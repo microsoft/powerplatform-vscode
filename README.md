@@ -2,6 +2,31 @@
 
 The extension is the uniform way for Power Platform ProDevs to install the pac CLI and PCF control tools and begin creating CDS solution, packages and components.
 
+## Setting Up Local Dev Environment
+
+Windows, macOS or Linux:
+
+- [Node.js LTS (currently v14)](https://nodejs.org/en/download/)
+- gulp CLI: ```npm install -g gulp-cli```
+- [git](https://git-scm.com/downloads)
+- [VS Code](https://code.visualstudio.com/Download) or your different favorite editor
+- recommended VSCode extensions:
+  - [EditorConfig for VS Code (editorconfig.editorconfig)](https://github.com/editorconfig/editorconfig-vscode)
+  - [ESLint (dbaeumer.vscode-eslint)](https://github.com/Microsoft/vscode-eslint)
+  - [GitLens (eamodio.gitlens)](https://github.com/eamodio/vscode-gitlens)
+  - [markdownlint (davidanson.vscode-markdownlint)](https://github.com/DavidAnson/vscode-markdownlint)
+
+## Getting Started
+
+Clone, restore modules, build and run:
+
+```bash
+git clone https://github.com/microsoft/powerplatform-vscode.git pp-vscode
+cd pp-vscode
+npm install
+gulp ci
+```
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
