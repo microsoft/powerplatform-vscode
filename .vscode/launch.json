@@ -2,6 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "name": "Launch VSCode Extension",
+      "outFiles": [
+        "${workspaceFolder}/out/**/*.js"
+      ],
+      "preLaunchTask": "gulp: compile",
+      "request": "launch",
+      "type": "pwa-extensionHost"
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Mocha All tests",

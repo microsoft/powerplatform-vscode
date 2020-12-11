@@ -1,8 +1,8 @@
 {
-  "name": "powerplatform-build-tools",
-  "version": "0.1.0",
-  "description": "Azure DevOps tasks for Power Platform",
-  "main": "index.js",
+  "name": "powerplatform-vscode",
+  "displayName": "VS Code Extension for Power Platform",
+  "description": "Tooling to create Power Platform packages and manage Power Platform environments",
+  "version": "0.0.1",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
@@ -14,12 +14,47 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/microsoft/powerplatform-build-tools"
+    "url": "https://github.com/microsoft/powerplatform-vscode"
   },
+  "bugs": {
+    "url": "https://github.com/microsoft/powerplatform-vscode/issues",
+    "email": "PPTools@microsoft.com"
+  },
+
+  "engines": {
+		"vscode": "^1.51.0"
+	},
+  "publisher": "microsoft-IsvExpTools",
+  "main": "./out/extension.js",
+  "categories": [ "Other" ],
+  "icon": "./assets/icon.png",
+  "keywords": [ "Power Platform" ],
+  "preview": true,
+  "badges": [
+    {
+      "description": "PR Loop",
+      "url": "https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg",
+      "href": "https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest"
+    }
+  ],
+  "activationEvents": [
+    "onCommand:microsoft-IsvExpTools.pac.createTerminal",
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "microsoft-IsvExpTools.pac.createTerminal",
+        "title": "pac CLI Terminal"
+      }
+    ]
+  },
+
   "devDependencies": {
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.14.6",
+    "@types/vscode": "^1.51.0",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
     "@vercel/ncc": "^0.25.0",
@@ -38,7 +73,9 @@
     "ps-list": "^7.2.0",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5",
-    "unzip-stream": "^0.3.1"
+    "vsce": "^1.81.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "unzip-stream": "^0.3.1"
+  }
 }

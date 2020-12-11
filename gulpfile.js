@@ -14,7 +14,6 @@ const fs = require('fs-extra');
 const log = require('fancy-log');
 const path = require('path');
 const pslist = require('ps-list');
-const unzip = require('unzip-stream');
 
 const tsConfigFile = './tsconfig.json';
 const tsconfig = require(tsConfigFile);
@@ -94,9 +93,10 @@ async function nugetInstall(nugetSource, packageName, version, targetDir) {
         throw new Error(`Cannot download ${res.url}, status: ${res.statusText} (${res.status}), body: ${body ? body.toString('ascii') : '<empty>'}`);
     }
 
-    log.info(`Extracting into folder: ${targetDir}`);
+    const localNupkg = path.join(targetDir, `${packageName}.${version}.nupkg`);
+    fs.ensureDirSync(targetDir);
     return new Promise((resolve, reject) => {
-        res.body.pipe(unzip.Extract({ path: targetDir }))
+        res.body.pipe(fs.createWriteStream(localNupkg))
             .on('close', () => {
                 resolve();
             }).on('error', err => {
@@ -136,15 +136,12 @@ function binplace(compName, relativePath) {
 
 function createDist() {
     fs.emptyDirSync(distdir);
-    binplace('SoPa', path.join('sopa', 'content', 'bin', 'coretools'));
     binplace('pac CLI', path.join('pac', 'tools'));
 }
 
 const recompile = gulp.series(
     clean,
-    // async () => nugetInstall('CAP_ISVExp_Tools_Daily', 'Microsoft.PowerApps.CLI', '1.4.5-daily-20102917', path.resolve(outdir, 'pac')),
     async () => nugetInstall('nuget.org', 'Microsoft.PowerApps.CLI', '1.4.4', path.resolve(outdir, 'pac')),
-    async () => nugetInstall('nuget.org', 'Microsoft.CrmSdk.CoreTools', '9.1.0.49', path.resolve(outdir, 'sopa')),
     compile
 );
 
@@ -163,4 +160,4 @@ exports.ci = gulp.series(
     test
 );
 exports.dist = dist;
-exports.default = recompile;
+exports.default = compile;
