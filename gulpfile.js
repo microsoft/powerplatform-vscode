@@ -6,8 +6,8 @@
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
-const sourcemaps = require('gulp-sourcemaps');
-const ts = require('gulp-typescript');
+const gulpWebpack = require('webpack-stream');
+const webpack = require('webpack');
 
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
@@ -15,9 +15,11 @@ const log = require('fancy-log');
 const path = require('path');
 const pslist = require('ps-list');
 
-const tsConfigFile = './tsconfig.json';
-const tsconfig = require(tsConfigFile);
-const outdir = path.resolve(tsconfig.compilerOptions.outDir);
+// const tsConfigFile = './tsconfig.json';
+// const tsconfig = require(tsConfigFile);
+const webPackConfig = require('./webpack.config');
+// const outdir = path.resolve(tsconfig.compilerOptions.outDir);
+const outdir = path.resolve('./out');
 const distdir = path.resolve('./dist');
 const readPAT = process.env['AZ_DevOps_Read_PAT'];
 
@@ -28,18 +30,15 @@ async function clean() {
             log.info(`Terminating: ${info.name} - ${info.pid}...`)
             process.kill(info.pid);
         });
+    fs.emptyDirSync(distdir);
     return fs.emptyDir(outdir);
 }
 
 function compile() {
-    const tsProj = ts.createProject(tsConfigFile);
     return gulp
         .src('src/**/*.ts')
-        .pipe(sourcemaps.init())
-        .pipe(tsProj())
-        // https://www.npmjs.com/package/gulp-typescript#source-maps
-        .pipe(sourcemaps.write('./', { sourceRoot: './', includeContent: false }))
-        .pipe(gulp.dest(outdir));
+        .pipe(gulpWebpack(webPackConfig, webpack))
+        .pipe(gulp.dest(distdir));
 }
 
 async function nugetInstall(nugetSource, packageName, version, targetDir) {

@@ -1,0 +1,14 @@
+.github/
+.vscode/
+node_modules/
+dist/
+out/
+src/
+test/
+.gitignore
+gulpfile.js
+README.md
+scorch
+scorch.cmd
+tsconfig.json
+webpack.config.js

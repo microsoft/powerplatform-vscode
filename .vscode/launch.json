@@ -7,9 +7,9 @@
       ],
       "name": "Launch VSCode Extension",
       "outFiles": [
-        "${workspaceFolder}/out/**/*.js"
+        "${workspaceFolder}/dist/**/*.js"
       ],
-      "preLaunchTask": "gulp: compile",
+      // "preLaunchTask": "gulp: compile",
       "request": "launch",
       "type": "pwa-extensionHost"
     },

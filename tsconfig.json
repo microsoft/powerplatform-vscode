@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2019",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "./out",
+    "outDir": "./dist",
     "strict": true,
     "strictPropertyInitialization": true,
     "noImplicitAny": true
