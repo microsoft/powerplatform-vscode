@@ -1,7 +1,8 @@
 /node_modules/
 /coverage/
-/out/
 /dist/
+/out/
+/package/
 
 # Logs
 logs

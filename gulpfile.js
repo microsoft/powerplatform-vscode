@@ -8,6 +8,7 @@ const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
 const gulpWebpack = require('webpack-stream');
 const webpack = require('webpack');
+const vsce = require('vsce');
 
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
@@ -17,6 +18,7 @@ const pslist = require('ps-list');
 
 const webPackConfig = require('./webpack.config');
 const distdir = path.resolve('./dist');
+const packagedir = path.resolve('./package');
 const readPAT = process.env['AZ_DevOps_Read_PAT'];
 
 async function clean() {
@@ -118,9 +120,11 @@ function test() {
             }));
 }
 
-function createDist() {
-    fs.emptyDirSync(distdir);
-    binplace('pac CLI', path.join('pac', 'tools'));
+async function packageVsix() {
+    fs.emptyDirSync(packagedir);
+    return vsce.createVSIX({
+        packagePath: packagedir,
+    })
 }
 
 const recompile = gulp.series(
@@ -130,7 +134,8 @@ const recompile = gulp.series(
 );
 
 const dist = gulp.series(
-    async () => createDist(),
+    recompile,
+    packageVsix,
 );
 
 exports.clean = clean;
@@ -143,5 +148,6 @@ exports.ci = gulp.series(
     lint,
     test
 );
+exports.package = packageVsix;
 exports.dist = dist;
 exports.default = compile;
