@@ -1,8 +1,9 @@
 .github/
 .vscode/
 node_modules/
-dist/
+dist/**/*.map
 out/
+package/
 src/
 test/
 .gitignore
