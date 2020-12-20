@@ -3,8 +3,6 @@
 
 import * as vscode from 'vscode';
 
-const publisherName = 'microsoft-IsvExpTools';
-
 export class PacTerminal implements vscode.Disposable {
     private readonly _context: vscode.ExtensionContext;
     private readonly _cmdDisposables: vscode.Disposable[] = [];
@@ -18,11 +16,11 @@ export class PacTerminal implements vscode.Disposable {
 
         // https://code.visualstudio.com/api/references/vscode-api#EnvironmentVariableCollection
         this._context.environmentVariableCollection.prepend('PATH', cliPath + ';');
-        this._cmdDisposables.push(vscode.commands.registerCommand(`${publisherName}.pac.createTerminal`, this.createCliTerminal));
+
+        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.openDocumentation', this.openDocumentation));
     }
 
-    public createCliTerminal(...args: any[]): void {
-        vscode.window.showInformationMessage(`open: terminal`);
+    public openDocumentation(): void {
+        vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/pacvscodedocs'));
     }
-
 }
