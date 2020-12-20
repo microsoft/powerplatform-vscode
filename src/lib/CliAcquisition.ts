@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { Extract } from 'unzip-stream'
 
-export class AcquireCli implements vscode.Disposable {
+export class CliAcquisition implements vscode.Disposable {
 
     private readonly _context: vscode.ExtensionContext;
     private readonly _cliPath: string;
@@ -30,7 +30,7 @@ export class AcquireCli implements vscode.Disposable {
     }
 
     public async ensureInstalled(): Promise<string> {
-        return this.installCli(path.join(this._context.extensionPath, 'out', 'pac', `microsoft.powerapps.cli.${this.cliVersion}.nupkg`));
+        return this.installCli(path.join(this._context.extensionPath, 'dist', 'pac', `microsoft.powerapps.cli.${this.cliVersion}.nupkg`));
     }
 
     async installCli(pathToNupkg: string): Promise<string> {

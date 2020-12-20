@@ -1,6 +1,14 @@
 module.exports = {
     root: true,
+    env: {
+        node: true,
+        amd: true,
+        mocha: true,
+    },
     parser: '@typescript-eslint/parser',
+    parserOptions: {
+        ecmaVersion: 2019
+    },
     plugins: [
         '@typescript-eslint',
     ],

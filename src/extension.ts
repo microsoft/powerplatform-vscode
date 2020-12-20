@@ -2,13 +2,13 @@
 // Licensed under the MIT License.
 
 import * as vscode from 'vscode';
-import { AcquireCli } from './lib/AcquireCli';
+import { CliAcquisition } from './lib/CliAcquisition';
 import { PacTerminal } from './lib/PacTerminal';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-    const acquisition = new AcquireCli(context, '1.4.4');
-    const cliPath = await acquisition.ensureInstalled();
-    context.subscriptions.push(acquisition);
+    const cli = new CliAcquisition(context, '1.4.4');
+    const cliPath = await cli.ensureInstalled();
+    context.subscriptions.push(cli);
     context.subscriptions.push(new PacTerminal(context, cliPath));
 }
 
