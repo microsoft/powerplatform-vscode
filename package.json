@@ -47,8 +47,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "microsoft-IsvExpTools.pac.createTerminal",
-        "title": "pac CLI Terminal"
+        "command": "pacCLI.openDocumentation",
+        "title": "pac PowerApps CLI: Documentation"
       }
     ]
   },

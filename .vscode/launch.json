@@ -9,7 +9,7 @@
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
       ],
-      // "preLaunchTask": "gulp: compile",
+      "preLaunchTask": "gulp: compile",
       "request": "launch",
       "type": "pwa-extensionHost"
     },
