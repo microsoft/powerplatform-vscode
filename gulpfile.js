@@ -15,11 +15,7 @@ const log = require('fancy-log');
 const path = require('path');
 const pslist = require('ps-list');
 
-// const tsConfigFile = './tsconfig.json';
-// const tsconfig = require(tsConfigFile);
 const webPackConfig = require('./webpack.config');
-// const outdir = path.resolve(tsconfig.compilerOptions.outDir);
-const outdir = path.resolve('./out');
 const distdir = path.resolve('./dist');
 const readPAT = process.env['AZ_DevOps_Read_PAT'];
 
@@ -30,8 +26,7 @@ async function clean() {
             log.info(`Terminating: ${info.name} - ${info.pid}...`)
             process.kill(info.pid);
         });
-    fs.emptyDirSync(distdir);
-    return fs.emptyDir(outdir);
+    return fs.emptyDir(distdir);
 }
 
 function compile() {
@@ -120,17 +115,7 @@ function test() {
         .pipe(mocha({
                 require: [ "ts-node/register" ],
                 ui: 'bdd'
-            }))
-        .pipe(eslint.format());
-}
-
-function binplace(compName, relativePath) {
-    const targetDir = path.resolve(distdir, relativePath);
-    log.info(`Copying ${compName} to ${targetDir}...`);
-    fs.emptyDirSync(targetDir);
-    fs.copySync(path.resolve(outdir, relativePath), targetDir, {
-        filter: (src) => path.extname(src) !== '.pdb'
-    });
+            }));
 }
 
 function createDist() {
@@ -140,7 +125,7 @@ function createDist() {
 
 const recompile = gulp.series(
     clean,
-    async () => nugetInstall('nuget.org', 'Microsoft.PowerApps.CLI', '1.4.4', path.resolve(outdir, 'pac')),
+    async () => nugetInstall('nuget.org', 'Microsoft.PowerApps.CLI', '1.4.4', path.resolve(distdir, 'pac')),
     compile
 );
 
