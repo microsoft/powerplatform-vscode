@@ -3,12 +3,16 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 "use strict";
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
+const moment = require('moment');
 const gulpWebpack = require('webpack-stream');
 const webpack = require('webpack');
 const vsce = require('vsce');
+const argv = require('yargs').argv;
 
 const fetch = require('node-fetch');
 const fs = require('fs-extra');
@@ -127,6 +131,65 @@ async function packageVsix() {
     })
 }
 
+async function git(args) {
+    args.unshift('git');
+    const {stdout, stderr } = await exec(args.join(' '));
+    return {stdout: stdout, stderr: stderr};
+}
+
+async function snapshot() {
+    const targetBranch = argv.targetBranch || process.env.SNAPSHOT_RELEASE_TARGET_BRANCH || 'release/daily';
+    const sourceSpecParam = argv.sourceSpec || process.env.SNAPSHOT_RELEASE_SOURCE_SPEC;
+
+    const tmpRepo = path.resolve('./out/tmpRepo');
+    fs.emptyDirSync(tmpRepo);
+    const repoToken = process.env.GITHUB_TOKEN;
+
+    const repoUrl = (await git(['remote', 'get-url', '--all', 'origin'])).stdout.trim();
+    log.info(`snapshot: remote repoUrl: ${repoUrl}`);
+    const orgDir = process.cwd();
+    process.chdir(tmpRepo);
+    try
+    {
+        await git(['init']);
+        await git(['remote', 'add', 'origin', repoUrl]);
+        const bearer = `AUTHORIZATION: basic ${Buffer.from(`PAT:${repoToken}`).toString('base64')}`;
+        await git(['config', '--local', 'http.https://github.com/.extraheader', `"${bearer}"`]);
+        await git(['fetch', 'origin']);
+        const remotes = (await git(['remote', 'show', 'origin'])).stdout;
+        const head = remotes
+            .split('\n')
+            .map(line => {
+                const branch = line.match(/HEAD branch:\s*(\S+)/);
+                if (branch && branch.length >= 2) {
+                    return branch[1];
+                }
+            })
+            .filter(b => !!b);
+        if (!head || head.length < 1 || head.length > 1 || !head[0]) {
+            throw new Error(`Cannot determine HEAD from remote: ${repoUrl}`);
+        }
+        const headBranch = head[0];
+        if (headBranch == targetBranch) {
+            throw new Error(`Cannot snapshot into default HEAD branch: ${headBranch}`);
+        }
+        const sourceSpec = sourceSpecParam || `origin/${headBranch}`;
+        log.info(`  > snap shotting '${sourceSpec}' into branch: ${targetBranch}...`);
+        await git(['checkout', headBranch]);
+        const snapshotTag = `snapshot-${targetBranch.replace('/', '_').replace(' ', '_')}-${moment.utc().format('YYMMDD[Z]HHmmss')}`;
+        await git(['tag', snapshotTag, sourceSpec]);
+        await git(['checkout', '--force', '-B', targetBranch]);
+        const resetMsg = (await git(['reset', '--hard', `"${sourceSpec}"`])).stdout.trim();
+        log.info(`  > snapshot (${snapshotTag}): ${resetMsg}`);
+        log.info(`  > pushing snapshot branch '${targetBranch} to origin...`);
+        const pushMsg = (await git(['push', '--force', '--tags', 'origin', targetBranch])).stderr.trim();
+        log.info(`  > ${pushMsg}`)
+    }
+    finally {
+        process.chdir(orgDir);
+    }
+}
+
 const recompile = gulp.series(
     clean,
     async () => nugetInstall('nuget.org', 'Microsoft.PowerApps.CLI', '1.4.4', path.resolve(distdir, 'pac')),
@@ -141,6 +204,7 @@ const dist = gulp.series(
 exports.clean = clean;
 exports.compile = compile;
 exports.recompile = recompile;
+exports.snapshot = snapshot;
 exports.lint = lint;
 exports.test = test;
 exports.ci = gulp.series(
