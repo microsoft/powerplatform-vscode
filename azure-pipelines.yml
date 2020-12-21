@@ -1,10 +1,11 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
 # https://aka.ms/yaml
+#
+# Official build to produce versioned and signed VSIX
 
 trigger:
-- main
+- release/stable
 
 pool:
   vmImage: 'windows-latest'
@@ -14,5 +15,15 @@ steps:
   inputs:
     versionSpec: '14.x'
 
-- script: npm i && npm run dist
+- script: npm i
+  displayName: 'Restore (npm install)'
+
+- script: npm run dist
   displayName: 'Build and package VSIX'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish packages'
+  condition: always()
+  inputs:
+    PathtoPublish: package
+    ArtifactName: packages
