@@ -138,12 +138,15 @@ async function git(args) {
 }
 
 async function snapshot() {
-    const targetBranch = argv.targetBranch || process.env.SNAPSHOT_RELEASE_TARGET_BRANCH || 'release/daily';
-    const sourceSpecParam = argv.sourceSpec || process.env.SNAPSHOT_RELEASE_SOURCE_SPEC;
+    const targetBranch = argv.targetBranch || 'release/daily';
+    const sourceSpecParam = argv.sourceSpec;
+    const repoToken = argv.repoToken || process.env.GITHUB_TOKEN1;
+    if (!repoToken) {
+        throw new Error('Must specify parameter --repoToken with read and push rights to origin repo!');
+    }
 
     const tmpRepo = path.resolve('./out/tmpRepo');
     fs.emptyDirSync(tmpRepo);
-    const repoToken = process.env.GITHUB_TOKEN;
 
     const repoUrl = (await git(['remote', 'get-url', '--all', 'origin'])).stdout.trim();
     log.info(`snapshot: remote repoUrl: ${repoUrl}`);
