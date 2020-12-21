@@ -2,7 +2,7 @@
 
 The extension is the uniform way for Power Platform ProDevs to install the pac CLI and PCF control tools and begin creating CDS solution, packages and components.
 
-![PullRequest](https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg)
+[![PullRequest](https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg)](https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest)
 
 ## Setting Up Local Dev Environment
 
