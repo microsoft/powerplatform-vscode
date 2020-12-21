@@ -31,7 +31,7 @@ jobs:
       with:
         node-version: 14.x
 
-    - name: Build and test
+    - name: run snapshot gulp script
       run: |
         npm i
-        node node_modules/gulp/bin/gulp.js snapshot --sourceSpec ${{ github.event.inputs.sourceSpec }} --targetBranch ${{ github.event.inputs.targetBranch }}
+        node node_modules/gulp/bin/gulp.js snapshot --sourceSpec ${{ github.event.inputs.sourceSpec }} --targetBranch ${{ github.event.inputs.targetBranch }} --repoToken ${{ secrets.GITHUB_TOKEN }}
