@@ -13,13 +13,17 @@ variables:
   breakCodesignValidationInjection: true
 
 trigger:
-- release/stable
+  batch: true
+  branches:
+    include:
+      - release/stable
 
 pool:
   vmImage: 'windows-latest'
 
 steps:
 - task: NodeTool@0
+  displayName: Select nodejs runtime
   inputs:
     versionSpec: '14.x'
 
