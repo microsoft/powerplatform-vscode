@@ -1,7 +1,7 @@
+.azure-pipelines/
 .github/
 .vscode/
 node_modules/
-azure-pipelines.yml
 dist/**/*.map
 out/
 package/
