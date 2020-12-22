@@ -1,28 +1,29 @@
 # https://github.com/release-it/release-it/blob/master/config/release-it.json
 
+hooks: {}
+
 # https://github.com/release-it/release-it/blob/master/docs/git.md
 git:
   addUntrackedFiles: false
   commit: false
-  push: false
+  push: true
   # requireBranch: 'release/stable'
-  requireCommits: false
-  requireCleanWorkingDir: false
-  requireUpstream: false
+  requireCommits: true
+  requireCleanWorkingDir: true
+  requireUpstream: true
   tag: true
-  tagAnnotation: "Release ${version}"
+  tagArgs: [ '--force' ]
+  tagAnnotation: |
+    build ${version}:
+    ${changelog}
   tagName: 'v${version}'
 
 #https://github.com/release-it/release-it/blob/master/docs/npm.md
 npm:
   ignoreVersion: true
   publish: false
-  tag: true
 
 # https://github.com/release-it/release-it/blob/master/docs/github-releases.md
 github:
   draft: true
-  preRelease: true
-  release: false
-  releaseName: 'Release ${version}'
-  releaseNotes: null
+  release: true
