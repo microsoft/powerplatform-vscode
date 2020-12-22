@@ -1,0 +1,28 @@
+# https://github.com/release-it/release-it/blob/master/config/release-it.json
+
+# https://github.com/release-it/release-it/blob/master/docs/git.md
+git:
+  addUntrackedFiles: false
+  commit: false
+  push: false
+  # requireBranch: 'release/stable'
+  requireCommits: false
+  requireCleanWorkingDir: false
+  requireUpstream: false
+  tag: true
+  tagAnnotation: "Release ${version}"
+  tagName: 'v${version}'
+
+#https://github.com/release-it/release-it/blob/master/docs/npm.md
+npm:
+  ignoreVersion: true
+  publish: false
+  tag: true
+
+# https://github.com/release-it/release-it/blob/master/docs/github-releases.md
+github:
+  draft: true
+  preRelease: true
+  release: false
+  releaseName: 'Release ${version}'
+  releaseNotes: null
