@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform VS Code Extension",
   "description": "Tooling to create Power Platform packages and manage Power Platform environments",
-  "version": "0.0.1",
+  "version": "0.0.1-dev",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
@@ -11,7 +11,7 @@
     "dist": "node node_modules/gulp/bin/gulp.js dist"
   },
   "author": "PowerApps-ISV-Tools",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://github.com/microsoft/powerplatform-vscode/blob/main/README.md",
   "repository": {
     "type": "git",

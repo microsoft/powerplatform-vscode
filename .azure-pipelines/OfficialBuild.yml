@@ -23,15 +23,20 @@ pool:
 
 steps:
 - task: NodeTool@0
-  displayName: Select nodejs runtime
+  displayName: 'Use nodejs 14.x'
   inputs:
     versionSpec: '14.x'
 
-- script: npm install
+- task: Npm@1
   displayName: 'Restore (npm install)'
+  inputs:
+    command: install
 
-- script: npm run dist
+- task: Npm@1
   displayName: 'Build and package VSIX'
+  inputs:
+    command: custom
+    customCommand: run dist
 
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Generating%20Signing%20JSON.aspx
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Selecting%20CodeSign%20Certificates.aspx
