@@ -1,6 +1,7 @@
 .github/
 .vscode/
 node_modules/
+azure-pipelines.yml
 dist/**/*.map
 out/
 package/
@@ -8,7 +9,6 @@ src/
 test/
 .gitignore
 gulpfile.js
-README.md
 scorch
 scorch.cmd
 tsconfig.json
