@@ -12,6 +12,7 @@
   },
   "author": "PowerApps-ISV-Tools",
   "license": "MIT",
+  "homepage": "https://github.com/microsoft/powerplatform-vscode/blob/main/README.md",
   "repository": {
     "type": "git",
     "url": "https://github.com/microsoft/powerplatform-vscode"
@@ -35,13 +36,18 @@
   "preview": true,
   "badges": [
     {
-      "description": "PR Loop",
+      "description": "Pull Request",
       "url": "https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg",
       "href": "https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest"
+    },
+    {
+      "description": "Official Build",
+      "url": "https://dev.azure.com/dynamicscrm/OneCRM/_apis/build/status/DPX-Tools/powerplatform-vscode%20Official%20Build?branchName=release/stable",
+      "href": "https://dev.azure.com/dynamicscrm/OneCRM/_build/latest?definitionId=12152"
     }
   ],
   "activationEvents": [
-    "onCommand:microsoft-IsvExpTools.pac.createTerminal",
+    "onCommand:pacCLI.openDocumentation",
     "onStartupFinished"
   ],
   "contributes": {
