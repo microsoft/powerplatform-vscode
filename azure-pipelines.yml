@@ -13,10 +13,7 @@ variables:
   breakCodesignValidationInjection: true
 
 trigger:
-  batch: true
-  branches:
-    include:
-      - release/stable
+  - release/stable
 
 pool:
   vmImage: 'windows-latest'
