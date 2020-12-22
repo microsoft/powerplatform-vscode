@@ -180,7 +180,8 @@ async function snapshot() {
         log.info(`  > snap shotting '${sourceSpec}' into branch: ${targetBranch}...`);
         await git(['checkout', headBranch]);
         const snapshotTag = `snapshot-${targetBranch.replace('/', '_').replace(' ', '_')}-${moment.utc().format('YYMMDD[Z]HHmmss')}`;
-        await git(['tag', snapshotTag, sourceSpec]);
+        // TODO: setting this tag can interfere with the versioning tool, release-it; for now, don't set this tag
+        // await git(['tag', snapshotTag, sourceSpec]);
         await git(['checkout', '--force', '-B', targetBranch]);
         const resetMsg = (await git(['reset', '--hard', `"${sourceSpec}"`])).stdout.trim();
         log.info(`  > snapshot (${snapshotTag}): ${resetMsg}`);
