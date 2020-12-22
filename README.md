@@ -3,6 +3,7 @@
 The extension is the uniform way for Power Platform ProDevs to install the pac CLI and PCF control tools and begin creating CDS solution, packages and components.
 
 [![PullRequest](https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg)](https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest)
+[![Official Build](https://dev.azure.com/dynamicscrm/OneCRM/_apis/build/status/DPX-Tools/powerplatform-vscode%20Official%20Build?branchName=release/stable)](https://dev.azure.com/dynamicscrm/OneCRM/_build/latest?definitionId=12152)
 
 ## Setting Up Local Dev Environment
 

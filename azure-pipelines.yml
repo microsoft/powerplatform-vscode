@@ -7,6 +7,8 @@
 variables:
   # https://aka.ms/gdn-injection
   GDN_CODESIGN_TARGETDIRECTORY: "$(Build.SourcesDirectory)\\package"
+  # no codesigning for JavaScript:
+  GDN_CODESIGN_EXCLUSIONS: "f|**/*.js"
   runCodesignValidationInjection: true
   breakCodesignValidationInjection: true
 
