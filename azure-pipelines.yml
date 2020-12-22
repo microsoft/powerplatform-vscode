@@ -13,7 +13,10 @@ variables:
   breakCodesignValidationInjection: true
 
 trigger:
-  - release/stable
+  - release/*
+
+# PR loops only via GH workflows
+pr: none
 
 pool:
   vmImage: 'windows-latest'
