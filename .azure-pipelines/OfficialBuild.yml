@@ -33,6 +33,12 @@ steps:
     command: install
 
 - task: Npm@1
+  displayName: 'increment version'
+  inputs:
+    command: custom
+    customCommand: run increment-version
+
+- task: Npm@1
   displayName: 'Build and package VSIX'
   inputs:
     command: custom
