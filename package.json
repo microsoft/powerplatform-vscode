@@ -8,7 +8,8 @@
     "build": "node node_modules/gulp/bin/gulp.js",
     "test": "node node_modules/gulp/bin/gulp.js test",
     "ci": "node node_modules/gulp/bin/gulp.js ci",
-    "dist": "node node_modules/gulp/bin/gulp.js dist"
+    "dist": "node node_modules/gulp/bin/gulp.js dist",
+    "increment-version": "node node_modules/release-it/bin/release-it --increment patch --preRelease=alpha --ci -VV"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -80,6 +81,7 @@
     "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
     "ps-list": "^7.2.0",
+    "release-it": "^14.2.2",
     "ts-loader": "^8.0.12",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5",

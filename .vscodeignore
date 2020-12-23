@@ -1,13 +1,14 @@
 .azure-pipelines/
 .github/
 .vscode/
-node_modules/
 dist/**/*.map
+node_modules/
 out/
 package/
 src/
 test/
 .gitignore
+.release-it.yaml
 gulpfile.js
 scorch
 scorch.cmd
