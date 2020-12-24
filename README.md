@@ -7,7 +7,7 @@ The Power Platform extension makes it easy to create, build and deploy Power Pla
 
 Installing this extension will also install the latest pac CLI for your OS and will make it available in your VSCode terminal.
 
-![VSCode Terminal with pac CLI](assets\pac-CLI-in-terminal.png)
+![VSCode Terminal with pac CLI](assets/pac-CLI-in-terminal.png)
 
 ## Getting Started
 
