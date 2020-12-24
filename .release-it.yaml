@@ -25,5 +25,5 @@ npm:
 
 # https://github.com/release-it/release-it/blob/master/docs/github-releases.md
 github:
-  draft: true
-  release: true
+  draft: false
+  release: false

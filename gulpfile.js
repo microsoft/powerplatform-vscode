@@ -137,13 +137,20 @@ async function git(args) {
     return {stdout: stdout, stderr: stderr};
 }
 
-async function snapshot() {
-    const targetBranch = argv.targetBranch || 'release/daily';
-    const sourceSpecParam = argv.sourceSpec;
-    const repoToken = argv.repoToken || process.env.GITHUB_TOKEN1;
+async function setGitAuthN() {
+    const repoToken = argv.repoToken || process.env.GITHUB_TOKEN;
     if (!repoToken) {
         throw new Error('Must specify parameter --repoToken with read and push rights to origin repo!');
     }
+    const bearer = `AUTHORIZATION: basic ${Buffer.from(`PAT:${repoToken}`).toString('base64')}`;
+    await git(['config', '--local', 'http.https://github.com/.extraheader', `"${bearer}"`]);
+    await git(['config', '--local', 'user.email', 'capisvaatdev@microsoft.com' ]);
+    await git(['config', '--local', 'user.name', '"DPT Tools Dev Team"' ]);
+}
+
+async function snapshot() {
+    const targetBranch = argv.targetBranch || 'release/daily';
+    const sourceSpecParam = argv.sourceSpec;
 
     const tmpRepo = path.resolve('./out/tmpRepo');
     fs.emptyDirSync(tmpRepo);
@@ -156,8 +163,7 @@ async function snapshot() {
     {
         await git(['init']);
         await git(['remote', 'add', 'origin', repoUrl]);
-        const bearer = `AUTHORIZATION: basic ${Buffer.from(`PAT:${repoToken}`).toString('base64')}`;
-        await git(['config', '--local', 'http.https://github.com/.extraheader', `"${bearer}"`]);
+        await setGitAuthN();
         await git(['fetch', 'origin']);
         const remotes = (await git(['remote', 'show', 'origin'])).stdout;
         const head = remotes
@@ -218,4 +224,5 @@ exports.ci = gulp.series(
 );
 exports.package = packageVsix;
 exports.dist = dist;
+exports.setGitAuthN = setGitAuthN;
 exports.default = compile;

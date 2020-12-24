@@ -11,6 +11,9 @@ variables:
   GDN_CODESIGN_EXCLUSIONS: "f|**/*.js"
   runCodesignValidationInjection: true
   breakCodesignValidationInjection: true
+  #
+  # set the following in the pipeline's web UI editor:
+  # GITHUB_TOKEN  # GitHub PAT with scopes: repo; must have SSO enabled for GH org 'microsoft' for corp user
 
 trigger:
   - release/*
@@ -31,6 +34,15 @@ steps:
   displayName: 'Restore (npm install)'
   inputs:
     command: install
+
+- task: Npm@1
+  displayName: 'set git authN'
+  inputs:
+    command: custom
+    customCommand: run set-git-authn
+
+- script: git checkout release/$(Build.SourceBranchName)
+  displayName: 'checkout release/$(Build.SourceBranchName) - (release-it cannot work on detached heads)'
 
 - task: Npm@1
   displayName: 'increment version'
