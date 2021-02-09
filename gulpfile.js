@@ -202,7 +202,7 @@ async function snapshot() {
 
 const recompile = gulp.series(
     clean,
-    async () => nugetInstall('nuget.org', 'Microsoft.PowerApps.CLI', '1.4.4', path.resolve(distdir, 'pac')),
+    async () => nugetInstall('nuget.org', 'Microsoft.PowerApps.CLI', '1.5.2', path.resolve(distdir, 'pac')),
     compile
 );
 
