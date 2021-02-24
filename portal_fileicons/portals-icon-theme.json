@@ -1,5 +1,5 @@
 {
-    "fonts": [
+  "fonts": [
 		{
 			"id": "seti",
 			"src": [
@@ -13,39 +13,39 @@
 			"size": "150%"
 		}
 	],
-    "iconDefinitions": {
-        "_content_snippet_dark": {
-            "iconPath": "./icons/dark/content_snippets.svg"
-        },
-        "_web_pages_dark": {
-            "iconPath": "./icons/dark/web_pages.svg"
-        },
-        "_web_files_dark": {
-            "iconPath": "./icons/dark/web_files.svg"
-        },
-        "_web_link_sets_dark": {
-            "iconPath": "./icons/dark/weblink_sets.svg"
-        },
-        "_web_links_dark": {
-            "iconPath": "./icons/dark/weblinks.svg"
-        },
-        "_web_templates_dark": {
-            "iconPath": "./icons/dark/web_templates.svg"
-        },
-        "_page_templates_dark": {
-            "iconPath": "./icons/dark/page_templates.svg"
-        },
-        "_websites_dark": {
-            "iconPath": "./icons/dark/website.svg"
-        },
-        "_portal_languages_dark": {
-            "iconPath": "./icons/dark/website_languages.svg"
-        },
-        "_entity_forms_dark": {
-            "iconPath": "./icons/dark/entity_forms.svg"
-        },
-        "_entity_lists_dark": {
-            "iconPath": "./icons/dark/entity_lists.svg"
+  "iconDefinitions": {
+    "_content_snippet_dark": {
+        "iconPath": "./icons/dark/content_snippets.svg"
+    },
+    "_web_pages_dark": {
+        "iconPath": "./icons/dark/web_pages.svg"
+    },
+    "_web_files_dark": {
+        "iconPath": "./icons/dark/web_files.svg"
+    },
+    "_web_link_sets_dark": {
+        "iconPath": "./icons/dark/weblink_sets.svg"
+    },
+    "_web_links_dark": {
+        "iconPath": "./icons/dark/weblinks.svg"
+    },
+    "_web_templates_dark": {
+        "iconPath": "./icons/dark/web_templates.svg"
+    },
+    "_page_templates_dark": {
+        "iconPath": "./icons/dark/page_templates.svg"
+    },
+    "_websites_dark": {
+        "iconPath": "./icons/dark/website.svg"
+    },
+    "_portal_languages_dark": {
+        "iconPath": "./icons/dark/website_languages.svg"
+    },
+    "_entity_forms_dark": {
+        "iconPath": "./icons/dark/entity_forms.svg"
+    },
+    "_entity_lists_dark": {
+        "iconPath": "./icons/dark/entity_lists.svg"
 		},
 		"_entity_permissions_dark": {
 			"iconPath": "./icons/dark/entity_permissions.svg"
@@ -89,43 +89,42 @@
 		"_web_forms_dark": {
 			"iconPath": "./icons/dark/web_forms.svg"
 		},
-        "_folder_dark": {
-            "iconPath": "./icons/dark/folder.svg"
-        },
-
-        // light icons
-        "_content_snippet_light": {
-            "iconPath": "./icons/light/content_snippets.svg"
-        },
-        "_web_pages_light": {
-            "iconPath": "./icons/light/web_pages.svg"
-        },
-        "_web_files_light": {
-            "iconPath": "./icons/light/web_files.svg"
-        },
-        "_web_link_sets_light": {
-            "iconPath": "./icons/light/weblink_sets.svg"
-        },
-        "_web_links_light": {
-            "iconPath": "./icons/light/weblinks.svg"
-        },
-        "_web_templates_light": {
-            "iconPath": "./icons/light/web_templates.svg"
-        },
-        "_page_templates_light": {
-            "iconPath": "./icons/light/page_templates.svg"
-        },
-        "_websites_light": {
-            "iconPath": "./icons/light/adx_websites.svg"
-        },
-        "_portal_languages_light": {
-            "iconPath": "./icons/light/website_languages.svg"
-        },
-        "_entity_forms_light": {
-            "iconPath": "./icons/light/entity_forms.svg"
-        },
-        "_entity_lists_light": {
-            "iconPath": "./icons/light/entity_lists.svg"
+    "_folder_dark": {
+        "iconPath": "./icons/dark/folder.svg"
+    },
+    // light icons
+    "_content_snippet_light": {
+        "iconPath": "./icons/light/content_snippets.svg"
+    },
+    "_web_pages_light": {
+        "iconPath": "./icons/light/web_pages.svg"
+    },
+    "_web_files_light": {
+        "iconPath": "./icons/light/web_files.svg"
+    },
+    "_web_link_sets_light": {
+        "iconPath": "./icons/light/weblink_sets.svg"
+    },
+    "_web_links_light": {
+        "iconPath": "./icons/light/weblinks.svg"
+    },
+    "_web_templates_light": {
+        "iconPath": "./icons/light/web_templates.svg"
+    },
+    "_page_templates_light": {
+        "iconPath": "./icons/light/page_templates.svg"
+    },
+    "_websites_light": {
+        "iconPath": "./icons/light/adx_websites.svg"
+    },
+    "_portal_languages_light": {
+        "iconPath": "./icons/light/website_languages.svg"
+    },
+    "_entity_forms_light": {
+        "iconPath": "./icons/light/entity_forms.svg"
+    },
+    "_entity_lists_light": {
+        "iconPath": "./icons/light/entity_lists.svg"
 		},
 		"_entity_permissions_light": {
 			"iconPath": "./icons/light/entity_permissions.svg"
@@ -169,16 +168,14 @@
 		"_web_forms_light": {
 			"iconPath": "./icons/light/web_forms.svg"
 		},
-        "_folder_light": {
-            "iconPath": "./icons/light/folder.svg"
-        },
-
-        "_file_dark": {
-			"iconPath": "./icons/dark/document.svg"
-        },
-        
-        // Files
-        "_R_light": {
+    "_folder_light": {
+      "iconPath": "./icons/light/folder.svg"
+    },
+    "_file_dark": {
+      "iconPath": "./icons/dark/document.svg"
+    },
+    // Files
+    "_R_light": {
 			"fontCharacter": "\\E001",
 			"fontColor": "#498ba7"
 		},
@@ -1556,17 +1553,17 @@
 	// "file": "_file_dark",
 	// "rootFolderExpanded": "_websites_dark",
 	"rootFolder": "_websites_dark",
-    "folderNames": {
-        "content-snippets": "_content_snippet_dark",
-        "web-pages": "_web_pages_dark",
-        "content-pages": "_web_pages_dark",
-        "web-files": "_web_files_dark",
-        "weblink-sets": "_web_link_sets_dark",
-        "web-links": "_web_link_dark",
-        "web-templates": "_web_templates_dark",
-        "page-templates": "_page_templates_dark",
-        "website-languages": "_portal_languages_dark",
-        "entity-forms": "_entity_forms_dark",
+  "folderNames": {
+    "content-snippets": "_content_snippet_dark",
+    "web-pages": "_web_pages_dark",
+    "content-pages": "_web_pages_dark",
+    "web-files": "_web_files_dark",
+    "weblink-sets": "_web_link_sets_dark",
+    "web-links": "_web_link_dark",
+    "web-templates": "_web_templates_dark",
+    "page-templates": "_page_templates_dark",
+    "website-languages": "_portal_languages_dark",
+    "entity-forms": "_entity_forms_dark",
 		"entity-lists": "_entity_lists_dark",
 		"entity-permissions": "_entity_permissions_dark",
 		"polls": "_polls_dark",
@@ -1581,9 +1578,9 @@
 		"website-access": "_website_access_dark",
 		"web-forms": "_web_forms_dark"
     },
-    "fileExtensions": {
-        // icons by file extension
-        "bsl": "_bsl",
+  "fileExtensions": {
+    // icons by file extension
+    "bsl": "_bsl",
 		"mdo": "_mdo",
 		"asm": "_asm",
 		"s": "_asm",
@@ -1802,8 +1799,7 @@
 		"webrole.json": "_webroles_dark",
 		"website.json": "_websites_dark",
 		"websiteaccess.json": "_website_access_dark",
-		"websitelanguage.json": "_portal_languages_light",
-		
+		"websitelanguage.json": "_portal_languages_dark",
 		"mix": "_hex",
 		"karma.conf.js": "_karma",
 		"karma.conf.coffee": "_karma",
@@ -1929,20 +1925,21 @@
 	},
 	"light": {
 		//"folderExpanded": "_folder_light",
-		//"folder": "_folder_light",
-		"rootFolderExpanded": "_websites_light",
-        "rootFolder": "_websites_light",
+		"folder": "_folder_light",
+		// "rootFolderExpanded": "_websites_light",
+    "rootFolder": "_websites_light",
         //"file": "_file_light",
-        "folderNames": {
-            "content-snippets": "_content_snippet_light",
-            "web-pages": "_web_pages_light",
-            "web-files": "_web_files_light",
-            "weblink-sets": "_web_link_sets_light",
-            "web-links": "_web_link_light",
-            "web-templates": "_web_templates_light",
-            "page-templates": "_page_templates_light",
-            "website-languages": "_portal_languages_light",
-            "entity-forms": "_entity_forms_light",
+    "folderNames": {
+      "content-snippets": "_content_snippet_light",
+      "web-pages": "_web_pages_light",
+      "content-pages": "_web_pages_light",
+      "web-files": "_web_files_light",
+      "weblink-sets": "_web_link_sets_light",
+      "web-links": "_web_link_light",
+      "web-templates": "_web_templates_light",
+      "page-templates": "_page_templates_light",
+      "website-languages": "_portal_languages_light",
+      "entity-forms": "_entity_forms_light",
 			"entity-lists": "_entity_lists_light",
 			"entity-permissions": "_entity_permissions_light",
 			"polls": "_polls_light",
@@ -1956,10 +1953,10 @@
 			"webroles": "_webroles_light",
 			"website-access": "_website_access_light",
 			"web-forms": "_web_forms_light"
-        }, 
+    },
 		"fileExtensions": {
-            // icons by file extension
-            "bsl": "_bsl_light",
+      // icons by file extension
+      "bsl": "_bsl_light",
 			"mdo": "_mdo_light",
 			"asm": "_asm_light",
 			"s": "_asm_light",
@@ -2236,6 +2233,15 @@
 			"django-html": "_html_3_light"
 		},
 		"fileNames": {
+      "sitemarker.json": "_site_markers_light",
+      "sitesetting.json": "_site_settings_light",
+      "publishingstate.json": "_publishing_states_light",
+      "tag.json": "_tag_light",
+      "webpagerule.json": "_webpage_rules_light",
+      "webrole.json": "_webroles_light",
+      "website.json": "_websites_light",
+      "websiteaccess.json": "_website_access_light",
+      "websitelanguage.json": "_portal_languages_light",
 			"mix": "_hex_light",
 			"karma.conf.js": "_karma_light",
 			"karma.conf.coffee": "_karma_light",
