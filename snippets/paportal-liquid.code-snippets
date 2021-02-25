@@ -1,17 +1,57 @@
 {
+    "Chart": {
+		"prefix": "chart",
+		"body": ["{% chart id:\"$1\" viewid:\"$2\" %}"],
+		"description": "Adds a Power Apps chart"
+	},
+    "Editable Page": {
+		"prefix": "editable-page",
+		"body": [
+			"{% editable page 'adx_copy' type: 'html', title: 'Page Copy', escape: false, liquid: true %}"
+		],
+		"description": "Renders a given Power Apps portals page as editable on the portal"
+	},
+    "Editable Snippet": {
+		"prefix": "editable-snippet",
+		"body": [
+			"{% editable snippets '$1' type: 'html' liquid: true %}"
+		],
+		"description": "Renders a given Power Apps portals snippet as editable on the portal"
+	},
 	"EntityForm ID": {
 		"prefix": "entityform-id",
 		"body": [
 			"{% entityform id:\"$1\" %}"
 		],
-		"description": "Renders an entity forms by ID"
+		"description": "Renders an entity form by ID"
 	},
 	"EntityForm Name": {
 		"prefix": "entityform-name",
 		"body": [
 			"{% entityform name:\"$1\" %}"
 		],
-		"description": "Renders an entity forms by name"
+		"description": "Renders an entity form by name"
+	},
+    "EntityList Name": {
+		"prefix": "entitylist-name",
+		"body": [
+			"{% include 'entity_list' key: '$1' %}"
+		],
+		"description": "Loads a given entity list by name"
+	},
+    "EntityView Id": {
+		"prefix": "entityview-id",
+		"body": [
+			"{% entityview id:\"$1\" %} {% endentityview %}"
+		],
+		"description": "Loads a given Power Apps view by ID"
+	},
+    "EntityView Name": {
+		"prefix": "entityview-name",
+		"body": [
+			"{% entityview logical_name:\"$1\", name:\"$2\" %} {% endentityview %}"
+		],
+		"description": "Loads a given Power Apps view by name"
 	},
 	"PowerBI AAD": {
 		"prefix": "powerbi-aad",
@@ -25,47 +65,7 @@
 		"body": [
 			"{% powerbi authentication_type:\"powerbiembedded\" path:\"$1\" %}"
 		],
-		"description": "Adds the Power BI Embedded dashboards and reports within pages"
-	},
-	"Chart": {
-		"prefix": "chart",
-		"body": ["{% chart id:\"$1\" viewid:\"$2\" %}"],
-		"description": "Adds a Power Apps chart to a web page"
-	},
-	"Editable Page": {
-		"prefix": "editable-page",
-		"body": [
-			"{% editable page 'adx_copy' type: 'html', title: 'Page Copy', escape: false, liquid: true %}"
-		],
-		"description": "Renders a given Power Apps portals page as editable on the portal"
-	},
-	"Editable Snippet": {
-		"prefix": "editable-snippet",
-		"body": [
-			"{% editable snippets '$1' type: 'html' liquid: true %}"
-		],
-		"description": "Renders a given Power Apps portals snippet as editable on the portal"
-	},
-	"EntityList Name": {
-		"prefix": "entitylist-name",
-		"body": [
-			"{% include 'entity_list' key: '$1' %}"
-		],
-		"description": "Loads a given entity list by name"
-	},
-	"EntityView Name": {
-		"prefix": "entityview-name",
-		"body": [
-			"{% entityview logical_name:\"$1\", name:\"$2\" %} {% endentityview %}"
-		],
-		"description": "Loads a given Power Apps view by name"
-	},
-	"EntityView Id": {
-		"prefix": "entityview-id",
-		"body": [
-			"{% entityview id:\"$1\" %} {% endentityview %}"
-		],
-		"description": "Loads a given Power Apps view by ID"
+		"description": "Adds the Power BI Embedded dashboards and reports"
 	},
 	"SearchIndex": {
 		"prefix": "searchindex",
@@ -74,18 +74,18 @@
 		],
 		"description": "Performs a query against the portal search index"
 	},
+    "WebForm ID": {
+		"prefix": "webform",
+		"body": [
+			"{% webform id:\"$1\" %}"
+		],
+		"description": "Fully renders a web form by ID"
+	},
 	"WebForm Name": {
 		"prefix": "webform-name",
 		"body": [
 			"{% webform name:\"$1\" %}"
 		],
 		"description": "Fully renders a web form by name"
-	},
-	"WebForm ID": {
-		"prefix": "webform",
-		"body": [
-			"{% webform id:\"$1\" %}"
-		],
-		"description": "Fully renders a web form by ID"
 	}
 }
