@@ -65,7 +65,14 @@
         "language": "html",
         "path": "./snippets/paportal-liquid.code-snippets"
       }
-    ]
+    ],
+    "iconThemes": [
+			{
+				"id": "portals_icon",
+				"label": "PowerApps Portals Icons (Visual Studio Code)",
+				"path": "./portal_fileicons/portals-icon-theme.json"
+			}
+		]
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",
