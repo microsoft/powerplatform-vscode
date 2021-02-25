@@ -92,7 +92,6 @@
     "_folder_dark": {
         "iconPath": "./icons/dark/folder.svg"
     },
-    // light icons
     "_content_snippet_light": {
         "iconPath": "./icons/light/content_snippets.svg"
     },
@@ -174,7 +173,6 @@
     "_file_dark": {
       "iconPath": "./icons/dark/document.svg"
     },
-    // Files
     "_R_light": {
 			"fontCharacter": "\\E001",
 			"fontColor": "#498ba7"
@@ -1548,10 +1546,7 @@
 		}
 	},
 
-	// "folderExpanded": "_websites_dark",
 	"folder": "_folder_dark",
-	// "file": "_file_dark",
-	// "rootFolderExpanded": "_websites_dark",
 	"rootFolder": "_websites_dark",
   "folderNames": {
     "content-snippets": "_content_snippet_dark",
@@ -1579,7 +1574,6 @@
 		"web-forms": "_web_forms_dark"
     },
   "fileExtensions": {
-    // icons by file extension
     "bsl": "_bsl",
 		"mdo": "_mdo",
 		"asm": "_asm",
@@ -1924,11 +1918,8 @@
 		"django-html": "_html_3"
 	},
 	"light": {
-		//"folderExpanded": "_folder_light",
 		"folder": "_folder_light",
-		// "rootFolderExpanded": "_websites_light",
     "rootFolder": "_websites_light",
-        //"file": "_file_light",
     "folderNames": {
       "content-snippets": "_content_snippet_light",
       "web-pages": "_web_pages_light",
@@ -1955,7 +1946,6 @@
 			"web-forms": "_web_forms_light"
     },
 		"fileExtensions": {
-      // icons by file extension
       "bsl": "_bsl_light",
 			"mdo": "_mdo_light",
 			"asm": "_asm_light",
@@ -2299,6 +2289,5 @@
 		}
 	},
 	"highContrast": {
-		// overrides for high contrast
 	}
 }
