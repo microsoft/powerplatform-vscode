@@ -11,10 +11,13 @@ const config = {
     target: 'node',
     mode: 'development',
 
-    entry: './src/extension.ts',
+    entry: {
+        extension:'./client/src/extension.ts',
+        server: './server/src/server.ts'
+    },
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'extension.js',
+        path: path.resolve(__dirname,'dist'),
+        filename: '[name].js',
         libraryTarget: "commonjs2",
         devtoolModuleFilenameTemplate: "../[resource-path]",
     },
