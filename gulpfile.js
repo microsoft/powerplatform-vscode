@@ -35,11 +35,21 @@ async function clean() {
     return fs.emptyDir(distdir);
 }
 
-function compile() {
+function _compile() {
     return gulp
         .src('src/**/*.ts')
         .pipe(gulpWebpack(webPackConfig, webpack))
         .pipe(gulp.dest(distdir));
+}
+
+function copyServer() {
+       return gulp.src('./dist/server.js')
+      .pipe(gulp.dest('./server/out/'));
+}
+
+function copyExtension() {
+    return gulp.src('./dist/extension.js')
+   .pipe(gulp.dest('./client/out/'));
 }
 
 async function nugetInstall(nugetSource, packageName, version, targetDir) {
@@ -117,7 +127,7 @@ function lint() {
 
 function test() {
     return gulp
-        .src('src/test/**/*.ts', { read: false })
+        .src('client/src/test/**/*.ts', { read: false })
         .pipe(mocha({
                 require: [ "ts-node/register" ],
                 ui: 'bdd'
@@ -203,7 +213,15 @@ async function snapshot() {
 const recompile = gulp.series(
     clean,
     async () => nugetInstall('nuget.org', 'Microsoft.PowerApps.CLI', '1.5.2', path.resolve(distdir, 'pac')),
-    compile
+    _compile,
+    copyExtension,
+    copyServer
+);
+
+const compile = gulp.series(
+    _compile,
+    copyExtension,
+    copyServer
 );
 
 const dist = gulp.series(

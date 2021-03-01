@@ -1,0 +1,27 @@
+{
+  "name": "powerplatform-vscode-server",
+  "displayName": "Power Platform VS Code Extension Server",
+  "description": "Tooling to create Power Platform packages and manage Power Platform environments",
+  "version": "0.0.1-dev",
+	"private": true,
+  "author": "PowerApps-ISV-Tools",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/microsoft/powerplatform-vscode/blob/main/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoft/powerplatform-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/microsoft/powerplatform-vscode/issues",
+    "email": "PPTools@microsoft.com"
+  },
+	"engines": {
+		"node": "*"
+	},
+	"dependencies": {
+		"vscode-uri": "^2.1.2",
+		"vscode-languageserver": "^7.0.0",
+		"vscode-languageserver-textdocument": "^1.0.1"
+	},
+	"scripts": {}
+}
