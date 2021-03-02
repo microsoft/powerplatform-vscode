@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 import { CliAcquisition } from './lib/CliAcquisition';
 import { PacTerminal } from './lib/PacTerminal';
 import * as path from 'path';
+import { PortalWebView } from './PortalWebView';
 
 import {
 	LanguageClient,
@@ -60,6 +61,41 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     const cliPath = await cli.ensureInstalled();
     context.subscriptions.push(cli);
     context.subscriptions.push(new PacTerminal(context, cliPath));
+
+    // portal web view panel
+	context.subscriptions.push(
+		vscode.commands.registerCommand('microsoft-powerapps-portals.preview-show', () => {
+			PortalWebView.createOrShow(context);
+		})
+	);
+
+	context.subscriptions.push(vscode.workspace
+        .onDidOpenTextDocument(() => {
+            if (vscode.window.activeTextEditor === undefined) return;
+			if (vscode.workspace.workspaceFolders !== undefined && PortalWebView.currentPanel
+				&& PortalWebView.currentDocument !== vscode.window.activeTextEditor.document.fileName
+				&& PortalWebView.checkDocumentIsHTML(false)) {
+                PortalWebView.currentPanel._update();
+            }
+        })
+    );
+	context.subscriptions.push(vscode.workspace
+        .onDidChangeTextDocument(() => {
+            if (vscode.window.activeTextEditor === undefined) return;
+			if (vscode.workspace.workspaceFolders !== undefined && PortalWebView.currentPanel
+				&& PortalWebView.currentDocument === vscode.window.activeTextEditor.document.fileName) {
+                PortalWebView.currentPanel._update();
+            }
+        })
+    );
+
+	if (vscode.window.registerWebviewPanelSerializer) {
+		vscode.window.registerWebviewPanelSerializer(PortalWebView.viewType, {
+			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
+				PortalWebView.revive(webviewPanel, context.extensionUri);
+			}
+		});
+	}
 }
 
 export function deactivate(): Thenable<void> | undefined {
