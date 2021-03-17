@@ -52,7 +52,8 @@
   ],
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
-    "onStartupFinished"
+    "onStartupFinished",
+    "onLanguage:json"
   ],
   "contributes": {
     "commands": [

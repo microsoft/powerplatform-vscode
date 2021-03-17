@@ -16,6 +16,7 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult
 } from 'vscode-languageserver/node';
+import { URL } from 'url';
 
 import {
 	TextDocument
@@ -31,6 +32,7 @@ let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
 let hasDiagnosticRelatedInformationCapability: boolean = false;
+
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -188,24 +190,64 @@ connection.onDidChangeWatchedFiles(_change => {
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
-	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
+	async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
-		return [
-			{
-				label: 'TypeScript',
-				kind: CompletionItemKind.Text,
-				data: 1
-			},
-			{
-				label: 'JavaScript',
-				kind: CompletionItemKind.Text,
-				data: 2
-			}
-		];
+		const editPath = _textDocumentPosition.textDocument.uri;
+		const editFileUrl = new URL(editPath);
+  		const rowIndex = _textDocumentPosition.position.line;
+		return await getSuggestions(rowIndex ,editFileUrl);
 	}
 );
+
+function getSuggestions(rowIndex: number, fileUrl: URL) {
+	const fs = require('fs');
+	const lineByLine = require('n-readlines');
+	const liner = new lineByLine(fileUrl);
+	let line;
+	let lineNumber = 0;
+	let userEditedLine = '';
+
+	while (line = liner.next()) {
+		if (lineNumber == rowIndex) {
+			userEditedLine = line.toString('ascii');
+			break;
+		}
+		lineNumber++;
+	}
+
+	const portalAttributeKeyPattern = /"(.*?)":/;
+	const matches = userEditedLine.match(portalAttributeKeyPattern);
+	const completionItems: CompletionItem[] = [];
+	if (matches) {
+		var portalAttributeKeyForCompletion = matches[1].toString();
+		// add a conditional check for "id"
+		portalAttributeKeyForCompletion = portalAttributeKeyForCompletion.substring(0, portalAttributeKeyForCompletion.length - 2);
+		// check for .portalConfig folder
+		fileUrl.pathname = '/e%3A/pac_Demo/starter-portal/.portalconfig/orgb2f4db70.crm10.dynamics.com-manifest.json';
+		const manifestData = fs.readFileSync(fileUrl, 'utf8');
+		const manifest = JSON.parse(manifestData);
+		const matchingManifestObject = manifest[portalAttributeKeyForCompletion];
+
+
+		if (matchingManifestObject) {
+			matchingManifestObject.forEach((element: any) => {
+				const item: CompletionItem = {
+					label: element.DisplayName + "("+ element.RecordId + ")",
+					insertText: "\"" + element.RecordId + "\"",
+					kind: CompletionItemKind.Value
+				}
+				completionItems.push(item);
+			});
+		}
+	}
+	return completionItems;
+}
+
+// function getPortalManifestFilePath(editFileUri: string) {
+// 	const workspaceFolder = vscode.workspace.getWorkspaceFolder(URI.file(editFileUri));
+// }
 
 // This handler resolves additional information for the item selected in
 // the completion list.
