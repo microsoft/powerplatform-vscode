@@ -12,8 +12,13 @@ import {
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient/node';
+import { TelemetryManager } from './telemetry/TelemetryManager';
 
 let client: LanguageClient;
+
+const extensionId = '';
+const extensionVersion = '';    // Should be updated via gulp taks
+const instrumentationKey = '';  // Should be updated via gulp taks
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
     // The server is implemented in node
@@ -23,6 +28,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	// The debug options for the server
 	// --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
 	let debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
+
+    const telemetryManager = TelemetryManager.getInstance(extensionId, extensionVersion, instrumentationKey);
+    // ensure it gets property disposed
+    context.subscriptions.push(telemetryManager.getReporter());
 
 	// If the extension is launched in debug mode then the debug server options are used
 	// Otherwise the run options are used
@@ -66,5 +75,6 @@ export function deactivate(): Thenable<void> | undefined {
 	if (!client) {
 		return undefined;
 	}
+    TelemetryManager.getInstance().getReporter().dispose()
 	return client.stop();
 }
