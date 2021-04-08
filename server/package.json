@@ -24,5 +24,8 @@
     "vscode-languageserver-textdocument": "^1.0.1",
     "n-readlines": "1.0.1"
   },
-  "scripts": {}
+  "scripts": {},
+  "devDependencies": {
+    "@types/n-readlines": "^1.0.1"
+  }
 }
