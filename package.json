@@ -55,6 +55,16 @@
     "onStartupFinished"
   ],
   "contributes": {
+    "configuration": {
+      "title": "powerplatform-vscode",
+      "properties": {
+        "powerPlatform.enablePortalFeatures": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Portal features in VSCode Extension"
+        }
+      }
+    },
     "commands": [
       {
         "command": "pacCLI.openDocumentation",
