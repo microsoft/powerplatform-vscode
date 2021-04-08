@@ -58,7 +58,7 @@
     "configuration": {
       "title": "powerplatform-vscode",
       "properties": {
-        "powerPlatform.enablePortalFeatures": {
+        "powerplatform-vscode.enablePortalFeatures": {
           "type": "boolean",
           "default": false,
           "description": "Enable Portal features in VSCode Extension"
