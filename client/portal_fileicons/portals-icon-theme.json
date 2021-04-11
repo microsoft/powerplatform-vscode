@@ -41,14 +41,14 @@
     "_portal_languages_dark": {
         "iconPath": "./icons/dark/website_languages.svg"
     },
-    "_entity_forms_dark": {
-        "iconPath": "./icons/dark/entity_forms.svg"
+    "_basic_forms_dark": {
+        "iconPath": "./icons/dark/basic_forms.svg"
     },
-    "_entity_lists_dark": {
-        "iconPath": "./icons/dark/entity_lists.svg"
+    "_lists_dark": {
+        "iconPath": "./icons/dark/lists.svg"
 		},
-		"_entity_permissions_dark": {
-			"iconPath": "./icons/dark/entity_permissions.svg"
+		"_table_permissions_dark": {
+			"iconPath": "./icons/dark/table_permissions.svg"
 		},
 		"_annotations_dark": {
 			"iconPath": "./icons/dark/annotation.svg"
@@ -86,8 +86,8 @@
 		"_website_access_dark": {
 			"iconPath": "./icons/dark/website_access.svg"
 		},
-		"_web_forms_dark": {
-			"iconPath": "./icons/dark/web_forms.svg"
+		"_advanced_forms_dark": {
+			"iconPath": "./icons/dark/advanced_forms.svg"
 		},
     "_folder_dark": {
         "iconPath": "./icons/dark/folder.svg"
@@ -119,14 +119,14 @@
     "_portal_languages_light": {
         "iconPath": "./icons/light/website_languages.svg"
     },
-    "_entity_forms_light": {
-        "iconPath": "./icons/light/entity_forms.svg"
+    "_basic_forms_light": {
+        "iconPath": "./icons/light/basic_forms.svg"
     },
-    "_entity_lists_light": {
-        "iconPath": "./icons/light/entity_lists.svg"
+    "_lists_light": {
+        "iconPath": "./icons/light/lists.svg"
 		},
-		"_entity_permissions_light": {
-			"iconPath": "./icons/light/entity_permissions.svg"
+		"_table_permissions_light": {
+			"iconPath": "./icons/light/table_permissions.svg"
 		},
 		"_annotations_light": {
 			"iconPath": "./icons/light/annotation.svg"
@@ -164,8 +164,8 @@
 		"_website_access_light": {
 			"iconPath": "./icons/light/website_access.svg"
 		},
-		"_web_forms_light": {
-			"iconPath": "./icons/light/web_forms.svg"
+		"_advanced_forms_light": {
+			"iconPath": "./icons/light/advanced_forms.svg"
 		},
     "_folder_light": {
       "iconPath": "./icons/light/folder.svg"
@@ -1558,9 +1558,9 @@
     "web-templates": "_web_templates_dark",
     "page-templates": "_page_templates_dark",
     "website-languages": "_portal_languages_dark",
-    "entity-forms": "_entity_forms_dark",
-		"entity-lists": "_entity_lists_dark",
-		"entity-permissions": "_entity_permissions_dark",
+    "basic-forms": "_basic_forms_dark",
+		"lists": "_lists_dark",
+		"table-permissions": "_table_permissions_dark",
 		"polls": "_polls_dark",
 		"poll-options": "_poll_options_dark",
 		"poll-placements": "_poll_placements_dark",
@@ -1571,7 +1571,7 @@
 		"webpage-rules": "_webpage_rules_dark",
 		"webroles": "_webroles_dark",
 		"website-access": "_website_access_dark",
-		"web-forms": "_web_forms_dark"
+		"advanced-forms": "_advanced_forms_dark"
     },
   "fileExtensions": {
     "bsl": "_bsl",
@@ -1930,9 +1930,9 @@
       "web-templates": "_web_templates_light",
       "page-templates": "_page_templates_light",
       "website-languages": "_portal_languages_light",
-      "entity-forms": "_entity_forms_light",
-			"entity-lists": "_entity_lists_light",
-			"entity-permissions": "_entity_permissions_light",
+      "basic-forms": "_basic_forms_light",
+			"lists": "_lists_light",
+			"table-permissions": "_table_permissions_light",
 			"polls": "_polls_light",
 			"poll-options": "_poll_options_light",
 			"poll-placements": "_poll_placements_light",
@@ -1943,7 +1943,7 @@
 			"webpage-rules": "_webpage_rules_light",
 			"webroles": "_webroles_light",
 			"website-access": "_website_access_light",
-			"web-forms": "_web_forms_light"
+			"advanced-forms": "_advanced_forms_light"
     },
 		"fileExtensions": {
       "bsl": "_bsl_light",
