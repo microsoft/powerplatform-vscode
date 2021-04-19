@@ -3,6 +3,7 @@ out/
 dist/
 /coverage/
 /package/
+.vscode/launch.json
 
 # Logs
 logs
