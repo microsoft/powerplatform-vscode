@@ -100,9 +100,7 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number, fileUrl: URL) {
-	// const YAML = require('yaml');
-
-	const portalAttributeKeyPattern = /"(.*?)":/; // "adx_pagetemplateid":
+	const portalAttributeKeyPattern = /"(.*?)":/; // regex to match text like "adx_pagetemplateid":
 	const matches = getEditedLineContent(rowIndex, fileUrl).match(portalAttributeKeyPattern);
 	const completionItems: CompletionItem[] = [];
 	if (matches) {
