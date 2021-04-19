@@ -36,6 +36,7 @@ let hasWorkspaceFolderCapability: boolean = false;
 let hasDiagnosticRelatedInformationCapability: boolean = false;
 let workspaceRootFolder: WorkspaceFolder[] | null = null;
 const portalConfigFolderName = '.portalconfig';
+const manifest = 'manifest';
 
 
 connection.onInitialize((params: InitializeParams) => {
@@ -114,11 +115,15 @@ function getSuggestions(rowIndex: number, fileUrl: URL) {
 			if (portalConfigFolderUrl && portalConfigFolderPath) {
 				const configFiles: string[] = fs.readdirSync(portalConfigFolderUrl);
 				configFiles.forEach(configFile => {
-					if (configFile.includes('manifest')) {
+					if (configFile.includes(manifest)) { // this is based on the assumption that there will be only one manifest file in portalconfig folder
 						const manifestFilePath = path.join(portalConfigFolderPath, configFile);
 						const manifestData = fs.readFileSync(new URL(manifestFilePath), 'utf8');
-						const parsedManifestData = YAML.parse(manifestData);
-						matchedManifestRecords = parsedManifestData[keyForCompletion];
+                        try {
+                            const parsedManifestData = YAML.parse(manifestData);
+                            matchedManifestRecords = parsedManifestData[keyForCompletion];
+                        } catch(exception) {
+                            // parsing failed. Add telemetry log.
+                        }
 					}
 				})
 			}
