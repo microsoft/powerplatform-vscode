@@ -119,11 +119,9 @@ function getSuggestions(rowIndex: number, fileUrl: URL) {
 				configFiles.forEach(configFile => {
 					if (configFile.includes('manifest')) {
 						const manifestFilePath = path.join(portalConfigFolderPath, configFile);
-						console.log(manifestFilePath);
 						const manifestData = fs.readFileSync(new URL(manifestFilePath), 'utf8');
 						const parsedManifestData = YAML.parse(manifestData);
 						matchedManifestRecords = parsedManifestData[keyForCompletion];
-						console.log(matchedManifestRecords);
 					}
 				})
 			}
@@ -182,16 +180,13 @@ function getEditedLineContent(rowIndex: number, fileUrl: URL) {
 }
 
 function getKeyForCompletion(matches: RegExpMatchArray) {
-	let portalAttributeKeyForCompletion = matches[1].toString();
-	if (portalAttributeKeyForCompletion.length > 2) {
+	let portalAttributeKeyForCompletion = matches[1].toString(); // returns text from the capture group e.g. adx_pagetemplateid
+	if (portalAttributeKeyForCompletion.length > 2 && portalAttributeKeyForCompletion.endsWith('id')) {
 		portalAttributeKeyForCompletion = portalAttributeKeyForCompletion.substring(0, portalAttributeKeyForCompletion.length - 2); // we remove the id
 	}
 	return portalAttributeKeyForCompletion;
 }
 
-// function getPortalManifestFilePath(editFileUri: string) {
-// 	const workspaceFolder = vscode.workspace.getWorkspaceFolder(URI.file(editFileUri));
-// }
 
 // This handler resolves additional information for the item selected in
 // the completion list.
