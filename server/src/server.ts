@@ -12,10 +12,13 @@ import {
 	CompletionItemKind,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+    WorkspaceFolder
 } from 'vscode-languageserver/node';
 import { URL } from 'url';
+import * as path from 'path';
 import * as fs from 'fs';
+import * as YAML from 'yaml';
 
 import {
 	TextDocument
@@ -31,11 +34,13 @@ let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
 let hasDiagnosticRelatedInformationCapability: boolean = false;
+let workspaceRootFolder: WorkspaceFolder[] | null = null;
+const portalConfigFolderName = '.portalconfig';
 
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
-
+    workspaceRootFolder = params.workspaceFolders;
 	// Does the client support the `workspace/configuration` request?
 	// If not, we fall back using global settings.
 	hasConfigurationCapability = !!(
@@ -97,6 +102,69 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number, fileUrl: URL) {
+	// const YAML = require('yaml');
+
+	const portalAttributeKeyPattern = /"(.*?)":/; // "adx_pagetemplateid":
+	const matches = getEditedLineContent(rowIndex, fileUrl).match(portalAttributeKeyPattern);
+	const completionItems: CompletionItem[] = [];
+	if (matches) {
+		const keyForCompletion = getKeyForCompletion(matches);
+		let matchedManifestRecords:string[] = [];
+
+		const portalConfigFolderUrl = getPortalConfigFolderUrl() as URL | null; //https://github.com/Microsoft/TypeScript/issues/11498
+		if (portalConfigFolderUrl) {
+			const portalConfigFolderPath = portalConfigFolderUrl.href;
+			if (portalConfigFolderUrl && portalConfigFolderPath) {
+				const configFiles: string[] = fs.readdirSync(portalConfigFolderUrl);
+				configFiles.forEach(configFile => {
+					if (configFile.includes('manifest')) {
+						const manifestFilePath = path.join(portalConfigFolderPath, configFile);
+						console.log(manifestFilePath);
+						const manifestData = fs.readFileSync(new URL(manifestFilePath), 'utf8');
+						const parsedManifestData = YAML.parse(manifestData);
+						matchedManifestRecords = parsedManifestData[keyForCompletion];
+						console.log(matchedManifestRecords);
+					}
+				})
+			}
+
+			if (matchedManifestRecords) {
+				matchedManifestRecords.forEach((element: any) => {
+					const item: CompletionItem = {
+						label: element.DisplayName + "("+ element.RecordId + ")",
+						insertText: "\"" + element.RecordId + "\"",
+						kind: CompletionItemKind.Value
+					}
+					completionItems.push(item);
+				});
+			}
+		}
+
+	}
+	return completionItems;
+}
+
+function getPortalConfigFolderUrl() {
+	let workspaceRootFolderUri = workspaceRootFolder && workspaceRootFolder[0].uri;
+	let portalConfigFolderUrl = null;
+	if (workspaceRootFolderUri !== null) {
+		let workspaceRootFolderUrl = new URL(workspaceRootFolderUri);
+		const workspaceRootFolderContents: string[] = fs.readdirSync(workspaceRootFolderUrl);
+		for (let i = 0; i <  workspaceRootFolderContents.length; i++) {
+			const fileName = workspaceRootFolderContents[i];
+			const filePath = path.join(workspaceRootFolderUrl.href, fileName);
+			const fileUrl = new URL(filePath);
+			const isDirectory = fs.statSync(fileUrl).isDirectory();
+			if (isDirectory && fileName === portalConfigFolderName) {
+				portalConfigFolderUrl = fileUrl;
+				return portalConfigFolderUrl;
+			}
+		}
+	}
+	return portalConfigFolderUrl;
+}
+
+function getEditedLineContent(rowIndex: number, fileUrl: URL) {
 	const lineByLine = require('n-readlines');
 	const liner = new lineByLine(fileUrl);
 	let line;
@@ -110,33 +178,15 @@ function getSuggestions(rowIndex: number, fileUrl: URL) {
 		}
 		lineNumber++;
 	}
+	return userEditedLine;
+}
 
-	const portalAttributeKeyPattern = /"(.*?)":/;
-	const matches = userEditedLine.match(portalAttributeKeyPattern);
-	const completionItems: CompletionItem[] = [];
-	if (matches) {
-		var portalAttributeKeyForCompletion = matches[1].toString();
-		// add a conditional check for "id"
-		portalAttributeKeyForCompletion = portalAttributeKeyForCompletion.substring(0, portalAttributeKeyForCompletion.length - 2);
-		// check for .portalConfig folder
-		fileUrl.pathname = '/e%3A/pac_Demo/starter-portal/.portalconfig/orgb2f4db70.crm10.dynamics.com-manifest.json';
-		const manifestData = fs.readFileSync(fileUrl, 'utf8');
-		const manifest = JSON.parse(manifestData);
-		const matchingManifestObject = manifest[portalAttributeKeyForCompletion];
-
-
-		if (matchingManifestObject) {
-			matchingManifestObject.forEach((element: any) => {
-				const item: CompletionItem = {
-					label: element.DisplayName + "("+ element.RecordId + ")",
-					insertText: "\"" + element.RecordId + "\"",
-					kind: CompletionItemKind.Value
-				}
-				completionItems.push(item);
-			});
-		}
+function getKeyForCompletion(matches: RegExpMatchArray) {
+	let portalAttributeKeyForCompletion = matches[1].toString();
+	if (portalAttributeKeyForCompletion.length > 2) {
+		portalAttributeKeyForCompletion = portalAttributeKeyForCompletion.substring(0, portalAttributeKeyForCompletion.length - 2); // we remove the id
 	}
-	return completionItems;
+	return portalAttributeKeyForCompletion;
 }
 
 // function getPortalManifestFilePath(editFileUri: string) {
