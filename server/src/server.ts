@@ -91,9 +91,6 @@ connection.onInitialized(() => {
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
 	async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
-		// The pass parameter contains the position of the text document in
-		// which code complete got requested. For the example we ignore this
-		// info and always provide the same completion items.
 		const editPath = _textDocumentPosition.textDocument.uri;
 		const editFileUrl = new URL(editPath);
   		const rowIndex = _textDocumentPosition.position.line;
