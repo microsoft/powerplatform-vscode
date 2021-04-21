@@ -56,6 +56,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	// Start the client. This will also launch the server
 	client.start();
 
+    const isPaportalFeatureEnabled = vscode.workspace.getConfiguration('powerplatform-vscode').get('enablePortalFeatures');
+    if (isPaportalFeatureEnabled) {
+        // add  portal specific features in this block
+    }
+
     const cli = new CliAcquisition(context, '1.5.2');
     const cliPath = await cli.ensureInstalled();
     context.subscriptions.push(cli);

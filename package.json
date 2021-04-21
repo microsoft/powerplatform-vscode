@@ -56,6 +56,16 @@
     "onLanguage:json"
   ],
   "contributes": {
+    "configuration": {
+      "title": "powerplatform-vscode",
+      "properties": {
+        "powerplatform-vscode.enablePortalFeatures": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Portal features in VSCode Extension"
+        }
+      }
+    },
     "commands": [
       {
         "command": "pacCLI.openDocumentation",
