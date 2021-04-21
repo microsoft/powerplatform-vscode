@@ -100,7 +100,7 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number, fileUrl: URL) {
-	const portalAttributeKeyPattern = /"(.*?)":/; // regex to match text like "adx_pagetemplateid":
+	const portalAttributeKeyPattern = /(.*?):/; // regex to match text like adx_pagetemplateid:
 	const matches = getEditedLineContent(rowIndex, fileUrl).match(portalAttributeKeyPattern);
 	const completionItems: CompletionItem[] = [];
 	if (matches) {
@@ -130,7 +130,7 @@ function getSuggestions(rowIndex: number, fileUrl: URL) {
 				matchedManifestRecords.forEach((element: any) => {
 					const item: CompletionItem = {
 						label: element.DisplayName + "("+ element.RecordId + ")",
-						insertText: "\"" + element.RecordId + "\"",
+						insertText: element.RecordId,
 						kind: CompletionItemKind.Value
 					}
 					completionItems.push(item);
