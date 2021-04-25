@@ -117,8 +117,7 @@ export class PortalWebView {
 
     private getFileName(): string {
         const filePath = this._textEditor.document.fileName;
-        const fileTitle =
-            "(Preview) " + filePath.substring(filePath.lastIndexOf("\\") + 1);
+        const fileTitle = "(Preview) " + path.basename(filePath);
         return fileTitle;
     }
 
