@@ -3,7 +3,7 @@ out/
 dist/
 /coverage/
 /package/
-
+.vs/
 # Logs
 logs
 *.log
