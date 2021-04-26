@@ -20,7 +20,7 @@ export class PortalWebView {
 
     public static checkDocumentIsHTML(): boolean {
         const languageId = vscode.window.activeTextEditor?.document.languageId.toLowerCase();
-        let result = languageId === "html";
+        const result = languageId === "html";
         return result;
     }
 
@@ -76,7 +76,7 @@ export class PortalWebView {
         this._update();
 
         // Listen for when the panel is disposed
-        // This happens when the user closes the panel or when the panel is closed programatically
+        // This happens when the user closes the panel or when the panel is closed programmatically
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
         // Update the content based on view changes
@@ -122,13 +122,13 @@ export class PortalWebView {
     }
 
     private generateHTML(webview: vscode.Webview): string {
-        let plainText: string = this._textEditor.document.getText();
-        let html = this.fixLinks(webview, plainText);
-        let htmlWithStyle = this.addStyles(webview, html);
+        const plainText: string = this._textEditor.document.getText();
+        const html = this.fixLinks(webview, plainText);
+        const htmlWithStyle = this.addStyles(webview, html);
         return htmlWithStyle;
     }
 
-    // Add styles to the current HTML so that it is displayed corectly in VS Code
+    // Add styles to the current HTML so that it is displayed correctly in VS Code
     private addStyles(webview: vscode.Webview, html: string): string {
         const uri =
             vscode.workspace.workspaceFolders &&
