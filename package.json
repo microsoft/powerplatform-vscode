@@ -70,14 +70,14 @@
         "command": "pacCLI.openDocumentation",
         "title": "pac PowerApps CLI: Documentation"
       },
-			{
-				"command": "microsoft-powerapps-portals.preview-show",
-				"title": "PowerApps Portal -> Show preview",
-				"icon": {
-					"dark": "./client/editor_menu_icons/dark/Show preview.svg",
-					"light": "./client/editor_menu_icons/light/Show preview.svg"
-				}
-			}
+      {
+        "command": "microsoft-powerapps-portals.preview-show",
+        "title": "PowerApps Portal -> Show preview",
+        "icon": {
+          "dark": "./client/editor_menu_icons/dark/Show preview.svg",
+          "light": "./client/editor_menu_icons/light/Show preview.svg"
+        }
+      }
     ],
     "snippets": [
       {
@@ -92,22 +92,22 @@
         "path": "./client/portal_fileicons/portals-icon-theme.json"
       }
     ],
-		"menus": {
-			"editor/title": [
-				{
-					"when": "resourceLangId == html",
-					"command": "microsoft-powerapps-portals.preview-show",
-					"alt": "microsoft-powerapps-portals.preview-show",
-					"group": "navigation"
-				}
-			],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceLangId == html",
+          "command": "microsoft-powerapps-portals.preview-show",
+          "alt": "microsoft-powerapps-portals.preview-show",
+          "group": "navigation"
+        }
+      ],
       "commandPalette": [
         {
           "command": "microsoft-powerapps-portals.preview-show",
           "when": "never"
         }
       ]
-		}
+    }
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",

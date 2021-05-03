@@ -3,7 +3,7 @@
   "displayName": "Power Platform VS Code Extension Client",
   "description": "Tooling to create Power Platform packages and manage Power Platform environments",
   "version": "0.0.1-dev",
-	"private": true,
+  "private": true,
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://github.com/microsoft/powerplatform-vscode/blob/main/README.md",
@@ -15,18 +15,18 @@
     "url": "https://github.com/microsoft/powerplatform-vscode/issues",
     "email": "PPTools@microsoft.com"
   },
-	"engines": {
-		"vscode": "^1.52.0"
-	},
-	"devDependencies": {
-		"@types/unzip-stream": "^0.3.0",
-		"@types/vscode": "1.52.0"
-	},
-	"dependencies": {
-		"vscode-languageclient": "7.0.0",
-		"unzip-stream": "^0.3.1"
-	},
-	"scripts": {
-		"test": "node ../node_modules/mocha/bin/_mocha"
-	}
+  "engines": {
+    "vscode": "^1.52.0"
+  },
+  "devDependencies": {
+    "@types/unzip-stream": "^0.3.0",
+    "@types/vscode": "1.52.0"
+  },
+  "dependencies": {
+    "unzip-stream": "^0.3.1",
+    "vscode-languageclient": "7.0.0"
+  },
+  "scripts": {
+    "test": "node ../node_modules/mocha/bin/_mocha"
+  }
 }
