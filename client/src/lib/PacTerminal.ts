@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path');
 import * as vscode from 'vscode';
 
 export class PacTerminal implements vscode.Disposable {
@@ -15,7 +17,7 @@ export class PacTerminal implements vscode.Disposable {
         this._context = context;
 
         // https://code.visualstudio.com/api/references/vscode-api#EnvironmentVariableCollection
-        this._context.environmentVariableCollection.prepend('PATH', cliPath + ';');
+        this._context.environmentVariableCollection.prepend('PATH', cliPath + path.delimiter);
 
         this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.openDocumentation', this.openDocumentation));
     }
