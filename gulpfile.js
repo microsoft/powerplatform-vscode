@@ -43,12 +43,12 @@ function _compile() {
 }
 
 function copyServer() {
-       return gulp.src('./dist/server.js')
+       return gulp.src('./dist/server.*')
       .pipe(gulp.dest('./server/out/'));
 }
 
 function copyExtension() {
-    return gulp.src('./dist/extension.js')
+    return gulp.src('./dist/extension.*')
    .pipe(gulp.dest('./client/out/'));
 }
 

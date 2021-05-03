@@ -5,8 +5,11 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import { Extract } from 'unzip-stream'
+import { spawnSync } from 'child_process';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const find = require('find-process');
 
 export class CliAcquisition implements vscode.Disposable {
 
@@ -16,6 +19,10 @@ export class CliAcquisition implements vscode.Disposable {
 
     public get cliVersion() : string {
         return this._cliVersion;
+    }
+
+    public get cliExePath() : string {
+        return path.join(this._cliPath, 'tools', 'pac.exe');
     }
 
     public constructor(context: vscode.ExtensionContext, cliVersion: string) {
@@ -35,11 +42,13 @@ export class CliAcquisition implements vscode.Disposable {
 
     async installCli(pathToNupkg: string): Promise<string> {
         const pacToolsPath = path.join(this._cliPath, 'tools');
-        if (fs.existsSync(path.join(pacToolsPath, 'pac.exe'))) {
+        if (this.isCliExpectedVersion()) {
             return Promise.resolve(pacToolsPath);
         }
         // nupkg has not been extracted yet:
         vscode.window.showInformationMessage(`Preparing pac CLI (v${this.cliVersion})...`);
+        await this.killTelemetryProcess();
+        fs.emptyDirSync(this._cliPath);
         return new Promise((resolve, reject) => {
             fs.createReadStream(pathToNupkg)
                 .pipe(Extract({ path: this._cliPath }))
@@ -51,6 +60,29 @@ export class CliAcquisition implements vscode.Disposable {
                     reject(err);
                 })
         });
+    }
 
+    isCliExpectedVersion(): boolean {
+        const exePath = this.cliExePath;
+        if (!fs.existsSync(exePath)) {
+            return false;
+        }
+        // determine version of currently cached CLI:
+        const res = spawnSync(exePath, ['help'], { encoding: 'utf-8' });
+        if (res.status !== 0) {
+            return false;
+        }
+        const versionMatch = res.stdout.match(/Version:\s+(\S+)/);
+        if (versionMatch && versionMatch.length >= 2) {
+            return (versionMatch[1] === this._cliVersion);
+        }
+        return false;
+    }
+
+    async killTelemetryProcess(): Promise<void> {
+        const list = await find('name', 'pacTelemetryUpload', true)
+        list.forEach((info: {pid: number}) => {
+            process.kill(info.pid)
+        });
     }
 }

@@ -124,7 +124,7 @@ export async function activate(
         }
     }
 
-    const cli = new CliAcquisition(context, "1.5.2");
+    const cli = new CliAcquisition(context, "1.6.5-daily-21042621");
     const cliPath = await cli.ensureInstalled();
     context.subscriptions.push(cli);
     context.subscriptions.push(new PacTerminal(context, cliPath));

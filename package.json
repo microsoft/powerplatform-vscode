@@ -111,6 +111,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",
+    "@types/fs-extra": "^9.0.11",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.14.6",
     "@types/vscode": "^1.51.0",
@@ -140,5 +141,8 @@
     "webpack-cli": "^4.2.0",
     "webpack-stream": "^6.1.1",
     "yargs": "^16.2.0"
+  },
+  "dependencies": {
+    "find-process": "^1.4.4"
   }
 }

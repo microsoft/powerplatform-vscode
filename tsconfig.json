@@ -1,22 +1,21 @@
 {
-	"extends": "./tsconfig.base.json",
-	"compilerOptions": {
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
     "target": "es2019",
     "module": "commonjs",
     "sourceMap": true,
     "outDir": "out",
-		"rootDir": ".",
-		"lib": [ "es2019" ],
-
-	},
-	"include": [
-		"src"
-	],
-	"exclude": [
-		"node_modules"
-	],
-	"references": [
-		{ "path": "./client" },
-		{ "path": "./server" }
-	]
+    "rootDir": ".",
+    "lib": [ "es2019" ]
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "references": [
+    { "path": "./client" },
+    { "path": "./server" }
+  ]
 }
