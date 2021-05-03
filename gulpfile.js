@@ -212,7 +212,7 @@ async function snapshot() {
 
 const recompile = gulp.series(
     clean,
-    async () => nugetInstall('nuget.org', 'Microsoft.PowerApps.CLI', '1.5.2', path.resolve(distdir, 'pac')),
+    async () => nugetInstall('CAP_ISVExp_Tools_Daily', 'Microsoft.PowerApps.CLI', '1.6.5-daily-21042621', path.resolve(distdir, 'pac')),
     _compile,
     copyExtension,
     copyServer
