@@ -6,8 +6,9 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as os from 'os';
 import { Extract } from 'unzip-stream'
-import { spawnSync } from 'child_process';
+import { execSync } from 'child_process';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const find = require('find-process');
 
@@ -22,7 +23,8 @@ export class CliAcquisition implements vscode.Disposable {
     }
 
     public get cliExePath() : string {
-        return path.join(this._cliPath, 'tools', 'pac.exe');
+        const execName = (os.platform() === 'win32') ? 'pac.exe' : 'pac';
+        return path.join(this._cliPath, 'tools', execName);
     }
 
     public constructor(context: vscode.ExtensionContext, cliVersion: string) {
@@ -37,7 +39,8 @@ export class CliAcquisition implements vscode.Disposable {
     }
 
     public async ensureInstalled(): Promise<string> {
-        return this.installCli(path.join(this._context.extensionPath, 'dist', 'pac', `microsoft.powerapps.cli.${this.cliVersion}.nupkg`));
+        const basename = this.getNupkgBasename();
+        return this.installCli(path.join(this._context.extensionPath, 'dist', 'pac', `${basename}.${this.cliVersion}.nupkg`));
     }
 
     async installCli(pathToNupkg: string): Promise<string> {
@@ -54,6 +57,9 @@ export class CliAcquisition implements vscode.Disposable {
                 .pipe(Extract({ path: this._cliPath }))
                 .on('close', () => {
                     vscode.window.showInformationMessage('The pac CLI is ready for use in your VS Code terminal!');
+                    if (os.platform() !== 'win32') {
+                        fs.chmodSync(this.cliExePath, 0o755);
+                    }
                     resolve(pacToolsPath);
                 }).on('error', (err: unknown) => {
                     vscode.window.showErrorMessage(`Cannot install pac CLI: ${err}`);
@@ -68,11 +74,15 @@ export class CliAcquisition implements vscode.Disposable {
             return false;
         }
         // determine version of currently cached CLI:
-        const res = spawnSync(exePath, ['help'], { encoding: 'utf-8' });
-        if (res.status !== 0) {
+        let versionMatch;
+        try {
+            const res = execSync(`"${exePath}" help`, { encoding: 'utf-8' });
+            versionMatch = res.match(/Version:\s+(\S+)/);
+        }
+        catch {
             return false;
         }
-        const versionMatch = res.stdout.match(/Version:\s+(\S+)/);
+        // TODO: version string between net462 and dotnetCore differ: latter has git commit id -> homogenize versions
         if (versionMatch && versionMatch.length >= 2) {
             return (versionMatch[1] === this._cliVersion);
         }
@@ -84,5 +94,19 @@ export class CliAcquisition implements vscode.Disposable {
         list.forEach((info: {pid: number}) => {
             process.kill(info.pid)
         });
+    }
+
+    getNupkgBasename(): string {
+        const platformName = os.platform();
+        switch (platformName) {
+            case 'win32':
+                return 'microsoft.powerapps.cli';
+            case 'darwin':
+                return 'microsoft.powerapps.cli.Core.osx-x64';
+            case 'linux':
+                return 'microsoft.powerapps.cli.Core.linux-x64';
+            default:
+                throw new Error(`Unsupported OS platform for pac CLI: ${platformName}`);
+        }
     }
 }
