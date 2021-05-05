@@ -31,9 +31,16 @@ steps:
     versionSpec: '14.x'
 
 - task: Npm@1
+  displayName: 'Latest npm'
+  inputs:
+    command: custom
+    customCommand: install -g npm
+
+- task: Npm@1
   displayName: 'Restore (npm install)'
   inputs:
-    command: install
+    command: custom
+    customCommand: ci
 
 - task: Npm@1
   displayName: 'set git authN'
