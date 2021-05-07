@@ -12,14 +12,13 @@ const config = {
     mode: 'development',
 
     entry: {
-        extension:'./client/src/extension.ts',
-        server: './server/src/server.ts'
+        extension:'./src/client/extension.ts',
+        server: './src/server/server.ts'
     },
     output: {
         path: path.resolve(__dirname,'dist'),
         filename: '[name].js',
         libraryTarget: "commonjs2",
-        devtoolModuleFilenameTemplate: "../[resource-path]",
     },
     devtool: 'source-map',
     externals: {
@@ -32,14 +31,11 @@ const config = {
         rules: [{
             test: /\.ts$/,
             exclude: /node_modules/,
-            use: [{
-                loader: 'ts-loader',
-                options: {
-                    compilerOptions: {
-                        "module": "es2019"
-                    }
-                }
-            }]
+            use: [
+            {
+                loader: 'ts-loader'
+            }
+        ]
         }]
     },
 }

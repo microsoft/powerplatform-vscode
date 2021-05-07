@@ -7,19 +7,22 @@
       ],
       "name": "Launch VSCode Extension",
       "outFiles": [
-        "${workspaceFolder}/client/out/**/*.js"
+				"${workspaceFolder}/dist/**/*.js"
       ],
+      "sourceMaps": true,
+      "runtimeExecutable": "${execPath}",
       "preLaunchTask": "gulp: compile",
       "request": "launch",
-      "type": "pwa-extensionHost"
+      "type": "pwa-extensionHost",
+      "trace": true
     },
-    {
+		{
 			"type": "node",
 			"request": "attach",
 			"name": "Attach to Server",
 			"port": 6009,
 			"restart": true,
-			"outFiles": ["${workspaceRoot}/server/out/**/*.js"]
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"]
 		},
     {
       "type": "node",

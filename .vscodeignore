@@ -1,7 +1,6 @@
 .azure-pipelines/
 .github/
 .vscode/
-dist/**/*.js
 **/node_modules/
 package/
 **/*.ts
@@ -10,7 +9,6 @@ package/
 **/tsconfig.json
 **/tsconfig.base.json
 **/tslint.json
-**/src/
 test/
 .gitignore
 .release-it.yaml
