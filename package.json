@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform VS Code Extension",
   "description": "Tooling to create Power Platform packages and manage Power Platform environments",
-  "version": "0.0.1-dev",
+  "version": "0.1.0-dev",
   "scripts": {
     "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
     "clean": "scorch",
@@ -11,7 +11,7 @@
     "ci": "node node_modules/gulp/bin/gulp.js ci",
     "dist": "node node_modules/gulp/bin/gulp.js dist",
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
-    "increment-version": "node node_modules/release-it/bin/release-it --increment patch --preRelease=alpha --ci -VV"
+    "increment-version": "node node_modules/release-it/bin/release-it --increment patch --ci -VV"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -125,7 +125,7 @@
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
-    "gulp-mocha": "^7.0.2",
+    "gulp-mocha": "^8.0.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^6.0.0-alpha.1",
     "mocha": "^8.2.1",
