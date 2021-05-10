@@ -4,7 +4,6 @@
   "description": "Tooling to create Power Platform packages and manage Power Platform environments",
   "version": "0.1.0-dev",
   "scripts": {
-    "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
     "test": "node node_modules/gulp/bin/gulp.js test",
@@ -28,15 +27,15 @@
     "vscode": "^1.51.0"
   },
   "publisher": "microsoft-IsvExpTools",
-  "main": "./client/out/extension.js",
+  "main": "./dist/extension",
   "categories": [
     "Snippets",
     "Other"
   ],
-  "icon": "client/assets/icon.png",
   "keywords": [
     "Power Platform"
   ],
+  "icon": "src/client/assets/icon.png",
   "preview": true,
   "badges": [
     {
@@ -74,22 +73,22 @@
         "command": "microsoft-powerapps-portals.preview-show",
         "title": "PowerApps Portal -> Show preview",
         "icon": {
-          "dark": "./client/editor_menu_icons/dark/Show preview.svg",
-          "light": "./client/editor_menu_icons/light/Show preview.svg"
+          "dark": "./src/client/editor_menu_icons/dark/Show preview.svg",
+          "light": "./src/client/editor_menu_icons/light/Show preview.svg"
         }
       }
     ],
     "snippets": [
       {
         "language": "html",
-        "path": "./client/snippets/paportal-liquid.code-snippets"
+        "path": "./src/client/snippets/paportal-liquid.code-snippets"
       }
     ],
     "iconThemes": [
       {
         "id": "portals_icon",
         "label": "PowerApps Portals Icons (Visual Studio Code)",
-        "path": "./client/portal_fileicons/portals-icon-theme.json"
+        "path": "./src/client/portal_fileicons/portals-icon-theme.json"
       }
     ],
     "menus": {
@@ -114,6 +113,7 @@
     "@types/fs-extra": "^9.0.11",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.14.6",
+    "@types/unzip-stream": "^0.3.0",
     "@types/vscode": "^1.51.0",
     "@types/webpack": "^4.41.25",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
@@ -137,12 +137,17 @@
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5",
     "vsce": "^1.81.1",
+    "vscode-test": "^1.3.0",
     "webpack": "^5.10.0",
-    "webpack-cli": "^4.2.0",
+    "webpack-cli": "^4.7.0",
     "webpack-stream": "^6.1.1",
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "find-process": "^1.4.4"
+    "find-process": "^1.4.4",
+    "unzip-stream": "^0.3.1",
+    "vscode-languageclient": "^7.0.0",
+    "vscode-languageserver": "^7.0.0",
+    "vscode-languageserver-textdocument": "^1.0.1"
   }
 }

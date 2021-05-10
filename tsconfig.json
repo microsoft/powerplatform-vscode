@@ -1,21 +1,19 @@
 {
-  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "es2019",
+    "target": "es6",
     "module": "commonjs",
     "sourceMap": true,
     "outDir": "out",
-    "rootDir": ".",
-    "lib": [ "es2019" ]
+    "rootDir": "src",
+    "lib": [ "es6" ],
+    "noImplicitAny": true,
+    "strictPropertyInitialization": true,
+		"strict": true
   },
   "include": [
     "src"
   ],
   "exclude": [
     "node_modules"
-  ],
-  "references": [
-    { "path": "./client" },
-    { "path": "./server" }
   ]
 }

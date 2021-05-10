@@ -35,22 +35,13 @@ async function clean() {
     return fs.emptyDir(distdir);
 }
 
-function _compile() {
+function compile() {
     return gulp
         .src('src/**/*.ts')
         .pipe(gulpWebpack(webPackConfig, webpack))
         .pipe(gulp.dest(distdir));
 }
 
-function copyServer() {
-       return gulp.src('./dist/server.*')
-      .pipe(gulp.dest('./server/out/'));
-}
-
-function copyExtension() {
-    return gulp.src('./dist/extension.*')
-   .pipe(gulp.dest('./client/out/'));
-}
 
 async function nugetInstall(nugetSource, packageName, version, targetDir) {
     // https://docs.microsoft.com/en-us/nuget/api/package-base-address-resource
@@ -127,7 +118,7 @@ function lint() {
 
 function test() {
     return gulp
-        .src('client/src/test/**/*.ts', { read: false })
+        .src('src/client/test/**/*.ts', { read: false })
         .pipe(mocha({
                 require: [ "ts-node/register" ],
                 ui: 'bdd'
@@ -214,15 +205,7 @@ const recompile = gulp.series(
     clean,
     async () => nugetInstall('CAP_ISVExp_Tools_Daily', 'Microsoft.PowerApps.CLI', '1.6.5-daily-21042621', path.resolve(distdir, 'pac')),
     async () => nugetInstall('CAP_ISVExp_Tools_Daily', 'Microsoft.PowerApps.CLI.Core.osx-x64', '1.6.5-daily-21042621', path.resolve(distdir, 'pac')),
-    _compile,
-    copyExtension,
-    copyServer
-);
-
-const compile = gulp.series(
-    _compile,
-    copyExtension,
-    copyServer
+    compile,
 );
 
 const dist = gulp.series(

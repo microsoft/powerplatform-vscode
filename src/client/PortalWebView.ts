@@ -24,7 +24,7 @@ export class PortalWebView {
         return result;
     }
 
-    public static createOrShow(context: vscode.ExtensionContext) {
+    public static createOrShow(context: vscode.ExtensionContext): void {
         const isHtml = this.checkDocumentIsHTML();
         if (!isHtml) {
             return;
@@ -63,7 +63,7 @@ export class PortalWebView {
         PortalWebView.currentPanel = new PortalWebView(panel, extensionUri);
     }
 
-    public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri): void {
         PortalWebView.currentPanel = new PortalWebView(panel, extensionUri);
     }
 
@@ -81,7 +81,7 @@ export class PortalWebView {
 
         // Update the content based on view changes
         this._panel.onDidChangeViewState(
-            (e) => {
+            () => {
                 if (this._panel.visible) {
                     this._update();
                 }
@@ -91,7 +91,7 @@ export class PortalWebView {
         );
     }
 
-    public dispose() {
+    public dispose(): void {
         PortalWebView.currentPanel = undefined;
 
         // Clean up our resources
@@ -105,7 +105,7 @@ export class PortalWebView {
         }
     }
 
-    public _update() {
+    public _update(): void {
         this._textEditor = vscode.window.activeTextEditor as vscode.TextEditor;
 
         PortalWebView.currentDocument = this._textEditor.document.fileName;
@@ -142,13 +142,13 @@ export class PortalWebView {
                 "bootstrap.min.css"
             )
         );
-        const bootstrap: string = `<link href="${url}" rel="stylesheet" />`;
+        const bootstrap = `<link href="${url}" rel="stylesheet" />`;
 
         // Add theme.css
         url = webview.asWebviewUri(
             vscode.Uri.joinPath(uri as vscode.Uri, "web-files", "theme.css")
         );
-        const theme: string = `<link href="${url}" rel="stylesheet" />`;
+        const theme = `<link href="${url}" rel="stylesheet" />`;
 
         return html + bootstrap + theme;
     }
@@ -173,7 +173,7 @@ export class PortalWebView {
 
         // update image referred as url('/Homehero.png');
         html = html.replace(
-            /url\('(?:[^'\/]*\/)*([^']+)'/g,
+            /url\('(?:[^'\]*)*([^']+)'/g,
             "url('" + BaseURL + "/$1'"
         );
 
