@@ -35,7 +35,7 @@
   "keywords": [
     "Power Platform"
   ],
-  "icon":"src/client/assets/icon.png",
+  "icon": "src/client/assets/icon.png",
   "preview": true,
   "badges": [
     {
