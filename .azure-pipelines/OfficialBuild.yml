@@ -13,7 +13,9 @@ variables:
   breakCodesignValidationInjection: true
   #
   # set the following in the pipeline's web UI editor:
-  # GITHUB_TOKEN  # GitHub PAT with scopes: repo; must have SSO enabled for GH org 'microsoft' for corp user
+  # GITHUB_TOKEN        # GitHub PAT with scopes: repo; must have SSO enabled for GH org 'microsoft' for corp user
+  # AZ_DevOps_Read_PAT  # PAT to read from AzDO feed in msazure
+  # VSIX_VERSION        # VSIX package/release version; must be manually managed for now!
 
 trigger:
   - release/*
@@ -33,28 +35,35 @@ steps:
 - task: Npm@1
   displayName: 'Restore (npm install)'
   inputs:
-    command: install
+    command: custom
+    customCommand: ci
 
 - task: Npm@1
-  displayName: 'set git authN'
+  displayName: 'set git repo authN'
   inputs:
     command: custom
     customCommand: run set-git-authn -- --repoToken $(GITHUB_TOKEN)
 
-- script: git checkout release/$(Build.SourceBranchName)
-  displayName: 'checkout release/$(Build.SourceBranchName) - (release-it cannot work on detached heads)'
+# - script: git checkout release/$(Build.SourceBranchName)
+#   displayName: 'checkout release/$(Build.SourceBranchName) - (release-it cannot work on detached heads)'
 
 - task: Npm@1
-  displayName: 'increment version'
+  displayName: 'increment version via npm'
   inputs:
     command: custom
-    customCommand: run increment-version
+    customCommand: run increment-version-npm
+
+# - task: Npm@1
+#   displayName: 'increment version'
+#   inputs:
+#     command: custom
+#     customCommand: run increment-version
 
 - task: Npm@1
   displayName: 'Build and package VSIX'
   inputs:
     command: custom
-    customCommand: run dist
+    customCommand: run dist -- --feedPAT $(AZ_DevOps_Read_PAT)
 
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Generating%20Signing%20JSON.aspx
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Selecting%20CodeSign%20Certificates.aspx

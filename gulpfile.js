@@ -23,7 +23,7 @@ const pslist = require('ps-list');
 const webPackConfig = require('./webpack.config');
 const distdir = path.resolve('./dist');
 const packagedir = path.resolve('./package');
-const readPAT = process.env['AZ_DevOps_Read_PAT'];
+const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
 
 async function clean() {
     (await pslist())
@@ -73,10 +73,10 @@ async function nugetInstall(nugetSource, packageName, version, targetDir) {
         redirect: 'manual'
     };
     if (selectedFeed.authenticated) {
-        if (!readPAT) {
-            throw new Error(`nuget feed ${nugetSource} requires authN but env var 'AZ_DevOps_Read_PAT' was not defined!`);
+        if (!feedPAT) {
+            throw new Error(`nuget feed ${nugetSource} requires authN but neither '--feedToken' argument nor env var 'AZ_DevOps_Read_PAT' was defined!`);
         }
-        reqInit.headers['Authorization'] = `Basic ${Buffer.from('PAT:' + readPAT).toString('base64')}`;
+        reqInit.headers['Authorization'] = `Basic ${Buffer.from('PAT:' + feedPAT).toString('base64')}`;
     }
 
     log.info(`Downloading package: ${nupkgUrl}...`);
@@ -139,12 +139,13 @@ async function git(args) {
 }
 
 async function setGitAuthN() {
-    const repoToken = argv.repoToken || process.env.GITHUB_TOKEN;
+    const repoUrl = 'https://github.com';
+    const repoToken = argv.repoToken;
     if (!repoToken) {
-        throw new Error('Must specify parameter --repoToken with read and push rights to origin repo!');
+        throw new Error(`Must specify parameter --repoToken with read and push rights to ${repoUrl}!`);
     }
     const bearer = `AUTHORIZATION: basic ${Buffer.from(`PAT:${repoToken}`).toString('base64')}`;
-    await git(['config', '--local', 'http.https://github.com/.extraheader', `"${bearer}"`]);
+    await git(['config', '--local', `http.${repoUrl}/.extraheader`, `"${bearer}"`]);
     await git(['config', '--local', 'user.email', 'capisvaatdev@microsoft.com' ]);
     await git(['config', '--local', 'user.name', '"DPT Tools Dev Team"' ]);
 }
