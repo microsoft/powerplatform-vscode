@@ -52,7 +52,8 @@
   ],
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
-    "onStartupFinished"
+    "onStartupFinished",
+    "onLanguage:yml"
   ],
   "contributes": {
     "configuration": {
@@ -90,6 +91,14 @@
         "id": "portals_icon",
         "label": "PowerApps Portals Icons (Visual Studio Code)",
         "path": "./src/client/portal_fileicons/portals-icon-theme.json"
+      }
+    ],
+    "languages": [
+      {
+        "id": "yml",
+        "extensions": [
+          ".yml"
+        ]
       }
     ],
     "menus": {
@@ -149,6 +158,8 @@
     "unzip-stream": "^0.3.1",
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
-    "vscode-languageserver-textdocument": "^1.0.1"
+    "vscode-languageserver-textdocument": "^1.0.1",
+    "n-readlines": "1.0.1",
+    "yaml": "^1.10.2"
   }
 }

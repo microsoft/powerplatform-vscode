@@ -5,16 +5,20 @@
 import {
 	createConnection,
 	TextDocuments,
-	Diagnostic,
-	DiagnosticSeverity,
 	ProposedFeatures,
 	InitializeParams,
 	DidChangeConfigurationNotification,
 	CompletionItem,
 	CompletionItemKind,
+	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+    WorkspaceFolder
 } from 'vscode-languageserver/node';
+import { URL } from 'url';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as YAML from 'yaml';
 
 import {
 	TextDocument
@@ -30,10 +34,14 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
+let workspaceRootFolder: WorkspaceFolder[] | null = null;
+const portalConfigFolderName = '.portalconfig';
+const manifest = 'manifest';
+
 
 connection.onInitialize((params: InitializeParams) => {
 	const capabilities = params.capabilities;
-
+    workspaceRootFolder = params.workspaceFolders;
 	// Does the client support the `workspace/configuration` request?
 	// If not, we fall back using global settings.
 	hasConfigurationCapability = !!(
@@ -73,138 +81,112 @@ connection.onInitialized(() => {
 		connection.client.register(DidChangeConfigurationNotification.type, undefined);
 	}
 	if (hasWorkspaceFolderCapability) {
-		connection.workspace.onDidChangeWorkspaceFolders(() => {
+		connection.workspace.onDidChangeWorkspaceFolders(_event => {
 			connection.console.log('Workspace folder change event received.');
 		});
 	}
 });
 
-// The example settings
-interface ExampleSettings {
-	maxNumberOfProblems: number;
-}
 
-// The global settings, used when the `workspace/configuration` request is not supported by the client.
-// Please note that this is not the case when using this server with the client provided in this example
-// but could happen with other clients.
-const defaultSettings: ExampleSettings = { maxNumberOfProblems: 1000 };
-let globalSettings: ExampleSettings = defaultSettings;
-
-// Cache the settings of all open documents
-const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
-
-connection.onDidChangeConfiguration(change => {
-	if (hasConfigurationCapability) {
-		// Reset all cached document settings
-		documentSettings.clear();
-	} else {
-		globalSettings = <ExampleSettings>(
-			(change.settings.languageServerExample || defaultSettings)
-		);
-	}
-
-	// Revalidate all open text documents
-	documents.all().forEach(validateTextDocument);
-});
-
-function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
-	if (!hasConfigurationCapability) {
-		return Promise.resolve(globalSettings);
-	}
-	let result = documentSettings.get(resource);
-	if (!result) {
-		result = connection.workspace.getConfiguration({
-			scopeUri: resource,
-			section: 'languageServerExample'
-		});
-		documentSettings.set(resource, result);
-	}
-	return result;
-}
-
-// Only keep settings for open documents
-documents.onDidClose(e => {
-	documentSettings.delete(e.document.uri);
-});
-
-// The content of a text document has changed. This event is emitted
-// when the text document first opened or when its content has changed.
-documents.onDidChangeContent(change => {
-	validateTextDocument(change.document);
-});
-
-async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-	// In this simple example we get the settings for every validate run.
-	const settings = await getDocumentSettings(textDocument.uri);
-
-	// The validator creates diagnostics for all uppercase words length 2 and more
-	const text = textDocument.getText();
-	const pattern = /\b[A-Z]{2,}\b/g;
-	let m: RegExpExecArray | null;
-
-	let problems = 0;
-	const diagnostics: Diagnostic[] = [];
-	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
-		problems++;
-		const diagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Warning,
-			range: {
-				start: textDocument.positionAt(m.index),
-				end: textDocument.positionAt(m.index + m[0].length)
-			},
-			message: `${m[0]} is all uppercase.`,
-			source: 'ex'
-		};
-		if (hasDiagnosticRelatedInformationCapability) {
-			diagnostic.relatedInformation = [
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Spelling matters'
-				},
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Particularly for names'
-				}
-			];
-		}
-		diagnostics.push(diagnostic);
-	}
-
-	// Send the computed diagnostics to VSCode.
-	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-}
-
-connection.onDidChangeWatchedFiles(() => {
-	// Monitored files have change in VSCode
-	connection.console.log('We received an file change event');
-});
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
-	(): CompletionItem[] => {
-		// The pass parameter contains the position of the text document in
-		// which code complete got requested. For the example we ignore this
-		// info and always provide the same completion items.
-		return [
-			{
-				label: 'TypeScript',
-				kind: CompletionItemKind.Text,
-				data: 1
-			},
-			{
-				label: 'JavaScript',
-				kind: CompletionItemKind.Text,
-				data: 2
-			}
-		];
+	async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
+		const editPath = _textDocumentPosition.textDocument.uri;
+		const editFileUrl = new URL(editPath);
+  		const rowIndex = _textDocumentPosition.position.line;
+		return await getSuggestions(rowIndex ,editFileUrl);
 	}
 );
+
+function getSuggestions(rowIndex: number, fileUrl: URL) {
+	const portalAttributeKeyPattern = /(.*?):/; // regex to match text like adx_pagetemplateid:
+	const matches = getEditedLineContent(rowIndex, fileUrl).match(portalAttributeKeyPattern);
+	const completionItems: CompletionItem[] = [];
+	if (matches) {
+		const keyForCompletion = getKeyForCompletion(matches);
+		let matchedManifestRecords:string[] = [];
+
+		const portalConfigFolderUrl = getPortalConfigFolderUrl() as URL | null; //https://github.com/Microsoft/TypeScript/issues/11498
+		if (portalConfigFolderUrl) {
+			const portalConfigFolderPath = portalConfigFolderUrl.href;
+			if (portalConfigFolderUrl && portalConfigFolderPath) {
+				const configFiles: string[] = fs.readdirSync(portalConfigFolderUrl);
+				configFiles.forEach(configFile => {
+					if (configFile.includes(manifest)) { // this is based on the assumption that there will be only one manifest file in portalconfig folder
+						const manifestFilePath = path.join(portalConfigFolderPath, configFile);
+						const manifestData = fs.readFileSync(new URL(manifestFilePath), 'utf8');
+                        try {
+                            const parsedManifestData = YAML.parse(manifestData);
+                            matchedManifestRecords = parsedManifestData[keyForCompletion];
+                        } catch(exception) {
+                            // parsing failed. Add telemetry log.
+                        }
+					}
+				})
+			}
+
+			if (matchedManifestRecords) {
+				matchedManifestRecords.forEach((element: any) => {
+					const item: CompletionItem = {
+						label: element.DisplayName + "("+ element.RecordId + ")",
+						insertText: element.RecordId,
+						kind: CompletionItemKind.Value
+					}
+					completionItems.push(item);
+				});
+			}
+		}
+
+	}
+	return completionItems;
+}
+
+function getPortalConfigFolderUrl() {
+	let workspaceRootFolderUri = workspaceRootFolder && workspaceRootFolder[0].uri;
+	let portalConfigFolderUrl = null;
+	if (workspaceRootFolderUri !== null) {
+		let workspaceRootFolderUrl = new URL(workspaceRootFolderUri);
+		const workspaceRootFolderContents: string[] = fs.readdirSync(workspaceRootFolderUrl);
+		for (let i = 0; i <  workspaceRootFolderContents.length; i++) {
+			const fileName = workspaceRootFolderContents[i];
+			const filePath = path.join(workspaceRootFolderUrl.href, fileName);
+			const fileUrl = new URL(filePath);
+			const isDirectory = fs.statSync(fileUrl).isDirectory();
+			if (isDirectory && fileName === portalConfigFolderName) {
+				portalConfigFolderUrl = fileUrl;
+				return portalConfigFolderUrl;
+			}
+		}
+	}
+	return portalConfigFolderUrl;
+}
+
+function getEditedLineContent(rowIndex: number, fileUrl: URL) {
+	const lineByLine = require('n-readlines');
+	const liner = new lineByLine(fileUrl);
+	let line;
+	let lineNumber = 0;
+	let userEditedLine = '';
+
+	while (line = liner.next()) {
+		if (lineNumber == rowIndex) {
+			userEditedLine = line.toString('ascii');
+			break;
+		}
+		lineNumber++;
+	}
+	return userEditedLine;
+}
+
+function getKeyForCompletion(matches: RegExpMatchArray) {
+	let portalAttributeKeyForCompletion = matches[1].toString(); // returns text from the capture group e.g. adx_pagetemplateid
+	if (portalAttributeKeyForCompletion.length > 2 && portalAttributeKeyForCompletion.endsWith('id')) {
+		portalAttributeKeyForCompletion = portalAttributeKeyForCompletion.substring(0, portalAttributeKeyForCompletion.length - 2); // we remove the id
+	}
+	return portalAttributeKeyForCompletion;
+}
+
 
 // This handler resolves additional information for the item selected in
 // the completion list.
