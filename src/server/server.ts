@@ -36,7 +36,7 @@ let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
 let workspaceRootFolder: WorkspaceFolder[] | null = null;
 const portalConfigFolderName = '.portalconfig';
-const manifest = 'manifest';
+const manifest = '-manifest';
 
 
 connection.onInitialize((params: InitializeParams) => {
