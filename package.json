@@ -53,7 +53,7 @@
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
     "onStartupFinished",
-    "onLanguage:yml"
+    "onLanguage:yaml"
   ],
   "contributes": {
     "configuration": {
@@ -91,14 +91,6 @@
         "id": "portals_icon",
         "label": "PowerApps Portals Icons (Visual Studio Code)",
         "path": "./src/client/portal_fileicons/portals-icon-theme.json"
-      }
-    ],
-    "languages": [
-      {
-        "id": "yml",
-        "extensions": [
-          ".yml"
-        ]
       }
     ],
     "menus": {
