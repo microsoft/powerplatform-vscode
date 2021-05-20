@@ -24,6 +24,11 @@ import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
 
+interface ManifestElement {
+    DisplayName: string;
+    RecordId: string;
+}
+
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
@@ -105,7 +110,7 @@ function getSuggestions(rowIndex: number, fileUrl: URL) {
     const completionItems: CompletionItem[] = [];
     if (matches) {
         const keyForCompletion = getKeyForCompletion(matches);
-        let matchedManifestRecords: string[] = [];
+        let matchedManifestRecords: ManifestElement[] = [];
 
         const portalConfigFolderUrl = getPortalConfigFolderUrl() as URL | null; //https://github.com/Microsoft/TypeScript/issues/11498
         if (portalConfigFolderUrl) {
@@ -127,7 +132,7 @@ function getSuggestions(rowIndex: number, fileUrl: URL) {
             }
 
             if (matchedManifestRecords) {
-                matchedManifestRecords.forEach((element: any) => {
+                matchedManifestRecords.forEach((element: ManifestElement) => {
                     const item: CompletionItem = {
                         label: element.DisplayName + "(" + element.RecordId + ")",
                         insertText: element.RecordId,
@@ -170,13 +175,12 @@ function getEditedLineContent(rowIndex: number, fileUrl: URL) {
     let lineNumber = 0;
     let userEditedLine = '';
 
-    // no-cond-assign
-    while (line) { // double check this logic
+    while (line) {
         if (lineNumber == rowIndex) {
             userEditedLine = line.toString('ascii');
             break;
         }
-        line = liner.next(); // double check this logic
+        line = liner.next();
         lineNumber++;
     }
     return userEditedLine;
@@ -195,13 +199,6 @@ function getKeyForCompletion(matches: RegExpMatchArray) {
 // the completion list.
 connection.onCompletionResolve(
     (item: CompletionItem): CompletionItem => {
-        if (item.data === 1) {
-            item.detail = 'TypeScript details';
-            item.documentation = 'TypeScript documentation';
-        } else if (item.data === 2) {
-            item.detail = 'JavaScript details';
-            item.documentation = 'JavaScript documentation';
-        }
         return item;
     }
 );
