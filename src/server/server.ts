@@ -24,6 +24,8 @@ import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const lineByLine = require('n-readlines');
 interface ManifestElement {
     DisplayName: string;
     RecordId: string;
@@ -168,8 +170,6 @@ function getPortalConfigFolderUrl() {
 }
 
 function getEditedLineContent(rowIndex: number, fileUrl: URL) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const lineByLine = require('n-readlines');
     const liner = new lineByLine(fileUrl);
     let line = liner.next();
     let lineNumber = 0;
