@@ -52,7 +52,8 @@
   ],
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
-    "onStartupFinished"
+    "onStartupFinished",
+    "onLanguage:yaml"
   ],
   "contributes": {
     "configuration": {
@@ -149,6 +150,8 @@
     "unzip-stream": "^0.3.1",
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
-    "vscode-languageserver-textdocument": "^1.0.1"
+    "vscode-languageserver-textdocument": "^1.0.1",
+    "n-readlines": "1.0.1",
+    "yaml": "^1.10.2"
   }
 }
