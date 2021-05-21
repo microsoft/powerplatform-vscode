@@ -25,13 +25,15 @@ export async function activate(
     if (isPaportalFeatureEnabled) {
         // add  portal specific features in this block
 
+        let htmlServerRunning = false;
+        let yamlServerRunning = false;
         // The debug options for the server
         // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
         const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
 
         function didOpenTextDocument(document: vscode.TextDocument): void {
 
-            if (document.languageId === 'yaml') {
+            if (document.languageId === 'yaml' && !yamlServerRunning) {
 
                 // The server is implemented in node
                 const serverModule = context.asAbsolutePath(
@@ -70,8 +72,12 @@ export async function activate(
                 );
 
                 // Start the client. This will also launch the server
-                client.start();
-            } else if (document.languageId === 'html') {
+                let disposable = client.start();
+                if (disposable) {
+                    yamlServerRunning = true;
+                    context.subscriptions.push(disposable);
+                }
+            } else if (document.languageId === 'html' && !htmlServerRunning) {
 
                 // The server is implemented in node
                 const serverModule = context.asAbsolutePath(
@@ -109,7 +115,11 @@ export async function activate(
                 );
 
                 // Start the client. This will also launch the server
-                client.start();
+                let disposable = client.start();
+                if (disposable) {
+                    htmlServerRunning = true;
+                    context.subscriptions.push(disposable);
+                }
             }
 
         }

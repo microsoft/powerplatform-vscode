@@ -136,7 +136,7 @@ function getSuggestions(rowIndex: number, fileUrl: URL) {
             if (matchedManifestRecords) {
                 matchedManifestRecords.forEach((element: ManifestElement) => {
                     const item: CompletionItem = {
-                        label: element.DisplayName + "(" + element.RecordId + ")",
+                        label: element.DisplayName + " (" + element.RecordId + ")",
                         insertText: element.RecordId,
                         kind: CompletionItemKind.Value
                     }

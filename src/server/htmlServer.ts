@@ -104,8 +104,18 @@ connection.onCompletion(
 		// info and always provide the same completion items.
 		return [
 			{
-				label: 'SampleList',
+				label: 'SampleList (03b2a4a1-4eb9-eb11-bacd-0022481ec6a2)',
                 insertText: 'SampleList',
+				kind: CompletionItemKind.Value,
+			},
+            {
+				label: 'AdsList (0b02a354-08ba-eb11-bacd-0022481eb3c7)',
+                insertText: 'AdsList',
+				kind: CompletionItemKind.Value,
+			},
+            {
+				label: 'PollsList (34775e70-08ba-eb11-bacd-0022481eb3c7)',
+                insertText: 'PollsList',
 				kind: CompletionItemKind.Value,
 			}
 		];
