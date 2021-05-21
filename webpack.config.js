@@ -13,7 +13,8 @@ const config = {
 
     entry: {
         extension:'./src/client/extension.ts',
-        server: './src/server/server.ts'
+        yamlServer: './src/server/yamlServer.ts',
+        htmlServer: './src/server/htmlServer.ts'
     },
     output: {
         path: path.resolve(__dirname,'dist'),
