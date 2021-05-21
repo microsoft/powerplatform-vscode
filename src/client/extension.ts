@@ -33,39 +33,82 @@ export async function activate(
         // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
         const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
 
-        // If the extension is launched in debug mode then the debug server options are used
-        // Otherwise the run options are used
-        const serverOptions: ServerOptions = {
-            run: { module: serverModule, transport: TransportKind.ipc },
-            debug: {
-                module: serverModule,
-                transport: TransportKind.ipc,
-                options: debugOptions,
-            },
-        };
+        function didOpenTextDocument(document: vscode.TextDocument): void {
 
-        // Options to control the language client
-        const clientOptions: LanguageClientOptions = {
-            // Register the server for plain text documents
-            documentSelector: [{ scheme: "file", language: "yaml" }],
-            synchronize: {
-                // Notify the server about file changes to '.clientrc files contained in the workspace
-                fileEvents: vscode.workspace.createFileSystemWatcher(
-                    "**/.clientrc"
-                ),
-            },
-        };
+            if (document.languageId === 'yaml') {
+                // If the extension is launched in debug mode then the debug server options are used
+                // Otherwise the run options are used
+                const serverOptions: ServerOptions = {
+                    run: { module: serverModule, transport: TransportKind.ipc },
+                    debug: {
+                        module: serverModule,
+                        transport: TransportKind.ipc,
+                        options: debugOptions,
+                    },
+                };
 
-        // Create the language client and start the client.
-        client = new LanguageClient(
-            "PowerappsLanguageServer",
-            "PowerApps Language Server",
-            serverOptions,
-            clientOptions
-        );
+                // Options to control the language client
+                const clientOptions: LanguageClientOptions = {
+                    // Register the server for yaml documents
+                    documentSelector: [{ scheme: "file", language: "yaml" }],
+                    synchronize: {
+                        // Notify the server about file changes to '.clientrc files contained in the workspace
+                        fileEvents: vscode.workspace.createFileSystemWatcher(
+                            "**/.clientrc"
+                        ),
+                    },
+                };
 
-        // Start the client. This will also launch the server
-        client.start();
+                // Create the language client and start the client.
+                client = new LanguageClient(
+                    "PowerappsYamlLanguageServer",
+                    "PowerApps Yaml Language Server",
+                    serverOptions,
+                    clientOptions
+                );
+
+                // Start the client. This will also launch the server
+                client.start();
+            } else if (document.languageId === 'html') {
+                // If the extension is launched in debug mode then the debug server options are used
+                // Otherwise the run options are used
+                const serverOptions: ServerOptions = {
+                    run: { module: serverModule, transport: TransportKind.ipc },
+                    debug: {
+                        module: serverModule,
+                        transport: TransportKind.ipc,
+                        options: debugOptions,
+                    },
+                };
+
+                // Options to control the language client
+                const clientOptions: LanguageClientOptions = {
+                    // Register the server for yaml documents
+                    documentSelector: [{ scheme: "file", language: "html" }],
+                    synchronize: {
+                        // Notify the server about file changes to '.clientrc files contained in the workspace
+                        fileEvents: vscode.workspace.createFileSystemWatcher(
+                            "**/.clientrc"
+                        ),
+                    },
+                };
+
+                // Create the language client and start the client.
+                client = new LanguageClient(
+                    "PowerappsHtmlLanguageServer",
+                    "PowerApps Html Language Server",
+                    serverOptions,
+                    clientOptions
+                );
+
+                // Start the client. This will also launch the server
+                client.start();
+            }
+
+        }
+
+        vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
+        vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
         // portal web view panel
         context.subscriptions.push(

@@ -53,7 +53,8 @@
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
     "onStartupFinished",
-    "onLanguage:yaml"
+    "onLanguage:yaml",
+    "onLanguage:html"
   ],
   "contributes": {
     "configuration": {
