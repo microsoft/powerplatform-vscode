@@ -6,9 +6,9 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as glob from 'glob';
 import * as os from 'os';
 import { Extract } from 'unzip-stream'
-import { execSync } from 'child_process';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const find = require('find-process');
 
@@ -17,6 +17,8 @@ export class CliAcquisition implements vscode.Disposable {
     private readonly _context: vscode.ExtensionContext;
     private readonly _cliPath: string;
     private readonly _cliVersion: string;
+    private readonly _nupkgsFolder: string;
+    private readonly _installedTrackerFile: string;
 
     public get cliVersion() : string {
         return this._cliVersion;
@@ -27,11 +29,13 @@ export class CliAcquisition implements vscode.Disposable {
         return path.join(this._cliPath, 'tools', execName);
     }
 
-    public constructor(context: vscode.ExtensionContext, cliVersion: string) {
+    public constructor(context: vscode.ExtensionContext, cliVersion?: string) {
         this._context = context;
-        this._cliVersion = cliVersion;
+        this._nupkgsFolder = path.join(this._context.extensionPath, 'dist', 'pac');
+        this._cliVersion = cliVersion || this.getLatestNupkgVersion();
         // https://code.visualstudio.com/api/extension-capabilities/common-capabilities#data-storage
         this._cliPath = path.resolve(context.globalStorageUri.fsPath, 'pac');
+        this._installedTrackerFile = path.resolve(context.globalStorageUri.fsPath, 'installTracker.json');
     }
 
     public dispose(): void {
@@ -60,6 +64,7 @@ export class CliAcquisition implements vscode.Disposable {
                     if (os.platform() !== 'win32') {
                         fs.chmodSync(this.cliExePath, 0o755);
                     }
+                    this.setInstalledVersion(this._cliVersion);
                     resolve(pacToolsPath);
                 }).on('error', (err: unknown) => {
                     vscode.window.showErrorMessage(`Cannot install pac CLI: ${err}`);
@@ -69,24 +74,11 @@ export class CliAcquisition implements vscode.Disposable {
     }
 
     isCliExpectedVersion(): boolean {
-        const exePath = this.cliExePath;
-        if (!fs.existsSync(exePath)) {
+        const installedVersion = this.getInstalledVersion();
+        if (!installedVersion) {
             return false;
         }
-        // determine version of currently cached CLI:
-        let versionMatch;
-        try {
-            const res = execSync(`"${exePath}" help`, { encoding: 'utf-8' });
-            versionMatch = res.match(/Version:\s+(\S+)/);
-        }
-        catch {
-            return false;
-        }
-        // TODO: version string between net462 and dotnetCore differ: latter has git commit id -> homogenize versions
-        if (versionMatch && versionMatch.length >= 2) {
-            return (versionMatch[1] === this._cliVersion);
-        }
-        return false;
+        return installedVersion === this._cliVersion;
     }
 
     async killTelemetryProcess(): Promise<void> {
@@ -94,6 +86,20 @@ export class CliAcquisition implements vscode.Disposable {
         list.forEach((info: {pid: number}) => {
             process.kill(info.pid)
         });
+    }
+
+    getLatestNupkgVersion(): string {
+        const basename = this.getNupkgBasename();
+        const nuPkgExtension = '.nupkg';
+
+        const versions = glob.sync(`${basename}*${nuPkgExtension}`, { cwd: this._nupkgsFolder })
+            .map(file => file.substring(basename.length + 1).slice(0, -nuPkgExtension.length))  // isolate version part of file name
+            .filter(version => !isNaN(Number.parseInt(version.charAt(0))))  // expect version to start with number; dotnetCore and .NET pkg names share common base name
+            .sort();
+        if (versions.length < 1) {
+           throw new Error(`Corrupt .vsix? Did not find any *.nupkg files under: ${this._nupkgsFolder}`);
+        }
+        return versions[0];
     }
 
     getNupkgBasename(): string {
@@ -107,6 +113,26 @@ export class CliAcquisition implements vscode.Disposable {
                 return 'microsoft.powerapps.cli.Core.linux-x64';
             default:
                 throw new Error(`Unsupported OS platform for pac CLI: ${platformName}`);
+        }
+    }
+
+    setInstalledVersion(version: string): void {
+        const trackerInfo = {
+            pac: version
+        };
+        fs.writeFileSync(this._installedTrackerFile, JSON.stringify(trackerInfo), 'utf-8');
+    }
+
+    getInstalledVersion(): string | undefined {
+        if (!fs.existsSync(this._installedTrackerFile)) {
+            return undefined;
+        }
+        try {
+            const trackerInfo = JSON.parse(fs.readFileSync(this._installedTrackerFile, 'utf-8'));
+            return trackerInfo.pac;
+        }
+        catch {
+            return undefined;
         }
     }
 }
