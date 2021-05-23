@@ -11,7 +11,8 @@
     "dist": "node node_modules/gulp/bin/gulp.js dist",
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
     "increment-version": "node node_modules/release-it/bin/release-it --increment patch --ci -VV",
-    "increment-version-npm": "npm version %VSIX_VERSION%"
+    "increment-version-npm": "npm version %VSIX_VERSION%",
+    "build-grammar": "nearleyc ./src/server/Parser/liquidTagGrammar.ne -o ./src/server/Parser/liquidTagGrammar.js"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -148,11 +149,12 @@
   },
   "dependencies": {
     "find-process": "^1.4.4",
+    "nearley": "^2.20.1",
+    "n-readlines": "1.0.1",
     "unzip-stream": "^0.3.1",
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
-    "n-readlines": "1.0.1",
     "yaml": "^1.10.2"
   }
 }
