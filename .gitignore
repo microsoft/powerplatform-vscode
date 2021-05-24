@@ -8,3 +8,6 @@ dist/
 logs
 *.log
 npm-debug.log*
+
+# VS Code test infra
+.vscode-test/

@@ -34,6 +34,6 @@ jobs:
     - name: Build and test
       run: |
         npm i
-        npm run ci
+        npm run dist
       env:
         AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}

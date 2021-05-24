@@ -22,6 +22,7 @@ const pslist = require('ps-list');
 
 const webPackConfig = require('./webpack.config');
 const distdir = path.resolve('./dist');
+const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
 const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
 
@@ -32,6 +33,8 @@ async function clean() {
             log.info(`Terminating: ${info.name} - ${info.pid}...`)
             process.kill(info.pid);
         });
+
+    fs.emptyDirSync(outdir);
     return fs.emptyDir(distdir);
 }
 
@@ -41,7 +44,6 @@ function compile() {
         .pipe(gulpWebpack(webPackConfig, webpack))
         .pipe(gulp.dest(distdir));
 }
-
 
 async function nugetInstall(nugetSource, packageName, version, targetDir) {
     // https://docs.microsoft.com/en-us/nuget/api/package-base-address-resource
@@ -113,12 +115,18 @@ function lint() {
                 formatter: 'verbose',
                 configuration: '.eslintrc.js'
             }))
-        .pipe(eslint.format());
+        .pipe(eslint.format())
+        .pipe(eslint.results(results => {
+            if (results.warningCount > 0){
+                throw new Error(`Found ${results.warningCount} eslint errors.`)
+            }
+        }))
+        .pipe(eslint.failAfterError());
 }
 
 function test() {
     return gulp
-        .src('src/client/test/**/*.ts', { read: false })
+        .src('src/client/test/unit/**/*.ts', { read: false })
         .pipe(mocha({
                 require: [ "ts-node/register" ],
                 ui: 'bdd'
@@ -212,6 +220,8 @@ const recompile = gulp.series(
 const dist = gulp.series(
     recompile,
     packageVsix,
+    lint,
+    test
 );
 
 exports.clean = clean;
@@ -220,12 +230,8 @@ exports.recompile = recompile;
 exports.snapshot = snapshot;
 exports.lint = lint;
 exports.test = test;
-exports.ci = gulp.series(
-    recompile,
-    lint,
-    test
-);
 exports.package = packageVsix;
+exports.ci = dist;
 exports.dist = dist;
 exports.setGitAuthN = setGitAuthN;
 exports.default = compile;

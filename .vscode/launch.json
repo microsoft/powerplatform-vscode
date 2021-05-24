@@ -27,14 +27,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Mocha All tests",
+      "name": "Mocha All Unit tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/mocha",
       "cwd": "${workspaceFolder}",
       "args": [
         "--require", "ts-node/register",
         "-u", "bdd",
         "--timeout", "999999",
-        "src/test/**/*.ts"
+        "src/client/test/unit/**/*.ts"
       ],
       "internalConsoleOptions": "neverOpen"
     },
