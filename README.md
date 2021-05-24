@@ -11,7 +11,7 @@ developer to create, build and deploy Power Platform solutions, packages and por
 
 Installing this extension will also make the latest Power Platform CLI (aka pac) available in your VSCode terminal.
 
-![VSCode Terminal with pac CLI](src\client\assets\pac-CLI-in-terminal.png)
+![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Getting Started
 
