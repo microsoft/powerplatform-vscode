@@ -38,3 +38,7 @@ jobs:
         npm run dist
       env:
         AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
+
+    - name: Run integration test in VS Code
+      run: |
+        npm run int-test
