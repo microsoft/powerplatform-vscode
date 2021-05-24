@@ -57,6 +57,7 @@ connection.onInitialize((params: InitializeParams) => {
     hasWorkspaceFolderCapability = !!(
         capabilities.workspace && !!capabilities.workspace.workspaceFolders
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     hasDiagnosticRelatedInformationCapability = !!(
         capabilities.textDocument &&
         capabilities.textDocument.publishDiagnostics &&
