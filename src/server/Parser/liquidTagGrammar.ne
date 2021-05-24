@@ -9,7 +9,7 @@
 @builtin "string.ne"     # "strings"
 LiquidExpression -> _ "{%" __ TAG_DEFINITION __ "%}" _ {% function(token) {return { token:token, output: {tag: token[3].tag, key: token[3].key, value: token[3].value}}} %}
 TAG_DEFINITION -> TAG __ ATTRIBUTE_MAP {% function(token) {return { token:token, tag:token[0].output, key:token[2].key, value:token[2].value }} %}
-TAG -> ("entityform" | "webform" | EntityList) {% function(token) {return { output:token[0]}} %}
+TAG -> ("entityform" | "webform" | "entityview" | EntityList) {% function(token) {return { output:token[0]}} %}
 EntityList -> LIQUID_KEYWORD _ ENTITYLIST_TAG {% function(token) {return { output:token[2]}} %}
 LIQUID_KEYWORD -> "include" {% function(token) {return { output:token[0]}} %}
 ENTITYLIST_TAG -> "'entity_list'" {% function(token) {return { output:"entityList"}} %}

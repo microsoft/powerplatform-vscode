@@ -131,6 +131,8 @@ var grammar = {
     {"name": "TAG$subexpression$1", "symbols": ["TAG$subexpression$1$string$1"]},
     {"name": "TAG$subexpression$1$string$2", "symbols": [{"literal":"w"}, {"literal":"e"}, {"literal":"b"}, {"literal":"f"}, {"literal":"o"}, {"literal":"r"}, {"literal":"m"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "TAG$subexpression$1", "symbols": ["TAG$subexpression$1$string$2"]},
+    {"name": "TAG$subexpression$1$string$3", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"v"}, {"literal":"i"}, {"literal":"e"}, {"literal":"w"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "TAG$subexpression$1", "symbols": ["TAG$subexpression$1$string$3"]},
     {"name": "TAG$subexpression$1", "symbols": ["EntityList"]},
     {"name": "TAG", "symbols": ["TAG$subexpression$1"], "postprocess": function(token) {return { output:token[0]}}},
     {"name": "EntityList", "symbols": ["LIQUID_KEYWORD", "_", "ENTITYLIST_TAG"], "postprocess": function(token) {return { output:token[2]}}},
