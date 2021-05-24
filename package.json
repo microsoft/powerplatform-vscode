@@ -7,6 +7,8 @@
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
     "test": "node node_modules/gulp/bin/gulp.js test",
+    "preint-test": "node node_modules/typescript/bin/tsc -p ./",
+    "int-test": "node out/client/test/runIntegrationTests.js",
     "ci": "node node_modules/gulp/bin/gulp.js ci",
     "dist": "node node_modules/gulp/bin/gulp.js dist",
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
