@@ -25,47 +25,107 @@ export async function activate(
     if (isPaportalFeatureEnabled) {
         // add  portal specific features in this block
 
-        // The server is implemented in node
-        const serverModule = context.asAbsolutePath(
-            path.join("dist", "server.js")
-        );
+        let htmlServerRunning = false;
+        let yamlServerRunning = false;
         // The debug options for the server
         // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
         const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
 
-        // If the extension is launched in debug mode then the debug server options are used
-        // Otherwise the run options are used
-        const serverOptions: ServerOptions = {
-            run: { module: serverModule, transport: TransportKind.ipc },
-            debug: {
-                module: serverModule,
-                transport: TransportKind.ipc,
-                options: debugOptions,
-            },
-        };
+        function didOpenTextDocument(document: vscode.TextDocument): void {
 
-        // Options to control the language client
-        const clientOptions: LanguageClientOptions = {
-            // Register the server for plain text documents
-            documentSelector: [{ scheme: "file", language: "yaml" }],
-            synchronize: {
-                // Notify the server about file changes to '.clientrc files contained in the workspace
-                fileEvents: vscode.workspace.createFileSystemWatcher(
-                    "**/.clientrc"
-                ),
-            },
-        };
+            if (document.languageId === 'yaml' && !yamlServerRunning) {
 
-        // Create the language client and start the client.
-        client = new LanguageClient(
-            "PowerappsLanguageServer",
-            "PowerApps Language Server",
-            serverOptions,
-            clientOptions
-        );
+                // The server is implemented in node
+                const serverModule = context.asAbsolutePath(
+                    path.join("dist", "yamlServer.js")
+                );
 
-        // Start the client. This will also launch the server
-        client.start();
+                // If the extension is launched in debug mode then the debug server options are used
+                // Otherwise the run options are used
+                const serverOptions: ServerOptions = {
+                    run: { module: serverModule, transport: TransportKind.ipc },
+                    debug: {
+                        module: serverModule,
+                        transport: TransportKind.ipc,
+                        options: debugOptions,
+                    },
+                };
+
+                // Options to control the language client
+                const clientOptions: LanguageClientOptions = {
+                    // Register the server for yaml documents
+                    documentSelector: [{ scheme: "file", language: "yaml" }],
+                    synchronize: {
+                        // Notify the server about file changes to '.clientrc files contained in the workspace
+                        fileEvents: vscode.workspace.createFileSystemWatcher(
+                            "**/.clientrc"
+                        ),
+                    },
+                };
+
+                // Create the language client and start the client.
+                client = new LanguageClient(
+                    "PowerappsYamlLanguageServer",
+                    "PowerApps Yaml Language Server",
+                    serverOptions,
+                    clientOptions
+                );
+
+                // Start the client. This will also launch the server
+                const disposable = client.start();
+                if (disposable) {
+                    yamlServerRunning = true;
+                    context.subscriptions.push(disposable);
+                }
+            } else if (document.languageId === 'html' && !htmlServerRunning) {
+
+                // The server is implemented in node
+                const serverModule = context.asAbsolutePath(
+                    path.join("dist", "htmlServer.js")
+                );
+                // If the extension is launched in debug mode then the debug server options are used
+                // Otherwise the run options are used
+                const serverOptions: ServerOptions = {
+                    run: { module: serverModule, transport: TransportKind.ipc },
+                    debug: {
+                        module: serverModule,
+                        transport: TransportKind.ipc,
+                        options: debugOptions,
+                    },
+                };
+
+                // Options to control the language client
+                const clientOptions: LanguageClientOptions = {
+                    // Register the server for yaml documents
+                    documentSelector: [{ scheme: "file", language: "html" }],
+                    synchronize: {
+                        // Notify the server about file changes to '.clientrc files contained in the workspace
+                        fileEvents: vscode.workspace.createFileSystemWatcher(
+                            "**/.clientrc"
+                        ),
+                    },
+                };
+
+                // Create the language client and start the client.
+                client = new LanguageClient(
+                    "PowerappsHtmlLanguageServer",
+                    "PowerApps Html Language Server",
+                    serverOptions,
+                    clientOptions
+                );
+
+                // Start the client. This will also launch the server
+                const disposable = client.start();
+                if (disposable) {
+                    htmlServerRunning = true;
+                    context.subscriptions.push(disposable);
+                }
+            }
+
+        }
+
+        vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
+        vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
         // portal web view panel
         context.subscriptions.push(
