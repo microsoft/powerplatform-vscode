@@ -127,7 +127,7 @@ function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
                 parser.results[0]?.output?.tag[0];
             liquidKeyForCompletion = parser.results[0]?.output?.key[0];
         } catch (e) {
-            // add telemetry log
+            // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
         }
         if (liquidTagForCompletion && liquidKeyForCompletion) {
             const keyForCompletion = getKeyForCompletion(liquidTagForCompletion);
@@ -146,7 +146,7 @@ function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
                                 const parsedManifestData = YAML.parse(manifestData);
                                 matchedManifestRecords = parsedManifestData[keyForCompletion];
                             } catch (exception) {
-                                // parsing failed. Add telemetry log.
+                                // Add telemetry log. Failed parsing manifest file
                             }
                         }
                     })
@@ -191,14 +191,18 @@ function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
 
 function getEditedLiquidExpression(colIndex: number, editedLine: string) {
     let editedLiquidExpression = '';
-    const contentOnLeftOfCursor = editedLine.substring(0, colIndex);
-    const startIndexOfEditedLiquidExpression = contentOnLeftOfCursor.lastIndexOf(startTagOfLiquidExpression);
-    const editedLiquidExpressionOnLeftOfCursor = contentOnLeftOfCursor.substring(startIndexOfEditedLiquidExpression, contentOnLeftOfCursor.length);
-    const contentOnRightOfCursor = editedLine.substring(colIndex, editedLine.length);
-    const endIndexOfEditedLiquidExpression = contentOnRightOfCursor.indexOf(endTagOfLiquidExpression);
-    const editedLiquidExpressionOnRightOfCursor = contentOnRightOfCursor.substring(0, endIndexOfEditedLiquidExpression + endTagOfLiquidExpression.length);
-    if (editedLiquidExpressionOnLeftOfCursor && editedLiquidExpressionOnRightOfCursor) {
-        editedLiquidExpression = editedLiquidExpressionOnLeftOfCursor + editedLiquidExpressionOnRightOfCursor;
+    try {
+        const contentOnLeftOfCursor = editedLine.substring(0, colIndex);
+        const startIndexOfEditedLiquidExpression = contentOnLeftOfCursor.lastIndexOf(startTagOfLiquidExpression);
+        const editedLiquidExpressionOnLeftOfCursor = contentOnLeftOfCursor.substring(startIndexOfEditedLiquidExpression, contentOnLeftOfCursor.length);
+        const contentOnRightOfCursor = editedLine.substring(colIndex, editedLine.length);
+        const endIndexOfEditedLiquidExpression = contentOnRightOfCursor.indexOf(endTagOfLiquidExpression);
+        const editedLiquidExpressionOnRightOfCursor = contentOnRightOfCursor.substring(0, endIndexOfEditedLiquidExpression + endTagOfLiquidExpression.length);
+        if (editedLiquidExpressionOnLeftOfCursor && editedLiquidExpressionOnRightOfCursor) {
+            editedLiquidExpression = editedLiquidExpressionOnLeftOfCursor + editedLiquidExpressionOnRightOfCursor;
+        }
+    } catch(e) {
+        // Add Telemetry for index out of bounds...not a proper liquid expression
     }
     return editedLiquidExpression;
 }
