@@ -72,7 +72,7 @@ export async function activate(
                 );
 
                 // Start the client. This will also launch the server
-                let disposable = client.start();
+                const disposable = client.start();
                 if (disposable) {
                     yamlServerRunning = true;
                     context.subscriptions.push(disposable);
@@ -115,7 +115,7 @@ export async function activate(
                 );
 
                 // Start the client. This will also launch the server
-                let disposable = client.start();
+                const disposable = client.start();
                 if (disposable) {
                     htmlServerRunning = true;
                     context.subscriptions.push(disposable);
