@@ -23,7 +23,8 @@ describe('Terminal tests', () => {
         terminal.show();
         const logFile = path.resolve(outdir, 'int-test.log');
         terminal.sendText(`pac help > ${logFile}`);
-        delay(10000)
+        // there's no easy way to tell when the terminal itself is ready and when it has executed the pac command...
+        delay(20000)
             .then(() => {
                 const log = fs.readFileSync(logFile, 'utf-8');
                 vscode.window.showInformationMessage(`Got pac CLI output: ${log}`);
@@ -31,5 +32,5 @@ describe('Terminal tests', () => {
                 expect(log).to.contain('auth');
                 delay(2000).then(() => done());
             });
-    }).timeout(15000);
+    }).timeout(30 * 1000);
 });
