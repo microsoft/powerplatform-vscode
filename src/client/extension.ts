@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import * as vscode from "vscode";
-import { CliAcquisition } from "./lib/CliAcquisition";
+import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import * as path from "path";
 import { PortalWebView } from './PortalWebView';
@@ -184,7 +184,7 @@ export async function activate(
         }
     }
 
-    const cli = new CliAcquisition(context);
+    const cli = new CliAcquisition(new CliAcquisitionContext(context));
     const cliPath = await cli.ensureInstalled();
     context.subscriptions.push(cli);
     context.subscriptions.push(new PacTerminal(context, cliPath));
@@ -195,4 +195,22 @@ export function deactivate(): Thenable<void> | undefined {
         return undefined;
     }
     return client.stop();
+}
+
+class CliAcquisitionContext implements ICliAcquisitionContext {
+    private readonly _context: vscode.ExtensionContext;
+
+    public constructor(context: vscode.ExtensionContext) {
+        this._context = context;
+    }
+
+    public get extensionPath(): string { return this._context.extensionPath; }
+    public get globalStorageLocalPath(): string { return this._context.globalStorageUri.fsPath; }
+
+    showInformationMessage(message: string, ...items: string[]): void {
+        vscode.window.showInformationMessage(message, ...items);
+    }
+    showErrorMessage(message: string, ...items: string[]): void {
+        vscode.window.showErrorMessage(message, ...items);
+    }
 }

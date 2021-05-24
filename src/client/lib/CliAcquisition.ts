@@ -3,7 +3,6 @@
 
 // https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel
 
-import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
@@ -12,9 +11,21 @@ import { Extract } from 'unzip-stream'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const find = require('find-process');
 
-export class CliAcquisition implements vscode.Disposable {
+// allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
+export interface ICliAcquisitionContext {
+    readonly extensionPath: string;
+    readonly globalStorageLocalPath: string;
+    showInformationMessage(message: string, ...items: string[]): void;
+    showErrorMessage(message: string, ...items: string[]): void;
+}
 
-    private readonly _context: vscode.ExtensionContext;
+export interface IDisposable {
+    dispose(): void;
+}
+
+export class CliAcquisition implements IDisposable {
+
+    private readonly _context: ICliAcquisitionContext;
     private readonly _cliPath: string;
     private readonly _cliVersion: string;
     private readonly _nupkgsFolder: string;
@@ -29,17 +40,17 @@ export class CliAcquisition implements vscode.Disposable {
         return path.join(this._cliPath, 'tools', execName);
     }
 
-    public constructor(context: vscode.ExtensionContext, cliVersion?: string) {
+    public constructor(context: ICliAcquisitionContext, cliVersion?: string) {
         this._context = context;
         this._nupkgsFolder = path.join(this._context.extensionPath, 'dist', 'pac');
         this._cliVersion = cliVersion || this.getLatestNupkgVersion();
         // https://code.visualstudio.com/api/extension-capabilities/common-capabilities#data-storage
-        this._cliPath = path.resolve(context.globalStorageUri.fsPath, 'pac');
-        this._installedTrackerFile = path.resolve(context.globalStorageUri.fsPath, 'installTracker.json');
+        this._cliPath = path.resolve(context.globalStorageLocalPath, 'pac');
+        this._installedTrackerFile = path.resolve(context.globalStorageLocalPath, 'installTracker.json');
     }
 
     public dispose(): void {
-        vscode.window.showInformationMessage('Bye');
+        this._context.showInformationMessage('Bye');
     }
 
     public async ensureInstalled(): Promise<string> {
@@ -53,21 +64,21 @@ export class CliAcquisition implements vscode.Disposable {
             return Promise.resolve(pacToolsPath);
         }
         // nupkg has not been extracted yet:
-        vscode.window.showInformationMessage(`Preparing pac CLI (v${this.cliVersion})...`);
+        this._context.showInformationMessage(`Preparing pac CLI (v${this.cliVersion})...`);
         await this.killTelemetryProcess();
         fs.emptyDirSync(this._cliPath);
         return new Promise((resolve, reject) => {
             fs.createReadStream(pathToNupkg)
                 .pipe(Extract({ path: this._cliPath }))
                 .on('close', () => {
-                    vscode.window.showInformationMessage('The pac CLI is ready for use in your VS Code terminal!');
+                    this._context.showInformationMessage('The pac CLI is ready for use in your VS Code terminal!');
                     if (os.platform() !== 'win32') {
                         fs.chmodSync(this.cliExePath, 0o755);
                     }
                     this.setInstalledVersion(this._cliVersion);
                     resolve(pacToolsPath);
                 }).on('error', (err: unknown) => {
-                    vscode.window.showErrorMessage(`Cannot install pac CLI: ${err}`);
+                    this._context.showErrorMessage(`Cannot install pac CLI: ${err}`);
                     reject(err);
                 })
         });
