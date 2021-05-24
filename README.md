@@ -1,13 +1,17 @@
 # Power Platform VS Code Extension
 
+**PRE-RELEASE SOFTWARE.** The software is a pre-release version. It may not work the way a final version of the software will.
+We may change it for the final, commercial version. We also may not release a commercial version.
+
 [![PullRequest](https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg)](https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest)
 [![Official Build](https://dev.azure.com/dynamicscrm/OneCRM/_apis/build/status/DPX-Tools/powerplatform-vscode%20Official%20Build?branchName=release/stable)](https://dev.azure.com/dynamicscrm/OneCRM/_build/latest?definitionId=12152)
 
-The Power Platform extension makes it easy to create, build and deploy Power Platform PCF controls, plugins and combine them to solutions and packages.
+The Power Platform extension makes it easy to manage Power Platform environments and allows the
+developer to create, build and deploy Power Platform solutions, packages and portals.
 
-Installing this extension will also install the latest pac CLI for your OS and will make it available in your VSCode terminal.
+Installing this extension will also make the latest Power Platform CLI (aka pac) available in your VSCode terminal.
 
-![VSCode Terminal with pac CLI](assets/pac-CLI-in-terminal.png)
+![VSCode Terminal with pac CLI](src\client\assets\pac-CLI-in-terminal.png)
 
 ## Getting Started
 
@@ -16,81 +20,75 @@ Open the VS Code Terminal (Terminal | New Terminal) and type in:
 ```bash
 > pac
 Microsoft PowerApps CLI
-Version: 1.4.4+g0574e87
+Version: 1.6.6+g0d22892
 
-Usage: pac [auth] [help] [org] [package] [pcf] [plugin] [solution] [telemetry]
+Usage: pac [admin] [auth] [canvas] [help] [org] [package] [paportal] [pcf] [plugin] [solution] [telemetry]
 
+  admin                       Work with your PowerPlatform Admin Account
   auth                        Manage how you authenticate to various services
+  canvas                      Operating with Power Apps .msapp files
   help                        Show help for the Microsoft PowerApps CLI
-  org                         Work with your CDS Organization
-  package                     Commands for working with CDS package projects
+  org                         Work with your Dataverse Organization
+  package                     Commands for working with Dataverse package projects
+  paportal                    Commands for working with PowerApps portal website
   pcf                         Commands for working with PowerApps component framework projects
-  plugin                      Commands for working with CDS plugin class library
-  solution                    Commands for working with CDS solution projects
+  plugin                      Commands for working with Dataverse plugin class library
+  solution                    Commands for working with Dataverse solution projects
   telemetry                   Manage telemetry settings
 ```
 
-The pac CLI will show you the available command nouns with a short description. To get detailed help for each noun, just enter it after ```pac```, e.g.:
+The pac CLI will show you the available command nouns with a short description. To get detailed help for each noun, use the built-int help screens for each command, e.g.:
+
+```bash
+> pac solution
+Microsoft PowerApps CLI
+Version: 1.6.6+g0d22892
+
+Error: You are missing a sub-command.
+
+Usage: pac solution [init] [add-reference] [list] [version] [import] [export] [clone] [publish] [upgrade] [add-license] [check]
+
+  init                        Initializes a directory with a new Dataverse solution project
+  add-reference               Adds a reference from the project in the current directory to the project at 'path'
+  list                        List all Solutions from the current Dataverse Organization
+  version                     Patch version for solution
+  import                      Import the Dataverse Solution project output into the current Dataverse Organization
+  export                      Export a Dataverse Solution project from the current Dataverse Organization
+  clone                       Create a solution project based on an existing solution in your Organization
+  publish                     Publishes all customizations
+  upgrade                     Option to stage the Dataverse solution for upgrade
+  add-license                 Add license and plan info to solution
+  check                       Upload a Dataverse Solution project to run against the PowerApps Checker Service
+
+```
+
+To then view all solutions installed in the selected environment:
 
 ```bash
 > pac solution list
-Microsoft PowerApps CLI
-Version: 1.4.4+g0574e87
+Connected to...gintonic
+Listing all Solutions from the current Dataverse Organization...
 
-Error: No profiles were found of kind CDS on this computer. Please run 'pac auth create --kind CDS' to create one.
+ Index   Unique Name                    Friendly Name                                    Version
 
-Usage: list
-
-  This command does not take any arguments.
+ [1]     Crd854a                        Common Data Services Default Solution            1.0.0.0
+ [2]     imgDecode                      imgDecode                                        0.1.0
+ [3]     acctpluginSample               acct-pluginSample                                1.0.0.4
+ [4]     imgTest2                       imgTest2                                         0.1
+ [5]     MicrosoftPortalDependencies    Dynamics 365 Portals - Portal dependencies       9.2.2103.0
 ```
 
 ## Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit <https://cla.opensource.microsoft.com>.
+**PRE-RELEASE SOFTWARE.**
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+This project will welcome contributions and suggestions in the near future. But in this early preview stage, we're not ready for contributions.
 
-## Setting Up Local Dev Environment
-
-Windows, macOS or Linux:
-
-- [Node.js LTS (currently v14)](https://nodejs.org/en/download/)
-- gulp CLI: ```npm install -g gulp-cli```
-- [git](https://git-scm.com/downloads)
-- [VS Code](https://code.visualstudio.com/Download) or your different favorite editor
-- recommended VSCode extensions:
-  - [EditorConfig for VS Code (editorconfig.editorconfig)](https://github.com/editorconfig/editorconfig-vscode)
-  - [ESLint (dbaeumer.vscode-eslint)](https://github.com/Microsoft/vscode-eslint)
-  - [GitLens (eamodio.gitlens)](https://github.com/eamodio/vscode-gitlens)
-  - [markdownlint (davidanson.vscode-markdownlint)](https://github.com/DavidAnson/vscode-markdownlint)
-- TEMPORARY:
-  - Create a PAT for the Azure DevOps org ```msazure``` with scope: package(read) and add it as local environment variable.
-  ```Powershell
-  [Environment]::SetEnvironmentVariable('AZ_DevOps_Read_PAT', '<yourPAT>', [EnvironmentVariableTarget]::User)
-  ```
-
-## Build and Run From Repo
-
-Clone, restore modules, build and run:
-
-```bash
-git clone https://github.com/microsoft/powerplatform-vscode.git pp-vscode
-cd pp-vscode
-npm install
-gulp ci
-```
-
-Open the local repository as folder in VS Code. To locally debug the extension, select the "Launch VSCode Extension" from the run/debug configurations and hit <F5>
+See details in [CONTRIBUTING](CONTRIBUTING.md)
 
 ### Code of Conduct
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+See details in [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)
 
 ### Security issues
 
