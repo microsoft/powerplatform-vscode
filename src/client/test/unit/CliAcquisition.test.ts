@@ -27,8 +27,9 @@ class MockContext implements ICliAcquisitionContext {
     public get extensionPath(): string { return mockRootDir; }
     public get globalStorageLocalPath(): string { return this._testBaseDir; }
 
-    public get infoMessages() : string[] { return this._infoMessages; }
-    public get errorMessages() : string[] { return this._errorMessages; }
+    public get infoMessages():  string[] { return this._infoMessages; }
+    public get errorMessages(): string[] { return this._errorMessages; }
+    public get noErrors(): boolean { return this._errorMessages.length === 0; }
 
 
     public showInformationMessage(message: string, ...items: string[]): void {
@@ -67,7 +68,7 @@ describe('CliAcquisition', () => {
         expect(acq.cliVersion).to.be.not.undefined;
         expect(acq.cliExePath).to.be.not.undefined;
         expect(spy.infoMessages).to.be.empty;
-        expect(spy.errorMessages).to.be.empty;
+        expect(spy.noErrors).to.be.true;
     });
 
     it('unpacks latest CLI nupkg', async() => {
@@ -76,6 +77,19 @@ describe('CliAcquisition', () => {
 
         expect(exePath).to.be.not.undefined;
         expect(spy.infoMessages).to.be.not.empty;
-        expect(spy.errorMessages).to.be.empty;
+        expect(spy.noErrors).to.be.true;
+    }).timeout(10000);
+
+    it('updates older version to latest CLI nupkg', async() => {
+        const trackerFile = path.resolve(spy.globalStorageLocalPath, 'installTracker.json');
+        fs.removeSync(trackerFile);
+        fs.writeJSONSync(trackerFile, { pac: '0.9.42' });
+        const exePath = await acq.ensureInstalled();
+
+        expect(exePath).to.be.not.undefined;
+        expect(spy.infoMessages).to.be.not.empty;
+        expect(spy.noErrors).to.be.true;
+        const versionInfo = fs.readJSONSync(trackerFile);
+        expect(versionInfo.pac).to.be.equal('0.9.99');
     }).timeout(10000);
 });
