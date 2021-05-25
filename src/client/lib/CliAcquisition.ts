@@ -119,9 +119,9 @@ export class CliAcquisition implements IDisposable {
             case 'win32':
                 return 'microsoft.powerapps.cli';
             case 'darwin':
-                return 'microsoft.powerapps.cli.Core.osx-x64';
+                return 'microsoft.powerapps.cli.core.osx-x64';
             case 'linux':
-                return 'microsoft.powerapps.cli.Core.linux-x64';
+                return 'microsoft.powerapps.cli.core.linux-x64';
             default:
                 throw new Error(`Unsupported OS platform for pac CLI: ${platformName}`);
         }
