@@ -13,6 +13,24 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
+## Release Notes
+
+0.2.8:
+
+- initial public preview:
+  - pac CLI installed and runnable in VSCode terminal (cmd, PS, pwsh, git bash, any macOS shell like zsh, fish)
+  - PA Portal language services and auto complete
+- known issues:
+  - macOS: no good check if the required separate install of dotnetCore 3.x or 5.x is present
+  - macOS: 'pac auth create' interactive flow not yet working, pls supply credentials with --username/--password (or appId triple)
+
+
+## Requirements
+
+- VSCode >= 1.5x
+- .NET Windows 4.x
+- macOS: dotnetCore SDK 3.x or 5.x
+
 ## Getting Started
 
 Open the VS Code Terminal (Terminal | New Terminal) and type in:
@@ -77,6 +95,10 @@ Listing all Solutions from the current Dataverse Organization...
  [4]     imgTest2                       imgTest2                                         0.1
  [5]     MicrosoftPortalDependencies    Dynamics 365 Portals - Portal dependencies       9.2.2103.0
 ```
+
+## Feedback & Questions
+
+Please use the issues tracker in the home repo: <https://github.com/microsoft/powerplatform-vscode/issues>
 
 ## Contributing
 
