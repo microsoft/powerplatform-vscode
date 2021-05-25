@@ -10,7 +10,7 @@ package/
 **/tsconfig.base.json
 **/tslint.json
 **/test/
-/out/
+out/
 .gitignore
 .release-it.yaml
 gulpfile.js
