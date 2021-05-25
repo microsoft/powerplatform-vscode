@@ -23,70 +23,63 @@ export async function activate(
 
     _context = context;
 
-    const isPaportalFeatureEnabled = vscode.workspace
-        .getConfiguration("powerplatform-vscode")
-        .get("enablePortalFeatures");
-    if (isPaportalFeatureEnabled) {
-        // add  portal specific features in this block
+    vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
+    vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
-        vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
-        vscode.workspace.textDocuments.forEach(didOpenTextDocument);
+    // portal web view panel
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.preview-show",
+            () => {
+                PortalWebView.createOrShow(_context);
+            }
+        )
+    );
 
-        // portal web view panel
-        _context.subscriptions.push(
-            vscode.commands.registerCommand(
-                "microsoft-powerapps-portals.preview-show",
-                () => {
-                    PortalWebView.createOrShow(_context);
-                }
-            )
-        );
+    _context.subscriptions.push(
+        vscode.workspace.onDidOpenTextDocument(() => {
+            if (vscode.window.activeTextEditor === undefined) {
+                return;
+            } else if (
+                vscode.workspace.workspaceFolders !== undefined &&
+                PortalWebView.currentPanel &&
+                PortalWebView.currentDocument !==
+                vscode.window.activeTextEditor.document.fileName &&
+                PortalWebView.checkDocumentIsHTML()
+            ) {
+                PortalWebView.currentPanel._update();
+            }
+        })
+    );
+    _context.subscriptions.push(
+        vscode.workspace.onDidChangeTextDocument(() => {
+            if (vscode.window.activeTextEditor === undefined) {
+                return;
+            } else if (
+                vscode.workspace.workspaceFolders !== undefined &&
+                PortalWebView.currentPanel &&
+                PortalWebView.currentDocument ===
+                vscode.window.activeTextEditor.document.fileName
+            ) {
+                PortalWebView.currentPanel._update();
+            }
+        })
+    );
 
-        _context.subscriptions.push(
-            vscode.workspace.onDidOpenTextDocument(() => {
-                if (vscode.window.activeTextEditor === undefined) {
-                    return;
-                } else if (
-                    vscode.workspace.workspaceFolders !== undefined &&
-                    PortalWebView.currentPanel &&
-                    PortalWebView.currentDocument !==
-                    vscode.window.activeTextEditor.document.fileName &&
-                    PortalWebView.checkDocumentIsHTML()
+    if (vscode.window.registerWebviewPanelSerializer) {
+        vscode.window.registerWebviewPanelSerializer(
+            PortalWebView.viewType,
+            {
+                async deserializeWebviewPanel(
+                    webviewPanel: vscode.WebviewPanel
                 ) {
-                    PortalWebView.currentPanel._update();
-                }
-            })
+                    PortalWebView.revive(
+                        webviewPanel,
+                        _context.extensionUri
+                    );
+                },
+            }
         );
-        _context.subscriptions.push(
-            vscode.workspace.onDidChangeTextDocument(() => {
-                if (vscode.window.activeTextEditor === undefined) {
-                    return;
-                } else if (
-                    vscode.workspace.workspaceFolders !== undefined &&
-                    PortalWebView.currentPanel &&
-                    PortalWebView.currentDocument ===
-                    vscode.window.activeTextEditor.document.fileName
-                ) {
-                    PortalWebView.currentPanel._update();
-                }
-            })
-        );
-
-        if (vscode.window.registerWebviewPanelSerializer) {
-            vscode.window.registerWebviewPanelSerializer(
-                PortalWebView.viewType,
-                {
-                    async deserializeWebviewPanel(
-                        webviewPanel: vscode.WebviewPanel
-                    ) {
-                        PortalWebView.revive(
-                            webviewPanel,
-                            _context.extensionUri
-                        );
-                    },
-                }
-            );
-        }
     }
 
     const cli = new CliAcquisition(new CliAcquisitionContext(_context));

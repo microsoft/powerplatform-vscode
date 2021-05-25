@@ -17,22 +17,15 @@ import {
 } from 'vscode-languageserver/node';
 import * as nearley from 'nearley';
 import { URL } from 'url';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as YAML from 'yaml';
+
+import { getEditedLineContent, getMatchedManifestRecords, IManifestElement } from './lib/portalAutoCompleteHelper';
 
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const lineByLine = require('n-readlines');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('./Parser/liquidTagGrammar.js');
-interface ManifestElement {
-    DisplayName: string;
-    RecordId: string;
-}
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -45,8 +38,6 @@ let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
 let workspaceRootFolder: WorkspaceFolder[] | null = null;
-const portalConfigFolderName = '.portalconfig';
-const manifest = '-manifest';
 const startTagOfLiquidExpression = '{%';
 const endTagOfLiquidExpression = '%}';
 
@@ -132,57 +123,37 @@ function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
         }
         if (liquidTagForCompletion && liquidKeyForCompletion) {
             const keyForCompletion = getKeyForCompletion(liquidTagForCompletion);
-            let matchedManifestRecords: ManifestElement[] = [];
+            const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
 
-            const portalConfigFolderUrl = getPortalConfigFolderUrl() as URL | null; //https://github.com/Microsoft/TypeScript/issues/11498
-            if (portalConfigFolderUrl && keyForCompletion) {
-                const portalConfigFolderPath = portalConfigFolderUrl.href;
-                if (portalConfigFolderUrl && portalConfigFolderPath) {
-                    const configFiles: string[] = fs.readdirSync(portalConfigFolderUrl);
-                    configFiles.forEach(configFile => {
-                        if (configFile.includes(manifest)) { // this is based on the assumption that there will be only one manifest file in portalconfig folder
-                            const manifestFilePath = path.join(portalConfigFolderPath, configFile);
-                            const manifestData = fs.readFileSync(new URL(manifestFilePath), 'utf8');
-                            try {
-                                const parsedManifestData = YAML.parse(manifestData);
-                                matchedManifestRecords = parsedManifestData[keyForCompletion];
-                            } catch (exception) {
-                                // Add telemetry log. Failed parsing manifest file
-                            }
+            if (matchedManifestRecords) {
+                matchedManifestRecords.forEach((element: IManifestElement) => {
+                    const item: CompletionItem = {
+                        label: '',
+                        insertText: '',
+                        kind: CompletionItemKind.Value
+                    }
+                    switch (liquidKeyForCompletion) {
+                        case 'id': {
+                            item.label = element.DisplayName + " (" + element.RecordId + ")";
+                            item.insertText = element.RecordId;
+                            break;
                         }
-                    })
-                }
-
-                if (matchedManifestRecords) {
-                    matchedManifestRecords.forEach((element: ManifestElement) => {
-                        const item: CompletionItem = {
-                            label: '',
-                            insertText: '',
-                            kind: CompletionItemKind.Value
+                        case 'name': {
+                            item.label = element.DisplayName + " (" + element.RecordId + ")";
+                            item.insertText = element.DisplayName;
+                            break;
                         }
-                        switch (liquidKeyForCompletion) {
-                            case 'id': {
-                                item.label = element.DisplayName + " (" + element.RecordId + ")";
-                                item.insertText = element.RecordId;
-                                break;
-                            }
-                            case 'name': {
-                                item.label = element.DisplayName + " (" + element.RecordId + ")";
-                                item.insertText = element.DisplayName;
-                                break;
-                            }
-                            case 'key': {
-                                item.label = element.DisplayName + " (" + element.RecordId + ")";
-                                item.insertText = element.DisplayName;
-                                break;
-                            }
-                            default: {
-                                break;
-                            }
+                        case 'key': {
+                            item.label = element.DisplayName + " (" + element.RecordId + ")";
+                            item.insertText = element.DisplayName;
+                            break;
                         }
-                        completionItems.push(item);
-                    });
-                }
+                        default: {
+                            break;
+                        }
+                    }
+                    completionItems.push(item);
+                });
             }
 
         }
@@ -202,50 +173,13 @@ function getEditedLiquidExpression(colIndex: number, editedLine: string) {
         if (editedLiquidExpressionOnLeftOfCursor && editedLiquidExpressionOnRightOfCursor) {
             editedLiquidExpression = editedLiquidExpressionOnLeftOfCursor + editedLiquidExpressionOnRightOfCursor;
         }
-    } catch(e) {
+    } catch (e) {
         // Add Telemetry for index out of bounds...not a proper liquid expression
     }
     return editedLiquidExpression;
 }
 
-function getPortalConfigFolderUrl() {
-    const workspaceRootFolderUri = workspaceRootFolder && workspaceRootFolder[0].uri;
-    let portalConfigFolderUrl = null;
-    if (workspaceRootFolderUri !== null) {
-        const workspaceRootFolderUrl = new URL(workspaceRootFolderUri);
-        const workspaceRootFolderContents: string[] = fs.readdirSync(workspaceRootFolderUrl);
-        for (let i = 0; i < workspaceRootFolderContents.length; i++) {
-            const fileName = workspaceRootFolderContents[i];
-            const filePath = path.join(workspaceRootFolderUrl.href, fileName);
-            const fileUrl = new URL(filePath);
-            const isDirectory = fs.statSync(fileUrl).isDirectory();
-            if (isDirectory && fileName === portalConfigFolderName) {
-                portalConfigFolderUrl = fileUrl;
-                return portalConfigFolderUrl;
-            }
-        }
-    }
-    return portalConfigFolderUrl;
-}
-
-function getEditedLineContent(rowIndex: number, fileUrl: URL) {
-    const liner = new lineByLine(fileUrl);
-    let line = liner.next();
-    let lineNumber = 0;
-    let userEditedLine = '';
-
-    while (line) {
-        if (lineNumber == rowIndex) {
-            userEditedLine = line.toString('ascii');
-            break;
-        }
-        line = liner.next();
-        lineNumber++;
-    }
-    return userEditedLine;
-}
-
-function getKeyForCompletion(liquidTag: string) {
+function getKeyForCompletion(liquidTag: string): string {
     switch (liquidTag) {
         case 'entityList': {
             return 'adx_entitylist';
@@ -257,7 +191,7 @@ function getKeyForCompletion(liquidTag: string) {
             return 'adx_webform';
         }
         default: {
-            break;
+            return '';
         }
     }
 }
