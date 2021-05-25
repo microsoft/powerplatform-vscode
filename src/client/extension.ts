@@ -15,7 +15,9 @@ import {
 } from "vscode-languageclient/node";
 
 let client: LanguageClient;
-let _context: vscode.ExtensionContext
+let _context: vscode.ExtensionContext;
+let htmlServerRunning = false;
+let yamlServerRunning = false;
 
 export async function activate(
     context: vscode.ExtensionContext
@@ -103,8 +105,7 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {
-    let htmlServerRunning = false;
-    let yamlServerRunning = false;
+
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
     const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
