@@ -76,6 +76,7 @@ describe('CliAcquisition', () => {
         const exePath = await acq.ensureInstalled();
 
         expect(exePath).to.be.not.undefined;
+        expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
         expect(spy.infoMessages).to.be.not.empty;
         expect(spy.noErrors).to.be.true;
     }).timeout(10000);
@@ -87,6 +88,7 @@ describe('CliAcquisition', () => {
         const exePath = await acq.ensureInstalled();
 
         expect(exePath).to.be.not.undefined;
+        expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
         expect(spy.infoMessages).to.be.not.empty;
         expect(spy.noErrors).to.be.true;
         const versionInfo = fs.readJSONSync(trackerFile);
