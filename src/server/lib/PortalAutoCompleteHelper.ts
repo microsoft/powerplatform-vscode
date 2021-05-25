@@ -16,7 +16,7 @@ export interface IManifestElement {
     RecordId: string;
 }
 
-export function getEditedLineContent(rowIndex: number, fileUrl: URL) {
+export function getEditedLineContent(rowIndex: number, fileUrl: URL): string {
     const liner = new lineByLine(fileUrl);
     let line = liner.next();
     let lineNumber = 0;
@@ -33,7 +33,7 @@ export function getEditedLineContent(rowIndex: number, fileUrl: URL) {
     return userEditedLine;
 }
 
-export function getPortalConfigFolderUrl(workspaceRootFolder : WorkspaceFolder[] | null) {
+export function getPortalConfigFolderUrl(workspaceRootFolder : WorkspaceFolder[] | null): URL | null {
     const workspaceRootFolderUri = workspaceRootFolder && workspaceRootFolder[0].uri;
     let portalConfigFolderUrl = null;
     if (workspaceRootFolderUri !== null) {
