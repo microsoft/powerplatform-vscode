@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 import { ITelemetry } from './ITelemetry';
 
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */

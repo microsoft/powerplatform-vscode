@@ -63,7 +63,6 @@ export class CliAcquisition implements IDisposable {
     async installCli(pathToNupkg: string): Promise<string> {
         const pacToolsPath = path.join(this._cliPath, 'tools');
         if (this.isCliExpectedVersion()) {
-            this._context.telemetry.sendTelemetryEvent('PacCliAcquired', { cliVersion: this.cliVersion, installState: 'AlreadyInstalled' });
             return Promise.resolve(pacToolsPath);
         }
         // nupkg has not been extracted yet:
@@ -74,7 +73,7 @@ export class CliAcquisition implements IDisposable {
             fs.createReadStream(pathToNupkg)
                 .pipe(Extract({ path: this._cliPath }))
                 .on('close', () => {
-                    this._context.telemetry.sendTelemetryEvent('PacCliAcquired', { cliVersion: this.cliVersion, installState: 'JustInstalled' });
+                    this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                     this._context.showInformationMessage('The pac CLI is ready for use in your VS Code terminal!');
                     if (os.platform() !== 'win32') {
                         fs.chmodSync(this.cliExePath, 0o755);

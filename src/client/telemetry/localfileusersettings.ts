@@ -1,4 +1,5 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 import * as fs from 'fs-extra';
 import { getAppDataPath } from './appdata';
@@ -33,7 +34,11 @@ export function readUserSettings(applicationPath?: string | undefined): IUserSet
                 writeUserSettings(settings, applicationPath);
             }
         } catch (err) {
-            fs.unlinkSync(userSettingFilePath);
+            try {
+                fs.unlinkSync(userSettingFilePath);
+            } catch {
+                // Ignore error on delete
+            }
             writeUserSettings(settings, applicationPath);
         }
     } else {
