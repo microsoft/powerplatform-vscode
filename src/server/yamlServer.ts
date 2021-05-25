@@ -16,7 +16,7 @@ import {
     WorkspaceFolder
 } from 'vscode-languageserver/node';
 import { URL } from 'url';
-import { getEditedLineContent, getMatchedManifestRecords, IManifestElement } from './lib/portalAutoCompleteHelper';
+import { getEditedLineContent, getMatchedManifestRecords, IManifestElement } from './lib/PortalAutoCompleteHelper';
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';

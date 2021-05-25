@@ -18,7 +18,7 @@ import {
 import * as nearley from 'nearley';
 import { URL } from 'url';
 
-import { getEditedLineContent, getMatchedManifestRecords, IManifestElement } from './lib/portalAutoCompleteHelper';
+import { getEditedLineContent, getMatchedManifestRecords, IManifestElement } from './lib/PortalAutoCompleteHelper';
 
 import {
     TextDocument
