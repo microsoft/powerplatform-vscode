@@ -2,10 +2,15 @@
 // Licensed under the MIT License.
 
 import * as vscode from "vscode";
+import TelemetryReporter from 'vscode-extension-telemetry';
+import { ITelemetry } from './telemetry/ITelemetry';
+import { createTelemetryReporter } from './telemetry/configuration';
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import * as path from "path";
 import { PortalWebView } from './PortalWebView';
+import { AI_KEY } from './constants';
+import { v4 } from 'uuid';
 
 import {
     LanguageClient,
@@ -18,12 +23,18 @@ let client: LanguageClient;
 let _context: vscode.ExtensionContext;
 let htmlServerRunning = false;
 let yamlServerRunning = false;
+let _telemetry: TelemetryReporter;
 
 export async function activate(
     context: vscode.ExtensionContext
 ): Promise<void> {
-
     _context = context;
+
+    // setup telemetry
+    const sessionId = v4();
+    _telemetry = createTelemetryReporter('powerplatform-vscode', context, AI_KEY, sessionId);
+    context.subscriptions.push(_telemetry);
+    _telemetry.sendTelemetryEvent("Start");
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
     vscode.workspace.textDocuments.forEach(didOpenTextDocument);
@@ -84,17 +95,26 @@ export async function activate(
         );
     }
 
-    const cli = new CliAcquisition(new CliAcquisitionContext(_context));
+    const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, cliPath));
+
+    _telemetry.sendTelemetryEvent("activated");
 }
 
-export function deactivate(): Thenable<void> | undefined {
-    if (!client) {
-        return undefined;
+export async function deactivate(): Promise<void> {
+    if (_telemetry) {
+        _telemetry.sendTelemetryEvent("End");
+
+        // dispose() will flush any events not sent
+        // Note, while dispose() returns a promise, we don't await it so that we can unblock the rest of unloading logic
+        _telemetry.dispose();
     }
-    return client.stop();
+
+    if (client) {
+        await client.stop();
+    }
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {
@@ -196,14 +216,14 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
 }
 
 class CliAcquisitionContext implements ICliAcquisitionContext {
-    private readonly _context: vscode.ExtensionContext;
-
-    public constructor(context: vscode.ExtensionContext) {
-        this._context = context;
+    public constructor(
+        private readonly _context: vscode.ExtensionContext,
+        private readonly _telemetry: ITelemetry) {
     }
 
     public get extensionPath(): string { return this._context.extensionPath; }
     public get globalStorageLocalPath(): string { return this._context.globalStorageUri.fsPath; }
+    public get telemetry(): ITelemetry { return this._telemetry; }
 
     showInformationMessage(message: string, ...items: string[]): void {
         vscode.window.showInformationMessage(message, ...items);

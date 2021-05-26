@@ -8,6 +8,7 @@ import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as os from 'os';
 import { Extract } from 'unzip-stream'
+import { ITelemetry } from '../telemetry/ITelemetry';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const find = require('find-process');
 
@@ -15,6 +16,7 @@ const find = require('find-process');
 export interface ICliAcquisitionContext {
     readonly extensionPath: string;
     readonly globalStorageLocalPath: string;
+    readonly telemetry: ITelemetry;
     showInformationMessage(message: string, ...items: string[]): void;
     showErrorMessage(message: string, ...items: string[]): void;
 }
@@ -31,11 +33,11 @@ export class CliAcquisition implements IDisposable {
     private readonly _nupkgsFolder: string;
     private readonly _installedTrackerFile: string;
 
-    public get cliVersion() : string {
+    public get cliVersion(): string {
         return this._cliVersion;
     }
 
-    public get cliExePath() : string {
+    public get cliExePath(): string {
         const execName = (os.platform() === 'win32') ? 'pac.exe' : 'pac';
         return path.join(this._cliPath, 'tools', execName);
     }
@@ -71,6 +73,7 @@ export class CliAcquisition implements IDisposable {
             fs.createReadStream(pathToNupkg)
                 .pipe(Extract({ path: this._cliPath }))
                 .on('close', () => {
+                    this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                     this._context.showInformationMessage('The pac CLI is ready for use in your VS Code terminal!');
                     if (os.platform() !== 'win32') {
                         fs.chmodSync(this.cliExePath, 0o755);
@@ -94,7 +97,7 @@ export class CliAcquisition implements IDisposable {
 
     async killTelemetryProcess(): Promise<void> {
         const list = await find('name', 'pacTelemetryUpload', true)
-        list.forEach((info: {pid: number}) => {
+        list.forEach((info: { pid: number }) => {
             process.kill(info.pid)
         });
     }
@@ -108,7 +111,7 @@ export class CliAcquisition implements IDisposable {
             .filter(version => !isNaN(Number.parseInt(version.charAt(0))))  // expect version to start with number; dotnetCore and .NET pkg names share common base name
             .sort();
         if (versions.length < 1) {
-           throw new Error(`Corrupt .vsix? Did not find any *.nupkg files under: ${this._nupkgsFolder}`);
+            throw new Error(`Corrupt .vsix? Did not find any *.nupkg files under: ${this._nupkgsFolder}`);
         }
         return versions[0];
     }

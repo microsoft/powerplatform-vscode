@@ -6,6 +6,8 @@ import * as path from 'path';
 import { CliAcquisition, ICliAcquisitionContext } from '../../lib/CliAcquisition';
 import { expect } from 'chai';
 import { before } from 'mocha';
+import { ITelemetry } from '../../telemetry/ITelemetry';
+import { NoopTelemetryInstance } from '../../telemetry/NoopTelemetry';
 
 const repoRootDir = path.resolve(__dirname, '../../../..');
 const outdir = path.resolve(repoRootDir, 'out');
@@ -26,8 +28,9 @@ class MockContext implements ICliAcquisitionContext {
 
     public get extensionPath(): string { return mockRootDir; }
     public get globalStorageLocalPath(): string { return this._testBaseDir; }
+    public get telemetry(): ITelemetry { return NoopTelemetryInstance; }
 
-    public get infoMessages():  string[] { return this._infoMessages; }
+    public get infoMessages(): string[] { return this._infoMessages; }
     public get errorMessages(): string[] { return this._errorMessages; }
     public get noErrors(): boolean { return this._errorMessages.length === 0; }
 
@@ -49,7 +52,7 @@ describe('CliAcquisition', () => {
         const pacDistDir = path.resolve(mockDistDir, 'pac');
         fs.ensureDirSync(pacDistDir);
         const testDataDir = path.resolve(__dirname, 'data');
-        const nupkgs = [ 'microsoft.powerapps.cli.0.9.99.nupkg', 'microsoft.powerapps.cli.core.osx-x64.0.9.99.nupkg' ]
+        const nupkgs = ['microsoft.powerapps.cli.0.9.99.nupkg', 'microsoft.powerapps.cli.core.osx-x64.0.9.99.nupkg']
         nupkgs.forEach(file => {
             fs.copyFileSync(path.resolve(testDataDir, file), path.resolve(pacDistDir, file));
         });
@@ -71,7 +74,7 @@ describe('CliAcquisition', () => {
         expect(spy.noErrors).to.be.true;
     });
 
-    it('unpacks latest CLI nupkg', async() => {
+    it('unpacks latest CLI nupkg', async () => {
         fs.removeSync(path.resolve(spy.globalStorageLocalPath, 'installTracker.json'));
         const exePath = await acq.ensureInstalled();
 
@@ -81,7 +84,7 @@ describe('CliAcquisition', () => {
         expect(spy.noErrors).to.be.true;
     }).timeout(10000);
 
-    it('updates older version to latest CLI nupkg', async() => {
+    it('updates older version to latest CLI nupkg', async () => {
         const trackerFile = path.resolve(spy.globalStorageLocalPath, 'installTracker.json');
         fs.removeSync(trackerFile);
         fs.writeJSONSync(trackerFile, { pac: '0.9.42' });
