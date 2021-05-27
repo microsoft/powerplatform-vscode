@@ -1,3 +1,8 @@
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ * ------------------------------------------------------------------------------------------ */
+
 import {
     WorkspaceFolder
 } from 'vscode-languageserver/node';
@@ -6,8 +11,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as YAML from 'yaml';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const lineByLine = require('n-readlines');
 const portalConfigFolderName = '.portalconfig';
 const manifest = '-manifest';
 
@@ -16,24 +19,7 @@ export interface IManifestElement {
     RecordId: string;
 }
 
-export function getEditedLineContent(rowIndex: number, fileUrl: URL): string {
-    const liner = new lineByLine(fileUrl);
-    let line = liner.next();
-    let lineNumber = 0;
-    let userEditedLine = '';
-
-    while (line) {
-        if (lineNumber == rowIndex) {
-            userEditedLine = line.toString('ascii');
-            break;
-        }
-        line = liner.next();
-        lineNumber++;
-    }
-    return userEditedLine;
-}
-
-export function getPortalConfigFolderUrl(workspaceRootFolder : WorkspaceFolder[] | null): URL | null {
+function getPortalConfigFolderUrl(workspaceRootFolder : WorkspaceFolder[] | null): URL | null {
     const workspaceRootFolderUri = workspaceRootFolder && workspaceRootFolder[0].uri;
     let portalConfigFolderUrl = null;
     if (workspaceRootFolderUri !== null) {
