@@ -28,6 +28,8 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const lineByLine = require('n-readlines');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+const readline = require('readline');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('./Parser/liquidTagGrammar.js');
 interface ManifestElement {
     DisplayName: string;
@@ -45,10 +47,12 @@ let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
 let workspaceRootFolder: WorkspaceFolder[] | null = null;
+let editedTextDocument: TextDocument;
 const portalConfigFolderName = '.portalconfig';
 const manifest = '-manifest';
 const startTagOfLiquidExpression = '{%';
 const endTagOfLiquidExpression = '%}';
+
 
 
 connection.onInitialize((params: InitializeParams) => {
@@ -101,21 +105,24 @@ connection.onInitialized(() => {
 });
 
 
+// The content of a text document has changed. This event is emitted
+// when the text document first opened or when its content has changed.
+documents.onDidChangeContent(change => {
+	editedTextDocument = (change.document);
+});
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
     async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
-        const editPath = _textDocumentPosition.textDocument.uri;
-        const editFileUrl = new URL(editPath);
         const rowIndex = _textDocumentPosition.position.line;
         const colIndex = _textDocumentPosition.position.character;
-        return await getSuggestions(rowIndex, colIndex, editFileUrl);
+        return await getSuggestions(rowIndex, colIndex);
     }
 );
 
-function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
+function getSuggestions(rowIndex: number, colIndex: number) {
     const completionItems: CompletionItem[] = [];
-    const editedLine = getEditedLineContent(rowIndex, fileUrl);
+    const editedLine = getEditedLineContent(rowIndex, editedTextDocument);
     const editedLiquidExpression = getEditedLiquidExpression(colIndex, editedLine);
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
     let liquidTagForCompletion = null;
@@ -228,21 +235,15 @@ function getPortalConfigFolderUrl() {
     return portalConfigFolderUrl;
 }
 
-function getEditedLineContent(rowIndex: number, fileUrl: URL) {
-    const liner = new lineByLine(fileUrl);
-    let line = liner.next();
-    let lineNumber = 0;
-    let userEditedLine = '';
-
-    while (line) {
-        if (lineNumber == rowIndex) {
-            userEditedLine = line.toString('ascii');
-            break;
+function getEditedLineContent(rowIndex: number, textDocument: TextDocument) {
+    const lines = textDocument.getText().split(/\r?\n/g);
+    let editedLine = '';
+    for (let i = 0; i < lines.length; i++) {
+        if (i === rowIndex) {
+            editedLine = lines[i];
         }
-        line = liner.next();
-        lineNumber++;
     }
-    return userEditedLine;
+    return editedLine;
 }
 
 function getKeyForCompletion(liquidTag: string) {
