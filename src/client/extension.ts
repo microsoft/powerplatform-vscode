@@ -54,12 +54,10 @@ export async function activate(
             if (vscode.window.activeTextEditor === undefined) {
                 return;
             } else if (
-                vscode.workspace.workspaceFolders !== undefined &&
-                PortalWebView.currentPanel &&
-                PortalWebView.currentDocument !== vscode.window.activeTextEditor.document.fileName &&
+                !isCurrentDocumentEdited() &&
                 PortalWebView.checkDocumentIsHTML()
             ) {
-                PortalWebView.currentPanel._update();
+                PortalWebView?.currentPanel?._update();
             }
         })
     );
@@ -68,11 +66,9 @@ export async function activate(
             if (vscode.window.activeTextEditor === undefined) {
                 return;
             } else if (
-                vscode.workspace.workspaceFolders !== undefined &&
-                PortalWebView.currentPanel &&
-                PortalWebView.currentDocument === vscode.window.activeTextEditor.document.fileName
+                isCurrentDocumentEdited()
             ) {
-                PortalWebView.currentPanel._update();
+                PortalWebView?.currentPanel?._update();
             }
         })
     );
@@ -211,6 +207,15 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
         }
     }
 
+}
+
+function isCurrentDocumentEdited() : boolean{
+    const workspaceFolderExists = vscode.workspace.workspaceFolders !== undefined;
+    let currentPanelExists = false;
+    if (PortalWebView?.currentPanel) {
+        currentPanelExists = true;
+    }
+    return (workspaceFolderExists && currentPanelExists && PortalWebView.currentDocument === vscode?.window?.activeTextEditor?.document?.fileName);
 }
 
 class CliAcquisitionContext implements ICliAcquisitionContext {
