@@ -70,8 +70,7 @@ export async function activate(
             } else if (
                 vscode.workspace.workspaceFolders !== undefined &&
                 PortalWebView.currentPanel &&
-                PortalWebView.currentDocument ===
-                vscode.window.activeTextEditor.document.fileName
+                PortalWebView.currentDocument === vscode.window.activeTextEditor.document.fileName
             ) {
                 PortalWebView.currentPanel._update();
             }
