@@ -11,9 +11,9 @@
 # output: Object
 #	tag: "entityList"
 #	map: Object
-#		id: "123"
-#		name: "xyz"
-#		key: "abc"
+#     18: "id"
+#     27: "name"
+#     39: "key"
 
 @builtin "whitespace.ne" # `_` means arbitrary amount of whitespace
 @builtin "number.ne"     # `int`, `decimal`, and `percentage
@@ -30,13 +30,14 @@ ENTITYLIST_TAG -> "'entity_list'" {% function(token) {return { tag: "entityList"
 ATTRIBUTE_MAP -> _ (PAIR _):+  {% extractObjectFromSpaceSeparatedPairs %}
 	            | (_ PAIR _ ","):+ _ PAIR _ {% extractObjectFromCommaSeparatedPairs %}
 PAIR -> KEY _ ":" _ VALUE {% function(token) { return [token[0], token[4]]; } %}
-KEY -> ("id" | "name" | "key" ) {% id %}
-VALUE -> sqstring | dqstring {% id %}
+KEY -> ("id" | "name" | "key") {% id %}
+VALUE -> sqstring {% function(token, loc) {return { value: token[0], location: loc}} %}
+		| dqstring {% function(token, loc) {return { value: token[0], location: loc }} %}
 
 @{%
 
 function extractPair(kv, output) {
-    if(kv[0]) { output[kv[0]] = kv[1]; } // kv[0] is key and kv[1] is value
+    if(kv[0]) { output[kv[1].location + 1] = kv[0][0]; } // kv[0] is key and kv[1] is value
 }
 
 function extractObjectFromSpaceSeparatedPairs(d) {

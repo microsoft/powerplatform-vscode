@@ -5,7 +5,7 @@ function id(x) { return x[0]; }
 
 
 function extractPair(kv, output) {
-    if(kv[0]) { output[kv[0]] = kv[1]; } // kv[0] is key and kv[1] is value
+    if(kv[0]) { output[kv[1].location + 1] = kv[0][0]; } // kv[0] is key and kv[1] is value
 }
 
 function extractObjectFromSpaceSeparatedPairs(d) {
@@ -180,8 +180,8 @@ var grammar = {
     {"name": "KEY$subexpression$1$string$3", "symbols": [{"literal":"k"}, {"literal":"e"}, {"literal":"y"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "KEY$subexpression$1", "symbols": ["KEY$subexpression$1$string$3"]},
     {"name": "KEY", "symbols": ["KEY$subexpression$1"], "postprocess": id},
-    {"name": "VALUE", "symbols": ["sqstring"]},
-    {"name": "VALUE", "symbols": ["dqstring"], "postprocess": id}
+    {"name": "VALUE", "symbols": ["sqstring"], "postprocess": function(token, loc) {return { value: token[0], location: loc}}},
+    {"name": "VALUE", "symbols": ["dqstring"], "postprocess": function(token, loc) {return { value: token[0], location: loc }}}
 ]
   , ParserStart: "LiquidExpression"
 }
