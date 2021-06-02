@@ -4,6 +4,7 @@
 import * as vscode from "vscode";
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { ITelemetry } from './telemetry/ITelemetry';
+import { PortalWebPagePreview, PortalWebPagePreview_NewPage, PortalWebPagePreview_ExistingPage } from './telemetry/TelemetryEvents';
 import { createTelemetryReporter } from './telemetry/configuration';
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
@@ -62,6 +63,7 @@ export async function activate(
                 vscode.window.activeTextEditor.document.fileName &&
                 PortalWebView.checkDocumentIsHTML()
             ) {
+                _telemetry.sendTelemetryEvent(PortalWebPagePreview, { preview: PortalWebPagePreview_NewPage});
                 PortalWebView.currentPanel._update();
             }
         })
@@ -76,6 +78,7 @@ export async function activate(
                 PortalWebView.currentDocument ===
                 vscode.window.activeTextEditor.document.fileName
             ) {
+                _telemetry.sendTelemetryEvent(PortalWebPagePreview, { preview: PortalWebPagePreview_ExistingPage});
                 PortalWebView.currentPanel._update();
             }
         })
@@ -213,6 +216,12 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             htmlServerRunning = true;
             _context.subscriptions.push(disposable);
         }
+
+        client.onReady().then(() => {
+            client.onNotification("telemetry/event", (payload: string) => {
+                _telemetry.sendTelemetryEvent(payload);
+            });
+        });
     }
 
 }

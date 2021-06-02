@@ -15,6 +15,7 @@ import {
     InitializeResult,
     WorkspaceFolder
 } from 'vscode-languageserver/node';
+import {sendTelemetryEvent} from './telemetry/ServerTelemetry';
 import * as nearley from 'nearley';
 import { URL } from 'url';
 import * as path from 'path';
@@ -24,6 +25,7 @@ import * as YAML from 'yaml';
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
+import { send } from 'process';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const lineByLine = require('n-readlines');
@@ -186,6 +188,9 @@ function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
             }
 
         }
+    }
+    if(completionItems.length > 0) {
+        sendTelemetryEvent(connection, 'htmlServer AutoComplete - returned completion items');
     }
     return completionItems;
 }
