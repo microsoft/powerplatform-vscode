@@ -4,16 +4,21 @@
 # token is generated while parsing the input. In the nearleyjs documentation this is referred by d or data
 # output is the value generated at each level. In the nearleyjs documentation this is referred by v or value
 
-
+# For the input:
+# {% entityform id:'', name:"xyz",  key:"34234" %}
 # The output of the parser is generated in the following format:
 
-# token: Object
+# token: Array
 # output: Object
-#	tag: "entityList"
+#	tag: "entityform"
 #	map: Object
 #     18: "id"
 #     27: "name"
 #     39: "key"
+
+# How to access the ouptut:-
+# parser.results[0]?.output?.tag
+# parser.results[0]?.output?.map
 
 @builtin "whitespace.ne" # `_` means arbitrary amount of whitespace
 @builtin "number.ne"     # `int`, `decimal`, and `percentage
