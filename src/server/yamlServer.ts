@@ -96,16 +96,14 @@ documents.onDidChangeContent(change => {
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
     async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
-        const editPath = _textDocumentPosition.textDocument.uri;
-        const editFileUrl = new URL(editPath);
         const rowIndex = _textDocumentPosition.position.line;
-        return await getSuggestions(rowIndex, editFileUrl);
+        return await getSuggestions(rowIndex);
     }
 );
 
-function getSuggestions(rowIndex: number, fileUrl: URL) {
+function getSuggestions(rowIndex: number) {
     const portalAttributeKeyPattern = /(.*?):/; // regex to match text like adx_pagetemplateid:
-    const matches = getEditedLineContent(rowIndex, editedTextDocument).match(portalAttributeKeyPattern);
+    const matches = getEditedLineContent(rowIndex, editedTextDocument)?.match(portalAttributeKeyPattern);
     const completionItems: CompletionItem[] = [];
     if (matches) {
         const keyForCompletion = getKeyForCompletion(matches);
