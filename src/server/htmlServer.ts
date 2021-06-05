@@ -113,10 +113,8 @@ function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
     if (editedLiquidExpression) {
         try {
             parser.feed(editedLiquidExpression);
-            liquidTagForCompletion = (parser.results[0]?.output?.tag[0]?.output?.output) ?
-                parser.results[0]?.output?.tag[0]?.output?.output :
-                parser.results[0]?.output?.tag[0];
-            liquidKeyForCompletion = parser.results[0]?.output?.key[0];
+            liquidTagForCompletion = parser.results[0]?.output?.tag;
+            liquidKeyForCompletion = parser.results[0]?.output?.map[0]; //change this to index of edit in the liquid expression...
         } catch (e) {
             // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
         }
