@@ -219,7 +219,13 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
 
         client.onReady().then(() => {
             client.onNotification("telemetry/event", (payload: string) => {
-                _telemetry.sendTelemetryEvent(payload);
+                try {
+                    const serverTelemetry = JSON.parse(payload);
+                    _telemetry.sendTelemetryEvent(serverTelemetry);
+                } catch (error){
+                    _telemetry.sendTelemetryException(error);
+                }
+
             });
         });
     }
