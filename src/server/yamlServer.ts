@@ -18,7 +18,6 @@ import {
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
-import { URL } from 'url';
 import { getEditedLineContent } from './lib/LineReader';
 import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
 

@@ -7,7 +7,7 @@ import {
     TextDocument,
 } from 'vscode-languageserver-textdocument';
 
-export function getEditedLineContent(rowIndex: number, textDocument: TextDocument) {
+export function getEditedLineContent(rowIndex: number, textDocument: TextDocument): string {
     const lines = textDocument.getText().split(/\r?\n/g);
     let editedLine = '';
     for (let i = 0; i < lines.length; i++) {
