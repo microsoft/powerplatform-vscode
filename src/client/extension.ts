@@ -37,8 +37,6 @@ export async function activate(
     context.subscriptions.push(_telemetry);
     _telemetry.sendTelemetryEvent("Start");
 
-    // add  portal specific features in this block
-
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
     vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
@@ -57,14 +55,11 @@ export async function activate(
             if (vscode.window.activeTextEditor === undefined) {
                 return;
             } else if (
-                vscode.workspace.workspaceFolders !== undefined &&
-                PortalWebView.currentPanel &&
-                PortalWebView.currentDocument !==
-                vscode.window.activeTextEditor.document.fileName &&
+                !isCurrentDocumentEdited() &&
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 _telemetry.sendTelemetryEvent(PortalWebPagePreview, { preview: PortalWebPagePreview_NewPage});
-                PortalWebView.currentPanel._update();
+                PortalWebView?.currentPanel?._update();
             }
         })
     );
@@ -73,13 +68,10 @@ export async function activate(
             if (vscode.window.activeTextEditor === undefined) {
                 return;
             } else if (
-                vscode.workspace.workspaceFolders !== undefined &&
-                PortalWebView.currentPanel &&
-                PortalWebView.currentDocument ===
-                vscode.window.activeTextEditor.document.fileName
+                isCurrentDocumentEdited()
             ) {
                 _telemetry.sendTelemetryEvent(PortalWebPagePreview, { preview: PortalWebPagePreview_ExistingPage});
-                PortalWebView.currentPanel._update();
+                PortalWebView?.currentPanel?._update();
             }
         })
     );
@@ -230,6 +222,15 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
         });
     }
 
+}
+
+function isCurrentDocumentEdited() : boolean{
+    const workspaceFolderExists = vscode.workspace.workspaceFolders !== undefined;
+    let currentPanelExists = false;
+    if (PortalWebView?.currentPanel) {
+        currentPanelExists = true;
+    }
+    return (workspaceFolderExists && currentPanelExists && PortalWebView.currentDocument === vscode?.window?.activeTextEditor?.document?.fileName);
 }
 
 class CliAcquisitionContext implements ICliAcquisitionContext {
