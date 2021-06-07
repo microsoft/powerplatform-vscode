@@ -4,7 +4,9 @@
  * ------------------------------------------------------------------------------------------ */
 
 import { Connection, TelemetryEventNotification} from 'vscode-languageserver/node';
+import { TelemetryData } from '../../common/TelemetryData';
 
-export function sendTelemetryEvent(connection: Connection, payload: string): void {
+export function sendTelemetryEvent(connection: Connection, telemetryData: TelemetryData): void {
+    const payload = JSON.stringify(telemetryData);
     connection.sendNotification(TelemetryEventNotification.type, payload);
 }

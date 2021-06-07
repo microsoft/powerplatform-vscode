@@ -21,6 +21,9 @@ import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifes
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
+import { TelemetryData } from '../common/TelemetryData';
+import * as TelemetryConstants from './telemetry/TelemetryConstants';
+import { sendTelemetryEvent } from './telemetry/ServerTelemetry';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -97,12 +100,17 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number, fileUrl: URL) {
+    const autoCompleteTelemetryData = new TelemetryData(TelemetryConstants.AUTOCOMPLETE);
+    autoCompleteTelemetryData.addProperty(TelemetryConstants.SERVER, TelemetryConstants.YAML_SERVER);
     const portalAttributeKeyPattern = /(.*?):/; // regex to match text like adx_pagetemplateid:
     const matches = getEditedLineContent(rowIndex, fileUrl).match(portalAttributeKeyPattern);
     const completionItems: CompletionItem[] = [];
     if (matches) {
+        autoCompleteTelemetryData.addProperty(TelemetryConstants.KEY_FOR_COMPLETION, matches[1]);
         const keyForCompletion = getKeyForCompletion(matches);
+        const timeStampBeforeParsingManifestFile = new Date().getTime();
         const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
+        autoCompleteTelemetryData.addMeasurement(TelemetryConstants.TIME_TAKEN_TO_PARSE, new Date().getTime() - timeStampBeforeParsingManifestFile);
         if (matchedManifestRecords) {
             matchedManifestRecords.forEach((element: IManifestElement) => {
                 const item: CompletionItem = {
@@ -114,11 +122,16 @@ function getSuggestions(rowIndex: number, fileUrl: URL) {
             });
         }
     }
+    if(completionItems.length > 0) {
+        autoCompleteTelemetryData.addProperty(TelemetryConstants.AUTO_COMPLETE_RESULT, TelemetryConstants.SUCCESS);
+        autoCompleteTelemetryData.addMeasurement(TelemetryConstants.COUNT_OF_AUTOCOMPLETE_RESULTS, completionItems.length);
+        sendTelemetryEvent(connection, autoCompleteTelemetryData); // we send telemetry data only in case of success otherwise the logs will be bloated with unnecessary data
+    }
     return completionItems;
 }
 
 function getKeyForCompletion(matches: RegExpMatchArray) {
-    let portalAttributeKeyForCompletion = matches[1].toString(); // returns text from the capture group e.g. adx_pagetemplateid
+    let portalAttributeKeyForCompletion = matches[1]; // returns text from the capture group e.g. adx_pagetemplateid
     if (portalAttributeKeyForCompletion.length > 2 && portalAttributeKeyForCompletion.endsWith('id')) {
         portalAttributeKeyForCompletion = portalAttributeKeyForCompletion.substring(0, portalAttributeKeyForCompletion.length - 2); // we remove the id
     }
