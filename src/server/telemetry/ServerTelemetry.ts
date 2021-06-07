@@ -5,6 +5,6 @@
 
 import { Connection, TelemetryEventNotification} from 'vscode-languageserver/node';
 
-export function sendTelemetryEvent(connection: Connection, payload: string) {
+export function sendTelemetryEvent(connection: Connection, payload: string): void {
     connection.sendNotification(TelemetryEventNotification.type, payload);
 }

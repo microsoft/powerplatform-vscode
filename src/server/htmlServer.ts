@@ -23,7 +23,7 @@ import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifes
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
-import { send } from 'process';
+import { TelemetryData } from '../common/TelemetryData';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('./Parser/liquidTagGrammar.js');
@@ -160,7 +160,10 @@ function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
         }
     }
     if(completionItems.length > 0) {
-        sendTelemetryEvent(connection, 'htmlServer AutoComplete - returned completion items');
+        const autoCompleteTelemetryData = new TelemetryData('htmlServer Autocomplete');
+        autoCompleteTelemetryData.addProperty('server', 'htmlServer');
+        autoCompleteTelemetryData.addProperty('result', 'success');
+        sendTelemetryEvent(connection, JSON.stringify(autoCompleteTelemetryData));
     }
     return completionItems;
 }

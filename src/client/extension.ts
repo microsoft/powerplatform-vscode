@@ -12,6 +12,7 @@ import * as path from "path";
 import { PortalWebView } from './PortalWebView';
 import { AI_KEY } from './constants';
 import { v4 } from 'uuid';
+import { TelemetryData } from "../common/TelemetryData";
 
 import {
     LanguageClient,
@@ -212,8 +213,8 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
         client.onReady().then(() => {
             client.onNotification("telemetry/event", (payload: string) => {
                 try {
-                    const serverTelemetry = JSON.parse(payload);
-                    _telemetry.sendTelemetryEvent(serverTelemetry);
+                    const serverTelemetry = JSON.parse(payload) as TelemetryData;
+                    _telemetry.sendTelemetryEvent(serverTelemetry?.eventName, serverTelemetry?.properties, serverTelemetry?.measurements);
                 } catch (error){
                     _telemetry.sendTelemetryException(error);
                 }
