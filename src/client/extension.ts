@@ -4,7 +4,7 @@
 import * as vscode from "vscode";
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { ITelemetry } from './telemetry/ITelemetry';
-import { PortalWebPagePreview, PortalWebPagePreview_NewPage, PortalWebPagePreview_ExistingPage } from './telemetry/TelemetryEvents';
+import { PORTAL_WEBPAGE_PREVIEW, PORTAL_WEBPAGE_PREVIEW_NEW_PAGE, PORTAL_WEBPAGE_PREVIEW_EXISTING_PAGE } from './telemetry/TelemetryConstants';
 import { createTelemetryReporter } from './telemetry/configuration';
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
@@ -13,6 +13,7 @@ import { PortalWebView } from './PortalWebView';
 import { AI_KEY } from './constants';
 import { v4 } from 'uuid';
 import { TelemetryData } from "../common/TelemetryData";
+import * as TelemetryConstants from "./telemetry/TelemetryConstants";
 
 import {
     LanguageClient,
@@ -59,7 +60,9 @@ export async function activate(
                 !isCurrentDocumentEdited() &&
                 PortalWebView.checkDocumentIsHTML()
             ) {
-                _telemetry.sendTelemetryEvent(PortalWebPagePreview, { preview: PortalWebPagePreview_NewPage});
+                const previewTelemetryData = new TelemetryData(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW);
+                previewTelemetryData.addProperty(TelemetryConstants.PREVIEW, TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_NEW_PAGE);
+                _telemetry.sendTelemetryEvent(previewTelemetryData.eventName, previewTelemetryData.properties);
                 PortalWebView?.currentPanel?._update();
             }
         })
@@ -71,7 +74,9 @@ export async function activate(
             } else if (
                 isCurrentDocumentEdited()
             ) {
-                _telemetry.sendTelemetryEvent(PortalWebPagePreview, { preview: PortalWebPagePreview_ExistingPage});
+                const previewTelemetryData = new TelemetryData(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW);
+                previewTelemetryData.addProperty(TelemetryConstants.PREVIEW, TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_EXISTING_PAGE);
+                _telemetry.sendTelemetryEvent(previewTelemetryData.eventName, previewTelemetryData.properties);
                 PortalWebView?.currentPanel?._update();
             }
         })
@@ -210,6 +215,7 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             _context.subscriptions.push(disposable);
         }
 
+        // this is used to send server telemetry events
         client.onReady().then(() => {
             client.onNotification("telemetry/event", (payload: string) => {
                 try {

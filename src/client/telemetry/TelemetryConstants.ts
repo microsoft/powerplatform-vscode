@@ -3,6 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-export const PortalWebPagePreview = 'PortalWebPagePreview';
-export const PortalWebPagePreview_NewPage = 'PortalWebPagePreview_NewPage';
-export const PortalWebPagePreview_ExistingPage = 'PortalWebPagePreview_ExistingPage';
+// Event Names
+export const PORTAL_WEBPAGE_PREVIEW = 'portalWebPagePreview';
+
+// Properties - Keys
+export const PREVIEW = 'preview';
+
+// Properties - Values
+export const PORTAL_WEBPAGE_PREVIEW_NEW_PAGE = 'portalWebPagePreview_NewPage';
+export const PORTAL_WEBPAGE_PREVIEW_EXISTING_PAGE = 'portalWebPagePreview_ExistingPage';
