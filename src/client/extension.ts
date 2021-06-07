@@ -4,7 +4,6 @@
 import * as vscode from "vscode";
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { ITelemetry } from './telemetry/ITelemetry';
-import { PORTAL_WEBPAGE_PREVIEW, PORTAL_WEBPAGE_PREVIEW_NEW_PAGE, PORTAL_WEBPAGE_PREVIEW_EXISTING_PAGE } from './telemetry/TelemetryConstants';
 import { createTelemetryReporter } from './telemetry/configuration';
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
