@@ -26,6 +26,11 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('./Parser/liquidTagGrammar.js');
 
+interface ILiquidAutoComplete {
+    LiquidExpression: string;
+    AutoCompleteAtIndex: number;
+}
+
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
@@ -106,17 +111,15 @@ connection.onCompletion(
 function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
     const completionItems: CompletionItem[] = [];
     const editedLine = getEditedLineContent(rowIndex, fileUrl);
-    const editedLiquidExpression = getEditedLiquidExpression(colIndex, editedLine);
+    const liquidForAutocomplete = getEditedLiquidExpression(colIndex, editedLine);
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
     let liquidTagForCompletion = null;
     let liquidKeyForCompletion = '';
-    if (editedLiquidExpression) {
+    if (liquidForAutocomplete.LiquidExpression && liquidForAutocomplete.AutoCompleteAtIndex) {
         try {
-            parser.feed(editedLiquidExpression);
-            liquidTagForCompletion = (parser.results[0]?.output?.tag[0]?.output?.output) ?
-                parser.results[0]?.output?.tag[0]?.output?.output :
-                parser.results[0]?.output?.tag[0];
-            liquidKeyForCompletion = parser.results[0]?.output?.key[0];
+            parser.feed(liquidForAutocomplete.LiquidExpression);
+            liquidTagForCompletion = parser.results[0]?.output?.tag;
+            liquidKeyForCompletion = parser.results[0]?.output?.map[liquidForAutocomplete.AutoCompleteAtIndex];
         } catch (e) {
             // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
         }
@@ -161,7 +164,10 @@ function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
 }
 
 function getEditedLiquidExpression(colIndex: number, editedLine: string) {
-    let editedLiquidExpression = '';
+    const liquidForAutocomplete: ILiquidAutoComplete = {
+        LiquidExpression: '',
+        AutoCompleteAtIndex: -1,
+    }
     try {
         const contentOnLeftOfCursor = editedLine.substring(0, colIndex);
         const startIndexOfEditedLiquidExpression = contentOnLeftOfCursor.lastIndexOf(startTagOfLiquidExpression);
@@ -170,12 +176,13 @@ function getEditedLiquidExpression(colIndex: number, editedLine: string) {
         const endIndexOfEditedLiquidExpression = contentOnRightOfCursor.indexOf(endTagOfLiquidExpression);
         const editedLiquidExpressionOnRightOfCursor = contentOnRightOfCursor.substring(0, endIndexOfEditedLiquidExpression + endTagOfLiquidExpression.length);
         if (editedLiquidExpressionOnLeftOfCursor && editedLiquidExpressionOnRightOfCursor) {
-            editedLiquidExpression = editedLiquidExpressionOnLeftOfCursor + editedLiquidExpressionOnRightOfCursor;
+            liquidForAutocomplete.LiquidExpression = editedLiquidExpressionOnLeftOfCursor + editedLiquidExpressionOnRightOfCursor;
+            liquidForAutocomplete.AutoCompleteAtIndex = colIndex - startIndexOfEditedLiquidExpression;
         }
     } catch (e) {
         // Add Telemetry for index out of bounds...not a proper liquid expression
     }
-    return editedLiquidExpression;
+    return liquidForAutocomplete;
 }
 
 function getKeyForCompletion(liquidTag: string): string {
