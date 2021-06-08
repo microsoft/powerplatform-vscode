@@ -67,8 +67,8 @@
         "command": "microsoft-powerapps-portals.preview-show",
         "title": "PowerApps Portal -> Show preview",
         "icon": {
-          "dark": "./src/client/editor_menu_icons/dark/Show preview.svg",
-          "light": "./src/client/editor_menu_icons/light/Show preview.svg"
+          "dark": "./src/client/editor_menu_icons/dark/portal_webpage_preview.svg",
+          "light": "./src/client/editor_menu_icons/light/portal_webpage_preview.svg"
         }
       }
     ],
