@@ -17,7 +17,6 @@ import {
 } from 'vscode-languageserver/node';
 import {sendTelemetryEvent} from './telemetry/ServerTelemetry';
 import * as nearley from 'nearley';
-import { URL } from 'url';
 import { getEditedLineContent } from './lib/LineReader';
 import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
 import {
@@ -28,6 +27,11 @@ import * as TelemetryConstants from './telemetry/TelemetryConstants';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('./Parser/liquidTagGrammar.js');
+
+interface ILiquidAutoComplete {
+    LiquidExpression: string;
+    AutoCompleteAtIndex: number;
+}
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -40,8 +44,10 @@ let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
 let workspaceRootFolder: WorkspaceFolder[] | null = null;
+let editedTextDocument: TextDocument;
 const startTagOfLiquidExpression = '{%';
 const endTagOfLiquidExpression = '%}';
+
 
 
 connection.onInitialize((params: InitializeParams) => {
@@ -94,35 +100,36 @@ connection.onInitialized(() => {
 });
 
 
+// The content of a text document has changed. This event is emitted
+// when the text document first opened or when its content has changed.
+documents.onDidChangeContent(change => {
+	editedTextDocument = (change.document);
+});
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
     async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
-        const editPath = _textDocumentPosition.textDocument.uri;
-        const editFileUrl = new URL(editPath);
         const rowIndex = _textDocumentPosition.position.line;
         const colIndex = _textDocumentPosition.position.character;
-        return await getSuggestions(rowIndex, colIndex, editFileUrl);
+        return await getSuggestions(rowIndex, colIndex);
     }
 );
 
-function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
+function getSuggestions(rowIndex: number, colIndex: number) {
     const autoCompleteTelemetryData = new TelemetryData(TelemetryConstants.AUTOCOMPLETE);
     autoCompleteTelemetryData.addProperty(TelemetryConstants.SERVER, TelemetryConstants.HTML_SERVER);
     const completionItems: CompletionItem[] = [];
-    const editedLine = getEditedLineContent(rowIndex, fileUrl);
-    const editedLiquidExpression = getEditedLiquidExpression(colIndex, editedLine);
+    const editedLine = getEditedLineContent(rowIndex, editedTextDocument);
+    const liquidForAutocomplete = getEditedLiquidExpression(colIndex, editedLine);
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
     let liquidTagForCompletion = null;
     let liquidKeyForCompletion = '';
-    if (editedLiquidExpression) {
+    if (liquidForAutocomplete.LiquidExpression && liquidForAutocomplete.AutoCompleteAtIndex) {
         const timeStampBeforeLiquidParsing = new Date().getTime();
         try {
-            parser.feed(editedLiquidExpression);
-            liquidTagForCompletion = (parser.results[0]?.output?.tag[0]?.output?.output) ?
-                parser.results[0]?.output?.tag[0]?.output?.output :
-                parser.results[0]?.output?.tag[0];
-            liquidKeyForCompletion = parser.results[0]?.output?.key[0];
+            parser.feed(liquidForAutocomplete.LiquidExpression);
+            liquidTagForCompletion = parser.results[0]?.output?.tag;
+            liquidKeyForCompletion = parser.results[0]?.output?.map[liquidForAutocomplete.AutoCompleteAtIndex];
         } catch (e) {
             // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
         }
@@ -175,7 +182,10 @@ function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
 }
 
 function getEditedLiquidExpression(colIndex: number, editedLine: string) {
-    let editedLiquidExpression = '';
+    const liquidForAutocomplete: ILiquidAutoComplete = {
+        LiquidExpression: '',
+        AutoCompleteAtIndex: -1,
+    }
     try {
         const contentOnLeftOfCursor = editedLine.substring(0, colIndex);
         const startIndexOfEditedLiquidExpression = contentOnLeftOfCursor.lastIndexOf(startTagOfLiquidExpression);
@@ -184,12 +194,13 @@ function getEditedLiquidExpression(colIndex: number, editedLine: string) {
         const endIndexOfEditedLiquidExpression = contentOnRightOfCursor.indexOf(endTagOfLiquidExpression);
         const editedLiquidExpressionOnRightOfCursor = contentOnRightOfCursor.substring(0, endIndexOfEditedLiquidExpression + endTagOfLiquidExpression.length);
         if (editedLiquidExpressionOnLeftOfCursor && editedLiquidExpressionOnRightOfCursor) {
-            editedLiquidExpression = editedLiquidExpressionOnLeftOfCursor + editedLiquidExpressionOnRightOfCursor;
+            liquidForAutocomplete.LiquidExpression = editedLiquidExpressionOnLeftOfCursor + editedLiquidExpressionOnRightOfCursor;
+            liquidForAutocomplete.AutoCompleteAtIndex = colIndex - startIndexOfEditedLiquidExpression;
         }
     } catch (e) {
         // Add Telemetry for index out of bounds...not a proper liquid expression. This may again bloat up the logs (since the autocomplete events can be fired even for non-portal html files)
     }
-    return editedLiquidExpression;
+    return liquidForAutocomplete;
 }
 
 function getKeyForCompletion(liquidTag: string): string {

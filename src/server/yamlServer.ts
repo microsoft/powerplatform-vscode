@@ -15,15 +15,14 @@ import {
     InitializeResult,
     WorkspaceFolder
 } from 'vscode-languageserver/node';
-import { URL } from 'url';
-import { getEditedLineContent } from './lib/LineReader';
-import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
 import { TelemetryData } from '../common/TelemetryData';
 import * as TelemetryConstants from './telemetry/TelemetryConstants';
 import { sendTelemetryEvent } from './telemetry/ServerTelemetry';
+import { getEditedLineContent } from './lib/LineReader';
+import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -36,6 +35,7 @@ let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
 let workspaceRootFolder: WorkspaceFolder[] | null = null;
+let editedTextDocument: TextDocument;
 
 
 connection.onInitialize((params: InitializeParams) => {
@@ -88,22 +88,26 @@ connection.onInitialized(() => {
 });
 
 
+// The content of a text document has changed. This event is emitted
+// when the text document first opened or when its content has changed.
+documents.onDidChangeContent(change => {
+	editedTextDocument = (change.document);
+});
+
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
     async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
-        const editPath = _textDocumentPosition.textDocument.uri;
-        const editFileUrl = new URL(editPath);
         const rowIndex = _textDocumentPosition.position.line;
-        return await getSuggestions(rowIndex, editFileUrl);
+        return await getSuggestions(rowIndex);
     }
 );
 
-function getSuggestions(rowIndex: number, fileUrl: URL) {
+function getSuggestions(rowIndex: number) {
     const autoCompleteTelemetryData = new TelemetryData(TelemetryConstants.AUTOCOMPLETE);
     autoCompleteTelemetryData.addProperty(TelemetryConstants.SERVER, TelemetryConstants.YAML_SERVER);
     const portalAttributeKeyPattern = /(.*?):/; // regex to match text like adx_pagetemplateid:
-    const matches = getEditedLineContent(rowIndex, fileUrl).match(portalAttributeKeyPattern);
+    const matches = getEditedLineContent(rowIndex, editedTextDocument)?.match(portalAttributeKeyPattern);
     const completionItems: CompletionItem[] = [];
     if (matches) {
         autoCompleteTelemetryData.addProperty(TelemetryConstants.KEY_FOR_COMPLETION, matches[1]);
