@@ -2,6 +2,29 @@
 // http://github.com/Hardmath123/nearley
 (function () {
 function id(x) { return x[0]; }
+
+
+function extractPair(kv, output) {
+    if(kv[0]) { output[kv[1].location + 1] = kv[0][0]; } // kv[0] is key and kv[1] is value
+}
+
+function extractObjectFromSpaceSeparatedPairs(d) {
+    let output = {};
+    for (let i in d[1]) {  // d[1] matches with (PAIR _):+
+        extractPair(d[1][i][0], output); // d[1][i] represents ith PAIR _ and d[1][i][0] represents ith PAIR
+    }
+    return output;
+}
+
+function extractObjectFromCommaSeparatedPairs(d) {
+    let output = {};
+    for (let i in d[0]) { // d[0] matches with (_ PAIR _ ","):+
+        extractPair(d[0][i][1], output); // d[0][i] represents ith _ PAIR _ "," and d[0][i][1] represents ith PAIR
+    }
+	extractPair(d[2], output) // used to extract value from the last PAIR
+    return output;
+}
+
 var grammar = {
     Lexer: undefined,
     ParserRules: [
@@ -125,21 +148,31 @@ var grammar = {
         },
     {"name": "LiquidExpression$string$1", "symbols": [{"literal":"{"}, {"literal":"%"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "LiquidExpression$string$2", "symbols": [{"literal":"%"}, {"literal":"}"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "LiquidExpression", "symbols": ["_", "LiquidExpression$string$1", "__", "TAG_DEFINITION", "__", "LiquidExpression$string$2", "_"], "postprocess": function(token) {return { token:token, output: {tag: token[3].tag, key: token[3].key, value: token[3].value}}}},
-    {"name": "TAG_DEFINITION", "symbols": ["TAG", "__", "ATTRIBUTE_MAP"], "postprocess": function(token) {return { token:token, tag:token[0].output, key:token[2].key, value:token[2].value }}},
-    {"name": "TAG$subexpression$1$string$1", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"f"}, {"literal":"o"}, {"literal":"r"}, {"literal":"m"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "TAG$subexpression$1", "symbols": ["TAG$subexpression$1$string$1"]},
-    {"name": "TAG$subexpression$1$string$2", "symbols": [{"literal":"w"}, {"literal":"e"}, {"literal":"b"}, {"literal":"f"}, {"literal":"o"}, {"literal":"r"}, {"literal":"m"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "TAG$subexpression$1", "symbols": ["TAG$subexpression$1$string$2"]},
-    {"name": "TAG$subexpression$1$string$3", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"v"}, {"literal":"i"}, {"literal":"e"}, {"literal":"w"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "TAG$subexpression$1", "symbols": ["TAG$subexpression$1$string$3"]},
-    {"name": "TAG$subexpression$1", "symbols": ["EntityList"]},
-    {"name": "TAG", "symbols": ["TAG$subexpression$1"], "postprocess": function(token) {return { output:token[0]}}},
-    {"name": "EntityList", "symbols": ["LIQUID_KEYWORD", "_", "ENTITYLIST_TAG"], "postprocess": function(token) {return { output:token[2]}}},
+    {"name": "LiquidExpression", "symbols": ["_", "LiquidExpression$string$1", "__", "TAG_DEFINITION", "__", "LiquidExpression$string$2", "_"], "postprocess": function(token) {return { token:token, output: {tag: token[3].tag, map: token[3].map}}}},
+    {"name": "TAG_DEFINITION", "symbols": ["TAG", "__", "ATTRIBUTE_MAP"], "postprocess": function(token) {return { token:token, tag:token[0].tag, map: token[2] }}},
+    {"name": "TAG$string$1", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"f"}, {"literal":"o"}, {"literal":"r"}, {"literal":"m"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "TAG", "symbols": ["TAG$string$1"], "postprocess": function(token) {return { tag: token[0] }}},
+    {"name": "TAG$string$2", "symbols": [{"literal":"w"}, {"literal":"e"}, {"literal":"b"}, {"literal":"f"}, {"literal":"o"}, {"literal":"r"}, {"literal":"m"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "TAG", "symbols": ["TAG$string$2"], "postprocess": function(token) {return { tag: token[0]}}},
+    {"name": "TAG$string$3", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"v"}, {"literal":"i"}, {"literal":"e"}, {"literal":"w"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "TAG", "symbols": ["TAG$string$3"], "postprocess": function(token) {return { tag: token[0]}}},
+    {"name": "TAG", "symbols": ["EntityList"], "postprocess": function(token) {return { tag: token[0].tag }}},
+    {"name": "EntityList", "symbols": ["LIQUID_KEYWORD", "_", "ENTITYLIST_TAG"], "postprocess": function(token) {return { tag:token[2].tag}}},
     {"name": "LIQUID_KEYWORD$string$1", "symbols": [{"literal":"i"}, {"literal":"n"}, {"literal":"c"}, {"literal":"l"}, {"literal":"u"}, {"literal":"d"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "LIQUID_KEYWORD", "symbols": ["LIQUID_KEYWORD$string$1"], "postprocess": function(token) {return { output:token[0]}}},
+    {"name": "LIQUID_KEYWORD", "symbols": ["LIQUID_KEYWORD$string$1"], "postprocess": id},
     {"name": "ENTITYLIST_TAG$string$1", "symbols": [{"literal":"'"}, {"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"_"}, {"literal":"l"}, {"literal":"i"}, {"literal":"s"}, {"literal":"t"}, {"literal":"'"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "ENTITYLIST_TAG", "symbols": ["ENTITYLIST_TAG$string$1"], "postprocess": function(token) {return { output:"entityList"}}},
+    {"name": "ENTITYLIST_TAG", "symbols": ["ENTITYLIST_TAG$string$1"], "postprocess": function(token) {return { tag: "entityList" }}},
+    {"name": "ATTRIBUTE_MAP$ebnf$1$subexpression$1", "symbols": ["PAIR", "_"]},
+    {"name": "ATTRIBUTE_MAP$ebnf$1", "symbols": ["ATTRIBUTE_MAP$ebnf$1$subexpression$1"]},
+    {"name": "ATTRIBUTE_MAP$ebnf$1$subexpression$2", "symbols": ["PAIR", "_"]},
+    {"name": "ATTRIBUTE_MAP$ebnf$1", "symbols": ["ATTRIBUTE_MAP$ebnf$1", "ATTRIBUTE_MAP$ebnf$1$subexpression$2"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "ATTRIBUTE_MAP", "symbols": ["_", "ATTRIBUTE_MAP$ebnf$1"], "postprocess": extractObjectFromSpaceSeparatedPairs},
+    {"name": "ATTRIBUTE_MAP$ebnf$2$subexpression$1", "symbols": ["_", "PAIR", "_", {"literal":","}]},
+    {"name": "ATTRIBUTE_MAP$ebnf$2", "symbols": ["ATTRIBUTE_MAP$ebnf$2$subexpression$1"]},
+    {"name": "ATTRIBUTE_MAP$ebnf$2$subexpression$2", "symbols": ["_", "PAIR", "_", {"literal":","}]},
+    {"name": "ATTRIBUTE_MAP$ebnf$2", "symbols": ["ATTRIBUTE_MAP$ebnf$2", "ATTRIBUTE_MAP$ebnf$2$subexpression$2"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "ATTRIBUTE_MAP", "symbols": ["ATTRIBUTE_MAP$ebnf$2", "_", "PAIR", "_"], "postprocess": extractObjectFromCommaSeparatedPairs},
+    {"name": "PAIR", "symbols": ["KEY", "_", {"literal":":"}, "_", "VALUE"], "postprocess": function(token) { return [token[0], token[4]]; }},
     {"name": "KEY$subexpression$1$string$1", "symbols": [{"literal":"i"}, {"literal":"d"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "KEY$subexpression$1", "symbols": ["KEY$subexpression$1$string$1"]},
     {"name": "KEY$subexpression$1$string$2", "symbols": [{"literal":"n"}, {"literal":"a"}, {"literal":"m"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
@@ -147,10 +180,8 @@ var grammar = {
     {"name": "KEY$subexpression$1$string$3", "symbols": [{"literal":"k"}, {"literal":"e"}, {"literal":"y"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "KEY$subexpression$1", "symbols": ["KEY$subexpression$1$string$3"]},
     {"name": "KEY", "symbols": ["KEY$subexpression$1"], "postprocess": id},
-    {"name": "VALUE", "symbols": ["sqstring"]},
-    {"name": "VALUE", "symbols": ["dqstring"], "postprocess": id},
-    {"name": "ATTRIBUTE_MAP", "symbols": ["PAIR"], "postprocess": function(token) {return { key: token[0].key, value: token[0].value}}},
-    {"name": "PAIR", "symbols": ["KEY", "_", {"literal":":"}, "_", "VALUE"], "postprocess": function(token) {return { key:token[0], value: token[4]}}}
+    {"name": "VALUE", "symbols": ["sqstring"], "postprocess": function(token, loc) {return { value: token[0], location: loc}}},
+    {"name": "VALUE", "symbols": ["dqstring"], "postprocess": function(token, loc) {return { value: token[0], location: loc }}}
 ]
   , ParserStart: "LiquidExpression"
 }
