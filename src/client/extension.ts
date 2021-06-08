@@ -59,10 +59,12 @@ export async function activate(
                 !isCurrentDocumentEdited() &&
                 PortalWebView.checkDocumentIsHTML()
             ) {
-                const previewTelemetryData = new TelemetryData(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW);
-                previewTelemetryData.addProperty(TelemetryConstants.PREVIEW, TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_NEW_PAGE);
-                _telemetry.sendTelemetryEvent(previewTelemetryData.eventName, previewTelemetryData.properties);
-                PortalWebView?.currentPanel?._update();
+                if ( PortalWebView?.currentPanel) {
+                    const previewTelemetryData = new TelemetryData(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW);
+                    previewTelemetryData.addProperty(TelemetryConstants.PREVIEW, TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_NEW_PAGE);
+                    _telemetry.sendTelemetryEvent(previewTelemetryData.eventName, previewTelemetryData.properties);
+                    PortalWebView?.currentPanel?._update();
+                }
             }
         })
     );
@@ -73,10 +75,12 @@ export async function activate(
             } else if (
                 isCurrentDocumentEdited()
             ) {
-                const previewTelemetryData = new TelemetryData(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW);
-                previewTelemetryData.addProperty(TelemetryConstants.PREVIEW, TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_EXISTING_PAGE);
-                _telemetry.sendTelemetryEvent(previewTelemetryData.eventName, previewTelemetryData.properties);
-                PortalWebView?.currentPanel?._update();
+                if (PortalWebView?.currentPanel) {
+                    const previewTelemetryData = new TelemetryData(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW);
+                    previewTelemetryData.addProperty(TelemetryConstants.PREVIEW, TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_EXISTING_PAGE);
+                    _telemetry.sendTelemetryEvent(previewTelemetryData.eventName, previewTelemetryData.properties);
+                    PortalWebView?.currentPanel?._update();
+                }
             }
         })
     );
