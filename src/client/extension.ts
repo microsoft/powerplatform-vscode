@@ -170,6 +170,18 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             yamlServerRunning = true;
             _context.subscriptions.push(disposable);
         }
+
+        // this is used to send yamlServer telemetry events
+        client.onReady().then(() => {
+            client.onNotification("telemetry/event", (payload: string) => {
+                try {
+                    const serverTelemetry = JSON.parse(payload) as TelemetryData;
+                    _telemetry.sendTelemetryEvent(serverTelemetry?.eventName, serverTelemetry?.properties, serverTelemetry?.measurements);
+                } catch (error){
+                    _telemetry.sendTelemetryException(error);
+                }
+            });
+        });
     } else if (document.languageId === 'html' && !htmlServerRunning) {
 
         // The server is implemented in node
@@ -214,7 +226,7 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             _context.subscriptions.push(disposable);
         }
 
-        // this is used to send server telemetry events
+        // this is used to send htmlServer telemetry events
         client.onReady().then(() => {
             client.onNotification("telemetry/event", (payload: string) => {
                 try {
@@ -223,7 +235,6 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
                 } catch (error){
                     _telemetry.sendTelemetryException(error);
                 }
-
             });
         });
     }
