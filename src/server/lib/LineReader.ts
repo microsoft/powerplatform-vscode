@@ -7,10 +7,10 @@ import {
     TextDocument,
 } from 'vscode-languageserver-textdocument';
 
-export function getEditedLineContent(rowIndex: number, textDocument: TextDocument): string {
-    const lines = textDocument.getText().split(/\r?\n/g);
+export function getEditedLineContent(rowIndex: number, textDocument: TextDocument | undefined): string {
+    const lines = textDocument?.getText()?.split(/\r?\n/g);
     let editedLine = '';
-    for (let i = 0; i < lines.length; i++) {
+    for (let i = 0; lines && i < lines.length; i++) {
         if (i === rowIndex) {
             editedLine = lines[i];
         }
