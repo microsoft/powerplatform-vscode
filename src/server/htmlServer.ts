@@ -15,13 +15,12 @@ import {
     InitializeResult,
     WorkspaceFolder
 } from 'vscode-languageserver/node';
-import * as nearley from 'nearley';
-import { URL } from 'url';
-import { getEditedLineContent } from './lib/LineReader';
-import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
+import * as nearley from 'nearley';
+import { getEditedLineContent } from './lib/LineReader';
+import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('./Parser/liquidTagGrammar.js');
@@ -42,8 +41,10 @@ let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
 let workspaceRootFolder: WorkspaceFolder[] | null = null;
+let editedTextDocument: TextDocument;
 const startTagOfLiquidExpression = '{%';
 const endTagOfLiquidExpression = '%}';
+
 
 
 connection.onInitialize((params: InitializeParams) => {
@@ -96,21 +97,24 @@ connection.onInitialized(() => {
 });
 
 
+// The content of a text document has changed. This event is emitted
+// when the text document first opened or when its content has changed.
+documents.onDidChangeContent(change => {
+	editedTextDocument = (change.document);
+});
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
     async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
-        const editPath = _textDocumentPosition.textDocument.uri;
-        const editFileUrl = new URL(editPath);
         const rowIndex = _textDocumentPosition.position.line;
         const colIndex = _textDocumentPosition.position.character;
-        return await getSuggestions(rowIndex, colIndex, editFileUrl);
+        return await getSuggestions(rowIndex, colIndex);
     }
 );
 
-function getSuggestions(rowIndex: number, colIndex: number, fileUrl: URL) {
+function getSuggestions(rowIndex: number, colIndex: number) {
     const completionItems: CompletionItem[] = [];
-    const editedLine = getEditedLineContent(rowIndex, fileUrl);
+    const editedLine = getEditedLineContent(rowIndex, editedTextDocument);
     const liquidForAutocomplete = getEditedLiquidExpression(colIndex, editedLine);
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
     let liquidTagForCompletion = null;

@@ -3,24 +3,17 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import { URL } from 'url';
+import {
+    TextDocument,
+} from 'vscode-languageserver-textdocument';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const lineByLine = require('n-readlines');
-
-export function getEditedLineContent(rowIndex: number, fileUrl: URL): string {
-    const liner = new lineByLine(fileUrl);
-    let line = liner.next();
-    let lineNumber = 0;
-    let userEditedLine = '';
-
-    while (line) {
-        if (lineNumber == rowIndex) {
-            userEditedLine = line.toString('ascii');
-            break;
+export function getEditedLineContent(rowIndex: number, textDocument: TextDocument | undefined): string {
+    const lines = textDocument?.getText()?.split(/\r?\n/g);
+    let editedLine = '';
+    for (let i = 0; lines && i < lines.length; i++) {
+        if (i === rowIndex) {
+            editedLine = lines[i];
         }
-        line = liner.next();
-        lineNumber++;
     }
-    return userEditedLine;
+    return editedLine;
 }
