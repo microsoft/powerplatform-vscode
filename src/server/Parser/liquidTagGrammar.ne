@@ -21,17 +21,24 @@
 # parser.results[0]?.output?.map
 
 @builtin "whitespace.ne" # `_` means arbitrary amount of whitespace
-@builtin "number.ne"     # `int`, `decimal`, and `percentage
+@builtin "number.ne"     # `int`, `decimal`, and `percentage`
 @builtin "string.ne"     # "strings"
-LiquidExpression -> _ "{%" __ TAG_DEFINITION "%}" _ {% function(token) {return { token:token, output: {tag: token[3].tag, map: token[3].map}}} %}
-TAG_DEFINITION -> TAG __ ATTRIBUTE_MAP {% function(token) {return { token:token, tag:token[0].tag, map: token[2] }} %}
+LiquidExpression -> _ "{%" __ TAG_DEFINITION "%}" _ {% function(token) {return { token:token, output: token[3] }} %}
+
+TAG_DEFINITION -> TAG __ ATTRIBUTE_MAP {% extractTagDefinition %}
+
 TAG -> PORTAL_TAG {% function(token) {return { tag: token[0].tag }} %}
 		| "include" __ PORTAL_TAG {% function(token) {return { tag: token[2].tag }} %}
+		| "editable" __ PORTAL_TAG __ EDITABLE_TAG_VALUE {% function(token) {return { tag: token[2].tag, liquidTag: 'editable', editable_tag_value_location: token[4].location }} %}
+
+EDITABLE_TAG_VALUE -> sqstring {% function(token, loc) {return { value: token[0], location: loc}} %}
+		| dqstring {% function(token, loc) {return { value: token[0], location: loc }} %}
 
 PORTAL_TAG -> "entityform"  {% function(token) {return { tag: token[0] }} %}
 		| "webform"  {% function(token) {return { tag: token[0]}} %}
 		| "entityview" {% function(token) {return { tag: token[0]}} %}
 		| "'entity_list'" {% function(token) {return { tag: "entity_list" }} %}
+		| "snippets" {% function(token) {return { tag: token[0]}} %}
 
 ATTRIBUTE_MAP -> (PAIR _):+  {% extractObjectFromSpaceSeparatedPairs %}
 	            | PAIR _ "," (_ PAIR _ ","):* _ PAIR __ {% extractObjectFromCommaSeparatedPairs %}
@@ -62,6 +69,20 @@ function extractObjectFromCommaSeparatedPairs(d) {
     }
 	extractPair(d[5], output) // used to extract value from the last PAIR
     return output;
+}
+
+function extractTagDefinition(d) {
+	let output = {};
+	if(d[0].liquidTag && d[0].liquidTag === 'editable') {
+		const map = d[2];
+		map[d[0].editable_tag_value_location + 1] = 'editable_tag_value'; // we do +1 to get the location of the first index inside '' or ""
+        output['tag'] = d[0].tag;
+		output['map'] = map;
+	} else {
+		output['tag'] = d[0].tag;
+		output['map'] = d[2];
+	}
+	return output;
 }
 
 %}

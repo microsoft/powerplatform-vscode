@@ -26,6 +26,20 @@ function extractObjectFromCommaSeparatedPairs(d) {
     return output;
 }
 
+function extractTagDefinition(d) {
+	let output = {};
+	if(d[0].liquidTag && d[0].liquidTag === 'editable') {
+		const map = d[2];
+		map[d[0].editable_tag_value_location + 1] = 'editable_tag_value'; // we do +1 to get the location of the first index inside '' or ""
+        output['tag'] = d[0].tag;
+		output['map'] = map;
+	} else {
+		output['tag'] = d[0].tag;
+		output['map'] = d[2];
+	}
+	return output;
+}
+
 var grammar = {
     Lexer: undefined,
     ParserRules: [
@@ -149,11 +163,15 @@ var grammar = {
         },
     {"name": "LiquidExpression$string$1", "symbols": [{"literal":"{"}, {"literal":"%"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "LiquidExpression$string$2", "symbols": [{"literal":"%"}, {"literal":"}"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "LiquidExpression", "symbols": ["_", "LiquidExpression$string$1", "__", "TAG_DEFINITION", "LiquidExpression$string$2", "_"], "postprocess": function(token) {return { token:token, output: {tag: token[3].tag, map: token[3].map}}}},
-    {"name": "TAG_DEFINITION", "symbols": ["TAG", "__", "ATTRIBUTE_MAP"], "postprocess": function(token) {return { token:token, tag:token[0].tag, map: token[2] }}},
+    {"name": "LiquidExpression", "symbols": ["_", "LiquidExpression$string$1", "__", "TAG_DEFINITION", "LiquidExpression$string$2", "_"], "postprocess": function(token) {return { token:token, output: token[3] }}},
+    {"name": "TAG_DEFINITION", "symbols": ["TAG", "__", "ATTRIBUTE_MAP"], "postprocess": extractTagDefinition},
     {"name": "TAG", "symbols": ["PORTAL_TAG"], "postprocess": function(token) {return { tag: token[0].tag }}},
     {"name": "TAG$string$1", "symbols": [{"literal":"i"}, {"literal":"n"}, {"literal":"c"}, {"literal":"l"}, {"literal":"u"}, {"literal":"d"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "TAG", "symbols": ["TAG$string$1", "__", "PORTAL_TAG"], "postprocess": function(token) {return { tag: token[2].tag }}},
+    {"name": "TAG$string$2", "symbols": [{"literal":"e"}, {"literal":"d"}, {"literal":"i"}, {"literal":"t"}, {"literal":"a"}, {"literal":"b"}, {"literal":"l"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "TAG", "symbols": ["TAG$string$2", "__", "PORTAL_TAG", "__", "EDITABLE_TAG_VALUE"], "postprocess": function(token) {return { tag: token[2].tag, liquidTag: 'editable', editable_tag_value_location: token[4].location }}},
+    {"name": "EDITABLE_TAG_VALUE", "symbols": ["sqstring"], "postprocess": function(token, loc) {return { value: token[0], location: loc}}},
+    {"name": "EDITABLE_TAG_VALUE", "symbols": ["dqstring"], "postprocess": function(token, loc) {return { value: token[0], location: loc }}},
     {"name": "PORTAL_TAG$string$1", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"f"}, {"literal":"o"}, {"literal":"r"}, {"literal":"m"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "PORTAL_TAG", "symbols": ["PORTAL_TAG$string$1"], "postprocess": function(token) {return { tag: token[0] }}},
     {"name": "PORTAL_TAG$string$2", "symbols": [{"literal":"w"}, {"literal":"e"}, {"literal":"b"}, {"literal":"f"}, {"literal":"o"}, {"literal":"r"}, {"literal":"m"}], "postprocess": function joiner(d) {return d.join('');}},
@@ -162,6 +180,8 @@ var grammar = {
     {"name": "PORTAL_TAG", "symbols": ["PORTAL_TAG$string$3"], "postprocess": function(token) {return { tag: token[0]}}},
     {"name": "PORTAL_TAG$string$4", "symbols": [{"literal":"'"}, {"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"_"}, {"literal":"l"}, {"literal":"i"}, {"literal":"s"}, {"literal":"t"}, {"literal":"'"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "PORTAL_TAG", "symbols": ["PORTAL_TAG$string$4"], "postprocess": function(token) {return { tag: "entity_list" }}},
+    {"name": "PORTAL_TAG$string$5", "symbols": [{"literal":"s"}, {"literal":"n"}, {"literal":"i"}, {"literal":"p"}, {"literal":"p"}, {"literal":"e"}, {"literal":"t"}, {"literal":"s"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "PORTAL_TAG", "symbols": ["PORTAL_TAG$string$5"], "postprocess": function(token) {return { tag: token[0]}}},
     {"name": "ATTRIBUTE_MAP$ebnf$1$subexpression$1", "symbols": ["PAIR", "_"]},
     {"name": "ATTRIBUTE_MAP$ebnf$1", "symbols": ["ATTRIBUTE_MAP$ebnf$1$subexpression$1"]},
     {"name": "ATTRIBUTE_MAP$ebnf$1$subexpression$2", "symbols": ["PAIR", "_"]},
