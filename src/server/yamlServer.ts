@@ -105,16 +105,16 @@ connection.onCompletion(
 
 function getSuggestions(rowIndex: number) {
     const autoCompleteTelemetryData = new TelemetryData(TelemetryConstants.AUTOCOMPLETE);
-    autoCompleteTelemetryData.addProperty(TelemetryConstants.SERVER, TelemetryConstants.YAML_SERVER);
+    autoCompleteTelemetryData.addProperty(TelemetryConstants.SERVER, TelemetryConstants.YAML);
     const portalAttributeKeyPattern = /(.*?):/; // regex to match text like adx_pagetemplateid:
     const matches = getEditedLineContent(rowIndex, editedTextDocument)?.match(portalAttributeKeyPattern);
     const completionItems: CompletionItem[] = [];
     if (matches) {
-        autoCompleteTelemetryData.addProperty(TelemetryConstants.KEY_FOR_COMPLETION, matches[1]);
+        autoCompleteTelemetryData.addProperty(TelemetryConstants.COMPLETION_KEY, matches[1]);
         const keyForCompletion = getKeyForCompletion(matches);
         const timeStampBeforeParsingManifestFile = new Date().getTime();
         const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
-        autoCompleteTelemetryData.addMeasurement(TelemetryConstants.TIME_TAKEN_TO_PARSE, new Date().getTime() - timeStampBeforeParsingManifestFile);
+        autoCompleteTelemetryData.addMeasurement(TelemetryConstants.PARSE_TIME_MS, new Date().getTime() - timeStampBeforeParsingManifestFile);
         if (matchedManifestRecords) {
             matchedManifestRecords.forEach((element: IManifestElement) => {
                 const item: CompletionItem = {
@@ -128,7 +128,7 @@ function getSuggestions(rowIndex: number) {
     }
     // we send telemetry data only in case of success, otherwise the logs will be bloated with unnecessary data
     if(completionItems.length > 0) {
-        autoCompleteTelemetryData.addProperty(TelemetryConstants.AUTO_COMPLETE_RESULT, TelemetryConstants.SUCCESS);
+        autoCompleteTelemetryData.addProperty(TelemetryConstants.SUCCESS, 'true');
         autoCompleteTelemetryData.addMeasurement(TelemetryConstants.COUNT_OF_AUTOCOMPLETE_RESULTS, completionItems.length);
         sendTelemetryEvent(connection, autoCompleteTelemetryData); 
     }
