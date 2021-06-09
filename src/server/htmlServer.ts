@@ -196,7 +196,7 @@ function getEditedLiquidExpression(colIndex: number, editedLine: string) {
 
 function getKeyForCompletion(liquidTag: string): string {
     switch (liquidTag) {
-        case 'entityList': {
+        case 'entity_list': {
             return 'adx_entitylist';
         }
         case 'entityform': {
