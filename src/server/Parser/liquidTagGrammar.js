@@ -19,8 +19,8 @@ function extractObjectFromSpaceSeparatedPairs(d) {
 function extractObjectFromCommaSeparatedPairs(d) {
     let output = {};
 	extractPair(d[0], output) // used to extract value from the first PAIR
-    for (let i in d[3]) { // d[1] matches with (_ PAIR _ ","):*
-        extractPair(d[3][i][1], output); // d[1][i] represents ith _ PAIR _ "," and d[1][i][1] represents ith PAIR
+    for (let i in d[3]) { // d[3] matches with (_ PAIR _ ","):*
+        extractPair(d[3][i][1], output); // d[3][i] represents ith _ PAIR _ "," and d[3][i][1] represents ith PAIR
     }
 	extractPair(d[5], output) // used to extract value from the last PAIR
     return output;
