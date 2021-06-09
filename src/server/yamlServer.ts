@@ -18,8 +18,7 @@ import {
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
-import { TelemetryData } from '../common/TelemetryData';
-import * as TelemetryConstants from './telemetry/TelemetryConstants';
+import { IAutoCompleteTelemetryData } from '../common/TelemetryData';
 import { sendTelemetryEvent } from './telemetry/ServerTelemetry';
 import { getEditedLineContent } from './lib/LineReader';
 import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
@@ -104,17 +103,22 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number) {
-    const autoCompleteTelemetryData = new TelemetryData(TelemetryConstants.AUTOCOMPLETE);
-    autoCompleteTelemetryData.addProperty(TelemetryConstants.SERVER, TelemetryConstants.YAML);
+    const telemetryData: IAutoCompleteTelemetryData = {
+        eventName: "autoComplete",
+        properties: {
+            server: 'yaml',
+        },
+        measurements: {},
+    };
     const portalAttributeKeyPattern = /(.*?):/; // regex to match text like adx_pagetemplateid:
     const matches = getEditedLineContent(rowIndex, editedTextDocument)?.match(portalAttributeKeyPattern);
     const completionItems: CompletionItem[] = [];
     if (matches) {
-        autoCompleteTelemetryData.addProperty(TelemetryConstants.COMPLETION_KEY, matches[1]);
+        telemetryData.properties.keyForCompletion = matches[1];
         const keyForCompletion = getKeyForCompletion(matches);
         const timeStampBeforeParsingManifestFile = new Date().getTime();
         const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
-        autoCompleteTelemetryData.addMeasurement(TelemetryConstants.PARSE_TIME_MS, new Date().getTime() - timeStampBeforeParsingManifestFile);
+        telemetryData.measurements.parseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
         if (matchedManifestRecords) {
             matchedManifestRecords.forEach((element: IManifestElement) => {
                 const item: CompletionItem = {
@@ -128,9 +132,9 @@ function getSuggestions(rowIndex: number) {
     }
     // we send telemetry data only in case of success, otherwise the logs will be bloated with unnecessary data
     if(completionItems.length > 0) {
-        autoCompleteTelemetryData.addProperty(TelemetryConstants.SUCCESS, 'true');
-        autoCompleteTelemetryData.addMeasurement(TelemetryConstants.COUNT_OF_AUTOCOMPLETE_RESULTS, completionItems.length);
-        sendTelemetryEvent(connection, autoCompleteTelemetryData); 
+        telemetryData.properties.success = 'true';
+        telemetryData.measurements.countOfAutoCompleteResults = completionItems.length;
+        sendTelemetryEvent(connection, telemetryData); 
     }
     return completionItems;
 }

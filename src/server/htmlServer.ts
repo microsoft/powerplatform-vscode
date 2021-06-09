@@ -22,8 +22,7 @@ import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifes
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
-import { TelemetryData } from '../common/TelemetryData';
-import * as TelemetryConstants from './telemetry/TelemetryConstants';
+import { IAutoCompleteTelemetryData } from '../common/TelemetryData';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('./Parser/liquidTagGrammar.js');
@@ -116,8 +115,13 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number, colIndex: number) {
-    const autoCompleteTelemetryData = new TelemetryData(TelemetryConstants.AUTOCOMPLETE);
-    autoCompleteTelemetryData.addProperty(TelemetryConstants.SERVER, TelemetryConstants.HTML);
+    const telemetryData: IAutoCompleteTelemetryData = {
+        eventName: "autoComplete",
+        properties: {
+            server: 'html',
+        },
+        measurements: {},
+    };
     const completionItems: CompletionItem[] = [];
     const editedLine = getEditedLineContent(rowIndex, editedTextDocument);
     const liquidForAutocomplete = getEditedLiquidExpression(colIndex, editedLine);
@@ -133,10 +137,10 @@ function getSuggestions(rowIndex: number, colIndex: number) {
         } catch (e) {
             // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
         }
-        autoCompleteTelemetryData.addMeasurement(TelemetryConstants.PARSE_TIME_MS, new Date().getTime() - timeStampBeforeLiquidParsing);
+        telemetryData.measurements.parseTimeMs = new Date().getTime() - timeStampBeforeLiquidParsing;
         if (liquidTagForCompletion && liquidKeyForCompletion) {
-            autoCompleteTelemetryData.addProperty(TelemetryConstants.COMPLETION_TAG, liquidTagForCompletion);
-            autoCompleteTelemetryData.addProperty(TelemetryConstants.COMPLETION_KEY, liquidKeyForCompletion);
+            telemetryData.properties.tagForCompletion = liquidTagForCompletion;
+            telemetryData.properties.keyForCompletion = liquidKeyForCompletion;
             const keyForCompletion = getKeyForCompletion(liquidTagForCompletion);
             const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
 
@@ -175,9 +179,9 @@ function getSuggestions(rowIndex: number, colIndex: number) {
     }
     // we send telemetry data only in case of success, otherwise the logs will be bloated with unnecessary data
     if(completionItems.length > 0) {
-        autoCompleteTelemetryData.addProperty(TelemetryConstants.SUCCESS, 'true');
-        autoCompleteTelemetryData.addMeasurement(TelemetryConstants.COUNT_OF_AUTOCOMPLETE_RESULTS, completionItems.length);
-        sendTelemetryEvent(connection, autoCompleteTelemetryData);
+        telemetryData.properties.success = 'true';
+        telemetryData.measurements.countOfAutoCompleteResults = completionItems.length;
+        sendTelemetryEvent(connection, telemetryData);
     }
     return completionItems;
 }

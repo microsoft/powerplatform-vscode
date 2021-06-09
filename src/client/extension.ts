@@ -11,8 +11,7 @@ import * as path from "path";
 import { PortalWebView } from './PortalWebView';
 import { AI_KEY } from './constants';
 import { v4 } from 'uuid';
-import { TelemetryData } from "../common/TelemetryData";
-import * as TelemetryConstants from "./telemetry/TelemetryConstants";
+import { ITelemetryData } from "../common/TelemetryData";
 
 import {
     LanguageClient,
@@ -60,9 +59,7 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if ( PortalWebView?.currentPanel) {
-                    const onNewDocEventTelemetryProperties = {} as Record<string, string>;
-                    onNewDocEventTelemetryProperties[TelemetryConstants.PREVIEW] = TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_NEW_PAGE;
-                    _telemetry.sendTelemetryEvent(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW, onNewDocEventTelemetryProperties);
+                    _telemetry.sendTelemetryEvent('portalWebPagePreview', { preview: 'portalWebPagePreview_NewPage' });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -76,9 +73,7 @@ export async function activate(
                 isCurrentDocumentEdited()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    const onChangeEventTelemetryProperties = {} as Record<string, string>;
-                    onChangeEventTelemetryProperties[TelemetryConstants.PREVIEW] = TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_EXISTING_PAGE;
-                    _telemetry.sendTelemetryEvent(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW, onChangeEventTelemetryProperties);
+                    _telemetry.sendTelemetryEvent('portalWebPagePreview', { preview: 'portalWebPagePreview_ExistingPage' });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -231,7 +226,7 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
     client.onReady().then(() => {
         client.onNotification("telemetry/event", (payload: string) => {
             try {
-                const serverTelemetry = JSON.parse(payload) as TelemetryData;
+                const serverTelemetry = JSON.parse(payload) as ITelemetryData ;
                 _telemetry.sendTelemetryEvent(serverTelemetry?.eventName, serverTelemetry?.properties, serverTelemetry?.measurements);
             } catch (error){
                 _telemetry.sendTelemetryException(error);
