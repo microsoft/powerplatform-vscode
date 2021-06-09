@@ -45,6 +45,7 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
+                _telemetry.sendTelemetryEvent('portalShowPreview_buttonClicked');
                 PortalWebView.createOrShow(_context);
             }
         )
