@@ -23,17 +23,18 @@
 @builtin "whitespace.ne" # `_` means arbitrary amount of whitespace
 @builtin "number.ne"     # `int`, `decimal`, and `percentage
 @builtin "string.ne"     # "strings"
-LiquidExpression -> _ "{%" __ TAG_DEFINITION __ "%}" _ {% function(token) {return { token:token, output: {tag: token[3].tag, map: token[3].map}}} %}
+LiquidExpression -> _ "{%" __ TAG_DEFINITION "%}" _ {% function(token) {return { token:token, output: {tag: token[3].tag, map: token[3].map}}} %}
 TAG_DEFINITION -> TAG __ ATTRIBUTE_MAP {% function(token) {return { token:token, tag:token[0].tag, map: token[2] }} %}
-TAG -> "entityform"  {% function(token) {return { tag: token[0] }} %}
+TAG -> PORTAL_TAG {% function(token) {return { tag: token[0].tag }} %}
+		| "include" __ PORTAL_TAG {% function(token) {return { tag: token[2].tag }} %}
+
+PORTAL_TAG -> "entityform"  {% function(token) {return { tag: token[0] }} %}
 		| "webform"  {% function(token) {return { tag: token[0]}} %}
 		| "entityview" {% function(token) {return { tag: token[0]}} %}
-		| EntityList {% function(token) {return { tag: token[0].tag }} %}
-EntityList -> LIQUID_KEYWORD _ ENTITYLIST_TAG {% function(token) {return { tag:token[2].tag}} %}
-LIQUID_KEYWORD -> "include" {% id %}
-ENTITYLIST_TAG -> "'entity_list'" {% function(token) {return { tag: "entity_list" }} %}
+		| "'entity_list'" {% function(token) {return { tag: "entity_list" }} %}
+
 ATTRIBUTE_MAP -> (PAIR _):+  {% extractObjectFromSpaceSeparatedPairs %}
-	            | PAIR _ "," (_ PAIR _ ","):* _ PAIR {% extractObjectFromCommaSeparatedPairs %}
+	            | PAIR _ "," (_ PAIR _ ","):* _ PAIR __ {% extractObjectFromCommaSeparatedPairs %}
 PAIR -> KEY _ ":" _ VALUE {% function(token) { return [token[0], token[4]]; } %}
 KEY -> ("id" | "name" | "key") {% id %}
 VALUE -> sqstring {% function(token, loc) {return { value: token[0], location: loc}} %}
