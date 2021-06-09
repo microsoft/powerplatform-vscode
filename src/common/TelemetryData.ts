@@ -18,7 +18,8 @@ export interface IAutoCompleteTelemetryData extends ITelemetryData {
         'success'?: 'true' | 'false';
     };
     measurements: {
-        'parseTimeMs'?: number;
+        'manifestParseTimeMs'?: number;
+        'liquidParseTimeMs'?: number;
         'countOfAutoCompleteResults'?: number;
     };
 }

@@ -137,12 +137,14 @@ function getSuggestions(rowIndex: number, colIndex: number) {
         } catch (e) {
             // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
         }
-        telemetryData.measurements.parseTimeMs = new Date().getTime() - timeStampBeforeLiquidParsing;
+        telemetryData.measurements.liquidParseTimeMs = new Date().getTime() - timeStampBeforeLiquidParsing;
         if (liquidTagForCompletion && liquidKeyForCompletion) {
             telemetryData.properties.tagForCompletion = liquidTagForCompletion;
             telemetryData.properties.keyForCompletion = liquidKeyForCompletion;
             const keyForCompletion = getKeyForCompletion(liquidTagForCompletion);
+            const timeStampBeforeParsingManifestFile = new Date().getTime();
             const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
+            telemetryData.measurements.manifestParseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
 
             if (matchedManifestRecords) {
                 matchedManifestRecords.forEach((element: IManifestElement) => {

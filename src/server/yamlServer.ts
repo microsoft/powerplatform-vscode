@@ -118,7 +118,7 @@ function getSuggestions(rowIndex: number) {
         const keyForCompletion = getKeyForCompletion(matches);
         const timeStampBeforeParsingManifestFile = new Date().getTime();
         const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
-        telemetryData.measurements.parseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
+        telemetryData.measurements.manifestParseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
         if (matchedManifestRecords) {
             matchedManifestRecords.forEach((element: IManifestElement) => {
                 const item: CompletionItem = {
@@ -134,7 +134,7 @@ function getSuggestions(rowIndex: number) {
     if(completionItems.length > 0) {
         telemetryData.properties.success = 'true';
         telemetryData.measurements.countOfAutoCompleteResults = completionItems.length;
-        sendTelemetryEvent(connection, telemetryData); 
+        sendTelemetryEvent(connection, telemetryData);
     }
     return completionItems;
 }
