@@ -9,7 +9,6 @@
 # The output of the parser is generated in the following format:
 
 # token: Array
-# output: Object
 #	tag: "entityform"
 #	map: Object
 #     18: "id"
@@ -17,19 +16,19 @@
 #     39: "key"
 
 # How to access the ouptut:-
-# parser.results[0]?.output?.tag
-# parser.results[0]?.output?.map
+# parser.results[0]?.tag
+# parser.results[0]?.map
 
 @builtin "whitespace.ne" # `_` means arbitrary amount of whitespace
 @builtin "number.ne"     # `int`, `decimal`, and `percentage`
 @builtin "string.ne"     # "strings"
-LiquidExpression -> _ "{%" __ TAG_DEFINITION "%}" _ {% function(token) {return { token:token, output: token[3] }} %}
+LiquidExpression -> _ "{%" __ TAG_DEFINITION "%}" _ {% function(token) {return { token:token, tag: token[3].tag, map: token[3].map }} %}
 
 TAG_DEFINITION -> TAG __ ATTRIBUTE_MAP {% extractTagDefinition %}
 
 TAG -> PORTAL_TAG {% function(token) {return { tag: token[0].tag }} %}
 		| "include" __ PORTAL_TAG {% function(token) {return { tag: token[2].tag }} %}
-		| "editable" __ PORTAL_TAG __ EDITABLE_TAG_VALUE {% function(token) {return { tag: token[2].tag, liquidTag: 'editable', editable_tag_value_location: token[4].location }} %}
+		| "editable" __ PORTAL_TAG _ EDITABLE_TAG_VALUE {% function(token) {return { tag: token[2].tag, liquidTag: 'editable', editable_tag_value_location: token[4].location }} %}
 
 EDITABLE_TAG_VALUE -> sqstring {% function(token, loc) {return { value: token[0], location: loc}} %}
 		| dqstring {% function(token, loc) {return { value: token[0], location: loc }} %}
@@ -40,12 +39,15 @@ PORTAL_TAG -> "entityform"  {% function(token) {return { tag: token[0] }} %}
 		| "'entity_list'" {% function(token) {return { tag: "entity_list" }} %}
 		| "snippets" {% function(token) {return { tag: token[0]}} %}
 
-ATTRIBUTE_MAP -> (PAIR _):+  {% extractObjectFromSpaceSeparatedPairs %}
+ATTRIBUTE_MAP -> (PAIR _):*  {% extractObjectFromSpaceSeparatedPairs %}
 	            | PAIR _ "," (_ PAIR _ ","):* _ PAIR __ {% extractObjectFromCommaSeparatedPairs %}
 PAIR -> KEY _ ":" _ VALUE {% function(token) { return [token[0], token[4]]; } %}
-KEY -> ("id" | "name" | "key") {% id %}
+KEY -> ("id" | "name" | "key" | "type" | "liquid") {% id %}
 VALUE -> sqstring {% function(token, loc) {return { value: token[0], location: loc}} %}
 		| dqstring {% function(token, loc) {return { value: token[0], location: loc }} %}
+		| BOOLEAN {% function(token, loc) {return { value: token[0], location: loc }} %}
+BOOLEAN -> "true" {% id %}
+			| "false" {% id %}
 
 @{%
 
