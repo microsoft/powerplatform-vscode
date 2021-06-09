@@ -10,18 +10,19 @@ function extractPair(kv, output) {
 
 function extractObjectFromSpaceSeparatedPairs(d) {
     let output = {};
-    for (let i in d[1]) {  // d[1] matches with (PAIR _):+
-        extractPair(d[1][i][0], output); // d[1][i] represents ith PAIR _ and d[1][i][0] represents ith PAIR
+    for (let i in d[0]) {  // d[0] matches with (PAIR _):+
+        extractPair(d[0][i][0], output); // d[0][i] represents ith PAIR _ and d[0][i][0] represents ith PAIR
     }
     return output;
 }
 
 function extractObjectFromCommaSeparatedPairs(d) {
     let output = {};
-    for (let i in d[0]) { // d[0] matches with (_ PAIR _ ","):+
-        extractPair(d[0][i][1], output); // d[0][i] represents ith _ PAIR _ "," and d[0][i][1] represents ith PAIR
+	extractPair(d[0], output) // used to extract value from the first PAIR
+    for (let i in d[3]) { // d[1] matches with (_ PAIR _ ","):*
+        extractPair(d[3][i][1], output); // d[1][i] represents ith _ PAIR _ "," and d[1][i][1] represents ith PAIR
     }
-	extractPair(d[2], output) // used to extract value from the last PAIR
+	extractPair(d[5], output) // used to extract value from the last PAIR
     return output;
 }
 
@@ -161,17 +162,16 @@ var grammar = {
     {"name": "LIQUID_KEYWORD$string$1", "symbols": [{"literal":"i"}, {"literal":"n"}, {"literal":"c"}, {"literal":"l"}, {"literal":"u"}, {"literal":"d"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "LIQUID_KEYWORD", "symbols": ["LIQUID_KEYWORD$string$1"], "postprocess": id},
     {"name": "ENTITYLIST_TAG$string$1", "symbols": [{"literal":"'"}, {"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"_"}, {"literal":"l"}, {"literal":"i"}, {"literal":"s"}, {"literal":"t"}, {"literal":"'"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "ENTITYLIST_TAG", "symbols": ["ENTITYLIST_TAG$string$1"], "postprocess": function(token) {return { tag: "entityList" }}},
+    {"name": "ENTITYLIST_TAG", "symbols": ["ENTITYLIST_TAG$string$1"], "postprocess": function(token) {return { tag: "entity_list" }}},
     {"name": "ATTRIBUTE_MAP$ebnf$1$subexpression$1", "symbols": ["PAIR", "_"]},
     {"name": "ATTRIBUTE_MAP$ebnf$1", "symbols": ["ATTRIBUTE_MAP$ebnf$1$subexpression$1"]},
     {"name": "ATTRIBUTE_MAP$ebnf$1$subexpression$2", "symbols": ["PAIR", "_"]},
     {"name": "ATTRIBUTE_MAP$ebnf$1", "symbols": ["ATTRIBUTE_MAP$ebnf$1", "ATTRIBUTE_MAP$ebnf$1$subexpression$2"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "ATTRIBUTE_MAP", "symbols": ["_", "ATTRIBUTE_MAP$ebnf$1"], "postprocess": extractObjectFromSpaceSeparatedPairs},
+    {"name": "ATTRIBUTE_MAP", "symbols": ["ATTRIBUTE_MAP$ebnf$1"], "postprocess": extractObjectFromSpaceSeparatedPairs},
+    {"name": "ATTRIBUTE_MAP$ebnf$2", "symbols": []},
     {"name": "ATTRIBUTE_MAP$ebnf$2$subexpression$1", "symbols": ["_", "PAIR", "_", {"literal":","}]},
-    {"name": "ATTRIBUTE_MAP$ebnf$2", "symbols": ["ATTRIBUTE_MAP$ebnf$2$subexpression$1"]},
-    {"name": "ATTRIBUTE_MAP$ebnf$2$subexpression$2", "symbols": ["_", "PAIR", "_", {"literal":","}]},
-    {"name": "ATTRIBUTE_MAP$ebnf$2", "symbols": ["ATTRIBUTE_MAP$ebnf$2", "ATTRIBUTE_MAP$ebnf$2$subexpression$2"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "ATTRIBUTE_MAP", "symbols": ["ATTRIBUTE_MAP$ebnf$2", "_", "PAIR", "_"], "postprocess": extractObjectFromCommaSeparatedPairs},
+    {"name": "ATTRIBUTE_MAP$ebnf$2", "symbols": ["ATTRIBUTE_MAP$ebnf$2", "ATTRIBUTE_MAP$ebnf$2$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "ATTRIBUTE_MAP", "symbols": ["PAIR", "_", {"literal":","}, "ATTRIBUTE_MAP$ebnf$2", "_", "PAIR"], "postprocess": extractObjectFromCommaSeparatedPairs},
     {"name": "PAIR", "symbols": ["KEY", "_", {"literal":":"}, "_", "VALUE"], "postprocess": function(token) { return [token[0], token[4]]; }},
     {"name": "KEY$subexpression$1$string$1", "symbols": [{"literal":"i"}, {"literal":"d"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "KEY$subexpression$1", "symbols": ["KEY$subexpression$1$string$1"]},

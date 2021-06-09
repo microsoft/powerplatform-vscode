@@ -31,9 +31,9 @@ TAG -> "entityform"  {% function(token) {return { tag: token[0] }} %}
 		| EntityList {% function(token) {return { tag: token[0].tag }} %}
 EntityList -> LIQUID_KEYWORD _ ENTITYLIST_TAG {% function(token) {return { tag:token[2].tag}} %}
 LIQUID_KEYWORD -> "include" {% id %}
-ENTITYLIST_TAG -> "'entity_list'" {% function(token) {return { tag: "entityList" }} %}
-ATTRIBUTE_MAP -> _ (PAIR _):+  {% extractObjectFromSpaceSeparatedPairs %}
-	            | (_ PAIR _ ","):+ _ PAIR _ {% extractObjectFromCommaSeparatedPairs %}
+ENTITYLIST_TAG -> "'entity_list'" {% function(token) {return { tag: "entity_list" }} %}
+ATTRIBUTE_MAP -> (PAIR _):+  {% extractObjectFromSpaceSeparatedPairs %}
+	            | PAIR _ "," (_ PAIR _ ","):* _ PAIR {% extractObjectFromCommaSeparatedPairs %}
 PAIR -> KEY _ ":" _ VALUE {% function(token) { return [token[0], token[4]]; } %}
 KEY -> ("id" | "name" | "key") {% id %}
 VALUE -> sqstring {% function(token, loc) {return { value: token[0], location: loc}} %}
@@ -47,18 +47,19 @@ function extractPair(kv, output) {
 
 function extractObjectFromSpaceSeparatedPairs(d) {
     let output = {};
-    for (let i in d[1]) {  // d[1] matches with (PAIR _):+
-        extractPair(d[1][i][0], output); // d[1][i] represents ith PAIR _ and d[1][i][0] represents ith PAIR
+    for (let i in d[0]) {  // d[0] matches with (PAIR _):+
+        extractPair(d[0][i][0], output); // d[0][i] represents ith PAIR _ and d[0][i][0] represents ith PAIR
     }
     return output;
 }
 
 function extractObjectFromCommaSeparatedPairs(d) {
     let output = {};
-    for (let i in d[0]) { // d[0] matches with (_ PAIR _ ","):+
-        extractPair(d[0][i][1], output); // d[0][i] represents ith _ PAIR _ "," and d[0][i][1] represents ith PAIR
+	extractPair(d[0], output) // used to extract value from the first PAIR
+    for (let i in d[3]) { // d[1] matches with (_ PAIR _ ","):*
+        extractPair(d[3][i][1], output); // d[1][i] represents ith _ PAIR _ "," and d[1][i][1] represents ith PAIR
     }
-	extractPair(d[2], output) // used to extract value from the last PAIR
+	extractPair(d[5], output) // used to extract value from the last PAIR
     return output;
 }
 
