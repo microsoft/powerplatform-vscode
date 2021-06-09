@@ -126,10 +126,11 @@ function getSuggestions(rowIndex: number) {
             });
         }
     }
+    // we send telemetry data only in case of success, otherwise the logs will be bloated with unnecessary data
     if(completionItems.length > 0) {
         autoCompleteTelemetryData.addProperty(TelemetryConstants.AUTO_COMPLETE_RESULT, TelemetryConstants.SUCCESS);
         autoCompleteTelemetryData.addMeasurement(TelemetryConstants.COUNT_OF_AUTOCOMPLETE_RESULTS, completionItems.length);
-        sendTelemetryEvent(connection, autoCompleteTelemetryData); // we send telemetry data only in case of success otherwise the logs will be bloated with unnecessary data
+        sendTelemetryEvent(connection, autoCompleteTelemetryData); 
     }
     return completionItems;
 }

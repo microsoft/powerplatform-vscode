@@ -60,9 +60,9 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if ( PortalWebView?.currentPanel) {
-                    const previewTelemetryData = new TelemetryData(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW);
-                    previewTelemetryData.addProperty(TelemetryConstants.PREVIEW, TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_NEW_PAGE);
-                    _telemetry.sendTelemetryEvent(previewTelemetryData.eventName, previewTelemetryData.properties);
+                    const onNewDocEventTelemetryProperties = {} as Record<string, string>;
+                    onNewDocEventTelemetryProperties[TelemetryConstants.PREVIEW] = TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_NEW_PAGE;
+                    _telemetry.sendTelemetryEvent(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW, onNewDocEventTelemetryProperties);
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -76,9 +76,9 @@ export async function activate(
                 isCurrentDocumentEdited()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    const previewTelemetryData = new TelemetryData(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW);
-                    previewTelemetryData.addProperty(TelemetryConstants.PREVIEW, TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_EXISTING_PAGE);
-                    _telemetry.sendTelemetryEvent(previewTelemetryData.eventName, previewTelemetryData.properties);
+                    const onChangeEventTelemetryProperties = {} as Record<string, string>;
+                    onChangeEventTelemetryProperties[TelemetryConstants.PREVIEW] = TelemetryConstants.PORTAL_WEBPAGE_PREVIEW_EXISTING_PAGE;
+                    _telemetry.sendTelemetryEvent(TelemetryConstants.PORTAL_WEBPAGE_PREVIEW, onChangeEventTelemetryProperties);
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -176,16 +176,7 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
         }
 
         // this is used to send yamlServer telemetry events
-        client.onReady().then(() => {
-            client.onNotification("telemetry/event", (payload: string) => {
-                try {
-                    const serverTelemetry = JSON.parse(payload) as TelemetryData;
-                    _telemetry.sendTelemetryEvent(serverTelemetry?.eventName, serverTelemetry?.properties, serverTelemetry?.measurements);
-                } catch (error){
-                    _telemetry.sendTelemetryException(error);
-                }
-            });
-        });
+        registerClientToReceiveNotifications(client);
     } else if (document.languageId === 'html' && !htmlServerRunning) {
 
         // The server is implemented in node
@@ -231,18 +222,22 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
         }
 
         // this is used to send htmlServer telemetry events
-        client.onReady().then(() => {
-            client.onNotification("telemetry/event", (payload: string) => {
-                try {
-                    const serverTelemetry = JSON.parse(payload) as TelemetryData;
-                    _telemetry.sendTelemetryEvent(serverTelemetry?.eventName, serverTelemetry?.properties, serverTelemetry?.measurements);
-                } catch (error){
-                    _telemetry.sendTelemetryException(error);
-                }
-            });
-        });
+        registerClientToReceiveNotifications(client);
     }
 
+}
+
+function registerClientToReceiveNotifications(client: LanguageClient) {
+    client.onReady().then(() => {
+        client.onNotification("telemetry/event", (payload: string) => {
+            try {
+                const serverTelemetry = JSON.parse(payload) as TelemetryData;
+                _telemetry.sendTelemetryEvent(serverTelemetry?.eventName, serverTelemetry?.properties, serverTelemetry?.measurements);
+            } catch (error){
+                _telemetry.sendTelemetryException(error);
+            }
+        });
+    });
 }
 
 function isCurrentDocumentEdited() : boolean{
