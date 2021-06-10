@@ -161,7 +161,7 @@ var grammar = {
     {"name": "LIQUID_KEYWORD$string$1", "symbols": [{"literal":"i"}, {"literal":"n"}, {"literal":"c"}, {"literal":"l"}, {"literal":"u"}, {"literal":"d"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "LIQUID_KEYWORD", "symbols": ["LIQUID_KEYWORD$string$1"], "postprocess": id},
     {"name": "ENTITYLIST_TAG$string$1", "symbols": [{"literal":"'"}, {"literal":"e"}, {"literal":"n"}, {"literal":"t"}, {"literal":"i"}, {"literal":"t"}, {"literal":"y"}, {"literal":"_"}, {"literal":"l"}, {"literal":"i"}, {"literal":"s"}, {"literal":"t"}, {"literal":"'"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "ENTITYLIST_TAG", "symbols": ["ENTITYLIST_TAG$string$1"], "postprocess": function(token) {return { tag: "entityList" }}},
+    {"name": "ENTITYLIST_TAG", "symbols": ["ENTITYLIST_TAG$string$1"], "postprocess": function(token) {return { tag: "entity_list" }}},
     {"name": "ATTRIBUTE_MAP$ebnf$1$subexpression$1", "symbols": ["PAIR", "_"]},
     {"name": "ATTRIBUTE_MAP$ebnf$1", "symbols": ["ATTRIBUTE_MAP$ebnf$1$subexpression$1"]},
     {"name": "ATTRIBUTE_MAP$ebnf$1$subexpression$2", "symbols": ["PAIR", "_"]},

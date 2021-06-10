@@ -11,6 +11,7 @@ import * as path from "path";
 import { PortalWebView } from './PortalWebView';
 import { AI_KEY } from './constants';
 import { v4 } from 'uuid';
+import { ITelemetryData } from "../common/TelemetryData";
 
 import {
     LanguageClient,
@@ -44,6 +45,7 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
+                _telemetry.sendTelemetryEvent('StartCommand', {'commandId': 'microsoft-powerapps-portals.preview-show'});
                 PortalWebView.createOrShow(_context);
             }
         )
@@ -57,7 +59,10 @@ export async function activate(
                 !isCurrentDocumentEdited() &&
                 PortalWebView.checkDocumentIsHTML()
             ) {
-                PortalWebView?.currentPanel?._update();
+                if ( PortalWebView?.currentPanel) {
+                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'NewPage' });
+                    PortalWebView?.currentPanel?._update();
+                }
             }
         })
     );
@@ -68,7 +73,10 @@ export async function activate(
             } else if (
                 isCurrentDocumentEdited()
             ) {
-                PortalWebView?.currentPanel?._update();
+                if (PortalWebView?.currentPanel) {
+                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'ExistingPage' });
+                    PortalWebView?.currentPanel?._update();
+                }
             }
         })
     );
@@ -162,6 +170,9 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             yamlServerRunning = true;
             _context.subscriptions.push(disposable);
         }
+
+        // this is used to send yamlServer telemetry events
+        registerClientToReceiveNotifications(client);
     } else if (document.languageId === 'html' && !htmlServerRunning) {
 
         // The server is implemented in node
@@ -205,8 +216,22 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             htmlServerRunning = true;
             _context.subscriptions.push(disposable);
         }
+
+        // this is used to send htmlServer telemetry events
+        registerClientToReceiveNotifications(client);
     }
 
+}
+
+function registerClientToReceiveNotifications(client: LanguageClient) {
+    client.onReady().then(() => {
+        client.onNotification("telemetry/event", (payload: string) => {
+            const serverTelemetry = JSON.parse(payload) as ITelemetryData ;
+            if(!!serverTelemetry && !!serverTelemetry.eventName) {
+                _telemetry.sendTelemetryEvent(serverTelemetry.eventName, serverTelemetry.properties, serverTelemetry.measurements);
+            }
+        });
+    });
 }
 
 function isCurrentDocumentEdited() : boolean{

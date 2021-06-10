@@ -31,7 +31,7 @@ TAG -> "entityform"  {% function(token) {return { tag: token[0] }} %}
 		| EntityList {% function(token) {return { tag: token[0].tag }} %}
 EntityList -> LIQUID_KEYWORD _ ENTITYLIST_TAG {% function(token) {return { tag:token[2].tag}} %}
 LIQUID_KEYWORD -> "include" {% id %}
-ENTITYLIST_TAG -> "'entity_list'" {% function(token) {return { tag: "entityList" }} %}
+ENTITYLIST_TAG -> "'entity_list'" {% function(token) {return { tag: "entity_list" }} %}
 ATTRIBUTE_MAP -> _ (PAIR _):+  {% extractObjectFromSpaceSeparatedPairs %}
 	            | (_ PAIR _ ","):+ _ PAIR _ {% extractObjectFromCommaSeparatedPairs %}
 PAIR -> KEY _ ":" _ VALUE {% function(token) { return [token[0], token[4]]; } %}
