@@ -10,7 +10,7 @@ export interface ITelemetryData {
 }
 
 export interface IAutoCompleteTelemetryData extends ITelemetryData {
-    eventName: 'autoComplete';
+    eventName: 'AutoComplete';
     properties: {
         'server': 'yaml' | 'html';
         'keyForCompletion'?: string;

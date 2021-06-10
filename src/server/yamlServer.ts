@@ -104,7 +104,7 @@ connection.onCompletion(
 
 function getSuggestions(rowIndex: number) {
     const telemetryData: IAutoCompleteTelemetryData = {
-        eventName: "autoComplete",
+        eventName: "AutoComplete",
         properties: {
             server: 'yaml',
         },

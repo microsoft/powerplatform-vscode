@@ -45,7 +45,7 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent('portalShowPreview_buttonClicked');
+                _telemetry.sendTelemetryEvent('PortalShowPreview_buttonClicked');
                 PortalWebView.createOrShow(_context);
             }
         )
@@ -60,7 +60,7 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if ( PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('portalWebPagePreview', { preview: 'portalWebPagePreview_NewPage' });
+                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { preview: 'portalWebPagePreview_NewPage' });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -74,7 +74,7 @@ export async function activate(
                 isCurrentDocumentEdited()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('portalWebPagePreview', { preview: 'portalWebPagePreview_ExistingPage' });
+                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { preview: 'portalWebPagePreview_ExistingPage' });
                     PortalWebView?.currentPanel?._update();
                 }
             }
