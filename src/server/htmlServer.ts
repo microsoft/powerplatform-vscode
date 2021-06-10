@@ -128,7 +128,7 @@ function getSuggestions(rowIndex: number, colIndex: number) {
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
     let liquidTagForCompletion = null;
     let liquidKeyForCompletion = '';
-    if (liquidForAutocomplete.LiquidExpression && liquidForAutocomplete.AutoCompleteAtIndex) {
+    if (!!liquidForAutocomplete.LiquidExpression && !!liquidForAutocomplete.AutoCompleteAtIndex) {
         const timeStampBeforeLiquidParsing = new Date().getTime();
         try {
             parser.feed(liquidForAutocomplete.LiquidExpression);
