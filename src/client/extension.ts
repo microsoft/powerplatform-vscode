@@ -45,7 +45,7 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent('PortalShowPreview_buttonClicked');
+                _telemetry.sendTelemetryEvent('StartCommand', {'commandId': 'microsoft-powerapps-portals.preview-show'});
                 PortalWebView.createOrShow(_context);
             }
         )
@@ -60,7 +60,7 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if ( PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { preview: 'portalWebPagePreview_NewPage' });
+                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'NewPage' });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -74,7 +74,7 @@ export async function activate(
                 isCurrentDocumentEdited()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { preview: 'portalWebPagePreview_ExistingPage' });
+                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'ExistingPage' });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -226,11 +226,9 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
 function registerClientToReceiveNotifications(client: LanguageClient) {
     client.onReady().then(() => {
         client.onNotification("telemetry/event", (payload: string) => {
-            try {
-                const serverTelemetry = JSON.parse(payload) as ITelemetryData ;
-                _telemetry.sendTelemetryEvent(serverTelemetry?.eventName, serverTelemetry?.properties, serverTelemetry?.measurements);
-            } catch (error){
-                _telemetry.sendTelemetryException(error);
+            const serverTelemetry = JSON.parse(payload) as ITelemetryData ;
+            if(!!serverTelemetry && !!serverTelemetry.eventName) {
+                _telemetry.sendTelemetryEvent(serverTelemetry.eventName, serverTelemetry.properties, serverTelemetry.measurements);
             }
         });
     });
