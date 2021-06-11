@@ -217,8 +217,8 @@ async function snapshot() {
 
 const recompile = gulp.series(
     clean,
-    async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI', '1.7.1', path.resolve(distdir, 'pac')),
-    async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.osx-x64', '1.7.1', path.resolve(distdir, 'pac')),
+    async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI', '1.7.2', path.resolve(distdir, 'pac')),
+    async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.osx-x64', '1.7.2', path.resolve(distdir, 'pac')),
     compile,
 );
 
