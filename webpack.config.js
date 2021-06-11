@@ -23,7 +23,12 @@ const config = {
     },
     devtool: 'source-map',
     externals: {
-        vscode: "commonjs vscode"
+        vscode: "commonjs vscode",
+
+        // These dependencies are ignored because we don't use them, and App Insights has try-catch protecting their loading if they don't exist
+        // See: https://github.com/microsoft/vscode-extension-telemetry/issues/41#issuecomment-598852991
+        'applicationinsights-native-metrics': 'commonjs applicationinsights-native-metrics',
+        '@opentelemetry/tracing': "commonjs @opentelemetry/tracing"
     },
     resolve: {
         extensions: ['.ts', '.js']
