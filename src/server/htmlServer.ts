@@ -15,12 +15,14 @@ import {
     InitializeResult,
     WorkspaceFolder
 } from 'vscode-languageserver/node';
-import {
-    TextDocument
-} from 'vscode-languageserver-textdocument';
+import {sendTelemetryEvent} from './telemetry/ServerTelemetry';
 import * as nearley from 'nearley';
 import { getEditedLineContent } from './lib/LineReader';
 import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
+import {
+    TextDocument
+} from 'vscode-languageserver-textdocument';
+import { IAutoCompleteTelemetryData } from '../common/TelemetryData';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('./Parser/liquidTagGrammar.js');
@@ -113,13 +115,21 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number, colIndex: number) {
+    const telemetryData: IAutoCompleteTelemetryData = {
+        eventName: "AutoComplete",
+        properties: {
+            server: 'html',
+        },
+        measurements: {},
+    };
     const completionItems: CompletionItem[] = [];
     const editedLine = getEditedLineContent(rowIndex, editedTextDocument);
     const liquidForAutocomplete = getEditedLiquidExpression(colIndex, editedLine);
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
     let liquidTagForCompletion = null;
     let liquidKeyForCompletion = '';
-    if (liquidForAutocomplete.LiquidExpression && liquidForAutocomplete.AutoCompleteAtIndex) {
+    if (!!liquidForAutocomplete.LiquidExpression && !!liquidForAutocomplete.AutoCompleteAtIndex) {
+        const timeStampBeforeLiquidParsing = new Date().getTime();
         try {
             parser.feed(liquidForAutocomplete.LiquidExpression);
             liquidTagForCompletion = parser.results[0]?.tag;
@@ -127,9 +137,14 @@ function getSuggestions(rowIndex: number, colIndex: number) {
         } catch (e) {
             // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
         }
+        telemetryData.measurements.liquidParseTimeMs = new Date().getTime() - timeStampBeforeLiquidParsing;
         if (liquidTagForCompletion && liquidKeyForCompletion) {
+            telemetryData.properties.tagForCompletion = liquidTagForCompletion;
+            telemetryData.properties.keyForCompletion = liquidKeyForCompletion;
             const keyForCompletion = getKeyForCompletion(liquidTagForCompletion);
+            const timeStampBeforeParsingManifestFile = new Date().getTime();
             const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
+            telemetryData.measurements.manifestParseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
 
             if (matchedManifestRecords) {
                 matchedManifestRecords.forEach((element: IManifestElement) => {
@@ -169,6 +184,12 @@ function getSuggestions(rowIndex: number, colIndex: number) {
 
         }
     }
+    // we send telemetry data only in case of success, otherwise the logs will be bloated with unnecessary data
+    if(completionItems.length > 0) {
+        telemetryData.properties.success = 'true';
+        telemetryData.measurements.countOfAutoCompleteResults = completionItems.length;
+        sendTelemetryEvent(connection, telemetryData);
+    }
     return completionItems;
 }
 
@@ -189,7 +210,7 @@ function getEditedLiquidExpression(colIndex: number, editedLine: string) {
             liquidForAutocomplete.AutoCompleteAtIndex = colIndex - startIndexOfEditedLiquidExpression;
         }
     } catch (e) {
-        // Add Telemetry for index out of bounds...not a proper liquid expression
+        // Add Telemetry for index out of bounds...not a proper liquid expression. This may again bloat up the logs (since the autocomplete events can be fired even for non-portal html files)
     }
     return liquidForAutocomplete;
 }

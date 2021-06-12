@@ -18,6 +18,8 @@ import {
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
+import { IAutoCompleteTelemetryData } from '../common/TelemetryData';
+import { sendTelemetryEvent } from './telemetry/ServerTelemetry';
 import { getEditedLineContent } from './lib/LineReader';
 import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
 
@@ -101,12 +103,22 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number) {
+    const telemetryData: IAutoCompleteTelemetryData = {
+        eventName: "AutoComplete",
+        properties: {
+            server: 'yaml',
+        },
+        measurements: {},
+    };
     const portalAttributeKeyPattern = /(.*?):/; // regex to match text like adx_pagetemplateid:
     const matches = getEditedLineContent(rowIndex, editedTextDocument)?.match(portalAttributeKeyPattern);
     const completionItems: CompletionItem[] = [];
     if (matches) {
+        telemetryData.properties.keyForCompletion = matches[1];
         const keyForCompletion = getKeyForCompletion(matches);
+        const timeStampBeforeParsingManifestFile = new Date().getTime();
         const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
+        telemetryData.measurements.manifestParseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
         if (matchedManifestRecords) {
             matchedManifestRecords.forEach((element: IManifestElement) => {
                 const item: CompletionItem = {
@@ -118,11 +130,17 @@ function getSuggestions(rowIndex: number) {
             });
         }
     }
+    // we send telemetry data only in case of success, otherwise the logs will be bloated with unnecessary data
+    if(completionItems.length > 0) {
+        telemetryData.properties.success = 'true';
+        telemetryData.measurements.countOfAutoCompleteResults = completionItems.length;
+        sendTelemetryEvent(connection, telemetryData);
+    }
     return completionItems;
 }
 
 function getKeyForCompletion(matches: RegExpMatchArray) {
-    let portalAttributeKeyForCompletion = matches[1].toString(); // returns text from the capture group e.g. adx_pagetemplateid
+    let portalAttributeKeyForCompletion = matches[1]; // returns text from the capture group e.g. adx_pagetemplateid
     if (portalAttributeKeyForCompletion.length > 2 && portalAttributeKeyForCompletion.endsWith('id')) {
         portalAttributeKeyForCompletion = portalAttributeKeyForCompletion.substring(0, portalAttributeKeyForCompletion.length - 2); // we remove the id
     }
