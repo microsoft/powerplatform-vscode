@@ -6,8 +6,8 @@ import * as path from 'path';
 import { CliAcquisition, ICliAcquisitionContext } from '../../lib/CliAcquisition';
 import { expect } from 'chai';
 import { before } from 'mocha';
-import { ITelemetry } from '../../telemetry/ITelemetry';
-import { NoopTelemetryInstance } from '../../telemetry/NoopTelemetry';
+import { NoopTelemetryChannelInstance } from '../../../common/telemetry/NoopTelemetryChannel';
+import TelemetryClient from '../../../common/telemetry/TelemetryClient';
 
 const repoRootDir = path.resolve(__dirname, '../../../..');
 const outdir = path.resolve(repoRootDir, 'out');
@@ -18,6 +18,7 @@ class MockContext implements ICliAcquisitionContext {
     private readonly _testBaseDir: string;
     private readonly _infoMessages: string[];
     private readonly _errorMessages: string[];
+    private readonly _telemetryClient = new TelemetryClient(NoopTelemetryChannelInstance);
 
     public constructor() {
         this._testBaseDir = path.resolve(outdir, 'testOut');
@@ -28,12 +29,11 @@ class MockContext implements ICliAcquisitionContext {
 
     public get extensionPath(): string { return mockRootDir; }
     public get globalStorageLocalPath(): string { return this._testBaseDir; }
-    public get telemetry(): ITelemetry { return NoopTelemetryInstance; }
+    public get telemetryClient(): TelemetryClient { return this._telemetryClient; }
 
     public get infoMessages(): string[] { return this._infoMessages; }
     public get errorMessages(): string[] { return this._errorMessages; }
     public get noErrors(): boolean { return this._errorMessages.length === 0; }
-
 
     public showInformationMessage(message: string, ...items: string[]): void {
         this._infoMessages.push(JSON.stringify({ message: message, items: items }));

@@ -18,14 +18,17 @@ import {
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
-import { IAutoCompleteTelemetryData } from '../common/TelemetryData';
-import { sendTelemetryEvent } from './telemetry/ServerTelemetry';
 import { getEditedLineContent } from './lib/LineReader';
 import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
+import ServerTelemetryChannel from './telemetry/ServerTelemetryChannel';
+import TelemetryClient from '../common/telemetry/TelemetryClient';
+import { IAutoCompleteEvent } from '../common/telemetry/DataInterfaces';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
+
+const telemetryClient = new TelemetryClient(new ServerTelemetryChannel(connection, 'yamlServer'));
 
 // Create a simple text document manager.
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -103,8 +106,8 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number) {
-    const telemetryData: IAutoCompleteTelemetryData = {
-        eventName: "AutoComplete",
+    const telemetryData: IAutoCompleteEvent = {
+        name: "AutoComplete",
         properties: {
             server: 'yaml',
         },
@@ -134,7 +137,7 @@ function getSuggestions(rowIndex: number) {
     if(completionItems.length > 0) {
         telemetryData.properties.success = 'true';
         telemetryData.measurements.countOfAutoCompleteResults = completionItems.length;
-        sendTelemetryEvent(connection, telemetryData);
+        telemetryClient.trackEvent(telemetryData);
     }
     return completionItems;
 }

@@ -15,14 +15,15 @@ import {
     InitializeResult,
     WorkspaceFolder
 } from 'vscode-languageserver/node';
-import {sendTelemetryEvent} from './telemetry/ServerTelemetry';
 import * as nearley from 'nearley';
 import { getEditedLineContent } from './lib/LineReader';
 import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
-import { IAutoCompleteTelemetryData } from '../common/TelemetryData';
+import ServerTelemetryChannel from './telemetry/ServerTelemetryChannel';
+import TelemetryClient from '../common/telemetry/TelemetryClient';
+import { IAutoCompleteEvent } from '../common/telemetry/DataInterfaces';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('./Parser/liquidTagGrammar.js');
@@ -35,6 +36,8 @@ interface ILiquidAutoComplete {
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
+
+const telemetryClient = new TelemetryClient(new ServerTelemetryChannel(connection, 'htmlServer'));
 
 // Create a simple text document manager.
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -115,8 +118,8 @@ connection.onCompletion(
 );
 
 function getSuggestions(rowIndex: number, colIndex: number) {
-    const telemetryData: IAutoCompleteTelemetryData = {
-        eventName: "AutoComplete",
+    const telemetryData: IAutoCompleteEvent = {
+        name: "AutoComplete",
         properties: {
             server: 'html',
         },
@@ -183,7 +186,7 @@ function getSuggestions(rowIndex: number, colIndex: number) {
     if(completionItems.length > 0) {
         telemetryData.properties.success = 'true';
         telemetryData.measurements.countOfAutoCompleteResults = completionItems.length;
-        sendTelemetryEvent(connection, telemetryData);
+        telemetryClient.trackEvent(telemetryData);
     }
     return completionItems;
 }

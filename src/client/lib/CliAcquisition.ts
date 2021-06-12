@@ -8,7 +8,7 @@ import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as os from 'os';
 import { Extract } from 'unzip-stream'
-import { ITelemetry } from '../telemetry/ITelemetry';
+import  TelemetryClient from "../../common/telemetry/TelemetryClient";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const find = require('find-process');
 
@@ -16,7 +16,7 @@ const find = require('find-process');
 export interface ICliAcquisitionContext {
     readonly extensionPath: string;
     readonly globalStorageLocalPath: string;
-    readonly telemetry: ITelemetry;
+    readonly telemetryClient: TelemetryClient;
     showInformationMessage(message: string, ...items: string[]): void;
     showErrorMessage(message: string, ...items: string[]): void;
 }
@@ -73,7 +73,7 @@ export class CliAcquisition implements IDisposable {
             fs.createReadStream(pathToNupkg)
                 .pipe(Extract({ path: this._cliPath }))
                 .on('close', () => {
-                    this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
+                    this._context.telemetryClient.trackEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                     this._context.showInformationMessage('The pac CLI is ready for use in your VS Code terminal!');
                     if (os.platform() !== 'win32') {
                         fs.chmodSync(this.cliExePath, 0o755);

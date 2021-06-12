@@ -3,7 +3,6 @@
 
 import * as vscode from "vscode";
 import TelemetryReporter from 'vscode-extension-telemetry';
-import { ITelemetry } from './telemetry/ITelemetry';
 import { createTelemetryReporter } from './telemetry/configuration';
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
@@ -11,7 +10,6 @@ import * as path from "path";
 import { PortalWebView } from './PortalWebView';
 import { AI_KEY } from './constants';
 import { v4 } from 'uuid';
-import { ITelemetryData } from "../common/TelemetryData";
 
 import {
     LanguageClient,
@@ -19,12 +17,17 @@ import {
     ServerOptions,
     TransportKind,
 } from "vscode-languageclient/node";
+import TelemetryClient from "../common/telemetry/TelemetryClient";
+import TelemetryReporterChannel from "./telemetry/TelemetryReporterChannel";
+import { registerClientToReceiveTelemetryChannelNotifications } from "./telemetry/ClientTelemetryNotifications";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
 let htmlServerRunning = false;
 let yamlServerRunning = false;
-let _telemetry: TelemetryReporter;
+
+let _telemetryReporter: TelemetryReporter;
+let telemetryClient: TelemetryClient;
 
 export async function activate(
     context: vscode.ExtensionContext
@@ -33,9 +36,10 @@ export async function activate(
 
     // setup telemetry
     const sessionId = v4();
-    _telemetry = createTelemetryReporter('powerplatform-vscode', context, AI_KEY, sessionId);
-    context.subscriptions.push(_telemetry);
-    _telemetry.sendTelemetryEvent("Start");
+    _telemetryReporter = createTelemetryReporter('powerplatform-vscode', context, AI_KEY, sessionId);
+    context.subscriptions.push(_telemetryReporter);
+    telemetryClient = new TelemetryClient(new TelemetryReporterChannel(_telemetryReporter));
+    telemetryClient.trackEvent({ name: "Start" });
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
     vscode.workspace.textDocuments.forEach(didOpenTextDocument);
@@ -45,7 +49,7 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent('StartCommand', {'commandId': 'microsoft-powerapps-portals.preview-show'});
+                telemetryClient.trackStartCommandEvent('microsoft-powerapps-portals.preview-show');
                 PortalWebView.createOrShow(_context);
             }
         )
@@ -59,8 +63,8 @@ export async function activate(
                 !isCurrentDocumentEdited() &&
                 PortalWebView.checkDocumentIsHTML()
             ) {
-                if ( PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'NewPage' });
+                if (PortalWebView?.currentPanel) {
+                    telemetryClient.trackEvent('PortalWebPagePreview', { page: 'NewPage' });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -74,7 +78,7 @@ export async function activate(
                 isCurrentDocumentEdited()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'ExistingPage' });
+                    telemetryClient.trackEvent('PortalWebPagePreview', { page: 'ExistingPage' });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -97,21 +101,20 @@ export async function activate(
         );
     }
 
-    const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
+    const cli = new CliAcquisition(new CliAcquisitionContext(_context, telemetryClient));
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, cliPath));
 
-    _telemetry.sendTelemetryEvent("activated");
+    telemetryClient.trackEvent("activated");
 }
 
 export async function deactivate(): Promise<void> {
-    if (_telemetry) {
-        _telemetry.sendTelemetryEvent("End");
-
+    telemetryClient?.trackEvent("End");
+    if (_telemetryReporter) {
         // dispose() will flush any events not sent
         // Note, while dispose() returns a promise, we don't await it so that we can unblock the rest of unloading logic
-        _telemetry.dispose();
+        _telemetryReporter.dispose();
     }
 
     if (client) {
@@ -171,8 +174,7 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             _context.subscriptions.push(disposable);
         }
 
-        // this is used to send yamlServer telemetry events
-        registerClientToReceiveNotifications(client);
+        registerClientToReceiveTelemetryChannelNotifications(client, telemetryClient);
     } else if (document.languageId === 'html' && !htmlServerRunning) {
 
         // The server is implemented in node
@@ -217,24 +219,12 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             _context.subscriptions.push(disposable);
         }
 
-        // this is used to send htmlServer telemetry events
-        registerClientToReceiveNotifications(client);
+        registerClientToReceiveTelemetryChannelNotifications(client, telemetryClient);
     }
 
 }
 
-function registerClientToReceiveNotifications(client: LanguageClient) {
-    client.onReady().then(() => {
-        client.onNotification("telemetry/event", (payload: string) => {
-            const serverTelemetry = JSON.parse(payload) as ITelemetryData ;
-            if(!!serverTelemetry && !!serverTelemetry.eventName) {
-                _telemetry.sendTelemetryEvent(serverTelemetry.eventName, serverTelemetry.properties, serverTelemetry.measurements);
-            }
-        });
-    });
-}
-
-function isCurrentDocumentEdited() : boolean{
+function isCurrentDocumentEdited(): boolean {
     const workspaceFolderExists = vscode.workspace.workspaceFolders !== undefined;
     let currentPanelExists = false;
     if (PortalWebView?.currentPanel) {
@@ -246,12 +236,12 @@ function isCurrentDocumentEdited() : boolean{
 class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(
         private readonly _context: vscode.ExtensionContext,
-        private readonly _telemetry: ITelemetry) {
+        private readonly _telemetryClient: TelemetryClient) {
     }
 
     public get extensionPath(): string { return this._context.extensionPath; }
     public get globalStorageLocalPath(): string { return this._context.globalStorageUri.fsPath; }
-    public get telemetry(): ITelemetry { return this._telemetry; }
+    public get telemetryClient(): TelemetryClient { return this._telemetryClient; }
 
     showInformationMessage(message: string, ...items: string[]): void {
         vscode.window.showInformationMessage(message, ...items);
