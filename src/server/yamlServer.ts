@@ -33,13 +33,13 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
-let workspaceRootFolder: WorkspaceFolder[] | null = null;
+let workspaceRootFolders: WorkspaceFolder[] | null = null;
 let editedTextDocument: TextDocument;
 
 
 connection.onInitialize((params: InitializeParams) => {
     const capabilities = params.capabilities;
-    workspaceRootFolder = params.workspaceFolders;
+    workspaceRootFolders = params.workspaceFolders;
     // Does the client support the `workspace/configuration` request?
     // If not, we fall back using global settings.
     hasConfigurationCapability = !!(
@@ -118,7 +118,7 @@ function getSuggestions(rowIndex: number, pathOfFileBeingEdited: string) {
         telemetryData.properties.keyForCompletion = matches[1];
         const keyForCompletion = getKeyForCompletion(matches);
         const timeStampBeforeParsingManifestFile = new Date().getTime();
-        const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion, pathOfFileBeingEdited);
+        const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolders, keyForCompletion, pathOfFileBeingEdited);
         telemetryData.measurements.manifestParseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
         if (matchedManifestRecords) {
             matchedManifestRecords.forEach((element: IManifestElement) => {

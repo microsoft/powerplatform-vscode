@@ -19,10 +19,11 @@ export interface IManifestElement {
     RecordId: string;
 }
 
-export function getMatchedManifestRecords(workspaceRootFolder : WorkspaceFolder[] | null, keyForCompletion: string, pathOfFileBeingEdited?: string) : IManifestElement[] {
+export function getMatchedManifestRecords(workspaceRootFolders : WorkspaceFolder[] | null, keyForCompletion: string, pathOfFileBeingEdited?: string) : IManifestElement[] {
     let matchedManifestRecords: IManifestElement[] = [];
     if (pathOfFileBeingEdited) {
-        const portalConfigFolderUrl = getPortalConfigFolderUrl(pathOfFileBeingEdited) as URL | null; //https://github.com/Microsoft/TypeScript/issues/11498
+        const rootFolder = getRootFolder(workspaceRootFolders, pathOfFileBeingEdited);
+        const portalConfigFolderUrl = getPortalConfigFolderUrl(rootFolder, pathOfFileBeingEdited) as URL | null; //https://github.com/Microsoft/TypeScript/issues/11498
         if (portalConfigFolderUrl && keyForCompletion) {
             const configFiles: string[] = fs.readdirSync(portalConfigFolderUrl);
             configFiles.forEach(configFile => {
@@ -42,20 +43,31 @@ export function getMatchedManifestRecords(workspaceRootFolder : WorkspaceFolder[
     return matchedManifestRecords;
 }
 
-// check when to stop this recursion...this should be at the root of the workspace folder
-function getPortalConfigFolderUrl(file: string): URL | null {
+/**
+ * returns path of .portalConfigFolder if found under 'rootFolder' else returns null
+*/
+function getPortalConfigFolderUrl(rootFolder: string | null, file: string): URL | null {
+    if (!rootFolder) return null; // if a file is directly opened in VSCode
+    if (!file.startsWith(rootFolder)) return null; // if 'file' is not a node in the tree with root as 'rootFolder'
+    if (file === rootFolder) return null; // if we have already traversed all the nodes in the tree under 'rootFolder'
     const portalConfigIsSibling = isSibling(file);
     if (portalConfigIsSibling) {
         return portalConfigIsSibling;
     }
-    return getPortalConfigFolderUrl(getParentDirectory(file));
+    return getPortalConfigFolderUrl(rootFolder, getParentDirectory(file));
 }
 
-function getParentDirectory(pathOfFileBeingEdited: string): string {
-    const fileUnderEdit_parent = path.dirname(pathOfFileBeingEdited);
-    return fileUnderEdit_parent;
+/**
+ * returns parent directory/folder of a file
+*/
+function getParentDirectory(file: string): string {
+    return path.dirname(file);
 }
 
+/**
+ * Checks if the .portalconfig folder lies at the same level as file.
+ * Returns path of .portalconfig folder if above is true else returns null.
+*/
 function isSibling(file: string): URL | null {
     const parentDirectory = getParentDirectory(file);
     if (parentDirectory) {
@@ -70,6 +82,25 @@ function isSibling(file: string): URL | null {
                 return fileUrl;
             }
         }
+    }
+    return null;
+}
+
+/**
+ * returns the workspaceRootFolder for the file being edited
+ * in case of multi-root workspaces this will return the real root folder
+*/
+function getRootFolder(workspaceRootFolders: WorkspaceFolder[] | null, pathOfFileBeingEdited: string) : string | null{
+    if (workspaceRootFolders) {
+        let rootFolder = '';
+        for (let i = 0; i < workspaceRootFolders?.length; i++) {
+            const wsRootFolder = workspaceRootFolders[i].uri;
+            // among all the 'workspaceRootFolders' the one with the longest substring of 'file' is the real root folder
+            if(pathOfFileBeingEdited.startsWith(wsRootFolder) && wsRootFolder.length > rootFolder.length) {
+                rootFolder = wsRootFolder;
+            }
+        }
+        return rootFolder;
     }
     return null;
 }
