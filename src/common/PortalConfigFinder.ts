@@ -20,7 +20,7 @@ export function getPortalConfigFolderUrl(workspaceRootFolders : WorkspaceFolder[
 /**
  * returns path of .portalConfigFolder if found under 'rootFolder' else returns null
 */
-function searchPortalConfigFolder(rootFolder: string | null, file: string): URL | null {
+export function searchPortalConfigFolder(rootFolder: string | null, file: string): URL | null {
     if (!rootFolder) return null; // if a file is directly opened in VSCode
     if (!file.startsWith(rootFolder)) return null; // if 'file' is not a node in the tree with root as 'rootFolder'
     if (file === rootFolder) return null; // if we have already traversed all the nodes in the tree under 'rootFolder'

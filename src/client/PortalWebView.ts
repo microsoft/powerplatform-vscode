@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import { searchPortalConfigFolder } from "../common/PortalConfigFinder";
 
 /**
  * Manages cat coding webview panels
@@ -55,7 +56,7 @@ export class PortalWebView {
             vscode.ViewColumn.Two,
             {
                 localResourceRoots: [
-                    vscode.Uri.joinPath(uri as vscode.Uri, "web-files"),
+                    uri as vscode.Uri,
                 ],
             }
         );
@@ -130,9 +131,7 @@ export class PortalWebView {
 
     // Add styles to the current HTML so that it is displayed correctly in VS Code
     private addStyles(webview: vscode.Webview, html: string): string {
-        const uri =
-            vscode.workspace.workspaceFolders &&
-            vscode.workspace.workspaceFolders[0].uri;
+        const uri = this.getPortalRootFolder();
 
         // Add bootstrap.min.css
         let url = webview.asWebviewUri(
@@ -154,9 +153,7 @@ export class PortalWebView {
     }
 
     private fixLinks(webview: vscode.Webview, html: string): string {
-        const uri =
-            vscode.workspace.workspaceFolders &&
-            vscode.workspace.workspaceFolders[0].uri;
+        const uri = this.getPortalRootFolder();
         const BaseURL = webview.asWebviewUri(
             vscode.Uri.joinPath(uri as vscode.Uri, "web-files")
         );
@@ -178,5 +175,18 @@ export class PortalWebView {
         );
 
         return html;
+    }
+
+    private getPortalRootFolder(): vscode.Uri {
+        let portalRootFolder = '';
+        const wsRootFolder = vscode.workspace.getWorkspaceFolder(this._textEditor?.document?.uri)?.uri?.toString();
+        if (wsRootFolder) {
+            const portalConfigFolderUrl = searchPortalConfigFolder(wsRootFolder, this._textEditor?.document?.uri?.toString());
+            if (portalConfigFolderUrl) {
+                portalRootFolder = path.dirname(portalConfigFolderUrl.href);
+            }
+        }
+        const root = vscode.Uri.parse(portalRootFolder);
+        return root;
     }
 }
