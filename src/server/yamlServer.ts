@@ -97,12 +97,13 @@ documents.onDidChangeContent(change => {
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
     async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
+        const pathOfFileBeingEdited = _textDocumentPosition.textDocument.uri;
         const rowIndex = _textDocumentPosition.position.line;
-        return await getSuggestions(rowIndex);
+        return await getSuggestions(rowIndex, pathOfFileBeingEdited);
     }
 );
 
-function getSuggestions(rowIndex: number) {
+function getSuggestions(rowIndex: number, pathOfFileBeingEdited: string) {
     const telemetryData: IAutoCompleteTelemetryData = {
         eventName: "AutoComplete",
         properties: {
@@ -117,7 +118,7 @@ function getSuggestions(rowIndex: number) {
         telemetryData.properties.keyForCompletion = matches[1];
         const keyForCompletion = getKeyForCompletion(matches);
         const timeStampBeforeParsingManifestFile = new Date().getTime();
-        const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
+        const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion, pathOfFileBeingEdited);
         telemetryData.measurements.manifestParseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
         if (matchedManifestRecords) {
             matchedManifestRecords.forEach((element: IManifestElement) => {

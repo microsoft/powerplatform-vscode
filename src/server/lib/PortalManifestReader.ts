@@ -19,43 +19,57 @@ export interface IManifestElement {
     RecordId: string;
 }
 
-function getPortalConfigFolderUrl(workspaceRootFolder : WorkspaceFolder[] | null): URL | null {
-    const workspaceRootFolderUri = workspaceRootFolder && workspaceRootFolder[0].uri;
-    let portalConfigFolderUrl = null;
-    if (workspaceRootFolderUri !== null) {
-        const workspaceRootFolderUrl = new URL(workspaceRootFolderUri);
-        const workspaceRootFolderContents: string[] = fs.readdirSync(workspaceRootFolderUrl);
-        for (let i = 0; i < workspaceRootFolderContents.length; i++) {
-            const fileName = workspaceRootFolderContents[i];
-            const filePath = path.join(workspaceRootFolderUrl.href, fileName);
+export function getMatchedManifestRecords(workspaceRootFolder : WorkspaceFolder[] | null, keyForCompletion: string, pathOfFileBeingEdited?: string) : IManifestElement[] {
+    let matchedManifestRecords: IManifestElement[] = [];
+    if (pathOfFileBeingEdited) {
+        const portalConfigFolderUrl = getPortalConfigFolderUrl(pathOfFileBeingEdited) as URL | null; //https://github.com/Microsoft/TypeScript/issues/11498
+        if (portalConfigFolderUrl && keyForCompletion) {
+            const configFiles: string[] = fs.readdirSync(portalConfigFolderUrl);
+            configFiles.forEach(configFile => {
+                if (configFile.includes(manifest)) { // this is based on the assumption that there will be only one manifest file in portalconfig folder
+                    const manifestFilePath = path.join(portalConfigFolderUrl.href, configFile);
+                    const manifestData = fs.readFileSync(new URL(manifestFilePath), 'utf8');
+                    try {
+                        const parsedManifestData = YAML.parse(manifestData);
+                        matchedManifestRecords = parsedManifestData[keyForCompletion];
+                    } catch (exception) {
+                        // Add telemetry log. Failed parsing manifest file
+                    }
+                }
+            })
+        }
+    }
+    return matchedManifestRecords;
+}
+
+// check when to stop this recursion...this should be at the root of the workspace folder
+function getPortalConfigFolderUrl(file: string): URL | null {
+    const portalConfigIsSibling = isSibling(file);
+    if (portalConfigIsSibling) {
+        return portalConfigIsSibling;
+    }
+    return getPortalConfigFolderUrl(getParentDirectory(file));
+}
+
+function getParentDirectory(pathOfFileBeingEdited: string): string {
+    const fileUnderEdit_parent = path.dirname(pathOfFileBeingEdited);
+    return fileUnderEdit_parent;
+}
+
+function isSibling(file: string): URL | null {
+    const parentDirectory = getParentDirectory(file);
+    if (parentDirectory) {
+        const parentDirectoryUrl = new URL(parentDirectory);
+        const parentDirectoryContents: string[] = fs.readdirSync(parentDirectoryUrl);
+        for (let i = 0; i < parentDirectoryContents.length; i++) {
+            const fileName = parentDirectoryContents[i];
+            const filePath = path.join(parentDirectoryUrl.href, fileName);
             const fileUrl = new URL(filePath);
             const isDirectory = fs.statSync(fileUrl).isDirectory();
             if (isDirectory && fileName === portalConfigFolderName) {
-                portalConfigFolderUrl = fileUrl;
-                return portalConfigFolderUrl;
+                return fileUrl;
             }
         }
     }
-    return portalConfigFolderUrl;
-}
-
-export function getMatchedManifestRecords(workspaceRootFolder : WorkspaceFolder[] | null, keyForCompletion: string) : IManifestElement[] {
-    let matchedManifestRecords: IManifestElement[] = [];
-    const portalConfigFolderUrl = getPortalConfigFolderUrl(workspaceRootFolder) as URL | null; //https://github.com/Microsoft/TypeScript/issues/11498
-    if (portalConfigFolderUrl && keyForCompletion) {
-        const configFiles: string[] = fs.readdirSync(portalConfigFolderUrl);
-        configFiles.forEach(configFile => {
-            if (configFile.includes(manifest)) { // this is based on the assumption that there will be only one manifest file in portalconfig folder
-                const manifestFilePath = path.join(portalConfigFolderUrl.href, configFile);
-                const manifestData = fs.readFileSync(new URL(manifestFilePath), 'utf8');
-                try {
-                    const parsedManifestData = YAML.parse(manifestData);
-                    matchedManifestRecords = parsedManifestData[keyForCompletion];
-                } catch (exception) {
-                    // Add telemetry log. Failed parsing manifest file
-                }
-            }
-        })
-    }
-    return matchedManifestRecords;
+    return null;
 }
