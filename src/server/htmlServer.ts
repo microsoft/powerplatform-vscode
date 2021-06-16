@@ -90,6 +90,8 @@ connection.onInitialize((params: InitializeParams) => {
 });
 
 connection.onInitialized(() => {
+    telemetryClient.trackEvent('ServerInitialized'); // No need to add the serverType because it is added by the channel
+
     if (hasConfigurationCapability) {
         // Register for all configuration changes.
         connection.client.register(DidChangeConfigurationNotification.type, undefined);

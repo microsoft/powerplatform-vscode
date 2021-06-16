@@ -1,7 +1,8 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { Connection, TelemetryEventNotification} from 'vscode-languageserver/node';
+import { v4 } from 'uuid';
+import { Connection, TelemetryEventNotification } from 'vscode-languageserver/node';
 import { ITelemetryEvent, ITelemetryErrorEvent, ITelemetryExceptionData } from '../../common/telemetry/DataInterfaces';
 import { ITelemetryChannel } from '../../common/telemetry/ITelemetryChannel';
 import { TelemetryNotificationPayload } from '../../common/telemetry/Notifications';
@@ -12,10 +13,12 @@ import { TelemetryNotificationPayload } from '../../common/telemetry/Notificatio
 export default class ServerTelemetryChannel implements ITelemetryChannel {
     constructor(
         private readonly connection: Connection,
-        private readonly serverType: string
-        ){}
+        private readonly serverType: string,
+        private readonly serverInstanceId: string = v4() // ensures a unique id is set for each server instace, in case some servers get loaded more than once
+    ) { }
 
     trackEvent(event: ITelemetryEvent): void {
+        event.properties = this._concatServerProperties(event.properties);
         this._sendTelemetryEventNotification({
             kind: 'trackEvent',
             serverType: this.serverType,
@@ -24,6 +27,7 @@ export default class ServerTelemetryChannel implements ITelemetryChannel {
     }
 
     trackErrorEvent(event: ITelemetryErrorEvent): void {
+        event.properties = this._concatServerProperties(event.properties);
         this._sendTelemetryEventNotification({
             kind: 'trackErrorEvent',
             serverType: this.serverType,
@@ -32,6 +36,7 @@ export default class ServerTelemetryChannel implements ITelemetryChannel {
     }
 
     trackException(exceptionData: ITelemetryExceptionData): void {
+        exceptionData.properties = this._concatServerProperties(exceptionData.properties);
         this._sendTelemetryEventNotification({
             kind: 'trackException',
             serverType: this.serverType,
@@ -39,9 +44,16 @@ export default class ServerTelemetryChannel implements ITelemetryChannel {
         });
     }
 
+    private _concatServerProperties(properties?: Record<string, string>): Record<string, string> {
+        return {
+            ...properties,
+            serverType: this.serverType,
+            serverInstanceId: this.serverInstanceId
+        };
+    }
+
     private _sendTelemetryEventNotification(payload: TelemetryNotificationPayload) {
-        // Properly typed data will all be JSON-able
-        const payloadJson = JSON.stringify(payload);
-        this.connection.sendNotification(TelemetryEventNotification.type, payloadJson);
+        // Note: We don't need to stringify the payload into JSON, as the notification channel does this already.
+        this.connection.sendNotification(TelemetryEventNotification.type, payload);
     }
 }

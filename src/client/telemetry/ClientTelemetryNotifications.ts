@@ -8,7 +8,7 @@ import { TelemetryNotificationPayload } from '../../common/telemetry/Notificatio
 export function registerClientToReceiveTelemetryChannelNotifications(client: BaseLanguageClient, telemetryChannel: ITelemetryChannel): void {
     client.onReady()
         .then(() => {
-            client.onNotification("telemetry/event", (payloadJson: string) => TelemetryNotificatinoHandler(payloadJson, telemetryChannel));
+            client.onNotification("telemetry/event", (payload: TelemetryNotificationPayload) => TelemetryNotificatinoHandler(payload, telemetryChannel));
         });
 }
 
@@ -17,16 +17,8 @@ interface TelemetryNotificationPayload_Unknown {
     serverType: string;
 }
 
-function TelemetryNotificatinoHandler(payloadJson: string, telemetryChannel: ITelemetryChannel): void {
-    let payload: TelemetryNotificationPayload | undefined;
-    try {
-        payload = JSON.parse(payloadJson) as TelemetryNotificationPayload;
-    } catch (error) {
-        // ignore invalid json
-        return;
-    }
-
-    if (!payload?.kind || !payload.serverType) {
+function TelemetryNotificatinoHandler(payload: TelemetryNotificationPayload, telemetryChannel: ITelemetryChannel): void {
+    if (!payload || !payload.kind || !payload.serverType) {
         // ignore payloads missing the required metadata format
         return;
     }
@@ -34,25 +26,13 @@ function TelemetryNotificatinoHandler(payloadJson: string, telemetryChannel: ITe
     // Handle the kind of event
     switch (payload.kind) {
         case 'trackEvent':
-            payload.event.properties = {
-                ...payload.event.properties,
-                serverType: payload.serverType
-            };
             telemetryChannel.trackEvent(payload.event);
             break;
         case 'trackErrorEvent':
-            payload.event.properties = {
-                ...payload.event.properties,
-                serverType: payload.serverType
-            };
             telemetryChannel.trackErrorEvent(payload.event);
             break;
 
         case 'trackException':
-            payload.exceptionData.properties = {
-                ...payload.exceptionData.properties,
-                serverType: payload.serverType
-            };
             telemetryChannel.trackException(payload.exceptionData);
             break;
 
