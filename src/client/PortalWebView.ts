@@ -8,7 +8,7 @@ import * as path from "path";
 import { searchPortalConfigFolder } from "../common/PortalConfigFinder";
 
 /**
- * Manages cat coding webview panels
+ * Displays Portal html webpage preview
  */
 export class PortalWebView {
     /**
@@ -20,7 +20,6 @@ export class PortalWebView {
     public static readonly viewType = "portalPreview";
 
     private readonly _panel: vscode.WebviewPanel;
-    private readonly _extensionUri: vscode.Uri;
     private _disposables: vscode.Disposable[] = [];
     private _textEditor: vscode.TextEditor;
 
@@ -30,13 +29,12 @@ export class PortalWebView {
         return result;
     }
 
-    public static createOrShow(context: vscode.ExtensionContext): void {
+    public static createOrShow(): void {
         const isHtml = this.checkDocumentIsHTML();
         if (!isHtml) {
             return;
         }
 
-        const extensionUri: vscode.Uri = context.extensionUri;
         const column = vscode.window.activeTextEditor
             ? vscode.window.activeTextEditor.viewColumn
             : undefined;
@@ -59,16 +57,15 @@ export class PortalWebView {
             }
         );
 
-        PortalWebView.currentPanel = new PortalWebView(panel, extensionUri);
+        PortalWebView.currentPanel = new PortalWebView(panel);
     }
 
-    public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri): void {
-        PortalWebView.currentPanel = new PortalWebView(panel, extensionUri);
+    public static revive(panel: vscode.WebviewPanel): void {
+        PortalWebView.currentPanel = new PortalWebView(panel);
     }
 
-    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    private constructor(panel: vscode.WebviewPanel) {
         this._panel = panel;
-        this._extensionUri = extensionUri;
         this._textEditor = vscode.window.activeTextEditor as vscode.TextEditor;
 
         // Set the webview's initial html content
