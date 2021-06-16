@@ -132,61 +132,61 @@ export class PortalWebView {
     // Add styles to the current HTML so that it is displayed correctly in VS Code
     private addStyles(webview: vscode.Webview, html: string): string {
         const uri = this.getPortalRootFolder();
-
-        // Add bootstrap.min.css
-        let url = webview.asWebviewUri(
-            vscode.Uri.joinPath(
-                uri as vscode.Uri,
-                "web-files",
-                "bootstrap.min.css"
-            )
-        );
-        const bootstrap = `<link href="${url}" rel="stylesheet" />`;
-
-        // Add theme.css
-        url = webview.asWebviewUri(
-            vscode.Uri.joinPath(uri as vscode.Uri, "web-files", "theme.css")
-        );
-        const theme = `<link href="${url}" rel="stylesheet" />`;
-
-        return html + bootstrap + theme;
+        if (uri) {
+            // Add bootstrap.min.css
+            let url = webview.asWebviewUri(
+                vscode.Uri.joinPath(
+                    uri as vscode.Uri,
+                    "web-files",
+                    "bootstrap.min.css"
+                )
+            );
+            const bootstrap = `<link href="${url}" rel="stylesheet" />`;
+            html += bootstrap;
+            // Add theme.css
+            url = webview.asWebviewUri(
+                vscode.Uri.joinPath(uri as vscode.Uri, "web-files", "theme.css")
+            );
+            const theme = `<link href="${url}" rel="stylesheet" />`;
+            html += theme;
+        }
+        return html;
     }
 
     private fixLinks(webview: vscode.Webview, html: string): string {
         const uri = this.getPortalRootFolder();
-        const BaseURL = webview.asWebviewUri(
-            vscode.Uri.joinPath(uri as vscode.Uri, "web-files")
-        );
+        if (uri) {
+            const BaseURL = webview.asWebviewUri(
+                vscode.Uri.joinPath(uri as vscode.Uri, "web-files")
+            );
 
-        // update img src value with base url of web-files folder
-        // html = html.replace(/<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2\s<]+)\2/gi, "<img$1 src=$2" + BaseURL + "$3$2");
-        const regex = /<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2<]*(png|jpg|jpeg|svg|gif|PNG|JPG|JPEG|SVG|GIF|bmp|BMP))/g;
-        const emptySpace = /[ ]/g;
+            // update img src value with base url of web-files folder
+            // html = html.replace(/<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2\s<]+)\2/gi, "<img$1 src=$2" + BaseURL + "$3$2");
+            const regex = /<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2<]*(png|jpg|jpeg|svg|gif|PNG|JPG|JPEG|SVG|GIF|bmp|BMP))/g;
+            const emptySpace = /[ ]/g;
 
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            html = html.replace(match[3], BaseURL + match[3].replace(emptySpace, "-"));
+            let match;
+            while ((match = regex.exec(html)) !== null) {
+                html = html.replace(match[3], BaseURL + match[3].replace(emptySpace, "-"));
+            }
+
+            // update image referred as url('/Homehero.png');
+            html = html.replace(
+                /url\('(?:[^'\]*)*([^']+)'/g,
+                "url('" + BaseURL + "/$1'"
+            );
         }
-
-        // update image referred as url('/Homehero.png');
-        html = html.replace(
-            /url\('(?:[^'\]*)*([^']+)'/g,
-            "url('" + BaseURL + "/$1'"
-        );
-
         return html;
     }
 
-    private getPortalRootFolder(): vscode.Uri {
-        let portalRootFolder = '';
-        const wsRootFolder = vscode.workspace.getWorkspaceFolder(this._textEditor?.document?.uri)?.uri?.toString();
-        if (wsRootFolder) {
-            const portalConfigFolderUrl = searchPortalConfigFolder(wsRootFolder, this._textEditor?.document?.uri?.toString());
+    private getPortalRootFolder(): vscode.Uri | null {
+        for (let i = 0; !!(vscode.workspace.workspaceFolders) && (i < vscode.workspace.workspaceFolders?.length); i++) {
+            const portalConfigFolderUrl = searchPortalConfigFolder(vscode.workspace.workspaceFolders[i]?.uri?.toString(), this._textEditor?.document?.uri?.toString());
             if (portalConfigFolderUrl) {
-                portalRootFolder = path.dirname(portalConfigFolderUrl.href);
+                const portalRootFolder = path.dirname(portalConfigFolderUrl.href);
+                return vscode.Uri.parse(portalRootFolder);
             }
         }
-        const root = vscode.Uri.parse(portalRootFolder);
-        return root;
+        return null;
     }
 }

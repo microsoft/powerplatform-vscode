@@ -13,8 +13,13 @@ const portalConfigFolderName = '.portalconfig';
 
 
 export function getPortalConfigFolderUrl(workspaceRootFolders : WorkspaceFolder[] | null, pathOfFileBeingEdited: string): URL | null {
-    const rootFolder = getRootFolder(workspaceRootFolders, pathOfFileBeingEdited);
-    return searchPortalConfigFolder(rootFolder, pathOfFileBeingEdited);
+    for (let i = 0; workspaceRootFolders && i < workspaceRootFolders?.length; i++ ){
+        const portalConfigFolderUrl = searchPortalConfigFolder(workspaceRootFolders[i].uri, pathOfFileBeingEdited);
+        if (portalConfigFolderUrl) {
+            return portalConfigFolderUrl;
+        }
+    }
+    return null;
 }
 
 /**
@@ -64,17 +69,17 @@ function isSibling(file: string): URL | null {
  * returns the workspaceRootFolder for the file being edited
  * in case of multi-root workspaces this will return the real root folder
 */
-function getRootFolder(workspaceRootFolders: WorkspaceFolder[] | null, pathOfFileBeingEdited: string) : string | null{
-    if (workspaceRootFolders) {
-        let rootFolder = '';
-        for (let i = 0; i < workspaceRootFolders?.length; i++) {
-            const wsRootFolder = workspaceRootFolders[i].uri;
-            // among all the 'workspaceRootFolders' the one with the longest substring of 'file' is the real root folder
-            if(pathOfFileBeingEdited.startsWith(wsRootFolder) && wsRootFolder.length > rootFolder.length) {
-                rootFolder = wsRootFolder;
-            }
-        }
-        return rootFolder;
-    }
-    return null;
-}
+// function getRootFolder(workspaceRootFolders: WorkspaceFolder[] | null, pathOfFileBeingEdited: string) : string | null{
+//     if (workspaceRootFolders) {
+//         let rootFolder = '';
+//         for (let i = 0; i < workspaceRootFolders?.length; i++) {
+//             const wsRootFolder = workspaceRootFolders[i].uri;
+//             // among all the 'workspaceRootFolders' the one with the longest substring of 'file' is the real root folder
+//             if(pathOfFileBeingEdited.startsWith(wsRootFolder) && wsRootFolder.length > rootFolder.length) {
+//                 rootFolder = wsRootFolder;
+//             }
+//         }
+//         return rootFolder;
+//     }
+//     return null;
+// }
