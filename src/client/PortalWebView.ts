@@ -43,20 +43,13 @@ export class PortalWebView {
             return;
         }
 
-        const uri =
-            vscode.workspace.workspaceFolders &&
-            vscode.window.activeTextEditor &&
-            vscode.workspace.getWorkspaceFolder(
-                vscode.window.activeTextEditor?.document.uri
-            )?.uri;
-
         const panel = vscode.window.createWebviewPanel(
             PortalWebView.viewType,
             "Portal Preview",
             vscode.ViewColumn.Two,
             {
                 localResourceRoots: [
-                    uri as vscode.Uri,
+                    vscode.Uri.joinPath(PortalWebView.getPortalRootFolder() as vscode.Uri, "web-files"),
                 ],
             }
         );
@@ -131,7 +124,7 @@ export class PortalWebView {
 
     // Add styles to the current HTML so that it is displayed correctly in VS Code
     private addStyles(webview: vscode.Webview, html: string): string {
-        const uri = this.getPortalRootFolder();
+        const uri = PortalWebView.getPortalRootFolder();
         if (uri) {
             // Add bootstrap.min.css
             let url = webview.asWebviewUri(
@@ -154,7 +147,7 @@ export class PortalWebView {
     }
 
     private fixLinks(webview: vscode.Webview, html: string): string {
-        const uri = this.getPortalRootFolder();
+        const uri = PortalWebView.getPortalRootFolder();
         if (uri) {
             const BaseURL = webview.asWebviewUri(
                 vscode.Uri.joinPath(uri as vscode.Uri, "web-files")
@@ -179,12 +172,15 @@ export class PortalWebView {
         return html;
     }
 
-    private getPortalRootFolder(): vscode.Uri | null {
-        for (let i = 0; !!(vscode.workspace.workspaceFolders) && (i < vscode.workspace.workspaceFolders?.length); i++) {
-            const portalConfigFolderUrl = searchPortalConfigFolder(vscode.workspace.workspaceFolders[i]?.uri?.toString(), this._textEditor?.document?.uri?.toString());
-            if (portalConfigFolderUrl) {
-                const portalRootFolder = path.dirname(portalConfigFolderUrl.href);
-                return vscode.Uri.parse(portalRootFolder);
+    private static getPortalRootFolder(): vscode.Uri | null {
+        const fileBeingEdited = vscode.window.activeTextEditor as vscode.TextEditor;
+        if (fileBeingEdited) {
+            for (let i = 0; !!(vscode.workspace.workspaceFolders) && (i < vscode.workspace.workspaceFolders?.length); i++) {
+                const portalConfigFolderUrl = searchPortalConfigFolder(vscode.workspace.workspaceFolders[i]?.uri?.toString(), fileBeingEdited?.document?.uri?.toString());
+                if (portalConfigFolderUrl) {
+                    const portalRootFolder = path.dirname(portalConfigFolderUrl.href);
+                    return vscode.Uri.parse(portalRootFolder);
+                }
             }
         }
         return null;
