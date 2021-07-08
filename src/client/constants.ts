@@ -3,5 +3,5 @@
 
 export const EXTENSION_ID = 'microsoft-IsvExpTools.powerplatform-vscode';
 
-// TODO: Change this key for official builds
-export const AI_KEY = '441859ca-4501-4653-bc1d-65fb8663108a';
+// TODO: Switch key based off of build source (official vs dev)
+export const AI_KEY = '0d422197-d351-41c5-b371-a270ca3b13af';
