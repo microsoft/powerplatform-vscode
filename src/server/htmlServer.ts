@@ -132,8 +132,8 @@ function getSuggestions(rowIndex: number, colIndex: number) {
         const timeStampBeforeLiquidParsing = new Date().getTime();
         try {
             parser.feed(liquidForAutocomplete.LiquidExpression);
-            liquidTagForCompletion = parser.results[0]?.output?.tag;
-            liquidKeyForCompletion = parser.results[0]?.output?.map[liquidForAutocomplete.AutoCompleteAtIndex];
+            liquidTagForCompletion = parser.results[0]?.tag;
+            liquidKeyForCompletion = parser.results[0]?.map[liquidForAutocomplete.AutoCompleteAtIndex];
         } catch (e) {
             // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
         }
@@ -165,6 +165,11 @@ function getSuggestions(rowIndex: number, colIndex: number) {
                             break;
                         }
                         case 'key': {
+                            item.label = element.DisplayName + " (" + element.RecordId + ")";
+                            item.insertText = element.DisplayName;
+                            break;
+                        }
+                        case 'editable_tag_value': {
                             item.label = element.DisplayName + " (" + element.RecordId + ")";
                             item.insertText = element.DisplayName;
                             break;
@@ -220,6 +225,9 @@ function getKeyForCompletion(liquidTag: string): string {
         }
         case 'webform': {
             return 'adx_webform';
+        }
+        case 'snippets': {
+            return 'adx_contentsnippet';
         }
         default: {
             return '';
