@@ -130,11 +130,7 @@ export class PortalWebView {
         if (uri) {
             // Add bootstrap.min.css
             let url = webview.asWebviewUri(
-                vscode.Uri.joinPath(
-                    uri as vscode.Uri,
-                    "web-files",
-                    "bootstrap.min.css"
-                )
+                vscode.Uri.joinPath( uri as vscode.Uri, "web-files", "bootstrap.min.css")
             );
             const bootstrap = `<link href="${url}" rel="stylesheet" />`;
             html += bootstrap;

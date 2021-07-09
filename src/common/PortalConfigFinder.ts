@@ -56,30 +56,10 @@ function isSibling(file: string): URL | null {
             const fileName = parentDirectoryContents[i];
             const filePath = path.join(parentDirectoryUrl.href, fileName);
             const fileUrl = new URL(filePath);
-            const isDirectory = fs.statSync(fileUrl).isDirectory();
-            if (isDirectory && fileName === portalConfigFolderName) {
+            if (fileName === portalConfigFolderName) {
                 return fileUrl;
             }
         }
     }
     return null;
 }
-
-/**
- * returns the workspaceRootFolder for the file being edited
- * in case of multi-root workspaces this will return the real root folder
-*/
-// function getRootFolder(workspaceRootFolders: WorkspaceFolder[] | null, pathOfFileBeingEdited: string) : string | null{
-//     if (workspaceRootFolders) {
-//         let rootFolder = '';
-//         for (let i = 0; i < workspaceRootFolders?.length; i++) {
-//             const wsRootFolder = workspaceRootFolders[i].uri;
-//             // among all the 'workspaceRootFolders' the one with the longest substring of 'file' is the real root folder
-//             if(pathOfFileBeingEdited.startsWith(wsRootFolder) && wsRootFolder.length > rootFolder.length) {
-//                 rootFolder = wsRootFolder;
-//             }
-//         }
-//         return rootFolder;
-//     }
-//     return null;
-// }
