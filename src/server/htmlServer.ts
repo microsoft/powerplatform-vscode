@@ -42,7 +42,7 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
-let workspaceRootFolder: WorkspaceFolder[] | null = null;
+let workspaceRootFolders: WorkspaceFolder[] | null = null;
 let editedTextDocument: TextDocument;
 const startTagOfLiquidExpression = '{%';
 const endTagOfLiquidExpression = '%}';
@@ -51,7 +51,7 @@ const endTagOfLiquidExpression = '%}';
 
 connection.onInitialize((params: InitializeParams) => {
     const capabilities = params.capabilities;
-    workspaceRootFolder = params.workspaceFolders;
+    workspaceRootFolders = params.workspaceFolders;
     // Does the client support the `workspace/configuration` request?
     // If not, we fall back using global settings.
     hasConfigurationCapability = !!(
@@ -108,13 +108,14 @@ documents.onDidChangeContent(change => {
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
     async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
+        const pathOfFileBeingEdited = _textDocumentPosition.textDocument.uri;
         const rowIndex = _textDocumentPosition.position.line;
         const colIndex = _textDocumentPosition.position.character;
-        return await getSuggestions(rowIndex, colIndex);
+        return await getSuggestions(rowIndex, colIndex, pathOfFileBeingEdited);
     }
 );
 
-function getSuggestions(rowIndex: number, colIndex: number) {
+function getSuggestions(rowIndex: number, colIndex: number, pathOfFileBeingEdited: string) {
     const telemetryData: IAutoCompleteTelemetryData = {
         eventName: "AutoComplete",
         properties: {
@@ -132,8 +133,8 @@ function getSuggestions(rowIndex: number, colIndex: number) {
         const timeStampBeforeLiquidParsing = new Date().getTime();
         try {
             parser.feed(liquidForAutocomplete.LiquidExpression);
-            liquidTagForCompletion = parser.results[0]?.output?.tag;
-            liquidKeyForCompletion = parser.results[0]?.output?.map[liquidForAutocomplete.AutoCompleteAtIndex];
+            liquidTagForCompletion = parser.results[0]?.tag;
+            liquidKeyForCompletion = parser.results[0]?.map[liquidForAutocomplete.AutoCompleteAtIndex];
         } catch (e) {
             // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
         }
@@ -143,7 +144,7 @@ function getSuggestions(rowIndex: number, colIndex: number) {
             telemetryData.properties.keyForCompletion = liquidKeyForCompletion;
             const keyForCompletion = getKeyForCompletion(liquidTagForCompletion);
             const timeStampBeforeParsingManifestFile = new Date().getTime();
-            const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolder, keyForCompletion);
+            const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolders, keyForCompletion, pathOfFileBeingEdited);
             telemetryData.measurements.manifestParseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
 
             if (matchedManifestRecords) {
@@ -165,6 +166,11 @@ function getSuggestions(rowIndex: number, colIndex: number) {
                             break;
                         }
                         case 'key': {
+                            item.label = element.DisplayName + " (" + element.RecordId + ")";
+                            item.insertText = element.DisplayName;
+                            break;
+                        }
+                        case 'editable_tag_value': {
                             item.label = element.DisplayName + " (" + element.RecordId + ")";
                             item.insertText = element.DisplayName;
                             break;
@@ -220,6 +226,9 @@ function getKeyForCompletion(liquidTag: string): string {
         }
         case 'webform': {
             return 'adx_webform';
+        }
+        case 'snippets': {
+            return 'adx_contentsnippet';
         }
         default: {
             return '';

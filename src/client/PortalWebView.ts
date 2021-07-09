@@ -1,8 +1,14 @@
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ * ------------------------------------------------------------------------------------------ */
+
 import * as vscode from "vscode";
 import * as path from "path";
+import { searchPortalConfigFolder } from "../common/PortalConfigFinder";
 
 /**
- * Manages cat coding webview panels
+ * Displays Portal html webpage preview
  */
 export class PortalWebView {
     /**
@@ -14,7 +20,6 @@ export class PortalWebView {
     public static readonly viewType = "portalPreview";
 
     private readonly _panel: vscode.WebviewPanel;
-    private readonly _extensionUri: vscode.Uri;
     private _disposables: vscode.Disposable[] = [];
     private _textEditor: vscode.TextEditor;
 
@@ -24,13 +29,12 @@ export class PortalWebView {
         return result;
     }
 
-    public static createOrShow(context: vscode.ExtensionContext): void {
+    public static createOrShow(): void {
         const isHtml = this.checkDocumentIsHTML();
         if (!isHtml) {
             return;
         }
 
-        const extensionUri: vscode.Uri = context.extensionUri;
         const column = vscode.window.activeTextEditor
             ? vscode.window.activeTextEditor.viewColumn
             : undefined;
@@ -42,34 +46,26 @@ export class PortalWebView {
             return;
         }
 
-        const uri =
-            vscode.workspace.workspaceFolders &&
-            vscode.window.activeTextEditor &&
-            vscode.workspace.getWorkspaceFolder(
-                vscode.window.activeTextEditor?.document.uri
-            )?.uri;
-
         const panel = vscode.window.createWebviewPanel(
             PortalWebView.viewType,
             "Portal Preview",
             vscode.ViewColumn.Two,
             {
                 localResourceRoots: [
-                    vscode.Uri.joinPath(uri as vscode.Uri, "web-files"),
+                    vscode.Uri.joinPath(PortalWebView.getPortalRootFolder() as vscode.Uri, "web-files"),
                 ],
             }
         );
 
-        PortalWebView.currentPanel = new PortalWebView(panel, extensionUri);
+        PortalWebView.currentPanel = new PortalWebView(panel);
     }
 
-    public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri): void {
-        PortalWebView.currentPanel = new PortalWebView(panel, extensionUri);
+    public static revive(panel: vscode.WebviewPanel): void {
+        PortalWebView.currentPanel = new PortalWebView(panel);
     }
 
-    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    private constructor(panel: vscode.WebviewPanel) {
         this._panel = panel;
-        this._extensionUri = extensionUri;
         this._textEditor = vscode.window.activeTextEditor as vscode.TextEditor;
 
         // Set the webview's initial html content
@@ -130,53 +126,61 @@ export class PortalWebView {
 
     // Add styles to the current HTML so that it is displayed correctly in VS Code
     private addStyles(webview: vscode.Webview, html: string): string {
-        const uri =
-            vscode.workspace.workspaceFolders &&
-            vscode.workspace.workspaceFolders[0].uri;
-
-        // Add bootstrap.min.css
-        let url = webview.asWebviewUri(
-            vscode.Uri.joinPath(
-                uri as vscode.Uri,
-                "web-files",
-                "bootstrap.min.css"
-            )
-        );
-        const bootstrap = `<link href="${url}" rel="stylesheet" />`;
-
-        // Add theme.css
-        url = webview.asWebviewUri(
-            vscode.Uri.joinPath(uri as vscode.Uri, "web-files", "theme.css")
-        );
-        const theme = `<link href="${url}" rel="stylesheet" />`;
-
-        return html + bootstrap + theme;
+        const uri = PortalWebView.getPortalRootFolder();
+        if (uri) {
+            // Add bootstrap.min.css
+            let url = webview.asWebviewUri(
+                vscode.Uri.joinPath( uri as vscode.Uri, "web-files", "bootstrap.min.css")
+            );
+            const bootstrap = `<link href="${url}" rel="stylesheet" />`;
+            html += bootstrap;
+            // Add theme.css
+            url = webview.asWebviewUri(
+                vscode.Uri.joinPath(uri as vscode.Uri, "web-files", "theme.css")
+            );
+            const theme = `<link href="${url}" rel="stylesheet" />`;
+            html += theme;
+        }
+        return html;
     }
 
     private fixLinks(webview: vscode.Webview, html: string): string {
-        const uri =
-            vscode.workspace.workspaceFolders &&
-            vscode.workspace.workspaceFolders[0].uri;
-        const BaseURL = webview.asWebviewUri(
-            vscode.Uri.joinPath(uri as vscode.Uri, "web-files")
-        );
+        const uri = PortalWebView.getPortalRootFolder();
+        if (uri) {
+            const BaseURL = webview.asWebviewUri(
+                vscode.Uri.joinPath(uri as vscode.Uri, "web-files")
+            );
 
-        // update img src value with base url of web-files folder
-        // html = html.replace(/<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2\s<]+)\2/gi, "<img$1 src=$2" + BaseURL + "$3$2");
-        const regex = /<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2<]*(png|jpg|jpeg|svg|gif|PNG|JPG|JPEG|SVG|GIF|bmp|BMP))/g;
-        const emptySpace = /[ ]/g;
+            // update img src value with base url of web-files folder
+            // html = html.replace(/<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2\s<]+)\2/gi, "<img$1 src=$2" + BaseURL + "$3$2");
+            const regex = /<img([^>]*)\ssrc=(['"])(\/[^\2*([^\2<]*(png|jpg|jpeg|svg|gif|PNG|JPG|JPEG|SVG|GIF|bmp|BMP))/g;
+            const emptySpace = /[ ]/g;
 
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            html = html.replace(match[3], BaseURL + match[3].replace(emptySpace, "-"));
+            let match;
+            while ((match = regex.exec(html)) !== null) {
+                html = html.replace(match[3], BaseURL + match[3].replace(emptySpace, "-"));
+            }
+
+            // update image referred as url('/Homehero.png');
+            html = html.replace(
+                /url\('(?:[^'\]*)*([^']+)'/g,
+                "url('" + BaseURL + "/$1'"
+            );
         }
-
-        // update image referred as url('/Homehero.png');
-        html = html.replace(
-            /url\('(?:[^'\]*)*([^']+)'/g,
-            "url('" + BaseURL + "/$1'"
-        );
-
         return html;
+    }
+
+    private static getPortalRootFolder(): vscode.Uri | null {
+        const fileBeingEdited = vscode.window.activeTextEditor as vscode.TextEditor;
+        if (fileBeingEdited) {
+            for (let i = 0; !!(vscode.workspace.workspaceFolders) && (i < vscode.workspace.workspaceFolders?.length); i++) {
+                const portalConfigFolderUrl = searchPortalConfigFolder(vscode.workspace.workspaceFolders[i]?.uri?.toString(), fileBeingEdited?.document?.uri?.toString());
+                if (portalConfigFolderUrl) {
+                    const portalRootFolder = path.dirname(portalConfigFolderUrl.href);
+                    return vscode.Uri.parse(portalRootFolder);
+                }
+            }
+        }
+        return null;
     }
 }

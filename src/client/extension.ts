@@ -46,7 +46,7 @@ export async function activate(
             "microsoft-powerapps-portals.preview-show",
             () => {
                 _telemetry.sendTelemetryEvent('StartCommand', {'commandId': 'microsoft-powerapps-portals.preview-show'});
-                PortalWebView.createOrShow(_context);
+                PortalWebView.createOrShow();
             }
         )
     );
@@ -85,13 +85,8 @@ export async function activate(
         vscode.window.registerWebviewPanelSerializer(
             PortalWebView.viewType,
             {
-                async deserializeWebviewPanel(
-                    webviewPanel: vscode.WebviewPanel
-                ) {
-                    PortalWebView.revive(
-                        webviewPanel,
-                        _context.extensionUri
-                    );
+                async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel) {
+                    PortalWebView.revive(webviewPanel);
                 },
             }
         );
