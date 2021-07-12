@@ -64,10 +64,13 @@
         "title": "pac PowerApps CLI: Documentation"
       },
       {
+        "command": "pacCLI.pacHelp",
+        "title": "pac PowerApps CLI: Show General Command Line Help"
+      },
+      {
         "command": "pacCLI.pacAuthHelp",
         "title": "pac PowerApps CLI: Show Authentication Help"
       },
-
       {
         "command": "pacCLI.pacPackageHelp",
         "title": "pac PowerApps CLI: Show Package Help"
