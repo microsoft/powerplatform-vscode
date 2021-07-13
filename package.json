@@ -105,6 +105,22 @@
         "title": "Enable PAC telemetry"
       },
       {
+        "command": "pacCLI.explorer.solutionInit",
+        "title": "New PowerPlatform Solution"
+      },
+      {
+        "command": "pacCLI.explorer.packageInit",
+        "title": "New PowerPlatform Package"
+      },
+      {
+        "command": "pacCLI.explorer.pluginInit",
+        "title": "New PowerPlatform Plugin"
+      },
+      {
+        "command": "pacCLI.explorer.pcfInit",
+        "title": "New PowerPlatform PCF Control"
+      },
+      {
         "command": "microsoft-powerapps-portals.preview-show",
         "title": "PowerApps Portal -> Show preview",
         "icon": {
@@ -158,9 +174,57 @@
         {
           "command": "pacCLI.openPacLab",
           "when": "config.powerplatform.experimental.pacLab"
+        },
+        {
+          "command": "pacCLI.explorer.solutionInit",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.explorer.pluginInit",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.explorer.pcfInit",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.explorer.packageInit",
+          "when": "never"
+        }
+      ],
+      "explorer/context": [
+        {
+          "label": "Power Platform",
+          "submenu": "powerplatform/explorer/context",
+          "group": "4_powerplatform@0",
+          "when": "explorerResourceIsFolder"
+        }
+      ],
+      "powerplatform/explorer/context": [
+        {
+          "command": "pacCLI.explorer.solutionInit",
+          "group": "1_foo@1"
+        },
+        {
+          "command": "pacCLI.explorer.packageInit",
+          "group": "1_foo@2"
+        },
+        {
+          "command": "pacCLI.explorer.pluginInit",
+          "group": "1_foo@3"
+        },
+        {
+          "command": "pacCLI.explorer.pcfInit",
+          "group": "1_foo@4"
         }
       ]
-    }
+    },
+    "submenus": [
+      {
+        "id": "powerplatform/explorer/context",
+        "label": "Power Platform"
+      }
+    ]
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",

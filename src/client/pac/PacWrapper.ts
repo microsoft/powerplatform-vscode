@@ -119,6 +119,10 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "disable"));
     }
 
+    public async packageInit(outputDirectory: string): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("package", "init", "--outputDirectory", outputDirectory));
+    }
+
     public exit() : void {
         this.pacInterop.exit();
     }
