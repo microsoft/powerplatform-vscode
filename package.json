@@ -61,31 +61,38 @@
     "commands": [
       {
         "command": "pacCLI.openDocumentation",
-        "title": "pac PowerApps CLI: Documentation"
+        "category": "Power Platform CLI",
+        "title": "Documentation"
       },
       {
         "command": "pacCLI.openPacLab",
-        "title": "pac PowerApps CLI: Open PAC Lab"
+        "category": "Power Platform CLI",
+        "title": "Open PAC Lab"
       },
       {
         "command": "pacCLI.pacHelp",
-        "title": "pac PowerApps CLI: Show General Command Line Help"
+        "category": "Power Platform CLI",
+        "title": "Show PAC Help"
       },
       {
         "command": "pacCLI.pacAuthHelp",
-        "title": "pac PowerApps CLI: Show Authentication Help"
+        "category": "Power Platform CLI",
+        "title": "Show PAC Authentication Help"
       },
       {
         "command": "pacCLI.pacPackageHelp",
-        "title": "pac PowerApps CLI: Show Package Help"
+        "category": "Power Platform CLI",
+        "title": "Show PAC Package Help"
       },
       {
         "command": "pacCLI.pacPcfHelp",
-        "title": "pac PowerApps CLI: Show PCF Help"
+        "category": "Power Platform CLI",
+        "title": "Show PAC PCF Help"
       },
       {
         "command": "pacCLI.pacSolutionHelp",
-        "title": "pac PowerApps CLI: Show Solution Help"
+        "category": "Power Platform CLI",
+        "title": "Show PAC Solution Help"
       },
       {
         "command": "microsoft-powerapps-portals.preview-show",
