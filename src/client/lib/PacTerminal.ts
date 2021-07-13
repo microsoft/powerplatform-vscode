@@ -21,6 +21,16 @@ export class PacTerminal implements vscode.Disposable {
 
         this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.openDocumentation', this.openDocumentation));
         this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.openPacLab', this.openPacLab));
+        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacHelp',
+            () => PacTerminal.getTerminal().sendText("pac help")));
+        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacAuthHelp',
+            () => PacTerminal.getTerminal().sendText("pac auth help")));
+        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacPackageHelp',
+            () => PacTerminal.getTerminal().sendText("pac package help")));
+        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacPcfHelp',
+            () => PacTerminal.getTerminal().sendText("pac pcf help")));
+        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacSolutionHelp',
+            () => PacTerminal.getTerminal().sendText("pac solution help")));
     }
 
     public openDocumentation(): void {
@@ -29,5 +39,13 @@ export class PacTerminal implements vscode.Disposable {
 
     public openPacLab(): void {
         vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/pacvscodelab'));
+    }
+
+    private static getTerminal(): vscode.Terminal {
+        const terminal = vscode.window.activeTerminal ?
+            vscode.window.activeTerminal as vscode.Terminal :
+            vscode.window.createTerminal();
+        terminal.show();
+        return terminal;
     }
 }

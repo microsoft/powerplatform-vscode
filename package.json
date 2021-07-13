@@ -68,6 +68,26 @@
         "title": "pac PowerApps CLI: Open PAC Lab"
       },
       {
+        "command": "pacCLI.pacHelp",
+        "title": "pac PowerApps CLI: Show General Command Line Help"
+      },
+      {
+        "command": "pacCLI.pacAuthHelp",
+        "title": "pac PowerApps CLI: Show Authentication Help"
+      },
+      {
+        "command": "pacCLI.pacPackageHelp",
+        "title": "pac PowerApps CLI: Show Package Help"
+      },
+      {
+        "command": "pacCLI.pacPcfHelp",
+        "title": "pac PowerApps CLI: Show PCF Help"
+      },
+      {
+        "command": "pacCLI.pacSolutionHelp",
+        "title": "pac PowerApps CLI: Show Solution Help"
+      },
+      {
         "command": "microsoft-powerapps-portals.preview-show",
         "title": "PowerApps Portal -> Show preview",
         "icon": {
