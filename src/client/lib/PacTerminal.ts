@@ -20,6 +20,7 @@ export class PacTerminal implements vscode.Disposable {
         this._context.environmentVariableCollection.prepend('PATH', cliPath + path.delimiter);
 
         this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.openDocumentation', this.openDocumentation));
+        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.openPacLab', this.openPacLab));
         this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacHelp',
             () => PacTerminal.getTerminal().sendText("pac help")));
         this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacAuthHelp',
@@ -34,6 +35,10 @@ export class PacTerminal implements vscode.Disposable {
 
     public openDocumentation(): void {
         vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/pacvscodedocs'));
+    }
+
+    public openPacLab(): void {
+        vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/pacvscodelab'));
     }
 
     private static getTerminal(): vscode.Terminal {

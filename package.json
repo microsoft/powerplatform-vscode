@@ -64,6 +64,10 @@
         "title": "pac PowerApps CLI: Documentation"
       },
       {
+        "command": "pacCLI.openPacLab",
+        "title": "pac PowerApps CLI: Open PAC Lab"
+      },
+      {
         "command": "pacCLI.pacHelp",
         "title": "pac PowerApps CLI: Show General Command Line Help"
       },
