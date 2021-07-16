@@ -103,6 +103,21 @@
         }
       }
     ],
+    "configuration": {
+      "tile" : "PowerPlatform",
+      "properties": {
+        "powerplatform.experimental.authProfilePanel" : {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Auth Profile activity bar panel"
+        },
+        "powerplatform.experimental.pacLab" : {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "EXPERIMENTAL: Enable the PAC Lab link command"
+        }
+      }
+    },
     "snippets": [
       {
         "language": "html",
@@ -129,6 +144,10 @@
         {
           "command": "microsoft-powerapps-portals.preview-show",
           "when": "never"
+        },
+        {
+          "command": "pacCLI.openPacLab",
+          "when": "config.powerplatform.experimental.pacLab"
         }
       ]
     }
