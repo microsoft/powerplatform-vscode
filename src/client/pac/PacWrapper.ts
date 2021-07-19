@@ -40,14 +40,14 @@ export class PacInterop implements IPacInterop {
         // accidental writes by PAC being placed where they may interfere with things
         const pacWorkingDirectory = path.join(os.tmpdir(), v4());
         fs.ensureDirSync(pacWorkingDirectory);
-        const pacExecutablePath = path.join(pacWorkingDirectory, PacInterop.getPacExecutableName());
+        const pacExecutablePath = path.join(this.context.globalStorageLocalPath, 'pac', 'tools', PacInterop.getPacExecutableName());
 
         this.proc = spawn(pacExecutablePath, ["--non-interactive"], {
             cwd: pacWorkingDirectory,
             });
 
-            const lineReader = readline.createInterface({ input: this.proc.stdout });
-            lineReader.on('line', this.outputQueue.enqueue);
+        const lineReader = readline.createInterface({ input: this.proc.stdout });
+        lineReader.on('line', (line: string) => { this.outputQueue.enqueue(line); });
     }
 
     private static getPacExecutableName(): string {
@@ -109,6 +109,14 @@ export class PacWrapper {
 
     public async solutionList(): Promise<PacSolutionListOutput> {
         return this.executeCommandAndParseResults<PacSolutionListOutput>(new PacArguments("solution", "list"));
+    }
+
+    public async enableTelemetry(): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "enable"));
+    }
+
+    public async disableTelemetry(): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "disable"));
     }
 
     public exit() : void {

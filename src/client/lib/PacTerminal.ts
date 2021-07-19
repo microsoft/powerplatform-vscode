@@ -1,20 +1,32 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require('path');
+import * as path from 'path';
 import * as vscode from 'vscode';
+import { PacInterop, PacWrapper, PacWrapperContext } from '../pac/PacWrapper';
+import { ITelemetry } from '../telemetry/ITelemetry';
 
 export class PacTerminal implements vscode.Disposable {
     private readonly _context: vscode.ExtensionContext;
     private readonly _cmdDisposables: vscode.Disposable[] = [];
+    private readonly _pacWrapper: PacWrapper;
 
     public dispose(): void {
         this._cmdDisposables.forEach(cmd => cmd.dispose());
     }
 
-    public constructor(context: vscode.ExtensionContext, cliPath: string) {
+    public static async create(context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string): Promise<PacTerminal>{
+        const pacContext = new PacWrapperContext(context, telemetry);
+        const interop = await PacInterop.create(pacContext);
+        const pacWrapper = new PacWrapper(pacContext, interop);
+
+        const pacTerminal = new PacTerminal(context, cliPath, pacWrapper);
+        return pacTerminal;
+    }
+
+    private constructor(context: vscode.ExtensionContext, cliPath: string, pacWrapper: PacWrapper) {
         this._context = context;
+        this._pacWrapper = pacWrapper;
 
         // https://code.visualstudio.com/api/references/vscode-api#EnvironmentVariableCollection
         this._context.environmentVariableCollection.prepend('PATH', cliPath + path.delimiter);
@@ -31,6 +43,24 @@ export class PacTerminal implements vscode.Disposable {
             () => PacTerminal.getTerminal().sendText("pac pcf help")));
         this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacSolutionHelp',
             () => PacTerminal.getTerminal().sendText("pac solution help")));
+
+        this._cmdDisposables.push(vscode.commands.registerCommand(`pacCLI.enableTelemetry`, async () => {
+            const result = await this._pacWrapper.enableTelemetry();
+            if (result?.Status === "Success") {
+                vscode.window.showInformationMessage("PAC Telemetry enabled");
+            } else {
+                vscode.window.showErrorMessage("Failed to enable PAC telemetry.")
+            }
+        }));
+
+        this._cmdDisposables.push(vscode.commands.registerCommand(`pacCLI.disableTelemetry`, async () => {
+            const result = await this._pacWrapper.disableTelemetry();
+            if (result?.Status === "Success") {
+                vscode.window.showInformationMessage("PAC Telemetry disabled");
+            } else {
+                vscode.window.showErrorMessage("Failed to disable PAC telemetry.")
+            }
+        }));
     }
 
     public openDocumentation(): void {
