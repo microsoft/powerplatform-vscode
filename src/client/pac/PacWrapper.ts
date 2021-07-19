@@ -4,10 +4,12 @@
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
+import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
 import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput } from "./pacTypes";
+import { v4 } from "uuid";
 
 export interface IPacWrapperContext {
     readonly globalStorageLocalPath: string;
@@ -34,7 +36,10 @@ export class PacInterop implements IPacInterop {
     private outputQueue = new BlockingQueue<string>();
     private partialOutput = "";
     private constructor(private readonly context: IPacWrapperContext) {
-        const pacWorkingDirectory = path.join(this.context.globalStorageLocalPath, 'pac', 'tools');
+        // Set the Working Directory to a random temp folder, as we do not want
+        // accidental writes by PAC being placed where they may interfere with things
+        const pacWorkingDirectory = path.join(os.tmpdir(), v4());
+        fs.ensureDirSync(pacWorkingDirectory);
         const pacExecutablePath = path.join(pacWorkingDirectory, PacInterop.getPacExecutableName());
 
         this.proc = spawn(pacExecutablePath, ["--non-interactive"], {
