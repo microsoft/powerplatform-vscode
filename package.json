@@ -95,6 +95,16 @@
         "title": "Show PAC Solution Help"
       },
       {
+        "command": "pacCLI.disableTelemetry",
+        "category": "Power Platform CLI",
+        "title": "Disable PAC Telemetry"
+      },
+      {
+        "command": "pacCLI.enableTelemetry",
+        "category": "Power Platform CLI",
+        "title": "Enable PAC telemetry"
+      },
+      {
         "command": "microsoft-powerapps-portals.preview-show",
         "title": "PowerApps Portal -> Show preview",
         "icon": {

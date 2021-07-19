@@ -95,7 +95,7 @@ export async function activate(
     const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
-    _context.subscriptions.push(new PacTerminal(_context, cliPath));
+    _context.subscriptions.push(await PacTerminal.create(_context, _telemetry, cliPath));
 
     _telemetry.sendTelemetryEvent("activated");
 }
