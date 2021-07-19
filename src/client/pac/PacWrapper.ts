@@ -3,6 +3,7 @@
 
 import * as os from "os";
 import * as path from "path";
+import * as readline from "readline";
 import * as vscode from "vscode";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
@@ -32,7 +33,6 @@ export interface IPacInterop {
 export class PacInterop implements IPacInterop {
     private proc : ChildProcessWithoutNullStreams;
     private outputQueue = new BlockingQueue<string>();
-    private partialOutput = "";
     private constructor(private readonly context: IPacWrapperContext) {
         const pacWorkingDirectory = path.join(this.context.globalStorageLocalPath, 'pac', 'tools');
         const pacExecutablePath = path.join(pacWorkingDirectory, PacInterop.getPacExecutableName());
@@ -41,22 +41,8 @@ export class PacInterop implements IPacInterop {
             cwd: pacWorkingDirectory,
             });
 
-        this.proc.stdout.on("data", (data : Buffer) => {
-            // Output may contain multiple lines and/or partial lines.
-            // If we have a partial line from the last event, prepend it.
-            const str = this.partialOutput ? this.partialOutput + data.toString() : data.toString();
-            const split = str.split(os.EOL).filter(i => i);
-
-            // If the last item doesn't end in a closing brace, it's a partial line.
-            // Remove it from the current processing, and prepend on the next run.
-            if (!split[split.length - 1].endsWith('}')) {
-                this.partialOutput = split.pop() || "";
-            } else {
-                this.partialOutput = "";
-            }
-
-            split.forEach((value) => this.outputQueue.enqueue(value));
-        });
+            const lineReader = readline.createInterface({ input: this.proc.stdout });
+            lineReader.on('line', this.outputQueue.enqueue);
     }
 
     private static getPacExecutableName(): string {
