@@ -15,7 +15,7 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Release Notes
 0.2.11:
- - pac CLI 1.8.x (June refresh)
+ - pac CLI 1.8.5 (June refresh)
  - added more Power Platform CLI command palette entries
  - PA Portal editing support:
    - Enhanced grammar to support include and editable tags
