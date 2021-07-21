@@ -120,7 +120,29 @@ export class PacWrapper {
     }
 
     public async packageInit(outputDirectory: string): Promise<PacOutput> {
-        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("package", "init", "--outputDirectory", outputDirectory));
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("package", "init",
+            "--outputDirectory", outputDirectory));
+    }
+
+    public async pluginInit(outputDirectory: string): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("plugin", "init",
+            // TODO: Signing key support
+            "--outputDirectory", outputDirectory));
+    }
+
+    public async solutionInit(publisherName: string, publisherPrefix: string, outputDirectory: string): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("solution", "init",
+            "--publisher-name", publisherName,
+            "--publisher-prefix", publisherPrefix,
+            "--outputDirectory", outputDirectory));
+    }
+
+    public async pcfInit(namespace: string, name: string, template: string, outputDirectory: string): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pcf", "init",
+            "--namespace", namespace,
+            "--name", name,
+            "--template", template,
+            "--outputDirectory", outputDirectory));
     }
 
     public exit() : void {
