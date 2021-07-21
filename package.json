@@ -141,7 +141,13 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PAC Lab link command"
+        },
+        "powerplatform.experimental.explorerContextResources" : {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "EXPERIMENTAL: Enable PAC Init commands via the Explorer context menu."
         }
+
       }
     },
     "snippets": [
@@ -197,25 +203,26 @@
           "label": "Power Platform",
           "submenu": "powerplatform/explorer/context",
           "group": "4_powerplatform@0",
-          "when": "explorerResourceIsFolder"
+          "when": "explorerResourceIsFolder && config.powerplatform.experimental.explorerContextResources"
         }
       ],
       "powerplatform/explorer/context": [
         {
           "command": "pacCLI.explorer.solutionInit",
-          "group": "1_foo@1"
+          "group": "1_powerPlatformExplorer@1"
         },
         {
           "command": "pacCLI.explorer.packageInit",
-          "group": "1_foo@2"
-        },
-        {
-          "command": "pacCLI.explorer.pluginInit",
-          "group": "1_foo@3"
+          "group": "1_powerPlatformExplorer@2"
         },
         {
           "command": "pacCLI.explorer.pcfInit",
-          "group": "1_foo@4"
+          "group": "1_powerPlatformExplorer@3"
+        },
+        {
+          "command": "pacCLI.explorer.pluginInit",
+          "group": "1_powerPlatformExplorer@4",
+          "when": "isWindows"
         }
       ]
     },
