@@ -131,7 +131,7 @@ function lint() {
 
 function test() {
     return gulp
-        .src('src/client/test/unit/**/*.ts', { read: false })
+        .src(['src/server/test/unit/**/*.ts','src/client/test/unit/**/*.ts'], { read: false })
         .pipe(mocha({
                 require: [ "ts-node/register" ],
                 ui: 'bdd'
