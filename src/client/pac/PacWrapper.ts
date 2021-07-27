@@ -9,7 +9,7 @@ import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput } from "./pacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput } from "./PacTypes";
 import { v4 } from "uuid";
 
 export interface IPacWrapperContext {
