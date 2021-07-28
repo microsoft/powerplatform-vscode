@@ -28,6 +28,9 @@
   "engines": {
     "vscode": "^1.51.0"
   },
+  "extensionKind": [
+    "ui"
+  ],
   "publisher": "microsoft-IsvExpTools",
   "main": "./dist/extension",
   "categories": [
@@ -114,14 +117,14 @@
       }
     ],
     "configuration": {
-      "tile" : "PowerPlatform",
+      "tile": "PowerPlatform",
       "properties": {
-        "powerplatform.experimental.authProfilePanel" : {
+        "powerplatform.experimental.authProfilePanel": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Auth Profile activity bar panel"
         },
-        "powerplatform.experimental.pacLab" : {
+        "powerplatform.experimental.pacLab": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PAC Lab link command"
