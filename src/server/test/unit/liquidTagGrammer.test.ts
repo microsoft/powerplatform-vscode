@@ -118,7 +118,7 @@ it('entityform(more spaces before/after tag definition  in liquid tag)- grammar 
 
  it('test valid tag(entitylist) in Liquid Expression', () => {
   const parsedTag = parseLiquidTag("{% include 'entity_list' key: '' %}");
-    expect(parsedTag).eq('entityList');
+    expect(parsedTag).eq('entity_list');
  });
 
  it('test valid index value(entitylist with attribute key) in Liquid Expression', () => {
@@ -294,7 +294,7 @@ function parseLiquidAndGetKeyValue(liquidExpression: string) {
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
     parser.feed(liquidExpression);
 
-    for (const [key, value] of Object.entries(parser.results[0].output.map)) {
+    for (const [key, value] of Object.entries(parser.results[0].map)) {
       parserOutput.set(`${key}` , `${value}`);
     }
   } 
@@ -315,7 +315,7 @@ function parseLiquidTag(liquidExpression: string) {
     throw new Error("Error parsing the output");
     
   }
-  return parser.results[0].output.tag;
+  return parser.results[0].tag;
   
 }
 
