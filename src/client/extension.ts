@@ -31,6 +31,17 @@ export async function activate(
 ): Promise<void> {
     _context = context;
 
+    // Extension only supports Desktop UI installs currently
+    const extension = vscode.extensions.getExtension('microsoft-IsvExpTools.powerplatform-vscode');
+    if (extension && extension.extensionKind !== vscode.ExtensionKind.UI) {
+        vscode.window.showErrorMessage("The PowerPlatform Extension does not currently support remote installations.");
+        return;
+    }
+    if (vscode.env.uiKind !== vscode.UIKind.Desktop) {
+        vscode.window.showErrorMessage("The PowerPlatform Extension does not currently support Web UI.");
+        return;
+    }    
+    
     // setup telemetry
     const sessionId = v4();
     _telemetry = createTelemetryReporter('powerplatform-vscode', context, AI_KEY, sessionId);
