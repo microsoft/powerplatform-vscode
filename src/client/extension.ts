@@ -40,8 +40,8 @@ export async function activate(
     if (vscode.env.uiKind !== vscode.UIKind.Desktop) {
         vscode.window.showErrorMessage("The PowerPlatform Extension does not currently support Web UI.");
         return;
-    }    
-    
+    }
+
     // setup telemetry
     const sessionId = v4();
     _telemetry = createTelemetryReporter('powerplatform-vscode', context, AI_KEY, sessionId);
@@ -106,7 +106,7 @@ export async function activate(
     const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
-    _context.subscriptions.push(await PacTerminal.create(_context, _telemetry, cliPath));
+    _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
 
     _telemetry.sendTelemetryEvent("activated");
 }
