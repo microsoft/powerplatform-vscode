@@ -10,9 +10,6 @@ const grammar = require('../../Parser/liquidTagGrammar');
 
 describe('LiquidGrammar', () => {
 
-
-  //#region "Scenarios for Entity Form"
-
   it('test invalid attribute(entityform) in Liquid Expression', () => {
     try
     {
@@ -50,7 +47,6 @@ describe('LiquidGrammar', () => {
       expect(parserOutputLength).eq(1);
    });
 
-
   it('test valid index value(entityform with attribute name, id) in Liquid Expression', () => {
       const parserOutput = parseLiquidAndGetKeyValue("{% entityform name: 'test' id:'123' %}");
       expect(parserOutput.size).eq(2);
@@ -72,7 +68,6 @@ describe('LiquidGrammar', () => {
     expect(parserOutput.get('21')).eq('name');
     expect(parserOutput.get('31')).eq('id');
     expect(parserOutput.get('41')).eq('key');
-
  });
 
  it('entityform( value contains spaces but still the index is same )', () => {
@@ -104,17 +99,12 @@ it('test valid index value(entityform with attribute name, id, key) in Liquid Ex
   expect(parserOutput.get('21')).eq('name');
   expect(parserOutput.get('31')).eq('id');
   expect(parserOutput.get('41')).eq('key');
-
 });
 
 it('entityform(more spaces before/after tag definition  in liquid tag)- grammar should be unambiguous and output length should be 1 only', () => {
   const parserOutputLength = checkParsedOutputLength("{%  entityform name: 'test' id:'123' key:'form1' %}");
   expect(parserOutputLength).eq(1);
 });
-
-   //#endregion 
-
- //#region "Scenarios for Entity List"
 
  it('test valid tag(entitylist) in Liquid Expression', () => {
   const parsedTag = parseLiquidTag("{% include 'entity_list' key: '' %}");
@@ -134,7 +124,6 @@ it('entityform(more spaces before/after tag definition  in liquid tag)- grammar 
     expect(parserOutputLength).eq(1);
  });
 
-
 it('test valid index value(entitylist with attribute key,name) in Liquid Expression', () => {
     const parserOutput = parseLiquidAndGetKeyValue("{% include 'entity_list' key: 'list1' name: 'test' %}");
     expect(parserOutput.size).eq(2);
@@ -143,11 +132,9 @@ it('test valid index value(entitylist with attribute key,name) in Liquid Express
     expect(liquidExpKeys.next().value).eq('45');
     expect(parserOutput.get('31')).eq('key');
     expect(parserOutput.get('45')).eq('name');
-
  });
 
  it('test valid index value(entitylist with attribute key,name, id) in Liquid Expression', () => {
-
   const parserOutput = parseLiquidAndGetKeyValue("{% include 'entity_list' key: 'list1' name: 'test' id: '123' %}");
   expect(parserOutput.size).eq(3);
   const liquidExpKeys = parserOutput.keys();
@@ -157,7 +144,6 @@ it('test valid index value(entitylist with attribute key,name) in Liquid Express
   expect(parserOutput.get('31')).eq('key');
   expect(parserOutput.get('45')).eq('name');
   expect(parserOutput.get('56')).eq('id');
-
 });
 
 it('test valid index value(entitylist with attribute key,name, id) in Liquid Expression(Comma separated)', () => {
@@ -191,11 +177,6 @@ it('entitylist( value enclosed in double/single quotes return same parsed output
   expect(parserOutputWithSingleQuotes.get('31')).eq('key');
 });
 
-
- //#endregion 
-
- //#region "Scenarios for Web Form"
-
  it('test valid tag(webform) in Liquid Expression', () => {
   const parsedTag = parseLiquidTag("{% webform name: 'test' %}");
     expect(parsedTag).eq('webform');
@@ -222,9 +203,6 @@ it('entitylist( value enclosed in double/single quotes return same parsed output
     expect(parserOutputLength).eq(1);
  });
 
-
-
-
 it('test valid index value(webform with attribute name, id) in Liquid Expression', () => {
     const parserOutput = parseLiquidAndGetKeyValue("{% webform name: 'test' id: '123' %}");
     expect(parserOutput.size).eq(2);
@@ -233,11 +211,9 @@ it('test valid index value(webform with attribute name, id) in Liquid Expression
     expect(liquidExpKeys.next().value).eq('29');
     expect(parserOutput.get('18')).eq('name');
     expect(parserOutput.get('29')).eq('id');
-
  });
 
  it('test valid index value(webform with attribute name, id, key) in Liquid Expression', () => {
-
   const parserOutput = parseLiquidAndGetKeyValue("{% webform name: 'test' id: '123' key: 'form1' %}");
   expect(parserOutput.size).eq(3);
   const liquidExpKeys = parserOutput.keys();
@@ -247,7 +223,6 @@ it('test valid index value(webform with attribute name, id) in Liquid Expression
   expect(parserOutput.get('18')).eq('name');
   expect(parserOutput.get('29')).eq('id');
   expect(parserOutput.get('40')).eq('key');
-
 });
 
 it('test valid index value(webform with attribute name, id, key) in Liquid Expression(Comma separated)', () => {
@@ -260,7 +235,6 @@ it('test valid index value(webform with attribute name, id, key) in Liquid Expre
   expect(parserOutput.get('18')).eq('name');
   expect(parserOutput.get('29')).eq('id');
   expect(parserOutput.get('40')).eq('key');
-
 });
 
 it('webform( value contains spaces but still the index is same )', () => {
@@ -281,9 +255,6 @@ it('webform( value enclosed in double/single quotes return same parsed output)',
   expect(parserOutputWithDoubleQuotes.get('18')).eq('name');
   expect(parserOutputWithSingleQuotes.get('18')).eq('name');
 });
- //#endregion 
-
-
 });
 
 
@@ -312,11 +283,9 @@ function parseLiquidTag(liquidExpression: string) {
   }
   catch(err)
   {
-    throw new Error("Error parsing the output");
-    
+    throw new Error("Error parsing the output");  
   }
-  return parser.results[0].tag;
-  
+  return parser.results[0].tag; 
 }
 
 function checkParsedOutputLength(liquidExpression: string) {
