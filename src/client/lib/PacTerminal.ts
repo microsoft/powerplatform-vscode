@@ -15,18 +15,11 @@ export class PacTerminal implements vscode.Disposable {
         this._cmdDisposables.forEach(cmd => cmd.dispose());
     }
 
-    public static async create(context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string): Promise<PacTerminal>{
-        const pacContext = new PacWrapperContext(context, telemetry);
-        const interop = await PacInterop.create(pacContext);
-        const pacWrapper = new PacWrapper(pacContext, interop);
-
-        const pacTerminal = new PacTerminal(context, cliPath, pacWrapper);
-        return pacTerminal;
-    }
-
-    private constructor(context: vscode.ExtensionContext, cliPath: string, pacWrapper: PacWrapper) {
+    public constructor(context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
         this._context = context;
-        this._pacWrapper = pacWrapper;
+        const pacContext = new PacWrapperContext(context, telemetry);
+        const interop = new PacInterop(pacContext);
+        this._pacWrapper = new PacWrapper(pacContext, interop);
 
         // https://code.visualstudio.com/api/references/vscode-api#EnvironmentVariableCollection
         this._context.environmentVariableCollection.prepend('PATH', cliPath + path.delimiter);
