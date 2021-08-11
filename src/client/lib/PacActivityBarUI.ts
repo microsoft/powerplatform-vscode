@@ -43,12 +43,13 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             solutionPanel.refresh()
         }));
 
-        const adminEnvironmentPanel = new PacFlatDataView(
-            () => pacWrapper.adminEnvironmentList(),
-            item => new AdminEnvironmentTreeItem(item));
-        registrations.push(
-            vscode.window.registerTreeDataProvider("pacCLI.adminEnvironmentPanel", adminEnvironmentPanel),
-            vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.refresh", () => adminEnvironmentPanel.refresh()));
+    const adminEnvironmentPanel = new PacFlatDataView(
+        () => pacWrapper.adminEnvironmentList(),
+        item => new AdminEnvironmentTreeItem(item));
+    registrations.push(
+        vscode.window.registerTreeDataProvider("pacCLI.adminEnvironmentPanel", adminEnvironmentPanel),
+        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.refresh", () => adminEnvironmentPanel.refresh()));
+
     const adminAuthPanel = new PacFlatDataView(
         () => pacWrapper.authList(),
         item => new AuthProfileTreeItem(item),
