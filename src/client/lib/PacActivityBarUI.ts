@@ -14,7 +14,7 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         item => item.Kind === "CDS" || item.Kind === "DATAVERSE");
     registrations.push(
         vscode.window.registerTreeDataProvider("pacCLI.dataverseAuthPanel", dataverseAuthPanel),
-        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.refresh", () => dataverseAuthPanel.refresh(),
+        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.refresh", () => dataverseAuthPanel.refresh()),
         vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.newAuthProfile", async () => {
             const environmentUrl = await vscode.window.showInputBox({
                 title: "Create new Dataverse Auth Profile",
@@ -25,7 +25,15 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
                 await pacWrapper.authCreateNewDataverseProfile(environmentUrl);
                 dataverseAuthPanel.refresh();
             }
-        })));
+        }),
+        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.selectAuthProfile", async (item: AuthProfileTreeItem) => {
+            await pacWrapper.authSelectByIndex(item.model.Index);
+            dataverseAuthPanel.refresh();
+        }),
+        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.deleteAuthProfile", async (item: AuthProfileTreeItem) => {
+            await pacWrapper.authDeleteByIndex(item.model.Index);
+            dataverseAuthPanel.refresh();
+        }));
 
     const solutionPanel = new PacFlatDataView(() => pacWrapper.solutionList(), item => new SolutionTreeItem(item));
     registrations.push(
@@ -37,12 +45,20 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         item => new AuthProfileTreeItem(item),
         item => item.Kind === "ADMIN");
     registrations.push(
-        vscode.window.registerTreeDataProvider("pacCLI.adminAuthPanel",adminAuthPanel),
-        vscode.commands.registerCommand("pacCLI.adminAuthPanel.refresh", () => adminAuthPanel.refresh(),
+        vscode.window.registerTreeDataProvider("pacCLI.adminAuthPanel", adminAuthPanel),
+        vscode.commands.registerCommand("pacCLI.adminAuthPanel.refresh", () => adminAuthPanel.refresh()),
         vscode.commands.registerCommand("pacCLI.adminAuthPanel.newAuthProfile", async () => {
             await pacWrapper.authCreateNewAdminProfile();
             adminAuthPanel.refresh();
-        })));
+        }),
+        vscode.commands.registerCommand("pacCLI.adminAuthPanel.selectAuthProfile", async (item: AuthProfileTreeItem) => {
+            await pacWrapper.authSelectByIndex(item.model.Index);
+            adminAuthPanel.refresh();
+        }),
+        vscode.commands.registerCommand("pacCLI.adminAuthPanel.deleteAuthProfile", async (item: AuthProfileTreeItem) => {
+            await pacWrapper.authDeleteByIndex(item.model.Index);
+            adminAuthPanel.refresh();
+        }));
 
     const adminEnvironmentPanel = new PacFlatDataView(
         () => pacWrapper.adminEnvironmentList(),
@@ -91,7 +107,7 @@ class PacFlatDataView<PacResultType, TreeType extends vscode.TreeItem> implement
 }
 
 class AuthProfileTreeItem extends vscode.TreeItem {
-    public constructor(private readonly model: AuthProfileListing) {
+    public constructor(public readonly model: AuthProfileListing) {
         super(`${model.Resource} - ${model.User}`, vscode.TreeItemCollapsibleState.None);
         if (model.IsActive){
             this.iconPath = new vscode.ThemeIcon("star-full")
@@ -99,13 +115,13 @@ class AuthProfileTreeItem extends vscode.TreeItem {
     }
 }
 class SolutionTreeItem extends vscode.TreeItem {
-    public constructor(private readonly model: SolutionListing) {
+    public constructor(public readonly model: SolutionListing) {
         super(`${model.FriendlyName}-${model.VersionNumber}`);
     }
 }
 
 class AdminEnvironmentTreeItem extends vscode.TreeItem {
-    public constructor(private readonly model: AdminEnvironmentListing) {
+    public constructor(public readonly model: AdminEnvironmentListing) {
         super(`${model.DisplayName} ${model.EnvironmentUrl}`);
     }
 }

@@ -118,6 +118,15 @@
         "icon": "$(add)"
       },
       {
+        "command": "pacCLI.dataverseAuthPanel.selectAuthProfile",
+        "title": "Select Auth Profile"
+      },
+      {
+        "command": "pacCLI.dataverseAuthPanel.deleteAuthProfile",
+        "title": "Delete Auth Profile",
+        "icon": "$(trash)"
+      },
+      {
         "command": "pacCLI.solutionPanel.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
@@ -136,6 +145,15 @@
         "command": "pacCLI.adminAuthPanel.newAuthProfile",
         "title": "New Auth Profile",
         "icon": "$(add)"
+      },
+      {
+        "command": "pacCLI.adminAuthPanel.selectAuthProfile",
+        "title": "Select Auth Profile"
+      },
+      {
+        "command": "pacCLI.adminAuthPanel.deleteAuthProfile",
+        "title": "Delete Auth Profile",
+        "icon": "$(trash)"
       },
       {
         "command": "microsoft-powerapps-portals.preview-show",
@@ -196,6 +214,38 @@
         {
           "command": "pacCLI.openPacLab",
           "when": "config.powerplatform.experimental.pacLab"
+        },
+        {
+          "command": "pacCLI.dataverseAuthPanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.solutionPanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminAuthPanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.dataverseAuthPanel.selectAuthProfile",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminAuthPanel.selectAuthProfile",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.dataverseAuthPanel.deleteAuthProfile",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminAuthPanel.deleteAuthProfile",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -228,6 +278,24 @@
           "command": "pacCLI.adminEnvironmentPanel.refresh",
           "when": "view == pacCLI.adminEnvironmentPanel",
           "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "pacCLI.dataverseAuthPanel.selectAuthProfile",
+          "when": "view == pacCLI.dataverseAuthPanel"
+        },
+        {
+          "command": "pacCLI.dataverseAuthPanel.deleteAuthProfile",
+          "when": "view == pacCLI.dataverseAuthPanel"
+        },
+        {
+          "command": "pacCLI.adminAuthPanel.selectAuthProfile",
+          "when": "view == pacCLI.adminAuthPanel"
+        },
+        {
+          "command": "pacCLI.dataverseAuthPanel.deleteAuthProfile",
+          "when": "view == pacCLI.adminAuthPanel"
         }
       ]
     },

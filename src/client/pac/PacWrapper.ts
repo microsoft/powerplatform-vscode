@@ -113,6 +113,14 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacAuthListOutput>(new PacArguments("auth", "create", "--kind", "ADMIN"));
     }
 
+    public async authSelectByIndex(index: number): Promise<PacOutput>{
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "select", "--index", index.toString()))
+    }
+
+    public async authDeleteByIndex(index: number): Promise<PacOutput>{
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "delete", "--index", index.toString()))
+    }
+
     public async adminEnvironmentList(): Promise<PacAdminListOutput> {
         return this.executeCommandAndParseResults<PacAdminListOutput>(new PacArguments("admin", "list"));
     }
