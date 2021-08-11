@@ -294,7 +294,7 @@
           "when": "view == pacCLI.adminAuthPanel"
         },
         {
-          "command": "pacCLI.dataverseAuthPanel.deleteAuthProfile",
+          "command": "pacCLI.adminAuthPanel.deleteAuthProfile",
           "when": "view == pacCLI.adminAuthPanel"
         }
       ]
