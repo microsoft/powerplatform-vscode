@@ -67,7 +67,7 @@ class PacFlatDataView<PacResultType, TreeType extends vscode.TreeItem> implement
             return [];
         } else {
             const pacOutput = await this.dataSource();
-            if (pacOutput && pacOutput.Status === "Success") {
+            if (pacOutput && pacOutput.Status === "Success" && pacOutput.Results) {
                 const items = pacOutput.Results
                     .filter(this.itemFilter || (_ => true))
                     .map(this.mapToTreeItem);
