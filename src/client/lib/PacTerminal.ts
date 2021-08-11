@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { PacInterop, PacWrapper, PacWrapperContext } from '../pac/PacWrapper';
 import { ITelemetry } from '../telemetry/ITelemetry';
+import { RegisterPanels } from './PacActivityBarUI';
 
 export class PacTerminal implements vscode.Disposable {
     private readonly _context: vscode.ExtensionContext;
@@ -31,18 +32,16 @@ export class PacTerminal implements vscode.Disposable {
         // https://code.visualstudio.com/api/references/vscode-api#EnvironmentVariableCollection
         this._context.environmentVariableCollection.prepend('PATH', cliPath + path.delimiter);
 
-        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.openDocumentation', this.openDocumentation));
-        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.openPacLab', this.openPacLab));
-        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacHelp',
-            () => PacTerminal.getTerminal().sendText("pac help")));
-        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacAuthHelp',
-            () => PacTerminal.getTerminal().sendText("pac auth help")));
-        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacPackageHelp',
-            () => PacTerminal.getTerminal().sendText("pac package help")));
-        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacPcfHelp',
-            () => PacTerminal.getTerminal().sendText("pac pcf help")));
-        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.pacSolutionHelp',
-            () => PacTerminal.getTerminal().sendText("pac solution help")));
+        this._cmdDisposables.push(
+            vscode.commands.registerCommand('pacCLI.openDocumentation', this.openDocumentation),
+            vscode.commands.registerCommand('pacCLI.openPacLab', this.openPacLab));
+
+        this._cmdDisposables.push(
+            vscode.commands.registerCommand('pacCLI.pacHelp', () => PacTerminal.getTerminal().sendText("pac help")),
+            vscode.commands.registerCommand('pacCLI.pacAuthHelp', () => PacTerminal.getTerminal().sendText("pac auth help")),
+            vscode.commands.registerCommand('pacCLI.pacPackageHelp', () => PacTerminal.getTerminal().sendText("pac package help")),
+            vscode.commands.registerCommand('pacCLI.pacPcfHelp', () => PacTerminal.getTerminal().sendText("pac pcf help")),
+            vscode.commands.registerCommand('pacCLI.pacSolutionHelp', () => PacTerminal.getTerminal().sendText("pac solution help")));
 
         this._cmdDisposables.push(vscode.commands.registerCommand(`pacCLI.enableTelemetry`, async () => {
             const result = await this._pacWrapper.enableTelemetry();
@@ -61,6 +60,8 @@ export class PacTerminal implements vscode.Disposable {
                 vscode.window.showErrorMessage("Failed to disable PAC telemetry.")
             }
         }));
+
+        this._cmdDisposables.push(...RegisterPanels(this._pacWrapper));
     }
 
     public openDocumentation(): void {

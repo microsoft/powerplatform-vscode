@@ -108,6 +108,36 @@
         "title": "Enable PAC telemetry"
       },
       {
+        "command": "pacCLI.dataverseAuthPanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "pacCLI.dataverseAuthPanel.newAuthProfile",
+        "title": "New Auth Profile",
+        "icon": "$(add)"
+      },
+      {
+        "command": "pacCLI.solutionPanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "pacCLI.adminAuthPanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "pacCLI.adminEnvironmentPanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "pacCLI.adminAuthPanel.newAuthProfile",
+        "title": "New Auth Profile",
+        "icon": "$(add)"
+      },
+      {
         "command": "microsoft-powerapps-portals.preview-show",
         "title": "PowerApps Portal -> Show preview",
         "icon": {
@@ -123,6 +153,11 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Auth Profile activity bar panel"
+        },
+        "powerplatform.experimental.solutionPanel": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Solution panel"
         },
         "powerplatform.experimental.pacLab": {
           "type": "boolean",
@@ -161,6 +196,71 @@
         {
           "command": "pacCLI.openPacLab",
           "when": "config.powerplatform.experimental.pacLab"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "pacCLI.dataverseAuthPanel.refresh",
+          "when": "view == pacCLI.dataverseAuthPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "pacCLI.dataverseAuthPanel.newAuthProfile",
+          "when": "view == pacCLI.dataverseAuthPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "pacCLI.solutionPanel.refresh",
+          "when": "view == pacCLI.solutionPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "pacCLI.adminAuthPanel.refresh",
+          "when": "view == pacCLI.adminAuthPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "pacCLI.adminAuthPanel.newAuthProfile",
+          "when": "view == pacCLI.adminAuthPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.refresh",
+          "when": "view == pacCLI.adminEnvironmentPanel",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "power-platform-activitybar",
+          "title": "Power Platform",
+          "icon": "resources/powerplatform-activitybar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "power-platform-activitybar": [
+        {
+          "id": "pacCLI.dataverseAuthPanel",
+          "name": "Dataverse Auth Profiles",
+          "when": "config.powerplatform.experimental.authProfilePanel"
+        },
+        {
+          "id": "pacCLI.solutionPanel",
+          "name": "Solutions",
+          "when": "config.powerplatform.experimental.authProfilePanel"
+        },
+        {
+          "id": "pacCLI.adminAuthPanel",
+          "name": "Admin Auth Profiles",
+          "when": "config.powerplatform.experimental.authProfilePanel"
+        },
+        {
+          "id": "pacCLI.adminEnvironmentPanel",
+          "name": "Admin Environments",
+          "when": "config.powerplatform.experimental.authProfilePanel"
         }
       ]
     }
