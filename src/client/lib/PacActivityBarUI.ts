@@ -14,7 +14,18 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         item => item.Kind === "CDS" || item.Kind === "DATAVERSE");
     registrations.push(
         vscode.window.registerTreeDataProvider("pacCLI.dataverseAuthPanel", dataverseAuthPanel),
-        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.refresh", () => dataverseAuthPanel.refresh()));
+        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.refresh", () => dataverseAuthPanel.refresh(),
+        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.newAuthProfile", async () => {
+            const environmentUrl = await vscode.window.showInputBox({
+                title: "Create new Dataverse Auth Profile",
+                prompt: "Enter Environment URL",
+                placeHolder: "https://example.crm.dynamics.com/"
+            });
+            if (environmentUrl) {
+                await pacWrapper.authCreateNewDataverseProfile(environmentUrl);
+                dataverseAuthPanel.refresh();
+            }
+        })));
 
     const solutionPanel = new PacFlatDataView(() => pacWrapper.solutionList(), item => new SolutionTreeItem(item));
     registrations.push(

@@ -104,10 +104,9 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacAuthListOutput>(new PacArguments("auth", "list"));
     }
 
-    public async authCreateNewDataverseProfile(): Promise<PacAuthListOutput> {
-        // TODO: Update to Dataverse once those changes are in
-        // TODO: Take URL argument
-        return this.executeCommandAndParseResults<PacAuthListOutput>(new PacArguments("auth", "create", "--kind", "CDS", "--url", "https://ppdevtools.crm.dynamics.com"));
+    public async authCreateNewDataverseProfile(environmentUrl: string): Promise<PacAuthListOutput> {
+        return this.executeCommandAndParseResults<PacAuthListOutput>(
+            new PacArguments("auth", "create", "--kind", "CDS", "--url", environmentUrl));
     }
 
     public async authCreateNewAdminProfile(): Promise<PacAuthListOutput> {
