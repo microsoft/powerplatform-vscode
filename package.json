@@ -108,21 +108,26 @@
         "title": "Enable PAC telemetry"
       },
       {
-        "command": "pacCLI.dataverseAuthPanel.refresh",
+        "command": "pacCLI.authPanel.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
-        "command": "pacCLI.dataverseAuthPanel.newAuthProfile",
-        "title": "New Auth Profile",
+        "command": "pacCLI.authPanel.newDataverseAuthProfile",
+        "title": "New Dataverse Auth Profile",
         "icon": "$(add)"
       },
       {
-        "command": "pacCLI.dataverseAuthPanel.selectAuthProfile",
+        "command": "pacCLI.authPanel.newAdminAuthProfile",
+        "title": "New Admin Auth Profile",
+        "icon": "$(add)"
+      },
+      {
+        "command": "pacCLI.authPanel.selectAuthProfile",
         "title": "Select Auth Profile"
       },
       {
-        "command": "pacCLI.dataverseAuthPanel.deleteAuthProfile",
+        "command": "pacCLI.authPanel.deleteAuthProfile",
         "title": "Delete Auth Profile",
         "icon": "$(trash)"
       },
@@ -132,28 +137,9 @@
         "icon": "$(refresh)"
       },
       {
-        "command": "pacCLI.adminAuthPanel.refresh",
-        "title": "Refresh",
-        "icon": "$(refresh)"
-      },
-      {
         "command": "pacCLI.adminEnvironmentPanel.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
-      },
-      {
-        "command": "pacCLI.adminAuthPanel.newAuthProfile",
-        "title": "New Auth Profile",
-        "icon": "$(add)"
-      },
-      {
-        "command": "pacCLI.adminAuthPanel.selectAuthProfile",
-        "title": "Select Auth Profile"
-      },
-      {
-        "command": "pacCLI.adminAuthPanel.deleteAuthProfile",
-        "title": "Delete Auth Profile",
-        "icon": "$(trash)"
       },
       {
         "command": "microsoft-powerapps-portals.preview-show",
@@ -216,7 +202,7 @@
           "when": "config.powerplatform.experimental.pacLab"
         },
         {
-          "command": "pacCLI.dataverseAuthPanel.refresh",
+          "command": "pacCLI.authPanel.refresh",
           "when": "never"
         },
         {
@@ -224,78 +210,45 @@
           "when": "never"
         },
         {
-          "command": "pacCLI.adminAuthPanel.refresh",
-          "when": "never"
-        },
-        {
           "command": "pacCLI.adminEnvironmentPanel.refresh",
           "when": "never"
         },
         {
-          "command": "pacCLI.dataverseAuthPanel.selectAuthProfile",
+          "command": "pacCLI.authPanel.selectAuthProfile",
           "when": "never"
         },
         {
-          "command": "pacCLI.adminAuthPanel.selectAuthProfile",
-          "when": "never"
-        },
-        {
-          "command": "pacCLI.dataverseAuthPanel.deleteAuthProfile",
-          "when": "never"
-        },
-        {
-          "command": "pacCLI.adminAuthPanel.deleteAuthProfile",
+          "command": "pacCLI.authPanel.deleteAuthProfile",
           "when": "never"
         }
       ],
       "view/title": [
         {
-          "command": "pacCLI.dataverseAuthPanel.refresh",
-          "when": "view == pacCLI.dataverseAuthPanel",
+          "command": "pacCLI.authPanel.refresh",
+          "when": "view == pacCLI.authPanel",
           "group": "navigation"
         },
         {
-          "command": "pacCLI.dataverseAuthPanel.newAuthProfile",
-          "when": "view == pacCLI.dataverseAuthPanel",
+          "command": "pacCLI.authPanel.newDataverseAuthProfile",
+          "when": "view == pacCLI.authPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "pacCLI.authPanel.newAdminAuthProfile",
+          "when": "view == pacCLI.authPanel",
           "group": "navigation"
         },
         {
           "command": "pacCLI.solutionPanel.refresh",
           "when": "view == pacCLI.solutionPanel",
           "group": "navigation"
-        },
-        {
-          "command": "pacCLI.adminAuthPanel.refresh",
-          "when": "view == pacCLI.adminAuthPanel",
-          "group": "navigation"
-        },
-        {
-          "command": "pacCLI.adminAuthPanel.newAuthProfile",
-          "when": "view == pacCLI.adminAuthPanel",
-          "group": "navigation"
-        },
-        {
-          "command": "pacCLI.adminEnvironmentPanel.refresh",
-          "when": "view == pacCLI.adminEnvironmentPanel",
-          "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "pacCLI.dataverseAuthPanel.selectAuthProfile",
-          "when": "view == pacCLI.dataverseAuthPanel"
-        },
-        {
-          "command": "pacCLI.dataverseAuthPanel.deleteAuthProfile",
-          "when": "view == pacCLI.dataverseAuthPanel"
-        },
-        {
-          "command": "pacCLI.adminAuthPanel.selectAuthProfile",
-          "when": "view == pacCLI.adminAuthPanel"
-        },
-        {
-          "command": "pacCLI.adminAuthPanel.deleteAuthProfile",
-          "when": "view == pacCLI.adminAuthPanel"
+          "command": "pacCLI.authPanel.deleteAuthProfile",
+          "when": "view == pacCLI.authPanel",
+          "group": "inline"
         }
       ]
     },
@@ -311,18 +264,13 @@
     "views": {
       "power-platform-activitybar": [
         {
-          "id": "pacCLI.dataverseAuthPanel",
+          "id": "pacCLI.authPanel",
           "name": "Dataverse Auth Profiles",
           "when": "config.powerplatform.experimental.authProfilePanel"
         },
         {
           "id": "pacCLI.solutionPanel",
           "name": "Solutions",
-          "when": "config.powerplatform.experimental.authProfilePanel"
-        },
-        {
-          "id": "pacCLI.adminAuthPanel",
-          "name": "Admin Auth Profiles",
           "when": "config.powerplatform.experimental.authProfilePanel"
         },
         {

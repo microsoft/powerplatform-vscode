@@ -13,36 +13,6 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         vscode.window.registerTreeDataProvider("pacCLI.solutionPanel", solutionPanel),
         vscode.commands.registerCommand("pacCLI.solutionPanel.refresh", () => solutionPanel.refresh()));
 
-    const dataverseAuthPanel = new PacFlatDataView(
-        () => pacWrapper.authList(),
-        item => new AuthProfileTreeItem(item),
-        item => item.Kind === "CDS" || item.Kind === "DATAVERSE");
-    registrations.push(
-        vscode.window.registerTreeDataProvider("pacCLI.dataverseAuthPanel", dataverseAuthPanel),
-        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.refresh", () => dataverseAuthPanel.refresh()),
-        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.newAuthProfile", async () => {
-            const environmentUrl = await vscode.window.showInputBox({
-                title: "Create new Dataverse Auth Profile",
-                prompt: "Enter Environment URL",
-                placeHolder: "https://example.crm.dynamics.com/"
-            });
-            if (environmentUrl) {
-                await pacWrapper.authCreateNewDataverseProfile(environmentUrl);
-                dataverseAuthPanel.refresh();
-                solutionPanel.refresh()
-            }
-        }),
-        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.selectAuthProfile", async (item: AuthProfileTreeItem) => {
-            await pacWrapper.authSelectByIndex(item.model.Index);
-            dataverseAuthPanel.refresh();
-            solutionPanel.refresh()
-        }),
-        vscode.commands.registerCommand("pacCLI.dataverseAuthPanel.deleteAuthProfile", async (item: AuthProfileTreeItem) => {
-            await pacWrapper.authDeleteByIndex(item.model.Index);
-            dataverseAuthPanel.refresh();
-            solutionPanel.refresh()
-        }));
-
     const adminEnvironmentPanel = new PacFlatDataView(
         () => pacWrapper.adminEnvironmentList(),
         item => new AdminEnvironmentTreeItem(item));
@@ -50,27 +20,49 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         vscode.window.registerTreeDataProvider("pacCLI.adminEnvironmentPanel", adminEnvironmentPanel),
         vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.refresh", () => adminEnvironmentPanel.refresh()));
 
-    const adminAuthPanel = new PacFlatDataView(
+    const authPanel = new PacFlatDataView(
         () => pacWrapper.authList(),
-        item => new AuthProfileTreeItem(item),
-        item => item.Kind === "ADMIN");
+        item => new AuthProfileTreeItem(item));
     registrations.push(
-        vscode.window.registerTreeDataProvider("pacCLI.adminAuthPanel", adminAuthPanel),
-        vscode.commands.registerCommand("pacCLI.adminAuthPanel.refresh", () => adminAuthPanel.refresh()),
-        vscode.commands.registerCommand("pacCLI.adminAuthPanel.newAuthProfile", async () => {
+        vscode.window.registerTreeDataProvider("pacCLI.authPanel", authPanel),
+        vscode.commands.registerCommand("pacCLI.authPanel.refresh", () => authPanel.refresh()),
+        vscode.commands.registerCommand("pacCLI.authPanel.newDataverseAuthProfile", async () => {
+            const environmentUrl = await vscode.window.showInputBox({
+                title: "Create new Dataverse Auth Profile",
+                prompt: "Enter Environment URL",
+                placeHolder: "https://example.crm.dynamics.com/"
+            });
+            if (environmentUrl) {
+                await pacWrapper.authCreateNewDataverseProfile(environmentUrl);
+                authPanel.refresh();
+                solutionPanel.refresh();
+            }
+        }),
+        vscode.commands.registerCommand("pacCLI.authPanel.newAdminAuthProfile", async () => {
             await pacWrapper.authCreateNewAdminProfile();
-            adminAuthPanel.refresh();
+            authPanel.refresh();
             adminEnvironmentPanel.refresh();
         }),
-        vscode.commands.registerCommand("pacCLI.adminAuthPanel.selectAuthProfile", async (item: AuthProfileTreeItem) => {
+        vscode.commands.registerCommand("pacCLI.authPanel.selectAuthProfile", async (item: AuthProfileTreeItem) => {
             await pacWrapper.authSelectByIndex(item.model.Index);
-            adminAuthPanel.refresh();
-            adminEnvironmentPanel.refresh();
+            authPanel.refresh();
+            if (item.model.Kind === "DATAVERSE") {
+                solutionPanel.refresh();
+            } else if (item.model.Kind === "ADMIN") {
+                adminEnvironmentPanel.refresh();
+            }
         }),
-        vscode.commands.registerCommand("pacCLI.adminAuthPanel.deleteAuthProfile", async (item: AuthProfileTreeItem) => {
-            await pacWrapper.authDeleteByIndex(item.model.Index);
-            adminAuthPanel.refresh();
-            adminEnvironmentPanel.refresh();
+        vscode.commands.registerCommand("pacCLI.authPanel.deleteAuthProfile", async (item: AuthProfileTreeItem) => {
+            const confirmResult = await vscode.window.showWarningMessage(`Are you sure you want to delete the Auth Profile ${item.model.User}-${item.model.Resource}?`,"Confirm","Cancel");
+            if (confirmResult && confirmResult === "Confirm") {
+                await pacWrapper.authDeleteByIndex(item.model.Index);
+                authPanel.refresh();
+                if (item.model.Kind === "DATAVERSE") {
+                    solutionPanel.refresh();
+                } else if (item.model.Kind === "ADMIN") {
+                    adminEnvironmentPanel.refresh();
+                }
+            }
         }));
 
     return registrations;
@@ -114,15 +106,17 @@ class PacFlatDataView<PacResultType, TreeType extends vscode.TreeItem> implement
 
 class AuthProfileTreeItem extends vscode.TreeItem {
     public constructor(public readonly model: AuthProfileListing) {
-        super(`${model.Resource} - ${model.User}`, vscode.TreeItemCollapsibleState.None);
+        super(`${model.Kind} ${model.User} - ${model.Resource}`, vscode.TreeItemCollapsibleState.None);
         if (model.IsActive){
             this.iconPath = new vscode.ThemeIcon("star-full")
+        } else {
+            this.command = {title: "Select", command: "pacCLI.authPanel.selectAuthProfile", arguments:[this]};
         }
     }
 }
 class SolutionTreeItem extends vscode.TreeItem {
     public constructor(public readonly model: SolutionListing) {
-        super(`${model.FriendlyName}-${model.VersionNumber}`);
+        super(`${model.FriendlyName}, Version: ${model.VersionNumber}`);
     }
 }
 
