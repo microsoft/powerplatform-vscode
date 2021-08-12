@@ -124,7 +124,8 @@
       },
       {
         "command": "pacCLI.authPanel.selectAuthProfile",
-        "title": "Select Auth Profile"
+        "title": "Select Auth Profile",
+        "icon": "$(star-empty)"
       },
       {
         "command": "pacCLI.authPanel.deleteAuthProfile",
@@ -247,6 +248,11 @@
       "view/item/context": [
         {
           "command": "pacCLI.authPanel.deleteAuthProfile",
+          "when": "view == pacCLI.authPanel",
+          "group": "inline"
+        },
+        {
+          "command": "pacCLI.authPanel.selectAuthProfile",
           "when": "view == pacCLI.authPanel",
           "group": "inline"
         }

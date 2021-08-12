@@ -106,11 +106,18 @@ class PacFlatDataView<PacResultType, TreeType extends vscode.TreeItem> implement
 
 class AuthProfileTreeItem extends vscode.TreeItem {
     public constructor(public readonly model: AuthProfileListing) {
-        super(`${model.Kind} ${model.User} - ${model.Resource}`, vscode.TreeItemCollapsibleState.None);
+        super(AuthProfileTreeItem.createLabel(model), vscode.TreeItemCollapsibleState.None);
         if (model.IsActive){
             this.iconPath = new vscode.ThemeIcon("star-full")
+        }
+    }
+    private static createLabel(profile: AuthProfileListing): string {
+        if (profile.Name) {
+            return `${profile.Kind}: ${profile.Name}`;
+        } else if (profile.Kind === "ADMIN") {
+            return `${profile.Kind}: ${profile.User}`;
         } else {
-            this.command = {title: "Select", command: "pacCLI.authPanel.selectAuthProfile", arguments:[this]};
+            return `${profile.Kind}: ${profile.User} - ${profile.Resource}`;
         }
     }
 }
