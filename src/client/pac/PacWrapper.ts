@@ -33,21 +33,17 @@ export interface IPacInterop {
 }
 
 export class PacInterop implements IPacInterop {
-    private proc : ChildProcessWithoutNullStreams;
+    private _proc : ChildProcessWithoutNullStreams | undefined;
     private outputQueue = new BlockingQueue<string>();
-    private constructor(private readonly context: IPacWrapperContext) {
+    private tempWorkingDirectory : string;
+    private pacExecutablePath : string;
+
+    public constructor(private readonly context: IPacWrapperContext) {
         // Set the Working Directory to a random temp folder, as we do not want
         // accidental writes by PAC being placed where they may interfere with things
-        const pacWorkingDirectory = path.join(os.tmpdir(), v4());
-        fs.ensureDirSync(pacWorkingDirectory);
-        const pacExecutablePath = path.join(this.context.globalStorageLocalPath, 'pac', 'tools', PacInterop.getPacExecutableName());
-
-        this.proc = spawn(pacExecutablePath, ["--non-interactive"], {
-            cwd: pacWorkingDirectory,
-            });
-
-        const lineReader = readline.createInterface({ input: this.proc.stdout });
-        lineReader.on('line', (line: string) => { this.outputQueue.enqueue(line); });
+        this.tempWorkingDirectory = path.join(os.tmpdir(), v4());
+        fs.ensureDirSync(this.tempWorkingDirectory);
+        this.pacExecutablePath = path.join(this.context.globalStorageLocalPath, 'pac', 'tools', PacInterop.getPacExecutableName());
     }
 
     private static getPacExecutableName(): string {
@@ -63,29 +59,34 @@ export class PacInterop implements IPacInterop {
         }
     }
 
-    public static async create(context: IPacWrapperContext): Promise<PacInterop> {
-        const pac = new PacInterop(context);
-        await pac.Init();
-        return pac;
+    private async proc() : Promise<ChildProcessWithoutNullStreams> {
+        if (!(this._proc)) {
+            this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarting');
+            this._proc = spawn(this.pacExecutablePath, ["--non-interactive"], {
+                cwd: this.tempWorkingDirectory,
+                });
+
+            const lineReader = readline.createInterface({ input: this._proc.stdout });
+            lineReader.on('line', (line: string) => { this.outputQueue.enqueue(line); });
+
+            // Grab the first output, which will be the PAC Version info
+            await this.outputQueue.dequeue();
+            this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarted');
+        }
+
+        return this._proc;
     }
 
     public async executeCommand(args: PacArguments): Promise<string> {
         const command = JSON.stringify(args) + "\n";
-        this.proc.stdin.write(command);
+        (await this.proc()).stdin.write(command);
 
         const result = await this.outputQueue.dequeue();
         return result;
     }
 
-    public exit() : void {
-        this.proc.stdin.write(JSON.stringify(new PacArguments("exit")));
-    }
-
-    private async Init() : Promise<boolean> {
-        // Grab the first output, which should be a Success
-        const output = await this.outputQueue.dequeue();
-        const parsedOutput : PacOutput = JSON.parse(output);
-        return parsedOutput.Status === "Success";
+    public async exit() : Promise<void> {
+        (await this.proc()).stdin.write(JSON.stringify(new PacArguments("exit")));
     }
 }
 

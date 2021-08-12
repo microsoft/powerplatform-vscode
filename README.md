@@ -14,6 +14,10 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+0.2.17:
+  - pac CLI 1.9.3 (July refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+  - macOS: 'pac auth create' interactive login now works
+
 0.2.14:
  - pac CLI 1.8.6 (pcf-scripts npm pkg hot fix for June refresh)
 
@@ -34,7 +38,6 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
   - PA Portal language services and auto complete
 - known issues:
   - macOS: no good check if the required separate install of dotnetCore 3.x or 5.x is present
-  - macOS: 'pac auth create' interactive flow not yet working, pls supply credentials with --username/--password (or appId triple)
 
 
 ## Requirements
