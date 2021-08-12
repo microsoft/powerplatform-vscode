@@ -106,7 +106,7 @@ export class PacWrapper {
 
     public async authCreateNewDataverseProfile(environmentUrl: string): Promise<PacAuthListOutput> {
         return this.executeCommandAndParseResults<PacAuthListOutput>(
-            new PacArguments("auth", "create", "--kind", "CDS", "--url", environmentUrl));
+            new PacArguments("auth", "create", "--kind", "DATAVERSE", "--url", environmentUrl));
     }
 
     public async authCreateNewAdminProfile(): Promise<PacAuthListOutput> {
