@@ -154,15 +154,10 @@
     "configuration": {
       "tile": "PowerPlatform",
       "properties": {
-        "powerplatform.experimental.authProfilePanel": {
+        "powerplatform.experimental.activityBarPanels": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Auth Profile activity bar panel"
-        },
-        "powerplatform.experimental.solutionPanel": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Solution panel"
         },
         "powerplatform.experimental.pacLab": {
           "type": "boolean",
@@ -272,17 +267,17 @@
         {
           "id": "pacCLI.authPanel",
           "name": "Dataverse Auth Profiles",
-          "when": "config.powerplatform.experimental.authProfilePanel"
+          "when": "config.powerplatform.experimental.activityBarPanels"
         },
         {
           "id": "pacCLI.solutionPanel",
           "name": "Solutions",
-          "when": "config.powerplatform.experimental.authProfilePanel"
+          "when": "config.powerplatform.experimental.activityBarPanels"
         },
         {
           "id": "pacCLI.adminEnvironmentPanel",
           "name": "Admin Environments",
-          "when": "config.powerplatform.experimental.authProfilePanel"
+          "when": "config.powerplatform.experimental.activityBarPanels"
         }
       ]
     }
