@@ -17,6 +17,10 @@ export type AuthProfileListing = {
     CloudInstance: string;
 }
 
+export type PacOutputWithResultList<T> = PacOutput & {
+    Results: T[]
+}
+
 export type PacAuthListOutput = PacOutput & {
     Results: AuthProfileListing[];
 }
