@@ -108,6 +108,41 @@
         "title": "Enable PAC telemetry"
       },
       {
+        "command": "pacCLI.authPanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "pacCLI.authPanel.newDataverseAuthProfile",
+        "title": "New Dataverse Auth Profile",
+        "icon": "$(add)"
+      },
+      {
+        "command": "pacCLI.authPanel.newAdminAuthProfile",
+        "title": "New Admin Auth Profile",
+        "icon": "$(add)"
+      },
+      {
+        "command": "pacCLI.authPanel.selectAuthProfile",
+        "title": "Select Auth Profile",
+        "icon": "$(star-empty)"
+      },
+      {
+        "command": "pacCLI.authPanel.deleteAuthProfile",
+        "title": "Delete Auth Profile",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "pacCLI.solutionPanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "pacCLI.adminEnvironmentPanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
         "command": "microsoft-powerapps-portals.preview-show",
         "title": "PowerApps Portal -> Show preview",
         "icon": {
@@ -119,7 +154,7 @@
     "configuration": {
       "tile": "PowerPlatform",
       "properties": {
-        "powerplatform.experimental.authProfilePanel": {
+        "powerplatform.experimental.activityBarPanels": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Auth Profile activity bar panel"
@@ -161,6 +196,88 @@
         {
           "command": "pacCLI.openPacLab",
           "when": "config.powerplatform.experimental.pacLab"
+        },
+        {
+          "command": "pacCLI.authPanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.solutionPanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.authPanel.selectAuthProfile",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.authPanel.deleteAuthProfile",
+          "when": "never"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "pacCLI.authPanel.refresh",
+          "when": "view == pacCLI.authPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "pacCLI.authPanel.newDataverseAuthProfile",
+          "when": "view == pacCLI.authPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "pacCLI.authPanel.newAdminAuthProfile",
+          "when": "view == pacCLI.authPanel",
+          "group": "navigation"
+        },
+        {
+          "command": "pacCLI.solutionPanel.refresh",
+          "when": "view == pacCLI.solutionPanel",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "pacCLI.authPanel.deleteAuthProfile",
+          "when": "view == pacCLI.authPanel",
+          "group": "inline"
+        },
+        {
+          "command": "pacCLI.authPanel.selectAuthProfile",
+          "when": "view == pacCLI.authPanel",
+          "group": "inline"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "power-platform-activitybar",
+          "title": "Power Platform",
+          "icon": "resources/powerplatform-activitybar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "power-platform-activitybar": [
+        {
+          "id": "pacCLI.authPanel",
+          "name": "Dataverse Auth Profiles",
+          "when": "config.powerplatform.experimental.activityBarPanels"
+        },
+        {
+          "id": "pacCLI.solutionPanel",
+          "name": "Solutions",
+          "when": "config.powerplatform.experimental.activityBarPanels"
+        },
+        {
+          "id": "pacCLI.adminEnvironmentPanel",
+          "name": "Admin Environments",
+          "when": "config.powerplatform.experimental.activityBarPanels"
         }
       ]
     }
