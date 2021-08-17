@@ -35,6 +35,6 @@ describe('PacWrapper', () => {
         expect(result.Status === "Success");
         expect(result.Errors.length === 0);
         expect(result.Information.length > 0);
-        expect(result.Results && result.Results.length === 1 && result.Results[0].User === "bob@contoso.com");
+        expect(result.Results && result.Results.length === 1 && result.Results[0].User === "bob@contoso.com").to.be.true;
     });
 });
