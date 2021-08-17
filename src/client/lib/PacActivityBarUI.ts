@@ -25,6 +25,15 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         item => new AuthProfileTreeItem(item));
     registrations.push(
         vscode.window.registerTreeDataProvider("pacCLI.authPanel", authPanel),
+        vscode.commands.registerCommand("pacCLI.authPanel.clearAuthProfile", async () => {
+            const confirmResult = await vscode.window.showWarningMessage("Are you sure you want to clear all the Auth Profiles?","Confirm","Cancel");
+            if (confirmResult && confirmResult === "Confirm") {
+                await pacWrapper.authClear();
+                authPanel.refresh();
+                solutionPanel.refresh();
+                adminEnvironmentPanel.refresh();
+            }
+        }),
         vscode.commands.registerCommand("pacCLI.authPanel.refresh", () => authPanel.refresh()),
         vscode.commands.registerCommand("pacCLI.authPanel.newDataverseAuthProfile", async () => {
             const environmentUrl = await vscode.window.showInputBox({
