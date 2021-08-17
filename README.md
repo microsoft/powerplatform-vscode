@@ -1,4 +1,4 @@
-# Power Platform VS Code Extension
+# Power Platform Extension
 
 **PRE-RELEASE SOFTWARE.** The software is a pre-release version. It may not work the way a final version of the software will.
 We may change it for the final, commercial version. We also may not release a commercial version.
@@ -14,7 +14,8 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
-0.2.18:
+0.2.19:
+  - shortened the extension's friendly name
   - pac CLI 1.9.4 (July refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - macOS: 'pac auth create' interactive login now works
 
