@@ -1,7 +1,7 @@
 {
   "name": "powerplatform-vscode",
-  "displayName": "Power Platform VS Code Extension",
-  "description": "Tooling to create Power Platform packages and manage Power Platform environments",
+  "displayName": "Power Platform",
+  "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
   "version": "0.1.0-dev",
   "scripts": {
     "clean": "scorch",
