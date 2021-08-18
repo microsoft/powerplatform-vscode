@@ -9,8 +9,7 @@ import * as glob from 'glob';
 import * as os from 'os';
 import { Extract } from 'unzip-stream'
 import { ITelemetry } from '../telemetry/ITelemetry';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const find = require('find-process');
+import find from 'find-process';
 
 // allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
 export interface ICliAcquisitionContext {
@@ -67,7 +66,7 @@ export class CliAcquisition implements IDisposable {
         }
         // nupkg has not been extracted yet:
         this._context.showInformationMessage(`Preparing pac CLI (v${this.cliVersion})...`);
-        await this.killTelemetryProcess();
+        await this.killProcessesInUse(pacToolsPath);
         fs.emptyDirSync(this._cliPath);
         return new Promise((resolve, reject) => {
             fs.createReadStream(pathToNupkg)
@@ -95,11 +94,10 @@ export class CliAcquisition implements IDisposable {
         return installedVersion === this._cliVersion;
     }
 
-    async killTelemetryProcess(): Promise<void> {
-        const list = await find('name', 'pacTelemetryUpload', true)
-        list.forEach((info: { pid: number }) => {
-            process.kill(info.pid)
-        });
+    async killProcessesInUse(pacInstallPath: string): Promise<void> {
+        const list = (await find('name', 'pacTelemetryUpload', true)).concat(await find('name', 'pac', true));
+        list.filter(info => info.cmd.startsWith(pacInstallPath))
+            .forEach(info => process.kill(info.pid));
     }
 
     getLatestNupkgVersion(): string {
