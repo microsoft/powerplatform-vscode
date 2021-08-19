@@ -43,6 +43,7 @@ export class PacFlatDataView<PacResultType, TreeType extends vscode.TreeItem> im
 export class AuthProfileTreeItem extends vscode.TreeItem {
     public constructor(public readonly model: AuthProfileListing) {
         super(AuthProfileTreeItem.createLabel(model), vscode.TreeItemCollapsibleState.None);
+        this.contextValue = model.Kind;
         this.tooltip = AuthProfileTreeItem.createTooltip(model);
         if (model.IsActive){
             this.iconPath = new vscode.ThemeIcon("star-full")
