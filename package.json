@@ -114,6 +114,11 @@
         "title": "Enable PAC telemetry"
       },
       {
+        "command": "pacCLI.authPanel.clearAuthProfile",
+        "title": "Clear Auth Profiles",
+        "icon": "$(clear-all)"
+      },
+      {
         "command": "pacCLI.authPanel.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
@@ -290,19 +295,24 @@
       ],
       "view/title": [
         {
-          "command": "pacCLI.authPanel.refresh",
+          "command": "pacCLI.authPanel.newAdminAuthProfile",
           "when": "view == pacCLI.authPanel",
-          "group": "navigation"
+          "group": "navigation@0"
         },
         {
           "command": "pacCLI.authPanel.newDataverseAuthProfile",
           "when": "view == pacCLI.authPanel",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
-          "command": "pacCLI.authPanel.newAdminAuthProfile",
+          "command": "pacCLI.authPanel.refresh",
           "when": "view == pacCLI.authPanel",
-          "group": "navigation"
+          "group": "navigation@2"
+        },
+        {
+          "command": "pacCLI.authPanel.clearAuthProfile",
+          "when": "view == pacCLI.authPanel",
+          "group": "navigation@3"
         },
         {
           "command": "pacCLI.solutionPanel.refresh",
@@ -371,7 +381,7 @@
       "power-platform-activitybar": [
         {
           "id": "pacCLI.authPanel",
-          "name": "Dataverse Auth Profiles",
+          "name": "Auth Profiles",
           "when": "config.powerplatform.experimental.activityBarPanels"
         },
         {
