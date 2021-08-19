@@ -61,6 +61,12 @@
     "onLanguage:html"
   ],
   "contributes": {
+    "viewsWelcome": [
+      {
+        "view": "pacCLI.authPanel",
+        "contents": "No auth profiles found on this computer.\n[Add Admin Auth Profile](command:pacCLI.authPanel.newAdminAuthProfile)\n[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)"
+      }
+    ],
     "commands": [
       {
         "command": "pacCLI.openDocumentation",
@@ -138,14 +144,46 @@
         "icon": "$(trash)"
       },
       {
+        "command": "pacCLI.authPanel.navigateToResource",
+        "title": "Navigate to Resource"
+      },
+      {
+        "command": "pacCLI.authPanel.copyUser",
+        "title": "Copy User"
+      },
+      {
         "command": "pacCLI.solutionPanel.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
+        "command": "pacCLI.solutionPanel.copyFriendlyName",
+        "title": "Copy Friendly Name"
+      },
+      {
+        "command": "pacCLI.solutionPanel.copyVersionNumber",
+        "title": "Copy Version Number"
+      },
+      {
         "command": "pacCLI.adminEnvironmentPanel.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "pacCLI.adminEnvironmentPanel.copyDisplayName",
+        "title": "Copy Display Name"
+      },
+      {
+        "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentId",
+        "title": "Copy Environment Id"
+      },
+      {
+        "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl",
+        "title": "Copy Environment Url"
+      },
+      {
+        "command": "pacCLI.adminEnvironmentPanel.copyOrganizationId",
+        "title": "Copy Organization Id"
       },
       {
         "command": "microsoft-powerapps-portals.preview-show",
@@ -211,7 +249,31 @@
           "when": "never"
         },
         {
+          "command": "pacCLI.solutionPanel.copyFriendlyName",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.solutionPanel.copyVersionNumber",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.adminEnvironmentPanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyDisplayName",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentId",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyOrganizationId",
           "when": "never"
         },
         {
@@ -220,6 +282,14 @@
         },
         {
           "command": "pacCLI.authPanel.deleteAuthProfile",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.authPanel.navigateToResource",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.authPanel.copyUser",
           "when": "never"
         }
       ],
@@ -260,6 +330,41 @@
           "command": "pacCLI.authPanel.selectAuthProfile",
           "when": "view == pacCLI.authPanel",
           "group": "inline"
+        },
+        {
+          "command": "pacCLI.authPanel.navigateToResource",
+          "when": "view == pacCLI.authPanel && viewItem == DATAVERSE"
+        },
+        {
+          "command": "pacCLI.authPanel.copyUser",
+          "when": "view == pacCLI.authPanel"
+        },
+        {
+          "command": "pacCLI.solutionPanel.copyFriendlyName",
+          "when": "view == pacCLI.solutionPanel"
+        },
+        {
+          "command": "pacCLI.solutionPanel.copyVersionNumber",
+          "when": "view == pacCLI.solutionPanel"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyDisplayName",
+          "when": "view == pacCLI.adminEnvironmentPanel",
+          "group": "displayName@0"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentId",
+          "when": "view == pacCLI.adminEnvironmentPanel",
+          "group": "environment"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl",
+          "when": "view == pacCLI.adminEnvironmentPanel",
+          "group": "environment"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyOrganizationId",
+          "when": "view == pacCLI.adminEnvironmentPanel"
         }
       ]
     },
