@@ -238,7 +238,31 @@
           "when": "never"
         },
         {
+          "command": "pacCLI.solutionPanel.copyFriendlyName",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.solutionPanel.copyVersionNumber",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.adminEnvironmentPanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyDisplayName",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentId",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.copyOrganizationId",
           "when": "never"
         },
         {
@@ -247,6 +271,14 @@
         },
         {
           "command": "pacCLI.authPanel.deleteAuthProfile",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.authPanel.navigateToResource",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.authPanel.copyUser",
           "when": "never"
         }
       ],
