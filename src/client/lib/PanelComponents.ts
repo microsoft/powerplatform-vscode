@@ -43,6 +43,8 @@ export class PacFlatDataView<PacResultType, TreeType extends vscode.TreeItem> im
 export class AuthProfileTreeItem extends vscode.TreeItem {
     public constructor(public readonly model: AuthProfileListing) {
         super(AuthProfileTreeItem.createLabel(model), vscode.TreeItemCollapsibleState.None);
+        this.contextValue = model.Kind;
+        this.tooltip = AuthProfileTreeItem.createTooltip(model);
         if (model.IsActive){
             this.iconPath = new vscode.ThemeIcon("star-full")
         }
@@ -53,8 +55,19 @@ export class AuthProfileTreeItem extends vscode.TreeItem {
         } else if (profile.Kind === "ADMIN") {
             return `${profile.Kind}: ${profile.User}`;
         } else {
-            return `${profile.Kind}: ${profile.User} - ${profile.Resource}`;
+            return `${profile.Kind}: ${profile.Resource}`;
         }
+    }
+    private static createTooltip(profile: AuthProfileListing): string {
+        let tooltip = `${profile.Kind}: `;
+        if (profile.Name) {
+            tooltip += `${profile.Name} `;
+        }
+        if (profile.Kind === "DATAVERSE") {
+            tooltip += `${profile.Resource} `;
+        }
+        tooltip += profile.User;
+        return tooltip;
     }
 }
 
