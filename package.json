@@ -61,6 +61,12 @@
     "onLanguage:html"
   ],
   "contributes": {
+    "viewsWelcome": [
+      {
+        "view": "pacCLI.authPanel",
+        "contents": "No auth profiles found on this computer.\n[Add Admin Auth Profile](command:pacCLI.authPanel.newAdminAuthProfile)\n[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)"
+      }
+    ],
     "commands": [
       {
         "command": "pacCLI.openDocumentation",
