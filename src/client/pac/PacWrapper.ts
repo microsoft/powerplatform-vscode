@@ -100,6 +100,10 @@ export class PacWrapper {
         return parsed;
     }
 
+    public async authClear(): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "clear"));
+    }
+
     public async authList(): Promise<PacAuthListOutput> {
         return this.executeCommandAndParseResults<PacAuthListOutput>(new PacArguments("auth", "list"));
     }
