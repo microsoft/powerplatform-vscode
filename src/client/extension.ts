@@ -32,15 +32,15 @@ export async function activate(
     _context = context;
 
     // Extension only supports Desktop UI installs currently
-    const extension = vscode.extensions.getExtension('microsoft-IsvExpTools.powerplatform-vscode');
-    if (extension && extension.extensionKind !== vscode.ExtensionKind.UI) {
-        vscode.window.showErrorMessage("The PowerPlatform Extension does not currently support remote installations.");
-        return;
-    }
-    if (vscode.env.uiKind !== vscode.UIKind.Desktop) {
-        vscode.window.showErrorMessage("The PowerPlatform Extension does not currently support Web UI.");
-        return;
-    }
+    // const extension = vscode.extensions.getExtension('microsoft-IsvExpTools.powerplatform-vscode');
+    // if (extension && extension.extensionKind !== vscode.ExtensionKind.UI) {
+    //     vscode.window.showErrorMessage("The PowerPlatform Extension does not currently support remote installations.");
+    //     return;
+    // }
+    // if (vscode.env.uiKind !== vscode.UIKind.Desktop) {
+    //     vscode.window.showErrorMessage("The PowerPlatform Extension does not currently support Web UI.");
+    //     return;
+    // }
 
     // setup telemetry
     const sessionId = v4();
@@ -103,10 +103,16 @@ export async function activate(
         );
     }
 
-    const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
-    const cliPath = await cli.ensureInstalled();
-    _context.subscriptions.push(cli);
-    _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
+    // Only register the server-side commands if either 
+    // 1) UI and Server are running at the same place (vscode.env.remoteName === undefined)
+    // 2) we are on the server side of a split extension (vscode.ExtensionKind === workspace)
+    const extension = vscode.extensions.getExtension('microsoft-IsvExpTools.powerplatform-vscode');
+    if (vscode.env.remoteName === undefined || extension && extension.extensionKind !== vscode.ExtensionKind.UI) {
+        const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
+        const cliPath = await cli.ensureInstalled();
+        _context.subscriptions.push(cli);
+        _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
+    }
 
     _telemetry.sendTelemetryEvent("activated");
 }
