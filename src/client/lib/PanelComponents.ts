@@ -59,15 +59,15 @@ export class AuthProfileTreeItem extends vscode.TreeItem {
         }
     }
     private static createTooltip(profile: AuthProfileListing): string {
-        let tooltip = `Profile Kind: ${profile.Kind}: `;
+        const tooltip = [`Profile Kind: ${profile.Kind}`];
         if (profile.Name) {
-            tooltip += `\nName: ${profile.Name} `;
+            tooltip.push(`Name: ${profile.Name}`);
         }
         if (profile.Kind === "DATAVERSE") {
-            tooltip += `\nResource: ${profile.Resource} `;
+            tooltip.push(`Resource: ${profile.Resource}`);
         }
-        tooltip += `\nUser: ${profile.User}`;
-        return tooltip;
+        tooltip.push(`User: ${profile.User}`);
+        return tooltip.join('\n');
     }
 }
 
