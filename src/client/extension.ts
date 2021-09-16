@@ -103,13 +103,20 @@ export async function activate(
         );
     }
 
-    // Only register the server-side commands if either 
+    // Only register the server-side commands if either
     // 1) UI and Server are running at the same place (vscode.env.remoteName === undefined)
     // 2) we are on the server side of a split extension (vscode.ExtensionKind === workspace)
     const extension = vscode.extensions.getExtension('microsoft-IsvExpTools.powerplatform-vscode');
+    const crashDebug = vscode.window.createOutputChannel("CrashDebug");
+    crashDebug.show();
+    crashDebug.appendLine(`Remote Name: ${vscode.env.remoteName}`);
+    crashDebug.appendLine(`Extension Kind: ${extension?.extensionKind}`);
     if (vscode.env.remoteName === undefined || extension && extension.extensionKind !== vscode.ExtensionKind.UI) {
-        const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
+        crashDebug.appendLine(`CLI Acquire - start`);
+        const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry, crashDebug));
+        crashDebug.appendLine(`CLI Acquire - constructor finished`);
         const cliPath = await cli.ensureInstalled();
+        crashDebug.appendLine(`CLI Acquire - ensure installed finished`);
         _context.subscriptions.push(cli);
         _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
     }
@@ -258,7 +265,8 @@ function isCurrentDocumentEdited() : boolean{
 class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(
         private readonly _context: vscode.ExtensionContext,
-        private readonly _telemetry: ITelemetry) {
+        private readonly _telemetry: ITelemetry,
+        public readonly debugOutputChannel: vscode.OutputChannel) {
     }
 
     public get extensionPath(): string { return this._context.extensionPath; }
@@ -267,8 +275,10 @@ class CliAcquisitionContext implements ICliAcquisitionContext {
 
     showInformationMessage(message: string, ...items: string[]): void {
         vscode.window.showInformationMessage(message, ...items);
+        this.debugOutputChannel.appendLine(message);
     }
     showErrorMessage(message: string, ...items: string[]): void {
         vscode.window.showErrorMessage(message, ...items);
+        this.debugOutputChannel.appendLine(message);
     }
 }
