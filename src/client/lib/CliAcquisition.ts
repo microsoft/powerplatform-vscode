@@ -102,74 +102,33 @@ export class CliAcquisition implements IDisposable {
     }
 
     async killProcessesInUse(pacInstallPath: string): Promise<void> {
-
-        this._context.showInformationMessage("CliAcquisition.killProcessesInUse() - Searching for processes");
-        const tel = await this.findProcessWithRetry(pacInstallPath, 'pacTelemetryUpload');
-        const pac = await this.findProcessWithRetry(pacInstallPath, 'pac');
-        this._context.showInformationMessage("CliAcquisition.killProcessesInUse() - PAC Processes search done");
-        const list = tel.concat(pac);
-
-        const debugOutput = list.map(info => `PID: ${info.pid}\tcmd: ${info.cmd}`).join("\n\t");
-        this._context.showInformationMessage(`CliAcquisition.killProcessesInUse() - Processes found:\n\t${debugOutput}`)
-
-        //const list = (await find('name', 'pacTelemetryUpload', true)).concat(await find('name', 'pac', true));
-        this._context.showInformationMessage(`CliAcquisition.killProcessesInUse() - Found processes ${list}`);
+        const list = await this.findPacProcesses(pacInstallPath);
         list.forEach(info => process.kill(info.pid));
     }
 
-    async findProcessWithRetry(pacInstallPath: string, procName: string): Promise<{pid: number, cmd: string, ppid?: number|undefined, uid?: number|undefined, gid?: number|undefined}[]> {
+    async findPacProcesses(pacInstallPath: string): Promise<{pid: number, cmd: string}[]> {
         try {
-            this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - Attempt find-process ${procName}`);
-            const processes = await find('name', procName, true);
-            this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - Attempt find-process ${procName} - Success!`);
+            // In most cases, find-process will handle the OS specifics to find the running 
+            // Pac and PacTelemetryUpload processes
+            const processes = (await find('name', 'pac', true))
+                .concat(await find('name', 'pacTelemetryUpload', false)); // strict = false, as this may either be 'pacTelemetryProcess' or 'dotnet pacTelemetryProcess.dll'
             return processes.filter(info => info.cmd.includes(pacInstallPath));
         } catch (err) {
-            this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - Attempt find-process ${procName} - Fail!  Error was ${err}`);
+            // find-process fails with the WSL remoting pseudo terminal, so we'll need to call 'ps' ourselves
+            if (typeof err === "string" && err.includes("screen size is bogus") && os.platform() === "linux") {
+                const psResult = spawnSync("ps", ["ax","-ww","-o","pid,args"], {encoding: "utf-8"});
 
-            // TODO - Guard on error including "screen size is bogus", and Linux OS check
-            if (typeof err === "string" && err.includes("screen size is bogus")) {
+                // Output is a single '\n' delimated string.  First row is a header, the rest are in 
+                // the format [optional left padding spaces][PID][single space][full command line arguments of the running process]
+                const processes = psResult.stdout.split(os.EOL)
+                    .filter(line => line && line.includes(pacInstallPath))
+                    .map(line => line.trimStart())
+                    .map(line => line.split(' ', 2))
+                    .map(split => ({pid: parseInt(split[0]), cmd: split[1]}));
 
-                try {
-                    this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - Explicit PS attempt [${procName}] in location [${pacInstallPath}]`);
-                    const psResult = spawnSync("ps", ["ax","-ww","-o","pid,args"]);
-                    if (psResult.error) {
-                        this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - Explicit PS attempt ${procName} - Error: ${psResult.error}`);
-                    }
-
-                    const foo = psResult.output
-                        .filter(chunk => chunk)
-                        .map((chunk: string) => chunk.split("\n"))
-                        .reduce((accumulator, current) => accumulator.concat(current), [])
-                        .filter(line => line);
-                    this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - lines: ${foo?.length ?? -1} foo: ${foo}`);
-                    //const foo1 = foo.filter(line => line && line.includes(path.join(pacInstallPath, procName)));
-                    const foo1 = foo.filter(line => line && line.includes(pacInstallPath));
-                    this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - lines: ${foo1?.length ?? -1} foo1: ${foo1?.join("\n")}`);
-                    const foo2 = foo1.map(line => {
-                        this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - type before trim: ${typeof line}`);
-                        return line.trim();
-                    });
-                    this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - lines: ${foo2?.length ?? -1} foo2: ${foo2?.join("\n")}`);
-                    const foo3 = foo2.map(line => line.split(' ', 1));
-                    this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - foo3: ${foo3}`);
-                    const foo4 = foo3.map(split => ({pid: parseInt(split[0]), cmd: split[1]}));
-                    this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - foo4: ${foo4}`);
-
-                    // const processes = psResult.output
-                    //     .filter(line => line && line.includes(path.join(pacInstallPath, procName)))
-                    //     .map(line => line.trim())
-                    //     .map(line => line.split(' ', 1))
-                    //     .map(split => ({pid: parseInt(split[0]), cmd: split[1]}));
-
-                    // return processes;
-                    return [];// foo4
-                } catch (retryErr) {
-                    this._context.showInformationMessage(`CliAcquisition.findProcessWithRetry() - failed on second attempt to find ${procName} with error ${retryErr}.`)
-                    throw retryErr;
-                }
+                    return processes;
             }
 
-            this._context.showErrorMessage("Error finding processes");
             throw err;
         }
     }
