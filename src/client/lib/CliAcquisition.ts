@@ -62,9 +62,9 @@ export class CliAcquisition implements IDisposable {
 
     async installCli(pathToNupkg: string): Promise<string> {
         const pacToolsPath = path.join(this._cliPath, 'tools');
-        // if (this.isCliExpectedVersion()) {
-        //     return Promise.resolve(pacToolsPath);
-        // }
+        if (this.isCliExpectedVersion()) {
+            return Promise.resolve(pacToolsPath);
+        }
         // nupkg has not been extracted yet:
         this._context.showInformationMessage(`Preparing pac CLI (v${this.cliVersion})...`);
         await this.killProcessesInUse(pacToolsPath);
