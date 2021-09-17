@@ -108,17 +108,21 @@ export class CliAcquisition implements IDisposable {
 
     async findPacProcesses(pacInstallPath: string): Promise<{pid: number, cmd: string}[]> {
         try {
-            // In most cases, find-process will handle the OS specifics to find the running 
+            // In most cases, find-process will handle the OS specifics to find the running
             // Pac and PacTelemetryUpload processes
             const processes = (await find('name', 'pac', true))
                 .concat(await find('name', 'pacTelemetryUpload', false)); // strict = false, as this may either be 'pacTelemetryProcess' or 'dotnet pacTelemetryProcess.dll'
-            return processes.filter(info => info.cmd.includes(pacInstallPath));
+
+            // VS Code Install path and find-process disagree on the casing of "C:\" on Windows
+            return processes.filter(info => (os.platform() === 'win32')
+                ? info.cmd.toLowerCase().includes(pacInstallPath.toLowerCase())
+                : info.cmd.includes(pacInstallPath));
         } catch (err) {
             // find-process fails with the WSL remoting pseudo terminal, so we'll need to call 'ps' ourselves
             if (typeof err === "string" && err.includes("screen size is bogus") && os.platform() === "linux") {
                 const psResult = spawnSync("ps", ["ax","-ww","-o","pid,args"], {encoding: "utf-8"});
 
-                // Output is a single '\n' delimated string.  First row is a header, the rest are in 
+                // Output is a single '\n' delimated string.  First row is a header, the rest are in
                 // the format [optional left padding spaces][PID][single space][full command line arguments of the running process]
                 const processes = psResult.stdout.split(os.EOL)
                     .filter(line => line && line.includes(pacInstallPath))
