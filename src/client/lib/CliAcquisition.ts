@@ -67,17 +67,12 @@ export class CliAcquisition implements IDisposable {
         // }
         // nupkg has not been extracted yet:
         this._context.showInformationMessage(`Preparing pac CLI (v${this.cliVersion})...`);
-        this._context.showInformationMessage("CliAcquisition.installCli() - killing processes");
         await this.killProcessesInUse(pacToolsPath);
-        this._context.showInformationMessage("CliAcquisition.installCli() - killed processes");
-        this._context.showInformationMessage("CliAcquisition.installCli() - dir sync start");
         fs.emptyDirSync(this._cliPath);
-        this._context.showInformationMessage("CliAcquisition.installCli() - dir sync end");
         return new Promise((resolve, reject) => {
             fs.createReadStream(pathToNupkg)
                 .pipe(Extract({ path: this._cliPath }))
                 .on('close', () => {
-                    this._context.showInformationMessage("CliAcquisition.installCli() - Pac CLI installed");
                     this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                     this._context.showInformationMessage('The pac CLI is ready for use in your VS Code terminal!');
                     if (os.platform() !== 'win32') {
@@ -86,7 +81,6 @@ export class CliAcquisition implements IDisposable {
                     this.setInstalledVersion(this._cliVersion);
                     resolve(pacToolsPath);
                 }).on('error', (err: unknown) => {
-                    this._context.showInformationMessage(`CliAcquisition.installCli() - Install Error ${err}`);
                     this._context.showErrorMessage(`Cannot install pac CLI: ${err}`);
                     reject(err);
                 })
@@ -130,7 +124,7 @@ export class CliAcquisition implements IDisposable {
                     .map(line => line.split(' ', 2))
                     .map(split => ({pid: parseInt(split[0]), cmd: split[1]}));
 
-                    return processes;
+                return processes;
             }
 
             throw err;
