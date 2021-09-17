@@ -29,8 +29,7 @@
     "vscode": "^1.51.0"
   },
   "extensionKind": [
-    "workspace",
-    "ui"
+    "workspace"
   ],
   "publisher": "microsoft-IsvExpTools",
   "main": "./dist/extension",
