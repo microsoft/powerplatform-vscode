@@ -59,26 +59,30 @@ export class AuthProfileTreeItem extends vscode.TreeItem {
         }
     }
     private static createTooltip(profile: AuthProfileListing): string {
-        let tooltip = `${profile.Kind}: `;
+        const tooltip = [`Profile Kind: ${profile.Kind}`];
         if (profile.Name) {
-            tooltip += `${profile.Name} `;
+            tooltip.push(`Name: ${profile.Name}`);
         }
         if (profile.Kind === "DATAVERSE") {
-            tooltip += `${profile.Resource} `;
+            tooltip.push(`Resource: ${profile.Resource}`);
         }
-        tooltip += profile.User;
-        return tooltip;
+        tooltip.push(`User: ${profile.User}`);
+        return tooltip.join('\n');
     }
 }
 
 export class SolutionTreeItem extends vscode.TreeItem {
     public constructor(public readonly model: SolutionListing) {
         super(`${model.FriendlyName}, Version: ${model.VersionNumber}`);
+
+        this.tooltip = `Display Name: ${model.FriendlyName}\nUnique Name: ${model.SolutionUniqueName}\nVersion: ${model.VersionNumber}`
     }
 }
 
 export class AdminEnvironmentTreeItem extends vscode.TreeItem {
     public constructor(public readonly model: AdminEnvironmentListing) {
-        super(`${model.DisplayName} ${model.EnvironmentUrl}`);
+        super(model.DisplayName);
+
+        this.tooltip = `Name: ${model.DisplayName}\nType: ${model.Type}\nURL: ${model.EnvironmentUrl}\nEnvironment ID: ${model.EnvironmentId}\nOrganization ID: ${model.OrganizationId}`
     }
 }

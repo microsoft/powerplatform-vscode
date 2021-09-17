@@ -115,6 +115,7 @@
       },
       {
         "command": "pacCLI.authPanel.clearAuthProfile",
+        "category": "Power Platform CLI",
         "title": "Clear Auth Profiles",
         "icon": "$(clear-all)"
       },
@@ -125,11 +126,13 @@
       },
       {
         "command": "pacCLI.authPanel.newDataverseAuthProfile",
+        "category": "Power Platform CLI",
         "title": "New Dataverse Auth Profile",
         "icon": "$(add)"
       },
       {
         "command": "pacCLI.authPanel.newAdminAuthProfile",
+        "category": "Power Platform CLI",
         "title": "New Admin Auth Profile",
         "icon": "$(add)"
       },
