@@ -431,6 +431,7 @@
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5",
     "vsce": "^1.81.1",
+    "vscode-nls-dev": "^4.0.0-next.1",
     "vscode-test": "^1.5.2",
     "webpack": "^5.10.0",
     "webpack-cli": "^4.7.0",
@@ -448,6 +449,7 @@
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
+    "vscode-nls": "^5.0.0",
     "yaml": "^1.10.2"
   }
 }
