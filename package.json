@@ -335,6 +335,11 @@
           "command": "pacCLI.solutionPanel.refresh",
           "when": "view == pacCLI.solutionPanel",
           "group": "navigation"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.refresh",
+          "when": "view == pacCLI.adminEnvironmentPanel",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
