@@ -4,8 +4,10 @@
 /* eslint-disable no-undef */
 "use strict";
 const util = require('util');
+const nls = require('vscode-nls-dev');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
+const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
 const moment = require('moment');
@@ -217,7 +219,7 @@ async function snapshot() {
 const cliVersion = '1.9.6';
 
 const recompile = gulp.series(
-    clean,
+    //clean,
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI',cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
     compile,
@@ -230,6 +232,70 @@ const dist = gulp.series(
     test
 );
 
+const translationExtensionName = "vscode-powerplatform";
+
+function translationsExport() {
+    return gulp
+        .src('src/**/*.ts')
+        .pipe(nls.createMetaDataFiles())
+        .pipe(filter(['**/*.nls.json', '**/*.nls.metadata.json']))
+        .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', '.'))
+        .pipe(filter(['**/nls.metadata.header.json', '**/nls.metadata.json']))
+        .pipe(gulp.src(["package.nls.json"]))
+        .pipe(nls.createXlfFiles("translations-export", translationExtensionName))
+        .pipe(gulp.dest(path.join("loc")));
+}
+
+function translationsImport() {
+    return gulp
+        .src("loc\\translations-import\\vscode-powerplatform.fra.xlf")
+        //.src(path.join("./loc", "translations-import", "vscode-powerplatform.fra.xlf"))
+        .pipe(nls.prepareJsonFiles())
+        .pipe(gulp.dest(path.join("./i18n", "fra")))
+}
+
+const languages = [
+    // { id: "zh-tw", folderName: "cht", transifexId: "zh-hant" },
+    // { id: "zh-cn", folderName: "chs", transifexId: "zh-hans" },
+    { id: "fr", folderName: "fra" }//,
+    // { id: "de", folderName: "deu" },
+    // { id: "it", folderName: "ita" },
+    // { id: "es", folderName: "esn" },
+    // { id: "ja", folderName: "jpn" },
+    // { id: "ko", folderName: "kor" },
+    // { id: "ru", folderName: "rus" },
+    //{ id: "bg", folderName: "bul" }, // VS Code supports Bulgarian, but VS is not currently localized for it
+    //{ id: "hu", folderName: "hun" }, // VS Code supports Hungarian, but VS is not currently localized for it
+    // { id: "pt-br", folderName: "ptb", transifexId: "pt-BR" },
+    // { id: "tr", folderName: "trk" },
+    // { id: "cs", folderName: "csy" },
+    // { id: "pl", folderName: "plk" }
+];
+
+function translationsGeneratePackage() {
+    return gulp.src(['package.nls.json'])
+        .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
+        .pipe(gulp.dest('.'));
+}
+function translationsGenerateSrcLocBundles() {
+    return gulp.src('src/**/*.ts')
+        .pipe(nls.createMetaDataFiles())
+        .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
+        .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', path.join('dist', 'src')))
+        .pipe(nls.bundleLanguageFiles())
+        //.pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
+        .pipe(filter(['**/nls.*.json']))
+        .pipe(gulp.dest(path.join('dist', 'src')));
+}
+function translationsGenerate() {
+    // return gulp.series(
+    //     async() => translationsGeneratePackage(),
+    //     async() => translationsGenerateSrcLocBundles()
+    // );
+    //return translationsGeneratePackage();
+    return translationsGenerateSrcLocBundles();
+}
+
 exports.clean = clean;
 exports.compile = compile;
 exports.recompile = recompile;
@@ -239,5 +305,8 @@ exports.test = test;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;
+exports.translationsExport = translationsExport;
+exports.translationsImport = translationsImport;
+exports.translationsGenerate = translationsGenerate;
 exports.setGitAuthN = setGitAuthN;
 exports.default = compile;

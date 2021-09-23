@@ -9,6 +9,9 @@
     "test": "node node_modules/gulp/bin/gulp.js test",
     "ci": "node node_modules/gulp/bin/gulp.js ci",
     "dist": "node node_modules/gulp/bin/gulp.js dist",
+    "translations-export": "node node_modules/gulp/bin/gulp.js translationsExport",
+    "translations-import": "node node_modules/gulp/bin/gulp.js translationsImport",
+    "translations-generate": "node node_modules/gulp/bin/gulp.js translationsGenerate",
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
     "increment-version": "node node_modules/release-it/bin/release-it --increment patch --ci -VV",
     "increment-version-npm": "npm version %VSIX_VERSION%",
@@ -71,7 +74,7 @@
       {
         "command": "pacCLI.openDocumentation",
         "category": "Power Platform CLI",
-        "title": "Documentation"
+        "title": "%pacCLI.openDocumentation.title%"
       },
       {
         "command": "pacCLI.openPacLab",
@@ -419,6 +422,7 @@
     "fs-extra": "^9.0.1",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
+    "gulp-filter": "^7.0.0",
     "gulp-mocha": "^8.0.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^6.0.0-alpha.1",

@@ -37,7 +37,14 @@ const config = {
         rules: [{
             test: /\.ts$/,
             exclude: /node_modules/,
-            use: [
+            use: [{
+                // vscode-nls-dev loader:
+                // * rewrite nls-calls
+                loader: 'vscode-nls-dev/lib/webpack-loader',
+                options: {
+                    base: __dirname
+                }
+            },
             {
                 loader: 'ts-loader'
             }
