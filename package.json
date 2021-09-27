@@ -204,14 +204,14 @@
       }
     ],
     "configuration": {
-      "tile": "PowerPlatform",
+      "tile": "Power Platform",
       "properties": {
-        "powerplatform.experimental.activityBarPanels": {
+        "powerPlatform.experimental.activityBarPanels": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Auth Profile activity bar panel"
         },
-        "powerplatform.experimental.pacLab": {
+        "powerPlatform.experimental.pacLab": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PAC Lab link command"
@@ -247,7 +247,7 @@
         },
         {
           "command": "pacCLI.openPacLab",
-          "when": "config.powerplatform.experimental.pacLab"
+          "when": "config.powerPlatform.experimental.pacLab"
         },
         {
           "command": "pacCLI.authPanel.refresh",
@@ -404,17 +404,17 @@
         {
           "id": "pacCLI.authPanel",
           "name": "Auth Profiles",
-          "when": "config.powerplatform.experimental.activityBarPanels"
+          "when": "config.powerPlatform.experimental.activityBarPanels"
         },
         {
           "id": "pacCLI.solutionPanel",
           "name": "Solutions",
-          "when": "config.powerplatform.experimental.activityBarPanels"
+          "when": "config.powerPlatform.experimental.activityBarPanels"
         },
         {
           "id": "pacCLI.adminEnvironmentPanel",
           "name": "Admin Environments",
-          "when": "config.powerplatform.experimental.activityBarPanels"
+          "when": "config.powerPlatform.experimental.activityBarPanels"
         }
       ]
     }
