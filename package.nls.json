@@ -1,0 +1,37 @@
+{
+  "pacCLI.openDocumentation.title": "Documentation",
+  "pacCLI.openPacLab.title": "Open PAC Lab",
+  "pacCLI.pacHelp.title": "Show PAC Help",
+  "pacCLI.pacAuthHelp.title": "Show PAC Authentication Help",
+  "pacCLI.pacPackageHelp.title": "Show PAC Package Help",
+  "pacCLI.pacPcfHelp.title": "Show PAC PCF Help",
+  "pacCLI.pacSolutionHelp.title": "Show PAC Solution Help",
+  "pacCLI.disableTelemetry.title": "Disable PAC Telemetry",
+  "pacCLI.enableTelemetry.title": "Enable PAC telemetry",
+
+  "power-platform-activitybar.title": "Power Platform",
+
+  "pacCLI.authPanel.title": "Auth Profiles",
+  "pacCLI.authPanel.clearAuthProfile.title": "Clear Auth Profiles",
+  "pacCLI.authPanel.refresh.title": "Refresh",
+  "pacCLI.authPanel.newDataverseAuthProfile.title": "New Dataverse Auth Profile",
+  "pacCLI.authPanel.newAdminAuthProfile.title": "New Admin Auth Profile",
+  "pacCLI.authPanel.selectAuthProfile.title": "Select Auth Profile",
+  "pacCLI.authPanel.deleteAuthProfile.title": "Delete Auth Profile",
+  "pacCLI.authPanel.navigateToResource.title": "Navigate to Resource",
+  "pacCLI.authPanel.copyUser.title": "Copy User",
+
+  "pacCLI.solutionPanel.title": "Solutions",
+  "pacCLI.solutionPanel.refresh.title": "Refresh",
+  "pacCLI.solutionPanel.copyFriendlyName.title": "Copy Friendly Name",
+  "pacCLI.solutionPanel.copyVersionNumber.title": "Copy Version Number",
+
+  "pacCLI.adminEnvironmentPanel.title": "Admin Environments",
+  "pacCLI.adminEnvironmentPanel.refresh.title": "Refresh",
+  "pacCLI.adminEnvironmentPanel.copyDisplayName.title": "Copy Display Name",
+  "pacCLI.adminEnvironmentPanel.copyEnvironmentId.title": "Copy Environment Id",
+  "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl.title": "Copy Environment Url",
+  "pacCLI.adminEnvironmentPanel.copyOrganizationId.title": "Copy Organization Id",
+
+  "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview"
+}
