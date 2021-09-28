@@ -15,7 +15,7 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Release Notes
 
-0.2.21:
+0.2.22:
   - pac CLI 1.9.8 (August refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - added pac CLI Linux support in terminal: on Windows 10, remote connect to WSL terminal (<https://code.visualstudio.com/docs/remote/wsl>)
 
