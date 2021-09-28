@@ -82,7 +82,7 @@ describe('CliAcquisition', () => {
         expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
         expect(spy.infoMessages).to.be.not.empty;
         expect(spy.noErrors).to.be.true;
-    }).timeout(10000);
+    }).timeout(20000);
 
     it('updates older version to latest CLI nupkg', async () => {
         const trackerFile = path.resolve(spy.globalStorageLocalPath, 'installTracker.json');
@@ -96,5 +96,5 @@ describe('CliAcquisition', () => {
         expect(spy.noErrors).to.be.true;
         const versionInfo = fs.readJSONSync(trackerFile);
         expect(versionInfo.pac).to.be.equal('0.9.99');
-    }).timeout(10000);
+    }).timeout(20000);
 });
