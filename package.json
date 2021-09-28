@@ -1,6 +1,6 @@
 {
   "name": "powerplatform-vscode",
-  "displayName": "Power Platform",
+  "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
   "version": "0.1.0-dev",
   "scripts": {
