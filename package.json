@@ -153,6 +153,10 @@
         "icon": "$(trash)"
       },
       {
+        "command": "pacCLI.authPanel.nameAuthProfile",
+        "title": "%pacCLI.authPanel.nameAuthProfile.title%"
+      },
+      {
         "command": "pacCLI.authPanel.navigateToResource",
         "title": "%pacCLI.authPanel.navigateToResource.title%"
       },
@@ -302,6 +306,10 @@
           "when": "never"
         },
         {
+          "command": "pacCLI.authPanel.nameAuthProfile",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.authPanel.navigateToResource",
           "when": "never"
         },
@@ -352,6 +360,10 @@
           "command": "pacCLI.authPanel.selectAuthProfile",
           "when": "view == pacCLI.authPanel",
           "group": "inline"
+        },
+        {
+          "command": "pacCLI.authPanel.nameAuthProfile",
+          "when": "view == pacCLI.authPanel"
         },
         {
           "command": "pacCLI.authPanel.navigateToResource",
