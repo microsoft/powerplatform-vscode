@@ -219,10 +219,11 @@ async function snapshot() {
 const cliVersion = '1.9.8';
 
 const recompile = gulp.series(
-    //clean,
+    clean,
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI',cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
+    translationsExport,
     compile,
 );
 
@@ -235,7 +236,9 @@ const dist = gulp.series(
 
 const translationExtensionName = "vscode-powerplatform";
 
-function translationsExport() {
+// Extract all the localizable strings from TS and package.nls.json, and package into
+// an XLF for the localization team
+async function translationsExport() {
     return gulp
         .src('src/**/*.ts')
         .pipe(nls.createMetaDataFiles())
@@ -256,21 +259,21 @@ function translationsImport() {
 }
 
 const languages = [
-    // { id: "zh-tw", folderName: "cht", transifexId: "zh-hant" },
-    // { id: "zh-cn", folderName: "chs", transifexId: "zh-hans" },
-    { id: "fr", folderName: "fra" }//,
-    // { id: "de", folderName: "deu" },
-    // { id: "it", folderName: "ita" },
-    // { id: "es", folderName: "esn" },
-    // { id: "ja", folderName: "jpn" },
-    // { id: "ko", folderName: "kor" },
-    // { id: "ru", folderName: "rus" },
-    //{ id: "bg", folderName: "bul" }, // VS Code supports Bulgarian, but VS is not currently localized for it
-    //{ id: "hu", folderName: "hun" }, // VS Code supports Hungarian, but VS is not currently localized for it
-    // { id: "pt-br", folderName: "ptb", transifexId: "pt-BR" },
-    // { id: "tr", folderName: "trk" },
-    // { id: "cs", folderName: "csy" },
-    // { id: "pl", folderName: "plk" }
+    { id: "zh-tw", folderName: "cht" },
+    { id: "zh-cn", folderName: "chs" },
+    { id: "fr", folderName: "fra" },
+    { id: "de", folderName: "deu" },
+    { id: "it", folderName: "ita" },
+    { id: "es", folderName: "esn" },
+    { id: "ja", folderName: "jpn" },
+    { id: "ko", folderName: "kor" },
+    { id: "ru", folderName: "rus" },
+    { id: "bg", folderName: "bul" },
+    { id: "hu", folderName: "hun" },
+    { id: "pt-br", folderName: "ptb"},
+    { id: "tr", folderName: "trk" },
+    { id: "cs", folderName: "csy" },
+    { id: "pl", folderName: "plk" }
 ];
 
 function translationsGeneratePackage() {

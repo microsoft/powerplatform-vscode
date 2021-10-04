@@ -2,10 +2,6 @@
 // Licensed under the MIT License.
 
 import * as vscode from "vscode";
-import * as nls from 'vscode-nls';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { ITelemetry } from './telemetry/ITelemetry';
 import { createTelemetryReporter } from './telemetry/configuration';
@@ -34,10 +30,6 @@ export async function activate(
     context: vscode.ExtensionContext
 ): Promise<void> {
     _context = context;
-    vscode.window.showInformationMessage(`Language is: [${vscode.env.language}]`);
-    const msg = localize( {key: "localization.example", comment: ["Translation notes go here", "Additional note strings result in separate lines"] },
-        "Example message for localization testing");
-    vscode.window.showInformationMessage(msg);
 
     // setup telemetry
     const sessionId = v4();

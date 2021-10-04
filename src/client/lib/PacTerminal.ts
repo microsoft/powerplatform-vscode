@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { PacInterop, PacWrapper, PacWrapperContext } from '../pac/PacWrapper';
@@ -39,18 +43,18 @@ export class PacTerminal implements vscode.Disposable {
         this._cmdDisposables.push(vscode.commands.registerCommand(`pacCLI.enableTelemetry`, async () => {
             const result = await this._pacWrapper.enableTelemetry();
             if (result?.Status === "Success") {
-                vscode.window.showInformationMessage("PAC Telemetry enabled");
+                vscode.window.showInformationMessage(localize("pacCLI.enableTelemetry.successMessage", "PAC Telemetry enabled"));
             } else {
-                vscode.window.showErrorMessage("Failed to enable PAC telemetry.")
+                vscode.window.showErrorMessage(localize("pacCLI.enableTelemetry.failureMessage", "Failed to enable PAC telemetry."));
             }
         }));
 
         this._cmdDisposables.push(vscode.commands.registerCommand(`pacCLI.disableTelemetry`, async () => {
             const result = await this._pacWrapper.disableTelemetry();
             if (result?.Status === "Success") {
-                vscode.window.showInformationMessage("PAC Telemetry disabled");
+                vscode.window.showInformationMessage(localize("pacCLI.disableTelemetry.successMessage", "PAC Telemetry disabled"));
             } else {
-                vscode.window.showErrorMessage("Failed to disable PAC telemetry.")
+                vscode.window.showErrorMessage(localize("pacCLI.disableTelemetry.failureMessage", "Failed to disable PAC telemetry."));
             }
         }));
 
