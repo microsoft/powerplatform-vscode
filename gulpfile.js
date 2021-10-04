@@ -250,14 +250,6 @@ async function translationsExport() {
         .pipe(gulp.dest(path.join("loc")));
 }
 
-function translationsImport() {
-    return gulp
-        .src("loc\\translations-import\\vscode-powerplatform.fra.xlf")
-        //.src(path.join("./loc", "translations-import", "vscode-powerplatform.fra.xlf"))
-        .pipe(nls.prepareJsonFiles())
-        .pipe(gulp.dest(path.join("./i18n", "fra")))
-}
-
 const languages = [
     { id: "zh-tw", folderName: "cht" },
     { id: "zh-cn", folderName: "chs" },
@@ -275,6 +267,14 @@ const languages = [
     { id: "cs", folderName: "csy" },
     { id: "pl", folderName: "plk" }
 ];
+
+function translationsImport() {
+    return gulp.series(languages.map((language) => {
+        return gulp.src(path.join("loc", "translations-import" `vscode-powerplatform.${language.id}.xlf`))
+            .pipe(nls.prepareJsonFiles())
+            .pipe(gulp.dest(path.join("./i18n", language.folderName)));
+    }));
+}
 
 function translationsGeneratePackage() {
     return gulp.src(['package.nls.json'])
