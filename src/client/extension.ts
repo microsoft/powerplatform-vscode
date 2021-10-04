@@ -39,22 +39,18 @@ export async function activate(
         "Example message for localization testing");
     vscode.window.showInformationMessage(msg);
 
-    // Extension only supports Desktop UI installs currently
-    const extension = vscode.extensions.getExtension('microsoft-IsvExpTools.powerplatform-vscode');
-    if (extension && extension.extensionKind !== vscode.ExtensionKind.UI) {
-        vscode.window.showErrorMessage("The PowerPlatform Extension does not currently support remote installations.");
-        return;
-    }
-    if (vscode.env.uiKind !== vscode.UIKind.Desktop) {
-        vscode.window.showErrorMessage("The PowerPlatform Extension does not currently support Web UI.");
-        return;
-    }
-
     // setup telemetry
     const sessionId = v4();
     _telemetry = createTelemetryReporter('powerplatform-vscode', context, AI_KEY, sessionId);
     context.subscriptions.push(_telemetry);
     _telemetry.sendTelemetryEvent("Start");
+
+    // Setup context switches
+    if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl"){
+        // PAC Interactive Login works when we are the UI is running on the same machine
+        // as the extension (i.e. NOT remote), or the remote is WSL
+        vscode.commands.executeCommand('setContext', 'pacCLI.authPanel.interactiveLoginSupported', true);
+    }
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
     vscode.workspace.textDocuments.forEach(didOpenTextDocument);

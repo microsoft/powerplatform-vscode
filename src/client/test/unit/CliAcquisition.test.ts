@@ -52,7 +52,7 @@ describe('CliAcquisition', () => {
         const pacDistDir = path.resolve(mockDistDir, 'pac');
         fs.ensureDirSync(pacDistDir);
         const testDataDir = path.resolve(__dirname, 'data');
-        const nupkgs = ['microsoft.powerapps.cli.0.9.99.nupkg', 'microsoft.powerapps.cli.core.osx-x64.0.9.99.nupkg']
+        const nupkgs = ['microsoft.powerapps.cli.0.9.99.nupkg', 'microsoft.powerapps.cli.core.osx-x64.0.9.99.nupkg', 'microsoft.powerapps.cli.core.linux-x64.0.9.99.nupkg']
         nupkgs.forEach(file => {
             fs.copyFileSync(path.resolve(testDataDir, file), path.resolve(pacDistDir, file));
         });
@@ -82,7 +82,7 @@ describe('CliAcquisition', () => {
         expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
         expect(spy.infoMessages).to.be.not.empty;
         expect(spy.noErrors).to.be.true;
-    }).timeout(10000);
+    }).timeout(20000);
 
     it('updates older version to latest CLI nupkg', async () => {
         const trackerFile = path.resolve(spy.globalStorageLocalPath, 'installTracker.json');
@@ -96,5 +96,5 @@ describe('CliAcquisition', () => {
         expect(spy.noErrors).to.be.true;
         const versionInfo = fs.readJSONSync(trackerFile);
         expect(versionInfo.pac).to.be.equal('0.9.99');
-    }).timeout(10000);
+    }).timeout(20000);
 });

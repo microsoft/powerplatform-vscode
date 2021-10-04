@@ -1,6 +1,6 @@
 {
   "name": "powerplatform-vscode",
-  "displayName": "Power Platform",
+  "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
   "version": "0.1.0-dev",
   "scripts": {
@@ -32,7 +32,7 @@
     "vscode": "^1.51.0"
   },
   "extensionKind": [
-    "ui"
+    "workspace"
   ],
   "publisher": "microsoft-IsvExpTools",
   "main": "./dist/extension",
@@ -67,7 +67,13 @@
     "viewsWelcome": [
       {
         "view": "pacCLI.authPanel",
-        "contents": "No auth profiles found on this computer.\n[Add Admin Auth Profile](command:pacCLI.authPanel.newAdminAuthProfile)\n[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)"
+        "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
+        "when": "pacCLI.authPanel.interactiveLoginSupported"
+      },
+      {
+        "view": "pacCLI.authPanel",
+        "contents": "%pacCLI.authPanel.welcome.whenInteractiveNotSupported%",
+        "when": "!pacCLI.authPanel.interactiveLoginSupported"
       }
     ],
     "commands": [
@@ -79,121 +85,125 @@
       {
         "command": "pacCLI.openPacLab",
         "category": "Power Platform CLI",
-        "title": "Open PAC Lab"
+        "title": "%pacCLI.openPacLab.title%"
       },
       {
         "command": "pacCLI.pacHelp",
         "category": "Power Platform CLI",
-        "title": "Show PAC Help"
+        "title": "%pacCLI.pacHelp.title%"
       },
       {
         "command": "pacCLI.pacAuthHelp",
         "category": "Power Platform CLI",
-        "title": "Show PAC Authentication Help"
+        "title": "%pacCLI.pacAuthHelp.title%"
       },
       {
         "command": "pacCLI.pacPackageHelp",
         "category": "Power Platform CLI",
-        "title": "Show PAC Package Help"
+        "title": "%pacCLI.pacPackageHelp.title%"
       },
       {
         "command": "pacCLI.pacPcfHelp",
         "category": "Power Platform CLI",
-        "title": "Show PAC PCF Help"
+        "title": "%pacCLI.pacPcfHelp.title%"
       },
       {
         "command": "pacCLI.pacSolutionHelp",
         "category": "Power Platform CLI",
-        "title": "Show PAC Solution Help"
+        "title": "%pacCLI.pacSolutionHelp.title%"
       },
       {
         "command": "pacCLI.disableTelemetry",
         "category": "Power Platform CLI",
-        "title": "Disable PAC Telemetry"
+        "title": "%pacCLI.disableTelemetry.title%"
       },
       {
         "command": "pacCLI.enableTelemetry",
         "category": "Power Platform CLI",
-        "title": "Enable PAC telemetry"
+        "title": "%pacCLI.enableTelemetry.title%"
       },
       {
         "command": "pacCLI.authPanel.clearAuthProfile",
         "category": "Power Platform CLI",
-        "title": "Clear Auth Profiles",
+        "title": "%pacCLI.authPanel.clearAuthProfile.title%",
         "icon": "$(clear-all)"
       },
       {
         "command": "pacCLI.authPanel.refresh",
-        "title": "Refresh",
+        "title": "%pacCLI.authPanel.refresh.title%",
         "icon": "$(refresh)"
       },
       {
         "command": "pacCLI.authPanel.newDataverseAuthProfile",
         "category": "Power Platform CLI",
-        "title": "New Dataverse Auth Profile",
+        "title": "%pacCLI.authPanel.newDataverseAuthProfile.title%",
         "icon": "$(add)"
       },
       {
         "command": "pacCLI.authPanel.newAdminAuthProfile",
         "category": "Power Platform CLI",
-        "title": "New Admin Auth Profile",
+        "title": "%pacCLI.authPanel.newAdminAuthProfile.title%",
         "icon": "$(add)"
       },
       {
         "command": "pacCLI.authPanel.selectAuthProfile",
-        "title": "Select Auth Profile",
+        "title": "%pacCLI.authPanel.selectAuthProfile.title%",
         "icon": "$(star-empty)"
       },
       {
         "command": "pacCLI.authPanel.deleteAuthProfile",
-        "title": "Delete Auth Profile",
+        "title": "%pacCLI.authPanel.deleteAuthProfile.title%",
         "icon": "$(trash)"
       },
       {
+        "command": "pacCLI.authPanel.nameAuthProfile",
+        "title": "%pacCLI.authPanel.nameAuthProfile.title%"
+      },
+      {
         "command": "pacCLI.authPanel.navigateToResource",
-        "title": "Navigate to Resource"
+        "title": "%pacCLI.authPanel.navigateToResource.title%"
       },
       {
         "command": "pacCLI.authPanel.copyUser",
-        "title": "Copy User"
+        "title": "%pacCLI.authPanel.copyUser.title%"
       },
       {
         "command": "pacCLI.solutionPanel.refresh",
-        "title": "Refresh",
+        "title": "%pacCLI.solutionPanel.refresh.title%",
         "icon": "$(refresh)"
       },
       {
         "command": "pacCLI.solutionPanel.copyFriendlyName",
-        "title": "Copy Friendly Name"
+        "title": "%pacCLI.solutionPanel.copyFriendlyName.title%"
       },
       {
         "command": "pacCLI.solutionPanel.copyVersionNumber",
-        "title": "Copy Version Number"
+        "title": "%pacCLI.solutionPanel.copyVersionNumber.title%"
       },
       {
         "command": "pacCLI.adminEnvironmentPanel.refresh",
-        "title": "Refresh",
+        "title": "%pacCLI.adminEnvironmentPanel.refresh.title%",
         "icon": "$(refresh)"
       },
       {
         "command": "pacCLI.adminEnvironmentPanel.copyDisplayName",
-        "title": "Copy Display Name"
+        "title": "%pacCLI.adminEnvironmentPanel.copyDisplayName.title%"
       },
       {
         "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentId",
-        "title": "Copy Environment Id"
+        "title": "%pacCLI.adminEnvironmentPanel.copyEnvironmentId.title%"
       },
       {
         "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl",
-        "title": "Copy Environment Url"
+        "title": "%pacCLI.adminEnvironmentPanel.copyEnvironmentUrl.title%"
       },
       {
         "command": "pacCLI.adminEnvironmentPanel.copyOrganizationId",
-        "title": "Copy Organization Id"
+        "title": "%pacCLI.adminEnvironmentPanel.copyOrganizationId.title%"
       },
       {
         "command": "microsoft-powerapps-portals.preview-show",
-        "title": "PowerApps Portal -> Show preview",
+        "title": "%microsoft-powerapps-portals.preview-show.title%",
         "icon": {
           "dark": "./src/client/editor_menu_icons/dark/portal_webpage_preview.svg",
           "light": "./src/client/editor_menu_icons/light/portal_webpage_preview.svg"
@@ -201,14 +211,14 @@
       }
     ],
     "configuration": {
-      "tile": "PowerPlatform",
+      "tile": "Power Platform",
       "properties": {
-        "powerplatform.experimental.activityBarPanels": {
+        "powerPlatform.experimental.activityBarPanels": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Auth Profile activity bar panel"
         },
-        "powerplatform.experimental.pacLab": {
+        "powerPlatform.experimental.pacLab": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "EXPERIMENTAL: Enable the PAC Lab link command"
@@ -244,11 +254,19 @@
         },
         {
           "command": "pacCLI.openPacLab",
-          "when": "config.powerplatform.experimental.pacLab"
+          "when": "config.powerPlatform.experimental.pacLab"
         },
         {
           "command": "pacCLI.authPanel.refresh",
           "when": "never"
+        },
+        {
+          "command": "pacCLI.authPanel.newAdminAuthProfile",
+          "when": "pacCLI.authPanel.interactiveLoginSupported"
+        },
+        {
+          "command": "pacCLI.authPanel.newDataverseAuthProfile",
+          "when": "pacCLI.authPanel.interactiveLoginSupported"
         },
         {
           "command": "pacCLI.solutionPanel.refresh",
@@ -291,6 +309,10 @@
           "when": "never"
         },
         {
+          "command": "pacCLI.authPanel.nameAuthProfile",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.authPanel.navigateToResource",
           "when": "never"
         },
@@ -302,12 +324,12 @@
       "view/title": [
         {
           "command": "pacCLI.authPanel.newAdminAuthProfile",
-          "when": "view == pacCLI.authPanel",
+          "when": "view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
           "group": "navigation@0"
         },
         {
           "command": "pacCLI.authPanel.newDataverseAuthProfile",
-          "when": "view == pacCLI.authPanel",
+          "when": "view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
           "group": "navigation@1"
         },
         {
@@ -324,6 +346,11 @@
           "command": "pacCLI.solutionPanel.refresh",
           "when": "view == pacCLI.solutionPanel",
           "group": "navigation"
+        },
+        {
+          "command": "pacCLI.adminEnvironmentPanel.refresh",
+          "when": "view == pacCLI.adminEnvironmentPanel",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -336,6 +363,10 @@
           "command": "pacCLI.authPanel.selectAuthProfile",
           "when": "view == pacCLI.authPanel",
           "group": "inline"
+        },
+        {
+          "command": "pacCLI.authPanel.nameAuthProfile",
+          "when": "view == pacCLI.authPanel"
         },
         {
           "command": "pacCLI.authPanel.navigateToResource",
@@ -378,7 +409,7 @@
       "activitybar": [
         {
           "id": "power-platform-activitybar",
-          "title": "Power Platform",
+          "title": "%power-platform-activitybar.title%",
           "icon": "resources/powerplatform-activitybar-icon.svg"
         }
       ]
@@ -387,18 +418,18 @@
       "power-platform-activitybar": [
         {
           "id": "pacCLI.authPanel",
-          "name": "Auth Profiles",
-          "when": "config.powerplatform.experimental.activityBarPanels"
+          "name": "%pacCLI.authPanel.title%",
+          "when": "config.powerPlatform.experimental.activityBarPanels"
         },
         {
           "id": "pacCLI.solutionPanel",
-          "name": "Solutions",
-          "when": "config.powerplatform.experimental.activityBarPanels"
+          "name": "%pacCLI.solutionPanel.title%",
+          "when": "config.powerPlatform.experimental.activityBarPanels"
         },
         {
           "id": "pacCLI.adminEnvironmentPanel",
-          "name": "Admin Environments",
-          "when": "config.powerplatform.experimental.activityBarPanels"
+          "name": "%pacCLI.adminEnvironmentPanel.title%",
+          "when": "config.powerPlatform.experimental.activityBarPanels"
         }
       ]
     }

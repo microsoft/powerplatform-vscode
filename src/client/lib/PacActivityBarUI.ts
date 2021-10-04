@@ -91,6 +91,17 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
                 }
             }
         }),
+        vscode.commands.registerCommand('pacCLI.authPanel.nameAuthProfile', async (item: AuthProfileTreeItem) => {
+            const authProfileName = await vscode.window.showInputBox({
+                title: "Name/Rename Auth Profile",
+                prompt: "The name you want to give to this authentication profile",
+                validateInput: value => value.length <= 12 ? null : 'Maximum 12 characters allowed'
+            });
+            if (authProfileName) {
+                await pacWrapper.authNameByIndex(item.model.Index, authProfileName);
+                authPanel.refresh();
+            }
+        }),
         vscode.commands.registerCommand('pacCLI.authPanel.navigateToResource', (item: AuthProfileTreeItem) => {
             vscode.env.openExternal(vscode.Uri.parse(item.model.Resource));
         }),
