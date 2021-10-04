@@ -33,6 +33,7 @@
   "pacCLI.authPanel.newAdminAuthProfile.title": "New Admin Auth Profile",
   "pacCLI.authPanel.selectAuthProfile.title": "Select Auth Profile",
   "pacCLI.authPanel.deleteAuthProfile.title": "Delete Auth Profile",
+  "pacCLI.authPanel.nameAuthProfile.title": "Name/Rename Auth Profile",
   "pacCLI.authPanel.navigateToResource.title": "Navigate to Resource",
   "pacCLI.authPanel.copyUser.title": "Copy User",
 
