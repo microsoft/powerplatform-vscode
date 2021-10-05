@@ -4,8 +4,10 @@
 /* eslint-disable no-undef */
 "use strict";
 const util = require('util');
+const nls = require('vscode-nls-dev');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
+const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
 const moment = require('moment');
@@ -221,6 +223,8 @@ const recompile = gulp.series(
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI',cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
+    translationsExport,
+    translationsGenerateSrcLocBundles,
     compile,
 );
 
@@ -231,6 +235,33 @@ const dist = gulp.series(
     test
 );
 
+const translationExtensionName = "vscode-powerplatform";
+
+// Extract all the localizable strings from TS and package.nls.json, and package into
+// an XLF for the localization team
+async function translationsExport() {
+    return gulp
+        .src('src/**/*.ts')
+        .pipe(nls.createMetaDataFiles())
+        .pipe(filter(['**/*.nls.json', '**/*.nls.metadata.json']))
+        .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', '.'))
+        .pipe(filter(['**/nls.metadata.header.json', '**/nls.metadata.json']))
+        .pipe(gulp.src(["package.nls.json"]))
+        .pipe(nls.createXlfFiles("translations-export", translationExtensionName))
+        .pipe(gulp.dest(path.join("loc")));
+}
+
+function translationsGenerateSrcLocBundles() {
+    return gulp.src('src/**/*.ts')
+        .pipe(nls.createMetaDataFiles())
+        // .pipe(nls.createAdditionalLanguageFiles(languages, "i18n")) // TODO, Task 2462031 once translations are available
+        .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', path.join('dist', 'src')))
+        .pipe(nls.bundleLanguageFiles())
+        .pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
+        .pipe(filter(['**/nls.*.json']))
+        .pipe(gulp.dest(path.join('dist', 'src')));
+}
+
 exports.clean = clean;
 exports.compile = compile;
 exports.recompile = recompile;
@@ -240,5 +271,6 @@ exports.test = test;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;
+exports.translationsExport = translationsExport;
 exports.setGitAuthN = setGitAuthN;
 exports.default = compile;

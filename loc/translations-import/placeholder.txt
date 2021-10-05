@@ -1,0 +1,2 @@
+Placeholder - place the translated XLF files in this directory.
+They will be imported as part of the build process with Task 2462031: Localization - Import translated XLF files

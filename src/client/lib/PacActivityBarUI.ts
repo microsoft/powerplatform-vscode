@@ -1,6 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 import * as vscode from 'vscode';
 import { PacWrapper } from '../pac/PacWrapper';
 import { PacFlatDataView, SolutionTreeItem, AdminEnvironmentTreeItem, AuthProfileTreeItem } from './PanelComponents';
@@ -45,8 +49,12 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         vscode.window.registerTreeDataProvider("pacCLI.authPanel", authPanel),
         vscode.commands.registerCommand("pacCLI.authPanel.refresh", () => authPanel.refresh()),
         vscode.commands.registerCommand("pacCLI.authPanel.clearAuthProfile", async () => {
-            const confirmResult = await vscode.window.showWarningMessage("Are you sure you want to clear all the Auth Profiles?","Confirm","Cancel");
-            if (confirmResult && confirmResult === "Confirm") {
+            const confirm = localize("pacCLI.authPanel.clearAuthProfile.confirm", "Confirm");
+            const confirmResult = await vscode.window.showWarningMessage(
+                localize("pacCLI.authPanel.clearAuthProfile.prompt", "Are you sure you want to clear all the Auth Profiles?"),
+                confirm,
+                localize("pacCLI.authPanel.clearAuthProfile.cancel","Cancel"));
+            if (confirmResult && confirmResult === confirm) {
                 await pacWrapper.authClear();
                 authPanel.refresh();
                 solutionPanel.refresh();
@@ -55,8 +63,8 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.newDataverseAuthProfile", async () => {
             const environmentUrl = await vscode.window.showInputBox({
-                title: "Create new Dataverse Auth Profile",
-                prompt: "Enter Environment URL",
+                title: localize("pacCLI.authPanel.newDataverseAuthProfile.title", "Create new Dataverse Auth Profile"),
+                prompt: localize("pacCLI.authPanel.newDataverseAuthProfile.prompt", "Enter Environment URL"),
                 placeHolder: "https://example.crm.dynamics.com/"
             });
             if (environmentUrl) {
@@ -80,8 +88,16 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             }
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.deleteAuthProfile", async (item: AuthProfileTreeItem) => {
-            const confirmResult = await vscode.window.showWarningMessage(`Are you sure you want to delete the Auth Profile ${item.model.User}-${item.model.Resource}?`,"Confirm","Cancel");
-            if (confirmResult && confirmResult === "Confirm") {
+            const confirm = localize("pacCLI.authPanel.deleteAuthProfile.confirm", "Confirm");
+            const confirmResult = await vscode.window.showWarningMessage(
+                localize({ key: "pacCLI.authPanel.deleteAuthProfile.prompt",
+                    comment: ["{0} is the user name, {1} is the URL of environment of the auth profile"]},
+                    "Are you sure you want to delete the Auth Profile {0}-{1}?",
+                    item.model.User,
+                    item.model.Resource),
+                confirm,
+                localize("pacCLI.authPanel.deleteAuthProfile.cancel", "Cancel"));
+            if (confirmResult && confirmResult === confirm) {
                 await pacWrapper.authDeleteByIndex(item.model.Index);
                 authPanel.refresh();
                 if (item.model.Kind === "DATAVERSE") {
@@ -93,9 +109,9 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         }),
         vscode.commands.registerCommand('pacCLI.authPanel.nameAuthProfile', async (item: AuthProfileTreeItem) => {
             const authProfileName = await vscode.window.showInputBox({
-                title: "Name/Rename Auth Profile",
-                prompt: "The name you want to give to this authentication profile",
-                validateInput: value => value.length <= 12 ? null : 'Maximum 12 characters allowed'
+                title: localize("pacCLI.authPanel.nameAuthProfile.title", "Name/Rename Auth Profile"),
+                prompt: localize("pacCLI.authPanel.nameAuthProfile.prompt", "The name you want to give to this authentication profile"),
+                validateInput: value => value.length <= 12 ? null : localize("pacCLI.authPanel.nameAuthProfile.validation", 'Maximum 12 characters allowed')
             });
             if (authProfileName) {
                 await pacWrapper.authNameByIndex(item.model.Index, authProfileName);
