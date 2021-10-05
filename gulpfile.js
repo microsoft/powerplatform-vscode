@@ -250,54 +250,6 @@ async function translationsExport() {
         .pipe(gulp.dest(path.join("loc")));
 }
 
-const languages = [
-    { id: "zh-tw", folderName: "cht" },
-    { id: "zh-cn", folderName: "chs" },
-    { id: "fr", folderName: "fra" },
-    { id: "de", folderName: "deu" },
-    { id: "it", folderName: "ita" },
-    { id: "es", folderName: "esn" },
-    { id: "ja", folderName: "jpn" },
-    { id: "ko", folderName: "kor" },
-    { id: "ru", folderName: "rus" },
-    { id: "bg", folderName: "bul" },
-    { id: "hu", folderName: "hun" },
-    { id: "pt-br", folderName: "ptb"},
-    { id: "tr", folderName: "trk" },
-    { id: "cs", folderName: "csy" },
-    { id: "pl", folderName: "plk" }
-];
-
-// Task 2462031: Localization - Import translated XLF files
-// function translationsImport() {
-//     return gulp.series(languages.map((language) => {
-//         return gulp.src(path.join("loc", "translations-import" `vscode-powerplatform.${language.id}.xlf`))
-//             .pipe(nls.prepareJsonFiles())
-//             .pipe(gulp.dest(path.join("./i18n", language.folderName)));
-//     }));
-// }
-//
-// function translationsGeneratePackage() {
-//     return gulp.src(['package.nls.json'])
-//         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
-//         .pipe(gulp.dest('.'));
-// }
-// function translationsGenerateSrcLocBundles() {
-//     return gulp.src('src/**/*.ts')
-//         .pipe(nls.createMetaDataFiles())
-//         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
-//         .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', path.join('dist', 'src')))
-//         .pipe(nls.bundleLanguageFiles())
-//         .pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
-//         .pipe(filter(['**/nls.*.json']))
-//         .pipe(gulp.dest(path.join('dist', 'src')));
-// }
-// function translationsGenerate() {
-//     return gulp.series(
-//         async() => translationsGeneratePackage(),
-//         async() => translationsGenerateSrcLocBundles()
-//     );
-// }
 
 exports.clean = clean;
 exports.compile = compile;
@@ -309,7 +261,5 @@ exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;
 exports.translationsExport = translationsExport;
-exports.translationsImport = translationsImport;
-exports.translationsGenerate = translationsGenerate;
 exports.setGitAuthN = setGitAuthN;
 exports.default = compile;
