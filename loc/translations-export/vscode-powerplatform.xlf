@@ -109,6 +109,19 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
       <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
     </trans-unit>
   </body></file>
+  <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cliAquisition.preparingMessage">
+      <source xml:lang="en">Preparing pac CLI (v{0})...</source>
+      <note>{0} represents the version number</note>
+    </trans-unit>
+    <trans-unit id="cliAquisition.successMessage">
+      <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
+    </trans-unit>
+    <trans-unit id="cliAquisition.installationErrorMessage">
+      <source xml:lang="en">Cannot install pac CLI: {0}</source>
+      <note>{0} represents the error message returned from the exception</note>
+    </trans-unit>
+  </body></file>
   <file original="./client/lib/PacActivityBarUI" source-language="en" datatype="plaintext"><body>
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.confirm">
       <source xml:lang="en">Confirm</source>

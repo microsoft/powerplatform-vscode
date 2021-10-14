@@ -224,6 +224,7 @@ const recompile = gulp.series(
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
+    translationsGenerateSrcLocBundles,
     compile,
 );
 
@@ -282,22 +283,23 @@ const languages = [
 //         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
 //         .pipe(gulp.dest('.'));
 // }
-// function translationsGenerateSrcLocBundles() {
-//     return gulp.src('src/**/*.ts')
-//         .pipe(nls.createMetaDataFiles())
-//         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
-//         .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', path.join('dist', 'src')))
-//         .pipe(nls.bundleLanguageFiles())
-//         .pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
-//         .pipe(filter(['**/nls.*.json']))
-//         .pipe(gulp.dest(path.join('dist', 'src')));
-// }
 // function translationsGenerate() {
 //     return gulp.series(
 //         async() => translationsGeneratePackage(),
 //         async() => translationsGenerateSrcLocBundles()
 //     );
 // }
+
+function translationsGenerateSrcLocBundles() {
+    return gulp.src('src/**/*.ts')
+        .pipe(nls.createMetaDataFiles())
+        // .pipe(nls.createAdditionalLanguageFiles(languages, "i18n")) // TODO, Task 2462031 once translations are available
+        .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', path.join('dist', 'src')))
+        .pipe(nls.bundleLanguageFiles())
+        .pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
+        .pipe(filter(['**/nls.*.json']))
+        .pipe(gulp.dest(path.join('dist', 'src')));
+}
 
 exports.clean = clean;
 exports.compile = compile;
