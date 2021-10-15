@@ -4,47 +4,47 @@
     <body>
       <trans-unit id="pacCLI.openDocumentation.title">
         <source xml:lang="en">Documentation</source>
-        <target state="translated">［L14WE］Documentation</target>
+        <target state="translated">Документация</target>
       </trans-unit>
       <trans-unit id="pacCLI.openPacLab.title">
         <source xml:lang="en">Open PAC Lab</source>
-        <target state="translated">［2YiIk］Open PAC Lab</target>
+        <target state="translated">Открыть лабораторию PAC</target>
       </trans-unit>
       <trans-unit id="pacCLI.pacHelp.title">
         <source xml:lang="en">Show PAC Help</source>
-        <target state="translated">［Pq9ef］Show PAC Help</target>
+        <target state="translated">Показать справку по PAC</target>
       </trans-unit>
       <trans-unit id="pacCLI.pacAuthHelp.title">
         <source xml:lang="en">Show PAC Authentication Help</source>
-        <target state="translated">［PGRA8］Show PAC Authentication Help</target>
+        <target state="translated">Показать справку по проверке подлинности в PAC</target>
       </trans-unit>
       <trans-unit id="pacCLI.pacPackageHelp.title">
         <source xml:lang="en">Show PAC Package Help</source>
-        <target state="translated">［uJHTq］Show PAC Package Help</target>
+        <target state="translated">Показать справку по пакету PAC</target>
       </trans-unit>
       <trans-unit id="pacCLI.pacPcfHelp.title">
         <source xml:lang="en">Show PAC PCF Help</source>
-        <target state="translated">［fYr4v］Show PAC PCF Help</target>
+        <target state="translated">Показать справку по PAC PCF</target>
       </trans-unit>
       <trans-unit id="pacCLI.pacSolutionHelp.title">
         <source xml:lang="en">Show PAC Solution Help</source>
-        <target state="translated">［3LMPO］Show PAC Solution Help</target>
+        <target state="translated">Показать справку по решению PAC</target>
       </trans-unit>
       <trans-unit id="pacCLI.disableTelemetry.title">
         <source xml:lang="en">Disable PAC Telemetry</source>
-        <target state="translated">［WcZQI］Disable PAC Telemetry</target>
+        <target state="translated">Отключить телеметрию PAC</target>
       </trans-unit>
       <trans-unit id="pacCLI.enableTelemetry.title">
         <source xml:lang="en">Enable PAC telemetry</source>
-        <target state="translated">［79kZN］Enable PAC telemetry</target>
+        <target state="translated">Включить телеметрию PAC</target>
       </trans-unit>
       <trans-unit id="power-platform-activitybar.title">
         <source xml:lang="en">Power Platform</source>
-        <target state="translated">［jhb47］Power Platform</target>
+        <target state="translated">Power Platform</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.title">
         <source xml:lang="en">Auth Profiles</source>
-        <target state="translated">［uXnrV］Auth Profiles</target>
+        <target state="translated">Профили проверки подлинности</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -53,97 +53,97 @@
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAdminAuthProfile)', keeping brackets and the text in the parentheses unmodified
 The third line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">［0zhg1］No auth profiles found on this computer.
-［0zhg1］[Add Admin Auth Profile](command:pacCLI.authPanel.newAdminAuthProfile)
-［0zhg1］[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+        <target state="translated">На компьютере не найдены профили проверки подлинности.
+[Добавить профиль проверки подлинности администратора](command:pacCLI.authPanel.newAdminAuthProfile)
+[Добавить профиль проверки подлинности Dataverse](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
 [View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">［zzcgW］No auth profiles found on this computer.
-［zzcgW］[View Auth Profile Help](command:pacCLI.pacAuthHelp)</target>
+        <target state="translated">На компьютере не найдены профили проверки подлинности.
+[Открыть справку по профилям проверки подлинности](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
-        <target state="translated">［cFVtK］Clear Auth Profiles</target>
+        <target state="translated">Удаление профилей проверки подлинности</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.refresh.title">
         <source xml:lang="en">Refresh</source>
-        <target state="translated">［oPaGM］Refresh</target>
+        <target state="translated">Обновить</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
         <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">［FUlLT］New Dataverse Auth Profile</target>
+        <target state="translated">Новый профиль проверки подлинности Dataverse</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newAdminAuthProfile.title">
         <source xml:lang="en">New Admin Auth Profile</source>
-        <target state="translated">［Fyg3Y］New Admin Auth Profile</target>
+        <target state="translated">Новый профиль проверки подлинности администратора</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
-        <target state="translated">［LnW2e］Select Auth Profile</target>
+        <target state="translated">Выбор профиля проверки подлинности</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.title">
         <source xml:lang="en">Delete Auth Profile</source>
-        <target state="translated">［Bxgvw］Delete Auth Profile</target>
+        <target state="translated">Удаление профиля проверки подлинности</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
         <source xml:lang="en">Name/Rename Auth Profile</source>
-        <target state="translated">［J8r91］Name/Rename Auth Profile</target>
+        <target state="translated">Установка/изменение имени профиля проверки подлинности</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.navigateToResource.title">
         <source xml:lang="en">Navigate to Resource</source>
-        <target state="translated">［VPhyG］Navigate to Resource</target>
+        <target state="translated">Переход к ресурсу</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.copyUser.title">
         <source xml:lang="en">Copy User</source>
-        <target state="translated">［3Jmil］Copy User</target>
+        <target state="translated">Копировать пользователя</target>
       </trans-unit>
       <trans-unit id="pacCLI.solutionPanel.title">
         <source xml:lang="en">Solutions</source>
-        <target state="translated">［fM8mr］Solutions</target>
+        <target state="translated">Решения</target>
       </trans-unit>
       <trans-unit id="pacCLI.solutionPanel.refresh.title">
         <source xml:lang="en">Refresh</source>
-        <target state="translated">［x2CdS］Refresh</target>
+        <target state="translated">Обновить</target>
       </trans-unit>
       <trans-unit id="pacCLI.solutionPanel.copyFriendlyName.title">
         <source xml:lang="en">Copy Friendly Name</source>
-        <target state="translated">［8Qs8t］Copy Friendly Name</target>
+        <target state="translated">Копировать понятное имя</target>
       </trans-unit>
       <trans-unit id="pacCLI.solutionPanel.copyVersionNumber.title">
         <source xml:lang="en">Copy Version Number</source>
-        <target state="translated">［tKHO4］Copy Version Number</target>
+        <target state="translated">Копировать номер версии</target>
       </trans-unit>
       <trans-unit id="pacCLI.adminEnvironmentPanel.title">
         <source xml:lang="en">Admin Environments</source>
-        <target state="translated">［72UOS］Admin Environments</target>
+        <target state="translated">Администрирование сред</target>
       </trans-unit>
       <trans-unit id="pacCLI.adminEnvironmentPanel.refresh.title">
         <source xml:lang="en">Refresh</source>
-        <target state="translated">［Y1Xd3］Refresh</target>
+        <target state="translated">Обновить</target>
       </trans-unit>
       <trans-unit id="pacCLI.adminEnvironmentPanel.copyDisplayName.title">
         <source xml:lang="en">Copy Display Name</source>
-        <target state="translated">［4NsKf］Copy Display Name</target>
+        <target state="translated">Копировать отображаемое имя</target>
       </trans-unit>
       <trans-unit id="pacCLI.adminEnvironmentPanel.copyEnvironmentId.title">
         <source xml:lang="en">Copy Environment Id</source>
-        <target state="translated">［83ow5］Copy Environment Id</target>
+        <target state="translated">Копировать ИД среды</target>
       </trans-unit>
       <trans-unit id="pacCLI.adminEnvironmentPanel.copyEnvironmentUrl.title">
         <source xml:lang="en">Copy Environment Url</source>
-        <target state="translated">［CIXmb］Copy Environment Url</target>
+        <target state="translated">Копировать URL-адрес среды</target>
       </trans-unit>
       <trans-unit id="pacCLI.adminEnvironmentPanel.copyOrganizationId.title">
         <source xml:lang="en">Copy Organization Id</source>
-        <target state="translated">［3fIye］Copy Organization Id</target>
+        <target state="translated">Копировать ИД организации</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.preview-show.title">
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
-        <target state="translated">［cDlYf］PowerApps Portal -&gt; Show preview</target>
+        <target state="translated">Портал PowerApps -&gt; Показать предварительную версию</target>
       </trans-unit>
     </body>
   </file>
@@ -152,16 +152,16 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
       <trans-unit id="cliAquisition.preparingMessage">
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
         <note>{0} represents the version number</note>
-        <target state="translated">［G0yUt］Preparing pac CLI (v{0})...</target>
+        <target state="translated">Подготовка pac CLI (версия {0})...</target>
       </trans-unit>
       <trans-unit id="cliAquisition.successMessage">
         <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
-        <target state="translated">［M63ND］The pac CLI is ready for use in your VS Code terminal!</target>
+        <target state="translated">Компонент pac CLI готов к использованию в терминале VS Code!</target>
       </trans-unit>
       <trans-unit id="cliAquisition.installationErrorMessage">
         <source xml:lang="en">Cannot install pac CLI: {0}</source>
         <note>{0} represents the error message returned from the exception</note>
-        <target state="translated">［abSna］Cannot install pac CLI: {0}</target>
+        <target state="translated">Не удается установить pac CLI: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -169,48 +169,48 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
     <body>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
-        <target state="translated">［CItXt］Confirm</target>
+        <target state="translated">Подтвердить</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.prompt">
         <source xml:lang="en">Are you sure you want to clear all the Auth Profiles?</source>
-        <target state="translated">［auCoC］Are you sure you want to clear all the Auth Profiles?</target>
+        <target state="translated">Вы действительно хотите удалить все профили проверки подлинности?</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="translated">［CVsoZ］Cancel</target>
+        <target state="translated">Отмена</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
         <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">［JgOyt］Create new Dataverse Auth Profile</target>
+        <target state="translated">Создание профиля проверки подлинности Dataverse</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
         <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">［YvSeL］Enter Environment URL</target>
+        <target state="translated">Введите URL-адрес среды</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
-        <target state="translated">［hLnx5］Confirm</target>
+        <target state="translated">Подтвердить</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.prompt">
         <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
         <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
-        <target state="translated">［qZIom］Are you sure you want to delete the Auth Profile {0}-{1}?</target>
+        <target state="translated">Вы действительно хотите удалить этот профиль проверки подлинности {0}-{1}?</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="translated">［ImdJ4］Cancel</target>
+        <target state="translated">Отмена</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
         <source xml:lang="en">Name/Rename Auth Profile</source>
-        <target state="translated">［ahUZn］Name/Rename Auth Profile</target>
+        <target state="translated">Установка/изменение имени профиля проверки подлинности</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.prompt">
         <source xml:lang="en">The name you want to give to this authentication profile</source>
-        <target state="translated">［6hQpW］The name you want to give to this authentication profile</target>
+        <target state="translated">Имя, которое вы хотите дать этому профилю проверки подлинности</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
         <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">［6VvxK］Maximum 12 characters allowed</target>
+        <target state="translated">Допускается не более 12 знаков</target>
       </trans-unit>
     </body>
   </file>
@@ -218,19 +218,19 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
     <body>
       <trans-unit id="pacCLI.enableTelemetry.successMessage">
         <source xml:lang="en">PAC Telemetry enabled</source>
-        <target state="translated">［jQ2Wq］PAC Telemetry enabled</target>
+        <target state="translated">Телеметрия PAC включена</target>
       </trans-unit>
       <trans-unit id="pacCLI.enableTelemetry.failureMessage">
         <source xml:lang="en">Failed to enable PAC telemetry.</source>
-        <target state="translated">［ur57p］Failed to enable PAC telemetry.</target>
+        <target state="translated">Не удалось включить телеметрию PAC.</target>
       </trans-unit>
       <trans-unit id="pacCLI.disableTelemetry.successMessage">
         <source xml:lang="en">PAC Telemetry disabled</source>
-        <target state="translated">［NRsGg］PAC Telemetry disabled</target>
+        <target state="translated">Телеметрия PAC отключена</target>
       </trans-unit>
       <trans-unit id="pacCLI.disableTelemetry.failureMessage">
         <source xml:lang="en">Failed to disable PAC telemetry.</source>
-        <target state="translated">［ktMka］Failed to disable PAC telemetry.</target>
+        <target state="translated">Не удалось отключить телеметрию PAC.</target>
       </trans-unit>
     </body>
   </file>
