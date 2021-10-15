@@ -267,15 +267,16 @@ const languages = [
     { id: "ru", folderName: "rus" },
     { id: "tr", folderName: "trk" },
     { id: "zh-cn", folderName: "chs" },
-    { id: "zh-tw", folderName: "cht" }
+    { id: "zh-tw", folderName: "cht" },
 ];
 
-// Task 2462031: Localization - Import translated XLF files
 async function translationsImport(done) {
     const tasks = languages.map((language) => {
-        return async () => gulp.src(path.join("loc", "translations-import", `vscode-powerplatform.${language.id}.xlf`))
+        const importTask = async () => gulp.src(path.join("loc", "translations-import", `vscode-powerplatform.${language.id}.xlf`))
             .pipe(nls.prepareJsonFiles())
             .pipe(gulp.dest(path.join("./i18n", language.folderName)));
+        importTask.displayName = `Importing localization - ${language.id}`;
+        return importTask;
     });
 
     return gulp.parallel(...tasks, (seriesDone) => {
