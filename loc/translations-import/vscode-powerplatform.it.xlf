@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="package" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="pacCLI.openDocumentation.title">
+        <source xml:lang="en">Documentation</source>
+        <target state="translated">Documentazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.openPacLab.title">
+        <source xml:lang="en">Open PAC Lab</source>
+        <target state="translated">Apri esercitazione PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacHelp.title">
+        <source xml:lang="en">Show PAC Help</source>
+        <target state="translated">Mostra Guida PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacAuthHelp.title">
+        <source xml:lang="en">Show PAC Authentication Help</source>
+        <target state="translated">Mostra la Guida per l'autenticazione PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacPackageHelp.title">
+        <source xml:lang="en">Show PAC Package Help</source>
+        <target state="translated">Mostra la Guida del pacchetto PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacPcfHelp.title">
+        <source xml:lang="en">Show PAC PCF Help</source>
+        <target state="translated">Mostra Guida PAC PCF</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacSolutionHelp.title">
+        <source xml:lang="en">Show PAC Solution Help</source>
+        <target state="translated">Mostra la Guida per la soluzione PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.disableTelemetry.title">
+        <source xml:lang="en">Disable PAC Telemetry</source>
+        <target state="translated">Disabilita telemetria PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.enableTelemetry.title">
+        <source xml:lang="en">Enable PAC telemetry</source>
+        <target state="translated">Abilita telemetria PAC</target>
+      </trans-unit>
+      <trans-unit id="power-platform-activitybar.title">
+        <source xml:lang="en">Power Platform</source>
+        <target state="translated">Power Platform</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.title">
+        <source xml:lang="en">Auth Profiles</source>
+        <target state="translated">Profili di autenticazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
+        <source xml:lang="en">No auth profiles found on this computer.
+[Add Admin Auth Profile](command:pacCLI.authPanel.newAdminAuthProfile)
+[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAdminAuthProfile)', keeping brackets and the text in the parentheses unmodified
+The third line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Nessun profilo di autenticazione trovato in questo computer.
+[Aggiungi profilo di autenticazione amministratore](command:pacCLI.authPanel.newAdminAuthProfile)
+[Aggiungi profilo di autenticazione Dataverse](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
+        <source xml:lang="en">No auth profiles found on this computer.
+[View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Nessun profilo di autenticazione trovato in questo computer.
+[Visualizza la Guida del profilo di autenticazione](command:pacCLI.pacAuthHelp)</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
+        <source xml:lang="en">Clear Auth Profiles</source>
+        <target state="translated">Cancella profili di autenticazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Aggiorna</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
+        <source xml:lang="en">New Dataverse Auth Profile</source>
+        <target state="translated">Nuovo profilo di autenticazione Dataverse</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.newAdminAuthProfile.title">
+        <source xml:lang="en">New Admin Auth Profile</source>
+        <target state="translated">Nuovo profilo di autenticazione amministratore</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
+        <source xml:lang="en">Select Auth Profile</source>
+        <target state="translated">Seleziona profilo autenticazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.deleteAuthProfile.title">
+        <source xml:lang="en">Delete Auth Profile</source>
+        <target state="translated">Elimina profilo di autenticazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
+        <source xml:lang="en">Name/Rename Auth Profile</source>
+        <target state="translated">Assegna un nome/rinomina profilo di autorizzazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.navigateToResource.title">
+        <source xml:lang="en">Navigate to Resource</source>
+        <target state="translated">Passa a risorsa</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.copyUser.title">
+        <source xml:lang="en">Copy User</source>
+        <target state="translated">Copia utente</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.solutionPanel.title">
+        <source xml:lang="en">Solutions</source>
+        <target state="translated">Soluzioni</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.solutionPanel.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Aggiorna</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.solutionPanel.copyFriendlyName.title">
+        <source xml:lang="en">Copy Friendly Name</source>
+        <target state="translated">Copia nome descrittivo</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.solutionPanel.copyVersionNumber.title">
+        <source xml:lang="en">Copy Version Number</source>
+        <target state="translated">Copia numero versione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.adminEnvironmentPanel.title">
+        <source xml:lang="en">Admin Environments</source>
+        <target state="translated">Ambienti amministratore</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.adminEnvironmentPanel.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Aggiorna</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.adminEnvironmentPanel.copyDisplayName.title">
+        <source xml:lang="en">Copy Display Name</source>
+        <target state="translated">Copia nome visualizzato</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.adminEnvironmentPanel.copyEnvironmentId.title">
+        <source xml:lang="en">Copy Environment Id</source>
+        <target state="translated">Copia ID ambiente</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.adminEnvironmentPanel.copyEnvironmentUrl.title">
+        <source xml:lang="en">Copy Environment Url</source>
+        <target state="translated">Copia URL ambiente</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.adminEnvironmentPanel.copyOrganizationId.title">
+        <source xml:lang="en">Copy Organization Id</source>
+        <target state="translated">Copia ID organizzazione</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.preview-show.title">
+        <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
+        <target state="translated">Portale PowerApps -&gt; Mostra anteprima</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="cliAquisition.preparingMessage">
+        <source xml:lang="en">Preparing pac CLI (v{0})...</source>
+        <note>{0} represents the version number</note>
+        <target state="translated">Preparazione di pac CLI: in corso (v{0})...</target>
+      </trans-unit>
+      <trans-unit id="cliAquisition.successMessage">
+        <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
+        <target state="translated">pac CLI è pronto per l'utilizzo nel terminale VS Code.</target>
+      </trans-unit>
+      <trans-unit id="cliAquisition.installationErrorMessage">
+        <source xml:lang="en">Cannot install pac CLI: {0}</source>
+        <note>{0} represents the error message returned from the exception</note>
+        <target state="translated">Impossibile installare pac CLI: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./client/lib/PacActivityBarUI" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="pacCLI.authPanel.clearAuthProfile.confirm">
+        <source xml:lang="en">Confirm</source>
+        <target state="translated">Conferma</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.clearAuthProfile.prompt">
+        <source xml:lang="en">Are you sure you want to clear all the Auth Profiles?</source>
+        <target state="translated">Cancellare tutti i profili di autenticazione?</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.clearAuthProfile.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annulla</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
+        <source xml:lang="en">Create new Dataverse Auth Profile</source>
+        <target state="translated">Crea nuovo profilo di autenticazione Dataverse</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
+        <source xml:lang="en">Enter Environment URL</source>
+        <target state="translated">Immetti URL ambiente</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
+        <source xml:lang="en">Confirm</source>
+        <target state="translated">Conferma</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.deleteAuthProfile.prompt">
+        <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
+        <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
+        <target state="translated">Eliminare il profilo di autenticazione {0}-{1}?</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.deleteAuthProfile.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annulla</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
+        <source xml:lang="en">Name/Rename Auth Profile</source>
+        <target state="translated">Assegna un nome/rinomina profilo di autorizzazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.nameAuthProfile.prompt">
+        <source xml:lang="en">The name you want to give to this authentication profile</source>
+        <target state="translated">Il nome che vuoi assegnare a questo profilo di autenticazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
+        <source xml:lang="en">Maximum 12 characters allowed</source>
+        <target state="translated">È consentito un massimo di 12 caratteri</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./client/lib/PacTerminal" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="pacCLI.enableTelemetry.successMessage">
+        <source xml:lang="en">PAC Telemetry enabled</source>
+        <target state="translated">Telemetria PAC abilitata</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.enableTelemetry.failureMessage">
+        <source xml:lang="en">Failed to enable PAC telemetry.</source>
+        <target state="translated">Impossibile abilitare telemetria PAC.</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.disableTelemetry.successMessage">
+        <source xml:lang="en">PAC Telemetry disabled</source>
+        <target state="translated">Telemetria PAC disabilitata</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.disableTelemetry.failureMessage">
+        <source xml:lang="en">Failed to disable PAC telemetry.</source>
+        <target state="translated">Impossibile disabilitare telemetria PAC.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
