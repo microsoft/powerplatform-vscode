@@ -263,11 +263,11 @@ const languages = [
     { id: "it", folderName: "ita" },
     { id: "ja", folderName: "jpn" },
     { id: "ko", folderName: "kor" },
-    { id: "pt-br", folderName: "ptb"},
+    { id: "pt-BR", folderName: "ptb"},
     { id: "ru", folderName: "rus" },
     { id: "tr", folderName: "trk" },
-    { id: "zh-cn", folderName: "chs" },
-    { id: "zh-tw", folderName: "cht" },
+    { id: "zh-CN", folderName: "chs" },
+    { id: "zh-TW", folderName: "cht" },
 ];
 
 async function translationsImport(done) {
