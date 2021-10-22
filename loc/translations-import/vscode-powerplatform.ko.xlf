@@ -234,4 +234,64 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
       </trans-unit>
     </body>
   </file>
+  <file original="./client/lib/PanelComponents" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.profileKind">
+        <source xml:lang="en">Profile Kind: {0}</source>
+        <note>The {0} represents the profile type (Admin vs Dataverse)</note>
+        <target state="translated">프로필 종류: {0}</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.profileName">
+        <source xml:lang="en">Name: {0}</source>
+        <note>The {0} represents the optional name the user provided for the profile)</note>
+        <target state="translated">이름: {0}</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.resource">
+        <source xml:lang="en">Resource: {0}</source>
+        <note>The {0} represents profile's resource/environment URL</note>
+        <target state="translated">리소스: {0}</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.user">
+        <source xml:lang="en">User: {0}</source>
+        <note>The {0} represents auth profile's user name (email address))</note>
+        <target state="translated">사용자: {0}</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.SolutionTreeItem.label">
+        <source xml:lang="en">{0}, Version: {1}</source>
+        <note>The {0} represents Solution's Friendly / Display name
+The {1} represents Solution's Version number</note>
+        <target state="translated">{0}, 버전: {1}</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.SolutionTreeItem.toolTip">
+        <source xml:lang="en">Display Name: {0}
+Unique Name: {1}
+Version: {2}</source>
+        <note>This is a multi-line tooltip
+The {0} represents Solution's Friendly / Display name
+The {1} represents Solution's unique name
+The {2} represents Solution's Version number</note>
+        <target state="translated">표시 이름: {0}
+고유 이름: {1}
+버전: {2}</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.AdminEnvironmentTreeItem.toolTip">
+        <source xml:lang="en">Name: {0}
+Type: {1}
+URL: {2}
+Environment ID: {3}
+Organization ID: {4}</source>
+        <note>This is a multi-line tooltip
+The {0} represents Dataverse Environment's Friendly / Display name
+The {1} represents Dataverse Environment's type (Default, Sandbox, Trial, etc)
+The {2} represents Dataverse Environment's URL
+The {3} represents Dataverse Environment's Environment ID (GUID)
+The {4} represents Dataverse Environment's Organization ID (GUID)</note>
+        <target state="translated">이름: {0}
+유형: {1}
+URL: {2}
+환경 ID: {3}
+조직 ID: {4}</target>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>
