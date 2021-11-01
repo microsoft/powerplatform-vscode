@@ -9,6 +9,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Ressource: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Benutzer: {0}",
 	"pacCLI.SolutionTreeItem.label": "{0}, Version: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "Anzeigename: {0}\r\nEindeutiger Name: {1}\r\nVersion: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "Name: {0}\r\nTyp: {1}\r\nURL: {2}\r\nUmgebungs-ID: {3}\r\nOrganisations-ID: {4}"
+	"pacCLI.SolutionTreeItem.toolTip": "Anzeigename: {0}\nEindeutiger Name: {1}\nVersion: {2}",
+	"pacCLI.AdminEnvironmentTreeItem.toolTip": "Name: {0}\nTyp: {1}\nURL: {2}\nUmgebungs-ID: {3}\nOrganisations-ID: {4}"
 }

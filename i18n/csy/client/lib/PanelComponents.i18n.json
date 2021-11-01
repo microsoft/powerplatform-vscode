@@ -9,6 +9,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Prostředek: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Uživatel: {0}",
 	"pacCLI.SolutionTreeItem.label": "{0}, verze: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "Zobrazované jméno: {0}\r\nJedinečné jméno: {1}\r\nVerze: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "Název: {0}\r\nTyp: {1}\r\nAdresa URL: {2}\r\nID prostředí: {3}\r\nKód organizace: {4}"
+	"pacCLI.SolutionTreeItem.toolTip": "Zobrazované jméno: {0}\nJedinečné jméno: {1}\nVerze: {2}",
+	"pacCLI.AdminEnvironmentTreeItem.toolTip": "Název: {0}\nTyp: {1}\nAdresa URL: {2}\nID prostředí: {3}\nKód organizace: {4}"
 }

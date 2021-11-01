@@ -9,6 +9,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Kaynak: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Kullanıcı: {0}",
 	"pacCLI.SolutionTreeItem.label": "{0}, Sürüm: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "Görünen Ad: {0}\r\nBenzersiz Ad: {1}\r\nSürüm: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "Ad: {0}\r\nTür: {1}\r\nURL: {2}\r\nOrtam Kimliği: {3}\r\nKuruluş Kimliği: {4}"
+	"pacCLI.SolutionTreeItem.toolTip": "Görünen Ad: {0}\nBenzersiz Ad: {1}\nSürüm: {2}",
+	"pacCLI.AdminEnvironmentTreeItem.toolTip": "Ad: {0}\nTür: {1}\nURL: {2}\nOrtam Kimliği: {3}\nKuruluş Kimliği: {4}"
 }
