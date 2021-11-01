@@ -9,6 +9,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "リソース: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "ユーザー: {0}",
 	"pacCLI.SolutionTreeItem.label": "{0}、バージョン: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "表示名: {0}\r\n一意の名前: {1}\r\nバージョン: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "名前: {0}\r\n種類: {1}\r\nURL: {2}\r\n環境 ID: {3}\r\n組織 ID: {4}"
+	"pacCLI.SolutionTreeItem.toolTip": "表示名: {0}\n一意の名前: {1}\nバージョン: {2}",
+	"pacCLI.AdminEnvironmentTreeItem.toolTip": "名前: {0}\n種類: {1}\nURL: {2}\n環境 ID: {3}\n組織 ID: {4}"
 }

@@ -9,6 +9,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "资源: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "用户: {0}",
 	"pacCLI.SolutionTreeItem.label": "{0}，版本: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "显示名称: {0}\r\n唯一名称: {1}\r\n版本: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "名称: {0}\r\n类型: {1}\r\nURL: {2}\r\n环境 ID: {3}\r\n组织 ID: {4}"
+	"pacCLI.SolutionTreeItem.toolTip": "显示名称: {0}\n唯一名称: {1}\n版本: {2}",
+	"pacCLI.AdminEnvironmentTreeItem.toolTip": "名称: {0}\n类型: {1}\nURL: {2}\n环境 ID: {3}\n组织 ID: {4}"
 }
