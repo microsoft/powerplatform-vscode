@@ -5,7 +5,6 @@
 
 import { expect } from 'chai';
 import * as nearley from 'nearley';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const grammar = require('../../Parser/liquidTagGrammar');
 
 describe('LiquidGrammar', () => {
@@ -14,8 +13,8 @@ describe('LiquidGrammar', () => {
     try {
       parseLiquidTag("{% entityform class: 'test' %}");
     }
-    catch (err) {
-      expect(err.message).eq('Error parsing the output');
+    catch (err: unknown) {
+      expect((err as Error).message).contains('Error parsing the output');
     }
   });
 
@@ -258,17 +257,11 @@ describe('LiquidGrammar', () => {
 
 function parseLiquidAndGetKeyValue(liquidExpression: string) {
   const parserOutput: Map<string, string> = new Map();
-  // eslint-disable-next-line no-useless-catch
-  try {
-    const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
-    parser.feed(liquidExpression);
+  const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+  parser.feed(liquidExpression);
 
-    for (const [key, value] of Object.entries(parser.results[0].map)) {
+  for (const [key, value] of Object.entries(parser.results[0].map)) {
       parserOutput.set(`${key}`, `${value}`);
-    }
-  }
-  catch (err) {
-    throw err;
   }
   return parserOutput;
 }
@@ -276,21 +269,16 @@ function parseLiquidAndGetKeyValue(liquidExpression: string) {
 function parseLiquidTag(liquidExpression: string) {
   const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
   try {
-    // eslint-disable-next-line no-useless-catch
     parser.feed(liquidExpression);
   }
   catch (err) {
-    throw new Error("Error parsing the output");
+    throw new Error(`Error parsing the output: ${err}`);
   }
   return parser.results[0].tag;
 }
 
 function checkParsedOutputLength(liquidExpression: string) {
-  // eslint-disable-next-line no-useless-catch
   const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
   parser.feed(liquidExpression);
   return parser.results.length;
 }
-
-
-
