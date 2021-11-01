@@ -8,6 +8,7 @@ const nls = require('vscode-nls-dev');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
 const filter = require('gulp-filter');
+const replace = require('gulp-replace');
 const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
 const moment = require('moment');
@@ -274,6 +275,7 @@ async function translationsImport(done) {
     const tasks = languages.map((language) => {
         const importTask = async () => gulp.src(path.join("loc", "translations-import", `vscode-powerplatform.${language.id}.xlf`))
             .pipe(nls.prepareJsonFiles())
+            .pipe(replace('\\r\\n', '\\n'))
             .pipe(gulp.dest(path.join("./i18n", language.folderName)));
         importTask.displayName = `Importing localization - ${language.id}`;
         return importTask;
@@ -288,6 +290,7 @@ async function translationsImport(done) {
 function translationsGeneratePackage() {
     return gulp.src(['package.nls.json'])
         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
+        .pipe(replace('\\r\\n', '\\n'))
         .pipe(gulp.dest('.'));
 }
 function translationsGenerate(done) {
@@ -309,6 +312,7 @@ function translationsGenerateSrcLocBundles() {
         .pipe(nls.bundleLanguageFiles())
         .pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
         .pipe(filter(['**/nls.*.json']))
+        .pipe(replace('\\r\\n', '\\n'))
         .pipe(gulp.dest(path.join('dist', 'src')));
 }
 

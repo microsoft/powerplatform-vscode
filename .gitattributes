@@ -8,6 +8,10 @@
 # linux/macOS scripts
 *.sh text eol=lf
 
+# Loc json files - vscode-nls generates \n endings; checking them out with \n should prevent unnecessary local diffs
+*.i18n.json text eol=lf
+*.nls.*.json text eol=lf
+
 # LFS config:
 # tar/zipball config:
 # https://docs.github.com/en/github/administering-a-repository/managing-git-lfs-objects-in-archives-of-your-repository
