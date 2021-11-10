@@ -9,6 +9,7 @@ const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
 const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
+const replace = require('gulp-replace');
 const mocha = require('gulp-mocha');
 const moment = require('moment');
 const gulpWebpack = require('webpack-stream');
@@ -274,6 +275,7 @@ async function translationsImport(done) {
     const tasks = languages.map((language) => {
         const importTask = async () => gulp.src(path.join("loc", "translations-import", `vscode-powerplatform.${language.id}.xlf`))
             .pipe(nls.prepareJsonFiles())
+            .pipe(replace("\\r\\n", "\\n"))
             .pipe(gulp.dest(path.join("./i18n", language.folderName)));
         importTask.displayName = `Importing localization - ${language.id}`;
         return importTask;
