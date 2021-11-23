@@ -89,21 +89,21 @@
 		"description": "Fully renders a web form by name"
 	},
     "Section-1-Column": {
-        "prefix": "section-1-column",
+        "prefix": "section-one-column",
         "body": [
             "<div class=\"row sectionBlockLayout\" style=\"text-align:left;min-height:374px;padding:8px;\"><div class=\"container\" style=\"display:flex;flex-wrap:wrap;\"><div class=\"col-md-12 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div></div></div>"
         ],
         "description": "Adds a section component with 1 column"
     },
     "Section-2-Column": {
-        "prefix": "section-2-column",
+        "prefix": "section-two-column",
         "body": [
             "<div class=\"row sectionBlockLayout\" style=\"text-align:left;min-height:374px;padding:8px;\"><div class=\"container\" style=\"display:flex;flex-wrap:wrap;\"><div class=\"col-md-6 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div><div class=\"col-md-6 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div></div></div>"
         ],
         "description": "Adds a section component with 2 column"
     },
     "Section-3-Column": {
-        "prefix": "section-3-column",
+        "prefix": "section-three-column",
         "body": [
             "<div class=\"row sectionBlockLayout\" style=\"text-align:left;min-height:374px;padding:8px;\"><div class=\"container\" style=\"display:flex;flex-wrap:wrap;\"><div class=\"col-md-4 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div><div class=\"col-md-4 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div><div class=\"col-md-4 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div></div></div>"
         ],
