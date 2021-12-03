@@ -45,6 +45,7 @@ function compile() {
     return gulp
         .src('src/**/*.ts')
         .pipe(gulpWebpack(webPackConfig, webpack))
+        .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(distdir));
 }
 
