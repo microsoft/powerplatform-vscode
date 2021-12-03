@@ -46,3 +46,14 @@ export type SolutionListing = {
 export type PacSolutionListOutput = PacOutput & {
     Results: SolutionListing[];
 }
+
+export type OrgListOutput = {
+    FriendlyName: string,
+    OrganizationId: string,
+    EnvironmentId: string,
+    EnvironmentUrl: string
+}
+
+export type PacOrgListOutput = PacOutput & {
+    Results: OrgListOutput[];
+}

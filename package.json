@@ -422,6 +422,11 @@
           "when": "config.powerPlatform.experimental.activityBarPanels"
         },
         {
+          "id": "pacCLI.envAndSolutionsPanel",
+          "name": "Environments & Solutions",
+          "when": "config.powerplatform.experimental.activityBarPanels"
+        },
+        {
           "id": "pacCLI.solutionPanel",
           "name": "%pacCLI.solutionPanel.title%",
           "when": "config.powerPlatform.experimental.activityBarPanels"

@@ -6,6 +6,7 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 import * as vscode from 'vscode';
+import { OrgListOutput, PacOrgListOutput, PacSolutionListOutput, SolutionListing } from '../pac/PacTypes';
 import { PacWrapper } from '../pac/PacWrapper';
 import { PacFlatDataView, SolutionTreeItem, AdminEnvironmentTreeItem, AuthProfileTreeItem } from './PanelComponents';
 
@@ -125,5 +126,77 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             vscode.env.clipboard.writeText(item.model.User);
         }));
 
+    const envAndSolutionPanel = new EnvAndSolutionTreeView(
+        () => pacWrapper.orgList(),
+        (envId) => pacWrapper.solutionListFromEnvironment(envId));
+    registrations.push(
+        vscode.window.registerTreeDataProvider("pacCLI.envAndSolutionsPanel", envAndSolutionPanel));
+
     return registrations;
+}
+
+class EnvOrSolutionTreeItem extends vscode.TreeItem {
+    constructor(public readonly model: OrgListOutput | SolutionListing){
+        super(EnvOrSolutionTreeItem.createLabel(model), EnvOrSolutionTreeItem.setCollapsibleState(model));
+        this.tooltip = ("SolutionUniqueName" in model)
+            ? `Display Name: ${model.FriendlyName}\nUnique Name: ${model.SolutionUniqueName}\nVersion: ${model.VersionNumber}`
+            : `Name: ${model.FriendlyName}\nURL: ${model.EnvironmentUrl}\nEnvironment ID: ${model.EnvironmentId}\nOrganization ID: ${model.OrganizationId}`
+    }
+
+    private static createLabel(model: OrgListOutput | SolutionListing): string {
+        if ("SolutionUniqueName" in model){
+            return `${model.FriendlyName}, Version: ${model.VersionNumber}`;
+        } else {
+            return `${model.FriendlyName}`
+        }
+    }
+
+    private static setCollapsibleState(model: OrgListOutput | SolutionListing): vscode.TreeItemCollapsibleState {
+        if ("SolutionUniqueName" in model){
+            return vscode.TreeItemCollapsibleState.None;
+        }
+        return vscode.TreeItemCollapsibleState.Collapsed;
+    }
+}
+
+class EnvAndSolutionTreeView implements vscode.TreeDataProvider<EnvOrSolutionTreeItem> {
+    private _onDidChangeTreeData: vscode.EventEmitter<EnvOrSolutionTreeItem | undefined | void> = new vscode.EventEmitter<EnvOrSolutionTreeItem | undefined | void>();
+    readonly onDidChangeTreeData: vscode.Event<EnvOrSolutionTreeItem | undefined | void> = this._onDidChangeTreeData.event;
+
+    constructor(
+        public readonly envDataSource: () => Promise<PacOrgListOutput>,
+        public readonly solutionDataSource: (envId: string) => Promise<PacSolutionListOutput>,
+    ){
+    }
+
+    refresh(): void {
+        this._onDidChangeTreeData.fire();
+    }
+
+    public getTreeItem(element: EnvOrSolutionTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
+        return element;
+    }
+
+    public async getChildren(element?: EnvOrSolutionTreeItem): Promise<EnvOrSolutionTreeItem[]> {
+        if (!element) {
+            // root
+            const envOutput = await this.envDataSource();
+            if (envOutput && envOutput.Status === "Success" && envOutput.Results) {
+                return envOutput.Results.map(item => new EnvOrSolutionTreeItem(item))
+            } else {
+                return [];
+            }
+        } else if ("SolutionUniqueName" in element.model) {
+            // element is solution
+            return [];
+        } else {
+            // element is environment
+            const solutionOutput = await this.solutionDataSource(element.model.EnvironmentId);
+            if (solutionOutput && solutionOutput.Status === "Success" && solutionOutput.Results) {
+                return solutionOutput.Results.map(item => new EnvOrSolutionTreeItem(item))
+            } else {
+                return [];
+            }
+        }
+    }
 }
