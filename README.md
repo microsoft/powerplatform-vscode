@@ -15,6 +15,12 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Release Notes
 
+0.2.24:
+  - Known issues with .NET 6.0 on arm64 MacOS (aka M1 and Apple Silicone)
+    - Installing .NET 6.0 on M1 machiens breaks previous installations of .NET 5.0 prior to the November 2021 release of .NET 5.0, which breaks the prerequisites of this extension.  Users who are planing to or who have already installed .NET 6.0 are recommended to uninstall .NET from the machine, then install **both** the arm64 and x64 versions of .NET 6.0
+    - Documentation on this .NET issue can be found at [.NET Support for macOS 11 and Windows 11 for Arm64 and x64](https://github.com/dotnet/sdk/issues/22380)
+    - Users who only have .NET 5.0 installed do not need to take any action.
+
 0.2.22:
   - pac CLI 1.9.8 (August refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - added pac CLI Linux support in terminal: on Windows 10, remote connect to WSL terminal (<https://code.visualstudio.com/docs/remote/wsl>)
