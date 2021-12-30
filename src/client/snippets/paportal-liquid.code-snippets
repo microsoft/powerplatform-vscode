@@ -4,61 +4,61 @@
 		"body": ["{% chart id:\"$1\" viewid:\"$2\" %}"],
 		"description": "Adds a Power Apps chart"
 	},
-    "Editable Page": {
+    "Editable page": {
 		"prefix": "editable-page",
 		"body": [
 			"{% editable page 'adx_copy' type: 'html', title: 'Page Copy', escape: false, liquid: true %}"
 		],
-		"description": "Renders a given Power Apps portals page as editable on the portal"
+		"description": "Renders the selected webpage as editable on the website"
 	},
-    "Editable Snippet": {
+    "Editable snippet": {
 		"prefix": "editable-snippet",
 		"body": [
 			"{% editable snippets '$1' type: 'html' liquid: true %}"
 		],
-		"description": "Renders a given Power Apps portals snippet as editable on the portal"
+		"description": "Renders the selected snippet as editable on the website"
 	},
 	"EntityForm ID": {
 		"prefix": "entityform-id",
 		"body": [
 			"{% entityform id:\"$1\" %}"
 		],
-		"description": "Renders an entity form by ID"
+		"description": "Renders a given form by its ID"
 	},
-	"EntityForm Name": {
+	"EntityForm name": {
 		"prefix": "entityform-name",
 		"body": [
 			"{% entityform name:\"$1\" %}"
 		],
-		"description": "Renders an entity form by name"
+		"description": "Renders a given form by its name"
 	},
-    "EntityList Name": {
+    "EntityList name": {
 		"prefix": "entitylist-name",
 		"body": [
 			"{% include 'entity_list' key: '$1' %}"
 		],
-		"description": "Loads a given entity list by name"
+		"description": "Loads a given list by its name"
 	},
-    "EntityView Id": {
+    "EntityView ID": {
 		"prefix": "entityview-id",
 		"body": [
 			"{% entityview id:\"$1\" %} {% endentityview %}"
 		],
-		"description": "Loads a given Power Apps view by ID"
+		"description": "Loads a given view by its ID"
 	},
-    "EntityView Name": {
+    "EntityView name": {
 		"prefix": "entityview-name",
 		"body": [
 			"{% entityview logical_name:\"$1\", name:\"$2\" %} {% endentityview %}"
 		],
-		"description": "Loads a given Power Apps view by name"
+		"description": "Loads a given view by its name"
 	},
 	"PowerBI AAD": {
 		"prefix": "powerbi-aad",
 		"body": [
 			"{% powerbi authentication_type:\"AAD\" path:\"$1\" %}"
 		],
-		"description": "Adds the Power BI dashboards and reports with AAD Auth"
+		"description": "Adds the Power BI dashboards and reports with AAD Authentication"
 	},
 	"PowerBI Embedded": {
 		"prefix": "powerbi-embedded",
@@ -72,56 +72,56 @@
 		"body": [
 			"{% searchindex query:\"$1\", page:\"$2\" %} {% endsearchindex %}"
 		],
-		"description": "Performs a query against the portal search index"
+		"description": "Performs a query against the site search index"
 	},
     "WebForm ID": {
 		"prefix": "webform",
 		"body": [
 			"{% webform id:\"$1\" %}"
 		],
-		"description": "Fully renders a web form by ID"
+		"description": "Fully renders a web form by its ID"
 	},
-	"WebForm Name": {
+	"WebForm name": {
 		"prefix": "webform-name",
 		"body": [
 			"{% webform name:\"$1\" %}"
 		],
-		"description": "Fully renders a web form by name"
+		"description": "Fully renders a web form by its name"
 	},
     "Section-1-Column": {
         "prefix": "section-one-column",
         "body": [
             "<div class=\"row sectionBlockLayout\" style=\"text-align:left;min-height:374px;padding:8px;\"><div class=\"container\" style=\"display:flex;flex-wrap:wrap;\"><div class=\"col-md-12 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div></div></div>"
         ],
-        "description": "Adds a section component with 1 column"
+        "description": "Adds a 1-column section"
     },
     "Section-2-Column": {
         "prefix": "section-two-column",
         "body": [
             "<div class=\"row sectionBlockLayout\" style=\"text-align:left;min-height:374px;padding:8px;\"><div class=\"container\" style=\"display:flex;flex-wrap:wrap;\"><div class=\"col-md-6 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div><div class=\"col-md-6 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div></div></div>"
         ],
-        "description": "Adds a section component with 2 column"
+        "description": "Adds a 2-column section"
     },
     "Section-3-Column": {
         "prefix": "section-three-column",
         "body": [
             "<div class=\"row sectionBlockLayout\" style=\"text-align:left;min-height:374px;padding:8px;\"><div class=\"container\" style=\"display:flex;flex-wrap:wrap;\"><div class=\"col-md-4 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div><div class=\"col-md-4 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div><div class=\"col-md-4 columnBlockLayout\" style=\"padding:16px;margin: 60px 0;min-height:200px;\"></div></div></div>"
         ],
-        "description": "Adds a section component with 3 column"
+        "description": "Adds a 3-column section"
     },
     "Section-1/3-Left-Column": {
         "prefix": "section-one-third-left-column",
         "body": [
             "<div class=\"row sectionBlockLayout\" style=\"text-align:left;min-height:374px;\"><div class=\"container\" style=\"padding:0px; display:flex;flex-wrap:wrap;\"><div class=\"col-md-4 columnBlockLayout\" style=\"padding:16px; min-height:200px;\"></div><div class=\"col-md-8 columnBlockLayout\" style=\"padding:16px; min-height:200px;\"></div></div></div>"
         ],
-        "description": "Adds a section component with one third left column"
+        "description": "Adds a section with a one third width column on the left"
     },
     "Section-1/3-Right-Column": {
         "prefix": "section-one-third-right-column",
         "body": [
             "<div class=\"row sectionBlockLayout\" style=\"text-align:left;min-height:100px;\"><div class=\"container\" style=\"padding:0px; display:flex;flex-wrap:wrap;\"><div class=\"col-md-8 columnBlockLayout\" style=\"padding:16px; min-height:200px;\"></div><div class=\"col-md-4 columnBlockLayout\" style=\"padding:16px; min-height:200px;\"></div></div></div>"
         ],
-        "description": "Adds a section component with one third right column"
+        "description":"Adds a section with a one third width column on the right"
     },
     "Image-Component": {
         "prefix": "image-component",
