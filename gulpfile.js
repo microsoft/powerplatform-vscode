@@ -45,6 +45,7 @@ function compile() {
     return gulp
         .src('src/**/*.ts')
         .pipe(gulpWebpack(webPackConfig, webpack))
+        .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(distdir));
 }
 
@@ -217,7 +218,7 @@ async function snapshot() {
         process.chdir(orgDir);
     }
 }
-const cliVersion = '1.9.9';
+const cliVersion = '1.10.4';
 
 const recompile = gulp.series(
     clean,
