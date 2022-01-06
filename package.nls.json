@@ -37,17 +37,15 @@
   "pacCLI.authPanel.navigateToResource.title": "Navigate to Resource",
   "pacCLI.authPanel.copyUser.title": "Copy User",
 
-  "pacCLI.solutionPanel.title": "Solutions",
-  "pacCLI.solutionPanel.refresh.title": "Refresh",
-  "pacCLI.solutionPanel.copyFriendlyName.title": "Copy Friendly Name",
-  "pacCLI.solutionPanel.copyVersionNumber.title": "Copy Version Number",
+  "pacCLI.envAndSolutionsPanel.title": "Environments & Solutions",
+  "pacCLI.envAndSolutionsPanel.refresh.title": "Refresh",
+  "pacCLI.envAndSolutionsPanel.copyDisplayName.title": "Copy Display Name",
+  "pacCLI.envAndSolutionsPanel.copyEnvironmentId.title": "Copy Environment Id",
+  "pacCLI.envAndSolutionsPanel.copyEnvironmentUrl.title": "Copy Environment Url",
+  "pacCLI.envAndSolutionsPanel.copyOrganizationId.title": "Copy Organization Id",
 
-  "pacCLI.adminEnvironmentPanel.title": "Admin Environments",
-  "pacCLI.adminEnvironmentPanel.refresh.title": "Refresh",
-  "pacCLI.adminEnvironmentPanel.copyDisplayName.title": "Copy Display Name",
-  "pacCLI.adminEnvironmentPanel.copyEnvironmentId.title": "Copy Environment Id",
-  "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl.title": "Copy Environment Url",
-  "pacCLI.adminEnvironmentPanel.copyOrganizationId.title": "Copy Organization Id",
+  "pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Copy Friendly Name",
+  "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copy Version Number",
 
   "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview"
 }
