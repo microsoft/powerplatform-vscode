@@ -129,10 +129,12 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "name", "--index", index.toString(), "--name", name))
     }
 
+    // currently not called from anywhere
     public async adminEnvironmentList(): Promise<PacAdminListOutput> {
         return this.executeCommandAndParseResults<PacAdminListOutput>(new PacArguments("admin", "list"));
     }
 
+    // currently not called from anywhere
     public async solutionList(): Promise<PacSolutionListOutput> {
         return this.executeCommandAndParseResults<PacSolutionListOutput>(new PacArguments("solution", "list"));
     }

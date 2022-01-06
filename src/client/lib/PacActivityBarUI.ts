@@ -6,42 +6,12 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 import * as vscode from 'vscode';
-import { OrgListOutput, PacOrgListOutput, PacSolutionListOutput, SolutionListing } from '../pac/PacTypes';
+import { OrgListOutput, SolutionListing } from '../pac/PacTypes';
 import { PacWrapper } from '../pac/PacWrapper';
-import { PacFlatDataView, SolutionTreeItem, AdminEnvironmentTreeItem, AuthProfileTreeItem } from './PanelComponents';
+import { AuthProfileTreeItem, EnvAndSolutionTreeView, EnvOrSolutionTreeItem, PacFlatDataView } from './PanelComponents';
 
 export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
     const registrations: vscode.Disposable[] = [];
-
-    const solutionPanel = new PacFlatDataView(() => pacWrapper.solutionList(), item => new SolutionTreeItem(item));
-    registrations.push(
-        vscode.window.registerTreeDataProvider("pacCLI.solutionPanel", solutionPanel),
-        vscode.commands.registerCommand("pacCLI.solutionPanel.refresh", () => solutionPanel.refresh()),
-        vscode.commands.registerCommand("pacCLI.solutionPanel.copyFriendlyName", (item: SolutionTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.FriendlyName);
-        }),
-        vscode.commands.registerCommand("pacCLI.solutionPanel.copyVersionNumber", (item: SolutionTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.VersionNumber);
-        }));
-
-    const adminEnvironmentPanel = new PacFlatDataView(
-        () => pacWrapper.adminEnvironmentList(),
-        item => new AdminEnvironmentTreeItem(item));
-    registrations.push(
-        vscode.window.registerTreeDataProvider("pacCLI.adminEnvironmentPanel", adminEnvironmentPanel),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.refresh", () => adminEnvironmentPanel.refresh()),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.copyDisplayName", (item: AdminEnvironmentTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.DisplayName);
-        }),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.copyEnvironmentId", (item: AdminEnvironmentTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.EnvironmentId);
-        }),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.copyEnvironmentUrl", (item: AdminEnvironmentTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.EnvironmentUrl);
-        }),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.copyOrganizationId", (item: AdminEnvironmentTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.OrganizationId);
-        }));
 
     const authPanel = new PacFlatDataView(
         () => pacWrapper.authList(),
@@ -58,8 +28,7 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             if (confirmResult && confirmResult === confirm) {
                 await pacWrapper.authClear();
                 authPanel.refresh();
-                solutionPanel.refresh();
-                adminEnvironmentPanel.refresh();
+                envAndSolutionPanel.refresh();
             }
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.newDataverseAuthProfile", async () => {
@@ -71,22 +40,18 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             if (environmentUrl) {
                 await pacWrapper.authCreateNewDataverseProfile(environmentUrl);
                 authPanel.refresh();
-                solutionPanel.refresh();
+                envAndSolutionPanel.refresh();
             }
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.newAdminAuthProfile", async () => {
             await pacWrapper.authCreateNewAdminProfile();
             authPanel.refresh();
-            adminEnvironmentPanel.refresh();
+            envAndSolutionPanel.refresh();
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.selectAuthProfile", async (item: AuthProfileTreeItem) => {
             await pacWrapper.authSelectByIndex(item.model.Index);
             authPanel.refresh();
-            if (item.model.Kind === "DATAVERSE") {
-                solutionPanel.refresh();
-            } else if (item.model.Kind === "ADMIN") {
-                adminEnvironmentPanel.refresh();
-            }
+            envAndSolutionPanel.refresh();
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.deleteAuthProfile", async (item: AuthProfileTreeItem) => {
             const confirm = localize("pacCLI.authPanel.deleteAuthProfile.confirm", "Confirm");
@@ -101,11 +66,7 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             if (confirmResult && confirmResult === confirm) {
                 await pacWrapper.authDeleteByIndex(item.model.Index);
                 authPanel.refresh();
-                if (item.model.Kind === "DATAVERSE") {
-                    solutionPanel.refresh();
-                } else if (item.model.Kind === "ADMIN") {
-                    adminEnvironmentPanel.refresh();
-                }
+                envAndSolutionPanel.refresh();
             }
         }),
         vscode.commands.registerCommand('pacCLI.authPanel.nameAuthProfile', async (item: AuthProfileTreeItem) => {
@@ -130,73 +91,26 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         () => pacWrapper.orgList(),
         (envId) => pacWrapper.solutionListFromEnvironment(envId));
     registrations.push(
-        vscode.window.registerTreeDataProvider("pacCLI.envAndSolutionsPanel", envAndSolutionPanel));
+        vscode.window.registerTreeDataProvider("pacCLI.envAndSolutionsPanel", envAndSolutionPanel),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.refresh", () => envAndSolutionPanel.refresh()),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyDisplayName", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as OrgListOutput).FriendlyName);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyEnvironmentId", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as OrgListOutput).EnvironmentId);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyEnvironmentUrl", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as OrgListOutput).EnvironmentUrl);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyOrganizationId", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as OrgListOutput).OrganizationId);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyFriendlyName", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as SolutionListing).FriendlyName);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyVersionNumber", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as SolutionListing).VersionNumber);
+        }));
 
     return registrations;
-}
-
-class EnvOrSolutionTreeItem extends vscode.TreeItem {
-    constructor(public readonly model: OrgListOutput | SolutionListing){
-        super(EnvOrSolutionTreeItem.createLabel(model), EnvOrSolutionTreeItem.setCollapsibleState(model));
-        this.tooltip = ("SolutionUniqueName" in model)
-            ? `Display Name: ${model.FriendlyName}\nUnique Name: ${model.SolutionUniqueName}\nVersion: ${model.VersionNumber}`
-            : `Name: ${model.FriendlyName}\nURL: ${model.EnvironmentUrl}\nEnvironment ID: ${model.EnvironmentId}\nOrganization ID: ${model.OrganizationId}`
-    }
-
-    private static createLabel(model: OrgListOutput | SolutionListing): string {
-        if ("SolutionUniqueName" in model){
-            return `${model.FriendlyName}, Version: ${model.VersionNumber}`;
-        } else {
-            return `${model.FriendlyName}`
-        }
-    }
-
-    private static setCollapsibleState(model: OrgListOutput | SolutionListing): vscode.TreeItemCollapsibleState {
-        if ("SolutionUniqueName" in model){
-            return vscode.TreeItemCollapsibleState.None;
-        }
-        return vscode.TreeItemCollapsibleState.Collapsed;
-    }
-}
-
-class EnvAndSolutionTreeView implements vscode.TreeDataProvider<EnvOrSolutionTreeItem> {
-    private _onDidChangeTreeData: vscode.EventEmitter<EnvOrSolutionTreeItem | undefined | void> = new vscode.EventEmitter<EnvOrSolutionTreeItem | undefined | void>();
-    readonly onDidChangeTreeData: vscode.Event<EnvOrSolutionTreeItem | undefined | void> = this._onDidChangeTreeData.event;
-
-    constructor(
-        public readonly envDataSource: () => Promise<PacOrgListOutput>,
-        public readonly solutionDataSource: (envId: string) => Promise<PacSolutionListOutput>,
-    ){
-    }
-
-    refresh(): void {
-        this._onDidChangeTreeData.fire();
-    }
-
-    public getTreeItem(element: EnvOrSolutionTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
-        return element;
-    }
-
-    public async getChildren(element?: EnvOrSolutionTreeItem): Promise<EnvOrSolutionTreeItem[]> {
-        if (!element) {
-            // root
-            const envOutput = await this.envDataSource();
-            if (envOutput && envOutput.Status === "Success" && envOutput.Results) {
-                return envOutput.Results.map(item => new EnvOrSolutionTreeItem(item))
-            } else {
-                return [];
-            }
-        } else if ("SolutionUniqueName" in element.model) {
-            // element is solution
-            return [];
-        } else {
-            // element is environment
-            const solutionOutput = await this.solutionDataSource(element.model.EnvironmentId);
-            if (solutionOutput && solutionOutput.Status === "Success" && solutionOutput.Results) {
-                return solutionOutput.Results.map(item => new EnvOrSolutionTreeItem(item))
-            } else {
-                return [];
-            }
-        }
-    }
 }
