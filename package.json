@@ -410,7 +410,7 @@
         {
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
-          "when": "config.powerplatform.experimental.activityBarPanels"
+          "when": "config.powerPlatform.experimental.activityBarPanels"
         }
       ]
     }
