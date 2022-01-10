@@ -96,35 +96,43 @@ export class AuthProfileTreeItem extends vscode.TreeItem {
 export class EnvOrSolutionTreeItem extends vscode.TreeItem {
     constructor(public readonly model: OrgListOutput | SolutionListing){
         super(EnvOrSolutionTreeItem.createLabel(model), EnvOrSolutionTreeItem.setCollapsibleState(model));
-        this.contextValue = "SolutionUniqueName" in model ? "SOLUTION" : "ENVIRONMENT";
-
-        this.tooltip = ("SolutionUniqueName" in model)
-            ? localize({
-                key: "pacCLI.EnvOrSolutionTreeItem.toolTip",
-                comment: [
-                    "This is a multi-line tooltip",
-                    "The {0} represents Solution's Friendly / Display name",
-                    "The {1} represents Solution's unique name",
-                    "The {2} represents Solution's Version number"]},
+        if ("SolutionUniqueName" in model) {
+            this.contextValue = "SOLUTION";
+            this.tooltip = localize(
+                {
+                    key: "pacCLI.EnvOrSolutionTreeItem.toolTip",
+                    comment: [
+                        "This is a multi-line tooltip",
+                        "The {0} represents Solution's Friendly / Display name",
+                        "The {1} represents Solution's unique name",
+                        "The {2} represents Solution's Version number"
+                    ]
+                },
                 "Display Name: {0}\nUnique Name: {1}\nVersion: {2}",
                 model.FriendlyName,
                 model.SolutionUniqueName,
                 model.VersionNumber
-            )
-            : localize({
-                key: "pacCLI.EnvOrSolutionTreeItem.toolTip",
-                comment: [
-                    "This is a multi-line tooltip",
-                    "The {0} represents Dataverse Environment's Friendly / Display name",
-                    "The {2} represents Dataverse Environment's URL",
-                    "The {3} represents Dataverse Environment's Environment ID (GUID)",
-                    "The {4} represents Dataverse Environment's Organization ID (GUID)"]},
+            );
+        } else {
+            this.contextValue = "ENVIRONMENT";
+            this.tooltip = localize(
+                {
+                    key: "pacCLI.EnvOrSolutionTreeItem.toolTip",
+                    comment: [
+                        "This is a multi-line tooltip",
+                        "The {0} represents Dataverse Environment's Friendly / Display name",
+                        "The {1} represents Dataverse Environment's URL",
+                        "The {2} represents Dataverse Environment's Environment ID (GUID)",
+                        "The {3} represents Dataverse Environment's Organization ID (GUID)"
+                    ]
+                },
                 "Name: {0}\nURL: {1}\nEnvironment ID: {2}\nOrganization ID: {3}",
                 model.FriendlyName,
                 model.EnvironmentUrl,
                 model.EnvironmentId,
                 model.OrganizationId
             );
+        }
     }
 
     private static createLabel(model: OrgListOutput | SolutionListing): string {
