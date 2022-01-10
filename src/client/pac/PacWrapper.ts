@@ -9,7 +9,7 @@ import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput } from "./PacTypes";
 import { v4 } from "uuid";
 
 export interface IPacWrapperContext {
@@ -129,12 +129,22 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "name", "--index", index.toString(), "--name", name))
     }
 
+    // currently not called from anywhere
     public async adminEnvironmentList(): Promise<PacAdminListOutput> {
         return this.executeCommandAndParseResults<PacAdminListOutput>(new PacArguments("admin", "list"));
     }
 
+    // currently not called from anywhere
     public async solutionList(): Promise<PacSolutionListOutput> {
         return this.executeCommandAndParseResults<PacSolutionListOutput>(new PacArguments("solution", "list"));
+    }
+
+    public async solutionListFromEnvironment(environmentId: string): Promise<PacSolutionListOutput> {
+        return this.executeCommandAndParseResults<PacSolutionListOutput>(new PacArguments("solution", "list", "--environment-id", environmentId));
+    }
+
+    public async orgList(): Promise<PacOrgListOutput> {
+        return this.executeCommandAndParseResults<PacOrgListOutput>(new PacArguments("org", "list"));
     }
 
     public async enableTelemetry(): Promise<PacOutput> {

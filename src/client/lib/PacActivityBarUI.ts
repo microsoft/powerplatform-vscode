@@ -6,41 +6,12 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 import * as vscode from 'vscode';
+import { OrgListOutput, SolutionListing } from '../pac/PacTypes';
 import { PacWrapper } from '../pac/PacWrapper';
-import { PacFlatDataView, SolutionTreeItem, AdminEnvironmentTreeItem, AuthProfileTreeItem } from './PanelComponents';
+import { AuthProfileTreeItem, EnvAndSolutionTreeView, EnvOrSolutionTreeItem, PacFlatDataView } from './PanelComponents';
 
 export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
     const registrations: vscode.Disposable[] = [];
-
-    const solutionPanel = new PacFlatDataView(() => pacWrapper.solutionList(), item => new SolutionTreeItem(item));
-    registrations.push(
-        vscode.window.registerTreeDataProvider("pacCLI.solutionPanel", solutionPanel),
-        vscode.commands.registerCommand("pacCLI.solutionPanel.refresh", () => solutionPanel.refresh()),
-        vscode.commands.registerCommand("pacCLI.solutionPanel.copyFriendlyName", (item: SolutionTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.FriendlyName);
-        }),
-        vscode.commands.registerCommand("pacCLI.solutionPanel.copyVersionNumber", (item: SolutionTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.VersionNumber);
-        }));
-
-    const adminEnvironmentPanel = new PacFlatDataView(
-        () => pacWrapper.adminEnvironmentList(),
-        item => new AdminEnvironmentTreeItem(item));
-    registrations.push(
-        vscode.window.registerTreeDataProvider("pacCLI.adminEnvironmentPanel", adminEnvironmentPanel),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.refresh", () => adminEnvironmentPanel.refresh()),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.copyDisplayName", (item: AdminEnvironmentTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.DisplayName);
-        }),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.copyEnvironmentId", (item: AdminEnvironmentTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.EnvironmentId);
-        }),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.copyEnvironmentUrl", (item: AdminEnvironmentTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.EnvironmentUrl);
-        }),
-        vscode.commands.registerCommand("pacCLI.adminEnvironmentPanel.copyOrganizationId", (item: AdminEnvironmentTreeItem) => {
-            vscode.env.clipboard.writeText(item.model.OrganizationId);
-        }));
 
     const authPanel = new PacFlatDataView(
         () => pacWrapper.authList(),
@@ -57,8 +28,7 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             if (confirmResult && confirmResult === confirm) {
                 await pacWrapper.authClear();
                 authPanel.refresh();
-                solutionPanel.refresh();
-                adminEnvironmentPanel.refresh();
+                envAndSolutionPanel.refresh();
             }
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.newDataverseAuthProfile", async () => {
@@ -70,22 +40,18 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             if (environmentUrl) {
                 await pacWrapper.authCreateNewDataverseProfile(environmentUrl);
                 authPanel.refresh();
-                solutionPanel.refresh();
+                envAndSolutionPanel.refresh();
             }
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.newAdminAuthProfile", async () => {
             await pacWrapper.authCreateNewAdminProfile();
             authPanel.refresh();
-            adminEnvironmentPanel.refresh();
+            envAndSolutionPanel.refresh();
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.selectAuthProfile", async (item: AuthProfileTreeItem) => {
             await pacWrapper.authSelectByIndex(item.model.Index);
             authPanel.refresh();
-            if (item.model.Kind === "DATAVERSE") {
-                solutionPanel.refresh();
-            } else if (item.model.Kind === "ADMIN") {
-                adminEnvironmentPanel.refresh();
-            }
+            envAndSolutionPanel.refresh();
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.deleteAuthProfile", async (item: AuthProfileTreeItem) => {
             const confirm = localize("pacCLI.authPanel.deleteAuthProfile.confirm", "Confirm");
@@ -100,11 +66,7 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             if (confirmResult && confirmResult === confirm) {
                 await pacWrapper.authDeleteByIndex(item.model.Index);
                 authPanel.refresh();
-                if (item.model.Kind === "DATAVERSE") {
-                    solutionPanel.refresh();
-                } else if (item.model.Kind === "ADMIN") {
-                    adminEnvironmentPanel.refresh();
-                }
+                envAndSolutionPanel.refresh();
             }
         }),
         vscode.commands.registerCommand('pacCLI.authPanel.nameAuthProfile', async (item: AuthProfileTreeItem) => {
@@ -123,6 +85,31 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         }),
         vscode.commands.registerCommand('pacCLI.authPanel.copyUser', (item: AuthProfileTreeItem) => {
             vscode.env.clipboard.writeText(item.model.User);
+        }));
+
+    const envAndSolutionPanel = new EnvAndSolutionTreeView(
+        () => pacWrapper.orgList(),
+        (envId) => pacWrapper.solutionListFromEnvironment(envId));
+    registrations.push(
+        vscode.window.registerTreeDataProvider("pacCLI.envAndSolutionsPanel", envAndSolutionPanel),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.refresh", () => envAndSolutionPanel.refresh()),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyDisplayName", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as OrgListOutput).FriendlyName);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyEnvironmentId", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as OrgListOutput).EnvironmentId);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyEnvironmentUrl", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as OrgListOutput).EnvironmentUrl);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyOrganizationId", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as OrgListOutput).OrganizationId);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyFriendlyName", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as SolutionListing).FriendlyName);
+        }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyVersionNumber", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as SolutionListing).VersionNumber);
         }));
 
     return registrations;

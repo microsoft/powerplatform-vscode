@@ -75,35 +75,29 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
     <trans-unit id="pacCLI.authPanel.copyUser.title">
       <source xml:lang="en">Copy User</source>
     </trans-unit>
-    <trans-unit id="pacCLI.solutionPanel.title">
-      <source xml:lang="en">Solutions</source>
+    <trans-unit id="pacCLI.envAndSolutionsPanel.title">
+      <source xml:lang="en">Environments &amp; Solutions</source>
     </trans-unit>
-    <trans-unit id="pacCLI.solutionPanel.refresh.title">
+    <trans-unit id="pacCLI.envAndSolutionsPanel.refresh.title">
       <source xml:lang="en">Refresh</source>
     </trans-unit>
-    <trans-unit id="pacCLI.solutionPanel.copyFriendlyName.title">
-      <source xml:lang="en">Copy Friendly Name</source>
-    </trans-unit>
-    <trans-unit id="pacCLI.solutionPanel.copyVersionNumber.title">
-      <source xml:lang="en">Copy Version Number</source>
-    </trans-unit>
-    <trans-unit id="pacCLI.adminEnvironmentPanel.title">
-      <source xml:lang="en">Admin Environments</source>
-    </trans-unit>
-    <trans-unit id="pacCLI.adminEnvironmentPanel.refresh.title">
-      <source xml:lang="en">Refresh</source>
-    </trans-unit>
-    <trans-unit id="pacCLI.adminEnvironmentPanel.copyDisplayName.title">
+    <trans-unit id="pacCLI.envAndSolutionsPanel.copyDisplayName.title">
       <source xml:lang="en">Copy Display Name</source>
     </trans-unit>
-    <trans-unit id="pacCLI.adminEnvironmentPanel.copyEnvironmentId.title">
+    <trans-unit id="pacCLI.envAndSolutionsPanel.copyEnvironmentId.title">
       <source xml:lang="en">Copy Environment Id</source>
     </trans-unit>
-    <trans-unit id="pacCLI.adminEnvironmentPanel.copyEnvironmentUrl.title">
+    <trans-unit id="pacCLI.envAndSolutionsPanel.copyEnvironmentUrl.title">
       <source xml:lang="en">Copy Environment Url</source>
     </trans-unit>
-    <trans-unit id="pacCLI.adminEnvironmentPanel.copyOrganizationId.title">
+    <trans-unit id="pacCLI.envAndSolutionsPanel.copyOrganizationId.title">
       <source xml:lang="en">Copy Organization Id</source>
+    </trans-unit>
+    <trans-unit id="pacCLI.envAndSolutionsPanel.copyFriendlyName.title">
+      <source xml:lang="en">Copy Friendly Name</source>
+    </trans-unit>
+    <trans-unit id="pacCLI.envAndSolutionsPanel.copyVersionNumber.title">
+      <source xml:lang="en">Copy Version Number</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.preview-show.title">
       <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
@@ -189,12 +183,7 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
       <source xml:lang="en">User: {0}</source>
       <note>The {0} represents auth profile's user name (email address))</note>
     </trans-unit>
-    <trans-unit id="pacCLI.SolutionTreeItem.label">
-      <source xml:lang="en">{0}, Version: {1}</source>
-      <note>The {0} represents Solution's Friendly / Display name
-The {1} represents Solution's Version number</note>
-    </trans-unit>
-    <trans-unit id="pacCLI.SolutionTreeItem.toolTip">
+    <trans-unit id="pacCLI.EnvOrSolutionTreeItem.toolTip">
       <source xml:lang="en">Display Name: {0}
 Unique Name: {1}
 Version: {2}</source>
@@ -202,19 +191,6 @@ Version: {2}</source>
 The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
-    </trans-unit>
-    <trans-unit id="pacCLI.AdminEnvironmentTreeItem.toolTip">
-      <source xml:lang="en">Name: {0}
-Type: {1}
-URL: {2}
-Environment ID: {3}
-Organization ID: {4}</source>
-      <note>This is a multi-line tooltip
-The {0} represents Dataverse Environment's Friendly / Display name
-The {1} represents Dataverse Environment's type (Default, Sandbox, Trial, etc)
-The {2} represents Dataverse Environment's URL
-The {3} represents Dataverse Environment's Environment ID (GUID)
-The {4} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
   </body></file>
 </xliff>

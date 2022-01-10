@@ -168,38 +168,33 @@
         "title": "%pacCLI.authPanel.copyUser.title%"
       },
       {
-        "command": "pacCLI.solutionPanel.refresh",
-        "title": "%pacCLI.solutionPanel.refresh.title%",
+        "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",
+        "title": "%pacCLI.envAndSolutionsPanel.copyFriendlyName.title%"
+      },
+      {
+        "command": "pacCLI.envAndSolutionsPanel.copyVersionNumber",
+        "title": "%pacCLI.envAndSolutionsPanel.copyVersionNumber.title%"
+      },
+      {
+        "command": "pacCLI.envAndSolutionsPanel.refresh",
+        "title": "%pacCLI.envAndSolutionsPanel.refresh.title%",
         "icon": "$(refresh)"
       },
       {
-        "command": "pacCLI.solutionPanel.copyFriendlyName",
-        "title": "%pacCLI.solutionPanel.copyFriendlyName.title%"
+        "command": "pacCLI.envAndSolutionsPanel.copyDisplayName",
+        "title": "%pacCLI.envAndSolutionsPanel.copyDisplayName.title%"
       },
       {
-        "command": "pacCLI.solutionPanel.copyVersionNumber",
-        "title": "%pacCLI.solutionPanel.copyVersionNumber.title%"
+        "command": "pacCLI.envAndSolutionsPanel.copyEnvironmentId",
+        "title": "%pacCLI.envAndSolutionsPanel.copyEnvironmentId.title%"
       },
       {
-        "command": "pacCLI.adminEnvironmentPanel.refresh",
-        "title": "%pacCLI.adminEnvironmentPanel.refresh.title%",
-        "icon": "$(refresh)"
+        "command": "pacCLI.envAndSolutionsPanel.copyEnvironmentUrl",
+        "title": "%pacCLI.envAndSolutionsPanel.copyEnvironmentUrl.title%"
       },
       {
-        "command": "pacCLI.adminEnvironmentPanel.copyDisplayName",
-        "title": "%pacCLI.adminEnvironmentPanel.copyDisplayName.title%"
-      },
-      {
-        "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentId",
-        "title": "%pacCLI.adminEnvironmentPanel.copyEnvironmentId.title%"
-      },
-      {
-        "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl",
-        "title": "%pacCLI.adminEnvironmentPanel.copyEnvironmentUrl.title%"
-      },
-      {
-        "command": "pacCLI.adminEnvironmentPanel.copyOrganizationId",
-        "title": "%pacCLI.adminEnvironmentPanel.copyOrganizationId.title%"
+        "command": "pacCLI.envAndSolutionsPanel.copyOrganizationId",
+        "title": "%pacCLI.envAndSolutionsPanel.copyOrganizationId.title%"
       },
       {
         "command": "microsoft-powerapps-portals.preview-show",
@@ -269,35 +264,31 @@
           "when": "pacCLI.authPanel.interactiveLoginSupported"
         },
         {
-          "command": "pacCLI.solutionPanel.refresh",
+          "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",
           "when": "never"
         },
         {
-          "command": "pacCLI.solutionPanel.copyFriendlyName",
+          "command": "pacCLI.envAndSolutionsPanel.copyVersionNumber",
           "when": "never"
         },
         {
-          "command": "pacCLI.solutionPanel.copyVersionNumber",
+          "command": "pacCLI.envAndSolutionsPanel.refresh",
           "when": "never"
         },
         {
-          "command": "pacCLI.adminEnvironmentPanel.refresh",
+          "command": "pacCLI.envAndSolutionsPanel.copyDisplayName",
           "when": "never"
         },
         {
-          "command": "pacCLI.adminEnvironmentPanel.copyDisplayName",
+          "command": "pacCLI.envAndSolutionsPanel.copyEnvironmentId",
           "when": "never"
         },
         {
-          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentId",
+          "command": "pacCLI.envAndSolutionsPanel.copyEnvironmentUrl",
           "when": "never"
         },
         {
-          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl",
-          "when": "never"
-        },
-        {
-          "command": "pacCLI.adminEnvironmentPanel.copyOrganizationId",
+          "command": "pacCLI.envAndSolutionsPanel.copyOrganizationId",
           "when": "never"
         },
         {
@@ -343,13 +334,8 @@
           "group": "navigation@3"
         },
         {
-          "command": "pacCLI.solutionPanel.refresh",
-          "when": "view == pacCLI.solutionPanel",
-          "group": "navigation"
-        },
-        {
-          "command": "pacCLI.adminEnvironmentPanel.refresh",
-          "when": "view == pacCLI.adminEnvironmentPanel",
+          "command": "pacCLI.envAndSolutionsPanel.refresh",
+          "when": "view == pacCLI.envAndSolutionsPanel",
           "group": "navigation"
         }
       ],
@@ -377,31 +363,31 @@
           "when": "view == pacCLI.authPanel"
         },
         {
-          "command": "pacCLI.solutionPanel.copyFriendlyName",
-          "when": "view == pacCLI.solutionPanel"
+          "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",
+          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
         },
         {
-          "command": "pacCLI.solutionPanel.copyVersionNumber",
-          "when": "view == pacCLI.solutionPanel"
+          "command": "pacCLI.envAndSolutionsPanel.copyVersionNumber",
+          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
         },
         {
-          "command": "pacCLI.adminEnvironmentPanel.copyDisplayName",
-          "when": "view == pacCLI.adminEnvironmentPanel",
+          "command": "pacCLI.envAndSolutionsPanel.copyDisplayName",
+          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
           "group": "displayName@0"
         },
         {
-          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentId",
-          "when": "view == pacCLI.adminEnvironmentPanel",
+          "command": "pacCLI.envAndSolutionsPanel.copyEnvironmentId",
+          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
           "group": "environment"
         },
         {
-          "command": "pacCLI.adminEnvironmentPanel.copyEnvironmentUrl",
-          "when": "view == pacCLI.adminEnvironmentPanel",
+          "command": "pacCLI.envAndSolutionsPanel.copyEnvironmentUrl",
+          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
           "group": "environment"
         },
         {
-          "command": "pacCLI.adminEnvironmentPanel.copyOrganizationId",
-          "when": "view == pacCLI.adminEnvironmentPanel"
+          "command": "pacCLI.envAndSolutionsPanel.copyOrganizationId",
+          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
         }
       ]
     },
@@ -422,13 +408,8 @@
           "when": "config.powerPlatform.experimental.activityBarPanels"
         },
         {
-          "id": "pacCLI.solutionPanel",
-          "name": "%pacCLI.solutionPanel.title%",
-          "when": "config.powerPlatform.experimental.activityBarPanels"
-        },
-        {
-          "id": "pacCLI.adminEnvironmentPanel",
-          "name": "%pacCLI.adminEnvironmentPanel.title%",
+          "id": "pacCLI.envAndSolutionsPanel",
+          "name": "%pacCLI.envAndSolutionsPanel.title%",
           "when": "config.powerPlatform.experimental.activityBarPanels"
         }
       ]
