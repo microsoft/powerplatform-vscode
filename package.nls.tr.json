@@ -15,7 +15,6 @@
 	"pacCLI.authPanel.clearAuthProfile.title": "Kimlik Doğrulama Profillerini Temizle",
 	"pacCLI.authPanel.refresh.title": "Yenile",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Yeni Dataverse Kimlik Doğrulama Profili",
-	"pacCLI.authPanel.newAdminAuthProfile.title": "Yeni Yönetici Kimlik Doğrulama Profili",
 	"pacCLI.authPanel.selectAuthProfile.title": "Kimlik Doğrulama Profili Seçin",
 	"pacCLI.authPanel.deleteAuthProfile.title": "Kimlik Doğrulama Profilini Sil",
 	"pacCLI.authPanel.nameAuthProfile.title": "Kimlik Doğrulama Profilini Adlandır/Yeniden Adlandır",

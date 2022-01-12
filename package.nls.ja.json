@@ -15,7 +15,6 @@
 	"pacCLI.authPanel.clearAuthProfile.title": "認証プロファイルのクリア",
 	"pacCLI.authPanel.refresh.title": "最新の情報に更新",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "新しい Dataverse 認証プロファイル",
-	"pacCLI.authPanel.newAdminAuthProfile.title": "新しい管理者認証プロファイル",
 	"pacCLI.authPanel.selectAuthProfile.title": "認証プロファイルの選択",
 	"pacCLI.authPanel.deleteAuthProfile.title": "認証プロファイルの削除",
 	"pacCLI.authPanel.nameAuthProfile.title": "認証プロファイルの名前の指定/変更",

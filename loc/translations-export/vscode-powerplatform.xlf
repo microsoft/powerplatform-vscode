@@ -36,11 +36,9 @@
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
       <source xml:lang="en">No auth profiles found on this computer.
-[Add Admin Auth Profile](command:pacCLI.authPanel.newAdminAuthProfile)
 [Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAdminAuthProfile)', keeping brackets and the text in the parentheses unmodified
-The third line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
       <source xml:lang="en">No auth profiles found on this computer.
@@ -56,9 +54,6 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
       <source xml:lang="en">New Dataverse Auth Profile</source>
-    </trans-unit>
-    <trans-unit id="pacCLI.authPanel.newAdminAuthProfile.title">
-      <source xml:lang="en">New Admin Auth Profile</source>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
       <source xml:lang="en">Select Auth Profile</source>
