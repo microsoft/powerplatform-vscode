@@ -140,12 +140,6 @@
         "icon": "$(add)"
       },
       {
-        "command": "pacCLI.authPanel.newAdminAuthProfile",
-        "category": "Power Platform CLI",
-        "title": "%pacCLI.authPanel.newAdminAuthProfile.title%",
-        "icon": "$(add)"
-      },
-      {
         "command": "pacCLI.authPanel.selectAuthProfile",
         "title": "%pacCLI.authPanel.selectAuthProfile.title%",
         "icon": "$(star-empty)"
@@ -256,10 +250,6 @@
           "when": "never"
         },
         {
-          "command": "pacCLI.authPanel.newAdminAuthProfile",
-          "when": "pacCLI.authPanel.interactiveLoginSupported"
-        },
-        {
           "command": "pacCLI.authPanel.newDataverseAuthProfile",
           "when": "pacCLI.authPanel.interactiveLoginSupported"
         },
@@ -314,24 +304,19 @@
       ],
       "view/title": [
         {
-          "command": "pacCLI.authPanel.newAdminAuthProfile",
+          "command": "pacCLI.authPanel.newDataverseAuthProfile",
           "when": "view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
           "group": "navigation@0"
         },
         {
-          "command": "pacCLI.authPanel.newDataverseAuthProfile",
-          "when": "view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
-          "group": "navigation@1"
-        },
-        {
           "command": "pacCLI.authPanel.refresh",
           "when": "view == pacCLI.authPanel",
-          "group": "navigation@2"
+          "group": "navigation@1"
         },
         {
           "command": "pacCLI.authPanel.clearAuthProfile",
           "when": "view == pacCLI.authPanel",
-          "group": "navigation@3"
+          "group": "navigation@2"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.refresh",

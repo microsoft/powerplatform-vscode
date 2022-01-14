@@ -15,7 +15,6 @@
 	"pacCLI.authPanel.clearAuthProfile.title": "Vymazat ověřovací profily",
 	"pacCLI.authPanel.refresh.title": "Aktualizovat",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Nový ověřovací profil Dataverse",
-	"pacCLI.authPanel.newAdminAuthProfile.title": "Nový ověřovací profil správce",
 	"pacCLI.authPanel.selectAuthProfile.title": "Vybrat ověřovací profil",
 	"pacCLI.authPanel.deleteAuthProfile.title": "Odstranit ověřovací profil",
 	"pacCLI.authPanel.nameAuthProfile.title": "Pojmenovat nebo přejmenovat ověřovací profil",
