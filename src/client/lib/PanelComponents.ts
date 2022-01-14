@@ -157,7 +157,7 @@ export class EnvAndSolutionTreeView implements vscode.TreeDataProvider<EnvOrSolu
 
     constructor(
         public readonly envDataSource: () => Promise<PacOrgListOutput>,
-        public readonly solutionDataSource: (envId: string) => Promise<PacSolutionListOutput>,
+        public readonly solutionDataSource: (environmentUrl: string) => Promise<PacSolutionListOutput>,
     ){
     }
 
@@ -183,7 +183,7 @@ export class EnvAndSolutionTreeView implements vscode.TreeDataProvider<EnvOrSolu
             return [];
         } else {
             // element is environment
-            const solutionOutput = await this.solutionDataSource(element.model.EnvironmentId);
+            const solutionOutput = await this.solutionDataSource(element.model.EnvironmentUrl);
             if (solutionOutput && solutionOutput.Status === "Success" && solutionOutput.Results) {
                 return solutionOutput.Results.map(item => new EnvOrSolutionTreeItem(item))
             } else {

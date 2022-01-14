@@ -139,8 +139,8 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacSolutionListOutput>(new PacArguments("solution", "list"));
     }
 
-    public async solutionListFromEnvironment(environmentId: string): Promise<PacSolutionListOutput> {
-        return this.executeCommandAndParseResults<PacSolutionListOutput>(new PacArguments("solution", "list", "--environment-id", environmentId));
+    public async solutionListFromEnvironment(environmentUrl: string): Promise<PacSolutionListOutput> {
+        return this.executeCommandAndParseResults<PacSolutionListOutput>(new PacArguments("solution", "list", "--environment", environmentUrl));
     }
 
     public async orgList(): Promise<PacOrgListOutput> {

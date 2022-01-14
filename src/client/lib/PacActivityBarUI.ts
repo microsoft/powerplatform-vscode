@@ -85,7 +85,7 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
 
     const envAndSolutionPanel = new EnvAndSolutionTreeView(
         () => pacWrapper.orgList(),
-        (envId) => pacWrapper.solutionListFromEnvironment(envId));
+        (environmentUrl) => pacWrapper.solutionListFromEnvironment(environmentUrl));
     registrations.push(
         vscode.window.registerTreeDataProvider("pacCLI.envAndSolutionsPanel", envAndSolutionPanel),
         vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.refresh", () => envAndSolutionPanel.refresh()),
