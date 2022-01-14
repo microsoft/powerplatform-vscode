@@ -15,7 +15,6 @@
 	"pacCLI.authPanel.clearAuthProfile.title": "인증 프로필 지우기",
 	"pacCLI.authPanel.refresh.title": "새로 고침",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "새 Dataverse 인증 프로필",
-	"pacCLI.authPanel.newAdminAuthProfile.title": "새 관리자 인증 프로필",
 	"pacCLI.authPanel.selectAuthProfile.title": "인증 프로필 선택",
 	"pacCLI.authPanel.deleteAuthProfile.title": "인증 프로필 삭제",
 	"pacCLI.authPanel.nameAuthProfile.title": "인증 프로필 이름 지정/이름 변경",

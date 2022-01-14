@@ -15,7 +15,6 @@
 	"pacCLI.authPanel.clearAuthProfile.title": "清除身份验证配置文件",
 	"pacCLI.authPanel.refresh.title": "刷新",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "新建 Dataverse 身份验证配置文件",
-	"pacCLI.authPanel.newAdminAuthProfile.title": "新建管理员身份验证配置文件",
 	"pacCLI.authPanel.selectAuthProfile.title": "选择身份验证配置文件",
 	"pacCLI.authPanel.deleteAuthProfile.title": "删除身份验证配置文件",
 	"pacCLI.authPanel.nameAuthProfile.title": "命名/重命名身份验证配置文件",

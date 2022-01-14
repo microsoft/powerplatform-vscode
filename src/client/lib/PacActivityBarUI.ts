@@ -15,7 +15,8 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
 
     const authPanel = new PacFlatDataView(
         () => pacWrapper.authList(),
-        item => new AuthProfileTreeItem(item));
+        item => new AuthProfileTreeItem(item),
+        item => item.Kind !== "ADMIN");
     registrations.push(
         vscode.window.registerTreeDataProvider("pacCLI.authPanel", authPanel),
         vscode.commands.registerCommand("pacCLI.authPanel.refresh", () => authPanel.refresh()),
@@ -42,11 +43,6 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
                 authPanel.refresh();
                 envAndSolutionPanel.refresh();
             }
-        }),
-        vscode.commands.registerCommand("pacCLI.authPanel.newAdminAuthProfile", async () => {
-            await pacWrapper.authCreateNewAdminProfile();
-            authPanel.refresh();
-            envAndSolutionPanel.refresh();
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.selectAuthProfile", async (item: AuthProfileTreeItem) => {
             await pacWrapper.authSelectByIndex(item.model.Index);

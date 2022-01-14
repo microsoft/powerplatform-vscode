@@ -15,7 +15,6 @@
 	"pacCLI.authPanel.clearAuthProfile.title": "Удаление профилей проверки подлинности",
 	"pacCLI.authPanel.refresh.title": "Обновить",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Новый профиль проверки подлинности Dataverse",
-	"pacCLI.authPanel.newAdminAuthProfile.title": "Новый профиль проверки подлинности администратора",
 	"pacCLI.authPanel.selectAuthProfile.title": "Выбор профиля проверки подлинности",
 	"pacCLI.authPanel.deleteAuthProfile.title": "Удаление профиля проверки подлинности",
 	"pacCLI.authPanel.nameAuthProfile.title": "Установка/изменение имени профиля проверки подлинности",

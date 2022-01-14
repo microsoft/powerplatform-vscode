@@ -15,7 +15,6 @@
 	"pacCLI.authPanel.clearAuthProfile.title": "Borrar perfiles de autenticación",
 	"pacCLI.authPanel.refresh.title": "Actualizar",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Nuevo perfil de autenticación de Dataverse",
-	"pacCLI.authPanel.newAdminAuthProfile.title": "Nuevo perfil de autenticación de administrador",
 	"pacCLI.authPanel.selectAuthProfile.title": "Seleccionar perfil de autenticación",
 	"pacCLI.authPanel.deleteAuthProfile.title": "Eliminar perfil de autenticación",
 	"pacCLI.authPanel.nameAuthProfile.title": "Asignar nombre/Cambiar nombre del perfil de autenticación",

@@ -15,7 +15,6 @@
 	"pacCLI.authPanel.clearAuthProfile.title": "清除驗證設定檔",
 	"pacCLI.authPanel.refresh.title": "重新整理​",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "新增 Dataverse 驗證設定檔",
-	"pacCLI.authPanel.newAdminAuthProfile.title": "新增系統管理驗證設定檔",
 	"pacCLI.authPanel.selectAuthProfile.title": "選取驗證設定檔",
 	"pacCLI.authPanel.deleteAuthProfile.title": "刪除驗證設定檔",
 	"pacCLI.authPanel.nameAuthProfile.title": "命名/重新命名驗證設定檔",
