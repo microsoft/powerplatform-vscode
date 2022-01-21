@@ -27,6 +27,7 @@
 	"pacCLI.envAndSolutionsPanel.copyEnvironmentUrl.title": "Copy Environment Url",
 	"pacCLI.envAndSolutionsPanel.copyOrganizationId.title": "Copy Organization Id",
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Copy Friendly Name",
+	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copy Unique Name",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copy Version Number",
 	"microsoft-powerapps-portals.preview-show.title": "PowerApps-Portal -> Vorschauversion anzeigen"
 }
