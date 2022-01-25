@@ -104,6 +104,9 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyFriendlyName", (item: EnvOrSolutionTreeItem) => {
             vscode.env.clipboard.writeText((item.model as SolutionListing).FriendlyName);
         }),
+        vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyUniqueName", (item: EnvOrSolutionTreeItem) => {
+            vscode.env.clipboard.writeText((item.model as SolutionListing).SolutionUniqueName);
+        }),
         vscode.commands.registerCommand("pacCLI.envAndSolutionsPanel.copyVersionNumber", (item: EnvOrSolutionTreeItem) => {
             vscode.env.clipboard.writeText((item.model as SolutionListing).VersionNumber);
         }));
