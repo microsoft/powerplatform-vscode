@@ -166,6 +166,10 @@
         "title": "%pacCLI.envAndSolutionsPanel.copyFriendlyName.title%"
       },
       {
+        "command": "pacCLI.envAndSolutionsPanel.copyUniqueName",
+        "title": "%pacCLI.envAndSolutionsPanel.copyUniqueName.title%"
+      },
+      {
         "command": "pacCLI.envAndSolutionsPanel.copyVersionNumber",
         "title": "%pacCLI.envAndSolutionsPanel.copyVersionNumber.title%"
       },
@@ -255,6 +259,10 @@
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",
+          "when": "never"
+        },
+        {
+          "command": "pacCLI.envAndSolutionsPanel.copyUniqueName",
           "when": "never"
         },
         {
@@ -349,6 +357,10 @@
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",
+          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
+        },
+        {
+          "command": "pacCLI.envAndSolutionsPanel.copyUniqueName",
           "when": "view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
         },
         {

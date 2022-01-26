@@ -91,6 +91,9 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
     <trans-unit id="pacCLI.envAndSolutionsPanel.copyFriendlyName.title">
       <source xml:lang="en">Copy Friendly Name</source>
     </trans-unit>
+    <trans-unit id="pacCLI.envAndSolutionsPanel.copyUniqueName.title">
+      <source xml:lang="en">Copy Unique Name</source>
+    </trans-unit>
     <trans-unit id="pacCLI.envAndSolutionsPanel.copyVersionNumber.title">
       <source xml:lang="en">Copy Version Number</source>
     </trans-unit>
