@@ -14,6 +14,9 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+0.2.30:
+ - pac CLI 1.11.4 (Dec/Jan refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - fixed installation issue for Windows 11 Insider builds due to deprecation of WMIC
 0.2.27:
  - pac CLI 1.10.4 (November refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - .NET 6 on Apple M1: pac CLI is targeting dotnetCore 5 for intel, but the .NET6 amd64 installer removes the net5 and x64 support.  Users who have installed .NET 6 will need to uninstall all existing .NET bits and then install **both** the amd64 (Apple M1) and the x64 .NET 6 SDKs side by side.
