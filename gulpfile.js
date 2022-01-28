@@ -63,7 +63,7 @@ async function nugetInstall(nugetSource, packageName, version, targetDir) {
         },
         'CAP_ISVExp_Tools_Stable': {
             authenticated: true,
-            // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Daily
+            // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Stable
             baseUrl: 'https://pkgs.dev.azure.com/msazure/_packaging/b0441cf8-0bc8-4fad-b126-841a6184e784/nuget/v3/flat2/'
         },
     }
@@ -218,13 +218,13 @@ async function snapshot() {
         process.chdir(orgDir);
     }
 }
-const cliVersion = '1.10.5-daily-22011218';
+const cliVersion = '1.11.4';
 
 const recompile = gulp.series(
     clean,
-    async () => nugetInstall('CAP_ISVExp_Tools_Daily', 'Microsoft.PowerApps.CLI',cliVersion, path.resolve(distdir, 'pac')),
-    async () => nugetInstall('CAP_ISVExp_Tools_Daily', 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
-    async () => nugetInstall('CAP_ISVExp_Tools_Daily', 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
+    async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI',cliVersion, path.resolve(distdir, 'pac')),
+    async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
+    async () => nugetInstall('CAP_ISVExp_Tools_Stable', 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
     translationsImport,
     translationsGenerate,
