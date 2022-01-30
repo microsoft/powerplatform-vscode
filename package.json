@@ -68,7 +68,12 @@
     "onCommand:pacCLI.openDocumentation",
     "onStartupFinished",
     "onLanguage:yaml",
-    "onLanguage:html"
+    "onLanguage:html",
+		"onFileSystem:portals",
+		"onCommand:portals.workspaceInit",
+		"onCommand:portals.init",
+		"onCommand:portals.login",
+		"onCommand:portals.accessToken"
   ],
   "contributes": {
     "viewsWelcome": [
@@ -208,7 +213,27 @@
           "dark": "./src/client/editor_menu_icons/dark/portal_webpage_preview.svg",
           "light": "./src/client/editor_menu_icons/light/portal_webpage_preview.svg"
         }
-      }
+      },
+      {
+				"command": "portals.workspaceInit",
+				"title": "Setup Workspace",
+				"category": "Portals"
+			},
+			{
+				"command": "portals.init",
+				"title": "Create Files",
+				"category": "Portals"
+			},
+			{
+				"command": "portals.login",
+				"title": "Login to Dataverse",
+				"category": "Portals"
+			},
+			{
+				"command": "portals.accessToken",
+				"title": "Enter Access Token for Portals",
+				"category": "Portals"
+			}
     ],
     "configuration": {
       "tile": "Power Platform",
@@ -315,7 +340,13 @@
         {
           "command": "pacCLI.authPanel.copyUser",
           "when": "never"
-        }
+        },
+        {
+					"command": "portals.init"
+				},
+				{
+					"command": "portals.workspaceInit"
+				}
       ],
       "view/title": [
         {
