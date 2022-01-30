@@ -15,7 +15,13 @@
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
     "increment-version": "node node_modules/release-it/bin/release-it --increment patch --ci -VV",
     "increment-version-npm": "npm version %VSIX_VERSION%",
-    "build-grammar": "nearleyc ./src/server/Parser/liquidTagGrammar.ne -o ./src/server/Parser/liquidTagGrammar.js"
+    "build-grammar": "nearleyc ./src/server/Parser/liquidTagGrammar.ne -o ./src/server/Parser/liquidTagGrammar.js",
+    "pretest-web": "npm run compile-web",
+    "vscode:prepublish": "npm run package-web",
+    "compile-web": "webpack",
+    "watch-web": "webpack --watch",
+    "package-web": "webpack --mode production --devtool hidden-source-map",
+    "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -36,6 +42,7 @@
   ],
   "publisher": "microsoft-IsvExpTools",
   "main": "./dist/extension",
+  "browser": "./dist/web/extension.js",
   "categories": [
     "Snippets",
     "Other"
@@ -450,7 +457,10 @@
     "webpack": "^5.61.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
-    "yargs": "^16.2.0"
+    "yargs": "^16.2.0",
+    "@types/webpack-env": "^1.16.2",
+    "process": "^0.11.10",
+    "path-browserify": "^1.0.1"
   },
   "dependencies": {
     "find-process": "^1.4.7",
