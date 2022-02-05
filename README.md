@@ -14,6 +14,9 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+0.2.32:
+ - pac CLI 1.11.8 (Fixes a regression in `pac solution check`)
+
 0.2.31:
  - pac CLI 1.11.6 (Dec/Jan refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
  - fixed installation issue for Windows 11 Insider builds due to deprecation of WMIC
