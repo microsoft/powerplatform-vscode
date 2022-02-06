@@ -41,13 +41,6 @@ export function activate(context: vscode.ExtensionContext): void {
         //     console.log(e.toString());
         // }
 
-        // some more files & folders
-        vscode.window.showInformationMessage('creating portals folder');
-        portalsFS.createDirectory(vscode.Uri.parse(`${portalsUriScheme}:/${portalsFolderName}/`, true));
-
-        // Do something before delay
-        vscode.window.showInformationMessage('fetching portal data...');
-
         // Prompt for the Access Token.
         const token = await vscode.window.showInputBox({
             ignoreFocusOut: true,
@@ -59,7 +52,12 @@ export function activate(context: vscode.ExtensionContext): void {
         }
         accessToken = token;
 
-        vscode.window.showInformationMessage('received access token!');
+        // some more files & folders
+        vscode.window.showInformationMessage('creating portals folder');
+        portalsFS.createDirectory(vscode.Uri.parse(`${portalsUriScheme}:/${portalsFolderName}/`, true));
+
+        // Do something before delay
+        vscode.window.showInformationMessage('fetching portal data...');
 
         let adxCopy = '';
         let adxCustomJavascript = '';
