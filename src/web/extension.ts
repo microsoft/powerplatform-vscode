@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 import { PortalsFS } from './fileSystemProvider';
 
-const portalsFolderName = 'portal';
+const portalsFolderName = 'StarterPortal';
 const portalsUriScheme = 'portals';
 const portalsWorkspaceName = 'Power Portals';
 let fileName = '';
@@ -42,11 +42,11 @@ export function activate(context: vscode.ExtensionContext): void {
         // }
 
         // some more files & folders
-        portalsFS.createDirectory(vscode.Uri.parse(`${portalsUriScheme}:/${portalsFolderName}/`));
+        vscode.window.showInformationMessage('creating portals folder');
+        portalsFS.createDirectory(vscode.Uri.parse(`${portalsUriScheme}:/${portalsFolderName}/`, true));
 
         // Do something before delay
         vscode.window.showInformationMessage('fetching portal data...');
-        accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCIsImtpZCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCJ9.eyJhdWQiOiJodHRwczovL29yZzJlMmU5Y2FlLmNybS5keW5hbWljcy5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kMzFkZDk5Yy02NWIyLTRkYjUtOWIzOS1jNDliYzllZjA5ZWQvIiwiaWF0IjoxNjQyMDM0OTczLCJuYmYiOjE2NDIwMzQ5NzMsImV4cCI6MTY0MjAzOTQ0OSwiYWNyIjoiMSIsImFpbyI6IkUyWmdZR2lQVVRNdTJmeFdMOFkvV3piSzk4YWZEQW0xMmR2L3paY3oyNUUwODZTS3Z4WUEiLCJhbXIiOlsicHdkIl0sImFwcGlkIjoiMTViNmZiMjMtNjA4YS00ODUxLWIyNWItZDA2YjQ0ZTdjNzdmIiwiYXBwaWRhY3IiOiIwIiwiZmFtaWx5X25hbWUiOiJDaG91ZGhhcnkiLCJnaXZlbl9uYW1lIjoiQXNoaXNoIiwiaXBhZGRyIjoiNDkuMjA3LjE5NC4xMTciLCJuYW1lIjoiQXNoaXNoIENob3VkaGFyeSIsIm9pZCI6ImIxNWU5MTA2LWNjMjAtNDM2Ni1iZTI3LTQzNDVkNDBiZjE4OCIsInB1aWQiOiIxMDAzMjAwMUNBRjE4QTIwIiwicmgiOiIwLkFVWUFuTmtkMDdKbHRVMmJPY1NieWU4SjdTUDd0aFdLWUZGSXNsdlFhMFRueDMtQUFPNC4iLCJzY3AiOiJ1c2VyX2ltcGVyc29uYXRpb24iLCJzdWIiOiJPdHJySWRKNlo3NFlQMlRpUmpkeXdGdEZvRlpQYlhIX0tXcms4NnJhZ0cwIiwidGlkIjoiZDMxZGQ5OWMtNjViMi00ZGI1LTliMzktYzQ5YmM5ZWYwOWVkIiwidW5pcXVlX25hbWUiOiJBc2hpc2hDaG91ZGhhcnlAdnNjb2RlUG9jLm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6IkFzaGlzaENob3VkaGFyeUB2c2NvZGVQb2Mub25taWNyb3NvZnQuY29tIiwidXRpIjoiUzBIOXlIREFMVVdfWThhSlhrQ1RBQSIsInZlciI6IjEuMCJ9.gw2Cyy3KSIzbZe9Df16rij8N2Qt1Z8Ycru5EU6uTwNkEmOCzwAij1XkGJWH4Ezyz0r_dgU6CQGm5Kp2bL097tzRHGRzlZGHZ-SpUzUxuesrY6HeqwCyt1SBAGnnKDV0KMi5IBRLES8kGhncgniyvO-zAXYDLQ3R6Lv1RUWO9gTSFZzx0KP6ZRsOpLo32LoIjRu0hDOKnACoZGNvRlJNgAXYxgM8BVPzPwPmeXcvKv6-ULa0GwTClBpVCW8UykQHTuqZukkp87vLp61bkXDdfvEEyerKo6GI2GoARuyrNOl7we9PKpJbqKx5QvQzwqZkDbhtDO4nFeLz_xpQwfL0XBA';
 
         // Prompt for the Access Token.
         const token = await vscode.window.showInputBox({
@@ -110,7 +110,8 @@ export function activate(context: vscode.ExtensionContext): void {
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('portals.workspaceInit', async () => {
-        vscode.workspace.updateWorkspaceFolders(0, null, { uri: vscode.Uri.parse(`${portalsUriScheme}:/`), name: portalsWorkspaceName });
+        vscode.window.showInformationMessage('creating PowerPortals workspace');
+        vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: vscode.Uri.parse(`${portalsUriScheme}:/`), name: portalsWorkspaceName });
     }));
 
     // this is just for testing...remove this once pre-authorization is completed.
