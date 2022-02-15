@@ -42,9 +42,11 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDatave
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
       <source xml:lang="en">No auth profiles found on this computer.
+Interactive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
 [View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
+The second line should not translate the argument `--deviceCode`
+The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
       <source xml:lang="en">Clear Auth Profiles</source>

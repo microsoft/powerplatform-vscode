@@ -218,7 +218,7 @@ async function snapshot() {
         process.chdir(orgDir);
     }
 }
-const cliVersion = '1.11.8';
+const cliVersion = '1.12.1';
 
 const recompile = gulp.series(
     clean,
