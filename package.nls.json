@@ -20,10 +20,12 @@
     ]
   },
   "pacCLI.authPanel.welcome.whenInteractiveNotSupported": {
-    "message": "No auth profiles found on this computer.\n[View Auth Profile Help](command:pacCLI.pacAuthHelp)",
+    "message": "No auth profiles found on this computer.\nInteractive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.\n[View Auth Profile Help](command:pacCLI.pacAuthHelp)",
     "comment": [
       "This is a Markdown formatted string, and the formatting must persist across translations.",
-      "The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified"
+      "The second line should not translate the argument `--deviceCode`",
+      "The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified"
+      
    ]
   },
   "pacCLI.authPanel.clearAuthProfile.title": "Clear Auth Profiles",
