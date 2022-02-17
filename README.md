@@ -15,7 +15,7 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Release Notes
 0.2.33:
- - pac CLI 1.12.1 (February refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - pac CLI 1.12.2 (February refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 
 0.2.32:
  - pac CLI 1.11.8 (Fixes a regression in `pac solution check`)
