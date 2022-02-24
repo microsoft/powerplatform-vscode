@@ -11,6 +11,7 @@ import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
 import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput } from "./PacTypes";
 import { v4 } from "uuid";
+import { buildAgentString } from "../telemetry/batchedTelemetryAgent";
 
 export interface IPacWrapperContext {
     readonly globalStorageLocalPath: string;
@@ -25,7 +26,7 @@ export class PacWrapperContext implements IPacWrapperContext {
     }
     public get globalStorageLocalPath(): string { return this._context.globalStorageUri.fsPath; }
     public get telemetry(): ITelemetry { return this._telemetry; }
-    public get automationAgent(): string {return `${this._context.extension.packageJSON.name}/${this._context.extension.packageJSON.version}`; }
+    public get automationAgent(): string { return buildAgentString(this._context) }
 }
 
 
