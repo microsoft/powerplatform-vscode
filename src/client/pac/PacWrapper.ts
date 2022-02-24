@@ -15,6 +15,7 @@ import { v4 } from "uuid";
 export interface IPacWrapperContext {
     readonly globalStorageLocalPath: string;
     readonly telemetry: ITelemetry;
+    readonly automationAgent: string;
 }
 
 export class PacWrapperContext implements IPacWrapperContext {
@@ -24,6 +25,7 @@ export class PacWrapperContext implements IPacWrapperContext {
     }
     public get globalStorageLocalPath(): string { return this._context.globalStorageUri.fsPath; }
     public get telemetry(): ITelemetry { return this._telemetry; }
+    public get automationAgent(): string {return `${this._context.extension.packageJSON.name}/${this._context.extension.packageJSON.version}`; }
 }
 
 
@@ -64,6 +66,7 @@ export class PacInterop implements IPacInterop {
             this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarting');
             this._proc = spawn(this.pacExecutablePath, ["--non-interactive"], {
                 cwd: this.tempWorkingDirectory,
+                env: {...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent }
                 });
 
             const lineReader = readline.createInterface({ input: this._proc.stdout });
