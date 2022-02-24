@@ -11,6 +11,7 @@ import * as os from 'os'
 import { PacInterop, PacWrapper, PacWrapperContext } from '../pac/PacWrapper';
 import { ITelemetry } from '../telemetry/ITelemetry';
 import { RegisterPanels } from './PacActivityBarUI';
+import { buildAgentString } from '../telemetry/batchedTelemetryAgent';
 
 export class PacTerminal implements vscode.Disposable {
     private readonly _context: vscode.ExtensionContext;
@@ -29,6 +30,7 @@ export class PacTerminal implements vscode.Disposable {
 
         // https://code.visualstudio.com/api/references/vscode-api#EnvironmentVariableCollection
         this._context.environmentVariableCollection.prepend('PATH', cliPath + path.delimiter);
+        this._context.environmentVariableCollection.prepend('PAC_CLI_LAUNCHER_AGENT', buildAgentString(context));
 
         // Compatability for users on M1 Macs with .NET 6.0 installed - permit pac and pacTelemetryUpload
         // to roll up to 6.0 if 5.0 is not found on the system.
