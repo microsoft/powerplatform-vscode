@@ -2,15 +2,13 @@
 // Licensed under the MIT License.
 
 import * as vscode from "vscode";
-import TelemetryReporter from 'vscode-extension-telemetry';
+import TelemetryReporter from "@vscode/extension-telemetry";
 import { ITelemetry } from './telemetry/ITelemetry';
-import { createTelemetryReporter } from './telemetry/configuration';
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import * as path from "path";
 import { PortalWebView } from './PortalWebView';
 import { AI_KEY } from './constants';
-import { v4 } from 'uuid';
 import { ITelemetryData } from "../common/TelemetryData";
 
 import {
@@ -19,6 +17,7 @@ import {
     ServerOptions,
     TransportKind,
 } from "vscode-languageclient/node";
+import { readUserSettings } from "./telemetry/localfileusersettings";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -32,10 +31,9 @@ export async function activate(
     _context = context;
 
     // setup telemetry
-    const sessionId = v4();
-    _telemetry = createTelemetryReporter('powerplatform-vscode', context, AI_KEY, sessionId);
+    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
     context.subscriptions.push(_telemetry);
-    _telemetry.sendTelemetryEvent("Start");
+    _telemetry.sendTelemetryEvent("Start", {'pac.userId': readUserSettings().uniqueId});
 
     // Setup context switches
     if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl"){

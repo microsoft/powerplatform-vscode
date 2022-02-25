@@ -453,13 +453,13 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@vscode/extension-telemetry": "^0.4.9",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
     "n-readlines": "^1.0.1",
     "nearley": "^2.20.1",
     "unzip-stream": "^0.3.1",
     "uuid": "^8.3.2",
-    "vscode-extension-telemetry": "^0.1.7",
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
