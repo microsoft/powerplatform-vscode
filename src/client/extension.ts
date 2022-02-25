@@ -33,7 +33,7 @@ export async function activate(
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
     context.subscriptions.push(_telemetry);
-    _telemetry.sendTelemetryEvent("Start", {'PAC_UserId': readUserSettings().uniqueId});
+    _telemetry.sendTelemetryEvent("Start", {'pac.userId': readUserSettings().uniqueId});
 
     // Setup context switches
     if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl"){
