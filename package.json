@@ -206,15 +206,15 @@
     "configuration": {
       "tile": "Power Platform",
       "properties": {
-        "powerPlatform.experimental.activityBarPanels": {
+        "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Auth Profile activity bar panel"
+          "markdownDescription": "EXPERIMENTAL: Disable the PowerPlatform activity bar panels"
         },
-        "powerPlatform.experimental.pacLab": {
+        "powerPlatform.experimental.disablePacLabLink": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "EXPERIMENTAL: Enable the PAC Lab link command"
+          "markdownDescription": "EXPERIMENTAL: Disable the PAC Lab link command"
         }
       }
     },
@@ -247,7 +247,7 @@
         },
         {
           "command": "pacCLI.openPacLab",
-          "when": "config.powerPlatform.experimental.pacLab"
+          "when": "config.powerPlatform.experimental.disablePacLabLink"
         },
         {
           "command": "pacCLI.authPanel.refresh",
@@ -402,12 +402,12 @@
         {
           "id": "pacCLI.authPanel",
           "name": "%pacCLI.authPanel.title%",
-          "when": "config.powerPlatform.experimental.activityBarPanels"
+          "when": "config.powerPlatform.experimental.disableActivityBarPanels"
         },
         {
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
-          "when": "config.powerPlatform.experimental.activityBarPanels"
+          "when": "config.powerPlatform.experimental.disableActivityBarPanels"
         }
       ]
     }
