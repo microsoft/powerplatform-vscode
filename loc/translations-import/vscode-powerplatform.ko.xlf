@@ -48,22 +48,17 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Admin Auth Profile](command:pacCLI.authPanel.newAdminAuthProfile)
 [Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAdminAuthProfile)', keeping brackets and the text in the parentheses unmodified
-The third line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">이 컴퓨터에는 인증 프로필이 없습니다.
-[관리자 인증 프로필 추가](command:pacCLI.authPanel.newAdminAuthProfile)
-[Dataverse 인증 프로필 추가](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
+Interactive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
 [View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">이 컴퓨터에는 인증 프로필이 없습니다.
-[인증 프로필 도움말 보기](command:pacCLI.pacAuthHelp)</target>
+The second line should not translate the argument `--deviceCode`
+The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -76,10 +71,6 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
         <source xml:lang="en">New Dataverse Auth Profile</source>
         <target state="translated">새 Dataverse 인증 프로필</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newAdminAuthProfile.title">
-        <source xml:lang="en">New Admin Auth Profile</source>
-        <target state="translated">새 관리자 인증 프로필</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -101,45 +92,41 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
         <source xml:lang="en">Copy User</source>
         <target state="translated">사용자 복사</target>
       </trans-unit>
-      <trans-unit id="pacCLI.solutionPanel.title">
-        <source xml:lang="en">Solutions</source>
-        <target state="translated">솔루션</target>
+      <trans-unit id="pacCLI.envAndSolutionsPanel.title">
+        <source xml:lang="en">Environments &amp; Solutions</source>
+        <target state="translated">환경 및 솔루션</target>
       </trans-unit>
-      <trans-unit id="pacCLI.solutionPanel.refresh.title">
+      <trans-unit id="pacCLI.envAndSolutionsPanel.refresh.title">
         <source xml:lang="en">Refresh</source>
         <target state="translated">새로 고침</target>
       </trans-unit>
-      <trans-unit id="pacCLI.solutionPanel.copyFriendlyName.title">
-        <source xml:lang="en">Copy Friendly Name</source>
-        <target state="translated">식별 이름 복사</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.solutionPanel.copyVersionNumber.title">
-        <source xml:lang="en">Copy Version Number</source>
-        <target state="translated">버전 번호 복사</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.adminEnvironmentPanel.title">
-        <source xml:lang="en">Admin Environments</source>
-        <target state="translated">관리자 환경</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.adminEnvironmentPanel.refresh.title">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">새로 고침</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.adminEnvironmentPanel.copyDisplayName.title">
+      <trans-unit id="pacCLI.envAndSolutionsPanel.copyDisplayName.title">
         <source xml:lang="en">Copy Display Name</source>
         <target state="translated">표시 이름 복사</target>
       </trans-unit>
-      <trans-unit id="pacCLI.adminEnvironmentPanel.copyEnvironmentId.title">
+      <trans-unit id="pacCLI.envAndSolutionsPanel.copyEnvironmentId.title">
         <source xml:lang="en">Copy Environment Id</source>
         <target state="translated">환경 ID 복사</target>
       </trans-unit>
-      <trans-unit id="pacCLI.adminEnvironmentPanel.copyEnvironmentUrl.title">
+      <trans-unit id="pacCLI.envAndSolutionsPanel.copyEnvironmentUrl.title">
         <source xml:lang="en">Copy Environment Url</source>
         <target state="translated">환경 URL 복사</target>
       </trans-unit>
-      <trans-unit id="pacCLI.adminEnvironmentPanel.copyOrganizationId.title">
+      <trans-unit id="pacCLI.envAndSolutionsPanel.copyOrganizationId.title">
         <source xml:lang="en">Copy Organization Id</source>
         <target state="translated">조직 ID 복사</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.envAndSolutionsPanel.copyFriendlyName.title">
+        <source xml:lang="en">Copy Friendly Name</source>
+        <target state="translated">식별 이름 복사</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.envAndSolutionsPanel.copyUniqueName.title">
+        <source xml:lang="en">Copy Unique Name</source>
+        <target state="translated">고유 이름 복사</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.envAndSolutionsPanel.copyVersionNumber.title">
+        <source xml:lang="en">Copy Version Number</source>
+        <target state="translated">버전 번호 복사</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.preview-show.title">
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
@@ -256,13 +243,7 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keep
         <note>The {0} represents auth profile's user name (email address))</note>
         <target state="translated">사용자: {0}</target>
       </trans-unit>
-      <trans-unit id="pacCLI.SolutionTreeItem.label">
-        <source xml:lang="en">{0}, Version: {1}</source>
-        <note>The {0} represents Solution's Friendly / Display name
-The {1} represents Solution's Version number</note>
-        <target state="translated">{0}, 버전: {1}</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.SolutionTreeItem.toolTip">
+      <trans-unit id="pacCLI.EnvOrSolutionTreeItem.toolTip">
         <source xml:lang="en">Display Name: {0}
 Unique Name: {1}
 Version: {2}</source>
@@ -270,27 +251,6 @@ Version: {2}</source>
 The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
-        <target state="translated">표시 이름: {0}
-고유 이름: {1}
-버전: {2}</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.AdminEnvironmentTreeItem.toolTip">
-        <source xml:lang="en">Name: {0}
-Type: {1}
-URL: {2}
-Environment ID: {3}
-Organization ID: {4}</source>
-        <note>This is a multi-line tooltip
-The {0} represents Dataverse Environment's Friendly / Display name
-The {1} represents Dataverse Environment's type (Default, Sandbox, Trial, etc)
-The {2} represents Dataverse Environment's URL
-The {3} represents Dataverse Environment's Environment ID (GUID)
-The {4} represents Dataverse Environment's Organization ID (GUID)</note>
-        <target state="translated">이름: {0}
-유형: {1}
-URL: {2}
-환경 ID: {3}
-조직 ID: {4}</target>
       </trans-unit>
     </body>
   </file>
