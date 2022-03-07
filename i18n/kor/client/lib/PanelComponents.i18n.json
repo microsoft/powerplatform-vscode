@@ -7,8 +7,5 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileKind": "프로필 종류: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "이름: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "리소스: {0}",
-	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "사용자: {0}",
-	"pacCLI.SolutionTreeItem.label": "{0}, 버전: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "표시 이름: {0}\n고유 이름: {1}\n버전: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "이름: {0}\n유형: {1}\nURL: {2}\n환경 ID: {3}\n조직 ID: {4}"
+	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "사용자: {0}"
 }

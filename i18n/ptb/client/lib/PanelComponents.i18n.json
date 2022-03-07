@@ -7,8 +7,5 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileKind": "Tipo de Perfil: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "Nome: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Recurso: {0}",
-	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Usuário: {0}",
-	"pacCLI.SolutionTreeItem.label": "{0}, Versão: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "Nome de Exibição: {0}\nNome Exclusivo: {1}\nVersão: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "Nome: {0}\nTipo: {1}\nURL: {2}\nID do Ambiente: {3}\nID da Organização: {4}"
+	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Usuário: {0}"
 }

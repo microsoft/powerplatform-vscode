@@ -7,8 +7,5 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileKind": "Profil Türü: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "Ad: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Kaynak: {0}",
-	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Kullanıcı: {0}",
-	"pacCLI.SolutionTreeItem.label": "{0}, Sürüm: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "Görünen Ad: {0}\nBenzersiz Ad: {1}\nSürüm: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "Ad: {0}\nTür: {1}\nURL: {2}\nOrtam Kimliği: {3}\nKuruluş Kimliği: {4}"
+	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Kullanıcı: {0}"
 }

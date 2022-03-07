@@ -7,8 +7,5 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileKind": "設定檔種類: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "名稱: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "資源: {0}",
-	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "使用者: {0}",
-	"pacCLI.SolutionTreeItem.label": "{0}，版本: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "顯示名稱: {0}\n唯一名稱: {1}\n版本: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "名稱: {0}\n類型: {1}\nURL: {2}\n環境識別碼: {3}\n組織識別碼: {4}"
+	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "使用者: {0}"
 }
