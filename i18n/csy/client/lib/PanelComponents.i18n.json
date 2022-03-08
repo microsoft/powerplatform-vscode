@@ -7,8 +7,5 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileKind": "Druh profilu: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "Jméno: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Prostředek: {0}",
-	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Uživatel: {0}",
-	"pacCLI.SolutionTreeItem.label": "{0}, verze: {1}",
-	"pacCLI.SolutionTreeItem.toolTip": "Zobrazované jméno: {0}\nJedinečné jméno: {1}\nVerze: {2}",
-	"pacCLI.AdminEnvironmentTreeItem.toolTip": "Název: {0}\nTyp: {1}\nAdresa URL: {2}\nID prostředí: {3}\nKód organizace: {4}"
+	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Uživatel: {0}"
 }
