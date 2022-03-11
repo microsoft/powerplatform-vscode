@@ -209,12 +209,7 @@
         "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "EXPERIMENTAL: Disable the PowerPlatform activity bar panels"
-        },
-        "powerPlatform.experimental.disablePacLabLink": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "EXPERIMENTAL: Disable the PAC Lab link command"
+          "markdownDescription": "Disable the PowerPlatform activity bar panels"
         }
       }
     },
@@ -244,10 +239,6 @@
         {
           "command": "microsoft-powerapps-portals.preview-show",
           "when": "never"
-        },
-        {
-          "command": "pacCLI.openPacLab",
-          "when": "config.powerPlatform.experimental.disablePacLabLink"
         },
         {
           "command": "pacCLI.authPanel.refresh",
@@ -402,12 +393,12 @@
         {
           "id": "pacCLI.authPanel",
           "name": "%pacCLI.authPanel.title%",
-          "when": "config.powerPlatform.experimental.disableActivityBarPanels"
+          "when": "!config.powerPlatform.experimental.disableActivityBarPanels"
         },
         {
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
-          "when": "config.powerPlatform.experimental.disableActivityBarPanels"
+          "when": "!config.powerPlatform.experimental.disableActivityBarPanels"
         }
       ]
     }
