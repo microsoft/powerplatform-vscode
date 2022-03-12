@@ -15,6 +15,8 @@
 	"pacCLI.enableTelemetry.title": "Включить телеметрию PAC",
 	"power-platform-activitybar.title": "Power Platform",
 	"pacCLI.authPanel.title": "Профили проверки подлинности",
+	"pacCLI.authPanel.welcome.whenInteractiveSupported": "На компьютере не найдены профили проверки подлинности.\n[Добавить профиль проверки подлинности Dataverse](command:pacCLI.pacAuthHelp)",
+	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "На компьютере не найдены профили проверки подлинности.\nИнтерактивная проверка подлинности недоступна для удаленных сценариев; необходимо создать профили проверки подлинности с помощью командной строкой. Используйте поток \"--deviceCode\" для пользователей с требованиями MFA или тех, клиенты которых используют ADFS.\n[Посмотреть справку по профилю проверки подлинности] (command:pacCLI.pacAuthHelp)",
 	"pacCLI.authPanel.clearAuthProfile.title": "Удаление профилей проверки подлинности",
 	"pacCLI.authPanel.refresh.title": "Обновить",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Новый профиль проверки подлинности Dataverse",
