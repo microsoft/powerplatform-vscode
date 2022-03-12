@@ -15,6 +15,8 @@
 	"pacCLI.enableTelemetry.title": "啟用 PAC 遙測",
 	"power-platform-activitybar.title": "Power Platform",
 	"pacCLI.authPanel.title": "驗證設定檔",
+	"pacCLI.authPanel.welcome.whenInteractiveSupported": "在此電腦上找不到驗證設定檔。\n[新增 Dataverse 驗證設定檔](command:pacCLI.authPanel.newDataverseAuthProfile)",
+	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "在此電腦上找不到驗證設定檔。\n互動式驗證不適用於遠端案例; 驗證設定檔必須由命令列建立。`--deviceCode` 流程必須針對有 MFA 需求或租用戶使用 ADFS 的使用者使用。\n[檢視驗證設定檔說明](command:pacCLI.pacAuthHelp)",
 	"pacCLI.authPanel.clearAuthProfile.title": "清除驗證設定檔",
 	"pacCLI.authPanel.refresh.title": "重新整理​",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "新增 Dataverse 驗證設定檔",

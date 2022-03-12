@@ -51,6 +51,8 @@
 [Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Bu bilgisayarda hiçbir kimlik doğrulama profili bulunamadı.
+[Dataverse Kimlik Doğrulama Profili Ekle](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -59,6 +61,9 @@ Interactive Authentication is not availalbe for remote scenarios; auth profiles 
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Bu bilgisayarda hiçbir kimlik doğrulama profili bulunamadı.
+Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik doğrulama profilleri komut satırı ile oluşturulmalıdır. MFA gereksinimleri olan veya kiracıları ADFS kullanan kullanıcılar için "--deviceCode" akışı kullanılmalıdır.
+[Kimlik Doğrulama Profili Yardımını Görüntüle](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -251,6 +256,9 @@ Version: {2}</source>
 The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
+        <target state="translated">Görünen Ad: {0}
+Benzersiz Ad: {1}
+Sürüm: {2}</target>
       </trans-unit>
     </body>
   </file>

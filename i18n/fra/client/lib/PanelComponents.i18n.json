@@ -7,5 +7,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileKind": "Type de profil : {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "Nom : {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Ressource : {0}",
-	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Utilisateur : {0}"
+	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Utilisateur : {0}",
+	"pacCLI.EnvOrSolutionTreeItem.toolTip": "Nom complet : {0}\nNom unique : {1}\nVersion : {2}"
 }

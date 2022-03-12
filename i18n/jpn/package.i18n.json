@@ -15,6 +15,8 @@
 	"pacCLI.enableTelemetry.title": "PAC テレメトリを有効にする",
 	"power-platform-activitybar.title": "Power Platform",
 	"pacCLI.authPanel.title": "認証プロファイル",
+	"pacCLI.authPanel.welcome.whenInteractiveSupported": "このコンピューターには認証プロファイルが見つかりません。\n[Dataverse 認証プロファイルを追加](command:pacCLI.authPanel.newDataverseAuthProfile)",
+	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "このコンピューターには認証プロファイルが見つかりません。\n対話型認証をリモート シナリオで使用できません。認証プロファイルをコマンド ラインで作成する必要があります。`--deviceCode` フローは、MFA 要件を満たすユーザー、またはテナントが ADFS を使用するユーザーに対して使用する必要があります。\n[認証プロファイルのヘルプを表示](command:pacCLI.pacAuthHelp)",
 	"pacCLI.authPanel.clearAuthProfile.title": "認証プロファイルのクリア",
 	"pacCLI.authPanel.refresh.title": "最新の情報に更新",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "新しい Dataverse 認証プロファイル",

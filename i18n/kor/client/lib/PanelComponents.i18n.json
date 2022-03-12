@@ -7,5 +7,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileKind": "프로필 종류: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "이름: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "리소스: {0}",
-	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "사용자: {0}"
+	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "사용자: {0}",
+	"pacCLI.EnvOrSolutionTreeItem.toolTip": "표시 이름: {0}\n고유 이름: {1}\n버전: {2}"
 }
