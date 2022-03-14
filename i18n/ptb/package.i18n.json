@@ -15,6 +15,8 @@
 	"pacCLI.enableTelemetry.title": "Habilitar Telemetria de PAC",
 	"power-platform-activitybar.title": "Power Platform",
 	"pacCLI.authPanel.title": "Perfis de Autenticação",
+	"pacCLI.authPanel.welcome.whenInteractiveSupported": "Nenhum perfil de autenticação encontrado neste computador.\n[Adicionar Perfil de Autenticação do Dataverse](command:pacCLI.authPanel.newDataverseAuthProfile)",
+	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "Nenhum perfil de autenticação encontrado neste computador.\nA Autenticação Interativa não está disponível para cenários remotos; os perfis de autenticação devem ser criados pela linha de comando. O fluxo `--deviceCode` deve ser usado para usuários com requisitos de MFA ou cujos locatários usam o ADFS.\n[Exibir Ajuda do Perfil de Autenticação] (command:lCLI.coAuthHelp)",
 	"pacCLI.authPanel.clearAuthProfile.title": "Limpar Perfis de Autenticação",
 	"pacCLI.authPanel.refresh.title": "Atualizar",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Novo Perfil de Autenticação do Dataverse",

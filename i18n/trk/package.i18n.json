@@ -15,6 +15,8 @@
 	"pacCLI.enableTelemetry.title": "PAC telemetrisini etkinleştir",
 	"power-platform-activitybar.title": "Power Platform",
 	"pacCLI.authPanel.title": "Kimlik Doğrulama Profilleri",
+	"pacCLI.authPanel.welcome.whenInteractiveSupported": "Bu bilgisayarda hiçbir kimlik doğrulama profili bulunamadı.\n[Dataverse Kimlik Doğrulama Profili Ekle](command:pacCLI.authPanel.newDataverseAuthProfile)",
+	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "Bu bilgisayarda hiçbir kimlik doğrulama profili bulunamadı.\nUzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik doğrulama profilleri komut satırı ile oluşturulmalıdır. MFA gereksinimleri olan veya kiracıları ADFS kullanan kullanıcılar için \"--deviceCode\" akışı kullanılmalıdır.\n[Kimlik Doğrulama Profili Yardımını Görüntüle](command:pacCLI.pacAuthHelp)",
 	"pacCLI.authPanel.clearAuthProfile.title": "Kimlik Doğrulama Profillerini Temizle",
 	"pacCLI.authPanel.refresh.title": "Yenile",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Yeni Dataverse Kimlik Doğrulama Profili",
