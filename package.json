@@ -44,7 +44,6 @@
     "Power Platform"
   ],
   "icon": "src/client/assets/icon.png",
-  "preview": true,
   "badges": [
     {
       "description": "Pull Request",
