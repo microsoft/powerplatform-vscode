@@ -5,7 +5,6 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { CliAcquisition, ICliAcquisitionContext } from '../../lib/CliAcquisition';
 import { expect } from 'chai';
-import { before } from 'mocha';
 import { ITelemetry } from '../../telemetry/ITelemetry';
 import { NoopTelemetryInstance } from '../../telemetry/NoopTelemetry';
 
