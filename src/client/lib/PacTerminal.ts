@@ -75,7 +75,7 @@ export class PacTerminal implements vscode.Disposable {
     }
 
     public openPacLab(): void {
-        vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/pacvscodelab'));
+        vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/powerplatform-vscode-lab'));
     }
 
     private static getTerminal(): vscode.Terminal {

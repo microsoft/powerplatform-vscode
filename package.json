@@ -44,7 +44,6 @@
     "Power Platform"
   ],
   "icon": "src/client/assets/icon.png",
-  "preview": true,
   "badges": [
     {
       "description": "Pull Request",
@@ -206,15 +205,10 @@
     "configuration": {
       "tile": "Power Platform",
       "properties": {
-        "powerPlatform.experimental.activityBarPanels": {
+        "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "EXPERIMENTAL: Enable the PowerPlatform Auth Profile activity bar panel"
-        },
-        "powerPlatform.experimental.pacLab": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "EXPERIMENTAL: Enable the PAC Lab link command"
+          "markdownDescription": "Disable the PowerPlatform activity bar panels"
         }
       }
     },
@@ -244,10 +238,6 @@
         {
           "command": "microsoft-powerapps-portals.preview-show",
           "when": "never"
-        },
-        {
-          "command": "pacCLI.openPacLab",
-          "when": "config.powerPlatform.experimental.pacLab"
         },
         {
           "command": "pacCLI.authPanel.refresh",
@@ -402,12 +392,12 @@
         {
           "id": "pacCLI.authPanel",
           "name": "%pacCLI.authPanel.title%",
-          "when": "config.powerPlatform.experimental.activityBarPanels"
+          "when": "!config.powerPlatform.experimental.disableActivityBarPanels"
         },
         {
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
-          "when": "config.powerPlatform.experimental.activityBarPanels"
+          "when": "!config.powerPlatform.experimental.disableActivityBarPanels"
         }
       ]
     }
