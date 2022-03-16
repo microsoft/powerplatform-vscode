@@ -1,9 +1,8 @@
 # Contributing
 
-**PRE-RELEASE SOFTWARE.**
-This project will welcome contributions and suggestions in the near future. But in this early preview stage, we're not ready for contributions.
+This project will welcome contributions and suggestions in the near future.
 
-Once this project is ready to welcome contributions and suggestions.  Most contributions require you to agree to a
+Once this project is ready to welcome contributions and suggestions:  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit <https://cla.opensource.microsoft.com>.
 
@@ -15,7 +14,7 @@ provided by the bot. You will only need to do this once across all repos using o
 
 Windows, macOS or Linux:
 
-- [Node.js LTS (currently v14)](https://nodejs.org/en/download/)
+- [Node.js LTS (currently v16)](https://nodejs.org/en/download/)
 - gulp CLI: ```npm install -g gulp-cli```
 - [git](https://git-scm.com/downloads)
 - [VS Code](https://code.visualstudio.com/Download) or your different favorite editor
@@ -30,7 +29,7 @@ Windows, macOS or Linux:
   [Environment]::SetEnvironmentVariable('AZ_DevOps_Read_PAT', '<yourPAT>', [EnvironmentVariableTarget]::User)
   ```
 
-## Build and Run From Repo
+## Build and Run
 
 Clone, restore modules, build and run:
 
@@ -42,4 +41,3 @@ gulp ci
 ```
 
 Open the local repository as folder in VS Code. To locally debug the extension, select the "Launch VSCode Extension" from the run/debug configurations and hit <F5>
-
