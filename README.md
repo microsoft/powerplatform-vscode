@@ -1,8 +1,5 @@
 # Power Platform Extension
 
-**PRE-RELEASE SOFTWARE.** The software is a pre-release version. It may not work the way a final version of the software will.
-We may change it for the final, commercial version. We also may not release a commercial version.
-
 [![PullRequest](https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg)](https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest)
 [![Official Build](https://dev.azure.com/dynamicscrm/OneCRM/_apis/build/status/DPX-Tools/powerplatform-vscode%20Official%20Build?branchName=release/stable)](https://dev.azure.com/dynamicscrm/OneCRM/_build/latest?definitionId=12152)
 
@@ -14,8 +11,13 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+1.0.1:
+ - Extension is now released with General Availability
+ - New Activity Pane for this extension that lets user managed PowerPlatform credentials and shows visible PP environments
+ - pac CLI 1.13.4 (February refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
 0.2.35:
- - pac CLI 1.12.2 (February refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - pac CLI 1.12.2 (Dec/Jan refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 
 0.2.32:
  - pac CLI 1.11.8 (Fixes a regression in `pac solution check`)
@@ -65,7 +67,7 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 - VSCode >= 1.5x
 - .NET Windows 4.x
-- macOS: dotnetCore SDK 3.x or 5.x
+- macOS/Linux/WSL: dotnetCore SDK 5.x or 6.x
 
 ## Getting Started
 
@@ -73,15 +75,15 @@ Open the VS Code Terminal (Terminal | New Terminal) and type in:
 
 ```bash
 > pac
-Microsoft PowerApps CLI
-Version: 1.6.6+g0d22892
+Microsoft PowerPlatform CLI
 
-Usage: pac [admin] [auth] [canvas] [help] [org] [package] [paportal] [pcf] [plugin] [solution] [telemetry]
+Usage: pac [admin] [application] [auth] [canvas] [help] [org] [package] [paportal] [pcf] [plugin] [solution] [telemetry]
 
   admin                       Work with your PowerPlatform Admin Account
+  application                 Commands for listing and installing available DataVerse applications from AppSource
   auth                        Manage how you authenticate to various services
   canvas                      Operating with Power Apps .msapp files
-  help                        Show help for the Microsoft PowerApps CLI
+  help                        Show help for the Microsoft PowerPlatform CLI
   org                         Work with your Dataverse Organization
   package                     Commands for working with Dataverse package projects
   paportal                    Commands for working with PowerApps portal website
@@ -94,42 +96,40 @@ Usage: pac [admin] [auth] [canvas] [help] [org] [package] [paportal] [pcf] [plug
 The pac CLI will show you the available command nouns with a short description. To get detailed help for each noun, use the built-int help screens for each command, e.g.:
 
 ```bash
-> pac solution
+> pac solution help
 Microsoft PowerApps CLI
-Version: 1.6.6+g0d22892
 
-Error: You are missing a sub-command.
-
-Usage: pac solution [init] [add-reference] [list] [version] [import] [export] [clone] [publish] [upgrade] [add-license] [check]
+Usage: pac solution [init] [add-reference] [list] [delete] [online-version] [version] [import] [export] [clone] [publish] [upgrade] [add-license] [check] [create-settings] [pack] [unpack]
 
   init                        Initializes a directory with a new Dataverse solution project
   add-reference               Adds a reference from the project in the current directory to the project at 'path'
   list                        List all Solutions from the current Dataverse Organization
-  version                     Patch version for solution
-  import                      Import the Dataverse Solution project output into the current Dataverse Organization
-  export                      Export a Dataverse Solution project from the current Dataverse Organization
+  delete                      Delete Dataverse Solution from the current Dataverse Environment
+  online-version              Sets version for solution loaded in Dataverse environment.
+  version                     Update build or revision version for solution
+  import                      Import the Dataverse Solution into the current Dataverse Environment
+  export                      Export a Dataverse Solution from the current Dataverse Environment
   clone                       Create a solution project based on an existing solution in your Organization
   publish                     Publishes all customizations
   upgrade                     Option to stage the Dataverse solution for upgrade
   add-license                 Add license and plan info to solution
   check                       Upload a Dataverse Solution project to run against the PowerApps Checker Service
-
+  create-settings             Create a settings file from solution zip or solution folder.
+  pack                        Package solution components on local filesystem into solution.zip (SolutionPackager)
+  unpack                      Extract solution components from solution.zip onto local filesystem (SolutionPackager)
 ```
 
 To then view all solutions installed in the selected environment:
 
 ```bash
 > pac solution list
-Connected to...gintonic
+Connected to...vscode-test
 Listing all Solutions from the current Dataverse Organization...
 
- Index   Unique Name                    Friendly Name                                    Version
+ Index      Unique Name                                        Friendly Name                                                Version
 
- [1]     Crd854a                        Common Data Services Default Solution            1.0.0.0
- [2]     imgDecode                      imgDecode                                        0.1.0
- [3]     acctpluginSample               acct-pluginSample                                1.0.0.4
- [4]     imgTest2                       imgTest2                                         0.1
- [5]     MicrosoftPortalDependencies    Dynamics 365 Portals - Portal dependencies       9.2.2103.0
+
+ [1]        Cr4323c                                            Common Data Services Default Solution                        1.0.0.0
 ```
 
 ## Feedback & Questions
@@ -138,9 +138,8 @@ Please use the issues tracker in the home repo: <https://github.com/microsoft/po
 
 ## Contributing
 
-**PRE-RELEASE SOFTWARE.**
-
-This project will welcome contributions and suggestions in the near future. But in this early preview stage, we're not ready for contributions.
+This project will welcome contributions in the near future. At this stage, we're not ready for contributions,
+but do welcome your suggestions via this repository's issue tracker.
 
 See details in [CONTRIBUTING](CONTRIBUTING.md)
 
