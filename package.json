@@ -35,7 +35,7 @@
     "email": "PPTools@microsoft.com"
   },
   "engines": {
-    "vscode": "^1.51.0"
+    "vscode": "^1.59.0"
   },
   "extensionKind": [
     "workspace"
@@ -43,6 +43,9 @@
   "publisher": "microsoft-IsvExpTools",
   "main": "./dist/extension",
   "browser": "./dist/web/extension.js",
+  "enabledApiProposals": [
+    "ipc"
+  ],
   "categories": [
     "Snippets",
     "Other"
@@ -69,11 +72,12 @@
     "onStartupFinished",
     "onLanguage:yaml",
     "onLanguage:html",
-		"onFileSystem:portals",
-		"onCommand:portals.workspaceInit",
-		"onCommand:portals.init",
-		"onCommand:portals.login",
-		"onCommand:portals.accessToken"
+    "onFileSystem:portals",
+    "onCommand:portals.workspaceInit",
+    "onCommand:portals.init",
+    "onCommand:portals.login",
+    "onCommand:portals.accessToken",
+    "onCommand:portals.ping"
   ],
   "contributes": {
     "viewsWelcome": [
@@ -215,25 +219,30 @@
         }
       },
       {
-				"command": "portals.workspaceInit",
-				"title": "Setup Workspace",
-				"category": "Portals"
-			},
-			{
-				"command": "portals.init",
-				"title": "Create Files",
-				"category": "Portals"
-			},
-			{
-				"command": "portals.login",
-				"title": "Login to Dataverse",
-				"category": "Portals"
-			},
-			{
-				"command": "portals.accessToken",
-				"title": "Enter Access Token for Portals",
-				"category": "Portals"
-			}
+        "command": "portals.workspaceInit",
+        "title": "Setup Workspace",
+        "category": "Portals"
+      },
+      {
+        "command": "portals.init",
+        "title": "Create Files",
+        "category": "Portals"
+      },
+      {
+        "command": "portals.login",
+        "title": "Login to Dataverse",
+        "category": "Portals"
+      },
+      {
+        "command": "portals.accessToken",
+        "title": "Enter Access Token for Portals",
+        "category": "Portals"
+      },
+      {
+        "command": "portals.ping",
+        "title": "Send a Ping message to Portal Studio",
+        "category": "Portals"
+      }
     ],
     "configuration": {
       "tile": "Power Platform",
@@ -342,11 +351,11 @@
           "when": "never"
         },
         {
-					"command": "portals.init"
-				},
-				{
-					"command": "portals.workspaceInit"
-				}
+          "command": "portals.init"
+        },
+        {
+          "command": "portals.workspaceInit"
+        }
       ],
       "view/title": [
         {
@@ -459,7 +468,7 @@
     "@types/node": "^14.14.6",
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
-    "@types/vscode": "^1.51.0",
+    "@types/vscode": "^1.59.0",
     "@types/webpack": "^5.28.0",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",

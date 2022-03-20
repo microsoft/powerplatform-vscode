@@ -18,6 +18,15 @@ export function activate(context: vscode.ExtensionContext): void {
     let initialized = false;
     let accessToken = '';
 
+    // const messageProtocol = context.messagePassingProtocol;
+
+    // if (messageProtocol) {
+    //     vscode.window.showInformationMessage("Received Port from Portal Studio!");
+    // }
+
+    // messageProtocol?.onDidReceiveMessage(() => {
+    //     vscode.window.showInformationMessage("received message from Studio!!!");
+    // });
 
     context.subscriptions.push(vscode.commands.registerCommand('portals.init', async (args: any) => {
         if (initialized) {
@@ -135,6 +144,15 @@ export function activate(context: vscode.ExtensionContext): void {
         }
         accessToken = token;
     }));
+
+    // context.subscriptions.push(vscode.commands.registerCommand('portals.ping',async () => {
+    //     const pingMessage = await vscode.window.showInputBox({
+    //         ignoreFocusOut: true,
+    //         placeHolder: 'Enter Ping Message',
+    //         prompt: 'Enter a Ping Message for Portal Studio'
+    //     });
+    //     messageProtocol?.postMessage(pingMessage);
+    // }));
 
 }
 
