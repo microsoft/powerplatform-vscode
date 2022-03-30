@@ -11,6 +11,9 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+1.0.2:
+ - pac CLI 1.13.6 (February refresh plus 2 fixes, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
 1.0.1:
  - Extension is now released with General Availability
  - New Activity Pane for this extension that lets user managed PowerPlatform credentials and shows visible PP environments
