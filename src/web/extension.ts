@@ -124,7 +124,7 @@ export function activate(context: vscode.ExtensionContext): void {
     // this is just for testing...remove this once pre-authorization is completed.
     context.subscriptions.push(vscode.commands.registerCommand('portals.login', async () => {
         try {
-            const session = await vscode.authentication.getSession("microsoft", ["https://org2e2e9cae.crm.dynamics.com" + "/.default"], { createIfNone: true });
+            const session = await vscode.authentication.getSession("microsoft", ["https://org2e2e9cae.crm.dynamics.com" + "//.default"], { createIfNone: true });
             console.log(session.accessToken);
         } catch (e: any) {
             console.log(e.toString());
@@ -153,6 +153,10 @@ export function activate(context: vscode.ExtensionContext): void {
     //     });
     //     messageProtocol?.postMessage(pingMessage);
     // }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('microsoft-powerapps-portals.preview-show',async () => {
+        // vscode.commands.executeCommand('vscode.diff', uri1, uri2);
+    }));
 
 }
 
