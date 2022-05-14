@@ -40,26 +40,31 @@ export function activate(context: vscode.ExtensionContext): void {
 
         const { dataverseOrg, api, data, version, entity, entityId } = args;
 
-        vscode.window.showInformationMessage('editing '+ entity);
+        vscode.window.showInformationMessage('editing ' + entity);
 
         // uncomment this after pre-authorization of VSCode firstPartyApp(aebc6443-996d-45c2-90f0-388ff96faa56) in Dataverse
-        // try {
-        //     const session = await vscode.authentication.getSession("microsoft", ["https://org2e2e9cae.crm.dynamics.com" + "/.default"], { createIfNone: true });
-        //     console.log(session.accessToken);
-        // }catch(e: any) {
-        //     console.log(e.toString());
-        // }
-
-        // Prompt for the Access Token.
-        const token = await vscode.window.showInputBox({
-            ignoreFocusOut: true,
-            placeHolder: 'Portal/Dataverse access token',
-            prompt: 'Enter a Portal/Dataverse access token.'
-        });
-        if (!token) {
-            throw new Error('AccessToken is required');
+        try {
+            const session = await vscode.authentication.getSession("microsoft", ["https://org2e2e9cae.crm.dynamics.com" + "/.default"], { createIfNone: true });
+            console.log('accessToken = '+ session.accessToken);
+            console.log('scopes = '+ session.scopes);
+            accessToken = session.accessToken;
+        } catch (e: any) {
+            console.log(e.toString());
         }
-        accessToken = token;
+
+        if (!accessToken) {
+            // Prompt for the Access Token.
+            const token = await vscode.window.showInputBox({
+                ignoreFocusOut: true,
+                placeHolder: 'Portal/Dataverse access token',
+                prompt: 'Enter a Portal/Dataverse access token.'
+            });
+            if (!token) {
+                throw new Error('AccessToken is required');
+            }
+            accessToken = token;
+        }
+
 
         // some more files & folders
         vscode.window.showInformationMessage('creating portals folder');
@@ -154,7 +159,7 @@ export function activate(context: vscode.ExtensionContext): void {
     //     messageProtocol?.postMessage(pingMessage);
     // }));
 
-    context.subscriptions.push(vscode.commands.registerCommand('microsoft-powerapps-portals.preview-show',async () => {
+    context.subscriptions.push(vscode.commands.registerCommand('microsoft-powerapps-portals.preview-show', async () => {
         // vscode.commands.executeCommand('vscode.diff', uri1, uri2);
     }));
 
