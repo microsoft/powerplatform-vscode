@@ -44,7 +44,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
         // uncomment this after pre-authorization of VSCode firstPartyApp(aebc6443-996d-45c2-90f0-388ff96faa56) in Dataverse
         try {
-            const session = await vscode.authentication.getSession("microsoft", ["https://org2e2e9cae.crm.dynamics.com" + "/.default"], { createIfNone: true });
+            const session = await vscode.authentication.getSession("microsoft", ["https:"+ dataverseOrg + "//.default"], { createIfNone: true });
             console.log('accessToken = '+ session.accessToken);
             console.log('scopes = '+ session.scopes);
             accessToken = session.accessToken;
