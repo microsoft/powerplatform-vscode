@@ -29,5 +29,6 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Kolay Adı Kopyala",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Benzersiz Adı Kopyala",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Sürüm Numarasını Kopyala",
-	"microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Önizlemeyi göster"
+	"microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Önizlemeyi göster",
+	"webExtension.init.title": "Initialize Web Extension"
 }

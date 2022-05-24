@@ -102,6 +102,9 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
     <trans-unit id="microsoft-powerapps-portals.preview-show.title">
       <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
     </trans-unit>
+    <trans-unit id="webExtension.init.title">
+      <source xml:lang="en">Initialize Web Extension</source>
+    </trans-unit>
   </body></file>
   <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cliAquisition.preparingMessage">

@@ -29,5 +29,6 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "식별 이름 복사",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "고유 이름 복사",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "버전 번호 복사",
-	"microsoft-powerapps-portals.preview-show.title": "PowerApps 포털 -> 프리뷰 보기"
+	"microsoft-powerapps-portals.preview-show.title": "PowerApps 포털 -> 프리뷰 보기",
+	"webExtension.init.title": "Initialize Web Extension"
 }

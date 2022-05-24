@@ -29,5 +29,6 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "複製自訂名稱",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "複製唯一名稱",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "複製版本號碼",
-	"microsoft-powerapps-portals.preview-show.title": "PowerApps 入口網站 -> 顯示預覽"
+	"microsoft-powerapps-portals.preview-show.title": "PowerApps 入口網站 -> 顯示預覽",
+	"webExtension.init.title": "Initialize Web Extension"
 }

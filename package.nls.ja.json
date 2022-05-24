@@ -29,5 +29,6 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "フレンドリ名のコピー",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "一意の名前のコピー",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "バージョン番号のコピー",
-	"microsoft-powerapps-portals.preview-show.title": "PowerApps ポータル -> プレビューの表示"
+	"microsoft-powerapps-portals.preview-show.title": "PowerApps ポータル -> プレビューの表示",
+	"webExtension.init.title": "Initialize Web Extension"
 }

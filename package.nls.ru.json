@@ -29,5 +29,6 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Копировать понятное имя",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Копировать уникальное имя",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Копировать номер версии",
-	"microsoft-powerapps-portals.preview-show.title": "Портал PowerApps -> Показать предварительную версию"
+	"microsoft-powerapps-portals.preview-show.title": "Портал PowerApps -> Показать предварительную версию",
+	"webExtension.init.title": "Initialize Web Extension"
 }

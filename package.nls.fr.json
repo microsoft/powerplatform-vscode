@@ -29,5 +29,6 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Copier le nom convivial",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copier le nom unique",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copier le numéro de version",
-	"microsoft-powerapps-portals.preview-show.title": "Portail PowerApps -> Afficher la version préliminaire"
+	"microsoft-powerapps-portals.preview-show.title": "Portail PowerApps -> Afficher la version préliminaire",
+	"webExtension.init.title": "Initialize Web Extension"
 }
