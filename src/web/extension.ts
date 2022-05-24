@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	console.log("Activated web extension!");
 
-	context.subscriptions.push(vscode.commands.registerCommand("helloworld-web-sample.helloWorld", () => {
+	context.subscriptions.push(vscode.commands.registerCommand("webExtension.init", () => {
 
 		vscode.window.showInformationMessage("Hello World from web extension!");
 	}));
