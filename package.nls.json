@@ -25,7 +25,7 @@
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The second line should not translate the argument `--deviceCode`",
       "The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified"
-      
+
    ]
   },
   "pacCLI.authPanel.clearAuthProfile.title": "Clear Auth Profiles",
@@ -48,5 +48,6 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copy Unique Name",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copy Version Number",
 
-  "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview"
+  "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview",
+  "webExtension.init.title": "Initialize Web Extension"
 }
