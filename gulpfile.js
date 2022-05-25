@@ -149,6 +149,15 @@ function test() {
             }));
 }
 
+function testWeb() {
+    return gulp
+        .src(['src/web/test/suite/**/*.ts'], { read: false })
+        .pipe(mocha({
+                require: [ "ts-node/register" ],
+                ui: 'bdd'
+            }));
+}
+
 async function packageVsix() {
     fs.emptyDirSync(packagedir);
     return vsce.createVSIX({
@@ -243,7 +252,8 @@ const dist = gulp.series(
     recompile,
     packageVsix,
     lint,
-    test
+    test,
+    testWeb
 );
 
 const translationExtensionName = "vscode-powerplatform";
@@ -325,10 +335,12 @@ function translationsGenerateSrcLocBundles() {
 
 exports.clean = clean;
 exports.compile = compile;
+exports.compileWeb = compileWeb;
 exports.recompile = recompile;
 exports.snapshot = snapshot;
 exports.lint = lint;
 exports.test = test;
+exports.testWeb = testWeb;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;

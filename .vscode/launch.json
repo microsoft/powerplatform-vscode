@@ -89,22 +89,7 @@
 			"outFiles": [
 				"${workspaceFolder}/dist/web/**/*.js"
 			],
-			"preLaunchTask": "npm: watch-web"
-		},
-		{
-			"name": "Extension Tests in VS Code",
-			"type": "extensionHost",
-			"debugWebWorkerHost": true,
-			"request": "launch",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionDevelopmentKind=web",
-				"--extensionTestsPath=${workspaceFolder}/dist/web/test/suite/index"
-			],
-			"outFiles": [
-				"${workspaceFolder}/dist/web/**/*.js"
-			],
-			"preLaunchTask": "npm: watch-web"
+			"preLaunchTask": "gulp: compileWeb"
 		}
   ],
   "compounds": [

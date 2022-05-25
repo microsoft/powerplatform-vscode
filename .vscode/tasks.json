@@ -7,6 +7,13 @@
       "group": "build",
       "problemMatcher": [],
       "label": "gulp: compile"
+    },
+    {
+      "type": "gulp",
+      "task": "compileWeb",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "gulp: compileWeb"
     }
   ]
 }
