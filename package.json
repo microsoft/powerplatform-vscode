@@ -245,6 +245,10 @@
       ],
       "commandPalette": [
         {
+          "command": "webExtension.init",
+          "when": "isWeb"
+        },
+        {
           "command": "microsoft-powerapps-portals.preview-show",
           "when": "never"
         },
