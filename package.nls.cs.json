@@ -30,5 +30,5 @@
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Zkopírovat jedinečné jméno",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Zkopírovat číslo verze",
 	"microsoft-powerapps-portals.preview-show.title": "Portál PowerApps -> Zobrazit náhled",
-	"webExtension.init.title": "Initialize Web Extension"
+	"microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension"
 }

@@ -49,5 +49,5 @@
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copy Version Number",
 
   "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview",
-  "webExtension.init.title": "Initialize Web Extension"
+  "microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension"
 }

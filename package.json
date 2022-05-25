@@ -62,7 +62,7 @@
   ],
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
-    "onCommand:webExtension.init",
+    "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onStartupFinished",
     "onLanguage:yaml",
     "onLanguage:html"
@@ -207,8 +207,8 @@
         }
       },
       {
-        "command": "webExtension.init",
-        "title": "%webExtension.init.title%"
+        "command": "microsoft-powerapps-portals.webExtension.init",
+        "title": "%microsoft-powerapps-portals.webExtension.init.title%"
       }
     ],
     "configuration": {
@@ -245,7 +245,7 @@
       ],
       "commandPalette": [
         {
-          "command": "webExtension.init",
+          "command": "microsoft-powerapps-portals.webExtension.init",
           "when": "isWeb"
         },
         {

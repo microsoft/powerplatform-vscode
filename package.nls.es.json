@@ -30,5 +30,5 @@
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copiar nombre único",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copiar número de versión",
 	"microsoft-powerapps-portals.preview-show.title": "Portal de PowerApps -> Mostrar vista previa",
-	"webExtension.init.title": "Initialize Web Extension"
+	"microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension"
 }

@@ -6,11 +6,16 @@
 import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext): void {
+    console.log("Activated web extension!");
 
-	console.log("Activated web extension!");
-
-	context.subscriptions.push(vscode.commands.registerCommand("webExtension.init", () => {
-
-		vscode.window.showInformationMessage("Initializing web extension!");
-	}));
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.webExtension.init",
+            () => {
+                vscode.window.showInformationMessage(
+                    "Initializing web extension!"
+                );
+            }
+        )
+    );
 }
