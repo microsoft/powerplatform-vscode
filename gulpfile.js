@@ -151,7 +151,7 @@ function test() {
 
 function testWeb() {
     return gulp
-        .src(['src/web/test/suite/**/*.ts'], { read: false })
+        .src(['src/web/test/unit/**/*.ts'], { read: false })
         .pipe(mocha({
                 require: [ "ts-node/register" ],
                 ui: 'bdd'
