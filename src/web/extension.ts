@@ -11,6 +11,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	context.subscriptions.push(vscode.commands.registerCommand("webExtension.init", () => {
 
-		vscode.window.showInformationMessage("Hello World from web extension!");
+		vscode.window.showInformationMessage("Initializing web extension!");
 	}));
 }
