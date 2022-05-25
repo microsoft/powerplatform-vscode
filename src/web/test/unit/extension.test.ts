@@ -7,6 +7,6 @@ import { expect } from "chai";
 
 describe("Web Extension Unit Tests", () => {
     it("Sample test", () => {
-        expect([1, 2, 3].indexOf(5)).to.be.eq(-1);
+        expect([1, 2, 3].indexOf(5)).to.be.eq(-1); // sample unit test for webExtension
     });
 });
