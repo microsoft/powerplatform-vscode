@@ -69,7 +69,7 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             const authProfileName = await vscode.window.showInputBox({
                 title: localize("pacCLI.authPanel.nameAuthProfile.title", "Name/Rename Auth Profile"),
                 prompt: localize("pacCLI.authPanel.nameAuthProfile.prompt", "The name you want to give to this authentication profile"),
-                validateInput: value => value.length <= 12 ? null : localize("pacCLI.authPanel.nameAuthProfile.validation", 'Maximum 12 characters allowed')
+                validateInput: value => value.length <= 30 ? null : localize("pacCLI.authPanel.nameAuthProfile.validation", 'Maximum 30 characters allowed')
             });
             if (authProfileName) {
                 await pacWrapper.authNameByIndex(item.model.Index, authProfileName);
