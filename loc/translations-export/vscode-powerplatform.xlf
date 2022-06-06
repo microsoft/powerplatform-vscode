@@ -149,7 +149,7 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
       <source xml:lang="en">The name you want to give to this authentication profile</source>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-      <source xml:lang="en">Maximum 12 characters allowed</source>
+      <source xml:lang="en">Maximum 30 characters allowed</source>
     </trans-unit>
   </body></file>
   <file original="./client/lib/PacTerminal" source-language="en" datatype="plaintext"><body>
