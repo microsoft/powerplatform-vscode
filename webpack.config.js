@@ -8,7 +8,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 /**@type {import('webpack').Configuration}*/
-const config = {
+const nodeConfig = {
     target: 'node',
     mode: 'development',
 
@@ -53,7 +53,7 @@ const config = {
         }]
     },
 };
-const webExtensionConfig = {
+const webConfig = {
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 	target: 'webworker', // extensions run in a webworker context
 	entry: {
@@ -106,4 +106,4 @@ const webExtensionConfig = {
 	},
 };
 
-module.exports = [config, webExtensionConfig];
+module.exports = [nodeConfig, webConfig];
