@@ -56,7 +56,7 @@ export class AuthProfileTreeItem extends vscode.TreeItem {
     private static createLabel(profile: AuthProfileListing): string {
         if (profile.Name) {
             return `${profile.Kind}: ${profile.Name}`;
-        } else if (profile.Kind === "ADMIN") {
+        } else if (profile.Kind === "ADMIN" || profile.Kind === "UNIVERSAL") {
             return `${profile.Kind}: ${profile.User}`;
         } else {
             return `${profile.Kind}: ${profile.Resource}`;

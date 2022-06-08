@@ -36,9 +36,9 @@
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
       <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
       <source xml:lang="en">No auth profiles found on this computer.
@@ -55,7 +55,7 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
       <source xml:lang="en">Refresh</source>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-      <source xml:lang="en">New Dataverse Auth Profile</source>
+      <source xml:lang="en">New Auth Profile</source>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
       <source xml:lang="en">Select Auth Profile</source>
@@ -125,12 +125,6 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.cancel">
       <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-      <source xml:lang="en">Create new Dataverse Auth Profile</source>
-    </trans-unit>
-    <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-      <source xml:lang="en">Enter Environment URL</source>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
       <source xml:lang="en">Confirm</source>
