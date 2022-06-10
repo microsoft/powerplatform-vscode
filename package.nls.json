@@ -13,10 +13,10 @@
 
   "pacCLI.authPanel.title": "Auth Profiles",
   "pacCLI.authPanel.welcome.whenInteractiveSupported": {
-     "message": "No auth profiles found on this computer.\n[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)",
+     "message": "No auth profiles found on this computer.\n[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)",
      "comment": [
        "This is a Markdown formatted string, and the formatting must persist across translations.",
-       "The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified"
+       "The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified"
     ]
   },
   "pacCLI.authPanel.welcome.whenInteractiveNotSupported": {
@@ -25,12 +25,12 @@
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The second line should not translate the argument `--deviceCode`",
       "The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified"
-      
+
    ]
   },
   "pacCLI.authPanel.clearAuthProfile.title": "Clear Auth Profiles",
   "pacCLI.authPanel.refresh.title": "Refresh",
-  "pacCLI.authPanel.newDataverseAuthProfile.title": "New Dataverse Auth Profile",
+  "pacCLI.authPanel.newDataverseAuthProfile.title": "New Auth Profile",
   "pacCLI.authPanel.selectAuthProfile.title": "Select Auth Profile",
   "pacCLI.authPanel.deleteAuthProfile.title": "Delete Auth Profile",
   "pacCLI.authPanel.nameAuthProfile.title": "Name/Rename Auth Profile",
