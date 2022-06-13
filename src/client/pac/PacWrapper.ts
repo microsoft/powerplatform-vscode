@@ -112,13 +112,9 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacAuthListOutput>(new PacArguments("auth", "list"));
     }
 
-    public async authCreateNewDataverseProfile(environmentUrl: string): Promise<PacAuthListOutput> {
+    public async authCreateNewAuthProfile(): Promise<PacAuthListOutput> {
         return this.executeCommandAndParseResults<PacAuthListOutput>(
-            new PacArguments("auth", "create", "--kind", "DATAVERSE", "--url", environmentUrl));
-    }
-
-    public async authCreateNewAdminProfile(): Promise<PacAuthListOutput> {
-        return this.executeCommandAndParseResults<PacAuthListOutput>(new PacArguments("auth", "create", "--kind", "ADMIN"));
+            new PacArguments("auth", "create"));
     }
 
     public async authSelectByIndex(index: number): Promise<PacOutput>{

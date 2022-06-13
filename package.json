@@ -144,7 +144,7 @@
         "icon": "$(refresh)"
       },
       {
-        "command": "pacCLI.authPanel.newDataverseAuthProfile",
+        "command": "pacCLI.authPanel.newAuthProfile",
         "category": "Power Platform CLI",
         "title": "%pacCLI.authPanel.newDataverseAuthProfile.title%",
         "icon": "$(add)"
@@ -268,7 +268,7 @@
           "when": "never"
         },
         {
-          "command": "pacCLI.authPanel.newDataverseAuthProfile",
+          "command": "pacCLI.authPanel.newAuthProfile",
           "when": "pacCLI.authPanel.interactiveLoginSupported"
         },
         {
@@ -362,7 +362,7 @@
       ],
       "view/title": [
         {
-          "command": "pacCLI.authPanel.newDataverseAuthProfile",
+          "command": "pacCLI.authPanel.newAuthProfile",
           "when": "!virtualWorkspace && view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
           "group": "navigation@0"
         },
