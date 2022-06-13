@@ -105,6 +105,9 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
       <source xml:lang="en">Initialize Web Extension</source>
     </trans-unit>
+    <trans-unit id="%microsoft-powerapps-portals.webExtension.limitation">
+      <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
+    </trans-unit>
   </body></file>
   <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cliAquisition.preparingMessage">

@@ -30,5 +30,6 @@
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "一意の名前のコピー",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "バージョン番号のコピー",
 	"microsoft-powerapps-portals.preview-show.title": "PowerApps ポータル -> プレビューの表示",
-	"microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension"
+	"microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension",
+	"%microsoft-powerapps-portals.webExtension.limitation": "PAC CLI is not supported in VS Code for the Web"
 }

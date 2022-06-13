@@ -67,6 +67,12 @@
     "onLanguage:yaml",
     "onLanguage:html"
   ],
+  "capabilities": {
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "%microsoft-powerapps-portals.webExtension.limitation"
+    }
+  },
   "contributes": {
     "viewsWelcome": [
       {
