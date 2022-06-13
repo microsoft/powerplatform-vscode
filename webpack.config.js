@@ -85,6 +85,13 @@ const webConfig = {
 			test: /\.ts$/,
 			exclude: /node_modules/,
 			use: [{
+                // vscode-nls-dev loader:
+                // * rewrite nls-calls
+                loader: 'vscode-nls-dev/lib/webpack-loader',
+                options: {
+                    base: __dirname
+                }
+            },{
 				loader: 'ts-loader'
 			}]
 		}]
