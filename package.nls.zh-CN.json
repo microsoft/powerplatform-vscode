@@ -31,5 +31,5 @@
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "复制版本号",
 	"microsoft-powerapps-portals.preview-show.title": "PowerApps 门户 -> 显示预览版",
 	"microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension",
-	"%microsoft-powerapps-portals.webExtension.limitation": "PAC CLI is not supported in VS Code for the Web"
+	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI is not supported in VS Code for the Web"
 }

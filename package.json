@@ -324,6 +324,10 @@
           "when": "never"
         },
         {
+          "command": "pacCLI.openDocumentation",
+          "when": "!virtualWorkspace"
+        },
+        {
           "command": "pacCLI.openPacLab",
           "when": "!virtualWorkspace"
         },
