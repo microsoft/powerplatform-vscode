@@ -48,11 +48,9 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">На компьютере не найдены профили проверки подлинности.
-[Добавить профиль проверки подлинности Dataverse](command:pacCLI.pacAuthHelp)</target>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -61,9 +59,6 @@ Interactive Authentication is not availalbe for remote scenarios; auth profiles 
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">На компьютере не найдены профили проверки подлинности.
-Интерактивная проверка подлинности недоступна для удаленных сценариев; необходимо создать профили проверки подлинности с помощью командной строкой. Используйте поток "--deviceCode" для пользователей с требованиями MFA или тех, клиенты которых используют ADFS.
-[Посмотреть справку по профилю проверки подлинности] (command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -74,8 +69,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <target state="translated">Обновить</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">Новый профиль проверки подлинности Dataverse</target>
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">Новый профиль проверки подлинности</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -171,14 +166,6 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <source xml:lang="en">Cancel</source>
         <target state="translated">Отмена</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">Создание профиля проверки подлинности Dataverse</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-        <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">Введите URL-адрес среды</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
         <target state="translated">Подтвердить</target>
@@ -201,8 +188,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <target state="translated">Имя, которое вы хотите дать этому профилю проверки подлинности</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">Допускается не более 12 знаков</target>
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">Допускается не более 30 знаков</target>
       </trans-unit>
     </body>
   </file>
@@ -256,9 +243,6 @@ Version: {2}</source>
 The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
-        <target state="translated">Отображаемая имя: {0}
-Уникальное имя: {1}
-Версия: {2}</target>
       </trans-unit>
     </body>
   </file>

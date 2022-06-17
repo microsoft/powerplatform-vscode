@@ -48,11 +48,9 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">이 컴퓨터에는 인증 프로필이 없습니다.
-[Dataverse 인증 프로필 추가](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -61,9 +59,6 @@ Interactive Authentication is not availalbe for remote scenarios; auth profiles 
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">이 컴퓨터에서는 인증 프로필을 찾을 수 없습니다.
-원격 시나리오에서는 대화형 인증을 사용할 수 없습니다. auth 프로필은 명령줄에서 생성해야 합니다. MFA 요구 사항이 있거나 테넌트가 ADFS를 사용하는 사용자는 `--deviceCode` 흐름을 사용해야 합니다.
-[인증 프로필 도움말 보기](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -74,8 +69,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <target state="translated">새로 고침</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">새 Dataverse 인증 프로필</target>
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">새 인증 프로필</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -171,14 +166,6 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <source xml:lang="en">Cancel</source>
         <target state="translated">취소</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">새 Dataverse 인증 프로필 만들기</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-        <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">환경 URL 입력</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
         <target state="translated">확인</target>
@@ -201,8 +188,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <target state="translated">이 인증 프로필에 지정할 이름</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">최대 12자까지 허용됩니다.</target>
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">최대 30자까지 허용됩니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -256,9 +243,6 @@ Version: {2}</source>
 The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
-        <target state="translated">표시 이름: {0}
-고유 이름: {1}
-버전: {2}</target>
       </trans-unit>
     </body>
   </file>

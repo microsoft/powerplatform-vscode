@@ -48,11 +48,9 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Nessun profilo di autenticazione trovato in questo computer.
-[Aggiungi il profilo di autenticazione Dataverse](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -61,9 +59,6 @@ Interactive Authentication is not availalbe for remote scenarios; auth profiles 
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Nessun profilo di autenticazione trovato in questo computer.
-L'autenticazione interattiva non è disponibile per scenari remoti. I profili di autenticazione devono essere creati dalla riga di comando. Il flusso "--deviceCode" deve essere utilizzato per gli utenti con requisiti di autenticazione a più fattori o i cui tenant utilizzano il file system distribuito di Azure.
-[Visualizza la Guida del profilo di autorizzazione](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -74,8 +69,8 @@ L'autenticazione interattiva non è disponibile per scenari remoti. I profili di
         <target state="translated">Aggiorna</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">Nuovo profilo di autenticazione Dataverse</target>
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">Nuovo profilo di autenticazione</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -171,14 +166,6 @@ L'autenticazione interattiva non è disponibile per scenari remoti. I profili di
         <source xml:lang="en">Cancel</source>
         <target state="translated">Annulla</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">Crea nuovo profilo di autenticazione Dataverse</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-        <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">Immetti URL ambiente</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
         <target state="translated">Conferma</target>
@@ -201,8 +188,8 @@ L'autenticazione interattiva non è disponibile per scenari remoti. I profili di
         <target state="translated">Il nome che vuoi assegnare a questo profilo di autenticazione</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">È consentito un massimo di 12 caratteri</target>
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">È consentito un massimo di 30 caratteri</target>
       </trans-unit>
     </body>
   </file>
@@ -256,9 +243,6 @@ Version: {2}</source>
 The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
-        <target state="translated">Nome visualizzato: {0}
-Nome univoco: {1}
-Versione: {2}</target>
       </trans-unit>
     </body>
   </file>
