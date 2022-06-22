@@ -11,8 +11,9 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
-1.0.14:
- - pac CLI 1.16.4 (May refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+1.0.15:
+ - pac CLI 1.16.5 (May refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - the Power Platform panel now supports the new UNIVERSAL authentication kind that pac CLI 1.16.x introduced
 
 1.0.9:
  - pac CLI 1.15.3 (April refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
