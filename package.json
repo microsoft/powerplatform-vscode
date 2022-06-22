@@ -47,8 +47,7 @@
     "Power Platform"
   ],
   "icon": "src/client/assets/icon.png",
-  "badges": [
-    {
+  "badges": [{
       "description": "Pull Request",
       "url": "https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg",
       "href": "https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest"
@@ -73,8 +72,7 @@
     }
   },
   "contributes": {
-    "viewsWelcome": [
-      {
+    "viewsWelcome": [{
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
@@ -85,8 +83,7 @@
         "when": "!virtualWorkspace && !pacCLI.authPanel.interactiveLoginSupported"
       }
     ],
-    "commands": [
-      {
+    "commands": [{
         "command": "pacCLI.openDocumentation",
         "category": "Power Platform CLI",
         "title": "%pacCLI.openDocumentation.title%"
@@ -228,33 +225,31 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Enable PowerPlatform web extension features"
+        },
+        "powerPlatform.experimental.enablePcfDebuggingFeatures": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable debugger features for PCF controls"
         }
       }
     },
-    "snippets": [
-      {
-        "language": "html",
-        "path": "./src/client/snippets/paportal-liquid.code-snippets"
-      }
-    ],
-    "iconThemes": [
-      {
-        "id": "portals_icon",
-        "label": "PowerApps Portals Icons (Visual Studio Code)",
-        "path": "./src/client/portal_fileicons/portals-icon-theme.json"
-      }
-    ],
+    "snippets": [{
+      "language": "html",
+      "path": "./src/client/snippets/paportal-liquid.code-snippets"
+    }],
+    "iconThemes": [{
+      "id": "portals_icon",
+      "label": "PowerApps Portals Icons (Visual Studio Code)",
+      "path": "./src/client/portal_fileicons/portals-icon-theme.json"
+    }],
     "menus": {
-      "editor/title": [
-        {
-          "when": "resourceLangId == html && !virtualWorkspace",
-          "command": "microsoft-powerapps-portals.preview-show",
-          "alt": "microsoft-powerapps-portals.preview-show",
-          "group": "navigation"
-        }
-      ],
-      "commandPalette": [
-        {
+      "editor/title": [{
+        "when": "resourceLangId == html && !virtualWorkspace",
+        "command": "microsoft-powerapps-portals.preview-show",
+        "alt": "microsoft-powerapps-portals.preview-show",
+        "group": "navigation"
+      }],
+      "commandPalette": [{
           "command": "microsoft-powerapps-portals.webExtension.init",
           "when": "isWeb && config.powerPlatform.experimental.enableWebExtensionFeatures"
         },
@@ -363,8 +358,7 @@
           "when": "!virtualWorkspace"
         }
       ],
-      "view/title": [
-        {
+      "view/title": [{
           "command": "pacCLI.authPanel.newAuthProfile",
           "when": "!virtualWorkspace && view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
           "group": "navigation@0"
@@ -385,8 +379,7 @@
           "group": "navigation"
         }
       ],
-      "view/item/context": [
-        {
+      "view/item/context": [{
           "command": "pacCLI.authPanel.deleteAuthProfile",
           "when": "!virtualWorkspace && view == pacCLI.authPanel",
           "group": "inline"
@@ -442,17 +435,14 @@
       ]
     },
     "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "power-platform-activitybar",
-          "title": "%power-platform-activitybar.title%",
-          "icon": "resources/powerplatform-activitybar-icon.svg"
-        }
-      ]
+      "activitybar": [{
+        "id": "power-platform-activitybar",
+        "title": "%power-platform-activitybar.title%",
+        "icon": "resources/powerplatform-activitybar-icon.svg"
+      }]
     },
     "views": {
-      "power-platform-activitybar": [
-        {
+      "power-platform-activitybar": [{
           "id": "pacCLI.authPanel",
           "name": "%pacCLI.authPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
