@@ -23,7 +23,7 @@ const log = require('fancy-log');
 const path = require('path');
 const pslist = require('ps-list');
 
-const webPackConfig = require('./webpack.config');
+const [nodeConfig ,webConfig] = require('./webpack.config');
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
@@ -36,7 +36,6 @@ async function clean() {
             log.info(`Terminating: ${info.name} - ${info.pid}...`)
             process.kill(info.pid);
         });
-
     fs.emptyDirSync(outdir);
     return fs.emptyDir(distdir);
 }
@@ -44,9 +43,17 @@ async function clean() {
 function compile() {
     return gulp
         .src('src/**/*.ts')
-        .pipe(gulpWebpack(webPackConfig, webpack))
+        .pipe(gulpWebpack(nodeConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(distdir));
+}
+
+function compileWeb() {
+    return gulp
+    .src('src/web/**/*.ts')
+    .pipe(gulpWebpack(webConfig, webpack))
+    .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
+    .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
 
 async function nugetInstall(nugetSource, packageName, version, targetDir) {
@@ -142,6 +149,15 @@ function test() {
             }));
 }
 
+function testWeb() {
+    return gulp
+        .src(['src/web/test/unit/**/*.ts'], { read: false })
+        .pipe(mocha({
+                require: [ "ts-node/register" ],
+                ui: 'bdd'
+            }));
+}
+
 async function packageVsix() {
     fs.emptyDirSync(packagedir);
     return vsce.createVSIX({
@@ -229,13 +245,15 @@ const recompile = gulp.series(
     translationsImport,
     translationsGenerate,
     compile,
+    compileWeb
 );
 
 const dist = gulp.series(
     recompile,
     packageVsix,
     lint,
-    test
+    test,
+    testWeb
 );
 
 const translationExtensionName = "vscode-powerplatform";
@@ -317,10 +335,12 @@ function translationsGenerateSrcLocBundles() {
 
 exports.clean = clean;
 exports.compile = compile;
+exports.compileWeb = compileWeb;
 exports.recompile = recompile;
 exports.snapshot = snapshot;
 exports.lint = lint;
 exports.test = test;
+exports.testWeb = testWeb;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;

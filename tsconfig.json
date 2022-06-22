@@ -5,7 +5,7 @@
     "sourceMap": true,
     "outDir": "out",
     "rootDir": "src",
-    "lib": [ "es6" ],
+    "lib": [ "es6", "WebWorker" ],
     "noImplicitAny": true,
     "strictPropertyInitialization": true,
 		"strict": true,
@@ -16,6 +16,7 @@
     "src"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".vscode-test-web"
   ]
 }

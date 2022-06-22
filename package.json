@@ -15,7 +15,10 @@
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
     "increment-version": "node node_modules/release-it/bin/release-it --increment patch --ci -VV",
     "increment-version-npm": "npm version %VSIX_VERSION%",
-    "build-grammar": "nearleyc ./src/server/Parser/liquidTagGrammar.ne -o ./src/server/Parser/liquidTagGrammar.js"
+    "build-grammar": "nearleyc ./src/server/Parser/liquidTagGrammar.ne -o ./src/server/Parser/liquidTagGrammar.js",
+    "compile-web": "webpack",
+    "watch-web": "webpack --watch",
+    "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -36,6 +39,7 @@
   ],
   "publisher": "microsoft-IsvExpTools",
   "main": "./dist/extension",
+  "browser": "./dist/web/extension.js",
   "categories": [
     "Snippets",
     "Other"
@@ -58,21 +62,28 @@
   ],
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
+    "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onStartupFinished",
     "onLanguage:yaml",
     "onLanguage:html"
   ],
+  "capabilities": {
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "%microsoft-powerapps-portals.webExtension.limitation%"
+    }
+  },
   "contributes": {
     "viewsWelcome": [
       {
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
-        "when": "pacCLI.authPanel.interactiveLoginSupported"
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
       },
       {
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveNotSupported%",
-        "when": "!pacCLI.authPanel.interactiveLoginSupported"
+        "when": "!virtualWorkspace && !pacCLI.authPanel.interactiveLoginSupported"
       }
     ],
     "commands": [
@@ -200,6 +211,10 @@
           "dark": "./src/client/editor_menu_icons/dark/portal_webpage_preview.svg",
           "light": "./src/client/editor_menu_icons/light/portal_webpage_preview.svg"
         }
+      },
+      {
+        "command": "microsoft-powerapps-portals.webExtension.init",
+        "title": "%microsoft-powerapps-portals.webExtension.init.title%"
       }
     ],
     "configuration": {
@@ -209,6 +224,11 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Disable the PowerPlatform activity bar panels"
+        },
+        "powerPlatform.experimental.enableWebExtensionFeatures": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable PowerPlatform web extension features"
         }
       }
     },
@@ -228,13 +248,17 @@
     "menus": {
       "editor/title": [
         {
-          "when": "resourceLangId == html",
+          "when": "resourceLangId == html && !virtualWorkspace",
           "command": "microsoft-powerapps-portals.preview-show",
           "alt": "microsoft-powerapps-portals.preview-show",
           "group": "navigation"
         }
       ],
       "commandPalette": [
+        {
+          "command": "microsoft-powerapps-portals.webExtension.init",
+          "when": "isWeb && config.powerPlatform.experimental.enableWebExtensionFeatures"
+        },
         {
           "command": "microsoft-powerapps-portals.preview-show",
           "when": "never"
@@ -298,83 +322,123 @@
         {
           "command": "pacCLI.authPanel.copyUser",
           "when": "never"
+        },
+        {
+          "command": "pacCLI.openDocumentation",
+          "when": "!virtualWorkspace"
+        },
+        {
+          "command": "pacCLI.openPacLab",
+          "when": "!virtualWorkspace"
+        },
+        {
+          "command": "pacCLI.pacHelp",
+          "when": "!virtualWorkspace"
+        },
+        {
+          "command": "pacCLI.pacAuthHelp",
+          "when": "!virtualWorkspace"
+        },
+        {
+          "command": "pacCLI.pacPackageHelp",
+          "when": "!virtualWorkspace"
+        },
+        {
+          "command": "pacCLI.pacPcfHelp",
+          "when": "!virtualWorkspace"
+        },
+        {
+          "command": "pacCLI.pacSolutionHelp",
+          "when": "!virtualWorkspace"
+        },
+        {
+          "command": "pacCLI.disableTelemetry",
+          "when": "!virtualWorkspace"
+        },
+        {
+          "command": "pacCLI.enableTelemetry",
+          "when": "!virtualWorkspace"
+        },
+        {
+          "command": "pacCLI.authPanel.clearAuthProfile",
+          "when": "!virtualWorkspace"
         }
       ],
       "view/title": [
         {
           "command": "pacCLI.authPanel.newAuthProfile",
-          "when": "view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
+          "when": "!virtualWorkspace && view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
           "group": "navigation@0"
         },
         {
           "command": "pacCLI.authPanel.refresh",
-          "when": "view == pacCLI.authPanel",
+          "when": "!virtualWorkspace && view == pacCLI.authPanel",
           "group": "navigation@1"
         },
         {
           "command": "pacCLI.authPanel.clearAuthProfile",
-          "when": "view == pacCLI.authPanel",
+          "when": "!virtualWorkspace && view == pacCLI.authPanel",
           "group": "navigation@2"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.refresh",
-          "when": "view == pacCLI.envAndSolutionsPanel",
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
           "command": "pacCLI.authPanel.deleteAuthProfile",
-          "when": "view == pacCLI.authPanel",
+          "when": "!virtualWorkspace && view == pacCLI.authPanel",
           "group": "inline"
         },
         {
           "command": "pacCLI.authPanel.selectAuthProfile",
-          "when": "view == pacCLI.authPanel",
+          "when": "!virtualWorkspace && view == pacCLI.authPanel",
           "group": "inline"
         },
         {
           "command": "pacCLI.authPanel.nameAuthProfile",
-          "when": "view == pacCLI.authPanel"
+          "when": "!virtualWorkspace && view == pacCLI.authPanel"
         },
         {
           "command": "pacCLI.authPanel.navigateToResource",
-          "when": "view == pacCLI.authPanel && viewItem == DATAVERSE"
+          "when": "!virtualWorkspace && view == pacCLI.authPanel && viewItem == DATAVERSE"
         },
         {
           "command": "pacCLI.authPanel.copyUser",
-          "when": "view == pacCLI.authPanel"
+          "when": "!virtualWorkspace && view == pacCLI.authPanel"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",
-          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyUniqueName",
-          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyVersionNumber",
-          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyDisplayName",
-          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
           "group": "displayName@0"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyEnvironmentId",
-          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
           "group": "environment"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyEnvironmentUrl",
-          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
           "group": "environment"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyOrganizationId",
-          "when": "view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
         }
       ]
     },
@@ -392,12 +456,12 @@
         {
           "id": "pacCLI.authPanel",
           "name": "%pacCLI.authPanel.title%",
-          "when": "!config.powerPlatform.experimental.disableActivityBarPanels"
+          "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
         },
         {
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
-          "when": "!config.powerPlatform.experimental.disableActivityBarPanels"
+          "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
         }
       ]
     }
@@ -413,8 +477,10 @@
     "@types/uuid": "^8.3.0",
     "@types/vscode": "^1.51.0",
     "@types/webpack": "^5.28.0",
+    "@types/webpack-env": "^1.17.0",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
+    "@vscode/test-web": "^0.0.24",
     "chai": "^4.3.6",
     "eslint": "^8.11.0",
     "fancy-log": "^1.3.3",
@@ -429,6 +495,8 @@
     "mocha": "^9.2.2",
     "moment": "^2.29.2",
     "node-fetch": "^2.6.7",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
     "ps-list": "^7.2.0",
     "release-it": "^14.12.5",
     "ts-loader": "^9.2.8",

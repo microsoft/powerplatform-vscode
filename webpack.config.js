@@ -5,9 +5,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const path = require('path');
+const webpack = require('webpack');
 
 /**@type {import('webpack').Configuration}*/
-const config = {
+const nodeConfig = {
     target: 'node',
     mode: 'development',
 
@@ -51,6 +52,65 @@ const config = {
         ]
         }]
     },
-}
+};
+const webConfig = {
+	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+	target: 'webworker', // extensions run in a webworker context
+	entry: {
+		'extension': './src/web/extension.ts',
+        'test/unit/extension': './src/web/test/unit/extension.test.ts'
+	},
+	output: {
+		filename: '[name].js',
+		path: path.join(__dirname, './dist/web'),
+		libraryTarget: 'commonjs',
+		devtoolModuleFilenameTemplate: '../../[resource-path]'
+	},
+	resolve: {
+		mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
+		extensions: ['.ts', '.js'], // support ts-files and js-files
+		alias: {
+			// provides alternate implementation for node module and source files
+		},
+		fallback: {
+			// Webpack 5 no longer polyfills Node.js core modules automatically.
+			// see https://webpack.js.org/configuration/resolve/#resolvefallback
+			// for the list of Node.js core module polyfills.
+			"path": require.resolve("path-browserify"),
+			'assert': require.resolve('assert')
+		}
+	},
+	module: {
+		rules: [{
+			test: /\.ts$/,
+			exclude: /node_modules/,
+			use: [{
+                // vscode-nls-dev loader:
+                // * rewrite nls-calls
+                loader: 'vscode-nls-dev/lib/webpack-loader',
+                options: {
+                    base: __dirname
+                }
+            },{
+				loader: 'ts-loader'
+			}]
+		}]
+	},
+	plugins: [
+		new webpack.ProvidePlugin({
+			process: 'process/browser', // provide a shim for the global `process` variable
+		}),
+	],
+	externals: {
+		'vscode': 'commonjs vscode', // ignored because it doesn't exist
+	},
+	performance: {
+		hints: false
+	},
+	devtool: 'nosources-source-map', // create a source map that points to the original source file
+	infrastructureLogging: {
+		level: "log", // enables logging required for problem matchers
+	},
+};
 
-module.exports = config;
+module.exports = [nodeConfig, webConfig];
