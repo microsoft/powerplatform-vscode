@@ -50,9 +50,6 @@ steps:
     command: custom
     customCommand: run set-git-authn -- --repoToken $(GITHUB_TOKEN)
 
-# - script: git checkout release/$(Build.SourceBranchName)
-#   displayName: 'checkout release/$(Build.SourceBranchName) - (release-it cannot work on detached heads)'
-
 - task: Npm@1
   displayName: 'set version via npm'
   inputs:
