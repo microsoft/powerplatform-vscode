@@ -48,11 +48,11 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">V tomto počítači nebyly nalezeny žádné ověřovací profily.
-[Přidat ověřovací profil Dataverse](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+[Přidat ověřovací profil](command:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -74,8 +74,8 @@ Interaktivní ověřování není dostupné pro vzdálené scénáře; ověřova
         <target state="translated">Aktualizovat</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">Nový ověřovací profil Dataverse</target>
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">Nový ověřovací profil</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -171,14 +171,6 @@ Interaktivní ověřování není dostupné pro vzdálené scénáře; ověřova
         <source xml:lang="en">Cancel</source>
         <target state="translated">Zrušit</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">Vytvořit nový ověřovací profil Dataverse</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-        <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">Zadejte adresu URL prostředí.</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
         <target state="translated">Potvrdit</target>
@@ -201,8 +193,8 @@ Interaktivní ověřování není dostupné pro vzdálené scénáře; ověřova
         <target state="translated">Název, který chcete dát tomuto ověřovacímu profilu</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">Je povoleno maximálně 12 znaků.</target>
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">Je povoleno maximálně 30 znaků.</target>
       </trans-unit>
     </body>
   </file>

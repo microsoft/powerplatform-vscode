@@ -7,12 +7,10 @@
 	"pacCLI.authPanel.clearAuthProfile.confirm": "Confirmer",
 	"pacCLI.authPanel.clearAuthProfile.prompt": "Voulez-vous vraiment effacer tous les profils d’authentification ?",
 	"pacCLI.authPanel.clearAuthProfile.cancel": "Annuler",
-	"pacCLI.authPanel.newDataverseAuthProfile.title": "Créer un nouveau profil d’authentification Dataverse",
-	"pacCLI.authPanel.newDataverseAuthProfile.prompt": "Entrer l’URL de l’environnement",
 	"pacCLI.authPanel.deleteAuthProfile.confirm": "Confirmer",
 	"pacCLI.authPanel.deleteAuthProfile.prompt": "Voulez-vous vraiment supprimer le profil d’authentification {0}-{1} ?",
 	"pacCLI.authPanel.deleteAuthProfile.cancel": "Annuler",
 	"pacCLI.authPanel.nameAuthProfile.title": "Nommer/Renommer le profil d’authentification",
 	"pacCLI.authPanel.nameAuthProfile.prompt": "Nom que vous souhaitez attribuer à ce profil d’authentification",
-	"pacCLI.authPanel.nameAuthProfile.validation": "12 caractères maximum autorisés"
+	"pacCLI.authPanel.nameAuthProfile.validation": "30 caractères maximum autorisés"
 }

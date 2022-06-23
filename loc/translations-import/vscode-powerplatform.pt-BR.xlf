@@ -48,11 +48,11 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Nenhum perfil de autenticação encontrado neste computador.
-[Adicionar Perfil de Autenticação do Dataverse](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+[Adicionar Perfil de Autenticação](command:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -63,7 +63,7 @@ The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Nenhum perfil de autenticação encontrado neste computador.
 A Autenticação Interativa não está disponível para cenários remotos; os perfis de autenticação devem ser criados pela linha de comando. O fluxo `--deviceCode` deve ser usado para usuários com requisitos de MFA ou cujos locatários usam o ADFS.
-[Exibir Ajuda do Perfil de Autenticação] (command:lCLI.coAuthHelp)</target>
+[Exibir Ajuda do Perfil de Autenticação] (command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -74,8 +74,8 @@ A Autenticação Interativa não está disponível para cenários remotos; os pe
         <target state="translated">Atualizar</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">Novo Perfil de Autenticação do Dataverse</target>
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">Novo Perfil de Autenticação</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -171,14 +171,6 @@ A Autenticação Interativa não está disponível para cenários remotos; os pe
         <source xml:lang="en">Cancel</source>
         <target state="translated">Cancelar</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">Criar Perfil de Autenticação do Dataverse</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-        <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">Inserir URL do Ambiente</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
         <target state="translated">Confirmar</target>
@@ -201,8 +193,8 @@ A Autenticação Interativa não está disponível para cenários remotos; os pe
         <target state="translated">O nome que você deseja dar a este perfil de autenticação</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">O máximo permitido são 12 caracteres</target>
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">O máximo permitido são 30 caracteres</target>
       </trans-unit>
     </body>
   </file>

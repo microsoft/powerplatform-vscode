@@ -48,11 +48,11 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">在此计算机上找不到身份验证配置文件。
-[添加 Dataverse 身份验证文件](命令:pacCLI.authPanel.newDataverseAuthProfile)</target>
+[添加身份验证文件](命令:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -74,8 +74,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <target state="translated">刷新</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">新建 Dataverse 身份验证配置文件</target>
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">新建身份验证配置文件</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -171,14 +171,6 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <source xml:lang="en">Cancel</source>
         <target state="translated">取消</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">创建新的 Dataverse 身份验证配置文件</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-        <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">输入环境 URL</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
         <target state="translated">确认</target>
@@ -201,8 +193,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <target state="translated">要为此身份验证配置文件指定的名称</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">最多允许 12 个字符</target>
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">最多允许 30 个字符</target>
       </trans-unit>
     </body>
   </file>

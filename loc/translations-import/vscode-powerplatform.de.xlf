@@ -48,11 +48,11 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Auf diesem Computer wurden keine Authentifizierungsprofile gefunden.
-[Dataverse-Authentifizierungsprofil hinzufügen](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+[Authentifizierungsprofil hinzufügen](command:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -74,8 +74,8 @@ Die interaktive Authentifizierung ist für Remoteszenarien nicht verfügbar. Aut
         <target state="translated">Aktualisieren</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">Neues Dataverse-Authentifizierungsprofil</target>
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">Neues Authentifizierungsprofil</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -171,14 +171,6 @@ Die interaktive Authentifizierung ist für Remoteszenarien nicht verfügbar. Aut
         <source xml:lang="en">Cancel</source>
         <target state="translated">Abbrechen</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">Neues Dataverse-Authentifizierungsprofil erstellen</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-        <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">Umgebungs-URL eingeben</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
         <target state="translated">Bestätigen</target>
@@ -201,8 +193,8 @@ Die interaktive Authentifizierung ist für Remoteszenarien nicht verfügbar. Aut
         <target state="translated">Der Name, den Sie diesem Authentifizierungsprofil geben möchten</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">Maximal 12 Zeichen zulässig</target>
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">Maximal 30 Zeichen zulässig</target>
       </trans-unit>
     </body>
   </file>

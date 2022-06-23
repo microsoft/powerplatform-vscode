@@ -48,11 +48,11 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Bu bilgisayarda hiçbir kimlik doğrulama profili bulunamadı.
-[Dataverse Kimlik Doğrulama Profili Ekle](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+[Kimlik Doğrulama Profili Ekle](command:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -74,8 +74,8 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
         <target state="translated">Yenile</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">Yeni Dataverse Kimlik Doğrulama Profili</target>
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">Yeni Kimlik Doğrulama Profili</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -171,14 +171,6 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
         <source xml:lang="en">Cancel</source>
         <target state="translated">İptal Et</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">Yeni Dataverse Kimlik Doğrulama Profili oluşturun</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-        <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">Ortam URL'sini girin</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
         <target state="translated">Onayla</target>
@@ -201,8 +193,8 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
         <target state="translated">Bu kimlik doğrulama profiline vermek istediğiniz ad</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">En fazla 12 karaktere izin verilir</target>
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">En fazla 30 karaktere izin verilir</target>
       </trans-unit>
     </body>
   </file>

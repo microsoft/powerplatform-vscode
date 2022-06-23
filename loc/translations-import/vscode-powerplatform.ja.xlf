@@ -48,11 +48,11 @@
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
         <source xml:lang="en">No auth profiles found on this computer.
-[Add Dataverse Auth Profile](command:pacCLI.authPanel.newDataverseAuthProfile)</source>
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newDataverseAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">このコンピューターには認証プロファイルが見つかりません。
-[Dataverse 認証プロファイルを追加](command:pacCLI.authPanel.newDataverseAuthProfile)</target>
+[認証プロファイルを追加](command:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -74,8 +74,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <target state="translated">最新の情報に更新</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Dataverse Auth Profile</source>
-        <target state="translated">新しい Dataverse 認証プロファイル</target>
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">新しい認証プロファイル</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -171,14 +171,6 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <source xml:lang="en">Cancel</source>
         <target state="translated">キャンセル</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">Create new Dataverse Auth Profile</source>
-        <target state="translated">新しい Dataverse 認証プロファイルの作成</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.prompt">
-        <source xml:lang="en">Enter Environment URL</source>
-        <target state="translated">環境 URL を入力してください</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
         <source xml:lang="en">Confirm</source>
         <target state="translated">確認</target>
@@ -201,8 +193,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <target state="translated">この認証プロファイルに指定する名前</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 12 characters allowed</source>
-        <target state="translated">最大 12 文字使用可能</target>
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">最大 30 文字使用可能</target>
       </trans-unit>
     </body>
   </file>
