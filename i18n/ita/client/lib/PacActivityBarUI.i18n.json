@@ -7,12 +7,10 @@
 	"pacCLI.authPanel.clearAuthProfile.confirm": "Conferma",
 	"pacCLI.authPanel.clearAuthProfile.prompt": "Cancellare tutti i profili di autenticazione?",
 	"pacCLI.authPanel.clearAuthProfile.cancel": "Annulla",
-	"pacCLI.authPanel.newDataverseAuthProfile.title": "Crea nuovo profilo di autenticazione Dataverse",
-	"pacCLI.authPanel.newDataverseAuthProfile.prompt": "Immetti URL ambiente",
 	"pacCLI.authPanel.deleteAuthProfile.confirm": "Conferma",
 	"pacCLI.authPanel.deleteAuthProfile.prompt": "Eliminare il profilo di autenticazione {0}-{1}?",
 	"pacCLI.authPanel.deleteAuthProfile.cancel": "Annulla",
 	"pacCLI.authPanel.nameAuthProfile.title": "Assegna un nome/rinomina profilo di autorizzazione",
 	"pacCLI.authPanel.nameAuthProfile.prompt": "Il nome che vuoi assegnare a questo profilo di autenticazione",
-	"pacCLI.authPanel.nameAuthProfile.validation": "È consentito un massimo di 12 caratteri"
+	"pacCLI.authPanel.nameAuthProfile.validation": "È consentito un massimo di 30 caratteri"
 }

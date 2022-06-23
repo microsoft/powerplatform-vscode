@@ -7,12 +7,10 @@
 	"pacCLI.authPanel.clearAuthProfile.confirm": "확인",
 	"pacCLI.authPanel.clearAuthProfile.prompt": "모든 인증 프로필을 지우시겠습니까?",
 	"pacCLI.authPanel.clearAuthProfile.cancel": "취소",
-	"pacCLI.authPanel.newDataverseAuthProfile.title": "새 Dataverse 인증 프로필 만들기",
-	"pacCLI.authPanel.newDataverseAuthProfile.prompt": "환경 URL 입력",
 	"pacCLI.authPanel.deleteAuthProfile.confirm": "확인",
 	"pacCLI.authPanel.deleteAuthProfile.prompt": "인증 프로필 {0}-{1}을(를) 삭제하시겠습니까?",
 	"pacCLI.authPanel.deleteAuthProfile.cancel": "취소",
 	"pacCLI.authPanel.nameAuthProfile.title": "인증 프로필 이름 지정/이름 변경",
 	"pacCLI.authPanel.nameAuthProfile.prompt": "이 인증 프로필에 지정할 이름",
-	"pacCLI.authPanel.nameAuthProfile.validation": "최대 12자까지 허용됩니다."
+	"pacCLI.authPanel.nameAuthProfile.validation": "최대 30자까지 허용됩니다."
 }
