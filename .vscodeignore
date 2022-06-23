@@ -12,7 +12,6 @@ package/
 **/test/
 out/
 .gitignore
-.release-it.yaml
 gulpfile.js
 scorch
 scorch.cmd

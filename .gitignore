@@ -11,3 +11,4 @@ npm-debug.log*
 
 # VS Code test infra
 .vscode-test/
+.vscode-test-web/
