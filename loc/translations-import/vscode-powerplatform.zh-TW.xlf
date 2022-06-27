@@ -137,6 +137,14 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
         <target state="translated">PowerApps 入口網站 -&gt; 顯示預覽</target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
+        <source xml:lang="en">Initialize Web Extension</source>
+        <target state="translated">初始化 Web 擴充</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
+        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
+        <target state="translated">適用於 Web 的 VS Code 不支援 PAC CLI</target>
+      </trans-unit>
     </body>
   </file>
   <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext" target-language="zh-TW">

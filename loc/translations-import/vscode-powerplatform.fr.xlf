@@ -62,7 +62,7 @@ Interactive Authentication is not availalbe for remote scenarios; auth profiles 
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Aucun profil d’authentification n’a été trouvé sur cet ordinateur.
-L’authentification interactive n’est pas disponible pour les scénarios distants ; les profils d’authentification doivent être créés par la ligne de commande. Le flux « --deviceCode » doit être utilisé pour les utilisateurs ayant des exigences MFA ou dont les clients utilisent ADFS.
+L’authentification interactive n’est pas disponible pour les scénarios distants ; les profils d’authentification doivent être créés par la ligne de commande. Le flux « --deviceCode » doit être utilisé pour les utilisateurs ayant des exigences MFA ou dont les clients utilisent ADFS.
 [Afficher l’aide des profils d’authentification](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
@@ -136,6 +136,14 @@ L’authentification interactive n’est pas disponible pour les scénarios dist
       <trans-unit id="microsoft-powerapps-portals.preview-show.title">
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
         <target state="translated">Portail PowerApps -&gt; Afficher la version préliminaire</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
+        <source xml:lang="en">Initialize Web Extension</source>
+        <target state="translated">Initialiser l’extension Web</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
+        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
+        <target state="translated">PAC CLI n’est pas pris en charge dans VS Code pour le Web</target>
       </trans-unit>
     </body>
   </file>
@@ -248,9 +256,9 @@ Version: {2}</source>
 The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
-        <target state="translated">Nom complet : {0}
-Nom unique : {1}
-Version : {2}</target>
+        <target state="translated">Nom complet : {0}
+Nom unique : {1}
+Version : {2}</target>
       </trans-unit>
     </body>
   </file>

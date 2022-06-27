@@ -16,7 +16,7 @@
 	"power-platform-activitybar.title": "Power Platform",
 	"pacCLI.authPanel.title": "Perfis de Autenticação",
 	"pacCLI.authPanel.welcome.whenInteractiveSupported": "Nenhum perfil de autenticação encontrado neste computador.\n[Adicionar Perfil de Autenticação](command:pacCLI.authPanel.newAuthProfile)",
-	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "Nenhum perfil de autenticação encontrado neste computador.\nA Autenticação Interativa não está disponível para cenários remotos; os perfis de autenticação devem ser criados pela linha de comando. O fluxo `--deviceCode` deve ser usado para usuários com requisitos de MFA ou cujos locatários usam o ADFS.\n[Exibir Ajuda do Perfil de Autenticação] (command:pacCLI.pacAuthHelp)",
+	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "Nenhum perfil de autenticação encontrado neste computador.\nA Autenticação Interativa não está disponível para cenários remotos; os perfis de autenticação devem ser criados pela linha de comando.  O fluxo `--deviceCode` deve ser usado para usuários com requisitos de MFA ou cujos locatários usam o ADFS.\n[Exibir Ajuda do Perfil de Autenticação](command:pacCLI.pacAuthHelp)",
 	"pacCLI.authPanel.clearAuthProfile.title": "Limpar Perfis de Autenticação",
 	"pacCLI.authPanel.refresh.title": "Atualizar",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Novo Perfil de Autenticação",
@@ -34,5 +34,7 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Copiar Nome Amigável",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copiar Nome Exclusivo",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copiar Número da Versão",
-	"microsoft-powerapps-portals.preview-show.title": "Portal do PowerApps -> Mostrar versão preliminar"
+	"microsoft-powerapps-portals.preview-show.title": "Portal do PowerApps -> Mostrar versão preliminar",
+	"microsoft-powerapps-portals.webExtension.init.title": "Inicializar Extensão da Web",
+	"microsoft-powerapps-portals.webExtension.limitation": "Não há suporte para PAC CLI no VS Code para a Web"
 }
