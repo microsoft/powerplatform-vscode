@@ -62,8 +62,8 @@ Interactive Authentication is not availalbe for remote scenarios; auth profiles 
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Nenhum perfil de autenticação encontrado neste computador.
-A Autenticação Interativa não está disponível para cenários remotos; os perfis de autenticação devem ser criados pela linha de comando. O fluxo `--deviceCode` deve ser usado para usuários com requisitos de MFA ou cujos locatários usam o ADFS.
-[Exibir Ajuda do Perfil de Autenticação] (command:pacCLI.pacAuthHelp)</target>
+A Autenticação Interativa não está disponível para cenários remotos; os perfis de autenticação devem ser criados pela linha de comando.  O fluxo `--deviceCode` deve ser usado para usuários com requisitos de MFA ou cujos locatários usam o ADFS.
+[Exibir Ajuda do Perfil de Autenticação](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -136,6 +136,14 @@ A Autenticação Interativa não está disponível para cenários remotos; os pe
       <trans-unit id="microsoft-powerapps-portals.preview-show.title">
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
         <target state="translated">Portal do PowerApps -&gt; Mostrar versão preliminar</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
+        <source xml:lang="en">Initialize Web Extension</source>
+        <target state="translated">Inicializar Extensão da Web</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
+        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
+        <target state="translated">Não há suporte para PAC CLI no VS Code para a Web</target>
       </trans-unit>
     </body>
   </file>

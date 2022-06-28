@@ -34,5 +34,7 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Kolay Adı Kopyala",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Benzersiz Adı Kopyala",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Sürüm Numarasını Kopyala",
-	"microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Önizlemeyi göster"
+	"microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Önizlemeyi göster",
+	"microsoft-powerapps-portals.webExtension.init.title": "Web Uzantısını Başlat",
+	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI, Web için VS Code'da desteklenmiyor"
 }

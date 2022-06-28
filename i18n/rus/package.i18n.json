@@ -15,8 +15,8 @@
 	"pacCLI.enableTelemetry.title": "Включить телеметрию PAC",
 	"power-platform-activitybar.title": "Power Platform",
 	"pacCLI.authPanel.title": "Профили проверки подлинности",
-	"pacCLI.authPanel.welcome.whenInteractiveSupported": "На компьютере не найдены профили проверки подлинности.\n[Добавить профиль проверки подлинности ](command:pacCLI.authPanel.newAuthProfile)",
-	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "На компьютере не найдены профили проверки подлинности.\nИнтерактивная проверка подлинности недоступна для удаленных сценариев; необходимо создать профили проверки подлинности с помощью командной строкой. Используйте поток \"--deviceCode\" для пользователей с требованиями MFA или тех, клиенты которых используют ADFS.\n[Посмотреть справку по профилю проверки подлинности] (command:pacCLI.pacAuthHelp)",
+	"pacCLI.authPanel.welcome.whenInteractiveSupported": "На компьютере не найдены профили проверки подлинности.\n[Добавить профиль проверки подлинности](command:pacCLI.authPanel.newAuthProfile)",
+	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "На компьютере не найдены профили проверки подлинности.\nИнтерактивная проверка подлинности недоступна для удаленных сценариев; необходимо создать профили проверки подлинности с помощью командной строки. Для пользователей, которым требуется MFA или клиенты которых используют AD FS, необходимо использовать поток --deviceCode.\n[Смотреть справку по профилям проверки подлинности](command:pacCLI.pacAuthHelp)",
 	"pacCLI.authPanel.clearAuthProfile.title": "Удаление профилей проверки подлинности",
 	"pacCLI.authPanel.refresh.title": "Обновить",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Новый профиль проверки подлинности",
@@ -34,5 +34,7 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Копировать понятное имя",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Копировать уникальное имя",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Копировать номер версии",
-	"microsoft-powerapps-portals.preview-show.title": "Портал PowerApps -> Показать предварительную версию"
+	"microsoft-powerapps-portals.preview-show.title": "Портал PowerApps -> Показать предварительную версию",
+	"microsoft-powerapps-portals.webExtension.init.title": "Инициализация веб-расширения",
+	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI не поддерживается в VS Code для Интернета"
 }

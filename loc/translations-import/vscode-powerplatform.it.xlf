@@ -62,7 +62,7 @@ Interactive Authentication is not availalbe for remote scenarios; auth profiles 
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">Nessun profilo di autenticazione trovato in questo computer.
-L'autenticazione interattiva non è disponibile per scenari remoti. I profili di autenticazione devono essere creati dalla riga di comando. Il flusso "--deviceCode" deve essere utilizzato per gli utenti con requisiti di autenticazione a più fattori o i cui tenant utilizzano il file system distribuito di Azure.
+L'autenticazione interattiva non è disponibile per scenari remoti. I profili di autenticazione devono essere creati dalla riga di comando. Il flusso "--deviceCode" deve essere utilizzato per gli utenti con requisiti di autenticazione a più fattori o i cui tenant utilizzano AD FS.
 [Visualizza la Guida del profilo di autorizzazione](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
@@ -136,6 +136,14 @@ L'autenticazione interattiva non è disponibile per scenari remoti. I profili di
       <trans-unit id="microsoft-powerapps-portals.preview-show.title">
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
         <target state="translated">Portale PowerApps -&gt; Mostra anteprima</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
+        <source xml:lang="en">Initialize Web Extension</source>
+        <target state="translated">Inizializza estensione Web</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
+        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
+        <target state="translated">PAC CLI non è supportata in VS Code per il Web</target>
       </trans-unit>
     </body>
   </file>

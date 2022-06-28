@@ -62,7 +62,7 @@ Interactive Authentication is not availalbe for remote scenarios; auth profiles 
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">V tomto počítači nebyly nalezeny žádné ověřovací profily.
-Interaktivní ověřování není dostupné pro vzdálené scénáře; ověřovací profily musí být vytvořeny pomocí příkazového řádku. Tok --deviceCode se musí použít pro uživatele s požadavky na vícefaktorové ověřování nebo na ty, jejichž tenanty používají ADFS.
+Interaktivní ověřování není dostupné pro vzdálené scénáře; ověřovací profily musí být vytvořeny pomocí příkazového řádku. Tok --deviceCode se musí použít pro uživatele s požadavky na vícefaktorové ověřování (MFA) nebo na ty, jejichž tenanty používají ADFS.
 [Zobrazit nápovědu k ověřovacímu profilu](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
@@ -136,6 +136,14 @@ Interaktivní ověřování není dostupné pro vzdálené scénáře; ověřova
       <trans-unit id="microsoft-powerapps-portals.preview-show.title">
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
         <target state="translated">Portál PowerApps -&gt; Zobrazit náhled</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
+        <source xml:lang="en">Initialize Web Extension</source>
+        <target state="translated">Inicializovat webové rozšíření</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
+        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
+        <target state="translated">Rozhraní PAC CLI není v editoru VS Code pro web podporováno.</target>
       </trans-unit>
     </body>
   </file>

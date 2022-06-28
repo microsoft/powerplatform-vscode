@@ -8,5 +8,5 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "Имя: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Ресурс: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Пользователь: {0}",
-	"pacCLI.EnvOrSolutionTreeItem.toolTip": "Отображаемая имя: {0}\nУникальное имя: {1}\nВерсия: {2}"
+	"pacCLI.EnvOrSolutionTreeItem.toolTip": "Отображаемое имя: {0}\nУникальное имя: {1}\nВерсия: {2}"
 }

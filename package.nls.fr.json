@@ -11,7 +11,7 @@
 	"power-platform-activitybar.title": "Power Platform",
 	"pacCLI.authPanel.title": "Profils d’authentification",
 	"pacCLI.authPanel.welcome.whenInteractiveSupported": "Aucun profil d’authentification n’a été trouvé sur cet ordinateur.\n[Ajouter un profil d’authentification](command:pacCLI.authPanel.newAuthProfile)",
-	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "Aucun profil d’authentification n’a été trouvé sur cet ordinateur.\nL’authentification interactive n’est pas disponible pour les scénarios distants ; les profils d’authentification doivent être créés par la ligne de commande. Le flux « --deviceCode » doit être utilisé pour les utilisateurs ayant des exigences MFA ou dont les clients utilisent ADFS.\n[Afficher l’aide des profils d’authentification](command:pacCLI.pacAuthHelp)",
+	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "Aucun profil d’authentification n’a été trouvé sur cet ordinateur.\nL’authentification interactive n’est pas disponible pour les scénarios distants ; les profils d’authentification doivent être créés par la ligne de commande. Le flux « --deviceCode » doit être utilisé pour les utilisateurs ayant des exigences MFA ou dont les clients utilisent ADFS.\n[Afficher l’aide des profils d’authentification](command:pacCLI.pacAuthHelp)",
 	"pacCLI.authPanel.clearAuthProfile.title": "Effacer les profils d’authentification",
 	"pacCLI.authPanel.refresh.title": "Actualiser",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Nouveau profil d’authentification",
@@ -30,6 +30,6 @@
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copier le nom unique",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copier le numéro de version",
 	"microsoft-powerapps-portals.preview-show.title": "Portail PowerApps -> Afficher la version préliminaire",
-	"microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension",
-	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI is not supported in VS Code for the Web"
+	"microsoft-powerapps-portals.webExtension.init.title": "Initialiser l’extension Web",
+	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI n’est pas pris en charge dans VS Code pour le Web"
 }
