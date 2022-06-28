@@ -65,9 +65,18 @@ export class PacInterop implements IPacInterop {
     private async proc() : Promise<ChildProcessWithoutNullStreams> {
         if (!(this._proc)) {
             this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarting');
+
+            const env : NodeJS.ProcessEnv = {...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
+
+            // Compatability for users on M1 Macs with .NET 6.0 installed - permit pac and pacTelemetryUpload
+            // to roll up to 6.0 if 5.0 is not found on the system.
+            if (os.platform() === 'darwin' && os.version().includes('ARM64')) {
+                env['DOTNET_ROLL_FORWARD'] = 'Major';
+            }
+
             this._proc = spawn(this.pacExecutablePath, ["--non-interactive"], {
                 cwd: this.tempWorkingDirectory,
-                env: {...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent }
+                env: env
                 });
 
             const lineReader = readline.createInterface({ input: this._proc.stdout });
