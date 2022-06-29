@@ -34,6 +34,10 @@ export class BrowserManager implements vscode.Disposable {
     private browserInstance?: Browser;
     private readonly browserLocator: BrowserLocator;
 
+    private controlLocator?: ControlLocator = undefined;
+    private bundleInterceptor?: RequestInterceptor = undefined;
+    private bundleWatcher?: FileWatcher = undefined;
+
     /**
      * Returns the browser instance process id.
      * @returns Browser process id.
@@ -62,6 +66,7 @@ export class BrowserManager implements vscode.Disposable {
 
     /**
      * Launches a new browser instance or attaches to existing one.
+     * This method is the main entry point. It is called from the `Debugger` once debugging is started.
      */
     public async launch(): Promise<void> {
         const telemetryProps = {
@@ -127,6 +132,7 @@ export class BrowserManager implements vscode.Disposable {
         return browserInstance;
     }
 
+    // TODO: verify this works
     /**
      * Creates a new page within an existing browser instance if user agrees.
      * @param browser Existing browser instance.
@@ -213,8 +219,8 @@ export class BrowserManager implements vscode.Disposable {
      * @param page Page to register.
      */
     private async registerPage(page: Page) {
-        const locator = new ControlLocator(this.debugConfig, this.logger);
-        const bundleInterceptor = new RequestInterceptor(
+        this.controlLocator = new ControlLocator(this.debugConfig, this.logger);
+        this.bundleInterceptor = new RequestInterceptor(
             this.debugConfig.file,
             this.workspaceFolder,
             this.logger
@@ -224,38 +230,38 @@ export class BrowserManager implements vscode.Disposable {
          * Disposes of all the managers related to this debugging session.
          */
         const disposeSession = async () => {
+            console.log("Disposing of session");
             await this.onBrowserClose();
-            bundleWatcher.dispose();
-            bundleInterceptor.dispose();
-            locator.dispose();
+            this.disposeSessionInstances();
         };
 
+        page.once("close", () => {
+            void disposeSession();
+        });
+
         const onFileChangeHandler = async () => {
-            await bundleInterceptor.reloadFileContents();
-            await locator.navigateToControl(page);
+            await this.bundleInterceptor?.reloadFileContents();
+            await this.controlLocator?.navigateToControl(page);
         };
 
         const onBundleLoaded = async () => {
             await this.onBrowserReady();
-            page.once("close", () => {
-                void disposeSession();
-            });
         };
-        const bundleWatcher = new FileWatcher(
+        this.bundleWatcher = new FileWatcher(
             this.debugConfig.file,
             onFileChangeHandler,
             this.workspaceFolder,
             this.logger
         );
         try {
-            await bundleInterceptor.register(page, onBundleLoaded);
-            await locator.navigateToControl(page);
+            await this.bundleInterceptor?.register(page, onBundleLoaded);
+            await this.controlLocator?.navigateToControl(page);
         } catch (error) {
             await ErrorReporter.report(
                 this.logger,
                 "BrowserManager.registerPage",
                 error,
-                "Failed to start debugging session."
+                "Failed to start browser session."
             );
             await disposeSession();
         }
@@ -271,6 +277,24 @@ export class BrowserManager implements vscode.Disposable {
                 this.browserInstance = undefined;
             }
         };
+        this.disposeSessionInstances();
         void disposeAsync();
+    }
+
+    private disposeSessionInstances() {
+        if (this.controlLocator) {
+            this.controlLocator.dispose();
+            this.controlLocator = undefined;
+        }
+
+        if (this.bundleInterceptor) {
+            this.bundleInterceptor.dispose();
+            this.bundleInterceptor = undefined;
+        }
+
+        if (this.bundleWatcher) {
+            this.bundleWatcher.dispose();
+            this.bundleWatcher = undefined;
+        }
     }
 }
