@@ -12,6 +12,7 @@ import {
 } from "vscode";
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
+import { sleep } from "./utils";
 
 /**
  * A file watcher that watches for file changes in a given folder.
@@ -62,6 +63,10 @@ export class FileWatcher implements Disposable {
 
         this.fileChangeTriggered = true;
         const onChangeAction = async () => {
+            // Somehow we need to wait a bit before we can trigger the onFileChange.
+            // If we don't wait, then the bundle will still be in its old state *before* the change that triggered
+            // the file watcher to call the onChange event.
+            await sleep(5000);
             try {
                 await this.onFileChange();
             } catch (error) {
@@ -75,9 +80,7 @@ export class FileWatcher implements Disposable {
             }
             this.fileChangeTriggered = false;
         };
-        setTimeout(() => {
-            void onChangeAction();
-        }, 10000); // TODO: check if still issue.
+        void onChangeAction();
     }
 
     /**
