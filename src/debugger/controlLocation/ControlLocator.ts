@@ -116,18 +116,21 @@ export class ControlLocator implements Disposable {
             await page.waitForSelector("ul[role='tablist']");
             await page.click(`li[aria-label='${tabName}']`);
         } catch (error) {
-            await ErrorReporter.report(
-                this.logger,
-                "ControlLocation.navigateToTab.navigation",
-                error,
-                "Could not navigate to tab.",
-                false,
-                { retryCount: "" + retryCount }
-            );
+            console.log("Could not find tab " + tabName);
             if (this.shouldRetry(retryCount)) {
                 await sleep(CONTROL_LOCATOR_RETRY_TIMEOUT);
                 return await this.navigateToTab(page, retryCount - 1);
+            } else {
+                await ErrorReporter.report(
+                    this.logger,
+                    "ControlLocation.navigateToTab.navigation",
+                    error,
+                    "Could not navigate to tab.",
+                    false,
+                    { retryCount: "" + retryCount }
+                );
             }
+            throw error;
         }
     }
 
@@ -146,6 +149,7 @@ export class ControlLocator implements Disposable {
      * Disposes the control locator.
      */
     public dispose(): void {
+        console.log("Disposing control locator");
         if (this.shouldRetryNavigation) {
             this.shouldRetryNavigation = false;
         }
