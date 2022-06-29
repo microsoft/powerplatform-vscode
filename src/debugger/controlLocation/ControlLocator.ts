@@ -21,6 +21,7 @@ import { ErrorReporter } from "../../common/ErrorReporter";
 export class ControlLocator implements Disposable {
     private readonly pageLink: string;
     private shouldRetryNavigation: boolean;
+    private isDisposed: boolean;
 
     /**
      * Creates a new instance of ControlLocator.
@@ -33,6 +34,7 @@ export class ControlLocator implements Disposable {
     ) {
         this.pageLink = this.getPageLink();
         this.shouldRetryNavigation = true;
+        this.isDisposed = false;
     }
 
     /**
@@ -116,7 +118,6 @@ export class ControlLocator implements Disposable {
             await page.waitForSelector("ul[role='tablist']");
             await page.click(`li[aria-label='${tabName}']`);
         } catch (error) {
-            console.log("Could not find tab " + tabName);
             if (this.shouldRetry(retryCount)) {
                 await sleep(CONTROL_LOCATOR_RETRY_TIMEOUT);
                 return await this.navigateToTab(page, retryCount - 1);
@@ -129,8 +130,16 @@ export class ControlLocator implements Disposable {
                     false,
                     { retryCount: "" + retryCount }
                 );
+
+                // Protocol error is expected if the debugging session was disposed.
+                if (
+                    this.isDisposed &&
+                    (error as Error).name === "ProtocolError"
+                ) {
+                    return;
+                }
+                throw error;
             }
-            throw error;
         }
     }
 
@@ -141,7 +150,9 @@ export class ControlLocator implements Disposable {
      */
     private shouldRetry(retryCount: number): boolean {
         return (
-            (this.shouldRetryNavigation && retryCount <= -1) || retryCount > 0
+            this.shouldRetryNavigation &&
+            !this.isDisposed &&
+            (retryCount <= -1 || retryCount > 0)
         );
     }
 
@@ -149,7 +160,7 @@ export class ControlLocator implements Disposable {
      * Disposes the control locator.
      */
     public dispose(): void {
-        console.log("Disposing control locator");
+        this.isDisposed = true;
         if (this.shouldRetryNavigation) {
             this.shouldRetryNavigation = false;
         }
