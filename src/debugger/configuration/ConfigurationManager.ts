@@ -22,6 +22,7 @@ import {
     EXTENSION_NAME,
     SETTINGS_DEBUGGER_DEFAULT_PORT,
 } from "../../client/constants";
+
 /**
  * Class that manages configuration of the extension.
  * Configuration can come from two different sources:

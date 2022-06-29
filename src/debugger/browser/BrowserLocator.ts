@@ -7,7 +7,6 @@ import * as path from "path";
 
 import { pathExists } from "fs-extra";
 
-import { WIN_APP_DATA } from "../Constants";
 import { ConfigurationManager } from "../configuration";
 import { IPcfLaunchConfig } from "../configuration/types";
 import { BrowserFlavor } from "./BrowserFlavor";
@@ -15,6 +14,8 @@ import { IBrowserPath } from "./IBrowserPath";
 import { Platform } from "./Platform";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
+
+const winAppDataFolder = process.env.LOCALAPPDATA || "/";
 
 /**
  * Class to retrieve and verify browser location on the user's machine.
@@ -33,7 +34,7 @@ export class BrowserLocator {
                         primary:
                             "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
                         secondary: path.join(
-                            WIN_APP_DATA,
+                            winAppDataFolder,
                             "Microsoft\\Edge\\Application\\msedge.exe"
                         ),
                     },
@@ -48,7 +49,7 @@ export class BrowserLocator {
                         primary:
                             "C:\\Program Files (x86)\\Microsoft\\Edge Beta\\Application\\msedge.exe",
                         secondary: path.join(
-                            WIN_APP_DATA,
+                            winAppDataFolder,
                             "Microsoft\\Edge Beta\\Application\\msedge.exe"
                         ),
                     },
@@ -63,7 +64,7 @@ export class BrowserLocator {
                         primary:
                             "C:\\Program Files (x86)\\Microsoft\\Edge Dev\\Application\\msedge.exe",
                         secondary: path.join(
-                            WIN_APP_DATA,
+                            winAppDataFolder,
                             "Microsoft\\Edge Dev\\Application\\msedge.exe"
                         ),
                     },
@@ -78,7 +79,7 @@ export class BrowserLocator {
                         primary:
                             "C:\\Program Files (x86)\\Microsoft\\Edge SxS\\Application\\msedge.exe",
                         secondary: path.join(
-                            WIN_APP_DATA,
+                            winAppDataFolder,
                             "Microsoft\\Edge SxS\\Application\\msedge.exe"
                         ),
                     },

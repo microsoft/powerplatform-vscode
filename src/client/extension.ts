@@ -24,7 +24,7 @@ import {
     activateDebugger,
     deactivateDebugger,
     shouldEnableDebugger,
-} from "../debugger/extension";
+} from "../debugger";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;

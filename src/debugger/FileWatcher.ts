@@ -30,6 +30,11 @@ export class FileWatcher implements Disposable {
     private fileChangeTriggered = false;
 
     /**
+     * Delay after a bundle change was detected.
+     */
+    private readonly FILE_WATCHER_CHANGE_DELAY = 5000;
+
+    /**
      * Creates a new FileWatcher instance.
      * @param filePattern The file pattern to watch.
      * @param onFileChange The callback to call when a file changes.
@@ -66,7 +71,7 @@ export class FileWatcher implements Disposable {
             // Somehow we need to wait a bit before we can trigger the onFileChange.
             // If we don't wait, then the bundle will still be in its old state *before* the change that triggered
             // the file watcher to call the onChange event.
-            await sleep(5000);
+            await sleep(this.FILE_WATCHER_CHANGE_DELAY);
             try {
                 await this.onFileChange();
             } catch (error) {

@@ -3,7 +3,7 @@
  */
 
 /**
- * Control location informs the {@linkcode ControlLocator} where a control is located.
+ * Control location informs the {@link ControlLocator} where a control is located.
  */
 export type ControlLocation = {
     /**

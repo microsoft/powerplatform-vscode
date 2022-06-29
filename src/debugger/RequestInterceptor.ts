@@ -26,7 +26,8 @@ export class RequestInterceptor implements Disposable {
      * The regex that matches the request for the bundle file that is being intercepted.
      * @example "https://YOUR_ORG.crm4.dynamics.com/%7b637920349270000192%7d/webresources/publisher.ControlName/bundle.js"
      */
-    private static webRequestUrlRegex = /.*\/webresources\/.*\/bundle.js/;
+    private static readonly webRequestUrlRegex =
+        /.*\/webresources\/.*\/bundle.js/;
 
     /**
      * Absolute path to the bundle on local disk.
