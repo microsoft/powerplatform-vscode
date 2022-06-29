@@ -23,6 +23,12 @@ type OnRequestInterceptedCallback = (fileName: string) => Promise<void> | void;
  */
 export class RequestInterceptor implements Disposable {
     /**
+     * The regex that matches the request for the bundle file that is being intercepted.
+     * @example "https://YOUR_ORG.crm4.dynamics.com/%7b637920349270000192%7d/webresources/publisher.ControlName/bundle.js"
+     */
+    private static webRequestUrlRegex = /.*\/webresources\/.*\/bundle.js/;
+
+    /**
      * Absolute path to the bundle on local disk.
      */
     private readonly filePath: string;
@@ -120,7 +126,7 @@ export class RequestInterceptor implements Disposable {
         const handleRequest = async (request: HTTPRequest) => {
             if (
                 request.method() === "GET" &&
-                request.url().endsWith(this.fileName) // TODO improve - don't just take the last part of the url
+                request.url().match(RequestInterceptor.webRequestUrlRegex)
             ) {
                 await this.respondWithPcfBundle(request, onRequestIntercepted);
             } else {
