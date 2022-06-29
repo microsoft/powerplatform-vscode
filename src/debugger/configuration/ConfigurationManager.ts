@@ -17,7 +17,7 @@ import {
     LaunchDebugConfiguration,
     UserDataDir,
 } from "./types";
-import { BrowserFlavor } from "../browser/BrowserFlavor";
+import { BrowserFlavor } from "../browser/types/BrowserFlavor";
 import {
     EXTENSION_NAME,
     SETTINGS_DEBUGGER_DEFAULT_PORT,

@@ -3,7 +3,6 @@
  */
 
 import puppeteer, { Browser, Page } from "puppeteer-core";
-import * as vscode from "vscode";
 
 import { FileWatcher } from "../FileWatcher";
 import { RequestInterceptor } from "../RequestInterceptor";
@@ -15,6 +14,7 @@ import { BrowserLocator } from "./BrowserLocator";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 import { BrowserArgsBuilder } from "./BrowserArgsBuilder";
+import { Disposable, window, WorkspaceFolder } from "vscode";
 
 /**
  * Callback that is invoked when the browser is closed.
@@ -28,14 +28,37 @@ type OnBrowserClose = () => Promise<void>;
 type OnBrowserReady = () => Promise<void>;
 
 /**
- *
+ * Class that controls a {@link puppeteer.Browser puppeteer browser instance} and manages all logic that interacts with puppeteer including:
+ * - {@link BrowserLocator} to locate the browser.
+ * - {@link RequestInterceptor} to intercept and replace all requests for the pcf control bundle.
+ * - {@link FileWatcher} to watch for local changes to the control bundle.
+ * - {@link ControlLocator} to automatically navigate to the control within a Power App.
  */
-export class BrowserManager implements vscode.Disposable {
-    private browserInstance?: Browser;
+export class BrowserManager implements Disposable {
+    /**
+     * Manager to locate the browser executable.
+     */
     private readonly browserLocator: BrowserLocator;
 
+    /**
+     * Puppeteer {@link puppeteer.Browser browser} instance.
+     * This will defined after calling {@link launch}.
+     */
+    private browserInstance?: Browser = undefined;
+
+    /**
+     * Navigates the puppeteer browser to the location of the pcf control within the Power App.
+     */
     private controlLocator?: ControlLocator = undefined;
+
+    /**
+     * Intercepts all puppeteer requests and answers with the contents of the local version of the pcf control bundle.
+     */
     private bundleInterceptor?: RequestInterceptor = undefined;
+
+    /**
+     * Watches for local changes to the bundle file to allow for hot reload.
+     */
     private bundleWatcher?: FileWatcher = undefined;
 
     /**
@@ -59,7 +82,7 @@ export class BrowserManager implements vscode.Disposable {
         private readonly debugConfig: IPcfLaunchConfig,
         private readonly onBrowserClose: OnBrowserClose,
         private readonly onBrowserReady: OnBrowserReady,
-        private readonly workspaceFolder: vscode.WorkspaceFolder
+        private readonly workspaceFolder: WorkspaceFolder
     ) {
         this.browserLocator = new BrowserLocator(this.debugConfig, this.logger);
     }
@@ -142,7 +165,7 @@ export class BrowserManager implements vscode.Disposable {
         browser: Browser
     ): Promise<Page | undefined> {
         // ask the user if they want to attach to an existing browser
-        const userAnswer = await vscode.window.showInformationMessage(
+        const userAnswer = await window.showInformationMessage(
             "There is an existing instance running. Do you want to open a new tab or cancel?",
             "Yes",
             "Cancel"

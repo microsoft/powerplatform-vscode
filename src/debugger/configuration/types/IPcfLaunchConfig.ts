@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
 
-import { BrowserFlavor } from "../../browser/BrowserFlavor";
+import { BrowserFlavor } from "../../browser/types";
 import { ControlLocation } from "../../controlLocation";
 
 import { DebugConfiguration } from "./DebugConfiguration";
@@ -43,4 +43,3 @@ export interface IPcfLaunchConfig
      */
     controlLocation: ControlLocation;
 }
-

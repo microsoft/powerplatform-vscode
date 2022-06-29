@@ -9,11 +9,10 @@ import { pathExists } from "fs-extra";
 
 import { ConfigurationManager } from "../configuration";
 import { IPcfLaunchConfig } from "../configuration/types";
-import { BrowserFlavor } from "./BrowserFlavor";
-import { IBrowserPath } from "./IBrowserPath";
-import { Platform } from "./Platform";
+import { BrowserFlavor } from "./types/BrowserFlavor";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
+import { IBrowserPath, Platform } from "./types";
 
 const winAppDataFolder = process.env.LOCALAPPDATA || "/";
 

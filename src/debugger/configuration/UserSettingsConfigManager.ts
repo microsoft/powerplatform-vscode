@@ -7,10 +7,9 @@ import {
     DEBUGGER_ENABLED_DEFAULT_VALUE,
     SETTINGS_EXPERIMENTAL_STORE_NAME,
 } from "../../client/constants";
-import { BrowserFlavor } from "../browser/BrowserFlavor";
+import { BrowserFlavor } from "../browser/types";
 
-import { UserDataDir } from "./types";
-import { IUserSettings } from "./types/IUserSettings";
+import { IUserSettings, UserDataDir } from "./types";
 
 /**
  * Class that is used to retrieve user settings for the extension.

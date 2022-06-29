@@ -99,10 +99,13 @@ export class Debugger implements Disposable, DebugAdapter {
      * @implements {DebugAdapter}
      */
     handleMessage(message: ProtocolMessage): void {
-        if (message.command === "disconnect") {
-            void this.stopDebugging();
-        } else if (message.command === "initialize") {
-            void this.browserManager.launch();
+        switch (message.command) {
+            case "disconnect":
+                void this.stopDebugging();
+                break;
+            case "initialize":
+                void this.browserManager.launch();
+                break;
         }
     }
 
@@ -134,7 +137,7 @@ export class Debugger implements Disposable, DebugAdapter {
 
         const edgeDebugConfig: DebugConfiguration = {
             type: "pwa-msedge",
-            name: `EDGE ${this.debugConfig.name}`,
+            name: `edge ${this.debugConfig.name}`,
             request: "attach",
             webRoot: this.debugConfig.webRoot,
             port: this.debugConfig.port,

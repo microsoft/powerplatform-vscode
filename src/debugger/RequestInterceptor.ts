@@ -2,20 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
 
-import path from "path";
-
 import { EventEmitter, HTTPRequest, Page } from "puppeteer-core";
-import {
-    Disposable,
-    TextDocument,
-    Uri,
-    WorkspaceFolder,
-    workspace,
-} from "vscode";
+import { Disposable, WorkspaceFolder } from "vscode";
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
+import { BundleLoader } from "./BundleLoader";
 
-import { SourceMapValidator } from "./SourceMapValidator";
 type OnRequestInterceptedCallback = (fileName: string) => Promise<void> | void;
 
 /**
@@ -30,15 +22,12 @@ export class RequestInterceptor implements Disposable {
         /.*\/webresources\/.*\/bundle.js/;
 
     /**
-     * Absolute path to the bundle on local disk.
-     */
-    private readonly filePath: string;
-
-    /**
      * Name of the bundle.
      * @example "bundle.js"
      */
-    private readonly fileName: string;
+    // private readonly fileName: string;
+
+    private readonly bundleLoader: BundleLoader;
 
     /**
      * Callback for `puppeteer.on("request")`.
@@ -62,29 +51,17 @@ export class RequestInterceptor implements Disposable {
      * @param logger The telemetry reporter to use for telemetry events.
      */
     constructor(
-        private readonly relativeFilePath: string,
-        private readonly workspaceFolder: WorkspaceFolder,
+        relativeFilePath: string,
+        workspaceFolder: WorkspaceFolder,
         private readonly logger: ITelemetry
     ) {
-        this.filePath = this.getAbsoluteFilePath(this.relativeFilePath);
-        this.fileName = path.basename(this.filePath);
-    }
-
-    /**
-     * Gets the absolute path to the file to be intercepted.
-     * @param filePath The relative path to the file to be intercepted.
-     * @returns The absolute path to the file to be intercepted.
-     */
-    private getAbsoluteFilePath(filePath: string): string {
-        const workspacePath = this.workspaceFolder.uri.path;
-
-        const parsedPath = Uri.parse(filePath);
-        console.log(parsedPath);
-        if (parsedPath.path.startsWith(workspacePath)) {
-            return filePath;
-        }
-
-        return path.join(workspacePath, filePath);
+        // const filePath = this.getAbsoluteFilePath(this.relativeFilePath);
+        // this.fileName = path.basename(filePath);
+        this.bundleLoader = new BundleLoader(
+            relativeFilePath,
+            workspaceFolder,
+            this.logger
+        );
     }
 
     /**
@@ -100,7 +77,7 @@ export class RequestInterceptor implements Disposable {
         if (this.requestEvent) {
             return;
         }
-        this.fileContents = await this.loadFileContents();
+        this.fileContents = await this.bundleLoader.loadFileContents();
 
         this.onRequestHandler = (event) =>
             this.onRequest(event, onRequestIntercepted);
@@ -112,7 +89,7 @@ export class RequestInterceptor implements Disposable {
      * Reloads the changed file contents.
      */
     public async reloadFileContents(): Promise<void> {
-        this.fileContents = await this.loadFileContents();
+        this.fileContents = await this.bundleLoader.loadFileContents();
     }
 
     /**
@@ -165,7 +142,7 @@ export class RequestInterceptor implements Disposable {
         }
 
         if (onRequestIntercepted) {
-            await onRequestIntercepted(this.fileName);
+            await onRequestIntercepted(this.bundleLoader.fileName);
         }
     }
 
@@ -188,53 +165,6 @@ export class RequestInterceptor implements Disposable {
                 false
             );
         }
-    }
-
-    /**
-     * Loads the file contents of the bundle from disk.
-     * @returns The string contents of the file.
-     */
-    private async loadFileContents(): Promise<string> {
-        try {
-            const file: TextDocument = await workspace.openTextDocument(
-                Uri.file(this.filePath)
-            );
-            const fileContent = file.getText();
-            await this.warnIfNoSourceMap(fileContent);
-
-            return fileContent;
-        } catch (error) {
-            await ErrorReporter.report(
-                this.logger,
-                "RequestInterceptor.loadFileContents.error",
-                error,
-                "Could not load file contents"
-            );
-            throw new Error(
-                `Could not load control '${this.fileName}' with path '${
-                    this.filePath
-                }': ${error instanceof Error ? error.message : error}`
-            );
-        }
-    }
-
-    /**
-     * Checks if the bundle has an inlined source map.
-     * If not, it will show an warning message.
-     * @param fileContent The file contents.
-     */
-    private async warnIfNoSourceMap(fileContent: string): Promise<void> {
-        const isValid = SourceMapValidator.isValid(fileContent);
-        if (isValid) {
-            return;
-        }
-
-        await ErrorReporter.report(
-            this.logger,
-            "RequestInterceptor.warnIfNoSourceMap.error",
-            undefined,
-            `Could not find inlined source map in '${this.fileName}'. Make sure you enable source maps in webpack with 'devtool: "inline-source-map"'. For local debugging, inlined source maps are required.`
-        );
     }
 
     /**

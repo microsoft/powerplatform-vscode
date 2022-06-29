@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
 
-import { BrowserFlavor } from "../../browser/BrowserFlavor";
+import { BrowserFlavor } from "../../browser/types";
 
 import { IDevToolsSettings } from "./IDevToolsSettings";
 
@@ -34,4 +34,3 @@ export interface IUserSettings extends IDevToolsSettings {
      */
     webRoot: string;
 }
-
