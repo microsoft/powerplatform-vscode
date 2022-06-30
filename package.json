@@ -512,6 +512,7 @@
   },
   "dependencies": {
     "@vscode/extension-telemetry": "^0.4.9",
+    "axios": "^0.27.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
     "n-readlines": "^1.0.1",
