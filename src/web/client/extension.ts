@@ -5,8 +5,7 @@
 
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { AI_KEY } from '../client/constants';
-import { randomUUID } from "crypto";
+import { AI_KEY } from '../../client/constants';
 
 let _telemetry: TelemetryReporter;
 
@@ -14,12 +13,13 @@ export function activate(context: vscode.ExtensionContext): void {
     console.log("Activated web extension!"); // sample code for testing the webExtension
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
-    _telemetry.sendTelemetryEvent("Start", {'web.userId': randomUUID()});
+    context.subscriptions.push(_telemetry);
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
             () => {
+                _telemetry.sendTelemetryEvent("StartCommand", {'commandId': 'microsoft-powerapps-portals.webExtension.init'});
                 // sample code for testing the webExtension
                 vscode.window.showInformationMessage(
                     "Initializing web extension!"
