@@ -4,19 +4,53 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as vscode from "vscode";
+import { dataverseAuthentication } from "./common/AuthenticationProvider";
+import { PORTALSURISCHEME, PORTALSWORKSPACENAME } from "./common/Constants";
 
 export function activate(context: vscode.ExtensionContext): void {
-    console.log("Activated web extension!"); // sample code for testing the webExtension
+    console.log("Activated Power Portal vscode web extension!"); // sample code for testing the webExtension
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
             () => {
-                // sample code for testing the webExtension
                 vscode.window.showInformationMessage(
-                    "Initializing web extension!"
+                    "Initializing Power Portal vscode web extension!"
                 );
             }
         )
     );
+
+    let initialized = false;
+    let accessToken = '';
+    context.subscriptions.push(vscode.commands.registerCommand('portals.init', async (args: any) => {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
+
+        if (!args) {
+            return;
+        }
+
+        const { appname, entity, entityId, searchParams} = args
+        console.log("extension - " + appname + " organization " +entity+entityId+ searchParams);
+
+
+        const queryParams = new Map<string, string>();
+        for(const p of searchParams)
+        {
+            queryParams.set(p[0],p[1]);
+        }
+        if(appname === 'portal')
+        {
+            // data verse authentication using vscode FPA
+            accessToken = await dataverseAuthentication(queryParams.get('orgUrl'));
+        }
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('portals.workspaceInit', async () => {
+        vscode.window.showInformationMessage('creating PowerPortals workspace');
+        vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: vscode.Uri.parse(`${PORTALSURISCHEME}:/`), name: PORTALSWORKSPACENAME });
+    }));
 }
