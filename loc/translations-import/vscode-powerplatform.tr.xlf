@@ -137,6 +137,14 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
         <target state="translated">PowerApps Portal -&gt; Önizlemeyi göster</target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
+        <source xml:lang="en">Initialize Web Extension</source>
+        <target state="translated">Web Uzantısını Başlat</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
+        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
+        <target state="translated">PAC CLI, Web için VS Code'da desteklenmiyor</target>
+      </trans-unit>
     </body>
   </file>
   <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext" target-language="tr">

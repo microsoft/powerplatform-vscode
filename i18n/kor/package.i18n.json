@@ -34,5 +34,7 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "식별 이름 복사",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "고유 이름 복사",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "버전 번호 복사",
-	"microsoft-powerapps-portals.preview-show.title": "PowerApps 포털 -> 프리뷰 보기"
+	"microsoft-powerapps-portals.preview-show.title": "PowerApps 포털 -> 프리뷰 보기",
+	"microsoft-powerapps-portals.webExtension.init.title": "웹 확장 초기화",
+	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI는 웹용 VS Code에서 지원되지 않습니다"
 }

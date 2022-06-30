@@ -41,6 +41,9 @@ export async function activate(
         // as the extension (i.e. NOT remote), or the remote is WSL
         vscode.commands.executeCommand('setContext', 'pacCLI.authPanel.interactiveLoginSupported', true);
     }
+    else {
+        _context.environmentVariableCollection.replace('PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE','true');
+    }
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
     vscode.workspace.textDocuments.forEach(didOpenTextDocument);

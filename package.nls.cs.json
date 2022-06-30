@@ -11,7 +11,7 @@
 	"power-platform-activitybar.title": "Power Platform",
 	"pacCLI.authPanel.title": "Ověřovací profily",
 	"pacCLI.authPanel.welcome.whenInteractiveSupported": "V tomto počítači nebyly nalezeny žádné ověřovací profily.\n[Přidat ověřovací profil](command:pacCLI.authPanel.newAuthProfile)",
-	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "V tomto počítači nebyly nalezeny žádné ověřovací profily.\nInteraktivní ověřování není dostupné pro vzdálené scénáře; ověřovací profily musí být vytvořeny pomocí příkazového řádku. Tok --deviceCode se musí použít pro uživatele s požadavky na vícefaktorové ověřování nebo na ty, jejichž tenanty používají ADFS.\n[Zobrazit nápovědu k ověřovacímu profilu](command:pacCLI.pacAuthHelp)",
+	"pacCLI.authPanel.welcome.whenInteractiveNotSupported": "V tomto počítači nebyly nalezeny žádné ověřovací profily.\nInteraktivní ověřování není dostupné pro vzdálené scénáře; ověřovací profily musí být vytvořeny pomocí příkazového řádku. Tok --deviceCode se musí použít pro uživatele s požadavky na vícefaktorové ověřování (MFA) nebo na ty, jejichž tenanty používají ADFS.\n[Zobrazit nápovědu k ověřovacímu profilu](command:pacCLI.pacAuthHelp)",
 	"pacCLI.authPanel.clearAuthProfile.title": "Vymazat ověřovací profily",
 	"pacCLI.authPanel.refresh.title": "Aktualizovat",
 	"pacCLI.authPanel.newDataverseAuthProfile.title": "Nový ověřovací profil",
@@ -30,6 +30,6 @@
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Zkopírovat jedinečné jméno",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Zkopírovat číslo verze",
 	"microsoft-powerapps-portals.preview-show.title": "Portál PowerApps -> Zobrazit náhled",
-	"microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension",
-	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI is not supported in VS Code for the Web"
+	"microsoft-powerapps-portals.webExtension.init.title": "Inicializovat webové rozšíření",
+	"microsoft-powerapps-portals.webExtension.limitation": "Rozhraní PAC CLI není v editoru VS Code pro web podporováno."
 }

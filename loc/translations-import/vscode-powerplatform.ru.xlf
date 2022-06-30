@@ -52,7 +52,7 @@
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">На компьютере не найдены профили проверки подлинности.
-[Добавить профиль проверки подлинности ](command:pacCLI.authPanel.newAuthProfile)</target>
+[Добавить профиль проверки подлинности](command:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
         <source xml:lang="en">No auth profiles found on this computer.
@@ -62,8 +62,8 @@ Interactive Authentication is not availalbe for remote scenarios; auth profiles 
 The second line should not translate the argument `--deviceCode`
 The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
         <target state="translated">На компьютере не найдены профили проверки подлинности.
-Интерактивная проверка подлинности недоступна для удаленных сценариев; необходимо создать профили проверки подлинности с помощью командной строкой. Используйте поток "--deviceCode" для пользователей с требованиями MFA или тех, клиенты которых используют ADFS.
-[Посмотреть справку по профилю проверки подлинности] (command:pacCLI.pacAuthHelp)</target>
+Интерактивная проверка подлинности недоступна для удаленных сценариев; необходимо создать профили проверки подлинности с помощью командной строки. Для пользователей, которым требуется MFA или клиенты которых используют AD FS, необходимо использовать поток --deviceCode.
+[Смотреть справку по профилям проверки подлинности](command:pacCLI.pacAuthHelp)</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -136,6 +136,14 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
       <trans-unit id="microsoft-powerapps-portals.preview-show.title">
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
         <target state="translated">Портал PowerApps -&gt; Показать предварительную версию</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
+        <source xml:lang="en">Initialize Web Extension</source>
+        <target state="translated">Инициализация веб-расширения</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
+        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
+        <target state="translated">PAC CLI не поддерживается в VS Code для Интернета</target>
       </trans-unit>
     </body>
   </file>
@@ -248,7 +256,7 @@ Version: {2}</source>
 The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
-        <target state="translated">Отображаемая имя: {0}
+        <target state="translated">Отображаемое имя: {0}
 Уникальное имя: {1}
 Версия: {2}</target>
       </trans-unit>
