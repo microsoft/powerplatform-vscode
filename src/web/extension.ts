@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { dataverseAuthentication } from "./common/AuthenticationProvider";
-import { PORTALSURISCHEME, PORTALSWORKSPACENAME } from "./common/Constants";
+import { appTypes, PORTALSURISCHEME, PORTALSWORKSPACENAME } from "./common/Constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     console.log("Activated Power Portal vscode web extension!"); // sample code for testing the webExtension
@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext): void {
         }
 
         const { appname, entity, entityId, searchParams} = args
-        console.log("extension - " + appname + " organization " +entity+entityId+ searchParams);
+        console.log("extension - " + appname + " organization " + entity + entityId + searchParams);
 
 
         const queryParams = new Map<string, string>();
@@ -42,11 +42,24 @@ export function activate(context: vscode.ExtensionContext): void {
         {
             queryParams.set(p[0],p[1]);
         }
-        if(appname === 'portal')
-        {
-            // data verse authentication using vscode FPA
-            accessToken = await dataverseAuthentication(queryParams.get('orgUrl'));
+
+        if (appname != undefined){
+            switch (appname) {
+                case appTypes.portal:
+                case appTypes.default:
+                    // data verse authentication using vscode FPA
+                    accessToken = await dataverseAuthentication(queryParams.get('orgUrl'));
+                    break;
+
+                default:
+                    vscode.window.showInformationMessage('Unknown app, Please add authentication flow for this app');
+
+            }
+
+        } else {
+            vscode.window.showErrorMessage("Please specify appName");
         }
+
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('portals.workspaceInit', async () => {
