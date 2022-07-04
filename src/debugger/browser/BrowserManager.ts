@@ -17,12 +17,12 @@ import { BrowserArgsBuilder } from "./BrowserArgsBuilder";
 import { Disposable, window, WorkspaceFolder } from "vscode";
 
 /**
- * Callback that is invoked when the browser is closed.
+ * Callback that is invoked by the {@link BrowserManager browser manager} when the browser is closed.
  */
 type OnBrowserClose = () => Promise<void>;
 
 /**
- * Callback that is invoked when the browser is ready.
+ * Callback that is invoked by the {@link BrowserManager browser manager} when the browser is ready.
  * The browser is ready when the bundle has been requested.
  */
 type OnBrowserReady = () => Promise<void>;
@@ -119,16 +119,19 @@ export class BrowserManager implements Disposable {
                     true,
                     telemetryProps
                 );
-                return;
+                throw error;
             }
         } else {
+            const message =
+                "Could not start browser. Please try again. Browser instance does not have any active pages.";
             await ErrorReporter.report(
                 this.logger,
                 "BrowserManager.launch.noPages",
                 undefined,
-                "Could not start browser. Please try again. Browser instance does not have any active pages.",
+                message,
                 true
             );
+            throw new Error(message);
         }
     }
 
@@ -191,7 +194,7 @@ export class BrowserManager implements Disposable {
     }
 
     /**
-     * Retrieves the browser instance. If the browser instance hasn't been created yet, it will create one.
+     * Retrieves the {@link puppeteer.Browser puppeteer browser instance}. If the browser instance hasn't been created yet, it will create one.
      * @returns Browser instance.
      */
     private async getBrowser(): Promise<Browser> {
@@ -253,7 +256,6 @@ export class BrowserManager implements Disposable {
          * Disposes of all the managers related to this debugging session.
          */
         const disposeSession = async () => {
-            console.log("Disposing of session");
             await this.onBrowserClose();
             this.disposeSessionInstances();
         };

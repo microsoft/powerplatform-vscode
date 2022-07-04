@@ -14,13 +14,26 @@ import {
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 
-import { BrowserManager } from "../browser/BrowserManager";
+import { BrowserManager } from "../browser";
 import { IPcfLaunchConfig } from "../configuration/types/IPcfLaunchConfig";
 import { sleep } from "../utils";
 
 import { ProtocolMessage } from "./DebugProtocolMessage";
 
-const defaultDebuggingRetryCount = 3;
+/**
+ * The default number of retries to attach the debugger.
+ */
+const DEFAULT_DEBUGGING_RETRY_COUNT = 3;
+
+/**
+ * The default delay in ms after which to retry the attach to the debugger.
+ */
+const DEFAULT_DEBUGGING_RETRY_DELAY = 1000;
+
+/**
+ * Time after which to dispose the debugger if the parent session was terminated.
+ */
+const DEFAULT_DEBUGGING_DISPOSE_TIMEOUT = 4000;
 
 /**
  * Control debugger that controls the msedge debug session.
@@ -29,7 +42,6 @@ export class Debugger implements Disposable, DebugAdapter {
     private readonly debugConfig: IPcfLaunchConfig;
     private edgeDebugSession?: DebugSession;
     private browserManager: BrowserManager;
-    private startDebugTimeout: NodeJS.Timeout | undefined;
     private startDebuggingDisposable?: Disposable;
     private debugSessionTerminatedDisposable?: Disposable;
     private isDisposed = false;
@@ -56,14 +68,18 @@ export class Debugger implements Disposable, DebugAdapter {
 
     /**
      * Creates a new Debugger instance.
-     * @param parentSession The parent debug session that was started by the user.
+     * @param parentSession The parent {@link DebugSession debug session} that was started by the user.
      * @param workspaceFolder The workspace folder to use for debugging.
      * @param logger The telemetry reporter to use for telemetry.
+     * @param debuggingRetryCount The number of times to retry starting the debug session if it fails.
+     * @param debuggingRetryDelay The delay in ms after which to retry starting the debug session.
      */
     constructor(
         private readonly parentSession: DebugSession,
         private readonly workspaceFolder: WorkspaceFolder,
-        private readonly logger: ITelemetry
+        private readonly logger: ITelemetry,
+        private readonly debuggingRetryCount: number = DEFAULT_DEBUGGING_RETRY_COUNT,
+        private readonly debuggingRetryDelay: number = DEFAULT_DEBUGGING_RETRY_DELAY
     ) {
         this.debugConfig = parentSession.configuration as IPcfLaunchConfig;
         this.browserManager = new BrowserManager(
@@ -83,7 +99,7 @@ export class Debugger implements Disposable, DebugAdapter {
      * Messages can be requests, responses, or events.
      *
      * *This debugger does not send messages to the editor, hence why subscribing is not supported*.
-     * @implements {DebugAdapter}
+     * @implements + {@link DebugAdapter.onDidSendMessage}
      */
     onDidSendMessage: Event<ProtocolMessage> = () => {
         return {
@@ -96,7 +112,7 @@ export class Debugger implements Disposable, DebugAdapter {
      * Messages can be requests, responses, or events.
      * Results or errors are returned via onSendMessage events.
      * @param message A Debug Adapter Protocol message.
-     * @implements {DebugAdapter}
+     * @implements + {@link DebugAdapter.handleMessage}
      */
     handleMessage(message: ProtocolMessage): void {
         switch (message.command) {
@@ -104,8 +120,16 @@ export class Debugger implements Disposable, DebugAdapter {
                 void this.stopDebugging();
                 break;
             case "initialize":
-                void this.browserManager.launch();
+                void this.launchBrowserManager();
                 break;
+        }
+    }
+
+    private async launchBrowserManager() {
+        try {
+            await this.browserManager.launch();
+        } catch (error) {
+            await this.stopDebugging();
         }
     }
 
@@ -114,7 +138,7 @@ export class Debugger implements Disposable, DebugAdapter {
      * @param retryCount The number of times to retry starting the debug session if it fails.
      */
     public async attachEdgeDebugger(
-        retryCount: number = defaultDebuggingRetryCount
+        retryCount: number = this.debuggingRetryCount
     ): Promise<void> {
         if (this.isDisposed) {
             throw new Error("Debugger is disposed");
@@ -161,14 +185,13 @@ export class Debugger implements Disposable, DebugAdapter {
             success = false;
         }
 
-        if (!success) {
-            await this.handleStartDebuggingNonSuccess(retryCount);
-        } else {
+        if (success) {
             this.logger.sendTelemetryEvent(
                 "Debugger.attachEdgeDebugger.success",
                 { running: "" + this.isRunning, retryCount: `${retryCount}` }
             );
-            this.startDebugTimeout = undefined;
+        } else {
+            await this.handleStartDebuggingNonSuccess(retryCount);
         }
     }
 
@@ -177,7 +200,7 @@ export class Debugger implements Disposable, DebugAdapter {
      * @param retryCount The number of times to retry starting the debug session if it fails.
      */
     private async handleStartDebuggingNonSuccess(
-        retryCount?: number
+        retryCount: number
     ): Promise<void> {
         await ErrorReporter.report(
             this.logger,
@@ -190,26 +213,28 @@ export class Debugger implements Disposable, DebugAdapter {
             }
         );
 
-        if (retryCount !== undefined && retryCount > 0) {
-            await sleep(1000);
+        if (retryCount > 0) {
+            await sleep(this.debuggingRetryDelay);
             await this.attachEdgeDebugger(retryCount - 1);
         } else {
-            await ErrorReporter.report(
+            void ErrorReporter.report(
                 this.logger,
                 "Debugger.handleStartDebuggingNonSuccess.noRetry",
                 undefined,
                 "Could not start debugging session.",
                 true,
                 {
-                    retryCount: `${retryCount}` ?? "undefined",
+                    retryCount:
+                        `${retryCount}/${this.debuggingRetryCount}` ??
+                        "undefined",
                 }
             );
         }
     }
 
     /**
-     * Callback for when the debug session starts.
-     * @param edgeDebugSession The debug session that has started by attaching the 'pwa-msedge' debugger.
+     * Callback called by {@link debug.onDidStartDebugSession} when the debug session has successfully started.
+     * @param edgeDebugSession The {@link DebugSession debug session} that has started by attaching the 'pwa-msedge' debugger.
      */
     private onDebugSessionStarted(edgeDebugSession: DebugSession): void {
         // don't start the debug session if it is already running
@@ -236,6 +261,7 @@ export class Debugger implements Disposable, DebugAdapter {
         this.logger.sendTelemetryEvent("debugger.stopDebugging", {
             sessionId: this.edgeDebugSession?.id || "undefined",
         });
+        console.log("Stopping debugging session...");
         if (this.hasAttachedDebuggerSession || this.isRunning) {
             // remove the onDebugStopped callback to prevent closing the browser
             // when the debug session is stopped
@@ -247,11 +273,11 @@ export class Debugger implements Disposable, DebugAdapter {
     }
 
     /**
-     * Callback for when the debug session stops.
-     * @param session The debug session that has stopped.
+     * Callback called by {@link debug.onDidTerminateDebugSession} for when vscode terminates the debug session.
+     * @param session The {@link DebugSession debug session} that has stopped.
      */
     private onDebugSessionStopped(session: DebugSession): void {
-        // Stop the debug session if after four seconds the session is stopped.
+        // Disposes the debugger if it the parent session is stopped after 4 seconds.
         setTimeout(() => {
             if (this.isRunning) {
                 return;
@@ -264,7 +290,7 @@ export class Debugger implements Disposable, DebugAdapter {
             );
 
             this.dispose();
-        }, 4000);
+        }, DEFAULT_DEBUGGING_DISPOSE_TIMEOUT);
     }
 
     /**
@@ -273,10 +299,6 @@ export class Debugger implements Disposable, DebugAdapter {
     dispose() {
         if (this.isDisposed) {
             return;
-        }
-        if (this.startDebugTimeout) {
-            clearTimeout(this.startDebugTimeout);
-            this.startDebugTimeout = undefined;
         }
 
         if (this.startDebuggingDisposable) {

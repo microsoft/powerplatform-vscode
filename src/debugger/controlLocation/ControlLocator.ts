@@ -11,6 +11,16 @@ import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 
 /**
+ * The default delay after which to retry the navigation to the control.
+ */
+const DEFAULT_CONTROL_LOCATOR_RETRY_TIMEOUT = 2000;
+
+/**
+ * Default number of retries to locate a control.
+ */
+const DEFAULT_CONTROL_LOCATOR_RETRIES = -1;
+
+/**
  * ControlLocator is a class which tries to navigate to a control once the page is loaded.
  * Depending on the control type this might involve navigating to a different tab.
  */
@@ -31,23 +41,17 @@ export class ControlLocator implements Disposable {
     private isDisposed: boolean;
 
     /**
-     * Default number of retries to locate a control.
-     */
-    private readonly CONTROL_LOCATOR_RETRIES = -1;
-
-    /**
-     * The delay after which to retry the navigation to the control.
-     */
-    private readonly CONTROL_LOCATOR_RETRY_TIMEOUT = 2000;
-
-    /**
      * Creates a new instance of ControlLocator.
      * @param debugConfig Debug configuration.
      * @param logger Telemetry reporter.
+     * @param controlLocatorRetryTimeout Delay after which to retry the navigation to the control.
+     * @param controlLocatorRetries Number of retries to locate a control.
      */
     constructor(
         private readonly debugConfig: IPcfLaunchConfig,
-        private readonly logger: ITelemetry
+        private readonly logger: ITelemetry,
+        private readonly controlLocatorRetryTimeout: number = DEFAULT_CONTROL_LOCATOR_RETRY_TIMEOUT,
+        private readonly controlLocatorRetries: number = DEFAULT_CONTROL_LOCATOR_RETRIES
     ) {
         this.pageUrl = this.getPageUrl();
         this.shouldRetryNavigation = true;
@@ -82,7 +86,7 @@ export class ControlLocator implements Disposable {
      */
     public async navigateToControl(
         page: Page,
-        retryCount: number = this.CONTROL_LOCATOR_RETRIES
+        retryCount: number = this.controlLocatorRetries
     ): Promise<void> {
         await this.navigateToPage(page, retryCount);
         await this.navigateToTab(page, retryCount);
@@ -96,7 +100,7 @@ export class ControlLocator implements Disposable {
      */
     private async navigateToPage(
         page: Page,
-        retryCount: number = this.CONTROL_LOCATOR_RETRIES
+        retryCount: number = this.controlLocatorRetries
     ): Promise<void> {
         try {
             await page.goto(this.pageUrl);
@@ -107,13 +111,26 @@ export class ControlLocator implements Disposable {
                 error,
                 "Could not navigate to form with url " + this.pageUrl,
                 true,
-                { pageLink: this.pageUrl, retryCount: "" + retryCount }
+                {
+                    pageLink: this.pageUrl,
+                    retryCount: `${retryCount}/${this.controlLocatorRetries}`,
+                }
             );
             if (this.shouldRetry(retryCount)) {
-                await sleep(this.CONTROL_LOCATOR_RETRY_TIMEOUT);
+                await sleep(this.controlLocatorRetryTimeout);
                 return await this.navigateToPage(page, retryCount - 1);
+            } else {
+                this.throwErrorIfNotDisposed(error);
             }
         }
+    }
+
+    private throwErrorIfNotDisposed(error: unknown): void {
+        // Protocol error is expected if the debugging session was disposed.
+        if (this.isDisposed && (error as Error).name === "ProtocolError") {
+            return;
+        }
+        throw error;
     }
 
     /**
@@ -124,7 +141,7 @@ export class ControlLocator implements Disposable {
      */
     private async navigateToTab(
         page: Page,
-        retryCount: number = this.CONTROL_LOCATOR_RETRIES
+        retryCount: number = this.controlLocatorRetries
     ): Promise<void> {
         if (this.debugConfig.controlLocation.renderFullScreen) {
             return;
@@ -136,7 +153,7 @@ export class ControlLocator implements Disposable {
             await page.click(`li[aria-label='${tabName}']`);
         } catch (error) {
             if (this.shouldRetry(retryCount)) {
-                await sleep(this.CONTROL_LOCATOR_RETRY_TIMEOUT);
+                await sleep(this.controlLocatorRetryTimeout);
                 return await this.navigateToTab(page, retryCount - 1);
             } else {
                 await ErrorReporter.report(
@@ -148,14 +165,7 @@ export class ControlLocator implements Disposable {
                     { retryCount: "" + retryCount }
                 );
 
-                // Protocol error is expected if the debugging session was disposed.
-                if (
-                    this.isDisposed &&
-                    (error as Error).name === "ProtocolError"
-                ) {
-                    return;
-                }
-                throw error;
+                this.throwErrorIfNotDisposed(error);
             }
         }
     }

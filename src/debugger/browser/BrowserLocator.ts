@@ -92,7 +92,7 @@ export class BrowserLocator {
      * @param logger Logger instance to use for logging.
      */
     constructor(
-        private readonly debugConfig: IPcfLaunchConfig,
+        debugConfig: IPcfLaunchConfig,
         private readonly logger: ITelemetry
     ) {
         this.browserFlavor =

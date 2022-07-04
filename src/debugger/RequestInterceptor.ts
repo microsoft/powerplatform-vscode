@@ -21,12 +21,6 @@ export class RequestInterceptor implements Disposable {
     private static readonly webRequestUrlRegex =
         /.*\/webresources\/.*\/bundle.js/;
 
-    /**
-     * Name of the bundle.
-     * @example "bundle.js"
-     */
-    // private readonly fileName: string;
-
     private readonly bundleLoader: BundleLoader;
 
     /**
@@ -55,8 +49,6 @@ export class RequestInterceptor implements Disposable {
         workspaceFolder: WorkspaceFolder,
         private readonly logger: ITelemetry
     ) {
-        // const filePath = this.getAbsoluteFilePath(this.relativeFilePath);
-        // this.fileName = path.basename(filePath);
         this.bundleLoader = new BundleLoader(
             relativeFilePath,
             workspaceFolder,
@@ -101,18 +93,21 @@ export class RequestInterceptor implements Disposable {
         request: HTTPRequest,
         onRequestIntercepted?: OnRequestInterceptedCallback
     ): void {
-        const handleRequest = async (request: HTTPRequest) => {
-            if (
-                request.method() === "GET" &&
-                request.url().match(RequestInterceptor.webRequestUrlRegex)
-            ) {
-                await this.respondWithPcfBundle(request, onRequestIntercepted);
-            } else {
-                await this.respondWithOriginalResource(request);
-            }
-        };
+        this.isRequestForBundle(request)
+            ? void this.respondWithPcfBundle(request, onRequestIntercepted)
+            : void this.respondWithOriginalResource(request);
+    }
 
-        void handleRequest(request);
+    /**
+     * Checks if a network request is for the bundle file.
+     * @param request The request to check.
+     * @returns true if the request should be intercepted with local bundle, false otherwise.
+     */
+    private isRequestForBundle(request: HTTPRequest): boolean {
+        return (
+            request.method() === "GET" &&
+            !!request.url().match(RequestInterceptor.webRequestUrlRegex)
+        );
     }
 
     /**
