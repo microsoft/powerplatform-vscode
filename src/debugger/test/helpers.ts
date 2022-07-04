@@ -2,7 +2,7 @@ import { EXTENSION_NAME } from "../../client/constants";
 import { IPcfLaunchConfig } from "../configuration/types";
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { Browser } from "puppeteer-core";
+import { Browser, HTTPRequest } from "puppeteer-core";
 import sinon from "sinon";
 
 export const getWorkspaceFolder = () => {
@@ -66,6 +66,26 @@ type BrowserMockResult = {
     invokePageOnceCallback: () => void;
 };
 
+export const getRequest = (
+    url: string,
+    method: string,
+    respondSpy: sinon.SinonSpy<any[], any> = sinon.spy(),
+    continueSpy: sinon.SinonSpy<any[], any> = sinon.spy()
+): HTTPRequest => {
+    return {
+        method: () => method,
+        url: () => url,
+        respond: respondSpy,
+        continue: continueSpy,
+    } as unknown as HTTPRequest;
+};
+
+export const getBundleRequest = () =>
+    getRequest(
+        "https://someOrg.com/webresources/publisher.ControlName/bundle.js",
+        "GET"
+    );
+
 export const getBrowserMock = (): BrowserMockResult => {
     let invokePageOnceCallback: () => void = () => undefined;
     let invokeBrowserOnCallback: () => void = () => undefined;
@@ -76,6 +96,10 @@ export const getBrowserMock = (): BrowserMockResult => {
         once: (event: string, callback: () => void) => {
             event === "close" && (invokePageOnceCallback = callback);
         },
+        on: (event: string, callback: (request: HTTPRequest) => void) => {
+            event === "request" && callback(getBundleRequest());
+        },
+        setRequestInterception: () => undefined,
     };
     const browser = {
         pages: async () => [page],
@@ -89,7 +113,11 @@ export const getBrowserMock = (): BrowserMockResult => {
         },
     } as unknown as Browser;
 
-    return { browser, invokeBrowserOnCallback, invokePageOnceCallback };
+    return {
+        browser,
+        invokeBrowserOnCallback,
+        invokePageOnceCallback,
+    };
 };
 
 export const mockFileSystemWatcher = () => {

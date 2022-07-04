@@ -39,12 +39,6 @@ suite("ControlLocator", () => {
         } as unknown as Page;
     };
 
-    mocha.after(() => {
-        pageGotoSpy.restore();
-        pageWaitForSelectorSpy.restore();
-        pageClickSpy.restore();
-    });
-
     test("navigates to fullscreen control", async () => {
         const expectedUrl =
             "https://ORG_URL.crm.dynamics.com/main.aspx?appid=f96ac8ee-529f-4510-af13-3fe5ff45f2b6&pagetype=control&controlName=ControlName";

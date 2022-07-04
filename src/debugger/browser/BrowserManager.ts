@@ -290,6 +290,7 @@ export class BrowserManager implements Disposable {
             );
             await disposeSession();
         }
+        console.log("loaded");
     }
 
     /**

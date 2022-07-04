@@ -4,7 +4,7 @@ import { HTTPRequest, Page } from "puppeteer-core";
 import sinon from "sinon";
 import * as mocha from "mocha";
 import { BundleLoader } from "../../BundleLoader";
-import { getWorkspaceFolder } from "../helpers";
+import { getRequest, getWorkspaceFolder } from "../helpers";
 
 suite("RequestInterceptor", () => {
     let instance: RequestInterceptor;
@@ -12,11 +12,16 @@ suite("RequestInterceptor", () => {
     const setRequestInterceptionSpy = sinon.spy();
     const workspace = getWorkspaceFolder();
     const mockBundleContents = "mock bundle contents";
+    let loadFileContentsStub: sinon.SinonStub<[], Promise<string>>;
 
     mocha.before(() => {
-        sinon
+        loadFileContentsStub = sinon
             .stub(BundleLoader.prototype, "loadFileContents")
             .resolves(mockBundleContents);
+    });
+
+    mocha.after(() => {
+        loadFileContentsStub.restore();
     });
 
     mocha.beforeEach(() => {
@@ -68,12 +73,7 @@ suite("RequestInterceptor", () => {
             } as unknown as Page;
 
             await instance.register(puppeteerPage, onRequestInterceptedSpy);
-            const request = {
-                method: () => method,
-                url: () => url,
-                respond: respondSpy,
-                continue: continueSpy,
-            } as unknown as HTTPRequest;
+            const request = getRequest(url, method, respondSpy, continueSpy);
 
             onRequestCallback(request);
         };
