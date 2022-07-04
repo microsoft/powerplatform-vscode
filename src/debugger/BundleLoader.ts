@@ -42,7 +42,6 @@ export class BundleLoader {
         const workspacePath = this.workspaceFolder.uri.path;
 
         const parsedPath = Uri.parse(filePath);
-        console.log(parsedPath);
         if (parsedPath.path.startsWith(workspacePath)) {
             return filePath;
         }
