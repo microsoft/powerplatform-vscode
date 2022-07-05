@@ -14,6 +14,8 @@ export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
     context.subscriptions.push(_telemetry);
+    _telemetry.sendTelemetryEvent("Start");
+    _telemetry.sendTelemetryEvent("activated");
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
