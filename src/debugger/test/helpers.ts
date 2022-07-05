@@ -2,8 +2,14 @@ import { EXTENSION_NAME } from "../../client/constants";
 import { IPcfLaunchConfig } from "../configuration/types";
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { Browser, HTTPRequest } from "puppeteer-core";
+import { Browser, HTTPRequest, Page } from "puppeteer-core";
 import sinon from "sinon";
+import { FileWatcher } from "../FileWatcher";
+import { BundleLoader } from "../BundleLoader";
+import { RequestInterceptor } from "../RequestInterceptor";
+import { ControlLocator } from "../controlLocation";
+import { BrowserLocator } from "../browser/BrowserLocator";
+import { BrowserManager } from "../browser";
 
 export const getWorkspaceFolder = () => {
     const workspace: vscode.WorkspaceFolder = {
@@ -60,12 +66,6 @@ export const expectThrowsAsync = async <T>(
         .to.not.be.undefined;
 };
 
-type BrowserMockResult = {
-    browser: Browser;
-    invokeBrowserOnCallback: () => void;
-    invokePageOnceCallback: () => void;
-};
-
 export const getRequest = (
     url: string,
     method: string,
@@ -80,24 +80,28 @@ export const getRequest = (
     } as unknown as HTTPRequest;
 };
 
-export const getBundleRequest = () =>
+const getBundleRequest = () =>
     getRequest(
         "https://someOrg.com/webresources/publisher.ControlName/bundle.js",
         "GET"
     );
 
-export const getBrowserMock = (): BrowserMockResult => {
-    let invokePageOnceCallback: () => void = () => undefined;
-    let invokeBrowserOnCallback: () => void = () => undefined;
+export const getMockBrowser = (
+    invokePageOnceCloseCallback: boolean,
+    invokeBrowserOnDisconnectedCallback: boolean,
+    invokePageOnRequestCallback: boolean
+): Browser => {
     const page = {
         goto: async () => undefined,
         waitForSelector: async () => undefined,
         click: async () => undefined,
         once: (event: string, callback: () => void) => {
-            event === "close" && (invokePageOnceCallback = callback);
+            event === "close" && invokePageOnceCloseCallback && callback();
         },
         on: (event: string, callback: (request: HTTPRequest) => void) => {
-            event === "request" && callback(getBundleRequest());
+            event === "request" &&
+                invokePageOnRequestCallback &&
+                callback(getBundleRequest());
         },
         setRequestInterception: () => undefined,
     };
@@ -109,15 +113,13 @@ export const getBrowserMock = (): BrowserMockResult => {
         process: () => ({ pid: "mockPID" }),
         close: () => undefined,
         on: (event: string, callback: () => void) => {
-            event === "disconnected" && (invokeBrowserOnCallback = callback);
+            event === "disconnected" &&
+                invokeBrowserOnDisconnectedCallback &&
+                callback();
         },
     } as unknown as Browser;
 
-    return {
-        browser,
-        invokeBrowserOnCallback,
-        invokePageOnceCallback,
-    };
+    return browser;
 };
 
 export const mockFileSystemWatcher = () => {
@@ -125,3 +127,80 @@ export const mockFileSystemWatcher = () => {
         onDidChange: () => ({ dispose: () => undefined }),
     } as unknown as vscode.FileSystemWatcher);
 };
+
+export const getMockFileWatcher = (invokeOnRegister = false): FileWatcher => {
+    const fileWatcherMock = sinon.createStubInstance(FileWatcher);
+    if (invokeOnRegister) {
+        const mockRegister = (cb: () => Promise<void>) => {
+            void cb();
+        };
+        fileWatcherMock.register =
+            fileWatcherMock.register.callsFake(mockRegister);
+    }
+    return fileWatcherMock;
+};
+
+export const getMockBundleLoader = (
+    fileContents = validSourceMapBundle
+): BundleLoader => {
+    const bundleLoaderMock = sinon.createStubInstance(BundleLoader);
+    bundleLoaderMock.loadFileContents.resolves(fileContents);
+    return bundleLoaderMock;
+};
+
+export const getMockRequestInterceptor = (
+    invokeOnRegister = false
+): RequestInterceptor => {
+    const requestInterceptorMock = sinon.createStubInstance(RequestInterceptor);
+    if (invokeOnRegister) {
+        const mockRegister = async (
+            page: Page,
+            onRequestIntercepted?: (fileName: string) => Promise<void> | void
+        ) => {
+            if (onRequestIntercepted) {
+                await onRequestIntercepted("mockFileName");
+            }
+        };
+        requestInterceptorMock.register.callsFake(mockRegister);
+    }
+    return requestInterceptorMock;
+};
+
+export const getMockControlLocator = (): ControlLocator => {
+    const controlLocatorMock = sinon.createStubInstance(ControlLocator);
+    return controlLocatorMock;
+};
+
+export const getMockBrowserLocator = (
+    path = "browser/path"
+): BrowserLocator => {
+    const browserManagerMock = sinon.createStubInstance(BrowserLocator);
+    browserManagerMock.getPath.resolves(path);
+    return browserManagerMock;
+};
+
+export const getMockBrowserManager = (
+    invokeOnBrowserClose = false,
+    invokeOnBrowserReady = false
+): BrowserManager => {
+    const browserManagerMock = sinon.createStubInstance(BrowserManager);
+    if (invokeOnBrowserClose) {
+        const mockOnBrowserClose = (cb: () => Promise<void>) => {
+            void cb();
+        };
+        browserManagerMock.registerOnBrowserClose.callsFake(mockOnBrowserClose);
+    }
+
+    if (invokeOnBrowserReady) {
+        const mockOnBrowserReady = (cb: () => Promise<void>) => {
+            void cb();
+        };
+        browserManagerMock.registerOnBrowserReady.callsFake(mockOnBrowserReady);
+    }
+    return browserManagerMock;
+};
+
+export const validSourceMapBundle =
+    "/******//******/ })(); //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9u";
+export const missingSourceMapBundle = "/******//******/ })();";
+export const urlSourceMapBundle = "//# sourceMappingURL=main.js.map";

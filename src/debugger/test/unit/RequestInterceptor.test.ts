@@ -3,31 +3,17 @@ import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import { HTTPRequest, Page } from "puppeteer-core";
 import sinon from "sinon";
 import * as mocha from "mocha";
-import { BundleLoader } from "../../BundleLoader";
-import { getRequest, getWorkspaceFolder } from "../helpers";
+import { getMockBundleLoader, getRequest } from "../helpers";
 
 suite("RequestInterceptor", () => {
     let instance: RequestInterceptor;
     let puppeteerPage: Page;
     const setRequestInterceptionSpy = sinon.spy();
-    const workspace = getWorkspaceFolder();
     const mockBundleContents = "mock bundle contents";
-    let loadFileContentsStub: sinon.SinonStub<[], Promise<string>>;
-
-    mocha.before(() => {
-        loadFileContentsStub = sinon
-            .stub(BundleLoader.prototype, "loadFileContents")
-            .resolves(mockBundleContents);
-    });
-
-    mocha.after(() => {
-        loadFileContentsStub.restore();
-    });
 
     mocha.beforeEach(() => {
         instance = new RequestInterceptor(
-            "${workspaceFolder}/controls/my-control/out/controls/src/bundle.js",
-            workspace,
+            getMockBundleLoader(mockBundleContents),
             NoopTelemetryInstance
         );
 

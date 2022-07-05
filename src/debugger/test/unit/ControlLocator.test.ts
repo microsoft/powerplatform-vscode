@@ -10,34 +10,36 @@ import {
 } from "../helpers";
 
 suite("ControlLocator", () => {
-    const pageGotoSpy = sinon.stub();
-    const pageWaitForSelectorSpy = sinon.stub();
-    const pageClickSpy = sinon.stub();
+    const pageGotoStub = sinon.stub();
+    const pageWaitForSelectorStub = sinon.stub();
+    const pageClickStub = sinon.stub();
 
     const getPageMock = (
         gotoSucceeds = true,
         waitForSelectorSucceeds = true,
         pageClickSpySucceeds = true
     ) => {
-        pageGotoSpy.resetHistory();
-        pageWaitForSelectorSpy.resetHistory();
-        pageClickSpy.resetHistory();
-
         gotoSucceeds
-            ? pageGotoSpy.resolves()
-            : pageGotoSpy.rejects(new Error());
+            ? pageGotoStub.resolves()
+            : pageGotoStub.rejects(new Error());
         waitForSelectorSucceeds
-            ? pageWaitForSelectorSpy.resolves()
-            : pageWaitForSelectorSpy.rejects(new Error());
+            ? pageWaitForSelectorStub.resolves()
+            : pageWaitForSelectorStub.rejects(new Error());
         pageClickSpySucceeds
-            ? pageClickSpy.resolves()
-            : pageClickSpy.rejects(new Error());
+            ? pageClickStub.resolves()
+            : pageClickStub.rejects(new Error());
         return {
-            goto: pageGotoSpy,
-            waitForSelector: pageWaitForSelectorSpy,
-            click: pageClickSpy,
+            goto: pageGotoStub,
+            waitForSelector: pageWaitForSelectorStub,
+            click: pageClickStub,
         } as unknown as Page;
     };
+
+    mocha.afterEach(() => {
+        pageGotoStub.resetHistory();
+        pageWaitForSelectorStub.resetHistory();
+        pageClickStub.resetHistory();
+    });
 
     test("navigates to fullscreen control", async () => {
         const expectedUrl =
@@ -50,7 +52,7 @@ suite("ControlLocator", () => {
         );
         const page = getPageMock();
         await instance.navigateToControl(page);
-        sinon.assert.calledWith(pageGotoSpy, expectedUrl);
+        sinon.assert.calledWith(pageGotoStub, expectedUrl);
     });
 
     test("navigates to tab", async () => {
@@ -64,8 +66,8 @@ suite("ControlLocator", () => {
         );
         const page = getPageMock();
         await instance.navigateToControl(page);
-        sinon.assert.calledWith(pageGotoSpy, expectedUrl);
-        sinon.assert.calledWith(pageClickSpy, expectedTabSelector);
+        sinon.assert.calledWith(pageGotoStub, expectedUrl);
+        sinon.assert.calledWith(pageClickStub, expectedTabSelector);
     });
 
     mocha.describe("no retry", () => {
@@ -79,14 +81,14 @@ suite("ControlLocator", () => {
             const page = getPageMock(false);
 
             await expectThrowsAsync(() => instance.navigateToControl(page));
-            sinon.assert.calledOnce(pageGotoSpy);
+            sinon.assert.calledOnce(pageGotoStub);
         });
 
         test("does not retry wait for selector if retry count is 0", async () => {
             const page = getPageMock(true, false, false);
 
             await expectThrowsAsync(() => instance.navigateToControl(page));
-            sinon.assert.calledOnce(pageWaitForSelectorSpy);
+            sinon.assert.calledOnce(pageWaitForSelectorStub);
         });
     });
 
@@ -100,23 +102,23 @@ suite("ControlLocator", () => {
         test("goto fail", async () => {
             const page = getPageMock(false);
             await expectThrowsAsync(() => instance.navigateToControl(page));
-            sinon.assert.calledTwice(pageGotoSpy);
-            sinon.assert.notCalled(pageWaitForSelectorSpy);
-            sinon.assert.notCalled(pageClickSpy);
+            sinon.assert.calledTwice(pageGotoStub);
+            sinon.assert.notCalled(pageWaitForSelectorStub);
+            sinon.assert.notCalled(pageClickStub);
         });
 
         test("wait for selector fails", async () => {
             const page = getPageMock(true, false, false);
             await expectThrowsAsync(() => instance.navigateToControl(page));
-            sinon.assert.calledTwice(pageWaitForSelectorSpy);
-            sinon.assert.notCalled(pageClickSpy);
+            sinon.assert.calledTwice(pageWaitForSelectorStub);
+            sinon.assert.notCalled(pageClickStub);
         });
 
         test("click fails", async () => {
             const page = getPageMock(true, true, false);
             await expectThrowsAsync(() => instance.navigateToControl(page));
-            sinon.assert.calledTwice(pageWaitForSelectorSpy);
-            sinon.assert.calledTwice(pageClickSpy);
+            sinon.assert.calledTwice(pageWaitForSelectorStub);
+            sinon.assert.calledTwice(pageClickStub);
         });
     });
 });

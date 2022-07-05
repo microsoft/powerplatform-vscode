@@ -16,6 +16,13 @@ import {
 import { Debugger } from "./Debugger";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
+import { BrowserManager } from "../browser";
+import { BundleLoader } from "../BundleLoader";
+import { IPcfLaunchConfig } from "../configuration/types";
+import { RequestInterceptor } from "../RequestInterceptor";
+import { FileWatcher } from "../FileWatcher";
+import { ControlLocator } from "../controlLocation";
+import { BrowserLocator } from "../browser/BrowserLocator";
 
 /**
  * Factory class that creates the debugger.
@@ -26,6 +33,48 @@ export class DebugAdaptorFactory implements DebugAdapterDescriptorFactory {
      * @param logger The telemetry reporter to use for telemetry.
      */
     constructor(private readonly logger: ITelemetry) {}
+
+    /**
+     * Creates the dependencies for the debugger.
+     * @param session The {@link DebugSession debug session} for which the debug adapter will be used.
+     * @param workspaceFolder The current workspace folder for the debugger to use.
+     * @returns The BrowserManager instance.
+     */
+    private createDependencyTree(
+        session: DebugSession,
+        workspaceFolder: WorkspaceFolder
+    ): BrowserManager {
+        const debugConfig = session.configuration as IPcfLaunchConfig;
+
+        const bundleWatcher = new FileWatcher(
+            debugConfig.file,
+            workspaceFolder,
+            this.logger
+        );
+
+        const bundleLoader = new BundleLoader(
+            debugConfig.file,
+            workspaceFolder,
+            this.logger
+        );
+        const bundleInterceptor = new RequestInterceptor(
+            bundleLoader,
+            this.logger
+        );
+
+        const controlLocator = new ControlLocator(debugConfig, this.logger);
+
+        const browserLocator = new BrowserLocator(debugConfig, this.logger);
+
+        return new BrowserManager(
+            bundleWatcher,
+            bundleInterceptor,
+            controlLocator,
+            browserLocator,
+            debugConfig,
+            this.logger
+        );
+    }
 
     /**
      * This method is called at the start of a debug session to provide details about the debug adapter to use.
@@ -42,7 +91,12 @@ export class DebugAdaptorFactory implements DebugAdapterDescriptorFactory {
             return;
         }
 
+        const browserManager = this.createDependencyTree(
+            session,
+            workspaceFolder
+        );
         const debugAdaptor = new Debugger(
+            browserManager,
             session,
             workspaceFolder,
             this.logger

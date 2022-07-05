@@ -35,26 +35,29 @@ export class FileWatcher implements Disposable {
     private readonly FILE_WATCHER_CHANGE_DELAY = 5000;
 
     /**
+     * The callback to call when a file changes.
+     */
+    private onFileChange?: () => Promise<void>;
+
+    /**
      * Creates a new FileWatcher instance.
      * @param filePattern The file pattern to watch.
-     * @param onFileChange The callback to call when a file changes.
      * @param workspaceFolder The workspace folder to watch.
      * @param logger The logger to use for telemetry.
      */
     constructor(
         filePattern: string,
-        private readonly onFileChange: () => Promise<void>,
         workspaceFolder: WorkspaceFolder,
-        private readonly logger: ITelemetry
+        private readonly logger: ITelemetry,
+        createFileSystemWatcher = workspace.createFileSystemWatcher
     ) {
         const pattern = new RelativePattern(workspaceFolder, filePattern);
-        this.watcher = workspace.createFileSystemWatcher(
-            pattern,
-            true,
-            false,
-            true
-        );
+        this.watcher = createFileSystemWatcher(pattern, true, false, true);
         this.watcher.onDidChange((uri) => this.onChange(uri));
+    }
+
+    public register(onFileChange: () => Promise<void>) {
+        this.onFileChange = onFileChange;
     }
 
     /**
@@ -68,6 +71,10 @@ export class FileWatcher implements Disposable {
 
         this.fileChangeTriggered = true;
         const onChangeAction = async () => {
+            if (!this.onFileChange) {
+                return;
+            }
+
             // Somehow we need to wait a bit before we can trigger the onFileChange.
             // If we don't wait, then the bundle will still be in its old state *before* the change that triggered
             // the file watcher to call the onChange event.
@@ -93,5 +100,6 @@ export class FileWatcher implements Disposable {
      */
     dispose() {
         this.watcher.dispose();
+        this.onFileChange = undefined;
     }
 }

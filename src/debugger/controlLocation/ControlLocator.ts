@@ -62,7 +62,7 @@ export class ControlLocator implements Disposable {
      * Builds the url to the initial page based on configuration.
      * @returns Url to control.
      */
-    public getPageUrl(): string {
+    private getPageUrl(): string {
         const url = this.debugConfig.url;
         const {
             appId,

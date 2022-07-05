@@ -41,10 +41,9 @@ const DEFAULT_DEBUGGING_DISPOSE_TIMEOUT = 4000;
 export class Debugger implements Disposable, DebugAdapter {
     private readonly debugConfig: IPcfLaunchConfig;
     private edgeDebugSession?: DebugSession;
-    private browserManager: BrowserManager;
     private startDebuggingDisposable?: Disposable;
     private debugSessionTerminatedDisposable?: Disposable;
-    private isDisposed = false;
+    public isDisposed = false;
 
     /**
      * Flag indicating if a debug session is running.
@@ -75,20 +74,22 @@ export class Debugger implements Disposable, DebugAdapter {
      * @param debuggingRetryDelay The delay in ms after which to retry starting the debug session.
      */
     constructor(
+        private readonly browserManager: BrowserManager,
         private readonly parentSession: DebugSession,
         private readonly workspaceFolder: WorkspaceFolder,
         private readonly logger: ITelemetry,
         private readonly debuggingRetryCount: number = DEFAULT_DEBUGGING_RETRY_COUNT,
-        private readonly debuggingRetryDelay: number = DEFAULT_DEBUGGING_RETRY_DELAY
+        private readonly debuggingRetryDelay: number = DEFAULT_DEBUGGING_RETRY_DELAY,
+        private readonly debuggingDisposeTimeout: number = DEFAULT_DEBUGGING_DISPOSE_TIMEOUT
     ) {
         this.debugConfig = parentSession.configuration as IPcfLaunchConfig;
-        this.browserManager = new BrowserManager(
-            logger,
-            this.debugConfig,
-            async () => this.stopDebugging(),
-            async () => this.attachEdgeDebugger(),
-            workspaceFolder
-        );
+        this.browserManager.registerOnBrowserClose(async () => {
+            this.stopDebugging();
+        });
+        this.browserManager.registerOnBrowserReady(async () => {
+            this.attachEdgeDebugger();
+        });
+
         this.startDebuggingDisposable = debug.onDidStartDebugSession(
             (session) => this.onDebugSessionStarted(session)
         );
@@ -120,12 +121,16 @@ export class Debugger implements Disposable, DebugAdapter {
                 void this.stopDebugging();
                 break;
             case "initialize":
-                void this.launchBrowserManager();
+                void this.browserManagerLaunch();
                 break;
         }
     }
 
-    private async launchBrowserManager() {
+    /**
+     * Asynchronously starts the browser manager so that the debugger can be attached when the bundle has been intercepted.
+     * The browser manager will then call {@link attachEdgeDebugger} through the {@link BrowserManager.onBrowserReady onBrowserReady} event.
+     */
+    private async browserManagerLaunch() {
         try {
             await this.browserManager.launch();
         } catch (error) {
@@ -244,8 +249,8 @@ export class Debugger implements Disposable, DebugAdapter {
 
         this.edgeDebugSession = edgeDebugSession;
         this.debugSessionTerminatedDisposable =
-            debug.onDidTerminateDebugSession((session) =>
-                this.onDebugSessionStopped(session)
+            debug.onDidTerminateDebugSession(
+                (session) => void this.onDebugSessionStopped(session)
             );
 
         this.logger.sendTelemetryEvent("Debugger.onDebugSessionStarted", {
@@ -261,7 +266,7 @@ export class Debugger implements Disposable, DebugAdapter {
         this.logger.sendTelemetryEvent("debugger.stopDebugging", {
             sessionId: this.edgeDebugSession?.id || "undefined",
         });
-        console.log("Stopping debugging session...");
+
         if (this.hasAttachedDebuggerSession || this.isRunning) {
             // remove the onDebugStopped callback to prevent closing the browser
             // when the debug session is stopped
@@ -276,21 +281,21 @@ export class Debugger implements Disposable, DebugAdapter {
      * Callback called by {@link debug.onDidTerminateDebugSession} for when vscode terminates the debug session.
      * @param session The {@link DebugSession debug session} that has stopped.
      */
-    private onDebugSessionStopped(session: DebugSession): void {
+    private async onDebugSessionStopped(session: DebugSession): Promise<void> {
         // Disposes the debugger if it the parent session is stopped after 4 seconds.
-        setTimeout(() => {
-            if (this.isRunning) {
-                return;
+        this.debuggingDisposeTimeout > 0 &&
+            (await sleep(this.debuggingDisposeTimeout));
+        if (this.isRunning) {
+            return;
+        }
+        void this.logger.sendTelemetryEvent(
+            "debugger.onDebugSessionStopped.stopped",
+            {
+                sessionId: session.id,
             }
-            void this.logger.sendTelemetryEvent(
-                "debugger.onDebugSessionStopped.stopped",
-                {
-                    sessionId: session.id,
-                }
-            );
+        );
 
-            this.dispose();
-        }, DEFAULT_DEBUGGING_DISPOSE_TIMEOUT);
+        this.dispose();
     }
 
     /**
@@ -316,5 +321,6 @@ export class Debugger implements Disposable, DebugAdapter {
         }
 
         this.edgeDebugSession = undefined;
+        this.isDisposed = true;
     }
 }

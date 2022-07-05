@@ -14,7 +14,7 @@ import { BrowserLocator } from "./BrowserLocator";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 import { BrowserArgsBuilder } from "./BrowserArgsBuilder";
-import { Disposable, window, WorkspaceFolder } from "vscode";
+import { Disposable, window } from "vscode";
 
 /**
  * Callback that is invoked by the {@link BrowserManager browser manager} when the browser is closed.
@@ -36,30 +36,27 @@ type OnBrowserReady = () => Promise<void>;
  */
 export class BrowserManager implements Disposable {
     /**
-     * Manager to locate the browser executable.
-     */
-    private readonly browserLocator: BrowserLocator;
-
-    /**
      * Puppeteer {@link puppeteer.Browser browser} instance.
      * This will defined after calling {@link launch}.
      */
     private browserInstance?: Browser = undefined;
 
     /**
-     * Navigates the puppeteer browser to the location of the pcf control within the Power App.
+     * Callback that is invoked when the browser is closed.
+     * Register this callback with {@link registerOnBrowserClose BrowserManager.registerOnBrowserClose}.
      */
-    private controlLocator?: ControlLocator = undefined;
+    private onBrowserClose?: OnBrowserClose;
 
     /**
-     * Intercepts all puppeteer requests and answers with the contents of the local version of the pcf control bundle.
+     * Callback that is invoked when the browser is ready. The browser is ready when the bundle has been requested.
+     * Register this callback with {@link registerOnBrowserReady BrowserManager.registerOnBrowserReady}.
      */
-    private bundleInterceptor?: RequestInterceptor = undefined;
+    private onBrowserReady?: OnBrowserReady;
 
     /**
-     * Watches for local changes to the bundle file to allow for hot reload.
+     * Flag indicating whether this instance is disposed.
      */
-    private bundleWatcher?: FileWatcher = undefined;
+    private isDisposed = false;
 
     /**
      * Returns the browser instance process id.
@@ -71,20 +68,38 @@ export class BrowserManager implements Disposable {
 
     /**
      * Creates a new Launch manager instance.
-     * @param logger Telemetry reporter used to emit telemetry events.
+     * @param bundleWatcher Watches for local changes to the bundle file to allow for hot reload.
+     * @param bundleInterceptor Intercepts all puppeteer requests and answers with the contents of the local version of the pcf control bundle.
+     * @param controlLocator Navigates the puppeteer browser to the location of the pcf control within the Power App.
+     * @param browserLocator Manager to locate the browser executable.
      * @param debugConfig Launch configuration.
-     * @param onBrowserClose Callback that is invoked when the browser is closed.
-     * @param onBrowserReady Callback that is invoked when the browser is ready. The browser is ready when the bundle has been requested.
-     * @param workspaceFolder The workspace folder.
+     * @param logger Telemetry reporter used to emit telemetry events.
+     * @param puppeteerLaunchWrapper [Optional] Wrapper around {@link puppeteer.launch}. Can be used to overwrite the puppeteer launch method for testing.
      */
     constructor(
-        private readonly logger: ITelemetry,
+        private readonly bundleWatcher: FileWatcher,
+        private readonly bundleInterceptor: RequestInterceptor,
+        private readonly controlLocator: ControlLocator,
+        private readonly browserLocator: BrowserLocator,
         private readonly debugConfig: IPcfLaunchConfig,
-        private readonly onBrowserClose: OnBrowserClose,
-        private readonly onBrowserReady: OnBrowserReady,
-        private readonly workspaceFolder: WorkspaceFolder
-    ) {
-        this.browserLocator = new BrowserLocator(this.debugConfig, this.logger);
+        private readonly logger: ITelemetry,
+        private readonly puppeteerLaunchWrapper = puppeteer.launch
+    ) {}
+
+    /**
+     * Registers the callback that is invoked when the browser is closed.
+     * @param onBrowserClose Callback to invoke
+     */
+    public registerOnBrowserClose(onBrowserClose: OnBrowserClose): void {
+        this.onBrowserClose = onBrowserClose;
+    }
+
+    /**
+     * Callback that is invoked when the browser is ready. The browser is ready when the bundle has been requested.
+     * @param onBrowserReady Callback to invoke
+     */
+    public registerOnBrowserReady(onBrowserReady: OnBrowserReady): void {
+        this.onBrowserReady = onBrowserReady;
     }
 
     /**
@@ -133,29 +148,6 @@ export class BrowserManager implements Disposable {
             );
             throw new Error(message);
         }
-    }
-
-    /**
-     * Launch the specified puppeteer browser with remote debugging enabled.
-     * @param browserPath The path of the browser to launch.
-     * @param port The port on which to enable remote debugging.
-     * @param userDataDir The user data directory for the launched instance.
-     * @returns The browser process.
-     */
-    private async launchPuppeteerInstance(
-        browserPath: string,
-        port: number,
-        userDataDir?: string
-    ) {
-        const argsBuilder = new BrowserArgsBuilder(port, userDataDir);
-        const args = argsBuilder.build();
-        const browserInstance = await puppeteer.launch({
-            executablePath: browserPath,
-            args,
-            headless: false,
-            defaultViewport: null,
-        });
-        return browserInstance;
     }
 
     // TODO: verify this works
@@ -241,22 +233,38 @@ export class BrowserManager implements Disposable {
     }
 
     /**
+     * Launch the specified puppeteer browser with remote debugging enabled.
+     * @param browserPath The path of the browser to launch.
+     * @param port The port on which to enable remote debugging.
+     * @param userDataDir The user data directory for the launched instance.
+     * @returns The browser process.
+     */
+    private async launchPuppeteerInstance(
+        browserPath: string,
+        port: number,
+        userDataDir?: string
+    ) {
+        const argsBuilder = new BrowserArgsBuilder(port, userDataDir);
+        const args = argsBuilder.build();
+        const browserInstance = await this.puppeteerLaunchWrapper({
+            executablePath: browserPath,
+            args,
+            headless: false,
+            defaultViewport: null,
+        });
+        return browserInstance;
+    }
+
+    /**
      * Performs actions to register a page with different managers to allow request interception, event logging and navigation to the control.
      * @param page Page to register.
      */
     private async registerPage(page: Page) {
-        this.controlLocator = new ControlLocator(this.debugConfig, this.logger);
-        this.bundleInterceptor = new RequestInterceptor(
-            this.debugConfig.file,
-            this.workspaceFolder,
-            this.logger
-        );
-
         /**
          * Disposes of all the managers related to this debugging session.
          */
         const disposeSession = async () => {
-            await this.onBrowserClose();
+            this.onBrowserClose && (await this.onBrowserClose());
             this.disposeSessionInstances();
         };
 
@@ -270,14 +278,9 @@ export class BrowserManager implements Disposable {
         };
 
         const onBundleLoaded = async () => {
-            await this.onBrowserReady();
+            this.onBrowserReady && (await this.onBrowserReady());
         };
-        this.bundleWatcher = new FileWatcher(
-            this.debugConfig.file,
-            onFileChangeHandler,
-            this.workspaceFolder,
-            this.logger
-        );
+        this.bundleWatcher.register(onFileChangeHandler);
         try {
             await this.bundleInterceptor?.register(page, onBundleLoaded);
             await this.controlLocator?.navigateToControl(page);
@@ -290,37 +293,34 @@ export class BrowserManager implements Disposable {
             );
             await disposeSession();
         }
-        console.log("loaded");
     }
 
     /**
-     * Dispose this object.
+     * Dispose this instance.
      */
-    dispose() {
+    public dispose() {
+        if (this.isDisposed) {
+            return;
+        }
         const disposeAsync = async () => {
             if (this.browserInstance) {
                 await this.browserInstance.close();
                 this.browserInstance = undefined;
             }
         };
+        this.onBrowserClose = undefined;
+        this.onBrowserReady = undefined;
         this.disposeSessionInstances();
         void disposeAsync();
+        this.isDisposed = true;
     }
 
+    /**
+     * Disposes the current session instances.
+     */
     private disposeSessionInstances() {
-        if (this.controlLocator) {
-            this.controlLocator.dispose();
-            this.controlLocator = undefined;
-        }
-
-        if (this.bundleInterceptor) {
-            this.bundleInterceptor.dispose();
-            this.bundleInterceptor = undefined;
-        }
-
-        if (this.bundleWatcher) {
-            this.bundleWatcher.dispose();
-            this.bundleWatcher = undefined;
-        }
+        this.controlLocator.dispose();
+        this.bundleInterceptor.dispose();
+        this.bundleWatcher.dispose();
     }
 }

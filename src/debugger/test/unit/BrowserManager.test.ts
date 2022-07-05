@@ -1,69 +1,58 @@
-import puppeteer, { Browser, Page } from "puppeteer-core";
 import sinon from "sinon";
-import * as mocha from "mocha";
 import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import {
-    getBrowserMock,
-    getWorkspaceFolder,
-    mockFileSystemWatcher,
+    getMockBrowser,
+    getMockBrowserLocator,
+    getMockControlLocator,
+    getMockFileWatcher,
+    getMockRequestInterceptor,
     mockTabbedControlConfiguration,
 } from "../helpers";
 import { BrowserManager } from "../../browser/";
-import { FileSystemWatcher } from "vscode";
-import { BundleLoader } from "../../BundleLoader";
 
 suite("BrowserManager", () => {
-    const { browser, invokeBrowserOnCallback, invokePageOnceCallback } =
-        getBrowserMock();
-    const puppeteerLaunchSpy = sinon
-        .stub(puppeteer, "launch")
-        .resolves(browser);
-    const onBrowserCloseEvent = sinon.spy();
-    const onBrowserReadyEvent = sinon.spy();
-    // let fileSystemWatcherMock: sinon.SinonStub<any, FileSystemWatcher>;
-
-    // mocha.before(() => {
-    //     fileSystemWatcherMock = mockFileSystemWatcher();
-    // });
-
-    let loadFileContentsStub: sinon.SinonStub<[], Promise<string>>;
-
-    mocha.before(() => {
-        loadFileContentsStub = sinon
-            .stub(BundleLoader.prototype, "loadFileContents")
-            .resolves("mock bundle contents");
-    });
-
-    mocha.after(() => {
-        loadFileContentsStub.restore();
-    });
-
-    mocha.afterEach(() => {
-        onBrowserCloseEvent.resetHistory();
-        onBrowserReadyEvent.resetHistory();
-    });
-
-    test("launch calls puppeteer.launch", async () => {
-        const instance = new BrowserManager(
-            NoopTelemetryInstance,
-            mockTabbedControlConfiguration,
-            onBrowserCloseEvent,
-            onBrowserReadyEvent,
-            getWorkspaceFolder()
+    const getInstance = (
+        fireBundleIntercepted: boolean,
+        fireOnBrowserClose: boolean,
+        fireOnBrowserDisconnect: boolean,
+        fireOnRequest: boolean
+    ): BrowserManager => {
+        const browser = getMockBrowser(
+            fireOnBrowserClose,
+            fireOnBrowserDisconnect,
+            fireOnRequest
         );
-        await instance.launch();
-        sinon.assert.calledOnce(puppeteerLaunchSpy);
-    });
+        const bundleWatcher = getMockFileWatcher();
+        const bundleInterceptor = getMockRequestInterceptor(
+            fireBundleIntercepted
+        );
+        const controlLocator = getMockControlLocator();
+        const browserLocator = getMockBrowserLocator();
+        const puppeteerLaunchMock = async () => browser;
+        return new BrowserManager(
+            bundleWatcher,
+            bundleInterceptor,
+            controlLocator,
+            browserLocator,
+            mockTabbedControlConfiguration,
+            NoopTelemetryInstance,
+            puppeteerLaunchMock
+        );
+    };
 
     test("calls onBrowserReady when bundle intercepted", async () => {
-        const instance = new BrowserManager(
-            NoopTelemetryInstance,
-            mockTabbedControlConfiguration,
-            onBrowserCloseEvent,
-            onBrowserReadyEvent,
-            getWorkspaceFolder()
-        );
+        const instance = getInstance(true, false, false, false);
+        const browserReadyStub = sinon.spy();
+        instance.registerOnBrowserReady(browserReadyStub);
         await instance.launch();
-        sinon.assert.calledOnce(onBrowserReadyEvent);
+        sinon.assert.calledOnce(browserReadyStub);
+    });
+
+    test("calls onBrowserClose when browser closed", async () => {
+        const instance = getInstance(false, true, false, false);
+        const browserCloseStub = sinon.spy();
+        instance.registerOnBrowserClose(browserCloseStub);
+        await instance.launch();
+        sinon.assert.calledOnce(browserCloseStub);
     });
 });

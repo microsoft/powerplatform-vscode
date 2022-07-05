@@ -8,6 +8,9 @@
 export class SourceMapValidator {
     /**
      * Regex that matches the source map inlined in the bundle.
+     * @example
+     * // matches
+     * "... })(); //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9u"
      */
     private static readonly sourceMapRegex =
         /sourceMappingURL=data:application\/json/;

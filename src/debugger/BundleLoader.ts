@@ -27,7 +27,8 @@ export class BundleLoader {
     constructor(
         relativeFilePath: string,
         private readonly workspaceFolder: WorkspaceFolder,
-        private readonly logger: ITelemetry
+        private readonly logger: ITelemetry,
+        private readonly openTextDocument = workspace.openTextDocument
     ) {
         this.filePath = this.getAbsoluteFilePath(relativeFilePath);
         this.fileName = path.basename(this.filePath);
@@ -55,7 +56,7 @@ export class BundleLoader {
      */
     public async loadFileContents(): Promise<string> {
         try {
-            const file: TextDocument = await workspace.openTextDocument(
+            const file: TextDocument = await this.openTextDocument(
                 Uri.file(this.filePath)
             );
             const fileContent = file.getText();
@@ -63,7 +64,7 @@ export class BundleLoader {
 
             return fileContent;
         } catch (error) {
-            await ErrorReporter.report(
+            void ErrorReporter.report(
                 this.logger,
                 "RequestInterceptor.loadFileContents.error",
                 error,
@@ -88,7 +89,7 @@ export class BundleLoader {
             return;
         }
 
-        await ErrorReporter.report(
+        void ErrorReporter.report(
             this.logger,
             "RequestInterceptor.warnIfNoSourceMap.error",
             undefined,

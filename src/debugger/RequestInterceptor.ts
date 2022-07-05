@@ -3,7 +3,7 @@
  */
 
 import { EventEmitter, HTTPRequest, Page } from "puppeteer-core";
-import { Disposable, WorkspaceFolder } from "vscode";
+import { Disposable } from "vscode";
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
 import { BundleLoader } from "./BundleLoader";
@@ -20,8 +20,6 @@ export class RequestInterceptor implements Disposable {
      */
     private static readonly webRequestUrlRegex =
         /.*\/webresources\/.*\/bundle.js/;
-
-    private readonly bundleLoader: BundleLoader;
 
     /**
      * Callback for `puppeteer.on("request")`.
@@ -40,21 +38,13 @@ export class RequestInterceptor implements Disposable {
 
     /**
      * Creates a new RequestInterceptor instance.
-     * @param relativeFilePath The relative path to the file to be intercepted.
-     * @param workspaceFolder The workspace folder that contains the file to be intercepted.
+     * @param bundleLoader Manager to load the contents of the bundle file.
      * @param logger The telemetry reporter to use for telemetry events.
      */
     constructor(
-        relativeFilePath: string,
-        workspaceFolder: WorkspaceFolder,
+        private readonly bundleLoader: BundleLoader,
         private readonly logger: ITelemetry
-    ) {
-        this.bundleLoader = new BundleLoader(
-            relativeFilePath,
-            workspaceFolder,
-            this.logger
-        );
-    }
+    ) {}
 
     /**
      * Starts intercepting requests to the specified file.
