@@ -57,8 +57,8 @@ const webConfig = {
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 	target: 'webworker', // extensions run in a webworker context
 	entry: {
-		'extension': './src/web/extension.ts',
-        'test/unit/extension': './src/web/test/unit/extension.test.ts'
+		'extension': './src/web/client/extension.ts',
+        'test/unit/extension': './src/web/client/test/unit/extension.test.ts'
 	},
 	output: {
 		filename: '[name].js',
@@ -77,7 +77,7 @@ const webConfig = {
 			// see https://webpack.js.org/configuration/resolve/#resolvefallback
 			// for the list of Node.js core module polyfills.
 			"path": require.resolve("path-browserify"),
-			'assert': require.resolve('assert')
+			'assert': require.resolve('assert'),
 		}
 	},
 	module: {
