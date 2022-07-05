@@ -1,3 +1,8 @@
+/* --------------------------------------------------------------------------------------------
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ * ------------------------------------------------------------------------------------------ */
+
 import Abstractapptypes from "./Abstractapptypes";
 
 export interface searchParams {
@@ -8,7 +13,5 @@ export interface searchParams {
 }
 
 export default interface portalapptypes extends Abstractapptypes {
-  entityName: string | undefined;
-  entityId: string | undefined;
   queryParams: searchParams;
   }
