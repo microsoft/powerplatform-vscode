@@ -6,11 +6,14 @@
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
-
+import { dataverseAuthentication } from "./common/authenticationProvider";
 let _telemetry: TelemetryReporter;
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export function activate(context: vscode.ExtensionContext): void {
-    console.log("Activated web extension!"); // sample code for testing the webExtension
+    console.log("Activated web extension!");
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
     context.subscriptions.push(_telemetry);
@@ -20,12 +23,48 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
-            () => {
-                _telemetry.sendTelemetryEvent("StartCommand", {'commandId': 'microsoft-powerapps-portals.webExtension.init'});
-                // sample code for testing the webExtension
+            async (args: any) => {
+                _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
                 vscode.window.showInformationMessage(
-                    "Initializing web extension!"
+                    "Initializing Power Platform web extension!"
                 );
+                if (!args) {
+                    vscode.window.showErrorMessage('Appname and query params missing, Please retry...');
+                    return;
+                }
+
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { appName, entity, entityId, searchParams } = args
+                const queryParamsMap = new Map<string, string>();
+                try {
+                    if(searchParams != null && searchParams != undefined)
+                    {   const queryParams = new URLSearchParams(searchParams);
+                        for (const pair of queryParams.entries()) {
+                            queryParamsMap.set(pair[0], pair[1]);
+                        }
+                    }
+                }
+                catch (error) {
+                    vscode.window.showErrorMessage("Error encountered in query parameters fetch");
+                }
+                let accessToken;
+                if (appName != null && appName != undefined) {
+                    switch (appName) {
+                        case 'portal':
+                        case 'default':
+                            accessToken = await dataverseAuthentication(queryParamsMap.get('orgUrl'));
+                            if (!accessToken) {
+                                vscode.window.showErrorMessage("Authentication to dataverse failed!, Please retry...");
+                            }
+                            break;
+
+                        default:
+                            vscode.window.showInformationMessage('Unknown app, Please add authentication flow for this app');
+                    }
+
+                } else {
+                    vscode.window.showErrorMessage("Please specify the appName");
+                }
             }
         )
     );

@@ -5,7 +5,7 @@
     "sourceMap": true,
     "outDir": "out",
     "rootDir": "src",
-    "lib": [ "es6", "WebWorker" ],
+    "lib": [ "es2019", "WebWorker" ],
     "noImplicitAny": true,
     "strictPropertyInitialization": true,
 		"strict": true,
