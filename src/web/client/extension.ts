@@ -37,16 +37,18 @@ export function activate(context: vscode.ExtensionContext): void {
                 const { appName, entity, entityId, searchParams } = args
                 const queryParamsMap = new Map<string, string>();
                 try {
-                    const queryParams = new URLSearchParams(searchParams);
-                    for (const pair of queryParams.entries()) {
-                        queryParamsMap.set(pair[0], pair[1]);
+                    if(searchParams != null && searchParams != undefined)
+                    {   const queryParams = new URLSearchParams(searchParams);
+                        for (const pair of queryParams.entries()) {
+                            queryParamsMap.set(pair[0], pair[1]);
+                        }
                     }
                 }
                 catch (error) {
                     vscode.window.showErrorMessage("Error encountered in query parameters fetch");
                 }
                 let accessToken;
-                if (appName != undefined) {
+                if (appName != null && appName != undefined) {
                     switch (appName) {
                         case 'portal':
                         case 'default':
