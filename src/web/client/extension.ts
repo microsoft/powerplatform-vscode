@@ -57,7 +57,6 @@ export function activate(context: vscode.ExtensionContext): void {
                             if (!accessToken) {
                                 vscode.window.showErrorMessage("Authentication to dataverse failed!, Please retry...");
                             }
-                            console.log(accessToken)
                             // set local storage for language and website data
                             setLocalStore(accessToken, queryParamsMap.get('orgUrl'))
                             break;

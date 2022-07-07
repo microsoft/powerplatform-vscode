@@ -20,12 +20,12 @@ export function getSchemaMapForEntities() {
 }
 
 export function getOrganizationMap() {
-    const jsonArray : { [key: string]: string }= portal_schema_data.entities.organization[0]
+    const orgArray: { [key: string]: string } = portal_schema_data.entities.organization[0]
     const orgMap = new Map<string, string>()
-    const keys = Object.keys(jsonArray);
-    keys.forEach(key=>{
-    console.log(key + '|' + jsonArray[key] as string);
-    orgMap.set(key, jsonArray[key] as string);
+    const keys = Object.keys(orgArray);
+    keys.forEach(key => {
+        console.log(key + '|' + orgArray[key] as string);
+        orgMap.set(key, orgArray[key] as string);
     });
     return orgMap;
 }
