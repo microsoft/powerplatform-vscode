@@ -46,9 +46,9 @@ describe("RequestInterceptor", () => {
         const doMockRequestForUrl = async (
             url: string,
             method: string,
-            respondSpy: sinon.SinonSpy<any[], any>,
-            continueSpy: sinon.SinonSpy<any[], any>,
-            onRequestInterceptedSpy: sinon.SinonSpy<any[], any> = sinon.spy()
+            respondSpy: sinon.SinonSpy<unknown[], unknown>,
+            continueSpy: sinon.SinonSpy<unknown[], unknown>,
+            onRequestInterceptedSpy: sinon.SinonSpy<unknown[], Promise<void>> = sinon.spy()
         ) => {
             let onRequestCallback: (request: HTTPRequest) => void = () =>
                 undefined;

@@ -75,8 +75,8 @@ export const expectThrowsAsync = async <T>(
 export const getRequest = (
     url: string,
     method: string,
-    respondSpy: sinon.SinonSpy<any[], any> = sinon.spy(),
-    continueSpy: sinon.SinonSpy<any[], any> = sinon.spy()
+    respondSpy: sinon.SinonSpy<unknown[], unknown> = sinon.spy(),
+    continueSpy: sinon.SinonSpy<unknown[], unknown> = sinon.spy()
 ): HTTPRequest => {
     return {
         method: () => method,

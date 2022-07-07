@@ -22,7 +22,7 @@ import {
 describe("Debugger", () => {
     let instance: Debugger;
     let browserManagerInstance: BrowserManager;
-    let attachEdgeDebuggerSpy: sinon.SinonSpy<any, Promise<void>>;
+    let attachEdgeDebuggerSpy: sinon.SinonSpy<[retryCount?: number | undefined], Promise<void>>;
     const activeDebugSessionStub = sinon.stub(
         vscode.debug,
         "activeDebugSession"
@@ -187,13 +187,8 @@ describe("Debugger", () => {
 
     describe("handleMessage", () => {
         it("calls launch on initialize command", async () => {
-            const launchSpy = browserManagerInstance.launch as sinon.SinonStub<
-                [],
-                Promise<void>
-            >;
-            instance.handleMessage({
-                command: "initialize",
-            } as ProtocolMessage);
+            const launchSpy = browserManagerInstance.launch as sinon.SinonStub<[], Promise<void>>;
+            instance.handleMessage({ command: "initialize" } as ProtocolMessage);
             sinon.assert.calledOnce(launchSpy);
             launchSpy.restore();
         });
