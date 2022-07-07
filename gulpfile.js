@@ -165,9 +165,16 @@ function lint() {
 
 function testUnitTests() {
     return gulp
-        .src(["src/server/test/unit/**/*.ts", "src/client/test/unit/**/*.ts"], {
-            read: false,
-        })
+        .src(
+            [
+                "src/server/test/unit/**/*.ts",
+                "src/client/test/unit/**/*.ts",
+                "src/debugger/test/unit/**/*.ts",
+            ],
+            {
+                read: false,
+            }
+        )
         .pipe(
             mocha({
                 require: ["ts-node/register"],

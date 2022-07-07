@@ -10,6 +10,7 @@ import { RequestInterceptor } from "../RequestInterceptor";
 import { ControlLocator } from "../controlLocation";
 import { BrowserLocator } from "../browser/BrowserLocator";
 import { BrowserManager } from "../browser";
+import { validSourceMapBundle } from "./unit/SourceMapValidator.test";
 
 export const getWorkspaceFolder = () => {
     const workspace: vscode.WorkspaceFolder = {
@@ -199,8 +200,3 @@ export const getMockBrowserManager = (
     }
     return browserManagerMock;
 };
-
-export const validSourceMapBundle =
-    "/******//******/ })(); //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9u";
-export const missingSourceMapBundle = "/******//******/ })();";
-export const urlSourceMapBundle = "//# sourceMappingURL=main.js.map";

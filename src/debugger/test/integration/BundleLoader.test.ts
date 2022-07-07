@@ -1,15 +1,14 @@
 import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import { BundleLoader } from "../../BundleLoader";
-import {
-    expectThrowsAsync,
-    getWorkspaceFolder,
-    missingSourceMapBundle,
-    validSourceMapBundle,
-} from "../helpers";
+import { expectThrowsAsync, getWorkspaceFolder } from "../helpers";
 import { TextDocument } from "vscode";
 import { expect } from "chai";
 import sinon from "sinon";
 import { ErrorReporter } from "../../../common/ErrorReporter";
+import {
+    missingSourceMapBundle,
+    validSourceMapBundle,
+} from "../unit/SourceMapValidator.test";
 
 describe("BundleLoader", () => {
     const mockFilePath = "mockFilePath";

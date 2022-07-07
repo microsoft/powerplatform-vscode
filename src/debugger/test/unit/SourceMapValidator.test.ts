@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { SourceMapValidator } from "../../SourceMapValidator";
-import {
-    validSourceMapBundle,
-    missingSourceMapBundle,
-    urlSourceMapBundle,
-} from "../helpers";
+
+export const validSourceMapBundle =
+    "/******//******/ })(); //# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9u";
+export const missingSourceMapBundle = "/******//******/ })();";
+export const urlSourceMapBundle = "//# sourceMappingURL=main.js.map";
 
 describe("SourceMapValidator", () => {
     it("should return true if the file contains a source map", () => {
