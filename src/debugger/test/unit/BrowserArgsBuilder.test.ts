@@ -2,8 +2,8 @@ import { BrowserArgsBuilder } from "../../browser/BrowserArgsBuilder";
 
 import { expect } from "chai";
 
-suite("BrowserArgsBuilder", () => {
-    test("with user data dir undefined", () => {
+describe("BrowserArgsBuilder", () => {
+    it("with user data dir undefined", () => {
         const expectedArgs = [
             "--no-first-run",
             "--no-default-browser-check",
@@ -13,7 +13,7 @@ suite("BrowserArgsBuilder", () => {
         expect(args).to.eql(expectedArgs);
     });
 
-    test("with user data dir defined", () => {
+    it("with user data dir defined", () => {
         const expectedArgs = [
             `${BrowserArgsBuilder.userDataDirArg}=/tmp/userDataDir`,
             "--no-first-run",

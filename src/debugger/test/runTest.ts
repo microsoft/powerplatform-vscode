@@ -20,4 +20,4 @@ async function main() {
     }
 }
 
-main();
+exports.main = main;

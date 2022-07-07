@@ -17,6 +17,7 @@ const replace = require("gulp-replace");
 const mocha = require("gulp-mocha");
 const moment = require("moment");
 const gulpWebpack = require("webpack-stream");
+const gulpTs = require("gulp-typescript");
 const webpack = require("webpack");
 const vsce = require("vsce");
 const argv = require("yargs").argv;
@@ -162,34 +163,44 @@ function lint() {
         .pipe(eslint.failAfterError());
 }
 
-function test() {
+function testUnitTests() {
     return gulp
-        .src(
-            [
-                "src/server/test/unit/**/*.ts",
-                "src/client/test/unit/**/*.ts",
-                "src/debugger/test/unit/**/*.ts",
-            ],
-            {
-                read: false,
-            }
-        )
+        .src(["src/server/test/unit/**/*.ts", "src/client/test/unit/**/*.ts"], {
+            read: false,
+        })
         .pipe(
             mocha({
-                require: ["ts-node/register", "vscode"],
+                require: ["ts-node/register"],
                 ui: "bdd",
             })
         );
 }
 
-function testWeb() {
-    return gulp
-        .src(['src/web/client/test/unit/**/*.ts'], { read: false })
-        .pipe(mocha({
-                require: [ "ts-node/register" ],
-                ui: 'bdd'
-            }));
+function compileDebuggerTests() {
+    const tsProject = gulpTs.createProject("tsconfig.json", {
+        // to test puppeteer we need "dom".
+        // since "dom" overlaps with "webworker" we need to overwrite the lib property.
+        // This is a known ts issue (bot being able to have both webworker and dom): https://github.com/microsoft/TypeScript/issues/20595
+        lib: ["es6", "dom"],
+    });
+    return gulp.src(["src/**/*.ts"]).pipe(tsProject()).pipe(gulp.dest("out"));
 }
+
+const testDebugger = gulp.series(compileDebuggerTests, async () => {
+    const testRunner = require("./out/debugger/test/runTest");
+    await testRunner.main();
+});
+
+function testWeb() {
+    return gulp.src(["src/web/client/test/unit/**/*.ts"], { read: false }).pipe(
+        mocha({
+            require: ["ts-node/register"],
+            ui: "bdd",
+        })
+    );
+}
+
+const test = gulp.series(testUnitTests, testWeb, testDebugger);
 
 async function packageVsix() {
     fs.emptyDirSync(packagedir);
@@ -324,7 +335,7 @@ const recompile = gulp.series(
     compileWeb
 );
 
-const dist = gulp.series(recompile, packageVsix, lint, test, testWeb);
+const dist = gulp.series(recompile, packageVsix, lint, test);
 
 const translationExtensionName = "vscode-powerplatform";
 
@@ -434,6 +445,7 @@ exports.snapshot = snapshot;
 exports.lint = lint;
 exports.test = test;
 exports.testWeb = testWeb;
+exports.testDebugger = testDebugger;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;

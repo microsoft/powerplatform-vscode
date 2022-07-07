@@ -2,7 +2,6 @@ import { DebugSession } from "vscode";
 import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import sinon from "sinon";
 import * as vscode from "vscode";
-import * as mocha from "mocha";
 import { Debugger } from "../../debugAdaptor/Debugger";
 import { expect } from "chai";
 import { BrowserManager } from "../../browser/BrowserManager";
@@ -15,7 +14,7 @@ import {
     mockTabbedControlConfiguration,
 } from "../helpers";
 
-suite("Debugger", () => {
+describe("Debugger", () => {
     let instance: Debugger;
     let browserManagerInstance: BrowserManager;
     let attachEdgeDebuggerSpy: sinon.SinonSpy<any, Promise<void>>;
@@ -39,7 +38,7 @@ suite("Debugger", () => {
     let onDebugSessionStartedCallback: (session: DebugSession) => void = () =>
         undefined;
 
-    mocha.after(() => {
+    after(() => {
         fileSystemWatcherStub.restore();
         startDebuggingStub.restore();
         activeDebugSessionStub.restore();
@@ -74,7 +73,7 @@ suite("Debugger", () => {
         return instance;
     };
 
-    mocha.beforeEach(() => {
+    beforeEach(() => {
         startDebuggingStub.reset();
         startDebuggingStub.resetHistory();
         onDidStartDebugSessionStub.reset();
@@ -105,14 +104,14 @@ suite("Debugger", () => {
         expect(instance.hasAttachedDebuggerSession).to.equal(state);
     };
 
-    mocha.describe("starts", () => {
-        test("starts the debugger", async () => {
+    describe("starts", () => {
+        it("starts the debugger", async () => {
             const startDebuggingStub = await mockDebugSessionStart();
             sinon.assert.calledOnce(startDebuggingStub);
             expectDebuggerToBeInState(instance, true);
         });
 
-        test("doesn't restart if already running", async () => {
+        it("doesn't restart if already running", async () => {
             const startDebuggingStub = await mockDebugSessionStart();
             sinon.assert.calledOnce(startDebuggingStub);
             expectDebuggerToBeInState(instance, true);
@@ -121,37 +120,37 @@ suite("Debugger", () => {
             sinon.assert.notCalled(startDebuggingStub);
         });
 
-        test("onBrowserReady starts debugger", () => {
+        it("onBrowserReady starts debugger", () => {
             initializeDebuggerInstance(false, true);
             sinon.assert.calledOnce(startDebuggingStub);
         });
 
-        test("retries starting debugger if it fails", async () => {
+        it("retries starting debugger if it fails", async () => {
             await mockDebugSessionStart(false);
             sinon.assert.calledTwice(attachEdgeDebuggerSpy);
             expectDebuggerToBeInState(instance, false);
         });
 
-        test("throws if started after being disposed", async () => {
+        it("throws if started after being disposed", async () => {
             instance.dispose();
             await expectThrowsAsync(() => instance.attachEdgeDebugger());
         });
     });
 
-    mocha.describe("stops", () => {
+    describe("stops", () => {
         const stopDebuggingStub = sinon
             .stub(vscode.debug, "stopDebugging")
             .resolves();
 
-        mocha.afterEach(() => {
+        afterEach(() => {
             stopDebuggingStub.resetHistory();
         });
 
-        mocha.after(() => {
+        after(() => {
             startDebuggingStub.restore();
         });
 
-        test("disposes if onDidTerminateDebugSession is called", async () => {
+        it("disposes if onDidTerminateDebugSession is called", async () => {
             let invokeOnTerminateDebugSession: (e: DebugSession) => void = () =>
                 undefined;
             const onDidTerminateDebugSessionStub = sinon
@@ -169,7 +168,7 @@ suite("Debugger", () => {
             onDidTerminateDebugSessionStub.restore();
         });
 
-        test("on disconnect message", async () => {
+        it("on disconnect message", async () => {
             await mockDebugSessionStart();
             expectDebuggerToBeInState(instance, true);
 
@@ -181,8 +180,8 @@ suite("Debugger", () => {
         });
     });
 
-    mocha.describe("handleMessage", () => {
-        test("calls launch on initialize command", async () => {
+    describe("handleMessage", () => {
+        it("calls launch on initialize command", async () => {
             const launchSpy = browserManagerInstance.launch as sinon.SinonStub<
                 [],
                 Promise<void>

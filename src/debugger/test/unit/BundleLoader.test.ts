@@ -11,7 +11,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { ErrorReporter } from "../../../common/ErrorReporter";
 
-suite("BundleLoader", () => {
+describe("BundleLoader", () => {
     const mockFilePath = "mockFilePath";
 
     const getOpenTextDocumentMock = (
@@ -31,7 +31,7 @@ suite("BundleLoader", () => {
         };
     };
 
-    test("returns file contents", async () => {
+    it("returns file contents", async () => {
         const instance = new BundleLoader(
             mockFilePath,
             getWorkspaceFolder(),
@@ -43,7 +43,7 @@ suite("BundleLoader", () => {
         expect(fileContents).to.equal(validSourceMapBundle);
     });
 
-    test("warns if no source map", async () => {
+    it("warns if no source map", async () => {
         const reporterSpy = sinon.spy(ErrorReporter, "report");
         const instance = new BundleLoader(
             mockFilePath,
@@ -60,7 +60,7 @@ suite("BundleLoader", () => {
         reporterSpy.restore();
     });
 
-    test("throws error if load fails", () => {
+    it("throws error if load fails", () => {
         const instance = new BundleLoader(
             mockFilePath,
             getWorkspaceFolder(),

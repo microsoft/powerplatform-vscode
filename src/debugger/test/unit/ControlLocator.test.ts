@@ -1,6 +1,5 @@
 import { Page } from "puppeteer-core";
 import sinon from "sinon";
-import * as mocha from "mocha";
 import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import { ControlLocator } from "../../controlLocation";
 import {
@@ -9,7 +8,7 @@ import {
     mockTabbedControlConfiguration,
 } from "../helpers";
 
-suite("ControlLocator", () => {
+describe("ControlLocator", () => {
     const pageGotoStub = sinon.stub();
     const pageWaitForSelectorStub = sinon.stub();
     const pageClickStub = sinon.stub();
@@ -35,13 +34,13 @@ suite("ControlLocator", () => {
         } as unknown as Page;
     };
 
-    mocha.afterEach(() => {
+    afterEach(() => {
         pageGotoStub.resetHistory();
         pageWaitForSelectorStub.resetHistory();
         pageClickStub.resetHistory();
     });
 
-    test("navigates to fullscreen control", async () => {
+    it("navigates to fullscreen control", async () => {
         const expectedUrl =
             "https://ORG_URL.crm.dynamics.com/main.aspx?appid=f96ac8ee-529f-4510-af13-3fe5ff45f2b6&pagetype=control&controlName=ControlName";
         const instance = new ControlLocator(
@@ -55,7 +54,7 @@ suite("ControlLocator", () => {
         sinon.assert.calledWith(pageGotoStub, expectedUrl);
     });
 
-    test("navigates to tab", async () => {
+    it("navigates to tab", async () => {
         const expectedUrl = "https://ORG_URL.crm.dynamics.com/with/path";
         const expectedTabSelector = "li[aria-label='Control Tab']";
         const instance = new ControlLocator(
@@ -70,21 +69,21 @@ suite("ControlLocator", () => {
         sinon.assert.calledWith(pageClickStub, expectedTabSelector);
     });
 
-    mocha.describe("no retry", () => {
+    describe("no retry", () => {
         const instance = new ControlLocator(
             mockTabbedControlConfiguration,
             NoopTelemetryInstance,
             0,
             0
         );
-        test("does not retry goto if retry count is 0", async () => {
+        it("does not retry goto if retry count is 0", async () => {
             const page = getPageMock(false);
 
             await expectThrowsAsync(() => instance.navigateToControl(page));
             sinon.assert.calledOnce(pageGotoStub);
         });
 
-        test("does not retry wait for selector if retry count is 0", async () => {
+        it("does not retry wait for selector if retry count is 0", async () => {
             const page = getPageMock(true, false, false);
 
             await expectThrowsAsync(() => instance.navigateToControl(page));
@@ -92,14 +91,14 @@ suite("ControlLocator", () => {
         });
     });
 
-    mocha.describe("1 retry", () => {
+    describe("1 retry", () => {
         const instance = new ControlLocator(
             mockTabbedControlConfiguration,
             NoopTelemetryInstance,
             0,
             1
         );
-        test("goto fail", async () => {
+        it("goto fail", async () => {
             const page = getPageMock(false);
             await expectThrowsAsync(() => instance.navigateToControl(page));
             sinon.assert.calledTwice(pageGotoStub);
@@ -107,14 +106,14 @@ suite("ControlLocator", () => {
             sinon.assert.notCalled(pageClickStub);
         });
 
-        test("wait for selector fails", async () => {
+        it("wait for selector fails", async () => {
             const page = getPageMock(true, false, false);
             await expectThrowsAsync(() => instance.navigateToControl(page));
             sinon.assert.calledTwice(pageWaitForSelectorStub);
             sinon.assert.notCalled(pageClickStub);
         });
 
-        test("click fails", async () => {
+        it("click fails", async () => {
             const page = getPageMock(true, true, false);
             await expectThrowsAsync(() => instance.navigateToControl(page));
             sinon.assert.calledTwice(pageWaitForSelectorStub);

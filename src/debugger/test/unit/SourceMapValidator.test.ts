@@ -6,16 +6,16 @@ import {
     urlSourceMapBundle,
 } from "../helpers";
 
-suite("SourceMapValidator", () => {
-    test("should return true if the file contains a source map", () => {
+describe("SourceMapValidator", () => {
+    it("should return true if the file contains a source map", () => {
         expect(SourceMapValidator.isValid(validSourceMapBundle)).to.be.true;
     });
 
-    test("should return false if the file does not contain a source map", () => {
+    it("should return false if the file does not contain a source map", () => {
         expect(SourceMapValidator.isValid(missingSourceMapBundle)).to.be.false;
     });
 
-    test("should return false if source map is url", () => {
+    it("should return false if source map is url", () => {
         expect(SourceMapValidator.isValid(urlSourceMapBundle)).to.be.false;
     });
 });

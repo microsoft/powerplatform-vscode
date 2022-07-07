@@ -10,7 +10,7 @@ import {
 } from "../helpers";
 import { BrowserManager } from "../../browser/";
 
-suite("BrowserManager", () => {
+describe("BrowserManager", () => {
     const getInstance = (
         fireBundleIntercepted: boolean,
         fireOnBrowserClose: boolean,
@@ -40,7 +40,7 @@ suite("BrowserManager", () => {
         );
     };
 
-    test("calls onBrowserReady when bundle intercepted", async () => {
+    it("calls onBrowserReady when bundle intercepted", async () => {
         const instance = getInstance(true, false, false, false);
         const browserReadyStub = sinon.spy();
         instance.registerOnBrowserReady(browserReadyStub);
@@ -48,7 +48,7 @@ suite("BrowserManager", () => {
         sinon.assert.calledOnce(browserReadyStub);
     });
 
-    test("calls onBrowserClose when browser closed", async () => {
+    it("calls onBrowserClose when browser closed", async () => {
         const instance = getInstance(false, true, false, false);
         const browserCloseStub = sinon.spy();
         instance.registerOnBrowserClose(browserCloseStub);

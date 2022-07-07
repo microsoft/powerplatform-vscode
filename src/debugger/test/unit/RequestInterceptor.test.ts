@@ -2,16 +2,15 @@ import { RequestInterceptor } from "../../RequestInterceptor";
 import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import { HTTPRequest, Page } from "puppeteer-core";
 import sinon from "sinon";
-import * as mocha from "mocha";
 import { getMockBundleLoader, getRequest } from "../helpers";
 
-suite("RequestInterceptor", () => {
+describe("RequestInterceptor", () => {
     let instance: RequestInterceptor;
     let puppeteerPage: Page;
     const setRequestInterceptionSpy = sinon.spy();
     const mockBundleContents = "mock bundle contents";
 
-    mocha.beforeEach(() => {
+    beforeEach(() => {
         instance = new RequestInterceptor(
             getMockBundleLoader(mockBundleContents),
             NoopTelemetryInstance
@@ -25,20 +24,20 @@ suite("RequestInterceptor", () => {
         setRequestInterceptionSpy.resetHistory();
     });
 
-    mocha.describe("register", () => {
-        test("should set setRequestInterception to true on register", async () => {
+    describe("register", () => {
+        it("should set setRequestInterception to true on register", async () => {
             await instance.register(puppeteerPage, () => undefined);
             sinon.assert.calledWith(setRequestInterceptionSpy, true);
         });
 
-        test("should not register twice", async () => {
+        it("should not register twice", async () => {
             await instance.register(puppeteerPage, () => undefined);
             await instance.register(puppeteerPage, () => undefined);
             sinon.assert.calledOnce(setRequestInterceptionSpy);
         });
     });
 
-    mocha.describe("onRequest", () => {
+    describe("onRequest", () => {
         const doMockRequestForUrl = async (
             url: string,
             method: string,
@@ -64,7 +63,7 @@ suite("RequestInterceptor", () => {
             onRequestCallback(request);
         };
 
-        test("responds with local bundle if request for bundle", async () => {
+        it("responds with local bundle if request for bundle", async () => {
             const requestRespondSpy = sinon.spy();
             const requestContinueSpy = sinon.spy();
             await doMockRequestForUrl(
@@ -82,7 +81,7 @@ suite("RequestInterceptor", () => {
             });
         });
 
-        test("calls onRequestIntercepted on bundle interception", async () => {
+        it("calls onRequestIntercepted on bundle interception", async () => {
             const requestInterceptedSpy = sinon.spy();
             await doMockRequestForUrl(
                 "https://someOrg.com/webresources/publisher.ControlName/bundle.js",
@@ -95,7 +94,7 @@ suite("RequestInterceptor", () => {
             sinon.assert.calledOnce(requestInterceptedSpy);
         });
 
-        test("continues if not bundle", async () => {
+        it("continues if not bundle", async () => {
             const requestRespondSpy = sinon.spy();
             const requestContinueSpy = sinon.spy();
             await doMockRequestForUrl(
@@ -109,7 +108,7 @@ suite("RequestInterceptor", () => {
             sinon.assert.calledOnce(requestContinueSpy);
         });
 
-        test("continues if not GET request", async () => {
+        it("continues if not GET request", async () => {
             const requestRespondSpy = sinon.spy();
             const requestContinueSpy = sinon.spy();
             await doMockRequestForUrl(
