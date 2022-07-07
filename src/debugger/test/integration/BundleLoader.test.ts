@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
 import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import { BundleLoader } from "../../BundleLoader";
 import { expectThrowsAsync, getWorkspaceFolder } from "../helpers";

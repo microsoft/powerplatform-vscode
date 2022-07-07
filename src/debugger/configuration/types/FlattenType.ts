@@ -1,11 +1,13 @@
 /*
  * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
 /**
  * Primitives for flattening a type.
  */
 type Primitive = string | number | boolean | undefined;
+
 /**
  * Creates key-value tuples out of a given object.
  */
