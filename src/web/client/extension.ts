@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
 import { dataverseAuthentication } from "./common/authenticationProvider";
+import { setLocalStore } from "./common/localStore";
 let _telemetry: TelemetryReporter;
 
 
@@ -37,8 +38,8 @@ export function activate(context: vscode.ExtensionContext): void {
                 const { appName, entity, entityId, searchParams } = args
                 const queryParamsMap = new Map<string, string>();
                 try {
-                    if(searchParams != null && searchParams != undefined)
-                    {   const queryParams = new URLSearchParams(searchParams);
+                    if (searchParams) {
+                        const queryParams = new URLSearchParams(searchParams);
                         for (const pair of queryParams.entries()) {
                             queryParamsMap.set(pair[0], pair[1]);
                         }
@@ -48,7 +49,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     vscode.window.showErrorMessage("Error encountered in query parameters fetch");
                 }
                 let accessToken;
-                if (appName != null && appName != undefined) {
+                if (appName) {
                     switch (appName) {
                         case 'portal':
                         case 'default':
@@ -56,6 +57,9 @@ export function activate(context: vscode.ExtensionContext): void {
                             if (!accessToken) {
                                 vscode.window.showErrorMessage("Authentication to dataverse failed!, Please retry...");
                             }
+                            console.log(accessToken)
+                            // set local storage for language and website data
+                            setLocalStore(accessToken, queryParamsMap.get('orgUrl'))
                             break;
 
                         default:
