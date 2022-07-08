@@ -60,7 +60,6 @@ export function activate(context: vscode.ExtensionContext): void {
                             // set local storage for language and website data
                             setContext(accessToken, queryParamsMap.get('orgUrl'))
                             break;
-setContext
                         default:
                             vscode.window.showInformationMessage('Unknown app, Please add authentication flow for this app');
                     }

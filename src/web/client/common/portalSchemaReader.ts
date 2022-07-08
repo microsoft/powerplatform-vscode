@@ -7,12 +7,12 @@
 import { portal_schema_data } from "./portalSchema";
 
 export function readSchema() {
-    // this will be reading all schema related enitties like - dataSourceproperties, fields, field , relationship
+    // this will be reading all schema related entities like - dataSourceproperties, entities, fields, field , relationship
     return getDataSourcePropertiesMap()
 }
 
 export function getDataSourcePropertiesMap() {
-    const dataSourcePropertie: { [key: string]: string } = portal_schema_data.entities.dataSourceProperties[0]
+    const dataSourcePropertie: { [key: string]: string } = portal_schema_data.entities.dataSourceProperties
     const dataSourcePropertieMap = new Map<string, string>()
     const keys = Object.keys(dataSourcePropertie);
     keys.forEach(key => {
@@ -20,4 +20,3 @@ export function getDataSourcePropertiesMap() {
     });
     return dataSourcePropertieMap;
 }
-
