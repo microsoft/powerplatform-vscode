@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
 import { dataverseAuthentication } from "./common/authenticationProvider";
-import { setLocalStore } from "./common/localStore";
+import { setContext } from "./common/localStore";
 let _telemetry: TelemetryReporter;
 
 
@@ -58,9 +58,9 @@ export function activate(context: vscode.ExtensionContext): void {
                                 vscode.window.showErrorMessage("Authentication to dataverse failed!, Please retry...");
                             }
                             // set local storage for language and website data
-                            setLocalStore(accessToken, queryParamsMap.get('orgUrl'))
+                            setContext(accessToken, queryParamsMap.get('orgUrl'))
                             break;
-
+setContext
                         default:
                             vscode.window.showInformationMessage('Unknown app, Please add authentication flow for this app');
                     }

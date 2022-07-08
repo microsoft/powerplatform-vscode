@@ -21,15 +21,14 @@ export async function languageIdtoCodeMap(accessToken: string, dataverseOrg: any
 
     try {
         const requestUrl = getCustomRequestURL(dataverseOrg, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY);
-        const req = await fetch(requestUrl, {
+        const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
 
-        if (!req.ok) {
-            const options = { detail: 'Auth failed in language id code', modal: true };
-            vscode.window.showErrorMessage("Language code fetch failed", options);
+        if (!response.ok) {
+            showErrorDialog("Fetch of adx_languages failed, check authorization ", "Network failure");
         }
-        const res = await req.json();
+        const res = await response.json();
         if (res) {
             if (res.value.length > 0) {
                 for (let counter = 0; counter < res.value.length; counter++) {
@@ -40,15 +39,23 @@ export async function languageIdtoCodeMap(accessToken: string, dataverseOrg: any
             }
         }
     } catch (e: any) {
-        if (e.message === 'Unauthorized') {
-            const options = { detail: 'Auth failed in language id code', modal: true };
-            vscode.window.showErrorMessage("Language code fetch failed", options);
+        if (e.message.includes('Unauthorized')) {
+            showErrorDialog("Auth failed in language id code","Language code fetch failed");
         }
-        throw e;
+        else
+        {
+            showErrorDialog("Error processing the adx_languages response","Language code response failure");
+            throw e;
+        }
     }
     return { languageIdCodeMap };
 }
 
+
+function showErrorDialog(detailMessaage: string, errorString: string) {
+    const options = { detail: detailMessaage, modal: true };
+    vscode.window.showErrorMessage(errorString, options);
+}
 
 function getCustomRequestURL(dataverseOrg: any, entity: string, urlquery: string) {
     const parameterizedUrl = orgMap.get(urlquery) as string;
@@ -60,14 +67,13 @@ export async function websiteIdtoLanguageMap(accessToken: string, dataverseOrg: 
 
     try {
         const requestUrl = getCustomRequestURL(dataverseOrg, WEBSITE_LANGUAGES, WEBSITE_LANGUAGES_URL_KEY);
-        const req = await fetch(requestUrl, {
+        const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
-        if (!req.ok) {
-            const options = { detail: 'Fetch of website language', modal: true };
-            vscode.window.showErrorMessage("Fetch of website language failed", options);
-        }
-        const res = await req.json();
+        if (!response.ok) {
+            showErrorDialog("Fetch of adx_websitelanguages failed, check authorization ", "Network failure");
+           }
+        const res = await response.json();
         if (res) {
             if (res.value.length > 0) {
                 for (let counter = 0; counter < res.value.length; counter++) {
@@ -79,11 +85,14 @@ export async function websiteIdtoLanguageMap(accessToken: string, dataverseOrg: 
         }
 
     } catch (e: any) {
-        if (e.message === 'Unauthorized') {
-            const options = { detail: 'Authotization Failed', modal: true };
-            vscode.window.showErrorMessage("Fetch of website language failed due to invalid accesstoken", options);
+        if (e.message.includes('Unauthorized')) {
+            showErrorDialog("Auth failed in websitelanguage fetch","Website language fetch failed");
         }
-        throw e;
+        else
+        {
+            showErrorDialog("Error processing the adx_websitelanguages response","WebsiteLanguage code response failure");
+            throw e;
+        }
     }
     return { websiteIdtoLanguage };
 }
@@ -92,14 +101,13 @@ export async function webpagestowebpagesIdMap(accessToken: string, dataverseOrg:
 
     try {
         const requestUrl = getCustomRequestURL(dataverseOrg, WEBPAGES, WEBPAGEID_URL_KEY);
-        const req = await fetch(requestUrl, {
+        const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
-        if (!req.ok) {
-            const options = { detail: 'Authorization Failed', modal: true };
-            vscode.window.showErrorMessage("Fetch of website ID failed due to invalid accesstoken", options);
+        if (!response.ok) {
+            showErrorDialog("Fetch of adx_webpagesid failed, check authorization ", "Network failure");
         }
-        const res = await req.json();
+        const res = await response.json();
 
         if (res) {
             if (res.value.length > 0) {
@@ -112,16 +120,19 @@ export async function webpagestowebpagesIdMap(accessToken: string, dataverseOrg:
         }
 
     } catch (e: any) {
-        if (e.message === 'Unauthorized') {
-            const options = { detail: 'Authorization Failed', modal: true };
-            vscode.window.showErrorMessage("Fetch of website Id failed due to invalid accesstoken", options);
+        if (e.message.includes('Unauthorized')) {
+            showErrorDialog("Auth failed in adx_webpagesid fetch","Webpages fetch failed");
         }
-        throw e;
+        else
+        {
+            showErrorDialog("Error processing the adx_webpagesid response","Webpages code response failure");
+            throw e;
+        }
     }
     return { webpagestowebpagesId };
 }
 
-export async function setLocalStore(accessToken: any, dataverseOrg: any) {
+export async function setContext(accessToken: any, dataverseOrg: any) {
     orgMap = readSchema();
     ({ websiteIdtoLanguage } = await websiteIdtoLanguageMap(accessToken, dataverseOrg, WEBSITE_LANGUAGES));
     ({ languageIdCodeMap } = await languageIdtoCodeMap(accessToken, dataverseOrg, PORTAL_LANGUAGES));

@@ -7,26 +7,17 @@
 import { portal_schema_data } from "./portalSchema";
 
 export function readSchema() {
-    return getOrganizationMap()
+    // this will be reading all schema related enitties like - dataSourceproperties, fields, field , relationship
+    return getDataSourcePropertiesMap()
 }
 
-export function getSchemaMapForEntities() {
-    const organizationMap = new Map<string, string>();
-    for (const pair in portal_schema_data.entities.entity.entries()) {
-        console.log(pair[0], "key, value", pair[1])
-        organizationMap.set(pair[0], pair[1])
-    }
-    return organizationMap
-}
-
-export function getOrganizationMap() {
-    const orgArray: { [key: string]: string } = portal_schema_data.entities.organization[0]
-    const orgMap = new Map<string, string>()
-    const keys = Object.keys(orgArray);
+export function getDataSourcePropertiesMap() {
+    const dataSourcePropertie: { [key: string]: string } = portal_schema_data.entities.dataSourceProperties[0]
+    const dataSourcePropertieMap = new Map<string, string>()
+    const keys = Object.keys(dataSourcePropertie);
     keys.forEach(key => {
-        console.log(key + '|' + orgArray[key] as string);
-        orgMap.set(key, orgArray[key] as string);
+        dataSourcePropertieMap.set(key, dataSourcePropertie[key] as string);
     });
-    return orgMap;
+    return dataSourcePropertieMap;
 }
 

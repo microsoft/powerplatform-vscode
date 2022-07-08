@@ -1,6 +1,6 @@
 export const portal_schema_data = {
     "entities":{
-       "organization":[
+       "dataSourceProperties":[
           {
              "api":"api",
              "data":"data",
