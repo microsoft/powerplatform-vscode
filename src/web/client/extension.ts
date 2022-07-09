@@ -8,18 +8,20 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
 import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
+import { PORTALSURISCHEME } from "./common/constants";
+import { PortalsFS } from "./common/fileSystemProvider";
 let _telemetry: TelemetryReporter;
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export function activate(context: vscode.ExtensionContext): void {
-    console.log("Activated web extension!");
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
     context.subscriptions.push(_telemetry);
     _telemetry.sendTelemetryEvent("Start");
     _telemetry.sendTelemetryEvent("activated");
+    const portalsFS = new PortalsFS();
+    context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALSURISCHEME, portalsFS, { isCaseSensitive: true }));
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -33,7 +35,6 @@ export function activate(context: vscode.ExtensionContext): void {
                     vscode.window.showErrorMessage('Appname and query params missing, Please retry...');
                     return;
                 }
-
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { appName, entity, entityId, searchParams } = args
                 const queryParamsMap = new Map<string, string>();
@@ -57,13 +58,11 @@ export function activate(context: vscode.ExtensionContext): void {
                             if (!accessToken) {
                                 vscode.window.showErrorMessage("Authentication to dataverse failed!, Please retry...");
                             }
-                            // set local storage for language and website data
-                            setContext(accessToken, queryParamsMap.get('orgUrl'))
+                            setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
                             break;
                         default:
                             vscode.window.showInformationMessage('Unknown app, Please add authentication flow for this app');
                     }
-
                 } else {
                     vscode.window.showErrorMessage("Please specify the appName");
                 }
@@ -75,7 +74,6 @@ export function activate(context: vscode.ExtensionContext): void {
 export async function deactivate(): Promise<void> {
     if (_telemetry) {
         _telemetry.sendTelemetryEvent("End");
-
         // dispose() will flush any events not sent
         // Note, while dispose() returns a promise, we don't await it so that we can unblock the rest of unloading logic
         _telemetry.dispose();
