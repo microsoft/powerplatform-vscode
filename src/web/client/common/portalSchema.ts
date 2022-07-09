@@ -1,7 +1,7 @@
-/*
+/* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
- */
+ * ------------------------------------------------------------------------------------------ */
 
 export const portal_schema_data = {
     "entities": {
@@ -9,15 +9,8 @@ export const portal_schema_data = {
             api: "api",
             data: "data",
             version: "v9.1",
-            fetchUrlSingleEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
-            fetchUrlForEntityRoot: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}",
-            saveUrlSingleEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
-            fetchUrlMultiEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}",
-            saveUrlMultiEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
-            requestUrlForportalLanguage: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_portallanguageid,adx_languagecode",
-            requestUrlForWebsiteId: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_name,adx_webpageid",
-            requestUrlForWebtemplates: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=$select=adx_name,adx_webtemplateid",
-            requestUrlForWebsitelanguage: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_websitelanguageid,_adx_portallanguageid_value"
+            singleEntityURL: "https://{dataverseOrgUrl}/{api}/{data}/{version}/{entity}({entityId})",
+            multiEntityURL: "https://{dataverseOrgUrl}/{api}/{data}/{version}/{entity}"
         },
         "entity": [
             {
@@ -120,7 +113,8 @@ export const portal_schema_data = {
                 "_disableplugins": "true",
                 "_foldername": "",
                 "_propextension": "website",
-                "_exporttype": "SingleFolder"
+                "_exporttype": "SingleFolder",
+                "_query": "?$select=adx_name,adx_websiteid,adx_website_language"
             },
             {
                 "fields": {
@@ -258,7 +252,8 @@ export const portal_schema_data = {
                 "_downloadThroughChild": "true",
                 "_foldername": ".portalconfig",
                 "_propextension": "portallanguage",
-                "_exporttype": "SingleFile"
+                "_exporttype": "SingleFile",
+                "_query": "?$select=adx_portallanguageid,adx_languagecode"
             },
             {
                 "fields": {
@@ -598,7 +593,8 @@ export const portal_schema_data = {
                 "_exporttype": "SubFolders",
                 "_languagefield": "adx_webpagelanguageid",
                 "_languagegroupby": "adx_rootwebpageid",
-                "_query": "?$select=adx_name,adx_webpageid"
+                "_query": "?$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
+                "_attributes": "adx_customcss,adx_customjavascript,adx_copy,adx_name"
             },
             {
                 "fields": {
@@ -773,7 +769,9 @@ export const portal_schema_data = {
                 "_disableplugins": "true",
                 "_foldername": "web-files",
                 "_propextension": "webfile",
-                "_exporttype": "SingleFolder"
+                "_exporttype": "SingleFolder",
+                "_query": "?$select=adx_partialurl,adx_name",
+                "_attributes": ""
             },
             {
                 "fields": {
@@ -1388,7 +1386,8 @@ export const portal_schema_data = {
                 "_foldername": "web-templates",
                 "_propextension": "webtemplate",
                 "_exporttype": "SubFolders",
-                "_query": "?$select=adx_name,adx_webtemplateid"
+                "_query": "?$select=adx_name,adx_webtemplateid",
+                "_attributes": "adx_copy,adx_source"
             },
             {
                 "fields": {

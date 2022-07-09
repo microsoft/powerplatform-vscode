@@ -6,99 +6,136 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-'use strict';
-import * as vscode from "vscode";
 import { getHeader } from "./authenticationProvider";
-import { PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY, PORTAL_LANGUAGE_DEFAULT, WEBSITE_LANGUAGES, WEBSITE_LANGUAGES_URL_KEY } from "./constants";
-import { getDataSourcePropertiesMap } from "./portalSchemaReader";
+import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES } from "./constants";
+import { getDataSourcePropertiesMap, getEntitiesSchemaMap } from "./portalSchemaReader";
+import { ERRORS, showErrorDialog } from "./errorHandler";
+import { getDataFromDataVerse } from "./remoteFetchProvider";
+import { PortalsFS } from "./fileSystemProvider";
+import { createFileSystem } from "./createFileSystem";
 
 let dataSourcePropertiesMap = new Map();
+let entitiesSchemaMap = new Map();
 let languageIdCodeMap = new Map();
-let websiteIdtoLanguage = new Map();
+let websiteLanguageIdToPortalLanguageMap = new Map();
+let websiteIdToLanguage = new Map();
+const portalDetailsMap = new Map();
 
-
-export async function languageIdtoCodeMap(accessToken: string, dataverseOrg: any, entity: string) {
+export async function languageIdToCode(accessToken: string, dataverseOrgURL: string, entity: string, entitiesSchemaMap: any): Promise<Map<string, any>> {
 
     try {
-        const requestUrl = getCustomRequestURL(dataverseOrg, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY);
+        const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
-
         if (!response.ok) {
-            showErrorDialog("Fetch of adx_languages failed, check authorization ", "Network failure");
+            showErrorDialog(ERRORS.NOT_FOUND, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
         }
-        const res = await response.json();
-        if (res) {
-            if (res.value.length > 0) {
-                for (let counter = 0; counter < res.value.length; counter++) {
-                    const adx_portallanguageid = res.value[counter].adx_portallanguageid ? res.value[counter].adx_portallanguageid : PORTAL_LANGUAGE_DEFAULT;
-                    const value = res.value[counter].adx_portallanguageid;
-                    languageIdCodeMap.set(adx_portallanguageid, value);
+        const result = await response.json();
+        if (result) {
+            if (result.value.length > 0) {
+                for (let counter = 0; counter < result.value.length; counter++) {
+                    const adx_portallanguageid = result.value[counter].adx_portallanguageid ? result.value[counter].adx_portallanguageid : PORTAL_LANGUAGE_DEFAULT;
+                    const adx_languagecode = result.value[counter].adx_languagecode;
+                    languageIdCodeMap.set(adx_portallanguageid, adx_languagecode);
                 }
             }
         }
     } catch (e: any) {
         if (e.message.includes('Unauthorized')) {
-            showErrorDialog("Auth failed in language id code", "Language code fetch failed");
+            showErrorDialog(ERRORS.AUTHORIZATION_FAILED, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
         }
         else {
-            showErrorDialog("Error processing the adx_languages response", "Language code response failure");
-            throw e;
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
         }
     }
-    return { languageIdCodeMap };
+    return languageIdCodeMap;
 }
 
-
-function showErrorDialog(detailMessaage: string, errorString: string) {
-    const options = { detail: detailMessaage, modal: true };
-    vscode.window.showErrorMessage(errorString, options);
-}
-
-function getCustomRequestURL(dataverseOrg: any, entity: string, urlquery: string) {
-    const parameterizedUrl = dataSourcePropertiesMap.get(urlquery) as string;
-    const requestUrl = parameterizedUrl.replace('{dataverseOrg}', dataverseOrg).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
-    return requestUrl;
-}
-
-export async function websiteIdtoLanguageMap(accessToken: string, dataverseOrg: string, entity: string) {
-
+export async function websiteLanguageIdToPortalLanguage(accessToken: string, dataverseOrgURL: string, entity: any, entitiesSchemaMap: any): Promise<Map<string, any>> {
     try {
-        const requestUrl = getCustomRequestURL(dataverseOrg, WEBSITE_LANGUAGES, WEBSITE_LANGUAGES_URL_KEY);
+        const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
-            showErrorDialog("Fetch of adx_websitelanguages failed, check authorization ", "Network failure");
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
         }
         const res = await response.json();
         if (res) {
             if (res.value.length > 0) {
                 for (let counter = 0; counter < res.value.length; counter++) {
-                    const adx_portallanguageid = res.value[counter].adx_portallanguageid ? res.value[counter].adx_portallanguageid : PORTAL_LANGUAGE_DEFAULT;
-                    const value = res.value[counter].adx_languagecode;
-                    websiteIdtoLanguage.set(adx_portallanguageid, value);
+                    const adx_portalLanguageId_value = res.value[counter].adx_portallanguageid_value ? res.value[counter].adx_portallanguageid_value : PORTAL_LANGUAGE_DEFAULT;
+                    const adx_websiteLanguageId = res.value[counter].adx_websitelanguageid;
+                    websiteLanguageIdToPortalLanguageMap.set(adx_websiteLanguageId, adx_portalLanguageId_value);
+                }
+            }
+        }
+    } catch (e: any) {
+        if (e.message.includes('Unauthorized')) {
+            showErrorDialog(ERRORS.AUTHORIZATION_FAILED, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
+        }
+        else {
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
+        }
+    }
+    return websiteLanguageIdToPortalLanguageMap;
+}
+
+function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string, entitiesSchemaMap: any): string {
+    const parameterizedUrl = dataSourcePropertiesMap.get(urlQuery) as string;
+    const query = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get("_query");
+    const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
+    return requestUrl + query;
+}
+
+export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUrl: string, entitiesSchemaMap: any): Promise<Map<string, string>> {
+    try {
+        const requestUrl = getCustomRequestURL(dataverseOrgUrl, WEBSITES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
+        const response = await fetch(requestUrl, {
+            headers: getHeader(accessToken),
+        });
+        if (!response.ok) {
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
+        }
+        const result = await response.json();
+        if (result) {
+            if (result.value.length > 0) {
+                for (let counter = 0; counter < result.value.length; counter++) {
+                    const adx_websiteId = result.value[counter].adx_websiteid ? result.value[counter].adx_websiteid : null;
+                    const adx_website_language = result.value[counter].adx_website_language;
+                    websiteIdToLanguage.set(adx_websiteId, adx_website_language);
                 }
             }
         }
 
     } catch (e: any) {
         if (e.message.includes('Unauthorized')) {
-            showErrorDialog("Auth failed in websitelanguage fetch", "Website language fetch failed");
+            showErrorDialog(ERRORS.AUTHORIZATION_FAILED, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
         }
         else {
-            showErrorDialog("Error processing the adx_websitelanguages response", "WebsiteLanguage code response failure");
-            throw e;
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
         }
     }
-    return { websiteIdtoLanguage };
+    return websiteIdToLanguage;
 }
 
-export async function setContext(accessToken: any, dataverseOrg: any) {
+
+export async function setContext(accessToken: string, pathEntity: string, entityId: string, queryParamsMap: any, portalsFS: PortalsFS) {
+    const entity = pathParamToSchema.get(pathEntity) as string;
+    const dataverseOrgUrl = queryParamsMap.get(ORG_URL);
     dataSourcePropertiesMap = getDataSourcePropertiesMap();
-    ({ websiteIdtoLanguage } = await websiteIdtoLanguageMap(accessToken, dataverseOrg, WEBSITE_LANGUAGES));
-    ({ languageIdCodeMap } = await languageIdtoCodeMap(accessToken, dataverseOrg, PORTAL_LANGUAGES));
+    entitiesSchemaMap = getEntitiesSchemaMap();
+    websiteIdToLanguage = await websiteIdToLanguageMap(accessToken, dataverseOrgUrl, entitiesSchemaMap);
+    websiteLanguageIdToPortalLanguageMap = await websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl, WEBSITE_LANGUAGES, entitiesSchemaMap);
+    languageIdCodeMap = await languageIdToCode(accessToken, queryParamsMap.get(ORG_URL), entity, entitiesSchemaMap);
+    createEntityFiles(portalsFS, accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap);
 }
 
-export { dataSourcePropertiesMap, websiteIdtoLanguage, languageIdCodeMap };
+function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any) {
+    createFileSystem(portalsFS)
+    getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS);
+}
+
+export { dataSourcePropertiesMap, entitiesSchemaMap, websiteIdToLanguage, websiteLanguageIdToPortalLanguageMap, languageIdCodeMap, portalDetailsMap };
+
