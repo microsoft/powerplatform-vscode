@@ -51,15 +51,16 @@ export function activate(context: vscode.ExtensionContext): void {
                     vscode.window.showErrorMessage("Error encountered in query parameters fetch");
                 }
                 let accessToken;
-                let dataverseOrg;
+                let dataverseOrgUrl;
                 if (appName) {
                     switch (appName) {
                         case 'portal':
                         case 'default':
-                            dataverseOrg = queryParamsMap.get(ORG_URL) as string;
-                            checkString(dataverseOrg);
+                            dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
+                            checkString(dataverseOrgUrl);
                             checkMap(queryParamsMap);
-                            accessToken = await dataverseAuthentication(dataverseOrg);
+                            checkString(entity);
+                            accessToken = await dataverseAuthentication(dataverseOrgUrl);
                             if (!accessToken) {
                                 {
                                     showErrorDialog("Error intializing the platform", "Authentication to dataverse failed!, Please retry...");

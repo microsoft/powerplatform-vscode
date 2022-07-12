@@ -17,10 +17,10 @@ export function getHeader(accessToken: string) {
     };
 }
 
-export async function dataverseAuthentication(dataverseOrg: string): Promise<string> {
+export async function dataverseAuthentication(dataverseOrgURL: string): Promise<string> {
     let accessToken = '';
     try {
-        const session = await vscode.authentication.getSession("microsoft", ["https://" + dataverseOrg + "//.default"], { createIfNone: true });
+        const session = await vscode.authentication.getSession("microsoft", ["https://" + dataverseOrgURL + "//.default"], { createIfNone: true });
         accessToken = session.accessToken;
     } catch (e: any) {
         vscode.window.showErrorMessage("Authentication to dataverse failed!, Please retry...");

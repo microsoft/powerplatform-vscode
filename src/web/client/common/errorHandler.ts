@@ -13,12 +13,12 @@ export function showErrorDialog(detailMessaage: string, errorString: string) {
 
 export function checkString(s: any) {
     if (typeof (s) !== 'string' && s !== undefined) {
-        showErrorDialog("Error intializing", "Mandatory parameters cannot be null");
+        showErrorDialog("Error intializing..", "Mandatory parameters cannot be null");
     }
 }
 
 export function checkMap(d: any) {
     if (d.size == 0 || d === undefined) {
-        showErrorDialog("Error intializing", "query parameters cannot be null");
+        showErrorDialog("Error intializing..", "Query parameters cannot be null");
     }
 }

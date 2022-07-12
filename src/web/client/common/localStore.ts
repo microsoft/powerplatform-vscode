@@ -6,7 +6,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { getHeader } from "./authenticationProvider";
-import { FETCH_URL_ENTITY_ROOT, ORG_URL, pathparam_schemaMap, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY, PORTAL_LANGUAGE_DEFAULT, WEBPAGEID_URL_KEY, WEBPAGES, WEBSITEID_LANGUAGE, WEBSITE_LANGUAGES, WEBSITE_LANGUAGES_URL_KEY } from "./constants";
+import { MULTI_ENTITY_URL_KEY, ORG_URL, pathparam_schemaMap, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { showErrorDialog } from "./errorHandler";
 import { getDataFromDataVerse } from "./remoteFetchProvider";
@@ -20,10 +20,10 @@ let websitelanguageIdtoportalLanguageMap = new Map();
 let websiteIdtoLanguage = new Map();
 const portalDetailsMap = new Map();
 
-export async function languageIdtoCode(accessToken: string, dataverseOrg: string, entity: string): Promise<Map<string, any>> {
+export async function languageIdtoCode(accessToken: string, dataverseOrgURL: string, entity: string): Promise<Map<string, any>> {
 
     try {
-        const requestUrl = getCustomRequestURL(dataverseOrg, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY); const response = await fetch(requestUrl, {
+        const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY); const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
 
@@ -51,9 +51,9 @@ export async function languageIdtoCode(accessToken: string, dataverseOrg: string
     return languageIdCodeMap;
 }
 
-export async function websitelanguageIdtoportalLanguage(accessToken: string, dataverseOrg: string, entity: any): Promise<Map<string, any>> {
+export async function websitelanguageIdtoportalLanguage(accessToken: string, dataverseOrgURL: string, entity: any): Promise<Map<string, any>> {
     try {
-        const requestUrl = getCustomRequestURL(dataverseOrg, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY);
+        const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY);
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
@@ -87,15 +87,14 @@ function getCustomRequestURL(dataverseOrg: string, entity: string, urlQuery: str
     return requestUrl;
 }
 
-export async function websiteIdtoLanguageMap(accessToken: string, dataverseOrg: string, entity: string): Promise<Map<string, string>> {
+export async function websiteIdtoLanguageMap(accessToken: string, dataverseOrg: string): Promise<Map<string, string>> {
     try {
-        const requestUrl = getCustomRequestURL(dataverseOrg, WEBSITEID_LANGUAGE, FETCH_URL_ENTITY_ROOT);
+        const requestUrl = getCustomRequestURL(dataverseOrg, WEBSITES, MULTI_ENTITY_URL_KEY);
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
-
         if (!response.ok) {
-            showErrorDialog("Fetch of adx_websitess failed, check authorization ", "Network failure");
+            showErrorDialog("Fetch of adx_websites failed, check authorization ", "Network failure");
         }
         const res = await response.json();
         if (res) {
@@ -125,7 +124,7 @@ export async function setContext(accessToken: any, pathEntity: string, entityId:
     const orgUrl = queryParamsMap.get(ORG_URL);
     dataSourcePropertiesMap = getDataSourcePropertiesMap();
     entitiesSchemaMap = getEntitiesSchemaMap();
-    websiteIdtoLanguage = await websiteIdtoLanguageMap(accessToken, orgUrl, WEBSITEID_LANGUAGE);
+    websiteIdtoLanguage = await websiteIdtoLanguageMap(accessToken, orgUrl);
     websitelanguageIdtoportalLanguageMap = await websitelanguageIdtoportalLanguage(accessToken, orgUrl, WEBSITE_LANGUAGES);
     languageIdCodeMap = await languageIdtoCode(accessToken, queryParamsMap.get('orgUrl'), PORTAL_LANGUAGES);
     createEntityFiles(portalsFS, accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap);

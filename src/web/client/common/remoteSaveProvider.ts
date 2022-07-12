@@ -14,7 +14,7 @@ export async function saveData(accessToken: string, requestUrl: string, fileUri:
         return undefined;
     }
     const field = saveDataMap.get(fileUri);
-    const data = {[field] : value};
+    const data = { [field]: value };
     requestBody = JSON.stringify(data);
 
     if (requestBody) {

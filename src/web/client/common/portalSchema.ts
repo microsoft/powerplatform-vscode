@@ -9,11 +9,8 @@ export const portal_schema_data = {
             api: "api",
             data: "data",
             version: "v9.1",
-            fetchUrlSingleEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
-            fetchUrlForEntityRoot: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}",
-            saveUrlSingleEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
-            fetchUrlMultiEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}",
-            saveUrlMultiEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
+            singleEntityURL: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
+            multiEntityURL: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}",
             requestUrlForportalLanguage: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_portallanguageid,adx_languagecode",
             requestUrlForWebsiteId: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_name,adx_webpageid",
             requestUrlForWebtemplates: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=$select=adx_name,adx_webtemplateid",
@@ -599,7 +596,7 @@ export const portal_schema_data = {
                 "_languagefield": "adx_webpagelanguageid",
                 "_languagegroupby": "adx_rootwebpageid",
                 "_query": "?$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
-                "_attributes": "adx_customcss,adx_customjs,adx_copy,adx_name"
+                "_attributes": "adx_customcss,adx_customjavascript,adx_copy,adx_name"
             },
             {
                 "fields": {
