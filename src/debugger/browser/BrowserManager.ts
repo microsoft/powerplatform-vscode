@@ -15,7 +15,7 @@ import { BrowserLocator } from "./BrowserLocator";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 import { BrowserArgsBuilder } from "./BrowserArgsBuilder";
-import { Disposable, window } from "vscode";
+import { Disposable } from "vscode";
 
 /**
  * Callback that is invoked by the {@link BrowserManager browser manager} when the browser is closed.
@@ -114,12 +114,6 @@ export class BrowserManager implements Disposable {
         };
         this.logger.sendTelemetryEvent("BrowserManager.launch", telemetryProps);
 
-        if (this.browserInstance) {
-            // try to open a new tab with an existing browser instance
-            await this.attachToExistingBrowser(this.browserInstance);
-            return;
-        }
-
         const browser = await this.getBrowser();
         const pages = await browser.pages();
 
@@ -148,41 +142,6 @@ export class BrowserManager implements Disposable {
                 true
             );
             throw new Error(message);
-        }
-    }
-
-    // TODO: verify this works
-    /**
-     * Creates a new page within an existing browser instance if user agrees.
-     * @param browser Existing browser instance.
-     * @returns Page instance.
-     */
-    private async attachToExistingBrowser(
-        browser: Browser
-    ): Promise<Page | undefined> {
-        // ask the user if they want to attach to an existing browser
-        const userAnswer = await window.showInformationMessage(
-            "There is an existing instance running. Do you want to open a new tab or cancel?",
-            "Yes",
-            "Cancel"
-        );
-
-        if (userAnswer !== "Yes") {
-            return;
-        }
-
-        try {
-            const page = await browser.newPage();
-            await this.registerPage(page);
-            return page;
-        } catch (error) {
-            ErrorReporter.report(
-                this.logger,
-                "BrowserManager.attachToExistingBrowser",
-                error,
-                "Could not register page."
-            );
-            throw error;
         }
     }
 
