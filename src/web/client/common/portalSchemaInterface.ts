@@ -28,6 +28,7 @@ export interface Entity {
     _topcount?: string | null;
     _syncdirection?: string | null;
     _query?: string | null;
+    _attributes?: string | null;
 }
 
 export interface WebsiteDetails {

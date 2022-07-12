@@ -8,8 +8,9 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
 import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
-import { PORTALSURISCHEME } from "./common/constants";
+import { ORG_URL, PORTALSURISCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
+import { checkMap, checkString, showErrorDialog } from "./common/errorHandler";
 let _telemetry: TelemetryReporter;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -50,13 +51,19 @@ export function activate(context: vscode.ExtensionContext): void {
                     vscode.window.showErrorMessage("Error encountered in query parameters fetch");
                 }
                 let accessToken;
+                let dataverseOrg;
                 if (appName) {
                     switch (appName) {
                         case 'portal':
                         case 'default':
-                            accessToken = await dataverseAuthentication(queryParamsMap.get('orgUrl'));
+                            dataverseOrg = queryParamsMap.get(ORG_URL) as string;
+                            checkString(dataverseOrg);
+                            checkMap(queryParamsMap);
+                            accessToken = await dataverseAuthentication(dataverseOrg);
                             if (!accessToken) {
-                                vscode.window.showErrorMessage("Authentication to dataverse failed!, Please retry...");
+                                {
+                                    showErrorDialog("Error intializing the platform", "Authentication to dataverse failed!, Please retry...");
+                                }
                             }
                             setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
                             break;

@@ -599,7 +599,7 @@ export const portal_schema_data = {
                 "_languagefield": "adx_webpagelanguageid",
                 "_languagegroupby": "adx_rootwebpageid",
                 "_query": "?$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
-                "attributes": "adx_customcss,adx_customjs,adx_copy"
+                "_attributes": "adx_customcss,adx_customjs,adx_copy,adx_name"
             },
             {
                 "fields": {
@@ -775,7 +775,8 @@ export const portal_schema_data = {
                 "_foldername": "web-files",
                 "_propextension": "webfile",
                 "_exporttype": "SingleFolder",
-                "_query":"$select=adx_partialurl,adx_name"
+                "_query": "$select=adx_partialurl,adx_name",
+                "_attributes": ""
             },
             {
                 "fields": {
@@ -1391,7 +1392,7 @@ export const portal_schema_data = {
                 "_propextension": "webtemplate",
                 "_exporttype": "SubFolders",
                 "_query": "?$select=adx_name,adx_webtemplateid",
-                "attributes": "adx_customcss,adx_customjs,adx_copy"
+                "_attributes": "adx_copy,adx_source"
             },
             {
                 "fields": {

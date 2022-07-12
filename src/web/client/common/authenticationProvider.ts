@@ -17,7 +17,7 @@ export function getHeader(accessToken: string) {
     };
 }
 
-export async function dataverseAuthentication(dataverseOrg: any) {
+export async function dataverseAuthentication(dataverseOrg: string): Promise<string> {
     let accessToken = '';
     try {
         const session = await vscode.authentication.getSession("microsoft", ["https://" + dataverseOrg + "//.default"], { createIfNone: true });

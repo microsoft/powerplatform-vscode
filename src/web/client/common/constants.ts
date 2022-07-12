@@ -21,10 +21,29 @@ export const PORTALSWORKSPACENAME = 'Power Portals';
 export const WEBPAGES_FILENAME = 'web-pages';
 export const WEBTEMPLATES = 'web-templates';
 export const WEBFILES = 'webfiles';
-export const CONTENTPAGES = 'content-pages';
+export const CONTENTPAGES = 'contentpages';
 export const SCHEMAFILENAME = "PortalSchema.json";
 export const DEFAULT_LANGUAGE_CODE = 'en_US';
+export const DEFAULT_CONTENT = ' ';
+export const ORG_URL = 'orgUrl';
+export const ADX_WEBTEMPLATES = 'adx_webtemplates';
+export const DEFAULT_FILE_NAME = 'defaultfilename';
+export const FILE_NAME_FIELD = '_primarynamefield';
+
 export const FILE_EXTENSION_REGEX = /(?<extension>\.[0-9a-z]+$)/i;
+
+export const columnextensionMap = new Map([
+    ["adx_CustomCss", "customcss.cs"],
+    ["adx_CustomJavascript", "customjs.js"],
+    ["adx_Copy", "webpage.copy.html"]
+]);
+
+export const entityFolderMap = new Map([
+    ["webpages", "web-pages"],
+    ["webtemplates", "web-templates"],
+    ["webfiles", "web-files"],
+    ["contentpages", "content-pages"]
+]);
 
 export enum appTypes {
     portal = 0,
@@ -42,7 +61,7 @@ export enum fileExtension {
     js = 2
 }
 
-export  const pathparam_schemaMap = new Map([
+export const pathparam_schemaMap = new Map([
     ["webpages", "adx_webpages"],
     ["webtemplates", "adx_webtemplates"],
     ["adx_webpages", "adx_webpage"],

@@ -5,15 +5,13 @@
  * ------------------------------------------------------------------------------------------ */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-'use strict';
-import * as vscode from "vscode";
 import { getHeader } from "./authenticationProvider";
-import { FETCH_URL_ENTITY_ROOT, pathparam_schemaMap, PORTALSFOLDERNAME, PORTALSURISCHEME, PORTALSWORKSPACENAME, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY, PORTAL_LANGUAGE_DEFAULT, WEBPAGEID_URL_KEY, WEBPAGES, WEBSITEID_LANGUAGE, WEBSITE_LANGUAGES, WEBSITE_LANGUAGES_URL_KEY } from "./constants";
+import { FETCH_URL_ENTITY_ROOT, ORG_URL, pathparam_schemaMap, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY, PORTAL_LANGUAGE_DEFAULT, WEBPAGEID_URL_KEY, WEBPAGES, WEBSITEID_LANGUAGE, WEBSITE_LANGUAGES, WEBSITE_LANGUAGES_URL_KEY } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { showErrorDialog } from "./errorHandler";
-import { createfiles } from "./remoteServiceProvider";
-import { WebsiteDetails } from "./portalSchemaInterface";
+import { getDataFromDataVerse } from "./remoteFetchProvider";
 import { PortalsFS } from "./fileSystemProvider";
+import { createFileSystem } from "./createFileSystem";
 
 let dataSourcePropertiesMap = new Map();
 let entitiesSchemaMap = new Map();
@@ -22,7 +20,7 @@ let websitelanguageIdtoportalLanguageMap = new Map();
 let websiteIdtoLanguage = new Map();
 const portalDetailsMap = new Map();
 
-export async function languageIdtoCode(accessToken: string, dataverseOrg: any, entity: string) {
+export async function languageIdtoCode(accessToken: string, dataverseOrg: string, entity: string): Promise<Map<string, any>> {
 
     try {
         const requestUrl = getCustomRequestURL(dataverseOrg, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY); const response = await fetch(requestUrl, {
@@ -53,7 +51,7 @@ export async function languageIdtoCode(accessToken: string, dataverseOrg: any, e
     return languageIdCodeMap;
 }
 
-export async function websitelanguageIdtoportalLanguage(accessToken: string, dataverseOrg: any, entity: string) {
+export async function websitelanguageIdtoportalLanguage(accessToken: string, dataverseOrg: string, entity: any): Promise<Map<string, any>> {
     try {
         const requestUrl = getCustomRequestURL(dataverseOrg, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY);
         const response = await fetch(requestUrl, {
@@ -83,13 +81,13 @@ export async function websitelanguageIdtoportalLanguage(accessToken: string, dat
     return websitelanguageIdtoportalLanguageMap;
 }
 
-function getCustomRequestURL(dataverseOrg: any, entity: string, urlquery: string) {
-    const parameterizedUrl = dataSourcePropertiesMap.get(urlquery) as string;
+function getCustomRequestURL(dataverseOrg: string, entity: string, urlQuery: string): string {
+    const parameterizedUrl = dataSourcePropertiesMap.get(urlQuery) as string;
     const requestUrl = parameterizedUrl.replace('{dataverseOrg}', dataverseOrg).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
     return requestUrl;
 }
 
-export async function websiteIdtoLanguageMap(accessToken: string, dataverseOrg: string, entity: string) {
+export async function websiteIdtoLanguageMap(accessToken: string, dataverseOrg: string, entity: string): Promise<Map<string, string>> {
     try {
         const requestUrl = getCustomRequestURL(dataverseOrg, WEBSITEID_LANGUAGE, FETCH_URL_ENTITY_ROOT);
         const response = await fetch(requestUrl, {
@@ -124,24 +122,20 @@ export async function websiteIdtoLanguageMap(accessToken: string, dataverseOrg: 
 
 export async function setContext(accessToken: any, pathEntity: string, entityId: string, queryParamsMap: any, portalsFS: PortalsFS) {
     const entity = pathparam_schemaMap.get(pathEntity) as string;
+    const orgUrl = queryParamsMap.get(ORG_URL);
     dataSourcePropertiesMap = getDataSourcePropertiesMap();
     entitiesSchemaMap = getEntitiesSchemaMap();
-    websiteIdtoLanguage = await websiteIdtoLanguageMap(accessToken, queryParamsMap.get('orgUrl'), WEBSITEID_LANGUAGE);
-    websitelanguageIdtoportalLanguageMap = await websitelanguageIdtoportalLanguage(accessToken, queryParamsMap.get('orgUrl'), WEBSITE_LANGUAGES);
+    websiteIdtoLanguage = await websiteIdtoLanguageMap(accessToken, orgUrl, WEBSITEID_LANGUAGE);
+    websitelanguageIdtoportalLanguageMap = await websitelanguageIdtoportalLanguage(accessToken, orgUrl, WEBSITE_LANGUAGES);
     languageIdCodeMap = await languageIdtoCode(accessToken, queryParamsMap.get('orgUrl'), PORTAL_LANGUAGES);
     createEntityFiles(portalsFS, accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap);
 }
 
 function createEntityFiles(portalsFS: PortalsFS, accessToken: any, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any) {
     createFileSystem(portalsFS)
-    createfiles(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS);
+    getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS);
 }
 
-
-export function createFileSystem(portalsFS: PortalsFS) {
-    vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: vscode.Uri.parse(`${PORTALSURISCHEME}:/`), name: PORTALSWORKSPACENAME });
-    portalsFS.createDirectory(vscode.Uri.parse(`${PORTALSURISCHEME}:/${PORTALSFOLDERNAME}/`, true));
-}
 
 export { dataSourcePropertiesMap, entitiesSchemaMap, websiteIdtoLanguage, websitelanguageIdtoportalLanguageMap, languageIdCodeMap, portalDetailsMap };
 
