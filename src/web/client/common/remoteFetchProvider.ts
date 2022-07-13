@@ -12,6 +12,7 @@ import { PortalsFS } from './fileSystemProvider';
 import { dataSourcePropertiesMap } from './localStore';
 import { saveData } from './remoteSaveProvider';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 let saveDataMap = new Map<string, string>();
 
 export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS) {
@@ -78,10 +79,12 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/`, true));
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/`, true));
         const attributeArray = attributes.split(',');
-        for (let i = 0; i < attributeArray.length; i++) {
-            const value = result[attributeArray[i]] ? result[attributeArray[i]] : NO_CONTENT;
-            saveDataMap = createVirtualFile(portalsFS, fileName, languageCode, value, columnExtension.get(attributeArray[i]) as string, subUri);
+        let counter = 0
+        for (counter; counter < attributeArray.length; counter++) {
+            const value = result[attributeArray[counter]] ? result[attributeArray[counter]] : NO_CONTENT;
+            saveDataMap = createVirtualFile(portalsFS, fileName, languageCode, value, columnExtension.get(attributeArray[counter]) as string, subUri);
         }
+        vscode.window.showTextDocument(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${columnExtension.get(attributeArray[--counter]) as string}`))
     }
     vscode.workspace.onDidSaveTextDocument(async (e) => {
         vscode.window.showInformationMessage('saving file: ' + e.uri);
