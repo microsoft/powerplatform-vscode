@@ -13,11 +13,11 @@ const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
 const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
+const gulpTs = require("gulp-typescript");
 const replace = require('gulp-replace');
 const mocha = require('gulp-mocha');
 const moment = require('moment');
 const gulpWebpack = require('webpack-stream');
-const gulpTs = require("gulp-typescript");
 const webpack = require('webpack');
 const vsce = require('vsce');
 const argv = require('yargs').argv;
@@ -165,7 +165,10 @@ function testUnitTests() {
         );
 }
 
-function compileDebuggerTests() {
+/**
+ * Compiles the integration tests and transpiles the results to /out
+ */
+function compileIntegrationTests() {
     const tsProject = gulpTs.createProject("tsconfig.json", {
         // to test puppeteer we need "dom".
         // since "dom" overlaps with "webworker" we need to overwrite the lib property.
@@ -175,7 +178,10 @@ function compileDebuggerTests() {
     return gulp.src(["src/**/*.ts"]).pipe(tsProject()).pipe(gulp.dest("out"));
 }
 
-const testDebugger = gulp.series(compileDebuggerTests, async () => {
+/**
+ * Tests the debugger integration tests after transpiling the source files to /out
+ */
+const testDebugger = gulp.series(compileIntegrationTests, async () => {
     const testRunner = require("./out/debugger/test/runTest");
     await testRunner.main();
 });
@@ -189,14 +195,19 @@ function testWeb() {
     );
 }
 
-const test = gulp.series(testUnitTests, testWeb, testDebugger);
+// unit tests without special test runner
+const test = gulp.series(testUnitTests, testWeb);
+
+// tests that require vscode-electron (which requires a display or xvfb)
+const testInt = gulp.series(testDebugger);
 
 async function packageVsix() {
     fs.emptyDirSync(packagedir);
     return vsce.createVSIX({
         packagePath: packagedir,
-    })
+    });
 }
+
 
 async function git(args) {
     args.unshift('git');
@@ -288,7 +299,6 @@ const dist = gulp.series(
     lint,
     test
 );
-
 const translationExtensionName = "vscode-powerplatform";
 
 // Extract all the localizable strings from TS and package.nls.json, and package into
@@ -316,7 +326,7 @@ const languages = [
     { id: "it", folderName: "ita" },
     { id: "ja", folderName: "jpn" },
     { id: "ko", folderName: "kor" },
-    { id: "pt-BR", folderName: "ptb"},
+    { id: "pt-BR", folderName: "ptb" },
     { id: "ru", folderName: "rus" },
     { id: "tr", folderName: "trk" },
     { id: "zh-CN", folderName: "chs" },
@@ -366,7 +376,6 @@ function translationsGenerateSrcLocBundles() {
         .pipe(gulp.dest(path.join('dist', 'src')));
 }
 
-
 exports.clean = clean;
 exports.compile = compile;
 exports.compileWeb = compileWeb;
@@ -375,7 +384,8 @@ exports.snapshot = snapshot;
 exports.lint = lint;
 exports.test = test;
 exports.testWeb = testWeb;
-exports.testDebugger = testDebugger;
+exports.compileIntegrationTests = compileIntegrationTests;
+exports.testInt = testInt;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;

@@ -18,8 +18,8 @@
     "compile-web": "webpack",
     "watch-web": "webpack --watch",
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "debugger-tests": "node ./out/debugger/test/runTest.js"
+    "compile-tests": "node node_modules/gulp/bin/gulp.js compileIntegrationTests",
+    "test-integration": "node node_modules/gulp/bin/gulp.js testInt"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -49,7 +49,8 @@
     "Power Platform"
   ],
   "icon": "src/client/assets/icon.png",
-  "badges": [{
+  "badges": [
+    {
       "description": "Pull Request",
       "url": "https://github.com/microsoft/powerplatform-vscode/workflows/PullRequest/badge.svg",
       "href": "https://github.com/microsoft/powerplatform-vscode/actions?query=workflow%3APullRequest"
@@ -79,38 +80,42 @@
     }
   },
   "contributes": {
-    "problemMatchers": [{
-      "name": "pcf-scripts-build",
-      "label": "PCF Scripts Build problems",
-      "owner": "typescript",
-      "source": "ts",
-      "applyTo": "allDocuments",
-      "fileLocation": "absolute",
-      "severity": "error",
-      "pattern": [{
-          "regexp": "\\[tsl\\] (ERROR|WARNING) in (.*)?\\((\\d+),(\\d+)\\)",
-          "severity": 1,
-          "file": 2,
-          "line": 3,
-          "column": 4
-        },
-        {
-          "regexp": "\\s*TS(\\d+):\\s*(.*)$",
-          "code": 1,
-          "message": 2
-        }
-      ],
-      "background": {
-        "activeOnStart": true,
-        "beginsPattern": {
-          "regexp": "(\\[Webpack stats\\])|(\\[build\\]  [Ii]nitializing)"
-        },
-        "endsPattern": {
-          "regexp": "[Cc]ompiled (.*?successfully|with .*?(error|warning))|[Cc]ompil(ation|er) .*?finished"
+    "problemMatchers": [
+      {
+        "name": "pcf-scripts-build",
+        "label": "PCF Scripts Build problems",
+        "owner": "typescript",
+        "source": "ts",
+        "applyTo": "allDocuments",
+        "fileLocation": "absolute",
+        "severity": "error",
+        "pattern": [
+          {
+            "regexp": "\\[tsl\\] (ERROR|WARNING) in (.*)?\\((\\d+),(\\d+)\\)",
+            "severity": 1,
+            "file": 2,
+            "line": 3,
+            "column": 4
+          },
+          {
+            "regexp": "\\s*TS(\\d+):\\s*(.*)$",
+            "code": 1,
+            "message": 2
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(\\[Webpack stats\\])|(\\[build\\]  [Ii]nitializing)"
+          },
+          "endsPattern": {
+            "regexp": "[Cc]ompiled (.*?successfully|with .*?(error|warning))|[Cc]ompil(ation|er) .*?finished"
+          }
         }
       }
-    }],
-    "viewsWelcome": [{
+    ],
+    "viewsWelcome": [
+      {
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveSupported%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
@@ -121,7 +126,8 @@
         "when": "!virtualWorkspace && !pacCLI.authPanel.interactiveLoginSupported"
       }
     ],
-    "commands": [{
+    "commands": [
+      {
         "command": "pacCLI.openDocumentation",
         "category": "Power Platform CLI",
         "title": "%pacCLI.openDocumentation.title%"
@@ -327,118 +333,129 @@
         }
       }
     },
-    "debuggers": [{
-      "type": "powerplatform-vscode.debug",
-      "label": "Debugger for PCF controls",
-      "configurationSnippets": [{
-        "label": "Debug PCF Control",
-        "description": "Debug a single PCF control",
-        "body": {
-          "type": "powerplatform-vscode.debug",
-          "request": "launch",
-          "name": "Launch a PCF control in Microsoft Edge and attach debugger.",
-          "url": "https://YOUR_ORG.crm.dynamics.com",
-          "webRoot": "^\"${2:\\${workspaceFolder\\}}\"",
-          "renderFullScreen": true,
-          "controlName": "publisher.MyControl",
-          "file": "${workspaceFolder}/out/bundle.js",
-          "useDefaultUserDataProfile": false
-        }
-      }],
-      "configurationAttributes": {
-        "launch": {
-          "properties": {
-            "url": {
-              "type": "string",
-              "description": "Absolute uri to launch. To enable automatic control navigation this value should be the form that the control is rendered on.",
-              "default": "https://YOUR_ORG.crm.dynamics.com"
-            },
-            "file": {
-              "type": "string",
-              "description": "Relative path of the bundle file to debug",
-              "default": "${workspaceFolder}/out/bundle.js"
-            },
-            "port": {
-              "type": "number",
-              "default": 9222,
-              "description": "The port on which to search for remote debuggable instances"
-            },
-            "userDataDir": {
-              "type": [
-                "string",
-                "boolean"
-              ],
-              "description": "By default, Microsoft Edge is launched with a separate user profile in a temp folder. Use this option to override the path. You can also set to false to launch with your default user profile instead.",
-              "default": true
-            },
-            "useDefaultUserDataProfile": {
-              "type": "boolean",
-              "description": "Set this property to true to use your default browser user profile for debugging. Otherwise, a temporary user profile will be created or the path specified in 'User Data Dir' will be used.",
-              "default": false
-            },
-            "webRoot": {
-              "type": "string",
-              "description": "The absolute path to the webserver root. Used to resolve paths like `/app.js` to files on disk",
-              "default": "${workspaceFolder}"
-            },
-            "renderFullScreen": {
-              "type": "boolean",
-              "description": "Should we render the control in full screen? This only works if the control does not depend on any entity record context.",
-              "default": false
-            },
-            "controlName": {
-              "type": "string",
-              "description": "This value is only required if renderFullScreen is true. The logical name of your PCF control. The logical name is defined as `<publisherPrefix>_<namespace>.<controlName>`. Namespace and controlName are defined in the ControlManifest.xml. Dataverse will display the logical name of your control when looking at the control in the solution. Example: Control Name 'MyCustomControl'. Publisher Name: 'm365'. Namespace: 'Workflows'. -> Logical Name: 'm365_Workflows.MyCustomControl'",
-              "default": "m365_Workflows.MyControl"
-            },
-            "tabName": {
-              "type": "string",
-              "description": "This value is not required if renderFullScreen is true. The name of the tab that hosts the control. If this is specified, the browser will try to navigate to the tab to load the control.",
-              "default": "MyControl Tab"
-            },
-            "appId": {
-              "type": "string",
-              "description": "This value is not required if renderFullScreen is true. The model driven application id which is used to host the PCF control.",
-              "default": "00000000-0000-0000-0000-000000000000"
-            },
-            "powerapps-pcf-debugger.browserFlavor": {
-              "type": "string",
-              "enum": [
-                "Default",
-                "Stable",
-                "Beta",
-                "Dev",
-                "Canary"
-              ],
-              "enumDescriptions": [
-                "Power Platform debugger will try to open the Microsoft Edge flavors in the following order: Stable, Beta, Dev and Canary",
-                "Power Platform debugger will use Microsoft Edge Stable version",
-                "Power Platform debugger will use Microsoft Edge Beta version",
-                "Power Platform debugger will use Microsoft Edge Dev version",
-                "Power Platform debugger will use Microsoft Edge Canary version"
-              ]
+    "debuggers": [
+      {
+        "type": "powerplatform-vscode.debug",
+        "label": "Debugger for PCF controls",
+        "configurationSnippets": [
+          {
+            "label": "Debug PCF Control",
+            "description": "Debug a single PCF control",
+            "body": {
+              "type": "powerplatform-vscode.debug",
+              "request": "launch",
+              "name": "Launch a PCF control in Microsoft Edge and attach debugger.",
+              "url": "https://YOUR_ORG.crm.dynamics.com",
+              "webRoot": "^\"${2:\\${workspaceFolder\\}}\"",
+              "renderFullScreen": true,
+              "controlName": "publisher.MyControl",
+              "file": "${workspaceFolder}/out/bundle.js",
+              "useDefaultUserDataProfile": false
+            }
+          }
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "Absolute uri to launch. To enable automatic control navigation this value should be the form that the control is rendered on.",
+                "default": "https://YOUR_ORG.crm.dynamics.com"
+              },
+              "file": {
+                "type": "string",
+                "description": "Relative path of the bundle file to debug",
+                "default": "${workspaceFolder}/out/bundle.js"
+              },
+              "port": {
+                "type": "number",
+                "default": 9222,
+                "description": "The port on which to search for remote debuggable instances"
+              },
+              "userDataDir": {
+                "type": [
+                  "string",
+                  "boolean"
+                ],
+                "description": "By default, Microsoft Edge is launched with a separate user profile in a temp folder. Use this option to override the path. You can also set to false to launch with your default user profile instead.",
+                "default": true
+              },
+              "useDefaultUserDataProfile": {
+                "type": "boolean",
+                "description": "Set this property to true to use your default browser user profile for debugging. Otherwise, a temporary user profile will be created or the path specified in 'User Data Dir' will be used.",
+                "default": false
+              },
+              "webRoot": {
+                "type": "string",
+                "description": "The absolute path to the webserver root. Used to resolve paths like `/app.js` to files on disk",
+                "default": "${workspaceFolder}"
+              },
+              "renderFullScreen": {
+                "type": "boolean",
+                "description": "Should we render the control in full screen? This only works if the control does not depend on any entity record context.",
+                "default": false
+              },
+              "controlName": {
+                "type": "string",
+                "description": "This value is only required if renderFullScreen is true. The logical name of your PCF control. The logical name is defined as `<publisherPrefix>_<namespace>.<controlName>`. Namespace and controlName are defined in the ControlManifest.xml. Dataverse will display the logical name of your control when looking at the control in the solution. Example: Control Name 'MyCustomControl'. Publisher Name: 'm365'. Namespace: 'Workflows'. -> Logical Name: 'm365_Workflows.MyCustomControl'",
+                "default": "m365_Workflows.MyControl"
+              },
+              "tabName": {
+                "type": "string",
+                "description": "This value is not required if renderFullScreen is true. The name of the tab that hosts the control. If this is specified, the browser will try to navigate to the tab to load the control.",
+                "default": "MyControl Tab"
+              },
+              "appId": {
+                "type": "string",
+                "description": "This value is not required if renderFullScreen is true. The model driven application id which is used to host the PCF control.",
+                "default": "00000000-0000-0000-0000-000000000000"
+              },
+              "powerapps-pcf-debugger.browserFlavor": {
+                "type": "string",
+                "enum": [
+                  "Default",
+                  "Stable",
+                  "Beta",
+                  "Dev",
+                  "Canary"
+                ],
+                "enumDescriptions": [
+                  "Power Platform debugger will try to open the Microsoft Edge flavors in the following order: Stable, Beta, Dev and Canary",
+                  "Power Platform debugger will use Microsoft Edge Stable version",
+                  "Power Platform debugger will use Microsoft Edge Beta version",
+                  "Power Platform debugger will use Microsoft Edge Dev version",
+                  "Power Platform debugger will use Microsoft Edge Canary version"
+                ]
+              }
             }
           }
         }
       }
-    }],
-    "snippets": [{
-      "language": "html",
-      "path": "./src/client/snippets/paportal-liquid.code-snippets"
-    }],
-    "iconThemes": [{
-      "id": "portals_icon",
-      "label": "PowerApps Portals Icons (Visual Studio Code)",
-      "path": "./src/client/portal_fileicons/portals-icon-theme.json"
-    }],
+    ],
+    "snippets": [
+      {
+        "language": "html",
+        "path": "./src/client/snippets/paportal-liquid.code-snippets"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "portals_icon",
+        "label": "PowerApps Portals Icons (Visual Studio Code)",
+        "path": "./src/client/portal_fileicons/portals-icon-theme.json"
+      }
+    ],
     "menus": {
-      "editor/title": [{
-        "when": "resourceLangId == html && !virtualWorkspace",
-        "command": "microsoft-powerapps-portals.preview-show",
-        "alt": "microsoft-powerapps-portals.preview-show",
-        "group": "navigation"
-      }],
-      "commandPalette": [{
+      "editor/title": [
+        {
+          "when": "resourceLangId == html && !virtualWorkspace",
+          "command": "microsoft-powerapps-portals.preview-show",
+          "alt": "microsoft-powerapps-portals.preview-show",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
           "command": "microsoft-powerapps-portals.webExtension.init",
           "when": "isWeb && config.powerPlatform.experimental.enableWebExtensionFeatures"
         },
@@ -547,7 +564,8 @@
           "when": "!virtualWorkspace"
         }
       ],
-      "view/title": [{
+      "view/title": [
+        {
           "command": "pacCLI.authPanel.newAuthProfile",
           "when": "!virtualWorkspace && view == pacCLI.authPanel && pacCLI.authPanel.interactiveLoginSupported",
           "group": "navigation@0"
@@ -568,7 +586,8 @@
           "group": "navigation"
         }
       ],
-      "view/item/context": [{
+      "view/item/context": [
+        {
           "command": "pacCLI.authPanel.deleteAuthProfile",
           "when": "!virtualWorkspace && view == pacCLI.authPanel",
           "group": "inline"
@@ -624,14 +643,17 @@
       ]
     },
     "viewsContainers": {
-      "activitybar": [{
-        "id": "power-platform-activitybar",
-        "title": "%power-platform-activitybar.title%",
-        "icon": "resources/powerplatform-activitybar-icon.svg"
-      }]
+      "activitybar": [
+        {
+          "id": "power-platform-activitybar",
+          "title": "%power-platform-activitybar.title%",
+          "icon": "resources/powerplatform-activitybar-icon.svg"
+        }
+      ]
     },
     "views": {
-      "power-platform-activitybar": [{
+      "power-platform-activitybar": [
+        {
           "id": "pacCLI.authPanel",
           "name": "%pacCLI.authPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
@@ -686,7 +708,6 @@
     "typescript": "^4.6.2",
     "vsce": "^2.7.0",
     "vscode-nls-dev": "^4.0.0-next.1",
-    "vscode-test": "^1.5.2",
     "webpack": "^5.61.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
@@ -706,5 +727,11 @@
     "vscode-languageserver-textdocument": "^1.0.1",
     "vscode-nls": "^5.0.0",
     "yaml": "^1.10.2"
+  },
+  "__metadata": {
+    "id": "b8680bb6-eaa9-481a-ae0b-83574fa58620",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "b0208c9d-08ff-4cfb-93f7-f64e487561a6",
+    "isPreReleaseVersion": false
   }
 }
