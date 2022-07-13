@@ -12,9 +12,7 @@ import { PortalsFS } from './fileSystemProvider';
 import { dataSourcePropertiesMap } from './localStore';
 import { saveData } from './remoteSaveProvider';
 
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-let saveDataMap = new Map<string, any>();
+let saveDataMap = new Map<string, string>();
 
 export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS) {
     try {
@@ -98,7 +96,7 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
 function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode: string, data: any, portalFileExtension: string, subUri: string) {
     const fileUri = `${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${portalFileExtension}`;
     portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
-    saveDataMap.set(fileUri, portalFileExtension);
+    saveDataMap.set(vscode.Uri.parse(fileUri).fsPath, portalFileExtension);
     return saveDataMap;
 }
 
