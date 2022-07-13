@@ -1,10 +1,13 @@
-/* --------------------------------------------------------------------------------------------
+/*
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
+ */
+
+
 import * as vscode from "vscode";
 import { ORG_URL, SCHEMA_FIELD_NAME, WEBSITE_ID } from "./constants";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const ERRORS = {
     WORKSPACE_INITIAL_LOAD: "Error Initializing Workspace",
     VSCODE_INITIAL_LOAD: "Error Initializing Platform",

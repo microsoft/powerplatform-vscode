@@ -1,12 +1,13 @@
 /*
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
+ */
 
 import * as vscode from 'vscode';
 import { PROVIDER_ID, SCOPE_OPTION, SCOPE_VERB } from './constants';
 import { ERRORS } from './errorHandler';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function getHeader(accessToken: string) {
     return {
         authorization: "Bearer " + accessToken,

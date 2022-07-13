@@ -13,6 +13,7 @@ import { PortalsFS } from "./common/fileSystemProvider";
 import { checkParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 let _telemetry: TelemetryReporter;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);

@@ -1,7 +1,8 @@
-/* --------------------------------------------------------------------------------------------
+/*
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
+ */
+
 import * as vscode from 'vscode';
 import { getHeader } from './authenticationProvider';
 import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, CHARSET } from './constants';
@@ -11,6 +12,8 @@ import { PortalsFS } from './fileSystemProvider';
 import { dataSourcePropertiesMap } from './localStore';
 import { saveData } from './remoteSaveProvider';
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 let saveDataMap = new Map<string, any>();
 
 export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS) {
