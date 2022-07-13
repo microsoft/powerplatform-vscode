@@ -1,7 +1,9 @@
-/* --------------------------------------------------------------------------------------------
+/*
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
+ */
+
+
 import * as vscode from 'vscode';
 import { getHeader } from './authenticationProvider';
 import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, CHARSET } from './constants';
@@ -11,7 +13,7 @@ import { PortalsFS } from './fileSystemProvider';
 import { dataSourcePropertiesMap } from './localStore';
 import { saveData } from './remoteSaveProvider';
 
-let saveDataMap = new Map<string, any>();
+let saveDataMap = new Map<string, string>();
 
 export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS) {
     try {
@@ -95,7 +97,7 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
 function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode: string, data: any, portalFileExtension: string, subUri: string) {
     const fileUri = `${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${portalFileExtension}`;
     portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
-    saveDataMap.set(fileUri, portalFileExtension);
+    saveDataMap.set(vscode.Uri.parse(fileUri).fsPath, portalFileExtension);
     return saveDataMap;
 }
 
