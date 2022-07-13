@@ -733,5 +733,9 @@
     "publisherDisplayName": "Microsoft",
     "publisherId": "b0208c9d-08ff-4cfb-93f7-f64e487561a6",
     "isPreReleaseVersion": false
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.6",
+    "utf-8-validate": "^5.0.9"
   }
 }
