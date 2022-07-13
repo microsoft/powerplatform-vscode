@@ -1,7 +1,9 @@
-/* --------------------------------------------------------------------------------------------
+/*
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
+ */
+
+
 
 export const portal_schema_data = {
     "entities": {
@@ -594,7 +596,7 @@ export const portal_schema_data = {
                 "_languagefield": "adx_webpagelanguageid",
                 "_languagegroupby": "adx_rootwebpageid",
                 "_query": "?$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
-                "_attributes": "adx_customcss,adx_customjavascript,adx_copy,adx_name"
+                "_attributes": "adx_customcss,adx_customjavascript,adx_copy"
             },
             {
                 "fields": {

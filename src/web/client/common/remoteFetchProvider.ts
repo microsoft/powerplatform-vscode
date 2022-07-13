@@ -94,9 +94,8 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
 
 function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode: string, data: any, portalFileExtension: string, subUri: string) {
     const fileUri = `${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${portalFileExtension}`;
-    portalsFS.writeFile(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${portalFileExtension}`), new TextEncoder().encode(data), { create: true, overwrite: true });
+    portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
     saveDataMap.set(fileUri, portalFileExtension);
-    vscode.window.showTextDocument(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${portalFileExtension}`))
     return saveDataMap;
 }
 
