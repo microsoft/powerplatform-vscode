@@ -27,7 +27,6 @@ export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
 export const SCOPE_VERB = "https://";
 
-export const FILE_EXTENSION_REGEX = /(?<extension>\.[0-9a-z]+$)/i;
 
 export const columnExtension = new Map([
     ["customcss.cs", "adx_customcss"],
