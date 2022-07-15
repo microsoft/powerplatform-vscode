@@ -4,14 +4,13 @@
  */
 
 import * as vscode from 'vscode';
-import { getHeader } from './authenticationProvider';
+import { getHeader, getRequestURLSingleEntity } from './authenticationProvider';
 import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, CHARSET } from './constants';
 import { PORTALS_FOLDER_NAME, PORTALS_URI_SCHEME, SINGLE_ENTITY_URL_KEY } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
-import { dataSourcePropertiesMap } from './localStore';
 import { SaveEntityDetails } from './portalSchemaInterface';
-import { saveData } from './remoteSaveProvider';
+import { registerSaveProvider } from './remoteSaveProvider';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let saveDataMap = new Map<string, SaveEntityDetails>();
@@ -48,19 +47,6 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
     }
 }
 
-function getRequestURLSingleEntity(dataverseOrgUrl: string, entity: string, entityId: string, urlquery: string, entitiesSchemaMap: any, method: string): string {
-    const parameterizedUrl = dataSourcePropertiesMap.get(urlquery) as string;
-    let requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{entityId}', entityId).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
-    switch (method) {
-        case 'GET':
-            requestUrl = requestUrl + entitiesSchemaMap.get(pathParamToSchema.get(entity)).get('_query');
-            break;
-        default:
-            break;
-    }
-    return requestUrl;
-}
-
 function createContentFiles(result: string, entity: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalsFS: PortalsFS, dataverseOrgUrl: string, accessToken: string, entityId: string) {
     let languageCode = DEFAULT_LANGUAGE_CODE;
     if (languageIdCodeMap?.size) {
@@ -87,14 +73,10 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
         }
         vscode.window.showTextDocument(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${columnExtension.get(attributeArray[--counter]) as string}`))
     }
-    vscode.workspace.onDidSaveTextDocument(async (e) => {
-        vscode.window.showInformationMessage('saving file: ' + e.uri);
-        const newFileData = portalsFS.readFile(e.uri);
-        const patchRequestUrl = getRequestURLSingleEntity(dataverseOrgUrl, entity, entityId, SINGLE_ENTITY_URL_KEY, entitiesSchemaMap, 'PATCH');
-        vscode.window.showInformationMessage(patchRequestUrl)
-        await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, new TextDecoder(CHARSET).decode(newFileData));
-    });
+   registerSaveProvider(accessToken, portalsFS,dataverseOrgUrl, saveDataMap)
 }
+
+
 
 function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode: string, data: any, portalFileExtension: string, subUri: string,entityId : string, saveDataAtribute : string, entity: string ) {
     const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAtribute);
