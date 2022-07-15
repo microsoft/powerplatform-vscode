@@ -10,7 +10,7 @@ import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
-import { checkMandatoryPathParameters, checkMandatoryQueryParameters, checkParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
+import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 let _telemetry: TelemetryReporter;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -53,23 +53,18 @@ export function activate(context: vscode.ExtensionContext): void {
                 let accessToken: string;
                 if (appName) {
                     switch (appName) {
-                        case 'portal':
-                            try {
-                                if (!checkMandatoryPathParameters(appName, entity, entityId)) return;
-                                if (!checkMandatoryQueryParameters(appName, queryParamsMap)) return;
-                                checkParameters(queryParamsMap, entity);
-                                accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
-                                if (!accessToken) {
-                                    {
-                                        showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);
-                                        return;
-                                    }
+                        case 'portal': {
+                            if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
+                            removeEncodingFromParameters(queryParamsMap);
+                            accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
+                            if (!accessToken) {
+                                {
+                                    showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);
+                                    return;
                                 }
-                                setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
-                            } catch {
-                                showErrorDialog(ERRORS.SERVICE_ERROR, ERRORS.BAD_VALUE);
-                                return;
                             }
+                            setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
+                        }
                             break;
                         case 'default':
                         default:
