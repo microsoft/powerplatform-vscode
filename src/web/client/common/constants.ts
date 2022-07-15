@@ -45,22 +45,6 @@ export const entityFolder = new Map([
     ["adx_webpages", "web-pages"]
 ]);
 
-export enum appTypes {
-    portal = 0,
-    default = 1
-}
-
-export enum dataSource {
-    dataverse = 0,
-    github = 1
-}
-
-export enum fileExtension {
-    html = 0,
-    css = 1,
-    js = 2
-}
-
 export const pathParamToSchema = new Map([
     ["webpages", "adx_webpages"],
     ["webtemplates", "adx_webtemplates"],

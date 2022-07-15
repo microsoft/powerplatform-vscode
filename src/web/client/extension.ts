@@ -35,7 +35,6 @@ export function activate(context: vscode.ExtensionContext): void {
                     vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR); // this should never happen, the check is done by vscode.dev server
                     return;
                 }
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { appName, entity, entityId, searchParams } = args;
 
                 const queryParamsMap = new Map<string, string>();
