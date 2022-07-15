@@ -7,7 +7,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { getHeader } from "./authenticationProvider";
-import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES } from "./constants";
+import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { ERRORS, showErrorDialog } from "./errorHandler";
 import { getDataFromDataVerse } from "./remoteFetchProvider";
@@ -133,7 +133,7 @@ export async function setContext(accessToken: string, pathEntity: string, entity
 }
 
 function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any) {
-    createFileSystem(portalsFS);
+    createFileSystem(portalsFS, queryParamsMap.get(WEBSITE_NAME));
     getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS);
 }
 

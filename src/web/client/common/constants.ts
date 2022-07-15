@@ -16,6 +16,7 @@ export const WEB_FILES = 'webfiles';
 export const CONTENT_PAGES = 'contentpages';
 export const SCHEMA_FIELD_NAME = "schema";
 export const WEBSITE_ID = "websiteId";
+export const WEBSITE_NAME = "websiteName";
 export const DEFAULT_LANGUAGE_CODE = 'en_US';
 export const NO_CONTENT = ' ';
 export const ORG_URL = 'orgUrl';
