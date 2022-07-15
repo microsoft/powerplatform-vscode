@@ -25,8 +25,6 @@ export const FILE_NAME_FIELD = '_primarynamefield';
 export const CHARSET = 'utf-8';
 export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
-export const SCOPE_VERB = "https://";
-
 
 export const columnExtension = new Map([
     ["customcss.cs", "adx_customcss"],
