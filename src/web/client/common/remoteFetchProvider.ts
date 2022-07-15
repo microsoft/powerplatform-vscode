@@ -4,8 +4,8 @@
  */
 
 import * as vscode from 'vscode';
-import { getHeader, getRequestURLSingleEntity } from './authenticationProvider';
-import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_NAME, WEBSITE_ID } from './constants';
+import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
+import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_ID, WEBSITE_NAME } from './constants';
 import { PORTALS_URI_SCHEME, SINGLE_ENTITY_URL_KEY } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
@@ -23,7 +23,7 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
             url = SINGLE_ENTITY_URL_KEY;
         }
         else url = MULTI_ENTITY_URL_KEY;
-        const requestUrl = getRequestURLSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
+        const requestUrl = getRequestURLForSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
         vscode.window.showInformationMessage(requestUrl);
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
@@ -54,8 +54,8 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
     }
     const attributes = entitiesSchemaMap.get(pathParamToSchema.get(entity)).get('_attributes');
     const exportType = entitiesSchemaMap.get(pathParamToSchema.get(entity)).get('_exporttype');
-    const subUri = entityFolder.get(entity) as string;
     const portalFolderName = queryParamsMap.get(WEBSITE_NAME);
+    const subUri = entityFolder.get(entity) as string;
     if (exportType && exportType === 'SubFolders') {
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`, true));
     }
