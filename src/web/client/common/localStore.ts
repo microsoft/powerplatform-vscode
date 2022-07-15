@@ -133,7 +133,7 @@ export async function setContext(accessToken: string, pathEntity: string, entity
 }
 
 function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any) {
-    createFileSystem(portalsFS)
+    createFileSystem(portalsFS);
     getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS);
 }
 
