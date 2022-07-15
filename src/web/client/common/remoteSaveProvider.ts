@@ -10,7 +10,7 @@ import { getHeader } from './authenticationProvider';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { SaveEntityDetails } from './portalSchemaInterface';
 
-export async function saveData(accessToken: string, requestUrl: string, fileUri: vscode.Uri, entity: string, saveDataMap: Map<string, SaveEntityDetails>, value: string) {
+export async function saveData(accessToken: string, requestUrl: string, fileUri: vscode.Uri, saveDataMap: Map<string, SaveEntityDetails>, value: string) {
     let requestBody = '';
     const column = saveDataMap.get(fileUri.fsPath)?.getSaveAttribute;
     if (column) {

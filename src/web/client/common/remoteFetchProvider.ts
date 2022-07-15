@@ -83,7 +83,7 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
         let counter = 0
         for (counter; counter < attributeArray.length; counter++) {
             const value = result[attributeArray[counter]] ? result[attributeArray[counter]] : NO_CONTENT;
-            saveDataMap = createVirtualFile(portalsFS, fileName, languageCode, value, columnExtension.get(attributeArray[counter]) as string, subUri, entityId, attributeArray[counter] as string);
+            saveDataMap = createVirtualFile(portalsFS, fileName, languageCode, value, columnExtension.get(attributeArray[counter]) as string, subUri, entityId, attributeArray[counter] as string, entity);
         }
         vscode.window.showTextDocument(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${columnExtension.get(attributeArray[--counter]) as string}`))
     }
@@ -92,12 +92,12 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
         const newFileData = portalsFS.readFile(e.uri);
         const patchRequestUrl = getRequestURLSingleEntity(dataverseOrgUrl, entity, entityId, SINGLE_ENTITY_URL_KEY, entitiesSchemaMap, 'PATCH');
         vscode.window.showInformationMessage(patchRequestUrl)
-        await saveData(accessToken, patchRequestUrl, e.uri, entity, saveDataMap, new TextDecoder(CHARSET).decode(newFileData));
+        await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, new TextDecoder(CHARSET).decode(newFileData));
     });
 }
 
-function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode: string, data: any, portalFileExtension: string, subUri: string,entityId : string, saveDataAtribute : string ) {
-    const saveEntityDetails = new SaveEntityDetails(entityId, entityName, saveDataAtribute);
+function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode: string, data: any, portalFileExtension: string, subUri: string,entityId : string, saveDataAtribute : string, entity: string ) {
+    const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAtribute);
     const fileUri = `${PORTALS_URI_SCHEME}:/${PORTALS_FOLDER_NAME}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${portalFileExtension}`;
     portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
     saveDataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
