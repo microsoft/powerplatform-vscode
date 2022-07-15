@@ -29,7 +29,7 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
-            vscode.window.showInformationMessage("auth failed in fetch data");
+            vscode.window.showErrorMessage("failed to fetch data");
             throw new Error(response.statusText);
         }
         const data = await response.json();
@@ -40,9 +40,11 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         } else {
             createContentFiles(data, entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId);
         }
-    } catch (e: any) {
-        if (e.message.includes('Unauthorized')) {
+    } catch (error) {
+        if (typeof error === "string" && error.includes('Unauthorized')) {
             vscode.window.showErrorMessage('Failed to authenticate');
+        } else {
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
         }
     }
 }

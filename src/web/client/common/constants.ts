@@ -29,10 +29,10 @@ export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
 
 export const columnExtension = new Map([
-    ["customcss.cs", "adx_customcss"],
+    ["customcss.css", "adx_customcss"],
     ["customjs.js", "adx_customjavascript"],
     ["webpage.copy.html", "adx_copy"],
-    ["adx_customcss", "customcss.cs"],
+    ["adx_customcss", "customcss.css"],
     ["adx_customjavascript", "customjs.js"],
     ["adx_copy", "webpage.copy.html"]
 ]);

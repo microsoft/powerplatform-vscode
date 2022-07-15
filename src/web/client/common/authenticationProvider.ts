@@ -24,7 +24,7 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
     try {
         const session = await vscode.authentication.getSession(PROVIDER_ID, [dataverseOrgURL + SCOPE_OPTION], { createIfNone: true });
         accessToken = session.accessToken;
-    } catch (e: any) {
+    } catch (error) {
         vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
     }
     return accessToken;

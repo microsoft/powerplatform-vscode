@@ -7,7 +7,6 @@
 import * as vscode from "vscode";
 import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME } from "./constants";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const ERRORS = {
     WORKSPACE_INITIAL_LOAD: "Error Initializing Workspace",
     VSCODE_INITIAL_LOAD: "Error Initializing Platform",
