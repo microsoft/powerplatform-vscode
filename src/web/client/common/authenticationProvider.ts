@@ -30,15 +30,22 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
     return accessToken;
 }
 
-export function getRequestURLSingleEntity(dataverseOrgUrl: string, entity: string, entityId: string, urlquery: string, entitiesSchemaMap: any, method: string): string {
+export function getRequestURLForSingleEntity(dataverseOrgUrl: string, entity: string, entityId: string, urlquery: string, entitiesSchemaMap: any, method: string): string {
     const parameterizedUrl = dataSourcePropertiesMap.get(urlquery) as string;
     let requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{entityId}', entityId).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
     switch (method) {
         case 'GET':
-            requestUrl = requestUrl + entitiesSchemaMap.get(pathParamToSchema.get(entity)).get('_query');
+            requestUrl = requestUrl + entitiesSchemaMap.get(pathParamToSchema.get(entity)).get('_fetchQueryParameters');
             break;
         default:
             break;
     }
     return requestUrl;
+}
+
+export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string, entitiesSchemaMap: any): string {
+    const parameterizedUrl = dataSourcePropertiesMap.get(urlQuery) as string;
+    const fetchQueryParameters = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get("_fetchQueryParameters");
+    const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
+    return requestUrl + fetchQueryParameters;
 }

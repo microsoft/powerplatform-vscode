@@ -5,7 +5,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as vscode from 'vscode';
-import { getHeader, getRequestURLSingleEntity } from './authenticationProvider';
+import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
 import { CHARSET, SINGLE_ENTITY_URL_KEY } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
@@ -16,7 +16,7 @@ export function registerSaveProvider(accessToken: string, portalsFS: PortalsFS, 
     vscode.workspace.onDidSaveTextDocument(async (e) => {
         vscode.window.showInformationMessage('saving file: ' + e.uri);
         const newFileData = portalsFS.readFile(e.uri);
-        const patchRequestUrl = getRequestURLSingleEntity(dataVerseOrgUrl, saveDataMap.get(e.uri.fsPath)?.getEntityName as string, saveDataMap.get(e.uri.fsPath)?.getEntityId as string, SINGLE_ENTITY_URL_KEY, entitiesSchemaMap, 'PATCH');
+        const patchRequestUrl = getRequestURLForSingleEntity(dataVerseOrgUrl, saveDataMap.get(e.uri.fsPath)?.getEntityName as string, saveDataMap.get(e.uri.fsPath)?.getEntityId as string, SINGLE_ENTITY_URL_KEY, entitiesSchemaMap, 'PATCH');
         vscode.window.showInformationMessage(patchRequestUrl);
         await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, new TextDecoder(CHARSET).decode(newFileData));
     });

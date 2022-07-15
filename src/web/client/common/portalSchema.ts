@@ -114,7 +114,7 @@ export const portal_schema_data = {
                 "_foldername": "",
                 "_propextension": "website",
                 "_exporttype": "SingleFolder",
-                "_query": "?$select=adx_name,adx_websiteid,adx_website_language"
+                "_fetchQueryParameters": "?$select=adx_name,adx_websiteid,adx_website_language"
             },
             {
                 "fields": {
@@ -253,7 +253,7 @@ export const portal_schema_data = {
                 "_foldername": ".portalconfig",
                 "_propextension": "portallanguage",
                 "_exporttype": "SingleFile",
-                "_query": "?$select=adx_portallanguageid,adx_languagecode"
+                "_fetchQueryParameters": "?$select=adx_portallanguageid,adx_languagecode"
             },
             {
                 "fields": {
@@ -593,7 +593,7 @@ export const portal_schema_data = {
                 "_exporttype": "SubFolders",
                 "_languagefield": "adx_webpagelanguageid",
                 "_languagegroupby": "adx_rootwebpageid",
-                "_query": "?$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
+                "_fetchQueryParameters": "?$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
                 "_attributes": "adx_customcss,adx_customjavascript,adx_copy"
             },
             {
@@ -770,8 +770,8 @@ export const portal_schema_data = {
                 "_foldername": "web-files",
                 "_propextension": "webfile",
                 "_exporttype": "SingleFolder",
-                "_query": "?$select=adx_partialurl,adx_name",
-                "_attributes": ""
+                "_fetchQueryParameters": "?$filter=_objectid_value%20eq%{_objectid_value}%20&$select=documentbody",
+                "_attributes": "documentbody"
             },
             {
                 "fields": {
@@ -1386,7 +1386,7 @@ export const portal_schema_data = {
                 "_foldername": "web-templates",
                 "_propextension": "webtemplate",
                 "_exporttype": "SubFolders",
-                "_query": "?$select=adx_name,adx_webtemplateid",
+                "_fetchQueryParameters": "?$select=adx_name,adx_webtemplateid",
                 "_attributes": "adx_copy,adx_source"
             },
             {
