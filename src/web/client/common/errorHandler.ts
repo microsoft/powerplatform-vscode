@@ -5,7 +5,7 @@
 
 
 import * as vscode from "vscode";
-import { ORG_URL, SCHEMA_FIELD_NAME, WEBSITE_ID } from "./constants";
+import { ORG_URL, PORTALS_FOLDER_NAME, SCHEMA_FIELD_NAME, WEBSITE_ID, WEBSITE_NAME } from "./constants";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const ERRORS = {
@@ -58,7 +58,14 @@ export function checkParameters(queryParamsMap: Map<string, string>, entity: str
     checkMap(queryParamsMap);
     checkString(entity);
     checkString(queryParamsMap.get(WEBSITE_ID));
-    checkString(queryParamsMap.get(SCHEMA_FIELD_NAME));
+    //NOTE: From extensibility perspective split attributes and attributes may contain encoded string which must be decoded before use.
+    const schemFileName = decodeURI(queryParamsMap.get(SCHEMA_FIELD_NAME) as string);
+    checkString(schemFileName);
+    queryParamsMap.set(SCHEMA_FIELD_NAME, schemFileName);
+    const websiteName = decodeURI(queryParamsMap.get(WEBSITE_NAME) as string);
+    checkString(websiteName);
+    const portalFolderName = websiteName ? websiteName : PORTALS_FOLDER_NAME;
+    queryParamsMap.set(WEBSITE_NAME, portalFolderName);
     const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
     checkString(dataverseOrgUrl);
 }
