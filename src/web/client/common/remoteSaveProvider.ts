@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as vscode from 'vscode';
 import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
 import { CHARSET, SINGLE_ENTITY_URL_KEY } from './constants';
@@ -34,10 +33,22 @@ export async function saveData(accessToken: string, requestUrl: string, fileUri:
     }
 
     if (requestBody) {
-        await fetch(requestUrl, {
-            method: 'PATCH',
-            headers: getHeader(accessToken),
-            body: requestBody
-        });
+        try {
+            const response = await fetch(requestUrl, {
+                method: 'PATCH',
+                headers: getHeader(accessToken),
+                body: requestBody
+            });
+            if (!response.ok) {
+                vscode.window.showErrorMessage("failed to save data");
+                throw new Error(response.statusText);
+            }
+        } catch (error) {
+            if (typeof error === "string" && error.includes('Unauthorized')) {
+                vscode.window.showErrorMessage('Failed to authenticate');
+            } else {
+                showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
+            }
+        }
     }
 }

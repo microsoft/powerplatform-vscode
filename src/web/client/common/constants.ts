@@ -14,12 +14,13 @@ export const PORTALS_URI_SCHEME = 'portals';
 export const PORTALS_WORKSPACE_NAME = 'Power Portals';
 export const WEB_FILES = 'webfiles';
 export const CONTENT_PAGES = 'contentpages';
-export const SCHEMA_FIELD_NAME = "schema";
+export const SCHEMA = "schema";
 export const WEBSITE_ID = "websiteId";
 export const WEBSITE_NAME = "websiteName";
 export const DEFAULT_LANGUAGE_CODE = 'en_US';
 export const NO_CONTENT = ' ';
 export const ORG_URL = 'orgUrl';
+export const DATA_SOURCE = 'dataSource';
 export const ADX_WEB_TEMPLATES = 'adx_webtemplates';
 export const EMPTY_FILE_NAME = 'defaultfilename';
 export const FILE_NAME_FIELD = '_primarynamefield';
@@ -28,10 +29,10 @@ export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
 
 export const columnExtension = new Map([
-    ["customcss.cs", "adx_customcss"],
+    ["customcss.css", "adx_customcss"],
     ["customjs.js", "adx_customjavascript"],
     ["webpage.copy.html", "adx_copy"],
-    ["adx_customcss", "customcss.cs"],
+    ["adx_customcss", "customcss.css"],
     ["adx_customjavascript", "customjs.js"],
     ["adx_copy", "webpage.copy.html"]
 ]);
@@ -43,22 +44,6 @@ export const entityFolder = new Map([
     ["contentpages", "content-pages"],
     ["adx_webpages", "web-pages"]
 ]);
-
-export enum appTypes {
-    portal = 0,
-    default = 1
-}
-
-export enum dataSource {
-    dataverse = 0,
-    github = 1
-}
-
-export enum fileExtension {
-    html = 0,
-    css = 1,
-    js = 2
-}
 
 export const pathParamToSchema = new Map([
     ["webpages", "adx_webpages"],

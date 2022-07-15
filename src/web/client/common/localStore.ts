@@ -114,8 +114,8 @@ export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUr
 }
 
 
-export async function setContext(accessToken: string, pathEntity: string, entityId: string, queryParamsMap: any, portalsFS: PortalsFS) {
-    const entity = pathParamToSchema.get(pathEntity) as string;
+export async function setContext(accessToken: string, pseudoEntityName: string, entityId: string, queryParamsMap: any, portalsFS: PortalsFS) {
+    const entity = pathParamToSchema.get(pseudoEntityName) as string;
     const dataverseOrgUrl = queryParamsMap.get(ORG_URL);
     dataSourcePropertiesMap = getDataSourcePropertiesMap();
     entitiesSchemaMap = getEntitiesSchemaMap();

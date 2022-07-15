@@ -5,9 +5,8 @@
 
 
 import * as vscode from "vscode";
-import { ORG_URL, PORTALS_FOLDER_NAME, SCHEMA_FIELD_NAME, WEBSITE_ID, WEBSITE_NAME } from "./constants";
+import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME } from "./constants";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const ERRORS = {
     WORKSPACE_INITIAL_LOAD: "Error Initializing Workspace",
     VSCODE_INITIAL_LOAD: "Error Initializing Platform",
@@ -32,6 +31,7 @@ export const ERRORS = {
     SERVICE_ERROR: "Service error",
     INVALID_ARGUMENT: 'Invalid argument',
     MANDATORY_PARAMETERS_NULL: "Mandatory Parameters Cannot Be Null",
+    MANDATORY_PARAMETERS_UNAVAILABLE: "Mandatory Parameters required for editing are not available",
     FILE_NAME_NOT_SET: "Error Creating File as File Name Not Specified"
 };
 
@@ -40,32 +40,48 @@ export function showErrorDialog(detailMessage: string, errorString: string) {
     vscode.window.showErrorMessage(errorString, options);
 }
 
-export function checkString(s: string | undefined) {
-    if (typeof (s) !== 'string' && s !== undefined) {
-        showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_NULL);
-        throw new Error(ERRORS.MANDATORY_PARAMETERS_NULL);
-    }
-}
-
-export function checkMap(d: Map<any, any>) {
-    if (d.size == 0 || d === undefined) {
-        showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_NULL);
-        throw new Error(ERRORS.MANDATORY_PARAMETERS_NULL);
-    }
-}
-
-export function checkParameters(queryParamsMap: Map<string, string>, entity: string) {
-    checkMap(queryParamsMap);
-    checkString(entity);
-    checkString(queryParamsMap.get(WEBSITE_ID));
+export function removeEncodingFromParameters(queryParamsMap: Map<string, string>) {
     //NOTE: From extensibility perspective split attributes and attributes may contain encoded string which must be decoded before use.
-    const schemFileName = decodeURI(queryParamsMap.get(SCHEMA_FIELD_NAME) as string);
-    checkString(schemFileName);
-    queryParamsMap.set(SCHEMA_FIELD_NAME, schemFileName);
+    const schemaFileName = decodeURI(queryParamsMap.get(SCHEMA) as string);
+    queryParamsMap.set(SCHEMA, schemaFileName);
     const websiteName = decodeURI(queryParamsMap.get(WEBSITE_NAME) as string);
-    checkString(websiteName);
     const portalFolderName = websiteName ? websiteName : PORTALS_FOLDER_NAME;
     queryParamsMap.set(WEBSITE_NAME, portalFolderName);
-    const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
-    checkString(dataverseOrgUrl);
+}
+
+export function checkMandatoryParameters(appName: string, entity: string, entityId: string, queryParamsMap: Map<string, string>): boolean {
+    return checkMandatoryPathParameters(appName, entity, entityId) && checkMandatoryQueryParameters(appName, queryParamsMap);
+}
+
+export function checkMandatoryPathParameters(appName: string, entity: string, entityId: string): boolean {
+    switch (appName) { // remove switch cases and use polymorphism
+        case 'portal':
+            if (entity && entityId) { // this will change when we start supporting multi-entity edits
+                return true;
+            } else {
+                showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_UNAVAILABLE);
+                return false;
+            }
+        default:
+            return false;
+    }
+}
+
+export function checkMandatoryQueryParameters(appName: string, queryParamsMap: Map<string, string>): boolean {
+    switch (appName) { // remove switch cases and use polymorphism
+        case 'portal': {
+            const orgURL = queryParamsMap?.get(ORG_URL);
+            const dataSource = queryParamsMap?.get(DATA_SOURCE);
+            const schemaName = queryParamsMap?.get(SCHEMA);
+            const websiteId = queryParamsMap?.get(WEBSITE_ID);
+            if (orgURL && dataSource && schemaName && websiteId) {
+                return true;
+            } else {
+                showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_UNAVAILABLE);
+                return false;
+            }
+        }
+        default:
+            return false;
+    }
 }

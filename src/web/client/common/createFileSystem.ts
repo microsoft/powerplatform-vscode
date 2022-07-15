@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as vscode from "vscode";
 import { PORTALS_URI_SCHEME } from "./constants";
 import { PortalsFS } from "./fileSystemProvider";

@@ -10,7 +10,7 @@ import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
-import { checkParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
+import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 let _telemetry: TelemetryReporter;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -32,11 +32,11 @@ export function activate(context: vscode.ExtensionContext): void {
                     "Initializing Power Platform web extension!"
                 );
                 if (!args) {
-                    vscode.window.showErrorMessage('Appname and query params missing, Please retry...');
+                    vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR); // this should never happen, the check is done by vscode.dev server
                     return;
                 }
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { appName, entity, entityId, searchParams } = args
+                const { appName, entity, entityId, searchParams } = args;
+
                 const queryParamsMap = new Map<string, string>();
                 try {
                     if (searchParams) {
@@ -52,21 +52,18 @@ export function activate(context: vscode.ExtensionContext): void {
                 let accessToken: string;
                 if (appName) {
                     switch (appName) {
-                        case 'portal':
-                            try {
-                                checkParameters(queryParamsMap, entity);
-                                accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
-                                if (!accessToken) {
-                                    {
-                                        showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);
-                                        return;
-                                    }
+                        case 'portal': {
+                            if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
+                            removeEncodingFromParameters(queryParamsMap);
+                            accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
+                            if (!accessToken) {
+                                {
+                                    showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);
+                                    return;
                                 }
-                                setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
-                            } catch {
-                                showErrorDialog(ERRORS.SERVICE_ERROR, ERRORS.BAD_VALUE);
-                                return;
                             }
+                            setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
+                        }
                             break;
                         case 'default':
                         default:
