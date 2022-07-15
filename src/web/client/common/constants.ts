@@ -20,6 +20,7 @@ export const WEBSITE_NAME = "websiteName";
 export const DEFAULT_LANGUAGE_CODE = 'en_US';
 export const NO_CONTENT = ' ';
 export const ORG_URL = 'orgUrl';
+export const DATA_SOURCE = 'dataSource';
 export const ADX_WEB_TEMPLATES = 'adx_webtemplates';
 export const EMPTY_FILE_NAME = 'defaultfilename';
 export const FILE_NAME_FIELD = '_primarynamefield';

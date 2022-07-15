@@ -10,7 +10,7 @@ import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
-import { checkParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
+import { checkMandatoryPathParameters, checkMandatoryQueryParameters, checkParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 let _telemetry: TelemetryReporter;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -32,11 +32,12 @@ export function activate(context: vscode.ExtensionContext): void {
                     "Initializing Power Platform web extension!"
                 );
                 if (!args) {
-                    vscode.window.showErrorMessage('Appname and query params missing, Please retry...');
+                    vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR); // this should never happen, the check is done by vscode.dev server
                     return;
                 }
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { appName, entity, entityId, searchParams } = args
+                const { appName, entity, entityId, searchParams } = args;
+
                 const queryParamsMap = new Map<string, string>();
                 try {
                     if (searchParams) {
@@ -54,6 +55,8 @@ export function activate(context: vscode.ExtensionContext): void {
                     switch (appName) {
                         case 'portal':
                             try {
+                                if (!checkMandatoryPathParameters(appName, entity, entityId)) return;
+                                if (!checkMandatoryQueryParameters(appName, queryParamsMap)) return;
                                 checkParameters(queryParamsMap, entity);
                                 accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
                                 if (!accessToken) {

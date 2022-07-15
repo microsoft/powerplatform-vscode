@@ -5,7 +5,7 @@
 
 
 import * as vscode from "vscode";
-import { ORG_URL, PORTALS_FOLDER_NAME, SCHEMA_FIELD_NAME, WEBSITE_ID, WEBSITE_NAME } from "./constants";
+import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA_FIELD_NAME, WEBSITE_ID, WEBSITE_NAME } from "./constants";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const ERRORS = {
@@ -32,6 +32,7 @@ export const ERRORS = {
     SERVICE_ERROR: "Service error",
     INVALID_ARGUMENT: 'Invalid argument',
     MANDATORY_PARAMETERS_NULL: "Mandatory Parameters Cannot Be Null",
+    MANDATORY_PARAMETERS_UNAVAILABLE: "Mandatory Parameters required for editing are not available",
     FILE_NAME_NOT_SET: "Error Creating File as File Name Not Specified"
 };
 
@@ -68,4 +69,35 @@ export function checkParameters(queryParamsMap: Map<string, string>, entity: str
     queryParamsMap.set(WEBSITE_NAME, portalFolderName);
     const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
     checkString(dataverseOrgUrl);
+}
+
+export function checkMandatoryPathParameters(appName: string, entity: string, entityId: string) {
+    switch (appName) { // remove switch cases and use polymorphism
+        case 'portal':
+            if (entity && entityId) { // this will change when we start supporting multi-entity edits
+                return true;
+            } else {
+                showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_UNAVAILABLE);
+                return false;
+            }
+        default:
+    }
+}
+
+export function checkMandatoryQueryParameters(appName: string, queryParamsMap: Map<string, string>) {
+    switch (appName) { // remove switch cases and use polymorphism
+        case 'portal': {
+            const orgURL = queryParamsMap?.get(ORG_URL);
+            const dataSource = queryParamsMap?.get(DATA_SOURCE);
+            const schemaName = queryParamsMap?.get(SCHEMA_FIELD_NAME);
+            const websiteId = queryParamsMap?.get(WEBSITE_ID);
+            if (orgURL && dataSource && schemaName && websiteId) {
+                return true;
+            } else {
+                showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_UNAVAILABLE);
+                return false;
+            }
+        }
+        default:
+    }
 }
