@@ -6,7 +6,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { getHeader } from "./authenticationProvider";
+import { getCustomRequestURL, getHeader } from "./authenticationProvider";
 import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { ERRORS, showErrorDialog } from "./errorHandler";
@@ -21,7 +21,7 @@ let websiteLanguageIdToPortalLanguageMap = new Map();
 let websiteIdToLanguage = new Map();
 const portalDetailsMap = new Map();
 
-export async function languageIdToCode(accessToken: string, dataverseOrgURL: string, entity: string, entitiesSchemaMap: any): Promise<Map<string, any>> {
+export async function languageIdToCode(accessToken: string, dataverseOrgURL: string, entitiesSchemaMap: any): Promise<Map<string, any>> {
 
     try {
         const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
@@ -52,7 +52,7 @@ export async function languageIdToCode(accessToken: string, dataverseOrgURL: str
     return languageIdCodeMap;
 }
 
-export async function websiteLanguageIdToPortalLanguage(accessToken: string, dataverseOrgURL: string, entity: any, entitiesSchemaMap: any): Promise<Map<string, any>> {
+export async function websiteLanguageIdToPortalLanguage(accessToken: string, dataverseOrgURL: string, entitiesSchemaMap: any): Promise<Map<string, any>> {
     try {
         const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
         const response = await fetch(requestUrl, {
@@ -61,12 +61,12 @@ export async function websiteLanguageIdToPortalLanguage(accessToken: string, dat
         if (!response.ok) {
             showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
         }
-        const res = await response.json();
-        if (res) {
-            if (res.value.length > 0) {
-                for (let counter = 0; counter < res.value.length; counter++) {
-                    const adx_portalLanguageId_value = res.value[counter].adx_portallanguageid_value ? res.value[counter].adx_portallanguageid_value : PORTAL_LANGUAGE_DEFAULT;
-                    const adx_websiteLanguageId = res.value[counter].adx_websitelanguageid;
+        const result = await response.json();
+        if (result) {
+            if (result.value.length > 0) {
+                for (let counter = 0; counter < result.value.length; counter++) {
+                    const adx_portalLanguageId_value = result.value[counter].adx_portallanguageid_value ? result.value[counter].adx_portallanguageid_value : PORTAL_LANGUAGE_DEFAULT;
+                    const adx_websiteLanguageId = result.value[counter].adx_websitelanguageid;
                     websiteLanguageIdToPortalLanguageMap.set(adx_websiteLanguageId, adx_portalLanguageId_value);
                 }
             }
@@ -80,13 +80,6 @@ export async function websiteLanguageIdToPortalLanguage(accessToken: string, dat
         }
     }
     return websiteLanguageIdToPortalLanguageMap;
-}
-
-function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string, entitiesSchemaMap: any): string {
-    const parameterizedUrl = dataSourcePropertiesMap.get(urlQuery) as string;
-    const query = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get("_query");
-    const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
-    return requestUrl + query;
 }
 
 export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUrl: string, entitiesSchemaMap: any): Promise<Map<string, string>> {
@@ -127,13 +120,14 @@ export async function setContext(accessToken: string, pathEntity: string, entity
     dataSourcePropertiesMap = getDataSourcePropertiesMap();
     entitiesSchemaMap = getEntitiesSchemaMap();
     websiteIdToLanguage = await websiteIdToLanguageMap(accessToken, dataverseOrgUrl, entitiesSchemaMap);
-    websiteLanguageIdToPortalLanguageMap = await websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl, WEBSITE_LANGUAGES, entitiesSchemaMap);
-    languageIdCodeMap = await languageIdToCode(accessToken, queryParamsMap.get(ORG_URL), entity, entitiesSchemaMap);
+    websiteLanguageIdToPortalLanguageMap = await websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl, entitiesSchemaMap);
+    languageIdCodeMap = await languageIdToCode(accessToken, queryParamsMap.get(ORG_URL), entitiesSchemaMap);
     createEntityFiles(portalsFS, accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap);
 }
 
 function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any) {
-    createFileSystem(portalsFS, queryParamsMap.get(WEBSITE_NAME));
+    const portalFolderName = queryParamsMap.get(WEBSITE_NAME);
+    createFileSystem(portalsFS, portalFolderName);
     getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS);
 }
 

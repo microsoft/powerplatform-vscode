@@ -28,7 +28,7 @@ export interface Entity {
     _orderby?: string | null;
     _topcount?: string | null;
     _syncdirection?: string | null;
-    _query?: string | null;
+    _fetchQueryParameters?: string | null;
     _attributes?: string | null;
 }
 
