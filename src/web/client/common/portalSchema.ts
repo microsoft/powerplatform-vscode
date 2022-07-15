@@ -770,7 +770,7 @@ export const portal_schema_data = {
                 "_foldername": "web-files",
                 "_propextension": "webfile",
                 "_exporttype": "SingleFolder",
-                "_fetchQueryParameters": "?$filter=_objectid_value%20eq%20639c734a-6cf7-ec11-82e4-0022482ac21c%20&$select=documentbody",
+                "_fetchQueryParameters": "?$filter=_objectid_value%20eq%{_objectid_value}%20&$select=documentbody",
                 "_attributes": "documentbody"
             },
             {
