@@ -4,10 +4,9 @@
  */
 
 import * as vscode from "vscode";
-import { PORTALS_URI_SCHEME } from "./constants";
+import { PORTALS_URI_SCHEME, PORTALS_WORKSPACE_NAME } from "./constants";
 import { PortalsFS } from "./fileSystemProvider";
 
 export function createFileSystem(portalsFS: PortalsFS, portalFolderName: string) {
-    portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/`, true));
-    vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/`), name: portalFolderName });
+    portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_WORKSPACE_NAME}/${portalFolderName}/`, true));
 }

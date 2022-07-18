@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
-import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_ID, WEBSITE_NAME } from './constants';
+import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_ID, WEBSITE_NAME, PORTALS_WORKSPACE_NAME } from './constants';
 import { PORTALS_URI_SCHEME, SINGLE_ENTITY_URL_KEY } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
@@ -59,29 +59,29 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
     const portalFolderName = queryParamsMap.get(WEBSITE_NAME);
     const subUri = entityFolder.get(entity) as string;
     if (exportType && exportType === 'SubFolders') {
-        portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`, true));
+        portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_WORKSPACE_NAME}/${portalFolderName}/${subUri}/`, true));
     }
     if (attributes) {
         const fileName = result[entitiesSchemaMap.get(pathParamToSchema.get(entity)).get(FILE_NAME_FIELD)] ? result[entitiesSchemaMap.get(pathParamToSchema.get(entity)).get(FILE_NAME_FIELD)].toLowerCase() : EMPTY_FILE_NAME;
         if (fileName === EMPTY_FILE_NAME) {
             showErrorDialog(ERRORS.FILE_NAME_NOT_SET, ERRORS.SERVICE_ERROR);
         }
-        portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`, true));
-        portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/`, true));
+        portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_WORKSPACE_NAME}/${portalFolderName}/${subUri}/${fileName}/`, true));
+        portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_WORKSPACE_NAME}/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/`, true));
         const attributeArray = attributes.split(',');
         let counter = 0
         for (counter; counter < attributeArray.length; counter++) {
             const value = result[attributeArray[counter]] ? result[attributeArray[counter]] : NO_CONTENT;
             saveDataMap = createVirtualFile(portalsFS, fileName, languageCode, value, columnExtension.get(attributeArray[counter]) as string, subUri, entityId, attributeArray[counter] as string, entity, portalFolderName);
         }
-        vscode.window.showTextDocument(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${columnExtension.get(attributeArray[--counter]) as string}`));
+        vscode.window.showTextDocument(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${PORTALS_WORKSPACE_NAME}/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${columnExtension.get(attributeArray[--counter]) as string}`));
     }
     registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap);
 }
 
 function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode: string, data: any, portalFileExtension: string, subUri: string, entityId: string, saveDataAtribute: string, entity: string, portalFolderName: string) {
     const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAtribute);
-    const fileUri = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${portalFileExtension}`;
+    const fileUri = `${PORTALS_URI_SCHEME}:/${PORTALS_WORKSPACE_NAME}/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${portalFileExtension}`;
     portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
     saveDataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
     return saveDataMap;

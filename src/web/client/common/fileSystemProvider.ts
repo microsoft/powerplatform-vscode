@@ -104,7 +104,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
     // --- manage files/folders
 
     rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
-
         if (!options.overwrite && this._lookup(newUri, true)) {
             throw vscode.FileSystemError.FileExists(newUri);
         }
