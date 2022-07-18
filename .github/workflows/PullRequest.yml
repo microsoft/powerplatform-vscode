@@ -32,10 +32,17 @@ jobs:
       with:
         node-version: 14.x
 
-    - name: Build and test
+    - name: Install dependencies
+      run: npm i -g npm
+
+    - name: Build and unit test
       run: |
-        npm i -g npm
         npm ci
         npm run dist
       env:
         AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
+
+    - name: Run integration tests
+      uses: GabrielBB/xvfb-action@v1.6
+      with:
+        run: npm run test-integration
