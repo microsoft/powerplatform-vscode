@@ -64,7 +64,8 @@
     "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onStartupFinished",
     "onLanguage:yaml",
-    "onLanguage:html"
+    "onLanguage:html",
+    "onFileSystem:powerportal-vfs"
   ],
   "capabilities": {
     "virtualWorkspaces": {
