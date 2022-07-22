@@ -65,7 +65,7 @@
     "onStartupFinished",
     "onLanguage:yaml",
     "onLanguage:html",
-    "onFileSystem:powerportal-vfs"
+    "onFileSystem:powerplatform-vfs"
   ],
   "capabilities": {
     "virtualWorkspaces": {
