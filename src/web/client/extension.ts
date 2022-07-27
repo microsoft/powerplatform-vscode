@@ -11,6 +11,7 @@ import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
+import { INFO } from "./common/resources/Info";
 let _telemetry: TelemetryReporter;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -28,27 +29,18 @@ export function activate(context: vscode.ExtensionContext): void {
             "microsoft-powerapps-portals.webExtension.init",
             async (args: any) => {
                 _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
-                vscode.window.showInformationMessage(
-                    "Initializing Power Platform web extension!"
-                );
-                if (!args) {
-                    vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR); // this should never happen, the check is done by vscode.dev server
-                    return;
-                }
+                vscode.window.showInformationMessage(INFO.WORKSPACE_INITIAL_LOAD);
                 const { appName, entity, entityId, searchParams } = args;
 
                 const queryParamsMap = new Map<string, string>();
-                try {
-                    if (searchParams) {
-                        const queryParams = new URLSearchParams(searchParams);
-                        for (const pair of queryParams.entries()) {
-                            queryParamsMap.set(pair[0], pair[1]);
-                        }
+
+                if (searchParams) {
+                    const queryParams = new URLSearchParams(searchParams);
+                    for (const pair of queryParams.entries()) {
+                        queryParamsMap.set(pair[0], pair[1]);
                     }
                 }
-                catch (error) {
-                    vscode.window.showErrorMessage("Error encountered in query parameters fetch");
-                }
+
                 let accessToken: string;
                 if (appName) {
                     switch (appName) {
@@ -58,7 +50,7 @@ export function activate(context: vscode.ExtensionContext): void {
                             accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
                             if (!accessToken) {
                                 {
-                                    showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);
+                                    showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.WORKSPACE_INITIAL_LOAD_DESC);
                                     return;
                                 }
                             }
@@ -70,8 +62,8 @@ export function activate(context: vscode.ExtensionContext): void {
                             vscode.window.showInformationMessage(ERRORS.UNKNOWN_APP);
                     }
                 } else {
-                    vscode.window.showErrorMessage(ERRORS.APP_NAME_NOT_AVAILABLE);
-                    throw new Error(ERRORS.APP_NAME_NOT_AVAILABLE);
+                    vscode.window.showErrorMessage(ERRORS.UNKNOWN_APP);
+                    throw new Error(ERRORS.UNKNOWN_APP);
                 }
             }
         )

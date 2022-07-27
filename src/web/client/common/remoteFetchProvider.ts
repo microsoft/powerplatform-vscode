@@ -11,6 +11,7 @@ import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { registerSaveProvider } from './remoteSaveProvider';
+import { INFO } from './resources/Info';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let saveDataMap = new Map<string, SaveEntityDetails>();
@@ -24,12 +25,11 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         }
         else url = MULTI_ENTITY_URL_KEY;
         const requestUrl = getRequestURLForSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
-        vscode.window.showInformationMessage(requestUrl);
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
-            vscode.window.showErrorMessage("failed to fetch data");
+            vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR);
             throw new Error(response.statusText);
         }
         const data = await response.json();
@@ -42,9 +42,9 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         }
     } catch (error) {
         if (typeof error === "string" && error.includes('Unauthorized')) {
-            vscode.window.showErrorMessage('Failed to authenticate');
+            vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
         } else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
     }
 }
@@ -88,6 +88,6 @@ function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode:
 }
 
 export async function getDataFromDataVerse(accessToken: string, entity: string, entityId: string, queryParamMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS) {
-    vscode.window.showInformationMessage('Fetching data...');
+    vscode.window.showInformationMessage(INFO.FETCH_FILE);
     await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs);
 }
