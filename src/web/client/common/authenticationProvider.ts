@@ -26,6 +26,7 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
         accessToken = session.accessToken;
     } catch (error) {
         vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
+        // TODO-Telemetry: add telemetry error event - dataverseAuthentication Failed
     }
     return accessToken;
 }

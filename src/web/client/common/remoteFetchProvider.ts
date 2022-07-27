@@ -25,11 +25,13 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         else url = MULTI_ENTITY_URL_KEY;
         const requestUrl = getRequestURLForSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
         vscode.window.showInformationMessage(requestUrl);
+        // TODO-Telemetry: add telemetry event - fetching data with requestUrl
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
             vscode.window.showErrorMessage("failed to fetch data");
+            // TODO-Telemetry: add telemetry error event - failed to fetch Data
             throw new Error(response.statusText);
         }
         const data = await response.json();
@@ -41,6 +43,7 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
             createContentFiles(data, entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId);
         }
     } catch (error) {
+        // TODO-Telemetry: add telemetry event - fetching data with requestUrl failed + error
         if (typeof error === "string" && error.includes('Unauthorized')) {
             vscode.window.showErrorMessage('Failed to authenticate');
         } else {
@@ -65,6 +68,7 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
         const fileName = result[entitiesSchemaMap.get(pathParamToSchema.get(entity)).get(FILE_NAME_FIELD)] ? result[entitiesSchemaMap.get(pathParamToSchema.get(entity)).get(FILE_NAME_FIELD)].toLowerCase() : EMPTY_FILE_NAME;
         if (fileName === EMPTY_FILE_NAME) {
             showErrorDialog(ERRORS.FILE_NAME_NOT_SET, ERRORS.SERVICE_ERROR);
+            // TODO-Telemetry: add telemetry error event - empty fileName
         }
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`, true));
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/`, true));

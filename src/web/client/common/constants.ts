@@ -56,3 +56,16 @@ export const pathParamToSchema = new Map([
     ["adx_webfiles", "adx_webfile"],
     ["adx_copy", "adx_copy"]
 ]);
+
+export enum queryParameters {
+    ORG_URL = 'orgUrl',
+    WEBSITE_ID = 'websiteId',
+    SCHEMA = 'schema',
+    DATA_SOURCE = 'dataSource',
+    REFERRER_SESSION_ID = 'referrerSessionId',
+    REFERRER = 'referrer'
+}
+
+export enum telemetryEventNames {
+    PORTAL_WEB_EXTENSION_INIT_DATA = 'PortalWebExtensionInitData'
+}

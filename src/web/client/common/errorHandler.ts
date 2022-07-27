@@ -60,6 +60,7 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
                 return true;
             } else {
                 showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_UNAVAILABLE);
+                // TODO-Telemetry: add telemetry error event - mandatory path params missing
                 return false;
             }
         default:
@@ -78,6 +79,7 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
                 return true;
             } else {
                 showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_UNAVAILABLE);
+                // TODO-Telemetry: add telemetry error event - mandatory query params missing
                 return false;
             }
         }

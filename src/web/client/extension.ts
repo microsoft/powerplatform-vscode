@@ -11,6 +11,7 @@ import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
+import { sendExtensionInitTelemetryEvents } from "./telemetry/webExtensionTelemetry";
 let _telemetry: TelemetryReporter;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -49,20 +50,25 @@ export function activate(context: vscode.ExtensionContext): void {
                 catch (error) {
                     vscode.window.showErrorMessage("Error encountered in query parameters fetch");
                 }
+                sendExtensionInitTelemetryEvents(args, _telemetry);
                 let accessToken: string;
                 if (appName) {
                     switch (appName) {
                         case 'portal': {
                             if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
                             removeEncodingFromParameters(queryParamsMap);
+
                             accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
                             if (!accessToken) {
                                 {
                                     showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);
+                                    // TODO-Telemetry: add telemetry error event - unable to fetch accessToken
                                     return;
                                 }
                             }
-                            setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
+                            // TODO-Telemetry: add telemetry measurements (pre)
+                            await setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
+                            // TODO-Telemetry: add telemetry measurements (post)
                         }
                             break;
                         case 'default':

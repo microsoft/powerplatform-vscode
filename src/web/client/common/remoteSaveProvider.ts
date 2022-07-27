@@ -30,6 +30,7 @@ export async function saveData(accessToken: string, requestUrl: string, fileUri:
         requestBody = JSON.stringify(data);
     } else {
         showErrorDialog(ERRORS.BAD_REQUEST, ERRORS.BAD_REQUEST);
+        // TODO-Telemetry: add error telemetry event - unable to save - couldn't get data required for saving
     }
 
     if (requestBody) {
@@ -41,9 +42,11 @@ export async function saveData(accessToken: string, requestUrl: string, fileUri:
             });
             if (!response.ok) {
                 vscode.window.showErrorMessage("failed to save data");
+                // TODO-Telemetry: add error telemetry event - unable to save + requestUrl
                 throw new Error(response.statusText);
             }
         } catch (error) {
+            // TODO-Telemetry: add error telemetry event - unable to save + requestUrl
             if (typeof error === "string" && error.includes('Unauthorized')) {
                 vscode.window.showErrorMessage('Failed to authenticate');
             } else {
