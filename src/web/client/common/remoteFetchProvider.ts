@@ -16,7 +16,7 @@ import { INFO } from './resources/Info';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let saveDataMap = new Map<string, SaveEntityDetails>();
 
-export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS) {
+export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS, websiteIdToLanguage: any) {
     try {
         const dataverseOrgUrl = queryParamsMap.get(ORG_URL);
         let url;
@@ -35,10 +35,10 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         const data = await response.json();
         if (data.value?.length >= 0) {
             for (let counter = 0; counter < data.value.length; counter++) {
-                createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId);
+                createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
             }
         } else {
-            createContentFiles(data, entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId);
+            createContentFiles(data, entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
         }
     } catch (error) {
         if (typeof error === "string" && error.includes('Unauthorized')) {
@@ -49,10 +49,11 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
     }
 }
 
-function createContentFiles(result: string, entity: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalsFS: PortalsFS, dataverseOrgUrl: string, accessToken: string, entityId: string) {
+function createContentFiles(result: string, entity: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalsFS: PortalsFS, dataverseOrgUrl: string, accessToken: string, entityId: string, websiteIdToLanguage: any) {
     let languageCode = DEFAULT_LANGUAGE_CODE;
     if (languageIdCodeMap?.size) {
-        languageCode = languageIdCodeMap.get(queryParamsMap.get(WEBSITE_ID)) ? languageIdCodeMap.get(queryParamsMap.get(WEBSITE_ID)) : DEFAULT_LANGUAGE_CODE;
+        const lcid = websiteIdToLanguage.get(queryParamsMap.get(WEBSITE_ID))
+        languageCode = languageIdCodeMap.get(lcid) ? languageIdCodeMap.get(lcid) : DEFAULT_LANGUAGE_CODE;
     }
     const attributes = entitiesSchemaMap.get(pathParamToSchema.get(entity)).get('_attributes');
     const exportType = entitiesSchemaMap.get(pathParamToSchema.get(entity)).get('_exporttype');
@@ -87,7 +88,7 @@ function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode:
     return saveDataMap;
 }
 
-export async function getDataFromDataVerse(accessToken: string, entity: string, entityId: string, queryParamMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS) {
+export async function getDataFromDataVerse(accessToken: string, entity: string, entityId: string, queryParamMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS, websiteIdToLanguage: any) {
     vscode.window.showInformationMessage(INFO.FETCH_FILE);
-    await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs);
+    await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs, websiteIdToLanguage);
 }

@@ -4,7 +4,7 @@
  */
 
 import * as vscode from 'vscode';
-import { pathParamToSchema, PROVIDER_ID, SCOPE_OPTION } from './constants';
+import { pathParamToSchema, PROVIDER_ID } from './constants';
 import { ERRORS } from './errorHandler';
 import { dataSourcePropertiesMap } from './localStore';
 
@@ -22,7 +22,8 @@ export function getHeader(accessToken: string) {
 export async function dataverseAuthentication(dataverseOrgURL: string): Promise<string> {
     let accessToken = '';
     try {
-        const session = await vscode.authentication.getSession(PROVIDER_ID, [dataverseOrgURL + SCOPE_OPTION], { createIfNone: true });
+        //const session = await vscode.authentication.getSession(PROVIDER_ID, [dataverseOrgURL + SCOPE_OPTION], { createIfNone: true });
+        const session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { createIfNone: true });
         accessToken = session.accessToken;
     } catch (error) {
         vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);

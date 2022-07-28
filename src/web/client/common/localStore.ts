@@ -25,6 +25,7 @@ export async function languageIdToCode(accessToken: string, dataverseOrgURL: str
 
     try {
         const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
+
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
@@ -33,11 +34,11 @@ export async function languageIdToCode(accessToken: string, dataverseOrgURL: str
         }
         const result = await response.json();
         if (result) {
-            if (result.value.length > 0) {
+            if (result.value?.length > 0) {
                 for (let counter = 0; counter < result.value.length; counter++) {
-                    const adx_portallanguageid = result.value[counter].adx_portallanguageid ? result.value[counter].adx_portallanguageid : PORTAL_LANGUAGE_DEFAULT;
+                    const adx_lcid = result.value[counter].adx_lcid ? result.value[counter].adx_lcid : PORTAL_LANGUAGE_DEFAULT;
                     const adx_languagecode = result.value[counter].adx_languagecode;
-                    languageIdCodeMap.set(adx_portallanguageid, adx_languagecode);
+                    languageIdCodeMap.set(adx_lcid, adx_languagecode);
                 }
             }
         }
@@ -54,7 +55,7 @@ export async function languageIdToCode(accessToken: string, dataverseOrgURL: str
 
 export async function websiteLanguageIdToPortalLanguage(accessToken: string, dataverseOrgURL: string, entitiesSchemaMap: any): Promise<Map<string, any>> {
     try {
-        const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
+        const requestUrl = getCustomRequestURL(dataverseOrgURL, WEBSITE_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
@@ -66,8 +67,8 @@ export async function websiteLanguageIdToPortalLanguage(accessToken: string, dat
             if (result.value.length > 0) {
                 for (let counter = 0; counter < result.value.length; counter++) {
                     const adx_portalLanguageId_value = result.value[counter].adx_portallanguageid_value ? result.value[counter].adx_portallanguageid_value : PORTAL_LANGUAGE_DEFAULT;
-                    const adx_websiteLanguageId = result.value[counter].adx_websitelanguageid;
-                    websiteLanguageIdToPortalLanguageMap.set(adx_websiteLanguageId, adx_portalLanguageId_value);
+                    const adx_websitelanguageid = result.value[counter].adx_websitelanguageid;
+                    websiteLanguageIdToPortalLanguageMap.set(adx_websitelanguageid, adx_portalLanguageId_value);
                 }
             }
         }
@@ -88,10 +89,12 @@ export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUr
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
+
         if (!response.ok) {
             showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
         const result = await response.json();
+
         if (result) {
             if (result.value.length > 0) {
                 for (let counter = 0; counter < result.value.length; counter++) {
@@ -128,7 +131,7 @@ export async function setContext(accessToken: string, pseudoEntityName: string, 
 function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any) {
     const portalFolderName = queryParamsMap.get(WEBSITE_NAME);
     createFileSystem(portalsFS, portalFolderName);
-    getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS);
+    getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS, websiteIdToLanguage);
 }
 
 export { dataSourcePropertiesMap, entitiesSchemaMap, websiteIdToLanguage, websiteLanguageIdToPortalLanguageMap, languageIdCodeMap, portalDetailsMap };

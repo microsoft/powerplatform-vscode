@@ -17,7 +17,7 @@ export const CONTENT_PAGES = 'contentpages';
 export const SCHEMA = "schema";
 export const WEBSITE_ID = "websiteId";
 export const WEBSITE_NAME = "websiteName";
-export const DEFAULT_LANGUAGE_CODE = 'en_US';
+export const DEFAULT_LANGUAGE_CODE = ' ';
 export const NO_CONTENT = ' ';
 export const ORG_URL = 'orgUrl';
 export const DATA_SOURCE = 'dataSource';
@@ -52,6 +52,7 @@ export const pathParamToSchema = new Map([
     ["adx_webtemplates", "adx_webtemplate"],
     ["adx_websites", "adx_website"],
     ["adx_portallanguages", "adx_portallanguage"],
+    ["adx_websitelanguages", "adx_websitelanguage"],
     ["webfiles", "adx_webfiles"],
     ["adx_webfiles", "adx_webfile"],
     ["adx_copy", "adx_copy"]
