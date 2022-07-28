@@ -253,7 +253,7 @@ export const portal_schema_data = {
                 "_foldername": ".portalconfig",
                 "_propextension": "portallanguage",
                 "_exporttype": "SingleFile",
-                "_fetchQueryParameters": "?$select=adx_portallanguageid,adx_languagecode"
+                "_fetchQueryParameters": "?$select=adx_lcid,adx_languagecode"
             },
             {
                 "fields": {
@@ -304,7 +304,8 @@ export const portal_schema_data = {
                 "_disableplugins": "true",
                 "_foldername": "",
                 "_propextension": "websitelanguage",
-                "_exporttype": "SingleFile"
+                "_exporttype": "SingleFile",
+                "_fetchQueryParameters": "?$select=adx_websitelanguageid,_adx_portallanguageid_value"
             },
             {
                 "fields": {

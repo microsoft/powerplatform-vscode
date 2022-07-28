@@ -4,7 +4,7 @@
  */
 
 import * as vscode from 'vscode';
-import { pathParamToSchema, PROVIDER_ID, SCOPE_OPTION } from './constants';
+import { pathParamToSchema, PROVIDER_ID } from './constants';
 import { ERRORS } from './errorHandler';
 import { dataSourcePropertiesMap } from './localStore';
 
@@ -21,7 +21,7 @@ export function getHeader(accessToken: string) {
 export async function dataverseAuthentication(dataverseOrgURL: string): Promise<string> {
     let accessToken = '';
     try {
-        const session = await vscode.authentication.getSession(PROVIDER_ID, [dataverseOrgURL + SCOPE_OPTION], { createIfNone: true });
+        const session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { createIfNone: true });
         accessToken = session.accessToken;
     } catch (error) {
         vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
@@ -45,6 +45,6 @@ export function getRequestURLForSingleEntity(dataverseOrgUrl: string, entity: st
 export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string, entitiesSchemaMap: Map<string, Map<string, string>>): string {
     const parameterizedUrl = dataSourcePropertiesMap.get(urlQuery) as string;
     const fetchQueryParameters = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get("_fetchQueryParameters");
-    const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api') as string)?.replace('{data}', dataSourcePropertiesMap.get('data') as string).replace('{version}', dataSourcePropertiesMap.get('version') as string);
+    const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api') as string).replace('{data}', dataSourcePropertiesMap.get('data') as string).replace('{version}', dataSourcePropertiesMap.get('version') as string);
     return requestUrl + fetchQueryParameters;
 }

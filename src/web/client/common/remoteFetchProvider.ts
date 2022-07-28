@@ -14,7 +14,7 @@ import { registerSaveProvider } from './remoteSaveProvider';
 import { INFO } from './resources/Info';
 let saveDataMap = new Map<string, SaveEntityDetails>();
 
-export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS) {
+export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, websiteIdToLanguage: Map<string, string>) {
     try {
         const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
         let url;
@@ -33,25 +33,25 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         const data = await response.json();
         if (data.value?.length >= 0) {
             for (let counter = 0; counter < data.value.length; counter++) {
-                createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId);
+                createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
             }
         } else {
-            createContentFiles(data, entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId);
+            createContentFiles(data, entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
         }
     } catch (error) {
         if (typeof error === "string" && error.includes('Unauthorized')) {
             vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
         } else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT);
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
     }
 }
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function createContentFiles(result: any, entity: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalsFS: PortalsFS, dataverseOrgUrl: string, accessToken: string, entityId: string) {
-    let languageCode = DEFAULT_LANGUAGE_CODE;
-    if (languageIdCodeMap?.size && languageIdCodeMap.get(queryParamsMap.get(WEBSITE_ID) as string)) {
-        languageCode = languageIdCodeMap.get(queryParamsMap.get(WEBSITE_ID) as string) as string;
+function createContentFiles(result: any, entity: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalsFS: PortalsFS, dataverseOrgUrl: string, accessToken: string, entityId: string, websiteIdToLanguage: Map<string, string>) {
+    let languageCode: string = DEFAULT_LANGUAGE_CODE;
+    const lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(WEBSITE_ID) as string) ? websiteIdToLanguage.get(queryParamsMap.get(WEBSITE_ID) as string) : DEFAULT_LANGUAGE_CODE;
+    if (languageIdCodeMap?.size && lcid) {
+        languageCode = languageIdCodeMap.get(lcid) as string ? languageIdCodeMap.get(lcid) as string : DEFAULT_LANGUAGE_CODE;
     }
     const entityEntry = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string);
     const attributes = entityEntry?.get('_attributes');
@@ -90,7 +90,7 @@ function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode:
     return saveDataMap;
 }
 
-export async function getDataFromDataVerse(accessToken: string, entity: string, entityId: string, queryParamMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS) {
+export async function getDataFromDataVerse(accessToken: string, entity: string, entityId: string, queryParamMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, websiteIdToLanguage: Map<string, string>) {
     vscode.window.showInformationMessage(INFO.FETCH_FILE);
-    await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs);
+    await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs, websiteIdToLanguage);
 }
