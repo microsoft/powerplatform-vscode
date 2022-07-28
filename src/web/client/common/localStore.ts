@@ -29,7 +29,7 @@ export async function languageIdToCode(accessToken: string, dataverseOrgURL: str
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
-            showErrorDialog(ERRORS.NOT_FOUND, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
+            showErrorDialog(ERRORS.BACKEND_ERROR, ERRORS.BACKEND_ERROR_DESC);
         }
         const result = await response.json();
         if (result) {
@@ -46,7 +46,7 @@ export async function languageIdToCode(accessToken: string, dataverseOrgURL: str
             showErrorDialog(ERRORS.AUTHORIZATION_FAILED, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
         }
         else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
     }
     return languageIdCodeMap;
@@ -59,7 +59,7 @@ export async function websiteLanguageIdToPortalLanguage(accessToken: string, dat
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
         const result = await response.json();
         if (result) {
@@ -76,7 +76,7 @@ export async function websiteLanguageIdToPortalLanguage(accessToken: string, dat
             showErrorDialog(ERRORS.AUTHORIZATION_FAILED, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
         }
         else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
     }
     return websiteLanguageIdToPortalLanguageMap;
@@ -89,7 +89,7 @@ export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUr
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
         const result = await response.json();
         if (result) {
@@ -107,7 +107,7 @@ export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUr
             showErrorDialog(ERRORS.AUTHORIZATION_FAILED, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
         }
         else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
+            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
     }
     return websiteIdToLanguage;
@@ -132,4 +132,3 @@ function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: st
 }
 
 export { dataSourcePropertiesMap, entitiesSchemaMap, websiteIdToLanguage, websiteLanguageIdToPortalLanguageMap, languageIdCodeMap, portalDetailsMap };
-
