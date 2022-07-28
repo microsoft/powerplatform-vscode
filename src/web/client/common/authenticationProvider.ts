@@ -8,7 +8,6 @@ import { pathParamToSchema, PROVIDER_ID } from './constants';
 import { ERRORS } from './errorHandler';
 import { dataSourcePropertiesMap } from './localStore';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export function getHeader(accessToken: string) {
     return {
         authorization: "Bearer " + accessToken,
@@ -22,7 +21,6 @@ export function getHeader(accessToken: string) {
 export async function dataverseAuthentication(dataverseOrgURL: string): Promise<string> {
     let accessToken = '';
     try {
-        //const session = await vscode.authentication.getSession(PROVIDER_ID, [dataverseOrgURL + SCOPE_OPTION], { createIfNone: true });
         const session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { createIfNone: true });
         accessToken = session.accessToken;
     } catch (error) {
@@ -31,12 +29,12 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
     return accessToken;
 }
 
-export function getRequestURLForSingleEntity(dataverseOrgUrl: string, entity: string, entityId: string, urlquery: string, entitiesSchemaMap: any, method: string): string {
+export function getRequestURLForSingleEntity(dataverseOrgUrl: string, entity: string, entityId: string, urlquery: string, entitiesSchemaMap: Map<string, Map<string, string>>, method: string): string {
     const parameterizedUrl = dataSourcePropertiesMap.get(urlquery) as string;
-    let requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{entityId}', entityId).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
+    let requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{entityId}', entityId).replace('{api}', dataSourcePropertiesMap.get('api') as string).replace('{data}', dataSourcePropertiesMap.get('data') as string).replace('{version}', dataSourcePropertiesMap.get('version') as string);
     switch (method) {
         case 'GET':
-            requestUrl = requestUrl + entitiesSchemaMap.get(pathParamToSchema.get(entity)).get('_fetchQueryParameters');
+            requestUrl = requestUrl + entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get('_fetchQueryParameters');
             break;
         default:
             break;
@@ -44,9 +42,9 @@ export function getRequestURLForSingleEntity(dataverseOrgUrl: string, entity: st
     return requestUrl;
 }
 
-export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string, entitiesSchemaMap: any): string {
+export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string, entitiesSchemaMap: Map<string, Map<string, string>>): string {
     const parameterizedUrl = dataSourcePropertiesMap.get(urlQuery) as string;
     const fetchQueryParameters = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get("_fetchQueryParameters");
-    const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
+    const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api') as string).replace('{data}', dataSourcePropertiesMap.get('data') as string).replace('{version}', dataSourcePropertiesMap.get('version') as string);
     return requestUrl + fetchQueryParameters;
 }

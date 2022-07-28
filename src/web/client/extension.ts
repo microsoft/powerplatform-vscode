@@ -14,7 +14,6 @@ import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErr
 import { INFO } from "./common/resources/Info";
 let _telemetry: TelemetryReporter;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
@@ -27,7 +26,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
-            async (args: any) => {
+            async (args) => {
                 _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
                 vscode.window.showInformationMessage(INFO.WORKSPACE_INITIAL_LOAD);
                 const { appName, entity, entityId, searchParams } = args;
