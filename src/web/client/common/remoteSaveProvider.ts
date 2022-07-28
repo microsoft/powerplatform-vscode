@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import { sendAPIFailureTelemetry, sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
 import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
 import { CHARSET, SINGLE_ENTITY_URL_KEY } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
@@ -30,7 +31,7 @@ export async function saveData(accessToken: string, requestUrl: string, fileUri:
         requestBody = JSON.stringify(data);
     } else {
         showErrorDialog(ERRORS.BAD_REQUEST, ERRORS.BAD_REQUEST);
-        // TODO-Telemetry: add error telemetry event - unable to save - couldn't get data required for saving
+        sendAPIFailureTelemetry(requestUrl, ERRORS.BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
     }
 
     if (requestBody) {
@@ -42,11 +43,12 @@ export async function saveData(accessToken: string, requestUrl: string, fileUri:
             });
             if (!response.ok) {
                 vscode.window.showErrorMessage("failed to save data");
-                // TODO-Telemetry: add error telemetry event - unable to save + requestUrl
+                sendAPIFailureTelemetry(requestUrl, response.statusText);
                 throw new Error(response.statusText);
             }
         } catch (error) {
-            // TODO-Telemetry: add error telemetry event - unable to save + requestUrl
+            const authError = (error as Error)?.message;
+            sendAPIFailureTelemetry(requestUrl, authError);
             if (typeof error === "string" && error.includes('Unauthorized')) {
                 vscode.window.showErrorMessage('Failed to authenticate');
             } else {

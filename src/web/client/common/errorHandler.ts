@@ -5,7 +5,8 @@
 
 
 import * as vscode from "vscode";
-import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME } from "./constants";
+import { sendErrorTelemetry } from "../telemetry/webExtensionTelemetry";
+import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from "./constants";
 
 export const ERRORS = {
     WORKSPACE_INITIAL_LOAD: "Error Initializing Workspace",
@@ -60,7 +61,7 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
                 return true;
             } else {
                 showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_UNAVAILABLE);
-                // TODO-Telemetry: add telemetry error event - mandatory path params missing
+                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
                 return false;
             }
         default:
@@ -79,7 +80,7 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
                 return true;
             } else {
                 showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_UNAVAILABLE);
-                // TODO-Telemetry: add telemetry error event - mandatory query params missing
+                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
                 return false;
             }
         }

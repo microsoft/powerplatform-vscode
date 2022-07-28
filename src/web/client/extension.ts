@@ -11,7 +11,7 @@ import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
-import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry } from "./telemetry/webExtensionTelemetry";
+import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
 let _telemetry: TelemetryReporter;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -19,6 +19,7 @@ export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
     context.subscriptions.push(_telemetry);
+    setTelemetryReporter(_telemetry);
     _telemetry.sendTelemetryEvent("Start");
     _telemetry.sendTelemetryEvent("activated");
     const portalsFS = new PortalsFS();
@@ -50,12 +51,12 @@ export function activate(context: vscode.ExtensionContext): void {
                 catch (error) {
                     vscode.window.showErrorMessage("Error encountered in query parameters fetch");
                 }
-                sendExtensionInitPathParametersTelemetry(appName, entity, entityId, _telemetry);
+                sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
                 let accessToken: string;
                 if (appName) {
                     switch (appName) {
                         case 'portal': {
-                            sendExtensionInitQueryParametersTelemetry(searchParams, _telemetry);
+                            sendExtensionInitQueryParametersTelemetry(searchParams);
                             if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
                             removeEncodingFromParameters(queryParamsMap);
 

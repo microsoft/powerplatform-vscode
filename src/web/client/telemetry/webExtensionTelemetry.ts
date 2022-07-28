@@ -6,7 +6,45 @@
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { queryParameters, telemetryEventNames } from "../common/constants";
 
-export function sendExtensionInitPathParametersTelemetry(appName: string | undefined, entity: string | undefined, entityId: string | undefined, _telemetry: TelemetryReporter) {
+let _telemetry: TelemetryReporter | undefined;
+export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWebExtensionTelemetryData {
+    eventName: string,
+    properties: {
+        'orgUrl'?: string;
+        'websiteId'?: string;
+        'dataSource'?: string;
+        'schema'?: string;
+        'referrerSessionId'?: string;
+        'referrer'?: string;
+    }
+}
+
+export interface IWebExtensionInitPathTelemetryData extends IWebExtensionTelemetryData {
+    eventName: string,
+    properties: {
+        'appName': string;
+        'entity'?: string;
+        'entityId'?: string;
+    }
+}
+
+export interface IWebExtensionAPITelemetryData extends IWebExtensionTelemetryData {
+    eventName: string,
+    properties: {
+        'url': string;
+        'isSuccessful'?: string;
+    }
+}
+
+export interface IWebExtensionTelemetryData {
+    properties?: Record<string, string>;
+}
+
+export function setTelemetryReporter(telemetry: TelemetryReporter) {
+    _telemetry = telemetry;
+}
+
+export function sendExtensionInitPathParametersTelemetry(appName: string | undefined, entity: string | undefined, entityId: string | undefined) {
     const telemetryData: IWebExtensionInitPathTelemetryData = {
         eventName: telemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
         properties: {
@@ -15,10 +53,10 @@ export function sendExtensionInitPathParametersTelemetry(appName: string | undef
             entityId: getPathParameterValue(entityId)
         }
     }
-    _telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
+    _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
 }
 
-export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearchParams | undefined | null, _telemetry: TelemetryReporter) {
+export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearchParams | undefined | null) {
     const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
         eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
         properties: {
@@ -30,7 +68,7 @@ export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearc
             referrer: getQueryParameterValue(queryParameters.REFERRER, searchParams)
         }
     }
-    _telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
+    _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
 }
 
 export function getPathParameterValue(parameter: string | undefined | null): string {
@@ -48,27 +86,37 @@ export function getQueryParameterValue(parameter: string, searchParams: URLSearc
     }
 }
 
-export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWebExtensionInitTelemetryData {
-    eventName: string,
-    properties: {
-        'orgUrl'?: string;
-        'websiteId'?: string;
-        'dataSource'?: string;
-        'schema'?: string;
-        'referrerSessionId'?: string;
-        'referrer'?: string;
+export function sendErrorTelemetry(eventName: string, errorMessage?: string) {
+    if (errorMessage) {
+        const errorMessages: string[] = [];
+        errorMessages.push(errorMessage);
+        _telemetry?.sendTelemetryErrorEvent(eventName, undefined, undefined, errorMessages);
+    } else {
+        _telemetry?.sendTelemetryErrorEvent(eventName);
     }
 }
 
-export interface IWebExtensionInitPathTelemetryData extends IWebExtensionInitTelemetryData {
-    eventName: string,
-    properties: {
-        'appName': string;
-        'entity'?: string;
-        'entityId'?: string;
+export function sendAPITelemetry(URL: string, isSuccessful?: boolean, errorMessage?: string, eventName?: string) {
+    const telemetryData: IWebExtensionAPITelemetryData = {
+        eventName: eventName ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST,
+        properties: {
+            url: URL,
+            isSuccessful: (isSuccessful === undefined) ? "" : (isSuccessful ? "true" : "false")
+        }
+    }
+    if (errorMessage) {
+        const errorMessages: string[] = [];
+        errorMessages.push(errorMessage);
+        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties, undefined, errorMessages);
+    } else {
+        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties);
     }
 }
 
-export interface IWebExtensionInitTelemetryData {
-    properties?: Record<string, string>;
+export function sendAPISuccessTelemetry(URL: string) {
+    sendAPITelemetry(URL, true, undefined, telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+}
+
+export function sendAPIFailureTelemetry(URL: string, errorMessage?: string) {
+    sendAPITelemetry(URL, false, errorMessage, telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
 }

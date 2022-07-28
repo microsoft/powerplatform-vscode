@@ -4,8 +4,9 @@
  */
 
 import * as vscode from 'vscode';
+import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry, sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
 import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
-import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_ID, WEBSITE_NAME } from './constants';
+import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from './constants';
 import { PORTALS_URI_SCHEME, SINGLE_ENTITY_URL_KEY } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
@@ -16,24 +17,25 @@ import { registerSaveProvider } from './remoteSaveProvider';
 let saveDataMap = new Map<string, SaveEntityDetails>();
 
 export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS) {
+    let url = '';
     try {
         const dataverseOrgUrl = queryParamsMap.get(ORG_URL);
-        let url;
         if (entityId) {
             url = SINGLE_ENTITY_URL_KEY;
         }
         else url = MULTI_ENTITY_URL_KEY;
         const requestUrl = getRequestURLForSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
         vscode.window.showInformationMessage(requestUrl);
-        // TODO-Telemetry: add telemetry event - fetching data with requestUrl
+        sendAPITelemetry(url);
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
             vscode.window.showErrorMessage("failed to fetch data");
-            // TODO-Telemetry: add telemetry error event - failed to fetch Data
+            sendAPIFailureTelemetry(url, response.statusText);
             throw new Error(response.statusText);
         }
+        sendAPISuccessTelemetry(url);
         const data = await response.json();
         if (data.value?.length >= 0) {
             for (let counter = 0; counter < data.value.length; counter++) {
@@ -43,12 +45,13 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
             createContentFiles(data, entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId);
         }
     } catch (error) {
-        // TODO-Telemetry: add telemetry event - fetching data with requestUrl failed + error
         if (typeof error === "string" && error.includes('Unauthorized')) {
             vscode.window.showErrorMessage('Failed to authenticate');
         } else {
             showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
         }
+        const authError = (error as Error)?.message;
+        sendAPIFailureTelemetry(url, authError);
     }
 }
 
@@ -68,7 +71,7 @@ function createContentFiles(result: string, entity: string, queryParamsMap: any,
         const fileName = result[entitiesSchemaMap.get(pathParamToSchema.get(entity)).get(FILE_NAME_FIELD)] ? result[entitiesSchemaMap.get(pathParamToSchema.get(entity)).get(FILE_NAME_FIELD)].toLowerCase() : EMPTY_FILE_NAME;
         if (fileName === EMPTY_FILE_NAME) {
             showErrorDialog(ERRORS.FILE_NAME_NOT_SET, ERRORS.SERVICE_ERROR);
-            // TODO-Telemetry: add telemetry error event - empty fileName
+            sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
         }
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`, true));
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/`, true));
