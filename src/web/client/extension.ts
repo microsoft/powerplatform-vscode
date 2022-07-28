@@ -11,7 +11,7 @@ import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
-import { sendExtensionInitTelemetryEvents } from "./telemetry/webExtensionTelemetry";
+import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry } from "./telemetry/webExtensionTelemetry";
 let _telemetry: TelemetryReporter;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -50,11 +50,12 @@ export function activate(context: vscode.ExtensionContext): void {
                 catch (error) {
                     vscode.window.showErrorMessage("Error encountered in query parameters fetch");
                 }
-                sendExtensionInitTelemetryEvents(args, _telemetry);
+                sendExtensionInitPathParametersTelemetry(appName, entity, entityId, _telemetry);
                 let accessToken: string;
                 if (appName) {
                     switch (appName) {
                         case 'portal': {
+                            sendExtensionInitQueryParametersTelemetry(searchParams, _telemetry);
                             if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
                             removeEncodingFromParameters(queryParamsMap);
 

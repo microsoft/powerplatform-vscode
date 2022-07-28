@@ -67,5 +67,6 @@ export enum queryParameters {
 }
 
 export enum telemetryEventNames {
-    PORTAL_WEB_EXTENSION_INIT_DATA = 'PortalWebExtensionInitData'
+    WEB_EXTENSION_INIT_PATH_PARAMETERS = 'WebExtensionInitPathParameters',
+    WEB_EXTENSION_INIT_QUERY_PARAMETERS = 'WebExtensionInitQueryParameters'
 }

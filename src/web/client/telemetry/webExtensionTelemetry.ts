@@ -6,60 +6,66 @@
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { queryParameters, telemetryEventNames } from "../common/constants";
 
-export function sendExtensionInitTelemetryEvents(args: webExtensionParameters, _telemetry: TelemetryReporter) {
-    const { appName, entity, entityId, searchParams } = args;
-    const telemetryData : IPortalWebExtensionInitTelemetryData = {
-        eventName: telemetryEventNames.PORTAL_WEB_EXTENSION_INIT_DATA,
+export function sendExtensionInitPathParametersTelemetry(appName: string | undefined, entity: string | undefined, entityId: string | undefined, _telemetry: TelemetryReporter) {
+    const telemetryData: IWebExtensionInitPathTelemetryData = {
+        eventName: telemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
         properties: {
-            appName: getPathParameter(appName)
+            appName: getPathParameter(appName),
+            entity: getPathParameter(entity),
+            entityId: getPathParameter(entityId)
         }
     }
-    telemetryData.properties.entity = getPathParameter(entity);
-    telemetryData.properties.entityId = getPathParameter(entityId);
-    telemetryData.properties.orgUrl = getQueryParameter(queryParameters.ORG_URL, searchParams);
-    telemetryData.properties.websiteId = getQueryParameter(queryParameters.WEBSITE_ID, searchParams);
-    telemetryData.properties.schema = getQueryParameter(queryParameters.SCHEMA, searchParams);
-    telemetryData.properties.dataSource = getQueryParameter(queryParameters.DATA_SOURCE, searchParams);
-    telemetryData.properties.referrerSessionId = getQueryParameter(queryParameters.REFERRER_SESSION_ID, searchParams);
-    telemetryData.properties.referrer = getQueryParameter(queryParameters.REFERRER, searchParams);
-
     _telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
 }
 
-export function getPathParameter(parameter: string|undefined|null): string {
-    return (parameter)? parameter : '';
+export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearchParams | undefined | null, _telemetry: TelemetryReporter) {
+    const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
+        eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
+        properties: {
+            orgUrl: getQueryParameter(queryParameters.ORG_URL, searchParams),
+            websiteId: getQueryParameter(queryParameters.WEBSITE_ID, searchParams),
+            dataSource: getQueryParameter(queryParameters.DATA_SOURCE, searchParams),
+            schema: getQueryParameter(queryParameters.SCHEMA, searchParams),
+            referrerSessionId: getQueryParameter(queryParameters.REFERRER_SESSION_ID, searchParams),
+            referrer: getQueryParameter(queryParameters.REFERRER, searchParams)
+        }
+    }
+    _telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
 }
 
-export function getQueryParameter(parameter: string, searchParams: URLSearchParams|undefined|null): string {
+export function getPathParameter(parameter: string | undefined | null): string {
+    return (parameter) ? parameter : '';
+}
+
+export function getQueryParameter(parameter: string, searchParams: URLSearchParams | undefined | null): string {
     if (searchParams) {
         const queryParams = new URLSearchParams(searchParams);
         const paramValue = queryParams.get(parameter);
-        return (paramValue)? paramValue: '';
+        return (paramValue) ? paramValue : '';
     }
     else {
         return '';
     }
 }
 
-export interface webExtensionParameters {
-    appName?: string;
-    entity?: string;
-    entityId?: string;
-    searchParams?: URLSearchParams;
-}
-
-export interface IPortalWebExtensionInitTelemetryData extends IWebExtensionInitTelemetryData {
+export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWebExtensionInitTelemetryData {
     eventName: string,
     properties: {
-        'appName': string;
-        'entity'?: string;
-        'entityId'?: string;
         'orgUrl'?: string;
         'websiteId'?: string;
         'dataSource'?: string;
         'schema'?: string;
         'referrerSessionId'?: string;
         'referrer'?: string;
+    }
+}
+
+export interface IWebExtensionInitPathTelemetryData extends IWebExtensionInitTelemetryData {
+    eventName: string,
+    properties: {
+        'appName': string;
+        'entity'?: string;
+        'entityId'?: string;
     }
 }
 
