@@ -3,14 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export interface Entities {
     entity?: (Entity)[] | null;
 }
 export interface Entity {
-    fields: any;
-    relationships?: string | any;
     _name: string;
     _displayname: string;
     _etc?: string | null;

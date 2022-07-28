@@ -3,12 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { portal_schema_data } from "./portalSchema";
 
-export async function getEntitiesSchemaMap(): Promise<Map<string, any>> {
-    const entitiesMap = new Map<string, any>();
+export async function getEntitiesSchemaMap(): Promise<Map<string, Map<string, string>>> {
+    const entitiesMap = new Map<string, Map<string, string>>();
     for (let i = 0; i < portal_schema_data.entities.entity.length; i++) {
         const entity = portal_schema_data.entities.entity[i];
         const entitiesDetailsMap = new Map<string, string>();

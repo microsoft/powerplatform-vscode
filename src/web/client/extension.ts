@@ -12,9 +12,9 @@ import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames } from "./common/const
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 import { sendErrorTelemetry, sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
+import { INFO } from "./common/resources/Info";
 let _telemetry: TelemetryReporter;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
@@ -28,30 +28,19 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
-            async (args: any) => {
+            async (args) => {
                 _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
-                vscode.window.showInformationMessage(
-                    "Initializing Power Platform web extension!"
-                );
-                if (!args) {
-                    vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR); // this should never happen, the check is done by vscode.dev server
-                    return;
-                }
+                vscode.window.showInformationMessage(INFO.WORKSPACE_INITIAL_LOAD);
                 const { appName, entity, entityId, searchParams } = args;
-
+                sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
                 const queryParamsMap = new Map<string, string>();
-                try {
-                    if (searchParams) {
-                        const queryParams = new URLSearchParams(searchParams);
-                        for (const pair of queryParams.entries()) {
-                            queryParamsMap.set(pair[0], pair[1]);
-                        }
+
+                if (searchParams) {
+                    const queryParams = new URLSearchParams(searchParams);
+                    for (const pair of queryParams.entries()) {
+                        queryParamsMap.set(pair[0], pair[1]);
                     }
                 }
-                catch (error) {
-                    vscode.window.showErrorMessage("Error encountered in query parameters fetch");
-                }
-                sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
                 let accessToken: string;
                 if (appName) {
                     switch (appName) {
@@ -63,7 +52,7 @@ export function activate(context: vscode.ExtensionContext): void {
                             accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
                             if (!accessToken) {
                                 {
-                                    showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);
+                                    showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.WORKSPACE_INITIAL_LOAD_DESC);
                                     sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
                                     return;
                                 }
@@ -79,8 +68,8 @@ export function activate(context: vscode.ExtensionContext): void {
                             vscode.window.showInformationMessage(ERRORS.UNKNOWN_APP);
                     }
                 } else {
-                    vscode.window.showErrorMessage(ERRORS.APP_NAME_NOT_AVAILABLE);
-                    throw new Error(ERRORS.APP_NAME_NOT_AVAILABLE);
+                    vscode.window.showErrorMessage(ERRORS.UNKNOWN_APP);
+                    throw new Error(ERRORS.UNKNOWN_APP);
                 }
             }
         )
