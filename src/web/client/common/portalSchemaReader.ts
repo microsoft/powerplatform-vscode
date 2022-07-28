@@ -7,7 +7,7 @@
 
 import { portal_schema_data } from "./portalSchema";
 
-export function getEntitiesSchemaMap(): Map<string, any> {
+export async function getEntitiesSchemaMap(): Promise<Map<string, any>> {
     const entitiesMap = new Map<string, any>();
     for (let i = 0; i < portal_schema_data.entities.entity.length; i++) {
         const entity = portal_schema_data.entities.entity[i];
@@ -22,7 +22,7 @@ export function getEntitiesSchemaMap(): Map<string, any> {
     return entitiesMap;
 }
 
-export function getDataSourcePropertiesMap(): Map<string, string> {
+export async function getDataSourcePropertiesMap(): Promise<Map<string, string>> {
     const dataSourceProperties: { [key: string]: string } = portal_schema_data.entities.dataSourceProperties
     const dataSourcePropertiesMap = new Map<string, string>()
     for (const [key, value] of Object.entries(dataSourceProperties)) {

@@ -18,6 +18,7 @@ let saveDataMap = new Map<string, SaveEntityDetails>();
 
 export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: any, entitiesSchemaMap: any, languageIdCodeMap: any, portalFs: PortalsFS) {
     let url = '';
+    let requestSentAtTime = new Date().getTime();
     try {
         const dataverseOrgUrl = queryParamsMap.get(ORG_URL);
         if (entityId) {
@@ -27,15 +28,16 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         const requestUrl = getRequestURLForSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
         vscode.window.showInformationMessage(requestUrl);
         sendAPITelemetry(url);
+        requestSentAtTime = new Date().getTime();
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
             vscode.window.showErrorMessage("failed to fetch data");
-            sendAPIFailureTelemetry(url, response.statusText);
+            sendAPIFailureTelemetry(url, new Date().getTime() - requestSentAtTime, response.statusText);
             throw new Error(response.statusText);
         }
-        sendAPISuccessTelemetry(url);
+        sendAPISuccessTelemetry(url, new Date().getTime() - requestSentAtTime);
         const data = await response.json();
         if (data.value?.length >= 0) {
             for (let counter = 0; counter < data.value.length; counter++) {
@@ -51,7 +53,7 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
             showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.SERVICE_ERROR);
         }
         const authError = (error as Error)?.message;
-        sendAPIFailureTelemetry(url, authError);
+        sendAPIFailureTelemetry(url, new Date().getTime() - requestSentAtTime, authError);
     }
 }
 

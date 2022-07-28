@@ -33,11 +33,22 @@ export interface IWebExtensionAPITelemetryData extends IWebExtensionTelemetryDat
     properties: {
         'url': string;
         'isSuccessful'?: string;
+    },
+    measurements: {
+        'durationInMillis': number;
+    }
+}
+
+export interface IWebExtensionPerfTelemetryData extends IWebExtensionTelemetryData {
+    eventName: string,
+    measurements: {
+        'durationInMillis': number;
     }
 }
 
 export interface IWebExtensionTelemetryData {
     properties?: Record<string, string>;
+    measurements?: Record<string, number>;
 }
 
 export function setTelemetryReporter(telemetry: TelemetryReporter) {
@@ -96,27 +107,40 @@ export function sendErrorTelemetry(eventName: string, errorMessage?: string) {
     }
 }
 
-export function sendAPITelemetry(URL: string, isSuccessful?: boolean, errorMessage?: string, eventName?: string) {
+export function sendAPITelemetry(URL: string, isSuccessful?: boolean, duration?: number, errorMessage?: string, eventName?: string) {
     const telemetryData: IWebExtensionAPITelemetryData = {
         eventName: eventName ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST,
         properties: {
             url: URL,
             isSuccessful: (isSuccessful === undefined) ? "" : (isSuccessful ? "true" : "false")
+        },
+        measurements: {
+            durationInMillis: (duration) ? duration : 0
         }
     }
     if (errorMessage) {
         const errorMessages: string[] = [];
         errorMessages.push(errorMessage);
-        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties, undefined, errorMessages);
+        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements, errorMessages);
     } else {
-        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties);
+        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
     }
 }
 
-export function sendAPISuccessTelemetry(URL: string) {
-    sendAPITelemetry(URL, true, undefined, telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+export function sendAPISuccessTelemetry(URL: string, duration: number) {
+    sendAPITelemetry(URL, true, duration, undefined, telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
 }
 
-export function sendAPIFailureTelemetry(URL: string, errorMessage?: string) {
-    sendAPITelemetry(URL, false, errorMessage, telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
+export function sendAPIFailureTelemetry(URL: string, duration: number, errorMessage?: string) {
+    sendAPITelemetry(URL, false, duration, errorMessage, telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
+}
+
+export function sendPerfTelemetry(eventName: string, duration: number) {
+    const telemetryData: IWebExtensionPerfTelemetryData = {
+        eventName: eventName,
+        measurements: {
+            durationInMillis: (duration) ? duration : 0
+        }
+    }
+    _telemetry?.sendTelemetryEvent(telemetryData.eventName, undefined, telemetryData.measurements);
 }

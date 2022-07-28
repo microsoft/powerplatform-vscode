@@ -4,9 +4,9 @@
  */
 
 import * as vscode from 'vscode';
-import { sendAPIFailureTelemetry, sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
+import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
 import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
-import { CHARSET, SINGLE_ENTITY_URL_KEY } from './constants';
+import { BAD_REQUEST, CHARSET, SINGLE_ENTITY_URL_KEY } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { entitiesSchemaMap } from './localStore';
@@ -31,24 +31,26 @@ export async function saveData(accessToken: string, requestUrl: string, fileUri:
         requestBody = JSON.stringify(data);
     } else {
         showErrorDialog(ERRORS.BAD_REQUEST, ERRORS.BAD_REQUEST);
-        sendAPIFailureTelemetry(requestUrl, ERRORS.BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
+        sendAPIFailureTelemetry(requestUrl, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
     }
 
     if (requestBody) {
+        const requestSentAtTime = new Date().getTime();
         try {
             const response = await fetch(requestUrl, {
                 method: 'PATCH',
                 headers: getHeader(accessToken),
                 body: requestBody
             });
+            sendAPITelemetry(requestUrl);
             if (!response.ok) {
                 vscode.window.showErrorMessage("failed to save data");
-                sendAPIFailureTelemetry(requestUrl, response.statusText);
+                sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response.statusText);
                 throw new Error(response.statusText);
             }
         } catch (error) {
             const authError = (error as Error)?.message;
-            sendAPIFailureTelemetry(requestUrl, authError);
+            sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, authError);
             if (typeof error === "string" && error.includes('Unauthorized')) {
                 vscode.window.showErrorMessage('Failed to authenticate');
             } else {

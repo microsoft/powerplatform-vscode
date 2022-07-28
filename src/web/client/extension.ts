@@ -8,10 +8,10 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
 import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
-import { ORG_URL, PORTALS_URI_SCHEME } from "./common/constants";
+import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
-import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
+import { sendErrorTelemetry, sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
 let _telemetry: TelemetryReporter;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -64,13 +64,14 @@ export function activate(context: vscode.ExtensionContext): void {
                             if (!accessToken) {
                                 {
                                     showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);
-                                    // TODO-Telemetry: add telemetry error event - unable to fetch accessToken
+                                    sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
                                     return;
                                 }
                             }
-                            // TODO-Telemetry: add telemetry measurements (pre)
+                            const timeStampBeforeSettingContext = new Date().getTime();
                             await setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
-                            // TODO-Telemetry: add telemetry measurements (post)
+                            const timeTakenToSetContext = new Date().getTime() - timeStampBeforeSettingContext;
+                            sendPerfTelemetry(telemetryEventNames.WEB_EXTENSION_SET_CONTEXT_PERF, timeTakenToSetContext);
                         }
                             break;
                         case 'default':
