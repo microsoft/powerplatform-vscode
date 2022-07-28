@@ -10,9 +10,9 @@ export function sendExtensionInitPathParametersTelemetry(appName: string | undef
     const telemetryData: IWebExtensionInitPathTelemetryData = {
         eventName: telemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
         properties: {
-            appName: getPathParameter(appName),
-            entity: getPathParameter(entity),
-            entityId: getPathParameter(entityId)
+            appName: getPathParameterValue(appName),
+            entity: getPathParameterValue(entity),
+            entityId: getPathParameterValue(entityId)
         }
     }
     _telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
@@ -22,22 +22,22 @@ export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearc
     const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
         eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
         properties: {
-            orgUrl: getQueryParameter(queryParameters.ORG_URL, searchParams),
-            websiteId: getQueryParameter(queryParameters.WEBSITE_ID, searchParams),
-            dataSource: getQueryParameter(queryParameters.DATA_SOURCE, searchParams),
-            schema: getQueryParameter(queryParameters.SCHEMA, searchParams),
-            referrerSessionId: getQueryParameter(queryParameters.REFERRER_SESSION_ID, searchParams),
-            referrer: getQueryParameter(queryParameters.REFERRER, searchParams)
+            orgUrl: getQueryParameterValue(queryParameters.ORG_URL, searchParams),
+            websiteId: getQueryParameterValue(queryParameters.WEBSITE_ID, searchParams),
+            dataSource: getQueryParameterValue(queryParameters.DATA_SOURCE, searchParams),
+            schema: getQueryParameterValue(queryParameters.SCHEMA, searchParams),
+            referrerSessionId: getQueryParameterValue(queryParameters.REFERRER_SESSION_ID, searchParams),
+            referrer: getQueryParameterValue(queryParameters.REFERRER, searchParams)
         }
     }
     _telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
 }
 
-export function getPathParameter(parameter: string | undefined | null): string {
+export function getPathParameterValue(parameter: string | undefined | null): string {
     return (parameter) ? parameter : '';
 }
 
-export function getQueryParameter(parameter: string, searchParams: URLSearchParams | undefined | null): string {
+export function getQueryParameterValue(parameter: string, searchParams: URLSearchParams | undefined | null): string {
     if (searchParams) {
         const queryParams = new URLSearchParams(searchParams);
         const paramValue = queryParams.get(parameter);
