@@ -4,7 +4,8 @@
  */
 
 import * as vscode from 'vscode';
-import { pathParamToSchema, PROVIDER_ID } from './constants';
+import { sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
+import { pathParamToSchema, PROVIDER_ID, telemetryEventNames } from './constants';
 import { ERRORS } from './errorHandler';
 import { dataSourcePropertiesMap } from './localStore';
 
@@ -25,6 +26,8 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
         accessToken = session.accessToken;
     } catch (error) {
         vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
+        const authError = (error as Error)?.message;
+        sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);
     }
     return accessToken;
 }

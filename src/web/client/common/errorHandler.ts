@@ -5,7 +5,8 @@
 
 
 import * as vscode from "vscode";
-import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME } from "./constants";
+import { sendErrorTelemetry } from "../telemetry/webExtensionTelemetry";
+import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from "./constants";
 
 export const ERRORS = {
     WORKSPACE_INITIAL_LOAD: "There was a problem opening the workspace",
@@ -65,6 +66,7 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
             if (entity && entityId) { // this will change when we start supporting multi-entity edits
                 return true;
             } else {
+                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
                 showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_NULL);
                 return false;
             }
@@ -83,6 +85,7 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
             if (orgURL && dataSource && schemaName && websiteId) {
                 return true;
             } else {
+                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
                 showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_NULL);
                 return false;
             }

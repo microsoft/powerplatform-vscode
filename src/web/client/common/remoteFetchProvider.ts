@@ -4,8 +4,9 @@
  */
 
 import * as vscode from 'vscode';
+import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry, sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
 import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
-import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_ID, WEBSITE_NAME } from './constants';
+import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from './constants';
 import { PORTALS_URI_SCHEME, SINGLE_ENTITY_URL_KEY } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
@@ -15,21 +16,26 @@ import { INFO } from './resources/Info';
 let saveDataMap = new Map<string, SaveEntityDetails>();
 
 export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, websiteIdToLanguage: Map<string, string>) {
+    let url = '';
+    let requestSentAtTime = new Date().getTime();
     try {
         const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
-        let url;
         if (entityId) {
             url = SINGLE_ENTITY_URL_KEY;
         }
         else url = MULTI_ENTITY_URL_KEY;
         const requestUrl = getRequestURLForSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
+        sendAPITelemetry(url);
+        requestSentAtTime = new Date().getTime();
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
             vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR);
+            sendAPIFailureTelemetry(url, new Date().getTime() - requestSentAtTime, response.statusText);
             throw new Error(response.statusText);
         }
+        sendAPISuccessTelemetry(url, new Date().getTime() - requestSentAtTime);
         const data = await response.json();
         if (data.value?.length >= 0) {
             for (let counter = 0; counter < data.value.length; counter++) {
@@ -44,6 +50,8 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         } else {
             showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
+        const authError = (error as Error)?.message;
+        sendAPIFailureTelemetry(url, new Date().getTime() - requestSentAtTime, authError);
     }
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,6 +76,7 @@ function createContentFiles(result: any, entity: string, queryParamsMap: Map<str
             fileName = result[fetchedFileName].toLowerCase();
         if (fileName === EMPTY_FILE_NAME) {
             showErrorDialog(ERRORS.FILE_NAME_NOT_SET, ERRORS.SERVICE_ERROR);
+            sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
         }
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`, true));
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/`, true));
