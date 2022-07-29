@@ -16,26 +16,27 @@ import { INFO } from './resources/Info';
 let saveDataMap = new Map<string, SaveEntityDetails>();
 
 export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, websiteIdToLanguage: Map<string, string>) {
-    let url = '';
+    let requestUrl = '';
     let requestSentAtTime = new Date().getTime();
     try {
+        let url = '';
         const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
         if (entityId) {
             url = SINGLE_ENTITY_URL_KEY;
         }
         else url = MULTI_ENTITY_URL_KEY;
-        const requestUrl = getRequestURLForSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
-        sendAPITelemetry(url);
+        requestUrl = getRequestURLForSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
+        sendAPITelemetry(requestUrl);
         requestSentAtTime = new Date().getTime();
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
             vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR);
-            sendAPIFailureTelemetry(url, new Date().getTime() - requestSentAtTime, response.statusText);
+            sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response.statusText);
             throw new Error(response.statusText);
         }
-        sendAPISuccessTelemetry(url, new Date().getTime() - requestSentAtTime);
+        sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
         const data = await response.json();
         if (data.value?.length >= 0) {
             for (let counter = 0; counter < data.value.length; counter++) {
@@ -51,7 +52,7 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
             showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
         }
         const authError = (error as Error)?.message;
-        sendAPIFailureTelemetry(url, new Date().getTime() - requestSentAtTime, authError);
+        sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, authError);
     }
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
