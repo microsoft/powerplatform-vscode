@@ -74,6 +74,28 @@ export function activate(context: vscode.ExtensionContext): void {
             }
         )
     );
+    context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.runCommand', async () => {
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		vscode.commands.executeCommand('getting-started-sample.sayHello', vscode.Uri.joinPath(context.extensionUri, 'sample-folder'));
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.changeSetting', async () => {
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		vscode.workspace.getConfiguration('getting-started-sample').update('sampleSetting', true);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.setContext', async () => {
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		vscode.commands.executeCommand('setContext', 'gettingStartedContextKey', true);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.sayHello', () => {
+		vscode.window.showInformationMessage('Hello');
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.viewSources', () => {
+		return { openFolder: vscode.Uri.joinPath(context.extensionUri, 'src') };
+	}));
 }
 
 export async function deactivate(): Promise<void> {
