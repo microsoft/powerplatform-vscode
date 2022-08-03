@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { AI_KEY } from '../../client/constants';
+import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
 import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
 let _telemetry: TelemetryReporter;

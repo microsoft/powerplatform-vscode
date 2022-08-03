@@ -11,6 +11,7 @@ const util = require('util');
 const nls = require('vscode-nls-dev');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
+const rename = require('gulp-rename');
 const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
 const gulpTs = require("gulp-typescript");
@@ -33,6 +34,7 @@ const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
 const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
+const isOfficialBuild = argv.isOfficialBuild && argv.isOfficialBuild.toLowerCase() == "true";
 
 async function clean() {
     (await pslist())
@@ -43,6 +45,17 @@ async function clean() {
         });
     fs.emptyDirSync(outdir);
     return fs.emptyDir(distdir);
+}
+
+function setTelemetryTarget() {
+    const telemetryConfigurationSource = isOfficialBuild
+        ? 'src/common/telemetry/telemetryConfigurationProd.ts'
+        : 'src/common/telemetry/telemetryConfigurationDev.ts';
+
+    return gulp
+        .src(telemetryConfigurationSource)
+        .pipe(rename('telemetryConfiguration.ts'))
+        .pipe(gulp.dest(path.join('src', 'common', 'telemetry', 'generated')));
 }
 
 function compile() {
@@ -289,6 +302,7 @@ const recompile = gulp.series(
     translationsExport,
     translationsImport,
     translationsGenerate,
+    setTelemetryTarget,
     compile,
     compileWeb
 );
