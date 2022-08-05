@@ -10,7 +10,7 @@ import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import * as path from "path";
 import { PortalWebView } from './PortalWebView';
-import { AI_KEY } from './constants';
+import { AI_KEY } from '../common/telemetry/generated/telemetryConfiguration';
 import { ITelemetryData } from "../common/TelemetryData";
 
 import {
