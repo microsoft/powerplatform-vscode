@@ -4,15 +4,15 @@
  */
 
 import * as vscode from 'vscode';
+import { localize } from 'vscode-nls';
 import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry, sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
 import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
 import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from './constants';
 import { PORTALS_URI_SCHEME, SINGLE_ENTITY_URL_KEY } from './constants';
-import { ERRORS, showErrorDialog } from './errorHandler';
+import { showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { registerSaveProvider } from './remoteSaveProvider';
-import { INFO } from './resources/Info';
 let saveDataMap = new Map<string, SaveEntityDetails>();
 
 export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, websiteIdToLanguage: Map<string, string>) {
@@ -31,7 +31,7 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
-            vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.init", "Try again"));
             sendAPIFailureTelemetry(url, new Date().getTime() - requestSentAtTime, response.statusText);
             throw new Error(response.statusText);
         }
@@ -46,9 +46,9 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         }
     } catch (error) {
         if (typeof error === "string" && error.includes('Unauthorized')) {
-            vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.init", "Try again"));
         } else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.init", "Check the parameters and try again"));
         }
         const authError = (error as Error)?.message;
         sendAPIFailureTelemetry(url, new Date().getTime() - requestSentAtTime, authError);
@@ -75,7 +75,7 @@ function createContentFiles(result: any, entity: string, queryParamsMap: Map<str
         if (fetchedFileName)
             fileName = result[fetchedFileName].toLowerCase();
         if (fileName === EMPTY_FILE_NAME) {
-            showErrorDialog(ERRORS.FILE_NAME_NOT_SET, ERRORS.SERVICE_ERROR);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init", "That file is not available"), localize("microsoft-powerapps-portals.webExtension.init", "The metadata may have changed on the Dataverse side. Contact your admin."));
             sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
         }
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`, true));
@@ -100,6 +100,6 @@ function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode:
 }
 
 export async function getDataFromDataVerse(accessToken: string, entity: string, entityId: string, queryParamMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, websiteIdToLanguage: Map<string, string>) {
-    vscode.window.showInformationMessage(INFO.FETCH_FILE);
+    vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init", "Fetching your file ..."));
     await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs, websiteIdToLanguage);
 }

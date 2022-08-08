@@ -5,6 +5,7 @@
 
 
 import * as vscode from "vscode";
+import { localize } from "vscode-nls";
 import { sendErrorTelemetry } from "../telemetry/webExtensionTelemetry";
 import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from "./constants";
 
@@ -67,7 +68,7 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
                 return true;
             } else {
                 sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
-                showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_NULL);
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init",  "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init", "Check the URL and verify the parameters are correct"));
                 return false;
             }
         default:
@@ -86,8 +87,8 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
                 return true;
             } else {
                 sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
-                showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_NULL);
-                return false;
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init",  "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init", "Check the URL and verify the parameters are correct"));
+                 return false;
             }
         }
         default:
