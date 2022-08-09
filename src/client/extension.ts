@@ -21,6 +21,7 @@ import {
 } from "vscode-languageclient/node";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
+import { HelloWorldPanel } from "./panels/HelloWorldPanel";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -103,6 +104,13 @@ export async function activate(
         );
     }
 
+    // Setup PAC Web Views
+    const helloComand = vscode.commands.registerCommand('hello-world.helloWorld', () => {
+        HelloWorldPanel.render(context.extensionUri);
+    });
+    context.subscriptions.push(helloComand);
+
+    // Setup PAC CLI
     const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
