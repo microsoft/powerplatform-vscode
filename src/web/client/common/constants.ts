@@ -7,6 +7,7 @@ export const PORTAL_LANGUAGES = 'adx_portallanguages';
 export const WEBSITE_LANGUAGES = 'adx_websitelanguages';
 export const WEBSITES = 'adx_websites';
 export const SINGLE_ENTITY_URL_KEY = 'singleEntityURL';
+export const SINGLE_ENTITY_LANGUAGE_KEY = 'singleEntityLanguageURL';
 export const MULTI_ENTITY_URL_KEY = 'multiEntityURL';
 export const PORTAL_LANGUAGE_DEFAULT = '1033';
 export const PORTALS_FOLDER_NAME = 'site';
@@ -28,6 +29,10 @@ export const CHARSET = 'utf-8';
 export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
 export const BAD_REQUEST = 'BAD_REQUEST';
+export const OLD_SCHEMA_NAME = 'portalDataverseoldschema';
+export const NEW_SCHEMA_NAME = 'portalDataversenewschema';
+export const NEW_PORTAL_LANGUAGES = 'powerpagesitelanguages';
+export const NEW_WEBSITE_LANGUAGES = 'languagelocale';
 
 export const columnExtension = new Map([
     ["customcss.css", "adx_customcss"],
@@ -35,7 +40,8 @@ export const columnExtension = new Map([
     ["webpage.copy.html", "adx_copy"],
     ["adx_customcss", "customcss.css"],
     ["adx_customjavascript", "customjs.js"],
-    ["adx_copy", "webpage.copy.html"]
+    ["adx_copy", "webpage.copy.html"],
+    ["summary", "webpage.copy.html"]
 ]);
 
 export const entityFolder = new Map([
@@ -81,3 +87,35 @@ export enum telemetryEventNames {
     WEB_EXTENSION_EMPTY_FILE_NAME = 'WebExtensionEmptyFileName',
     WEB_EXTENSION_SET_CONTEXT_PERF = 'WebExtensionSetContextPerf',
 }
+
+export const PowerPortalComponent = new Map([
+    ["publishingstate", "1"],
+    ["webpage", "2"],
+    ["webfile", "3"],
+    ["weblinkset", "4"],
+    ["weblink", "5"],
+    ["pagetemplate", "6"],
+    ["contentsnippet", "7"],
+    ["webtemplate", "8"],
+    ["sitesetting", "9"],
+    ["webpageaccesscontrolrule", "10"],
+    ["webrole", "11"],
+    ["websiteaccess", "12"],
+    ["sitemarker", "13"],
+    ["tag", "14"],
+    ["entityform", "15"],
+    ["entityformmetadata", "16"],
+    ["entitylist", "17"],
+    ["entitypermission", "18"],
+    ["webform", "19"],
+    ["webformstep", "20"],
+    ["webformmetadata", "21"],
+    ["poll", "22"],
+    ["polloption", "23"],
+    ["pollplacement", "24"],
+    ["ad", "25"],
+    ["adplacement", "26"],
+    ["botconsumer", "27"]
+]);
+
+

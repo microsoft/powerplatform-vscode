@@ -6,29 +6,33 @@
 import * as vscode from 'vscode';
 import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
 import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
-import { BAD_REQUEST, CHARSET, SINGLE_ENTITY_URL_KEY } from './constants';
+import { BAD_REQUEST, CHARSET, OLD_SCHEMA_NAME, SINGLE_ENTITY_URL_KEY } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { entitiesSchemaMap } from './localStore';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { INFO } from './resources/Info';
 
-export function registerSaveProvider(accessToken: string, portalsFS: PortalsFS, dataVerseOrgUrl: string, saveDataMap: Map<string, SaveEntityDetails>) {
+export function registerSaveProvider(accessToken: string, portalsFS: PortalsFS, dataVerseOrgUrl: string, saveDataMap: Map<string, SaveEntityDetails>, schema: string) {
     vscode.workspace.onDidSaveTextDocument(async (e) => {
         vscode.window.showInformationMessage(INFO.SAVE_FILE);
         const newFileData = portalsFS.readFile(e.uri);
         const patchRequestUrl = getRequestURLForSingleEntity(dataVerseOrgUrl, saveDataMap.get(e.uri.fsPath)?.getEntityName as string, saveDataMap.get(e.uri.fsPath)?.getEntityId as string, SINGLE_ENTITY_URL_KEY, entitiesSchemaMap, 'PATCH');
-        await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, new TextDecoder(CHARSET).decode(newFileData));
+        await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, new TextDecoder(CHARSET).decode(newFileData), schema);
     });
 }
 
-export async function saveData(accessToken: string, requestUrl: string, fileUri: vscode.Uri, saveDataMap: Map<string, SaveEntityDetails>, value: string) {
+export async function saveData(accessToken: string, requestUrl: string, fileUri: vscode.Uri, saveDataMap: Map<string, SaveEntityDetails>, value: string, schema: string) {
     let requestBody = '';
     const column = saveDataMap.get(fileUri.fsPath)?.getSaveAttribute;
     if (column) {
         const data: { [k: string]: string } = {};
         data[column] = value;
-        requestBody = JSON.stringify(data);
+        if(schema === OLD_SCHEMA_NAME)
+            requestBody = JSON.stringify(data);
+        else{
+            requestBody =  constructRequestBodyForNewSchema(data);
+        }
     } else {
         sendAPIFailureTelemetry(requestUrl, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
         showErrorDialog(ERRORS.BAD_REQUEST, ERRORS.BAD_REQUEST_DESC);
@@ -58,4 +62,11 @@ export async function saveData(accessToken: string, requestUrl: string, fileUri:
             }
         }
     }
+}
+
+
+function constructRequestBodyForNewSchema(data: { [k: string]: string; }): string {
+    //TODO: reconstruct the data for request body
+    console.log(data)
+    throw new Error('Function not implemented.');
 }

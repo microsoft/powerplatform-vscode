@@ -39,7 +39,8 @@ export const ERRORS = {
     MANDATORY_PARAMETERS_NULL: "The workspace is not available ",
     MANDATORY_PARAMETERS_NULL_DESC: "Check the URL and verify the parameters are correct",
     FILE_NAME_NOT_SET: "That file is not available",
-    FILE_NAME_NOT_SET_DESC: "The metadata may have changed on the Dataverse side. Contact your admin. {message_attribute}"
+    FILE_NAME_NOT_SET_DESC: "The metadata may have changed on the Dataverse side. Contact your admin. {message_attribute}",
+    GENERIC_ERROR: "Error encountered..."
 };
 
 export function showErrorDialog(detailMessage: string, errorString: string) {

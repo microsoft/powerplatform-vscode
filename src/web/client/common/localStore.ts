@@ -4,7 +4,7 @@
  */
 
 import { getCustomRequestURL, getHeader } from "./authenticationProvider";
-import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
+import { MULTI_ENTITY_URL_KEY, NEW_PORTAL_LANGUAGES, NEW_SCHEMA_NAME, OLD_SCHEMA_NAME, ORG_URL, pathParamToSchema, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, SCHEMA, SINGLE_ENTITY_LANGUAGE_KEY, SINGLE_ENTITY_URL_KEY, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { ERRORS, showErrorDialog } from "./errorHandler";
 import { getDataFromDataVerse } from "./remoteFetchProvider";
@@ -17,12 +17,21 @@ let languageIdCodeMap = new Map<string, string>();
 let websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
 let websiteIdToLanguage = new Map<string, string>();
 
-export async function languageIdToCode(accessToken: string, dataverseOrgURL: string, entitiesSchemaMap: Map<string, Map<string, string>>): Promise<Map<string, string>> {
+export async function languageIdToCode(accessToken: string, dataverseOrgURL: string, entitiesSchemaMap: Map<string, Map<string, string>>, schema: string): Promise<Map<string, string>> {
 
     try {
-        const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
-
-        const response = await fetch(requestUrl, {
+        let requestUrl: string | undefined;
+        switch (schema) {
+            case OLD_SCHEMA_NAME:
+                requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
+                break;
+            case NEW_SCHEMA_NAME:
+                requestUrl = getCustomRequestURL(dataverseOrgURL, NEW_PORTAL_LANGUAGES, SINGLE_ENTITY_LANGUAGE_KEY, entitiesSchemaMap)
+                break;
+            default:
+                break;
+        }
+        const response = await fetch(requestUrl as unknown as URL, {
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
@@ -31,10 +40,19 @@ export async function languageIdToCode(accessToken: string, dataverseOrgURL: str
         const result = await response.json();
         if (result) {
             if (result.value?.length > 0) {
-                for (let counter = 0; counter < result.value.length; counter++) {
-                    const adx_lcid = result.value[counter].adx_lcid ? result.value[counter].adx_lcid : PORTAL_LANGUAGE_DEFAULT;
-                    const adx_languagecode = result.value[counter].adx_languagecode;
-                    languageIdCodeMap.set(adx_lcid, adx_languagecode);
+                if (schema === OLD_SCHEMA_NAME) {
+                    for (let counter = 0; counter < result.value.length; counter++) {
+                        const adx_lcid = result.value[counter].adx_lcid ? result.value[counter].adx_lcid : PORTAL_LANGUAGE_DEFAULT;
+                        const adx_languagecode = result.value[counter].adx_languagecode;
+                        languageIdCodeMap.set(adx_lcid, adx_languagecode);
+                    }
+                }
+                else {
+                    for (let counter = 0; counter < result.value.length; counter++) {
+                        const powerpagesitelanguageid = result.value[counter].Powerpagesitelanguageid ? result.value[counter].Powerpagesitelanguageid : PORTAL_LANGUAGE_DEFAULT;
+                        const languagecode = result.value[counter].Languagecode;
+                        languageIdCodeMap.set(powerpagesitelanguageid, languagecode);
+                    }
                 }
             }
         }
@@ -116,18 +134,21 @@ export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUr
 export async function setContext(accessToken: string, pseudoEntityName: string, entityId: string, queryParamsMap: Map<string, string>, portalsFS: PortalsFS) {
     const entity = pathParamToSchema.get(pseudoEntityName) as string;
     const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
-    dataSourcePropertiesMap = await getDataSourcePropertiesMap();
-    entitiesSchemaMap = await getEntitiesSchemaMap();
-    websiteIdToLanguage = await websiteIdToLanguageMap(accessToken, dataverseOrgUrl, entitiesSchemaMap);
-    websiteLanguageIdToPortalLanguageMap = await websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl, entitiesSchemaMap);
-    languageIdCodeMap = await languageIdToCode(accessToken, dataverseOrgUrl, entitiesSchemaMap);
-    createEntityFiles(portalsFS, accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap);
+    const schema = queryParamsMap.get(SCHEMA) as string;
+    dataSourcePropertiesMap = await getDataSourcePropertiesMap(schema);
+    entitiesSchemaMap = await getEntitiesSchemaMap(schema);
+    languageIdCodeMap = await languageIdToCode(accessToken, dataverseOrgUrl, entitiesSchemaMap, schema);
+    if (schema === OLD_SCHEMA_NAME) {
+        websiteIdToLanguage = await websiteIdToLanguageMap(accessToken, dataverseOrgUrl, entitiesSchemaMap);
+        websiteLanguageIdToPortalLanguageMap = await websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl, entitiesSchemaMap);
+    }
+    createEntityFiles(portalsFS, accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, schema);
 }
 
-function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>) {
+function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, schema: string) {
     const portalFolderName = queryParamsMap.get(WEBSITE_NAME) as string;
     createFileSystem(portalsFS, portalFolderName);
-    getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS, websiteIdToLanguage);
+    getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS, websiteIdToLanguage, schema);
 }
 
 export { dataSourcePropertiesMap, entitiesSchemaMap, websiteIdToLanguage, websiteLanguageIdToPortalLanguageMap, languageIdCodeMap };
