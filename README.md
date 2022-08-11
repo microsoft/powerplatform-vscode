@@ -11,6 +11,12 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+1.0.20:
+ - PCF control debugging support in VS Code's debugger;
+   see for early details: https://github.com/microsoft/powerplatform-vscode/pull/231
+ - pac CLI 1.17.4 (July refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - when running on macOS on Apple Silicon (ARM M1/M2 CPU): make sure to also have the x64 version of the [.NET6 SDK](https://dotnet.microsoft.com/en-us/download) installed as well
+
 1.0.16:
  - pac CLI 1.16.6 (May refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
  - the Power Platform panel now supports the new UNIVERSAL authentication kind that pac CLI 1.16.x introduced
