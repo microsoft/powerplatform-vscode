@@ -128,6 +128,21 @@
     ],
     "commands": [
       {
+        "command": "pacCLI.SolutionInitPanel.Launch",
+        "category": "Power Platform CLI",
+        "title": "Solution Init"
+      },
+      {
+        "command": "pacCLI.PcfInitPanel.Launch",
+        "category": "Power Platform CLI",
+        "title": "PCF Init"
+      },
+      {
+        "command": "pacCLI.AdminResetPanel.Launch",
+        "category": "Power Platform CLI",
+        "title": "Admin Reset"
+      },
+      {
         "command": "hello-world.helloWorld",
         "title": "Hello World"
       },
@@ -449,6 +464,12 @@
         "path": "./src/client/portal_fileicons/portals-icon-theme.json"
       }
     ],
+    "submenus": [
+      {
+        "id": "pac.explorerContext.directory.menu",
+        "label": "Power Platform"
+      }
+    ],
     "menus": {
       "editor/title": [
         {
@@ -568,6 +589,25 @@
           "when": "!virtualWorkspace"
         }
       ],
+      "explorer/context": [
+        {
+          "submenu": "pac.explorerContext.directory.menu",
+          "when": "explorerResourceIsFolder",
+          "group": "2_pacCommands"
+        }
+      ],
+      "pac.explorerContext.directory.menu":[
+        {
+          "command": "pacCLI.SolutionInitPanel.Launch",
+          "when": "explorerResourceIsFolder",
+          "group": "2_pacCommands"
+        },
+        {
+          "command": "pacCLI.PcfInitPanel.Launch",
+          "when": "explorerResourceIsFolder",
+          "group": "2_pacCommands"
+        }
+      ],
       "view/title": [
         {
           "command": "pacCLI.authPanel.newAuthProfile",
@@ -642,6 +682,10 @@
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyOrganizationId",
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
+        },
+        {
+          "command": "pacCLI.AdminResetPanel.Launch",
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
         }
       ]

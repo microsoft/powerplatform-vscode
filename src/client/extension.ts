@@ -21,7 +21,9 @@ import {
 } from "vscode-languageclient/node";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
-import { HelloWorldPanel } from "./panels/HelloWorldPanel";
+import { AdminResetPanel } from "./panels/AdminResetPanel";
+import { SolutionInitPanel } from "./panels/SolutionInitPanel";
+import { PcfInitPanel } from "./panels/PcfInitPanel";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -105,10 +107,18 @@ export async function activate(
     }
 
     // Setup PAC Web Views
-    const helloComand = vscode.commands.registerCommand('hello-world.helloWorld', () => {
-        HelloWorldPanel.render(context.extensionUri);
+    const adminResetPanelCommand = vscode.commands.registerCommand('pacCLI.AdminResetPanel.Launch', () => {
+        AdminResetPanel.render(context.extensionUri);
     });
-    context.subscriptions.push(helloComand);
+    const solutionInitPanelCommand = vscode.commands.registerCommand('pacCLI.SolutionInitPanel.Launch', (item: vscode.Uri) => {
+        SolutionInitPanel.render(context.extensionUri, item.fsPath);
+    });
+    const pcfInitPanelCommand = vscode.commands.registerCommand('pacCLI.PcfInitPanel.Launch', (item: vscode.Uri) => {
+        PcfInitPanel.render(context.extensionUri, item.fsPath);
+    });
+
+    //vscode.commands.registerCommand()
+    context.subscriptions.push(adminResetPanelCommand, solutionInitPanelCommand, pcfInitPanelCommand);
 
     // Setup PAC CLI
     const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
