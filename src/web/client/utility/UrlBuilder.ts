@@ -43,10 +43,10 @@ export function getRequestURL(dataverseOrgUrl: string, entity: string, entityId:
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function updateEntityId(entity: string, entityId: string, entitiesSchemaMap: Map<string, Map<string, string>>, result: any) {
     const mappedEntityId = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get('_mappingEntityId');
+
     if (mappedEntityId) {
         return result[mappedEntityId];
     }
 
     return entityId;
-
 }
