@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext): void {
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
                 _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
-                vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init", "Opening VS Code for the web ..."));
+                vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init.message", "Opening VS Code for the web ..."));
                 const { appName, entity, entityId, searchParams } = args;
                 sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
                 const queryParamsMap = new Map<string, string>();
@@ -56,7 +56,7 @@ export function activate(context: vscode.ExtensionContext): void {
                             accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
                             if (!accessToken) {
                                 {
-                                    showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init",  "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init", "Try refreshing the browser"));
+                                    showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init.error.desc", "Try refreshing the browser"));
                                     sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
                                     return;
                                 }
@@ -69,10 +69,10 @@ export function activate(context: vscode.ExtensionContext): void {
                             break;
                         case 'default':
                         default:
-                            vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init","Unable to find that app" ));
+                            vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
                     }
                 } else {
-                    vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init", "Unable to find that app"));
+                    vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
                     throw new Error(ERRORS.UNKNOWN_APP);
                 }
             }

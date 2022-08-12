@@ -68,7 +68,7 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
                 return true;
             } else {
                 sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init",  "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init", "Check the URL and verify the parameters are correct"));
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.workspace.error",  "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.workspace.error.desc", "Check the URL and verify the parameters are correct"));
                 return false;
             }
         default:
@@ -87,7 +87,7 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
                 return true;
             } else {
                 sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init",  "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init", "Check the URL and verify the parameters are correct"));
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error",  "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the URL and verify the parameters are correct"));
                  return false;
             }
         }

@@ -33,7 +33,7 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
         });
         if (!response.ok) {
 
-            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.init", "Try again"));
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.authorization.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.fetch.authorization.desc", "Try again"));
             sendAPIFailureTelemetry(url, new Date().getTime() - requestSentAtTime, response.statusText);
             throw new Error(response.statusText);
         }
@@ -47,10 +47,11 @@ export async function fetchData(accessToken: string, entity: string, entityId: s
             createContentFiles(data, entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
         }
     } catch (error) {
-        if (typeof error === "string" && error.includes('Unauthorized')) {
-            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.init", "Try again"));
-        } else {
-            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.init", "Check the parameters and try again"));
+        if (typeof error === "string" && error.includes("Unauthorized")) {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
+        }
+        else {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
         }
         const authError = (error as Error)?.message;
         sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, authError);
@@ -77,7 +78,7 @@ function createContentFiles(result: any, entity: string, queryParamsMap: Map<str
         if (fetchedFileName)
             fileName = result[fetchedFileName].toLowerCase();
         if (fileName === EMPTY_FILE_NAME) {
-            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init", "That file is not available"), localize("microsoft-powerapps-portals.webExtension.init", "The metadata may have changed on the Dataverse side. Contact your admin."));
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.file-not-found.error", "That file is not available"), localize("microsoft-powerapps-portals.webExtension.file-not-found.desc", "The metadata may have changed on the Dataverse side. Contact your admin."));
             sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
         }
         portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`, true));
@@ -102,6 +103,6 @@ function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode:
 }
 
 export async function getDataFromDataVerse(accessToken: string, entity: string, entityId: string, queryParamMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, websiteIdToLanguage: Map<string, string>) {
-    vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init", "Fetching your file ..."));
+    vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ..."));
     await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs, websiteIdToLanguage);
 }
