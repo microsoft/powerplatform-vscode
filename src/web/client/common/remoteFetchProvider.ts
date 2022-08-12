@@ -4,9 +4,18 @@
  */
 
 import * as vscode from 'vscode';
-import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry, sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
-import { fromBase64, useBase64 } from '../utility/CommonUtility';
-import { getParameterizedRequestUrlKey, getRequestURL, updateEntityId } from '../utility/UrlBuilder';
+import {
+    sendAPIFailureTelemetry,
+    sendAPISuccessTelemetry,
+    sendAPITelemetry,
+    sendErrorTelemetry
+} from '../telemetry/webExtensionTelemetry';
+import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/CommonUtility';
+import {
+    getParameterizedRequestUrlKey,
+    getRequestURL,
+    updateEntityId
+} from '../utility/UrlBuilder';
 import { getHeader } from './authenticationProvider';
 import * as Constants from './constants';
 import { PORTALS_URI_SCHEME } from './constants';
@@ -32,7 +41,7 @@ export async function fetchData(
     try {
         const dataverseOrgUrl = queryParamsMap.get(Constants.ORG_URL) as string;
 
-        requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, entitiesSchemaMap, 'GET', false);
+        requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, entitiesSchemaMap, Constants.HttpMethod.GET, false);
         sendAPITelemetry(requestUrl);
 
         requestSentAtTime = new Date().getTime();
@@ -133,7 +142,11 @@ function createContentFiles(
         let fileUri = '';
         for (counter; counter < attributeArray.length; counter++) {
             const value = result[attributeArray[counter]] ? result[attributeArray[counter]] : Constants.NO_CONTENT;
-            fileUri = filePathInPortalFS + `${fileName}.${languageCode}.${Constants.columnExtension.get(attributeArray[counter]) as string}`;
+            const fileNameWithExtension = GetFileNameWithExtension(entity,
+                fileName,
+                languageCode,
+                Constants.columnExtension.get(attributeArray[counter]) as string);
+            fileUri = filePathInPortalFS + fileNameWithExtension;
 
             saveDataMap = createVirtualFile(
                 portalsFS,

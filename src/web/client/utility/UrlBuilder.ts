@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { DataverseUrlPathEntityName, MULTI_ENTITY_URL_KEY, pathParamToSchema, SINGLE_ENTITY_URL_KEY } from "../common/constants";
+import { DataverseUrlPathEntityName, HttpMethod, MULTI_ENTITY_URL_KEY, pathParamToSchema, SINGLE_ENTITY_URL_KEY } from "../common/constants";
 import { dataSourcePropertiesMap } from "../common/localStore";
 
 export const getParameterizedRequestUrlTemplate = (entity: string, entityId: string, isSingleEntity: boolean) => {
@@ -25,7 +25,7 @@ export const getParameterizedRequestUrlKey = (entity: string, entityId: string) 
 export function getRequestURL(dataverseOrgUrl: string, entity: string, entityId: string, entitiesSchemaMap: Map<string, Map<string, string>>, method: string, isSingleEntity: boolean): string {
     let parameterizedUrlTemplate = getParameterizedRequestUrlTemplate(entity, entityId, isSingleEntity);
     switch (method) {
-        case 'GET':
+        case HttpMethod.GET:
             parameterizedUrlTemplate = parameterizedUrlTemplate
                 + entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get('_fetchQueryParameters');
             break;

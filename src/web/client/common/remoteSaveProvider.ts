@@ -5,10 +5,10 @@
 
 import * as vscode from 'vscode';
 import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
-import { httpMethodType, toBase64 } from '../utility/CommonUtility';
+import { toBase64 } from '../utility/CommonUtility';
 import { getRequestURL } from '../utility/UrlBuilder';
 import { getHeader } from './authenticationProvider';
-import { BAD_REQUEST, CHARSET } from './constants';
+import { BAD_REQUEST, CHARSET, HttpMethod } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { entitiesSchemaMap } from './localStore';
@@ -26,7 +26,6 @@ export function registerSaveProvider(
         vscode.window.showInformationMessage(INFO.SAVE_FILE);
 
         const newFileData = portalsFS.readFile(e.uri);
-        const entity = saveDataMap.get(e.uri.fsPath)?.getEntityName;
         let stringDecodedValue = new TextDecoder(CHARSET).decode(newFileData);
 
         if (useBase64Encoding) {
@@ -37,7 +36,7 @@ export function registerSaveProvider(
             saveDataMap.get(e.uri.fsPath)?.getEntityName as string,
             saveDataMap.get(e.uri.fsPath)?.getEntityId as string,
             entitiesSchemaMap,
-            httpMethodType(entity ?? ''),
+            HttpMethod.PATCH,
             true);
 
         await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, stringDecodedValue);

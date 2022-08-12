@@ -29,6 +29,11 @@ export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
 export const BAD_REQUEST = 'BAD_REQUEST';
 
+export enum HttpMethod {
+    PATCH = 'PATCH',
+    GET = 'GET'
+}
+
 export enum VscodeUrlPathEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",

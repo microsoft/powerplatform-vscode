@@ -19,6 +19,15 @@ export function useBase64(entity: string): boolean {
     return entity === DataverseUrlPathEntityName.WEBFILES;
 }
 
-export function httpMethodType(entity: string) {
-    return entity === DataverseUrlPathEntityName.WEBFILES ? 'UPDATE' : 'PATCH';
+export function GetFileNameWithExtension(
+    entity: string,
+    fileName: string,
+    languageCode: string,
+    extension: string
+) {
+    if (entity === DataverseUrlPathEntityName.WEBPAGES) {
+        return `${fileName}.${languageCode}.${extension}`;
+    }
+
+    return fileName;
 }
