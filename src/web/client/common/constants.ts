@@ -29,34 +29,60 @@ export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
 export const BAD_REQUEST = 'BAD_REQUEST';
 
+export enum VscodeUrlPathEntityName {
+    WEBFILES = "webfiles",
+    WEBPAGES = "webpages",
+    WEBTEMPLATES = "webtemplates"
+}
+
+export enum SchemaEntityName {
+    WEBFILES = "adx_webfile",
+    WEBPAGES = "adx_webpage",
+    WEBTEMPLATES = "adx_webtemplate"
+}
+
+export enum DataverseUrlPathEntityName {
+    WEBFILES = "annotations",
+    WEBPAGES = "adx_webpages",
+    WEBTEMPLATES = "adx_webtemplate" // TODO - Update to right call name
+}
+
+export enum ExportType {
+    SubFolders = "SubFolders",
+    SingleFolder = "SingleFolder",
+    SingleFile = "SingleFile"
+}
+
 export const columnExtension = new Map([
     ["customcss.css", "adx_customcss"],
     ["customjs.js", "adx_customjavascript"],
     ["webpage.copy.html", "adx_copy"],
     ["adx_customcss", "customcss.css"],
     ["adx_customjavascript", "customjs.js"],
-    ["adx_copy", "webpage.copy.html"]
+    ["adx_copy", "webpage.copy.html"],
+    ["documentbody", "css"]
 ]);
 
 export const entityFolder = new Map([
     ["webpages", "web-pages"],
     ["webtemplates", "web-templates"],
-    ["webfiles", "web-files"],
+    ["annotations", "web-files"],
     ["contentpages", "content-pages"],
     ["adx_webpages", "web-pages"]
 ]);
 
 export const pathParamToSchema = new Map([
-    ["webpages", "adx_webpages"],
-    ["webtemplates", "adx_webtemplates"],
+    [VscodeUrlPathEntityName.WEBPAGES, "adx_webpages"],
+    [VscodeUrlPathEntityName.WEBFILES, "annotations"],
+    [VscodeUrlPathEntityName.WEBTEMPLATES, "adx_webtemplates"],
     ["adx_webpages", "adx_webpage"],
     ["adx_webtemplates", "adx_webtemplate"],
     ["adx_websites", "adx_website"],
     ["adx_portallanguages", "adx_portallanguage"],
     ["adx_websitelanguages", "adx_websitelanguage"],
-    ["webfiles", "adx_webfiles"],
     ["adx_webfiles", "adx_webfile"],
-    ["adx_copy", "adx_copy"]
+    ["adx_copy", "adx_copy"],
+    ["annotations", "adx_webfile"],
 ]);
 
 export enum queryParameters {

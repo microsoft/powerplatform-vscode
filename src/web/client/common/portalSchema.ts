@@ -766,13 +766,14 @@ export const portal_schema_data = {
                 "_displayname": "Web File",
                 "_etc": "10020",
                 "_primaryidfield": "adx_webfileid",
-                "_primarynamefield": "adx_name",
+                "_primarynamefield": "filename",
                 "_disableplugins": "true",
                 "_foldername": "web-files",
                 "_propextension": "webfile",
                 "_exporttype": "SingleFolder",
-                "_fetchQueryParameters": "?$filter=_objectid_value%20eq%{_objectid_value}%20&$select=documentbody",
-                "_attributes": "documentbody"
+                "_fetchQueryParameters": "?$filter=_objectid_value%20eq%20{entityId}%20&$select=documentbody,filename,annotationid",
+                "_attributes": "documentbody",
+                "_mappingEntityId": "annotationid"
             },
             {
                 "fields": {

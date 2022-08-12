@@ -5,26 +5,55 @@
 
 import * as vscode from 'vscode';
 import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
-import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
-import { BAD_REQUEST, CHARSET, SINGLE_ENTITY_URL_KEY } from './constants';
+import { httpMethodType, toBase64 } from '../utility/CommonUtility';
+import { getRequestURL } from '../utility/UrlBuilder';
+import { getHeader } from './authenticationProvider';
+import { BAD_REQUEST, CHARSET } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { entitiesSchemaMap } from './localStore';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { INFO } from './resources/Info';
 
-export function registerSaveProvider(accessToken: string, portalsFS: PortalsFS, dataVerseOrgUrl: string, saveDataMap: Map<string, SaveEntityDetails>) {
+export function registerSaveProvider(
+    accessToken: string,
+    portalsFS: PortalsFS,
+    dataVerseOrgUrl: string,
+    saveDataMap: Map<string, SaveEntityDetails>,
+    useBase64Encoding: boolean
+) {
     vscode.workspace.onDidSaveTextDocument(async (e) => {
         vscode.window.showInformationMessage(INFO.SAVE_FILE);
+
         const newFileData = portalsFS.readFile(e.uri);
-        const patchRequestUrl = getRequestURLForSingleEntity(dataVerseOrgUrl, saveDataMap.get(e.uri.fsPath)?.getEntityName as string, saveDataMap.get(e.uri.fsPath)?.getEntityId as string, SINGLE_ENTITY_URL_KEY, entitiesSchemaMap, 'PATCH');
-        await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, new TextDecoder(CHARSET).decode(newFileData));
+        const entity = saveDataMap.get(e.uri.fsPath)?.getEntityName;
+        let stringDecodedValue = new TextDecoder(CHARSET).decode(newFileData);
+
+        if (useBase64Encoding) {
+            stringDecodedValue = toBase64(stringDecodedValue);
+        }
+
+        const patchRequestUrl = getRequestURL(dataVerseOrgUrl,
+            saveDataMap.get(e.uri.fsPath)?.getEntityName as string,
+            saveDataMap.get(e.uri.fsPath)?.getEntityId as string,
+            entitiesSchemaMap,
+            httpMethodType(entity ?? ''),
+            true);
+
+        await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, stringDecodedValue);
     });
 }
 
-export async function saveData(accessToken: string, requestUrl: string, fileUri: vscode.Uri, saveDataMap: Map<string, SaveEntityDetails>, value: string) {
+export async function saveData(
+    accessToken: string,
+    requestUrl: string,
+    fileUri: vscode.Uri,
+    saveDataMap: Map<string, SaveEntityDetails>,
+    value: string
+) {
     let requestBody = '';
     const column = saveDataMap.get(fileUri.fsPath)?.getSaveAttribute;
+
     if (column) {
         const data: { [k: string]: string } = {};
         data[column] = value;
@@ -42,15 +71,19 @@ export async function saveData(accessToken: string, requestUrl: string, fileUri:
                 headers: getHeader(accessToken),
                 body: requestBody
             });
+
             sendAPITelemetry(requestUrl);
+
             if (!response.ok) {
                 sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response.statusText);
                 vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR);
                 throw new Error(response.statusText);
             }
-        } catch (error) {
+        }
+        catch (error) {
             const authError = (error as Error)?.message;
             sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, authError);
+
             if (typeof error === "string" && error.includes('Unauthorized')) {
                 vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
             } else {
