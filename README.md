@@ -11,6 +11,9 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+1.0.21:
+  - hotfix in pac CLI `pac paportal *` for #255
+
 1.0.20:
  - PCF control debugging support in VS Code's debugger;
    see for early details: https://github.com/microsoft/powerplatform-vscode/pull/231
