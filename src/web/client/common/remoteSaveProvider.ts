@@ -5,8 +5,8 @@
 
 import * as vscode from 'vscode';
 import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
-import { toBase64 } from '../utility/commonUtility';
-import { getRequestURL } from '../utility/urlBuilder';
+import { toBase64 } from '../utility/CommonUtility';
+import { getRequestURL } from '../utility/UrlBuilder';
 import { getHeader } from './authenticationProvider';
 import { BAD_REQUEST, CHARSET, httpMethod } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';

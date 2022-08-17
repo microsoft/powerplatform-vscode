@@ -10,11 +10,11 @@ import {
     sendAPITelemetry,
     sendErrorTelemetry
 } from '../telemetry/webExtensionTelemetry';
-import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/commonUtility';
+import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/CommonUtility';
 import {
     getRequestURL,
     updateEntityId
-} from '../utility/urlBuilder';
+} from '../utility/UrlBuilder';
 import { getHeader } from './authenticationProvider';
 import * as Constants from './constants';
 import { PORTALS_URI_SCHEME } from './constants';
