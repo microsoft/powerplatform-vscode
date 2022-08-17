@@ -10,12 +10,11 @@ import {
     sendAPITelemetry,
     sendErrorTelemetry
 } from '../telemetry/webExtensionTelemetry';
-import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/CommonUtility';
+import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/commonUtility';
 import {
-    getParameterizedRequestUrlKey,
     getRequestURL,
     updateEntityId
-} from '../utility/UrlBuilder';
+} from '../utility/urlBuilder';
 import { getHeader } from './authenticationProvider';
 import * as Constants from './constants';
 import { PORTALS_URI_SCHEME } from './constants';
@@ -41,7 +40,7 @@ export async function fetchData(
     try {
         const dataverseOrgUrl = queryParamsMap.get(Constants.ORG_URL) as string;
 
-        requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, entitiesSchemaMap, Constants.HttpMethod.GET, false);
+        requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, entitiesSchemaMap, Constants.httpMethod.GET, false);
         sendAPITelemetry(requestUrl);
 
         requestSentAtTime = new Date().getTime();
@@ -58,7 +57,7 @@ export async function fetchData(
         sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
 
         const result = await response.json();
-        const data = getParameterizedRequestUrlKey(entity, entityId) === Constants.SINGLE_ENTITY_URL_KEY ? [result] : result.value;
+        const data = result.value;
 
         if (!data) {
             vscode.window.showErrorMessage(ERRORS.EMPTY_RESPONSE);
@@ -112,7 +111,7 @@ function createContentFiles(
     }
 
     let filePathInPortalFS = '';
-    if (exportType && (exportType === Constants.ExportType.SubFolders || exportType === Constants.ExportType.SingleFolder)) {
+    if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
         filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
         portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
     }
@@ -131,7 +130,7 @@ function createContentFiles(
             return;
         }
 
-        if (exportType && (exportType === Constants.ExportType.SubFolders)) {
+        if (exportType && (exportType === Constants.exportType.SubFolders)) {
             filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
             portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
         }

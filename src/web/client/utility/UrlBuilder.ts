@@ -3,29 +3,21 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { DataverseUrlPathEntityName, HttpMethod, MULTI_ENTITY_URL_KEY, pathParamToSchema, SINGLE_ENTITY_URL_KEY } from "../common/constants";
+import { httpMethod, MULTI_ENTITY_URL_KEY, pathParamToSchema, SINGLE_ENTITY_URL_KEY } from "../common/constants";
 import { dataSourcePropertiesMap } from "../common/localStore";
 
-export const getParameterizedRequestUrlTemplate = (entity: string, entityId: string, isSingleEntity: boolean) => {
-    if (isSingleEntity || (entity === DataverseUrlPathEntityName.WEBPAGES && entityId)) {
+export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
+    if (isSingleEntity) {
         return dataSourcePropertiesMap.get(SINGLE_ENTITY_URL_KEY) as string;
     }
 
     return dataSourcePropertiesMap.get(MULTI_ENTITY_URL_KEY) as string;
 };
 
-export const getParameterizedRequestUrlKey = (entity: string, entityId: string) => {
-    if (entity === DataverseUrlPathEntityName.WEBPAGES && entityId) {
-        return SINGLE_ENTITY_URL_KEY;
-    }
-
-    return MULTI_ENTITY_URL_KEY;
-};
-
 export function getRequestURL(dataverseOrgUrl: string, entity: string, entityId: string, entitiesSchemaMap: Map<string, Map<string, string>>, method: string, isSingleEntity: boolean): string {
-    let parameterizedUrlTemplate = getParameterizedRequestUrlTemplate(entity, entityId, isSingleEntity);
+    let parameterizedUrlTemplate = getParameterizedRequestUrlTemplate(isSingleEntity);
     switch (method) {
-        case HttpMethod.GET:
+        case httpMethod.GET:
             parameterizedUrlTemplate = parameterizedUrlTemplate
                 + entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get('_fetchQueryParameters');
             break;

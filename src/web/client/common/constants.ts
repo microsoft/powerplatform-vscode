@@ -29,30 +29,46 @@ export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
 export const BAD_REQUEST = 'BAD_REQUEST';
 
-export enum HttpMethod {
+export enum httpMethod {
     PATCH = 'PATCH',
     GET = 'GET'
 }
 
-export enum VscodeUrlPathEntityName {
+/* Generic name of the entityType passed in the URL by the clients in VSCODE URL
+    Example: /powerplatform/portal/webfiles/0d877522-e316-ed11-b83f-002248310090?dataSource...
+    Here webfiles is the generic name passed for all CSS files.
+    These files are maintained in adx_webfile or annotations dataverse entity for PowerPages
+*/
+export enum vscodeUrlPathEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
     WEBTEMPLATES = "webtemplates"
 }
 
-export enum SchemaEntityName {
+/* Corresponding name of the entityType maintained in portalSchema file
+    Schema file contains properties about how to fetch/save an entity,
+    and how to display it in the file explorer.
+*/
+export enum schemaEntityName {
     WEBFILES = "adx_webfile",
     WEBPAGES = "adx_webpage",
     WEBTEMPLATES = "adx_webtemplate"
 }
 
-export enum DataverseUrlPathEntityName {
+/* Corresponding name of the entityType in Dataverse entities.
+    These are the OData names of the resources required for fetch and save calls.
+    Example: https://<orgUrl>/api/data/v9.2/annotations?$filter=_objectid_value eq <webFileId> &$select=documentbody
+    Here annotations entity has CSS file for PowerPages
+*/
+export enum dataverseUrlPathEntityName {
     WEBFILES = "annotations",
     WEBPAGES = "adx_webpages",
-    WEBTEMPLATES = "adx_webtemplate" // TODO - Update to right call name
+    WEBTEMPLATES = "adx_webtemplates" // TODO - Update to right call name
 }
 
-export enum ExportType {
+/*This decides the folder hierarchy a file being displayed in File explorer will follow.
+    This value is also maintained in portalSchema entities definition as _exporttype*/
+export enum exportType {
     SubFolders = "SubFolders",
     SingleFolder = "SingleFolder",
     SingleFile = "SingleFile"
@@ -77,9 +93,9 @@ export const entityFolder = new Map([
 ]);
 
 export const pathParamToSchema = new Map([
-    [VscodeUrlPathEntityName.WEBPAGES, "adx_webpages"],
-    [VscodeUrlPathEntityName.WEBFILES, "annotations"],
-    [VscodeUrlPathEntityName.WEBTEMPLATES, "adx_webtemplates"],
+    [vscodeUrlPathEntityName.WEBPAGES, "adx_webpages"],
+    [vscodeUrlPathEntityName.WEBFILES, "annotations"],
+    [vscodeUrlPathEntityName.WEBTEMPLATES, "adx_webtemplates"],
     ["adx_webpages", "adx_webpage"],
     ["adx_webtemplates", "adx_webtemplate"],
     ["adx_websites", "adx_website"],

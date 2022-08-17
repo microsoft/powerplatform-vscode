@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { DataverseUrlPathEntityName } from "../common/constants";
+import { dataverseUrlPathEntityName } from "../common/constants";
 
 // decodes base64 to text
 export function fromBase64(data: string) {
@@ -16,7 +16,7 @@ export function toBase64(data: string) {
 }
 
 export function useBase64(entity: string): boolean {
-    return entity === DataverseUrlPathEntityName.WEBFILES;
+    return entity === dataverseUrlPathEntityName.WEBFILES;
 }
 
 export function GetFileNameWithExtension(
@@ -25,7 +25,7 @@ export function GetFileNameWithExtension(
     languageCode: string,
     extension: string
 ) {
-    if (entity === DataverseUrlPathEntityName.WEBPAGES) {
+    if (entity === dataverseUrlPathEntityName.WEBPAGES) {
         return `${fileName}.${languageCode}.${extension}`;
     }
 

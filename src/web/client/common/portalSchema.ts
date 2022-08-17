@@ -594,7 +594,7 @@ export const portal_schema_data = {
                 "_exporttype": "SubFolders",
                 "_languagefield": "adx_webpagelanguageid",
                 "_languagegroupby": "adx_rootwebpageid",
-                "_fetchQueryParameters": "?$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
+                "_fetchQueryParameters": "?$filter=adx_webpageid%20eq%20{entityId}&$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
                 "_attributes": "adx_customcss,adx_customjavascript,adx_copy"
             },
             {
@@ -773,7 +773,7 @@ export const portal_schema_data = {
                 "_exporttype": "SingleFolder",
                 "_fetchQueryParameters": "?$filter=_objectid_value%20eq%20{entityId}%20&$select=documentbody,filename,annotationid",
                 "_attributes": "documentbody",
-                "_mappingEntityId": "annotationid"
+                "_mappingEntityId": "annotationid" // Webfile in old schema are maintained with two dataverse entity adx_webfile and annotations. This Id acts as foreign key for that mapping
             },
             {
                 "fields": {

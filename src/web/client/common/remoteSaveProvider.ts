@@ -5,10 +5,10 @@
 
 import * as vscode from 'vscode';
 import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
-import { toBase64 } from '../utility/CommonUtility';
-import { getRequestURL } from '../utility/UrlBuilder';
+import { toBase64 } from '../utility/commonUtility';
+import { getRequestURL } from '../utility/urlBuilder';
 import { getHeader } from './authenticationProvider';
-import { BAD_REQUEST, CHARSET, HttpMethod } from './constants';
+import { BAD_REQUEST, CHARSET, httpMethod } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { entitiesSchemaMap } from './localStore';
@@ -36,7 +36,7 @@ export function registerSaveProvider(
             saveDataMap.get(e.uri.fsPath)?.getEntityName as string,
             saveDataMap.get(e.uri.fsPath)?.getEntityId as string,
             entitiesSchemaMap,
-            HttpMethod.PATCH,
+            httpMethod.PATCH,
             true);
 
         await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, stringDecodedValue);
