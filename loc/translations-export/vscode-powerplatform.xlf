@@ -193,4 +193,18 @@ The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
     </trans-unit>
   </body></file>
+  <file original="./web/client/extension" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.message">
+      <source xml:lang="en">Opening VS Code for the web ...</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
+      <source xml:lang="en">There was a problem opening the workspace</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
+      <source xml:lang="en">Try refreshing the browser</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
+      <source xml:lang="en">Unable to find that app</source>
+    </trans-unit>
+  </body></file>
 </xliff>
