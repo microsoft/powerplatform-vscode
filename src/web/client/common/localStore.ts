@@ -10,7 +10,9 @@ import { showErrorDialog } from "./errorHandler";
 import { getDataFromDataVerse } from "./remoteFetchProvider";
 import { PortalsFS } from "./fileSystemProvider";
 import { createFileSystem } from "./createFileSystem";
-import { localize } from "vscode-nls";
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 let dataSourcePropertiesMap = new Map<string, string>();
 let entitiesSchemaMap = new Map<string, Map<string, string>>();

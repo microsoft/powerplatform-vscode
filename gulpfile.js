@@ -27,7 +27,7 @@ const log = require('fancy-log');
 const path = require('path');
 const pslist = require('ps-list');
 
-const [nodeConfig ,webConfig] = require('./webpack.config');
+const [nodeConfig, webConfig] = require('./webpack.config');
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
@@ -54,10 +54,10 @@ function compile() {
 
 function compileWeb() {
     return gulp
-    .src('src/web/**/*.ts')
-    .pipe(gulpWebpack(webConfig, webpack))
-    .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
-    .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
+        .src('src/web/**/*.ts')
+        .pipe(gulpWebpack(webConfig, webpack))
+        .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
+        .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
 
 async function nugetInstall(nugetSource, packageName, version, targetDir) {
@@ -132,12 +132,12 @@ function lint() {
     return gulp
         .src(['src/**/*.ts', __filename])
         .pipe(eslint({
-                formatter: 'verbose',
-                configuration: '.eslintrc.js'
-            }))
+            formatter: 'verbose',
+            configuration: '.eslintrc.js'
+        }))
         .pipe(eslint.format())
         .pipe(eslint.results(results => {
-            if (results.warningCount > 0){
+            if (results.warningCount > 0) {
                 throw new Error(`Found ${results.warningCount} eslint errors.`)
             }
         }))
@@ -146,20 +146,20 @@ function lint() {
 
 function test() {
     return gulp
-        .src(['src/server/test/unit/**/*.ts','src/client/test/unit/**/*.ts'], { read: false })
+        .src(['src/server/test/unit/**/*.ts', 'src/client/test/unit/**/*.ts'], { read: false })
         .pipe(mocha({
-                require: [ "ts-node/register" ],
-                ui: 'bdd'
-            }));
+            require: ["ts-node/register"],
+            ui: 'bdd'
+        }));
 }
 
 function testWeb() {
     return gulp
         .src(['src/web/client/test/unit/**/*.ts'], { read: false })
         .pipe(mocha({
-                require: [ "ts-node/register" ],
-                ui: 'bdd'
-            }));
+            require: ["ts-node/register"],
+            ui: 'bdd'
+        }));
 }
 
 async function packageVsix() {
@@ -171,8 +171,8 @@ async function packageVsix() {
 
 async function git(args) {
     args.unshift('git');
-    const {stdout, stderr } = await exec(args.join(' '));
-    return {stdout: stdout, stderr: stderr};
+    const { stdout, stderr } = await exec(args.join(' '));
+    return { stdout: stdout, stderr: stderr };
 }
 
 async function setGitAuthN() {
@@ -183,8 +183,8 @@ async function setGitAuthN() {
     }
     const bearer = `AUTHORIZATION: basic ${Buffer.from(`PAT:${repoToken}`).toString('base64')}`;
     await git(['config', '--local', `http.${repoUrl}/.extraheader`, `"${bearer}"`]);
-    await git(['config', '--local', 'user.email', 'capisvaatdev@microsoft.com' ]);
-    await git(['config', '--local', 'user.name', '"DPT Tools Dev Team"' ]);
+    await git(['config', '--local', 'user.email', 'capisvaatdev@microsoft.com']);
+    await git(['config', '--local', 'user.name', '"DPT Tools Dev Team"']);
 }
 
 async function snapshot() {
@@ -198,8 +198,7 @@ async function snapshot() {
     log.info(`snapshot: remote repoUrl: ${repoUrl}`);
     const orgDir = process.cwd();
     process.chdir(tmpRepo);
-    try
-    {
+    try {
         await git(['init']);
         await git(['remote', 'add', 'origin', repoUrl]);
         await setGitAuthN();
@@ -243,15 +242,12 @@ const cliVersion = '1.16.6';
 
 const recompile = gulp.series(
     clean,
-    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI',cliVersion, path.resolve(distdir, 'pac')),
+    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI', cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
-    translationsExportForVscode,
     translationsImport,
-    translationsImportForVscode,
     translationsGenerate,
-    translationsGenerateForVscode,
     compile,
     compileWeb
 );
@@ -280,18 +276,6 @@ async function translationsExport() {
         .pipe(gulp.dest(path.join("loc")));
 }
 
-async function translationsExportForVscode() {
-    return gulp
-        .src('src/web/client/**/*.ts')
-        .pipe(nls.createMetaDataFiles())
-        .pipe(filter(['**/*.nls.json', '**/*.nls.metadata.json']))
-        .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', '.'))
-        .pipe(filter(['**/nls.metadata.header.json', '**/nls.metadata.json']))
-        .pipe(gulp.src(["package.nls.json"]))
-        .pipe(nls.createXlfFiles("translations-export-for-vscode", translationExtensionName))
-        .pipe(gulp.dest(path.join("loc")));
-}
-
 const languages = [
     //{ id: "bg", folderName: "bul" },
     //{ id: "hu", folderName: "hun" },
@@ -303,7 +287,7 @@ const languages = [
     { id: "it", folderName: "ita" },
     { id: "ja", folderName: "jpn" },
     { id: "ko", folderName: "kor" },
-    { id: "pt-BR", folderName: "ptb"},
+    { id: "pt-BR", folderName: "ptb" },
     { id: "ru", folderName: "rus" },
     { id: "tr", folderName: "trk" },
     { id: "zh-CN", folderName: "chs" },
@@ -326,42 +310,16 @@ async function translationsImport(done) {
     })();
 }
 
-async function translationsImportForVscode(done) {
-    const tasks = languages.map((language) => {
-        const importTask = async () => gulp.src(path.join("loc", "translations-import-for-vscode", `vscode-powerplatform.${language.id}.xlf`))
-            .pipe(nls.prepareJsonFiles())
-            .pipe(replace("\\r\\n", "\\n"))
-            .pipe(gulp.dest(path.join("./i18n", language.folderName)));
-        importTask.displayName = `Importing localization - ${language.id}`;
-        return importTask;
-    });
-
-    return gulp.parallel(...tasks, (seriesDone) => {
-        seriesDone();
-        done();
-    })();
-}
-
 function translationsGeneratePackage() {
     return gulp.src(['package.nls.json'])
         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
         .pipe(gulp.dest('.'));
 }
+
 function translationsGenerate(done) {
     return gulp.series(
-        async() => translationsGeneratePackage(),
-        async() => translationsGenerateSrcLocBundles(),
-        (seriesDone) => {
-            seriesDone();
-            done();
-        }
-    )();
-}
-
-function translationsGenerateForVscode(done) {
-    return gulp.series(
-        async() => translationsGeneratePackage(),
-        async() => translationsGenerateSrcLocBundlesForVscode(),
+        async () => translationsGeneratePackage(),
+        async () => translationsGenerateSrcLocBundles(),
         (seriesDone) => {
             seriesDone();
             done();
@@ -371,17 +329,6 @@ function translationsGenerateForVscode(done) {
 
 function translationsGenerateSrcLocBundles() {
     return gulp.src('src/**/*.ts')
-        .pipe(nls.createMetaDataFiles())
-        .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
-        .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', path.join('dist', 'src')))
-        .pipe(nls.bundleLanguageFiles())
-        .pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
-        .pipe(filter(['**/nls.*.json']))
-        .pipe(gulp.dest(path.join('dist', 'src')));
-}
-
-function translationsGenerateSrcLocBundlesForVscode() {
-    return src('src/web/client/**/*.ts')
         .pipe(nls.createMetaDataFiles())
         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
         .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', path.join('dist', 'src')))
@@ -403,10 +350,7 @@ exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;
 exports.translationsExport = translationsExport;
-exports.translationsExportForVscode = translationsExportForVscode;
 exports.translationsImport = translationsImport;
-exports.translationsImportForVscode = translationsImportForVscode;
 exports.translationsGenerate = translationsGenerate;
-exports.translationsGenerateForVscode = translationsGenerateForVscode;
 exports.setGitAuthN = setGitAuthN;
 exports.default = compile;

@@ -4,7 +4,9 @@
  */
 
 import * as vscode from 'vscode';
-import { localize } from 'vscode-nls';
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import { sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
 import { pathParamToSchema, PROVIDER_ID, telemetryEventNames } from './constants';
 import { dataSourcePropertiesMap } from './localStore';
@@ -30,19 +32,6 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
         sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);
     }
     return accessToken;
-}
-
-export function getRequestURLForSingleEntity(dataverseOrgUrl: string, entity: string, entityId: string, urlquery: string, entitiesSchemaMap: Map<string, Map<string, string>>, method: string): string {
-    const parameterizedUrl = dataSourcePropertiesMap.get(urlquery) as string;
-    let requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{entityId}', entityId).replace('{api}', dataSourcePropertiesMap.get('api') as string).replace('{data}', dataSourcePropertiesMap.get('data') as string).replace('{version}', dataSourcePropertiesMap.get('version') as string);
-    switch (method) {
-        case 'GET':
-            requestUrl = requestUrl + entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get('_fetchQueryParameters');
-            break;
-        default:
-            break;
-    }
-    return requestUrl;
 }
 
 export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string, entitiesSchemaMap: Map<string, Map<string, string>>): string {
