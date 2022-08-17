@@ -22,24 +22,25 @@ export function registerSaveProvider(
     saveDataMap: Map<string, SaveEntityDetails>,
     useBase64Encoding: boolean
 ) {
-    vscode.workspace.onDidSaveTextDocument(async (e) => {
-        vscode.window.showInformationMessage(INFO.SAVE_FILE);
+    vscode.workspace.onDidSaveTextDocument(async (document) => {
+        if (document?.uri?.fsPath) {
+            vscode.window.showInformationMessage(INFO.SAVE_FILE);
 
-        const newFileData = portalsFS.readFile(e.uri);
-        let stringDecodedValue = new TextDecoder(CHARSET).decode(newFileData);
+            const newFileData = portalsFS.readFile(document.uri);
+            let stringDecodedValue = new TextDecoder(CHARSET).decode(newFileData);
 
-        if (useBase64Encoding) {
-            stringDecodedValue = toBase64(stringDecodedValue);
+            if (useBase64Encoding) {
+                stringDecodedValue = toBase64(stringDecodedValue);
+            }
+
+            const patchRequestUrl = getRequestURL(dataVerseOrgUrl,
+                saveDataMap.get(document.uri.fsPath)?.getEntityName as string,
+                saveDataMap.get(document.uri.fsPath)?.getEntityId as string,
+                entitiesSchemaMap,
+                httpMethod.PATCH,
+                true);
+            await saveData(accessToken, patchRequestUrl, document.uri, saveDataMap, stringDecodedValue);
         }
-
-        const patchRequestUrl = getRequestURL(dataVerseOrgUrl,
-            saveDataMap.get(e.uri.fsPath)?.getEntityName as string,
-            saveDataMap.get(e.uri.fsPath)?.getEntityId as string,
-            entitiesSchemaMap,
-            httpMethod.PATCH,
-            true);
-
-        await saveData(accessToken, patchRequestUrl, e.uri, saveDataMap, stringDecodedValue);
     });
 }
 
