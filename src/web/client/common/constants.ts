@@ -63,7 +63,7 @@ export enum schemaEntityName {
 export enum dataverseUrlPathEntityName {
     WEBFILES = "annotations",
     WEBPAGES = "adx_webpages",
-    WEBTEMPLATES = "adx_webtemplates" // TODO - Update to right call name
+    WEBTEMPLATES = "adx_webtemplates"
 }
 
 /*This decides the folder hierarchy a file being displayed in File explorer will follow.
