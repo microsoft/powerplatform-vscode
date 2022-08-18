@@ -65,7 +65,7 @@
     "onCommand:pacCLI.openDocumentation",
     "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onStartupFinished",
-    "workspaceContains:**/**dynamics.com-manifest.yml",
+    "workspaceContains:**/**.portalconfig",
     "onDebug"
   ],
   "capabilities": {
