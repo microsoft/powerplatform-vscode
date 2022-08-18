@@ -6,10 +6,13 @@
 import { getCustomRequestURL, getHeader } from "./authenticationProvider";
 import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesSchemaMap } from "./portalSchemaReader";
-import { ERRORS, showErrorDialog } from "./errorHandler";
+import { showErrorDialog } from "./errorHandler";
 import { getDataFromDataVerse } from "./remoteFetchProvider";
 import { PortalsFS } from "./fileSystemProvider";
 import { createFileSystem } from "./createFileSystem";
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 let dataSourcePropertiesMap = new Map<string, string>();
 let entitiesSchemaMap = new Map<string, Map<string, string>>();
@@ -26,7 +29,7 @@ export async function languageIdToCode(accessToken: string, dataverseOrgURL: str
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
-            showErrorDialog(ERRORS.BACKEND_ERROR, ERRORS.BACKEND_ERROR_DESC);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "There’s a problem on the back end"), localize("microsoft-powerapps-portals.webExtension.backend.desc", "Try again"));
         }
         const result = await response.json();
         if (result) {
@@ -40,10 +43,10 @@ export async function languageIdToCode(accessToken: string, dataverseOrgURL: str
         }
     } catch (error) {
         if (typeof error === "string" && error.includes("Unauthorized")) {
-            showErrorDialog(ERRORS.AUTHORIZATION_FAILED, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
         }
         else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
         }
     }
     return languageIdCodeMap;
@@ -56,7 +59,7 @@ export async function websiteLanguageIdToPortalLanguage(accessToken: string, dat
             headers: getHeader(accessToken),
         });
         if (!response.ok) {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.backend.desc", "Check the parameters and try again"));
         }
         const result = await response.json();
         if (result) {
@@ -70,10 +73,10 @@ export async function websiteLanguageIdToPortalLanguage(accessToken: string, dat
         }
     } catch (error) {
         if (typeof error === "string" && error.includes("Unauthorized")) {
-            showErrorDialog(ERRORS.AUTHORIZATION_FAILED, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
         }
         else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
         }
     }
     return websiteLanguageIdToPortalLanguageMap;
@@ -87,7 +90,7 @@ export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUr
         });
 
         if (!response.ok) {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.backend.desc", "Check the parameters and try again"));
         }
         const result = await response.json();
 
@@ -103,10 +106,10 @@ export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUr
 
     } catch (error) {
         if (typeof error === "string" && error.includes("Unauthorized")) {
-            showErrorDialog(ERRORS.AUTHORIZATION_FAILED, ERRORS.SERVER_ERROR_PERMISSION_DENIED);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
         }
         else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
         }
     }
     return websiteIdToLanguage;

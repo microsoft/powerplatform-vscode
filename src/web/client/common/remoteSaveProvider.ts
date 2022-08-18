@@ -9,11 +9,13 @@ import { toBase64 } from '../utility/CommonUtility';
 import { getRequestURL } from '../utility/UrlBuilder';
 import { getHeader } from './authenticationProvider';
 import { BAD_REQUEST, CHARSET, httpMethod } from './constants';
-import { ERRORS, showErrorDialog } from './errorHandler';
+import { showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { entitiesSchemaMap } from './localStore';
 import { SaveEntityDetails } from './portalSchemaInterface';
-import { INFO } from './resources/Info';
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function registerSaveProvider(
     accessToken: string,
@@ -24,7 +26,7 @@ export function registerSaveProvider(
 ) {
     vscode.workspace.onDidSaveTextDocument(async (document) => {
         if (document?.uri?.fsPath) {
-            vscode.window.showInformationMessage(INFO.SAVE_FILE);
+            vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.save.file.message", "Saving your file ..."));
 
             const newFileData = portalsFS.readFile(document.uri);
             let stringDecodedValue = new TextDecoder(CHARSET).decode(newFileData);
@@ -60,7 +62,7 @@ export async function saveData(
         requestBody = JSON.stringify(data);
     } else {
         sendAPIFailureTelemetry(requestUrl, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
-        showErrorDialog(ERRORS.BAD_REQUEST, ERRORS.BAD_REQUEST_DESC);
+        showErrorDialog(localize("microsoft-powerapps-portals.webExtension.save.file.error", "Unable to complete the request"), localize("microsoft-powerapps-portals.webExtension.save.file.error.desc", "One or more attribute names have been changed or removed. Contact your admin."));
     }
 
     if (requestBody) {
@@ -76,18 +78,18 @@ export async function saveData(
 
             if (!response.ok) {
                 sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response.statusText);
-                vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR);
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "There’s a problem on the back end"), localize("microsoft-powerapps-portals.webExtension.retry.desc", "Try again"));
                 throw new Error(response.statusText);
             }
         }
         catch (error) {
             const authError = (error as Error)?.message;
             sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, authError);
-
-            if (typeof error === "string" && error.includes('Unauthorized')) {
-                vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
-            } else {
-                showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
+            if (typeof error === "string" && error.includes("Unauthorized")) {
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
+            }
+            else {
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
             }
         }
     }

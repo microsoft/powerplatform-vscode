@@ -4,9 +4,11 @@
  */
 
 import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import { sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
 import { pathParamToSchema, PROVIDER_ID, telemetryEventNames } from './constants';
-import { ERRORS } from './errorHandler';
 import { dataSourcePropertiesMap } from './localStore';
 
 export function getHeader(accessToken: string) {
@@ -25,7 +27,7 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
         const session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { createIfNone: true });
         accessToken = session.accessToken;
     } catch (error) {
-        vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
+        vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.authorization.error", "Authorization Failed. Please run again to authorize it"));
         const authError = (error as Error)?.message;
         sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);
     }

@@ -4,6 +4,9 @@
  */
 
 import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import {
     sendAPIFailureTelemetry,
     sendAPISuccessTelemetry,
@@ -22,7 +25,6 @@ import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { registerSaveProvider } from './remoteSaveProvider';
-import { INFO } from './resources/Info';
 let saveDataMap = new Map<string, SaveEntityDetails>();
 
 export async function fetchData(
@@ -49,7 +51,7 @@ export async function fetchData(
         });
 
         if (!response.ok) {
-            vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.authorization.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.fetch.authorization.desc", "Try again"));
             sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response.statusText);
             throw new Error(response.statusText);
         }
@@ -68,14 +70,12 @@ export async function fetchData(
         }
     } catch (error) {
         const authError = (error as Error)?.message;
-        if (typeof error === "string" && error.includes('Unauthorized')) {
-            vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
+        if (typeof error === "string" && error.includes("Unauthorized")) {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
         }
         else {
-            vscode.window.showErrorMessage(authError);
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
         }
-
         sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, authError);
     }
 }
@@ -125,7 +125,7 @@ function createContentFiles(
         }
 
         if (fileName === Constants.EMPTY_FILE_NAME) {
-            showErrorDialog(ERRORS.FILE_NAME_NOT_SET, ERRORS.SERVICE_ERROR);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.file-not-found.error", "That file is not available"), localize("microsoft-powerapps-portals.webExtension.file-not-found.desc", "The metadata may have changed on the Dataverse side. Contact your admin."));
             sendErrorTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
             return;
         }
@@ -187,6 +187,6 @@ export async function getDataFromDataVerse(accessToken: string,
     portalFs: PortalsFS,
     websiteIdToLanguage: Map<string, string>
 ) {
-    vscode.window.showInformationMessage(INFO.FETCH_FILE);
+    vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ..."));
     await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs, websiteIdToLanguage);
 }
