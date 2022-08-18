@@ -15,8 +15,8 @@ export function toBase64(data: string) {
     return btoa(unescape(encodeURIComponent(data)));
 }
 
-export function useBase64(entity: string): boolean {
-    return entity === dataverseUrlPathEntityName.WEBFILES;
+export function useBase64(entity: string, attributeType: string): boolean {
+    return entity === dataverseUrlPathEntityName.WEBFILES && attributeType === "documentbody";
 }
 
 export function GetFileNameWithExtension(

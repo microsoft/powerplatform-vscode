@@ -36,19 +36,23 @@ export interface WebsiteDetails {
 export interface ISaveEntityDetails {
     readonly entityName: string,
     readonly entityId: string,
-    readonly saveAttribute: string
+    readonly saveAttribute: string,
+    readonly useBase64Encoding: boolean;
 }
 
 export class SaveEntityDetails implements ISaveEntityDetails {
     entityName!: string;
     entityId!: string;
     saveAttribute!: string;
+    useBase64Encoding: boolean;
     public get getEntityName(): string { return this.entityName; }
     public get getEntityId(): string { return this.entityId; }
     public get getSaveAttribute(): string { return this.saveAttribute }
-    constructor(entityId: string, entityName: string, saveAttribute: string) {
+    public get getUseBase64Encoding(): boolean { return this.useBase64Encoding }
+    constructor(entityId: string, entityName: string, saveAttribute: string, useBase64Encoding: boolean) {
         this.entityId = entityId;
         this.entityName = entityName;
         this.saveAttribute = saveAttribute;
+        this.useBase64Encoding = useBase64Encoding;
     }
 }

@@ -19,8 +19,7 @@ export function registerSaveProvider(
     accessToken: string,
     portalsFS: PortalsFS,
     dataVerseOrgUrl: string,
-    saveDataMap: Map<string, SaveEntityDetails>,
-    useBase64Encoding: boolean
+    saveDataMap: Map<string, SaveEntityDetails>
 ) {
     vscode.workspace.onDidSaveTextDocument(async (e) => {
         vscode.window.showInformationMessage(INFO.SAVE_FILE);
@@ -28,7 +27,7 @@ export function registerSaveProvider(
         const newFileData = portalsFS.readFile(e.uri);
         let stringDecodedValue = new TextDecoder(CHARSET).decode(newFileData);
 
-        if (useBase64Encoding) {
+        if (saveDataMap.get(e.uri.fsPath)?.getUseBase64Encoding as boolean) {
             stringDecodedValue = toBase64(stringDecodedValue);
         }
 
@@ -56,6 +55,7 @@ export async function saveData(
     if (column) {
         const data: { [k: string]: string } = {};
         data[column] = value;
+        data['filename'] = 'customname.css';
         requestBody = JSON.stringify(data);
     } else {
         sendAPIFailureTelemetry(requestUrl, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
