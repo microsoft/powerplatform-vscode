@@ -4,103 +4,189 @@
  */
 
 import * as vscode from 'vscode';
-import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry, sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
-import { getHeader, getRequestURLForSingleEntity } from './authenticationProvider';
-import { columnExtension, CONTENT_PAGES, NO_CONTENT, EMPTY_FILE_NAME, DEFAULT_LANGUAGE_CODE, entityFolder, FILE_NAME_FIELD, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from './constants';
-import { PORTALS_URI_SCHEME, SINGLE_ENTITY_URL_KEY } from './constants';
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+import {
+    sendAPIFailureTelemetry,
+    sendAPISuccessTelemetry,
+    sendAPITelemetry,
+    sendErrorTelemetry
+} from '../telemetry/webExtensionTelemetry';
+import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/CommonUtility';
+import {
+    getRequestURL,
+    updateEntityId
+} from '../utility/UrlBuilder';
+import { getHeader } from './authenticationProvider';
+import * as Constants from './constants';
+import { PORTALS_URI_SCHEME } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { registerSaveProvider } from './remoteSaveProvider';
-import { INFO } from './resources/Info';
 let saveDataMap = new Map<string, SaveEntityDetails>();
 
-export async function fetchData(accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, websiteIdToLanguage: Map<string, string>) {
+export async function fetchData(
+    accessToken: string,
+    entity: string,
+    entityId: string,
+    queryParamsMap: Map<string, string>,
+    entitiesSchemaMap: Map<string, Map<string, string>>,
+    languageIdCodeMap: Map<string, string>,
+    portalFs: PortalsFS,
+    websiteIdToLanguage: Map<string, string>
+) {
     let requestUrl = '';
     let requestSentAtTime = new Date().getTime();
     try {
-        let url = '';
-        const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
-        if (entityId) {
-            url = SINGLE_ENTITY_URL_KEY;
-        }
-        else url = MULTI_ENTITY_URL_KEY;
-        requestUrl = getRequestURLForSingleEntity(dataverseOrgUrl, entity, entityId, url, entitiesSchemaMap, 'GET');
+        const dataverseOrgUrl = queryParamsMap.get(Constants.ORG_URL) as string;
+
+        requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, entitiesSchemaMap, Constants.httpMethod.GET, false);
         sendAPITelemetry(requestUrl);
+
         requestSentAtTime = new Date().getTime();
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
+
         if (!response.ok) {
-            vscode.window.showErrorMessage(ERRORS.BACKEND_ERROR);
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.authorization.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.fetch.authorization.desc", "Try again"));
             sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response.statusText);
             throw new Error(response.statusText);
         }
+
         sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
-        const data = await response.json();
-        if (data.value?.length >= 0) {
-            for (let counter = 0; counter < data.value.length; counter++) {
-                createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
-            }
-        } else {
-            createContentFiles(data, entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
+
+        const result = await response.json();
+        const data = result.value;
+
+        if (!data) {
+            vscode.window.showErrorMessage(ERRORS.EMPTY_RESPONSE);
+        }
+
+        for (let counter = 0; counter < data.length; counter++) {
+            createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
         }
     } catch (error) {
-        if (typeof error === "string" && error.includes('Unauthorized')) {
-            vscode.window.showErrorMessage(ERRORS.AUTHORIZATION_FAILED);
-        } else {
-            showErrorDialog(ERRORS.INVALID_ARGUMENT, ERRORS.INVALID_ARGUMENT_DESC);
-        }
         const authError = (error as Error)?.message;
+        if (typeof error === "string" && error.includes("Unauthorized")) {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
+        }
+        else {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
+        }
         sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, authError);
     }
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function createContentFiles(result: any, entity: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalsFS: PortalsFS, dataverseOrgUrl: string, accessToken: string, entityId: string, websiteIdToLanguage: Map<string, string>) {
-    let languageCode: string = DEFAULT_LANGUAGE_CODE;
-    const lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(WEBSITE_ID) as string) ? websiteIdToLanguage.get(queryParamsMap.get(WEBSITE_ID) as string) : DEFAULT_LANGUAGE_CODE;
-    if (languageIdCodeMap?.size && lcid) {
-        languageCode = languageIdCodeMap.get(lcid) as string ? languageIdCodeMap.get(lcid) as string : DEFAULT_LANGUAGE_CODE;
-    }
-    const entityEntry = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string);
+
+function createContentFiles(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    result: any,
+    entity: string,
+    queryParamsMap: Map<string, string>,
+    entitiesSchemaMap: Map<string, Map<string, string>>,
+    languageIdCodeMap: Map<string, string>,
+    portalsFS: PortalsFS,
+    dataverseOrgUrl: string,
+    accessToken: string,
+    entityId: string,
+    websiteIdToLanguage: Map<string, string>
+) {
+    const lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string)
+        ? websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string)
+        : Constants.DEFAULT_LANGUAGE_CODE;
+    const entityEntry = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string);
     const attributes = entityEntry?.get('_attributes');
     const exportType = entityEntry?.get('_exporttype');
-    const portalFolderName = queryParamsMap.get(WEBSITE_NAME) as string;
-    const subUri = entityFolder.get(entity) as string;
-    if (exportType && exportType === 'SubFolders') {
-        portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`, true));
+    const portalFolderName = queryParamsMap.get(Constants.WEBSITE_NAME) as string;
+    const subUri = Constants.entityFolder.get(entity) as string;
+    const useBase64Encoding = useBase64(entity);
+    let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
+
+    if (languageIdCodeMap?.size && lcid) {
+        languageCode = languageIdCodeMap.get(lcid) as string
+            ? languageIdCodeMap.get(lcid) as string
+            : Constants.DEFAULT_LANGUAGE_CODE;
     }
+
+    let filePathInPortalFS = '';
+    if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
+        filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
+        portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
+    }
+
     if (attributes) {
-        let fileName = EMPTY_FILE_NAME;
-        const fetchedFileName = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get(FILE_NAME_FIELD);
-        if (fetchedFileName)
+        let fileName = Constants.EMPTY_FILE_NAME;
+        const fetchedFileName = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string)?.get(Constants.FILE_NAME_FIELD);
+
+        if (fetchedFileName) {
             fileName = result[fetchedFileName].toLowerCase();
-        if (fileName === EMPTY_FILE_NAME) {
-            showErrorDialog(ERRORS.FILE_NAME_NOT_SET, ERRORS.SERVICE_ERROR);
-            sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
         }
-        portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`, true));
-        portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/`, true));
+
+        if (fileName === Constants.EMPTY_FILE_NAME) {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.file-not-found.error", "That file is not available"), localize("microsoft-powerapps-portals.webExtension.file-not-found.desc", "The metadata may have changed on the Dataverse side. Contact your admin."));
+            sendErrorTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
+            return;
+        }
+
+        if (exportType && (exportType === Constants.exportType.SubFolders)) {
+            filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
+            portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
+        }
+
         const attributeArray = attributes.split(',');
         let counter = 0;
+
+        let fileUri = '';
         for (counter; counter < attributeArray.length; counter++) {
-            const value = result[attributeArray[counter]] ? result[attributeArray[counter]] : NO_CONTENT;
-            saveDataMap = createVirtualFile(portalsFS, fileName, languageCode, value, columnExtension.get(attributeArray[counter]) as string, subUri, entityId, attributeArray[counter] as string, entity, portalFolderName);
+            const value = result[attributeArray[counter]] ? result[attributeArray[counter]] : Constants.NO_CONTENT;
+            const fileNameWithExtension = GetFileNameWithExtension(entity,
+                fileName,
+                languageCode,
+                Constants.columnExtension.get(attributeArray[counter]) as string);
+            fileUri = filePathInPortalFS + fileNameWithExtension;
+
+            saveDataMap = createVirtualFile(
+                portalsFS,
+                fileUri,
+                useBase64Encoding ? fromBase64(value) : value,
+                updateEntityId(entity, entityId, entitiesSchemaMap, result),
+                attributeArray[counter] as string,
+                entity);
         }
-        vscode.window.showTextDocument(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${columnExtension.get(attributeArray[--counter]) as string}`));
+
+        // Display only the last file
+        vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
     }
-    registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap);
+    registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap, useBase64Encoding);
 }
 
-function createVirtualFile(portalsFS: PortalsFS, fileName: string, languageCode: string, data: string | undefined, portalFileExtension: string, subUri: string, entityId: string, saveDataAtribute: string, entity: string, portalFolderName: string) {
+function createVirtualFile(
+    portalsFS: PortalsFS,
+    fileUri: string,
+    data: string | undefined,
+    entityId: string,
+    saveDataAtribute: string,
+    entity: string
+) {
     const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAtribute);
-    const fileUri = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/${entityFolder.get(CONTENT_PAGES)}/${fileName}.${languageCode}.${portalFileExtension}`;
+
     portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
     saveDataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
+
     return saveDataMap;
 }
 
-export async function getDataFromDataVerse(accessToken: string, entity: string, entityId: string, queryParamMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, websiteIdToLanguage: Map<string, string>) {
-    vscode.window.showInformationMessage(INFO.FETCH_FILE);
+export async function getDataFromDataVerse(accessToken: string,
+    entity: string,
+    entityId: string,
+    queryParamMap: Map<string, string>,
+    entitiesSchemaMap: Map<string, Map<string, string>>,
+    languageIdCodeMap: Map<string, string>,
+    portalFs: PortalsFS,
+    websiteIdToLanguage: Map<string, string>
+) {
+    vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ..."));
     await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs, websiteIdToLanguage);
 }
