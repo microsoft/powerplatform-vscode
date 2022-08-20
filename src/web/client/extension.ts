@@ -34,7 +34,17 @@ export function activate(context: vscode.ExtensionContext): void {
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
                 _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
-                vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init.message", "Opening VS Code for the web ..."));
+                const close: vscode.MessageItem = { title: "Close" };
+                const edit: vscode.MessageItem = { isCloseAffordance: true, title: "Edit the site" };
+                const siteMessage = "Be careful making changes. Anyone can see changes you make right away. To edit in private, go to Set up to change the site visibility to private";
+                const options = { detail: siteMessage, modal: true };
+                const result = await vscode.window.showWarningMessage("You are editing a live, public site ", options, close, edit);
+                if (result === close) {
+                    console.log("closing current editor")
+                    //vscode.commands.executeCommand("workbench.action.closeEditor");
+                    vscode.window.tabGroups.close(vscode.window.tabGroups.activeTabGroup);
+                }
+                vscode.window.showInformationMessage("Opening VS Code for the web ...");
                 const { appName, entity, entityId, searchParams } = args;
                 sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
                 const queryParamsMap = new Map<string, string>();
