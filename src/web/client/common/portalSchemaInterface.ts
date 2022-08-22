@@ -43,12 +43,15 @@ export class SaveEntityDetails implements ISaveEntityDetails {
     entityName!: string;
     entityId!: string;
     saveAttribute!: string;
+    schema!: string;
     public get getEntityName(): string { return this.entityName; }
     public get getEntityId(): string { return this.entityId; }
     public get getSaveAttribute(): string { return this.saveAttribute }
-    constructor(entityId: string, entityName: string, saveAttribute: string) {
+    public get getSchemaAttribute(): string { return this.schema }
+    constructor(entityId: string, entityName: string, saveAttribute: string, schema: string) {
         this.entityId = entityId;
         this.entityName = entityName;
         this.saveAttribute = saveAttribute;
+        this.schema = schema;
     }
 }
