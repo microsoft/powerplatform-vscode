@@ -130,12 +130,22 @@
       {
         "command": "pacCLI.SolutionInitPanel.Launch",
         "category": "Power Platform CLI",
-        "title": "Solution Init"
+        "title": "Solution Init - panel"
       },
       {
         "command": "pacCLI.PcfInitPanel.Launch",
         "category": "Power Platform CLI",
-        "title": "PCF Init"
+        "title": "PCF Init - panel"
+      },
+      {
+        "command": "pacCLI.explorer.solutionInit",
+        "category": "Power Platform CLI",
+        "title": "Solution Init - chained prompts"
+      },
+      {
+        "command": "pacCLI.explorer.pcfInit",
+        "category": "Power Platform CLI",
+        "title": "PCF Init - chained prompts"
       },
       {
         "command": "pacCLI.AdminResetPanel.Launch",
@@ -604,6 +614,16 @@
         },
         {
           "command": "pacCLI.PcfInitPanel.Launch",
+          "when": "explorerResourceIsFolder",
+          "group": "2_pacCommands"
+        },
+        {
+          "command": "pacCLI.explorer.solutionInit",
+          "when": "explorerResourceIsFolder",
+          "group": "2_pacCommands"
+        },
+        {
+          "command": "pacCLI.explorer.pcfInit",
           "when": "explorerResourceIsFolder",
           "group": "2_pacCommands"
         }

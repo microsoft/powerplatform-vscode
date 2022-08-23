@@ -14,6 +14,8 @@ import { PacInterop, PacWrapper, PacWrapperContext } from '../pac/PacWrapper';
 import { ITelemetry } from '../telemetry/ITelemetry';
 import { RegisterPanels } from './PacActivityBarUI';
 import { buildAgentString } from '../telemetry/batchedTelemetryAgent';
+import { solutionInitPrompt } from './ui/solutionInitPrompt';
+import { pcfInitPrompt } from './ui/pcfInitPrompt';
 
 export class PacTerminal implements vscode.Disposable {
     private readonly _context: vscode.ExtensionContext;
@@ -70,7 +72,74 @@ export class PacTerminal implements vscode.Disposable {
         }));
 
         this._cmdDisposables.push(...RegisterPanels(this._pacWrapper));
+
+        // this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.explorer.packageInit',
+        //     async (output: vscode.Uri) => {
+        //         if (!(await uriIsEmptyDirectory(output))) {
+        //             return;
+        //         }
+
+        //         const result = await this._pacWrapper.packageInit(output.fsPath);
+        //         if (result?.Status === "Success") {
+        //             vscode.window.showInformationMessage(result.Information[1].trim());
+        //         } else {
+        //             vscode.window.showErrorMessage(result.Errors.join(os.EOL).trim());
+        //         }
+        // }));
+
+        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.explorer.solutionInit',
+            async (output: vscode.Uri) => {
+                if (!(await uriIsEmptyDirectory(output))) {
+                    return;
+                }
+
+                const args = await solutionInitPrompt();
+
+                vscode.window.showInformationMessage(`pac solution init -o "${output.fsPath}" -pn${args.publisherName} -pp ${args.publisherName}`);
+
+                //const result = await this._pacWrapper.solutionInit(args.publisherName, args.publisherPrefix, output.fsPath);
+
+                // if (result?.Status === "Success") {
+                //     vscode.window.showInformationMessage(result.Information[1].trim());
+                // } else {
+                //     vscode.window.showErrorMessage(result.Errors.join(os.EOL).trim());
+                // }
+        }));
+
+        this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.explorer.pcfInit',
+            async (output: vscode.Uri) => {
+                if (!(await uriIsEmptyDirectory(output))) {
+                    return;
+                }
+
+                const args = await pcfInitPrompt();
+
+                vscode.window.showInformationMessage(`pac pcf init -o "${output.fsPath}" --name ${args.name} -ns ${args.namespace} --template ${args.template}`);
+                // const result = await this._pacWrapper.pcfInit(args.namespace, args.name, args.template, output.fsPath);
+
+                // if (result?.Status === "Success") {
+                //     vscode.window.showInformationMessage(result.Information[1].trim());
+                // } else {
+                //     vscode.window.showErrorMessage(result.Errors.join(os.EOL).trim());
+                // }
+        }));
+
+        // this._cmdDisposables.push(vscode.commands.registerCommand('pacCLI.explorer.pluginInit',
+        //     async (output: vscode.Uri) => {
+        //         if (!(await uriIsEmptyDirectory(output))) {
+        //             return;
+        //         }
+
+        //         const result = await this._pacWrapper.pluginInit(output.fsPath);
+
+        //         if (result?.Status === "Success") {
+        //             vscode.window.showInformationMessage(result.Information[1].trim());
+        //         } else {
+        //             vscode.window.showErrorMessage(result.Errors.join(os.EOL).trim());
+        //         }
+        // }));
     }
+
 
     public openDocumentation(): void {
         vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/pacvscodedocs'));
@@ -87,4 +156,18 @@ export class PacTerminal implements vscode.Disposable {
         terminal.show();
         return terminal;
     }
+}
+
+async function uriIsEmptyDirectory(directory: vscode.Uri) : Promise<boolean> {
+    if (directory.scheme !== 'file') {
+        return false;
+    }
+
+    const directoryStats = await fs.stat(directory.fsPath);
+    if (!directoryStats.isDirectory()) {
+        return false;
+    }
+
+    const contents = await fs.promises.readdir(directory.fsPath);
+    return !(contents && contents.length > 0);
 }
