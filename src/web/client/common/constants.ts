@@ -28,6 +28,8 @@ export const CHARSET = 'utf-8';
 export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
 export const BAD_REQUEST = 'BAD_REQUEST';
+export const PUBLIC = 'public';
+export const SITE_VISIBILITY = 'siteVisibility';
 
 export enum httpMethod {
     PATCH = 'PATCH',

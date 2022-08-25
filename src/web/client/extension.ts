@@ -11,7 +11,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
 import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
-import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames } from "./common/constants";
+import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 import { sendErrorTelemetry, sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
@@ -34,16 +34,7 @@ export function activate(context: vscode.ExtensionContext): void {
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
                 _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
-                const close: vscode.MessageItem = { title: "Close" };
-                const edit: vscode.MessageItem = { isCloseAffordance: true, title: "Edit the site" };
-                const siteMessage = "Be careful making changes. Anyone can see changes you make right away. To edit in private, go to Set up to change the site visibility to private";
-                const options = { detail: siteMessage, modal: true };
-                const result = await vscode.window.showWarningMessage("You are editing a live, public site ", options, close, edit);
-                if (result === close) {
-                    console.log("closing current editor")
-                    //vscode.commands.executeCommand("workbench.action.closeEditor");
-                    vscode.window.tabGroups.close(vscode.window.tabGroups.activeTabGroup);
-                }
+
                 vscode.window.showInformationMessage("Opening VS Code for the web ...");
                 const { appName, entity, entityId, searchParams } = args;
                 sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
@@ -55,6 +46,14 @@ export function activate(context: vscode.ExtensionContext): void {
                         queryParamsMap.set(pair[0], pair[1]);
                     }
                 }
+
+                if (queryParamsMap.get(SITE_VISIBILITY) === PUBLIC) {
+                    const edit: vscode.MessageItem = { isCloseAffordance: true, title: "Edit the site" };
+                    const siteMessage = "Be careful making changes. Anyone can see changes you make right away. To edit in private, go to Set up to change the site visibility to private";
+                    const options = { detail: siteMessage, modal: true };
+                    vscode.window.showWarningMessage("You are editing a live, public site ", options, edit);
+                }
+
                 let accessToken: string;
                 if (appName) {
                     switch (appName) {

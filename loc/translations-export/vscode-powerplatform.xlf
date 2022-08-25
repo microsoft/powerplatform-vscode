@@ -194,18 +194,6 @@ The {2} represents Solution's Version number</note>
     </trans-unit>
   </body></file>
   <file original="./web/client/extension" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.init.dialog.close">
-      <source xml:lang="en">Close</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.init.dialog.edit">
-      <source xml:lang="en">Edit the site</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.init.dialog.desc">
-      <source xml:lang="en">Be careful making changes. Anyone can see changes you make right away. To edit in private, go to Set up to change the site visibility to private</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.init.dialog.message">
-      <source xml:lang="en">You are editing a live, public site </source>
-    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
       <source xml:lang="en">There was a problem opening the workspace</source>
     </trans-unit>
