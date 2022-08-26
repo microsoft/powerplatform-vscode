@@ -48,10 +48,10 @@ export function activate(context: vscode.ExtensionContext): void {
                 }
 
                 if (queryParamsMap.get(SITE_VISIBILITY) === PUBLIC) {
-                    const edit: vscode.MessageItem = { isCloseAffordance: true, title: "Edit the site" };
-                    const siteMessage = "Be careful making changes. Anyone can see changes you make right away. To edit in private, go to Set up to change the site visibility to private";
+                    const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit","Edit the site") };
+                    const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc","Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
                     const options = { detail: siteMessage, modal: true };
-                    vscode.window.showWarningMessage("You are editing a live, public site ", options, edit);
+                    await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title","You are editing a live, public site "), options, edit);
                 }
 
                 let accessToken: string;
