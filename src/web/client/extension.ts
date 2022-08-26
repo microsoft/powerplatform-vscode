@@ -11,7 +11,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
 import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
-import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames } from "./common/constants";
+import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 import { sendErrorTelemetry, sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
@@ -34,7 +34,8 @@ export function activate(context: vscode.ExtensionContext): void {
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
                 _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
-                vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init.message", "Opening VS Code for the web ..."));
+
+                vscode.window.showInformationMessage("Opening VS Code for the web ...");
                 const { appName, entity, entityId, searchParams } = args;
                 sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
                 const queryParamsMap = new Map<string, string>();
@@ -45,6 +46,14 @@ export function activate(context: vscode.ExtensionContext): void {
                         queryParamsMap.set(pair[0], pair[1]);
                     }
                 }
+
+                if (queryParamsMap.get(SITE_VISIBILITY) === PUBLIC) {
+                    const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit","Edit the site") };
+                    const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc","Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
+                    const options = { detail: siteMessage, modal: true };
+                    await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title","You are editing a live, public site "), options, edit);
+                }
+
                 let accessToken: string;
                 if (appName) {
                     switch (appName) {
