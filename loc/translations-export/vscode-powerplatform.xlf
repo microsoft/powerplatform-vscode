@@ -268,11 +268,20 @@ The {2} represents Solution's Version number</note>
     <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
       <source xml:lang="en">There was a permissions problem with the server</source>
     </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+      <source xml:lang="en">One or more commands are invalid or malformed</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+      <source xml:lang="en">Check the parameters and try again</source>
+    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.error">
       <source xml:lang="en">That file is not available</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.desc">
       <source xml:lang="en">The metadata may have changed on the Dataverse side. Contact your admin.</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+      <source xml:lang="en">Fetching your file ...</source>
     </trans-unit>
   </body></file>
   <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext"><body>

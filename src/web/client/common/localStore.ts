@@ -4,7 +4,7 @@
  */
 
 import { getCustomRequestURL, getHeader } from "./authenticationProvider";
-import { MULTI_ENTITY_URL_KEY, NEW_PORTAL_LANGUAGES, NEW_SCHEMA_NAME, OLD_SCHEMA_NAME, ORG_URL, pathParamToSchema, portalSchemaVersion, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, powerpagecomponents, SCHEMA, SINGLE_ENTITY_LANGUAGE_KEY, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
+import { MULTI_ENTITY_URL_KEY, NEW_PORTAL_LANGUAGES, NEW_SCHEMA_NAME, OLD_SCHEMA_NAME, ORG_URL, pathParamToSchema, portalSchemaVersion, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, SCHEMA, SINGLE_ENTITY_LANGUAGE_KEY, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { showErrorDialog } from "./errorHandler";
 import { getDataFromDataVerse } from "./remoteFetchProvider";
@@ -147,13 +147,13 @@ export async function setContext(accessToken: string, pseudoEntityName: string, 
         websiteIdToLanguage = await websiteIdToLanguageMap(accessToken, dataverseOrgUrl, entitiesSchemaMap);
         websiteLanguageIdToPortalLanguageMap = await websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl, entitiesSchemaMap);
     }
-    createEntityFiles(portalsFS, accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, schema);
+    createEntityFiles(portalsFS, accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap);
 }
 
-function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, schema: string) {
+function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>) {
     const portalFolderName = queryParamsMap.get(WEBSITE_NAME) as string;
     createFileSystem(portalsFS, portalFolderName);
-    getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS, websiteIdToLanguage, schema);
+    getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS, websiteIdToLanguage);
 }
 
 export { dataSourcePropertiesMap, entitiesSchemaMap, websiteIdToLanguage, websiteLanguageIdToPortalLanguageMap, languageIdCodeMap };
