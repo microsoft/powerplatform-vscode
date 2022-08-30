@@ -76,7 +76,6 @@ export async function saveData(
                 newJsonData[key] = value;
                 const ndata = JSON.stringify({ "content": newJsonData });
                 requestBody = JSON.stringify({ "content": ndata })
-                console.log(requestBody)
             }
 
             try {

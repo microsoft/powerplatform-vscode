@@ -25,7 +25,7 @@ export function GetFileNameWithExtension(
     languageCode: string,
     extension: string
 ) {
-    if (entity === dataverseUrlPathEntityName.WEBPAGES) {
+    if (entity === dataverseUrlPathEntityName.WEBPAGES || entity === dataverseUrlPathEntityName.WEBPAGE) {
         return `${fileName}.${languageCode}.${extension}`;
     }
     return fileName;

@@ -36,7 +36,6 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
 
 export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string, entitiesSchemaMap: Map<string, Map<string, string>>): string {
     const parameterizedUrl = dataSourcePropertiesMap.get(urlQuery) as string;
-    console.log(parameterizedUrl)
     const fetchQueryParameters = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get("_fetchQueryParameters");
     const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api') as string).replace('{data}', dataSourcePropertiesMap.get('data') as string).replace('{version}', dataSourcePropertiesMap.get('version') as string);
     if(fetchQueryParameters)

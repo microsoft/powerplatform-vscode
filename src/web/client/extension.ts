@@ -44,7 +44,6 @@ export function activate(context: vscode.ExtensionContext): void {
                     const queryParams = new URLSearchParams(searchParams);
                     for (const pair of queryParams.entries()) {
                         queryParamsMap.set(pair[0], pair[1]);
-                        console.log(pair[0], pair[1])
                     }
                 }
 
