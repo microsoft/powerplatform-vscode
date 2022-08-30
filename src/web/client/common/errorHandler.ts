@@ -5,6 +5,9 @@
 
 
 import * as vscode from "vscode";
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import { sendErrorTelemetry } from "../telemetry/webExtensionTelemetry";
 import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from "./constants";
 
@@ -28,18 +31,19 @@ export const ERRORS = {
     THRESHOLD_LIMIT_EXCEEDED_DESC: "You’ve exceeded the threshold rate limit for the Dataverse API",
     BAD_REQUEST: "Unable to complete the request",
     BAD_REQUEST_DESC: "One or more attribute names have been changed or removed. Contact your admin.",
-    BACKEND_ERROR: "There’s a problem on the back end",
+    //BACKEND_ERROR: "There’s a problem on the back end",
     SERVICE_UNAVAILABLE: "There’s a problem connecting to Dataverse",
     SERVICE_ERROR: "There’s a problem connecting to Dataverse",
     INVALID_ARGUMENT: "One or more commands are invalid or malformed",
-    BACKEND_ERROR_DESC: "Try again",
+    //BACKEND_ERROR_DESC: "Try again",
     SERVICE_UNAVAILABLE_DESC: "Try again",
     SERVICE_ERROR_DESC: "Try again",
     INVALID_ARGUMENT_DESC: "Check the parameters and try again",
     MANDATORY_PARAMETERS_NULL: "The workspace is not available ",
     MANDATORY_PARAMETERS_NULL_DESC: "Check the URL and verify the parameters are correct",
     FILE_NAME_NOT_SET: "That file is not available",
-    FILE_NAME_NOT_SET_DESC: "The metadata may have changed on the Dataverse side. Contact your admin. {message_attribute}"
+    FILE_NAME_NOT_SET_DESC: "The metadata may have changed on the Dataverse side. Contact your admin. {message_attribute}",
+    GENERIC_ERROR: "Error encountered..."
 };
 
 export function showErrorDialog(detailMessage: string, errorString: string) {
@@ -67,7 +71,7 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
                 return true;
             } else {
                 sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
-                showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_NULL);
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init.workspace.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init.workspace.error.desc", "Check the URL and verify the parameters are correct"));
                 return false;
             }
         default:
@@ -86,7 +90,7 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
                 return true;
             } else {
                 sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
-                showErrorDialog(ERRORS.WORKSPACE_INITIAL_LOAD, ERRORS.MANDATORY_PARAMETERS_NULL);
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the URL and verify the parameters are correct"));
                 return false;
             }
         }
