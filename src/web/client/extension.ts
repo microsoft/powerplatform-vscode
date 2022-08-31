@@ -8,7 +8,7 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { AI_KEY } from '../../client/constants';
+import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
 import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC } from "./common/constants";
