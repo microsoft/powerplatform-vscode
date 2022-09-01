@@ -10,7 +10,7 @@ import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import * as path from "path";
 import { PortalWebView } from './PortalWebView';
-import { AI_KEY } from './constants';
+import { AI_KEY } from '../common/telemetry/generated/telemetryConfiguration';
 import { ITelemetryData } from "../common/TelemetryData";
 
 import {
@@ -20,6 +20,7 @@ import {
     TransportKind,
 } from "vscode-languageclient/node";
 import { readUserSettings } from "./telemetry/localfileusersettings";
+import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -107,6 +108,10 @@ export async function activate(
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
 
+    if (shouldEnableDebugger()) {
+        activateDebugger(context, _telemetry);
+    }
+
     _telemetry.sendTelemetryEvent("activated");
 }
 
@@ -122,6 +127,9 @@ export async function deactivate(): Promise<void> {
     if (client) {
         await client.stop();
     }
+
+    deactivateDebugger();
+
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {

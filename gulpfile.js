@@ -11,8 +11,10 @@ const util = require('util');
 const nls = require('vscode-nls-dev');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
+const rename = require('gulp-rename');
 const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
+const gulpTs = require("gulp-typescript");
 const replace = require('gulp-replace');
 const mocha = require('gulp-mocha');
 const moment = require('moment');
@@ -27,11 +29,12 @@ const log = require('fancy-log');
 const path = require('path');
 const pslist = require('ps-list');
 
-const [nodeConfig, webConfig] = require('./webpack.config');
+const [nodeConfig ,webConfig] = require('./webpack.config');
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
 const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
+const isOfficialBuild = argv.isOfficialBuild && argv.isOfficialBuild.toLowerCase() == "true";
 
 async function clean() {
     (await pslist())
@@ -44,6 +47,17 @@ async function clean() {
     return fs.emptyDir(distdir);
 }
 
+function setTelemetryTarget() {
+    const telemetryConfigurationSource = isOfficialBuild
+        ? 'src/common/telemetry/telemetryConfigurationProd.ts'
+        : 'src/common/telemetry/telemetryConfigurationDev.ts';
+
+    return gulp
+        .src(telemetryConfigurationSource)
+        .pipe(rename('telemetryConfiguration.ts'))
+        .pipe(gulp.dest(path.join('src', 'common', 'telemetry', 'generated')));
+}
+
 function compile() {
     return gulp
         .src('src/**/*.ts')
@@ -54,10 +68,10 @@ function compile() {
 
 function compileWeb() {
     return gulp
-        .src('src/web/**/*.ts')
-        .pipe(gulpWebpack(webConfig, webpack))
-        .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
-        .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
+    .src('src/web/**/*.ts')
+    .pipe(gulpWebpack(webConfig, webpack))
+    .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
+    .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
 
 async function nugetInstall(nugetSource, packageName, version, targetDir) {
@@ -132,47 +146,86 @@ function lint() {
     return gulp
         .src(['src/**/*.ts', __filename])
         .pipe(eslint({
-            formatter: 'verbose',
-            configuration: '.eslintrc.js'
-        }))
+                formatter: 'verbose',
+                configuration: '.eslintrc.js'
+            }))
         .pipe(eslint.format())
         .pipe(eslint.results(results => {
-            if (results.warningCount > 0) {
+            if (results.warningCount > 0){
                 throw new Error(`Found ${results.warningCount} eslint errors.`)
             }
         }))
         .pipe(eslint.failAfterError());
 }
 
-function test() {
+function testUnitTests() {
     return gulp
-        .src(['src/server/test/unit/**/*.ts', 'src/client/test/unit/**/*.ts'], { read: false })
-        .pipe(mocha({
-            require: ["ts-node/register"],
-            ui: 'bdd'
-        }));
+        .src(
+            [
+                "src/server/test/unit/**/*.ts",
+                "src/client/test/unit/**/*.ts",
+                "src/debugger/test/unit/**/*.ts",
+            ],
+            {
+                read: false,
+            }
+        )
+        .pipe(
+            mocha({
+                require: ["ts-node/register"],
+                ui: "bdd",
+            })
+        );
 }
 
-function testWeb() {
-    return gulp
-        .src(['src/web/client/test/unit/**/*.ts'], { read: false })
-        .pipe(mocha({
-            require: ["ts-node/register"],
-            ui: 'bdd'
-        }));
+/**
+ * Compiles the integration tests and transpiles the results to /out
+ */
+function compileIntegrationTests() {
+    const tsProject = gulpTs.createProject("tsconfig.json", {
+        // to test puppeteer we need "dom".
+        // since "dom" overlaps with "webworker" we need to overwrite the lib property.
+        // This is a known ts issue (bot being able to have both webworker and dom): https://github.com/microsoft/TypeScript/issues/20595
+        lib: ["es2019", "dom", "dom.iterable"],
+    });
+    return gulp.src(["src/**/*.ts"]).pipe(tsProject()).pipe(gulp.dest("out"));
 }
+
+/**
+ * Tests the debugger integration tests after transpiling the source files to /out
+ */
+const testDebugger = gulp.series(compileIntegrationTests, async () => {
+    const testRunner = require("./out/debugger/test/runTest");
+    await testRunner.main();
+});
+
+function testWeb() {
+    return gulp.src(["src/web/client/test/unit/**/*.ts"], { read: false }).pipe(
+        mocha({
+            require: ["ts-node/register"],
+            ui: "bdd",
+        })
+    );
+}
+
+// unit tests without special test runner
+const test = gulp.series(testUnitTests, testWeb);
+
+// tests that require vscode-electron (which requires a display or xvfb)
+const testInt = gulp.series(testDebugger);
 
 async function packageVsix() {
     fs.emptyDirSync(packagedir);
     return vsce.createVSIX({
         packagePath: packagedir,
-    })
+    });
 }
+
 
 async function git(args) {
     args.unshift('git');
-    const { stdout, stderr } = await exec(args.join(' '));
-    return { stdout: stdout, stderr: stderr };
+    const {stdout, stderr } = await exec(args.join(' '));
+    return {stdout: stdout, stderr: stderr};
 }
 
 async function setGitAuthN() {
@@ -183,8 +236,8 @@ async function setGitAuthN() {
     }
     const bearer = `AUTHORIZATION: basic ${Buffer.from(`PAT:${repoToken}`).toString('base64')}`;
     await git(['config', '--local', `http.${repoUrl}/.extraheader`, `"${bearer}"`]);
-    await git(['config', '--local', 'user.email', 'capisvaatdev@microsoft.com']);
-    await git(['config', '--local', 'user.name', '"DPT Tools Dev Team"']);
+    await git(['config', '--local', 'user.email', 'capisvaatdev@microsoft.com' ]);
+    await git(['config', '--local', 'user.name', '"DPT Tools Dev Team"' ]);
 }
 
 async function snapshot() {
@@ -198,7 +251,8 @@ async function snapshot() {
     log.info(`snapshot: remote repoUrl: ${repoUrl}`);
     const orgDir = process.cwd();
     process.chdir(tmpRepo);
-    try {
+    try
+    {
         await git(['init']);
         await git(['remote', 'add', 'origin', repoUrl]);
         await setGitAuthN();
@@ -238,16 +292,17 @@ async function snapshot() {
 }
 
 const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.16.6';
+const cliVersion = '1.17.5';
 
 const recompile = gulp.series(
     clean,
-    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI', cliVersion, path.resolve(distdir, 'pac')),
+    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI',cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
     translationsImport,
     translationsGenerate,
+    setTelemetryTarget,
     compile,
     compileWeb
 );
@@ -256,10 +311,8 @@ const dist = gulp.series(
     recompile,
     packageVsix,
     lint,
-    test,
-    testWeb
+    test
 );
-
 const translationExtensionName = "vscode-powerplatform";
 
 // Extract all the localizable strings from TS and package.nls.json, and package into
@@ -315,11 +368,10 @@ function translationsGeneratePackage() {
         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
         .pipe(gulp.dest('.'));
 }
-
 function translationsGenerate(done) {
     return gulp.series(
-        async () => translationsGeneratePackage(),
-        async () => translationsGenerateSrcLocBundles(),
+        async() => translationsGeneratePackage(),
+        async() => translationsGenerateSrcLocBundles(),
         (seriesDone) => {
             seriesDone();
             done();
@@ -346,6 +398,8 @@ exports.snapshot = snapshot;
 exports.lint = lint;
 exports.test = test;
 exports.testWeb = testWeb;
+exports.compileIntegrationTests = compileIntegrationTests;
+exports.testInt = testInt;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;

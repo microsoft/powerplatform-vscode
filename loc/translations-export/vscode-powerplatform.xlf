@@ -194,8 +194,14 @@ The {2} represents Solution's Version number</note>
     </trans-unit>
   </body></file>
   <file original="./web/client/extension" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.init.message">
-      <source xml:lang="en">Opening VS Code for the web ...</source>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit">
+      <source xml:lang="en">Edit the site</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc">
+      <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title">
+      <source xml:lang="en">You are editing a live, public site </source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
       <source xml:lang="en">There was a problem opening the workspace</source>
