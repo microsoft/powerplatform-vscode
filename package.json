@@ -65,14 +65,14 @@
     "onCommand:pacCLI.openDocumentation",
     "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onStartupFinished",
-    "onCommand:getting-started-sample.runCommand",
-		"onCommand:getting-started-sample.changeSetting",
-		"onCommand:getting-started-sample.setContext",
-		"onCommand:getting-started-sample.sayHello",
-		"onCommand:getting-started-sample.viewSources",
     "onFileSystem:powerplatform-vfs",
     "workspaceContains:**/**.portalconfig",
-    "onDebug"
+    "onDebug",
+    "onCommand:powerplatform-walkthrough.overview-learn-more",
+		"onCommand:powerplatform-walkthrough.fileSystem-documentation",
+		"onCommand:powerplatform-walkthrough.fileSystem-open-folder",
+		"onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
+		"onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding"
   ],
   "capabilities": {
     "untrustedWorkspaces": {
@@ -132,6 +132,11 @@
       }
     ],
     "commands": [
+      {
+				"title": "Getting Started Sample: Say Hello",
+				"shortTitle": "Say Hello (This is the name used in the New File quick pick)",
+				"command": "powerplatform-walkthrough.command-handler"
+			},
       {
         "command": "pacCLI.openDocumentation",
         "category": "Power Platform CLI",
@@ -677,150 +682,45 @@
     },
     "walkthroughs": [
 			{
-				"id": "sample",
-				"title": "Sample",
-				"description": "A sample walkthrough",
+				"id": "PowerPage-gettingStarted",
+				"title": "Edit Power Pages code",
+				"description": "Discover how you can make complete, modern websites right in VS Code",
+				"when": "isWeb",
 				"steps": [
 					{
-						"id": "runcommand",
-						"title": "Run Command",
-						"description": "This step will run a command and check off once it has been run.\n[Run Command](command:getting-started-sample.runCommand)",
+						"id": "overview",
+						"title": "Overview",
+						"description": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n \n The preview is linked to Power Pages and enables you to view your changes.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
 						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
+							"svg": "./src/web/client/media/overview.svg",
+							"altText": "Overview"
+						}
+					},
+					{
+						"id": "fileSystem",
+						"title": "File system",
+						"description": "Your files are stored in nested folders under your site name. \n \n The individual page files can be found in the web-pages folder under your site name. \n \n All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. \n \n To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)",
+						"media": {
+							"svg": "./src/web/client/media/fileSystem.svg",
+							"altText": "File System"
 						},
 						"completionEvents": [
-							"onCommand:getting-started-sample.runCommand"
+							"onCommand:powerplatform-walkthrough.fileSystem-documentation",
+							"onCommand:powerplatform-walkthrough.fileSystem-open-folder"
 						]
 					},
 					{
-						"id": "changesetting",
-						"title": "Change Setting",
-						"description": "This step will change a setting and check off when the setting has changed\n[Change Setting](command:getting-started-sample.changeSetting)",
+						"id": "advancedCapabilities",
+						"title": "Advanced capabilities",
+						"description": "Visual Studio Code for Web enables editing and publishing of web pages on your website.\n \n For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop. \n \n [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.\n \n[Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)",
 						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
+							"svg": "./src/web/client/media/advancedCapabilities.svg",
+							"altText": "Advanced Capabilities"
 						},
 						"completionEvents": [
-							"onSettingChanged:getting-started-sample.sampleSetting"
+							"onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
+							"onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding"
 						]
-					},
-					{
-						"id": "setcontext",
-						"title": "Set Context",
-						"description": "This step will set a context key, and check off when that context has been set\n[Set Context](command:getting-started-sample.setContext)",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						},
-						"completionEvents": [
-							"onContext:gettingStartedContextKey"
-						]
-					},
-					{
-						"id": "install python extension",
-						"title": "Install Python Extension",
-						"description": "Click here to install the Python Extension. This step will complete once it has been installed.\n[Here](command:workbench.extensions.installExtension?%22ms-python.python%22)",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						},
-						"completionEvents": [
-							"extensionInstalled:ms-python.python"
-						]
-					},
-					{
-						"id": "open terminal view",
-						"title": "Open Terminal",
-						"description": "Click [here](command:workbench.action.terminal.toggleTerminal) to open terminal. This step will complete once the terminal has been opened.",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						},
-						"completionEvents": [
-							"onView:terminal"
-						]
-					},
-					{
-						"id": "usesvg",
-						"title": "Use SVG's",
-						"description": "Try out using SVG's in your content, they can react to the theme (try: ``var(--vscode-foreground)``) and even host command links (try: ``xlink:href=\"command:``)",
-						"media": {
-							"svg": "media/image.svg",
-							"altText": "Empty svg image"
-						}
-					},
-					{
-						"id": "mac",
-						"title": "UI Platform: Mac",
-						"description": "This step will only show on a Mac.",
-						"when": "isMac",
-						"media": {
-							"markdown": "media/mac.md"
-						}
-					},
-					{
-						"id": "windows",
-						"title": "UI Platform: Windows",
-						"description": "This step will only show on Windows",
-						"when": "isWindows",
-						"media": {
-							"markdown": "media/windows.md"
-						}
-					},
-					{
-						"id": "linux",
-						"title": "UI Platform: Linux",
-						"description": "This step will only show on Linux",
-						"when": "isLinux",
-						"media": {
-							"markdown": "media/linux.md"
-						}
-					},
-					{
-						"id": "macRemote",
-						"title": "Workspace Platform: Mac",
-						"description": "This step will only show on Mac remotes.",
-						"when": "workspacePlatform == 'mac'",
-						"media": {
-							"markdown": "media/mac.md"
-						}
-					},
-					{
-						"id": "windowsRemote",
-						"title": "Workspace Platform: Windows",
-						"description": "This step will only show on Windows remotes",
-						"when": "workspacePlatform == 'windows'",
-						"media": {
-							"markdown": "media/windows.md"
-						}
-					},
-					{
-						"id": "linuxRemote",
-						"title": "Workspace Platform: Linux",
-						"description": "This step will only show on Linux remotes",
-						"when": "workspacePlatform == 'linux'",
-						"media": {
-							"markdown": "media/linux.md"
-						}
-					},
-					{
-						"id": "webRemote",
-						"title": "Workspace Platform: Web",
-						"description": "This step will only show on webworker remotes",
-						"when": "workspacePlatform == 'webworker'",
-						"media": {
-							"markdown": "media/linux.md"
-						}
-					},
-					{
-						"id": "showSources",
-						"title": "View Sources",
-						"description": "Open a folder containg the sources of this extension.\n[View Sources](command:getting-started-sample.viewSources)",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						}
 					}
 				]
 			}

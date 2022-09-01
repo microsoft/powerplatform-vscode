@@ -87,27 +87,33 @@ export function activate(context: vscode.ExtensionContext): void {
             }
         )
     );
-    context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.runCommand', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.overview-learn-more', async () => {
 		await new Promise(resolve => setTimeout(resolve, 1000));
-		vscode.commands.executeCommand('getting-started-sample.sayHello', vscode.Uri.joinPath(context.extensionUri, 'sample-folder'));
+		vscode.commands.executeCommand('powerplatform-walkthrough.command-handler', ["overview-learn-more"]);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.changeSetting', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-documentation', async () => {
 		await new Promise(resolve => setTimeout(resolve, 1000));
-		vscode.workspace.getConfiguration('getting-started-sample').update('sampleSetting', true);
+		vscode.commands.executeCommand('powerplatform-walkthrough.command-handler', ["fileSystem-documentation"]);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.setContext', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-open-folder', async () => {
 		await new Promise(resolve => setTimeout(resolve, 1000));
-		vscode.commands.executeCommand('setContext', 'gettingStartedContextKey', true);
+		vscode.commands.executeCommand('powerplatform-walkthrough.command-handler',["fileSystem-open-folder"]);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.sayHello', () => {
-		vscode.window.showInformationMessage('Hello');
+	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-learn-more', async () => {
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		vscode.commands.executeCommand('powerplatform-walkthrough.command-handler',["advancedCapabilities-learn-more"]);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('getting-started-sample.viewSources', () => {
-		return { openFolder: vscode.Uri.joinPath(context.extensionUri, 'src') };
+	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		vscode.commands.executeCommand('powerplatform-walkthrough.command-handler',["advancedCapabilities-start-coding"]);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.command-handler', (args) => {
+		vscode.window.showInformationMessage(args[0]);
 	}));
 }
 
