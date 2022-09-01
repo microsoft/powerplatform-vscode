@@ -265,11 +265,6 @@
           "default": false,
           "markdownDescription": "Disable the PowerPlatform activity bar panels"
         },
-        "powerPlatform.experimental.enableWebExtensionFeatures": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Enable PowerPlatform web extension features"
-        },
         "powerPlatform.experimental.enablePcfDebuggingFeatures": {
           "type": "boolean",
           "default": false,
@@ -457,7 +452,7 @@
       "commandPalette": [
         {
           "command": "microsoft-powerapps-portals.webExtension.init",
-          "when": "isWeb && config.powerPlatform.experimental.enableWebExtensionFeatures"
+          "when": "never"
         },
         {
           "command": "microsoft-powerapps-portals.preview-show",
