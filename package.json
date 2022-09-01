@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
-  "version": "10.0.1-dev",
+  "version": "1.0.1-dev",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
@@ -685,7 +685,7 @@
 				"id": "PowerPage-gettingStarted",
 				"title": "Edit Power Pages code",
 				"description": "Discover how you can make complete, modern websites right in VS Code",
-				"when": "isWeb",
+				"when": "isWeb && virtualWorkspace",
 				"steps": [
 					{
 						"id": "overview",
