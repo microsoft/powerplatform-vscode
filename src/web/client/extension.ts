@@ -89,12 +89,12 @@ export function activate(context: vscode.ExtensionContext): void {
     );
 	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.overview-learn-more', async () => {
 		await new Promise(resolve => setTimeout(resolve, 1000));
-		vscode.commands.executeCommand('powerplatform-walkthrough.command-handler', ["overview-learn-more"]);
+		vscode.env.openExternal(vscode.Uri.parse("https://docs.microsoft.com/en-us/power-apps/maker/portals/vs-code-extension"));
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-documentation', async () => {
 		await new Promise(resolve => setTimeout(resolve, 1000));
-		vscode.commands.executeCommand('powerplatform-walkthrough.command-handler', ["fileSystem-documentation"]);
+		vscode.env.openExternal(vscode.Uri.parse("https://docs.microsoft.com/en-us/power-apps/maker/portals/power-apps-cli-tutorial"));
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-open-folder', async () => {
@@ -104,7 +104,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-learn-more', async () => {
 		await new Promise(resolve => setTimeout(resolve, 1000));
-		vscode.commands.executeCommand('powerplatform-walkthrough.command-handler',["advancedCapabilities-learn-more"]);
+		vscode.env.openExternal(vscode.Uri.parse("https://docs.microsoft.com/en-us/power-apps/maker/portals/power-apps-cli"));
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
