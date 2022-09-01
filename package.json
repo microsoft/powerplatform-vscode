@@ -1,6 +1,6 @@
 {
-  "name": "powerplatform-vscode-preview",
-  "displayName": "Power Platform Tools [PREVIEW]",
+  "name": "powerplatform-vscode",
+  "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
   "version": "1.0.1-dev",
   "scripts": {
@@ -65,7 +65,6 @@
     "onCommand:pacCLI.openDocumentation",
     "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onStartupFinished",
-    "onFileSystem:powerplatform-vfs",
     "workspaceContains:**/**.portalconfig",
     "onDebug"
   ],
@@ -265,6 +264,11 @@
           "default": false,
           "markdownDescription": "Disable the PowerPlatform activity bar panels"
         },
+        "powerPlatform.experimental.enableWebExtensionFeatures": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable PowerPlatform web extension features"
+        },
         "powerPlatform.experimental.enablePcfDebuggingFeatures": {
           "type": "boolean",
           "default": false,
@@ -452,7 +456,7 @@
       "commandPalette": [
         {
           "command": "microsoft-powerapps-portals.webExtension.init",
-          "when": "never"
+          "when": "isWeb && config.powerPlatform.experimental.enableWebExtensionFeatures"
         },
         {
           "command": "microsoft-powerapps-portals.preview-show",
