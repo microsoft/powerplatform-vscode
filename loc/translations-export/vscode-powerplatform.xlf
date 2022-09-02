@@ -183,6 +183,10 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
       <source xml:lang="en">User: {0}</source>
       <note>The {0} represents auth profile's user name (email address))</note>
     </trans-unit>
+    <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance">
+      <source xml:lang="en">Cloud Instance: {0}</source>
+      <note>The {0} represents profile's Azure Cloud Instances</note>
+    </trans-unit>
     <trans-unit id="pacCLI.EnvOrSolutionTreeItem.toolTip">
       <source xml:lang="en">Display Name: {0}
 Unique Name: {1}
