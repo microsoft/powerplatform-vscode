@@ -79,7 +79,7 @@ export class AuthProfileTreeItem extends vscode.TreeItem {
                 "Name: {0}",
                 profile.Name));
         }
-        if (profile.Kind === "DATAVERSE") {
+        if ((profile.Kind === "DATAVERSE" || profile.Kind === "UNIVERSAL") && profile.Resource) {
             tooltip.push(localize({
                 key: "pacCLI.AuthProfileTreeItem.toolTipParts.resource",
                 comment: ["The {0} represents profile's resource/environment URL"]},
@@ -91,6 +91,13 @@ export class AuthProfileTreeItem extends vscode.TreeItem {
             comment: ["The {0} represents auth profile's user name (email address))"]},
             "User: {0}",
             profile.User));
+        if (profile.CloudInstance) {
+            tooltip.push(localize({
+                key: "pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance",
+                comment: ["The {0} represents profile's Azure Cloud Instances"]},
+                "Cloud Instance: {0}",
+                profile.CloudInstance));
+        }
         return tooltip.join('\n');
     }
 }
