@@ -3,102 +3,134 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { getCustomRequestURL, getHeader } from "./authenticationProvider";
+import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
+import { getDataSourcePropertiesMap, getEntitiesSchemaMap } from "./portalSchemaReader";
+import { showErrorDialog } from "./errorHandler";
+import { getDataFromDataVerse } from "./remoteFetchProvider";
+import { PortalsFS } from "./fileSystemProvider";
+import { createFileSystem } from "./createFileSystem";
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-'use strict';
-import * as vscode from "vscode";
-import { getHeader } from "./authenticationProvider";
-import { PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY, PORTAL_LANGUAGE_DEFAULT, WEBSITE_LANGUAGES, WEBSITE_LANGUAGES_URL_KEY } from "./constants";
-import { getDataSourcePropertiesMap } from "./portalSchemaReader";
+let dataSourcePropertiesMap = new Map<string, string>();
+let entitiesSchemaMap = new Map<string, Map<string, string>>();
+let languageIdCodeMap = new Map<string, string>();
+let websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
+let websiteIdToLanguage = new Map<string, string>();
 
-let dataSourcePropertiesMap = new Map();
-let languageIdCodeMap = new Map();
-let websiteIdtoLanguage = new Map();
-
-
-export async function languageIdtoCodeMap(accessToken: string, dataverseOrg: any, entity: string) {
+export async function languageIdToCode(accessToken: string, dataverseOrgURL: string, entitiesSchemaMap: Map<string, Map<string, string>>): Promise<Map<string, string>> {
 
     try {
-        const requestUrl = getCustomRequestURL(dataverseOrg, PORTAL_LANGUAGES, PORTAL_LANGUAGES_URL_KEY);
+        const requestUrl = getCustomRequestURL(dataverseOrgURL, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
+
+        const response = await fetch(requestUrl, {
+            headers: getHeader(accessToken),
+        });
+        if (!response.ok) {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "There’s a problem on the back end"), localize("microsoft-powerapps-portals.webExtension.backend.desc", "Try again"));
+        }
+        const result = await response.json();
+        if (result) {
+            if (result.value?.length > 0) {
+                for (let counter = 0; counter < result.value.length; counter++) {
+                    const adx_lcid = result.value[counter].adx_lcid ? result.value[counter].adx_lcid : PORTAL_LANGUAGE_DEFAULT;
+                    const adx_languagecode = result.value[counter].adx_languagecode;
+                    languageIdCodeMap.set(adx_lcid, adx_languagecode);
+                }
+            }
+        }
+    } catch (error) {
+        if (typeof error === "string" && error.includes("Unauthorized")) {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
+        }
+        else {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
+        }
+    }
+    return languageIdCodeMap;
+}
+
+export async function websiteLanguageIdToPortalLanguage(accessToken: string, dataverseOrgURL: string, entitiesSchemaMap: Map<string, Map<string, string>>): Promise<Map<string, string>> {
+    try {
+        const requestUrl = getCustomRequestURL(dataverseOrgURL, WEBSITE_LANGUAGES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
+        const response = await fetch(requestUrl, {
+            headers: getHeader(accessToken),
+        });
+        if (!response.ok) {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.backend.desc", "Check the parameters and try again"));
+        }
+        const result = await response.json();
+        if (result) {
+            if (result.value?.length > 0) {
+                for (let counter = 0; counter < result.value.length; counter++) {
+                    const adx_portalLanguageId_value = result.value[counter].adx_portallanguageid_value ? result.value[counter].adx_portallanguageid_value : PORTAL_LANGUAGE_DEFAULT;
+                    const adx_websitelanguageid = result.value[counter].adx_websitelanguageid;
+                    websiteLanguageIdToPortalLanguageMap.set(adx_websitelanguageid, adx_portalLanguageId_value);
+                }
+            }
+        }
+    } catch (error) {
+        if (typeof error === "string" && error.includes("Unauthorized")) {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
+        }
+        else {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
+        }
+    }
+    return websiteLanguageIdToPortalLanguageMap;
+}
+
+export async function websiteIdToLanguageMap(accessToken: string, dataverseOrgUrl: string, entitiesSchemaMap: Map<string, Map<string, string>>): Promise<Map<string, string>> {
+    try {
+        const requestUrl = getCustomRequestURL(dataverseOrgUrl, WEBSITES, MULTI_ENTITY_URL_KEY, entitiesSchemaMap);
         const response = await fetch(requestUrl, {
             headers: getHeader(accessToken),
         });
 
         if (!response.ok) {
-            showErrorDialog("Fetch of adx_languages failed, check authorization ", "Network failure");
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.backend.desc", "Check the parameters and try again"));
         }
-        const res = await response.json();
-        if (res) {
-            if (res.value.length > 0) {
-                for (let counter = 0; counter < res.value.length; counter++) {
-                    const adx_portallanguageid = res.value[counter].adx_portallanguageid ? res.value[counter].adx_portallanguageid : PORTAL_LANGUAGE_DEFAULT;
-                    const value = res.value[counter].adx_portallanguageid;
-                    languageIdCodeMap.set(adx_portallanguageid, value);
-                }
-            }
-        }
-    } catch (e: any) {
-        if (e.message.includes('Unauthorized')) {
-            showErrorDialog("Auth failed in language id code", "Language code fetch failed");
-        }
-        else {
-            showErrorDialog("Error processing the adx_languages response", "Language code response failure");
-            throw e;
-        }
-    }
-    return { languageIdCodeMap };
-}
+        const result = await response.json();
 
-
-function showErrorDialog(detailMessaage: string, errorString: string) {
-    const options = { detail: detailMessaage, modal: true };
-    vscode.window.showErrorMessage(errorString, options);
-}
-
-function getCustomRequestURL(dataverseOrg: any, entity: string, urlquery: string) {
-    const parameterizedUrl = dataSourcePropertiesMap.get(urlquery) as string;
-    const requestUrl = parameterizedUrl.replace('{dataverseOrg}', dataverseOrg).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api')).replace('{data}', dataSourcePropertiesMap.get('data')).replace('{version}', dataSourcePropertiesMap.get('version'));
-    return requestUrl;
-}
-
-export async function websiteIdtoLanguageMap(accessToken: string, dataverseOrg: string, entity: string) {
-
-    try {
-        const requestUrl = getCustomRequestURL(dataverseOrg, WEBSITE_LANGUAGES, WEBSITE_LANGUAGES_URL_KEY);
-        const response = await fetch(requestUrl, {
-            headers: getHeader(accessToken),
-        });
-        if (!response.ok) {
-            showErrorDialog("Fetch of adx_websitelanguages failed, check authorization ", "Network failure");
-        }
-        const res = await response.json();
-        if (res) {
-            if (res.value.length > 0) {
-                for (let counter = 0; counter < res.value.length; counter++) {
-                    const adx_portallanguageid = res.value[counter].adx_portallanguageid ? res.value[counter].adx_portallanguageid : PORTAL_LANGUAGE_DEFAULT;
-                    const value = res.value[counter].adx_languagecode;
-                    websiteIdtoLanguage.set(adx_portallanguageid, value);
+        if (result) {
+            if (result.value?.length > 0) {
+                for (let counter = 0; counter < result.value.length; counter++) {
+                    const adx_websiteId = result.value[counter].adx_websiteid ? result.value[counter].adx_websiteid : null;
+                    const adx_website_language = result.value[counter].adx_website_language;
+                    websiteIdToLanguage.set(adx_websiteId, adx_website_language);
                 }
             }
         }
 
-    } catch (e: any) {
-        if (e.message.includes('Unauthorized')) {
-            showErrorDialog("Auth failed in websitelanguage fetch", "Website language fetch failed");
+    } catch (error) {
+        if (typeof error === "string" && error.includes("Unauthorized")) {
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
         }
         else {
-            showErrorDialog("Error processing the adx_websitelanguages response", "WebsiteLanguage code response failure");
-            throw e;
+            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
         }
     }
-    return { websiteIdtoLanguage };
+    return websiteIdToLanguage;
 }
 
-export async function setContext(accessToken: any, dataverseOrg: any) {
-    dataSourcePropertiesMap = getDataSourcePropertiesMap();
-    ({ websiteIdtoLanguage } = await websiteIdtoLanguageMap(accessToken, dataverseOrg, WEBSITE_LANGUAGES));
-    ({ languageIdCodeMap } = await languageIdtoCodeMap(accessToken, dataverseOrg, PORTAL_LANGUAGES));
+
+export async function setContext(accessToken: string, pseudoEntityName: string, entityId: string, queryParamsMap: Map<string, string>, portalsFS: PortalsFS) {
+    const entity = pathParamToSchema.get(pseudoEntityName) as string;
+    const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
+    dataSourcePropertiesMap = await getDataSourcePropertiesMap();
+    entitiesSchemaMap = await getEntitiesSchemaMap();
+    websiteIdToLanguage = await websiteIdToLanguageMap(accessToken, dataverseOrgUrl, entitiesSchemaMap);
+    websiteLanguageIdToPortalLanguageMap = await websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl, entitiesSchemaMap);
+    languageIdCodeMap = await languageIdToCode(accessToken, dataverseOrgUrl, entitiesSchemaMap);
+    createEntityFiles(portalsFS, accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap);
 }
 
-export { dataSourcePropertiesMap, websiteIdtoLanguage, languageIdCodeMap };
+function createEntityFiles(portalsFS: PortalsFS, accessToken: string, entity: string, entityId: string, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>) {
+    const portalFolderName = queryParamsMap.get(WEBSITE_NAME) as string;
+    createFileSystem(portalsFS, portalFolderName);
+    getDataFromDataVerse(accessToken, entity, entityId, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalsFS, websiteIdToLanguage);
+}
+
+export { dataSourcePropertiesMap, entitiesSchemaMap, websiteIdToLanguage, websiteLanguageIdToPortalLanguageMap, languageIdCodeMap };

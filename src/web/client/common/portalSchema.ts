@@ -9,15 +9,8 @@ export const portal_schema_data = {
             api: "api",
             data: "data",
             version: "v9.1",
-            fetchUrlSingleEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
-            fetchUrlForEntityRoot: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}",
-            saveUrlSingleEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
-            fetchUrlMultiEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}",
-            saveUrlMultiEntity: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
-            requestUrlForportalLanguage: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_portallanguageid,adx_languagecode",
-            requestUrlForWebsiteId: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_name,adx_webpageid",
-            requestUrlForWebtemplates: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=$select=adx_name,adx_webtemplateid",
-            requestUrlForWebsitelanguage: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_websitelanguageid,_adx_portallanguageid_value"
+            singleEntityURL: "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}({entityId})",
+            multiEntityURL: "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}"
         },
         "entity": [
             {
@@ -120,7 +113,8 @@ export const portal_schema_data = {
                 "_disableplugins": "true",
                 "_foldername": "",
                 "_propextension": "website",
-                "_exporttype": "SingleFolder"
+                "_exporttype": "SingleFolder",
+                "_fetchQueryParameters": "?$select=adx_name,adx_websiteid,adx_website_language"
             },
             {
                 "fields": {
@@ -258,7 +252,8 @@ export const portal_schema_data = {
                 "_downloadThroughChild": "true",
                 "_foldername": ".portalconfig",
                 "_propextension": "portallanguage",
-                "_exporttype": "SingleFile"
+                "_exporttype": "SingleFile",
+                "_fetchQueryParameters": "?$select=adx_lcid,adx_languagecode"
             },
             {
                 "fields": {
@@ -309,7 +304,8 @@ export const portal_schema_data = {
                 "_disableplugins": "true",
                 "_foldername": "",
                 "_propextension": "websitelanguage",
-                "_exporttype": "SingleFile"
+                "_exporttype": "SingleFile",
+                "_fetchQueryParameters": "?$select=adx_websitelanguageid,_adx_portallanguageid_value"
             },
             {
                 "fields": {
@@ -598,7 +594,8 @@ export const portal_schema_data = {
                 "_exporttype": "SubFolders",
                 "_languagefield": "adx_webpagelanguageid",
                 "_languagegroupby": "adx_rootwebpageid",
-                "_query": "?$select=adx_name,adx_webpageid"
+                "_fetchQueryParameters": "?$filter=adx_webpageid%20eq%20{entityId}&$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
+                "_attributes": "adx_customcss,adx_customjavascript,adx_copy"
             },
             {
                 "fields": {
@@ -769,11 +766,14 @@ export const portal_schema_data = {
                 "_displayname": "Web File",
                 "_etc": "10020",
                 "_primaryidfield": "adx_webfileid",
-                "_primarynamefield": "adx_name",
+                "_primarynamefield": "filename",
                 "_disableplugins": "true",
                 "_foldername": "web-files",
                 "_propextension": "webfile",
-                "_exporttype": "SingleFolder"
+                "_exporttype": "SingleFolder",
+                "_fetchQueryParameters": "?$filter=_objectid_value%20eq%20{entityId}%20&$select=documentbody,filename,annotationid",
+                "_attributes": "documentbody",
+                "_mappingEntityId": "annotationid" // Webfile in old schema are maintained with two dataverse entity adx_webfile and annotations. This Id acts as foreign key for that mapping
             },
             {
                 "fields": {
@@ -1388,7 +1388,8 @@ export const portal_schema_data = {
                 "_foldername": "web-templates",
                 "_propextension": "webtemplate",
                 "_exporttype": "SubFolders",
-                "_query": "?$select=adx_name,adx_webtemplateid"
+                "_fetchQueryParameters": "?$select=adx_name,adx_webtemplateid",
+                "_attributes": "adx_copy,adx_source"
             },
             {
                 "fields": {
