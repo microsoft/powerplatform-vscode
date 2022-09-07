@@ -8,7 +8,7 @@ import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExten
 import { toBase64 } from '../utility/CommonUtility';
 import { getRequestURL } from '../utility/UrlBuilder';
 import { getHeader } from './authenticationProvider';
-import { BAD_REQUEST, CHARSET, httpMethod } from './constants';
+import { BAD_REQUEST, CHARSET, httpMethod, MIMETYPE } from './constants';
 import { showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { entitiesSchemaMap } from './localStore';
@@ -52,14 +52,17 @@ export async function saveData(
     saveDataMap: Map<string, SaveEntityDetails>,
     value: string
 ) {
-    console.log(saveDataMap);
     let requestBody = '';
     const column = saveDataMap.get(fileUri.fsPath)?.getSaveAttribute;
 
     if (column) {
         const data: { [k: string]: string } = {};
         data[column] = value;
-        data['filename'] = 'customname.css';
+
+        const mimeType = saveDataMap.get(fileUri.fsPath)?.getMimeType;
+        if (mimeType) {
+            data[MIMETYPE] = mimeType
+        }
         requestBody = JSON.stringify(data);
     } else {
         sendAPIFailureTelemetry(requestUrl, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value

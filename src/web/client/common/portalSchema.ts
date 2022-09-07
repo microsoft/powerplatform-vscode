@@ -772,7 +772,7 @@ export const portal_schema_data = {
                 "_propextension": "webfile",
                 "_exporttype": "SingleFolder",
                 "_fetchQueryParameters": "?$filter=_objectid_value%20eq%20{entityId}%20&$select=mimetype,documentbody,filename,annotationid",
-                "_attributes": "mimetype,documentbody",
+                "_attributes": "documentbody",
                 "_mappingEntityId": "annotationid" // Webfile in old schema are maintained with two dataverse entity adx_webfile and annotations. This Id acts as foreign key for that mapping
             },
             {
