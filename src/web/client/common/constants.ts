@@ -30,6 +30,7 @@ export const SCOPE_OPTION = "//.default";
 export const BAD_REQUEST = 'BAD_REQUEST';
 export const PUBLIC = 'public';
 export const SITE_VISIBILITY = 'siteVisibility';
+export const MIMETYPE = 'mimetype';
 
 export enum httpMethod {
     PATCH = 'PATCH',
@@ -74,6 +75,11 @@ export enum exportType {
     SubFolders = "SubFolders",
     SingleFolder = "SingleFolder",
     SingleFile = "SingleFile"
+}
+
+// Entity attributes that need to be saved in base64 encoding - example documentBody
+export enum entityAttributesWithBase64Encoding {
+    documentbody = "documentbody"
 }
 
 export const columnExtension = new Map([
