@@ -13,7 +13,7 @@ import {
     sendAPITelemetry,
     sendErrorTelemetry
 } from '../telemetry/webExtensionTelemetry';
-import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/CommonUtility';
+import { fromBase64, GetFileNameWithExtension, SetDefaultFileUri, useBase64 } from '../utility/CommonUtility';
 import {
     getRequestURL,
     updateEntityId
@@ -157,7 +157,9 @@ function createContentFiles(
         }
 
         // Display only the last file
-        vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
+        const defaultFileUri = vscode.Uri.parse(fileUri);
+        SetDefaultFileUri(defaultFileUri);
+        vscode.window.showTextDocument(defaultFileUri);
     }
     registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap, useBase64Encoding);
 }
