@@ -154,7 +154,8 @@ function createContentFiles(
                 updateEntityId(entity, entityId, entitiesSchemaMap, result),
                 attributeArray[counter] as string,
                 useBase64Encoding,
-                entity);
+                entity,
+                result[Constants.MIMETYPE]);
         }
 
         // Display only the last file
@@ -168,11 +169,12 @@ function createVirtualFile(
     fileUri: string,
     data: string | undefined,
     entityId: string,
-    saveDataAtribute: string,
+    saveDataAttribute: string,
     useBase64Encoding: boolean,
-    entity: string
+    entity: string,
+    mimeType?: string
 ) {
-    const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAtribute, useBase64Encoding);
+    const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAttribute, useBase64Encoding, mimeType);
 
     portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
     saveDataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
