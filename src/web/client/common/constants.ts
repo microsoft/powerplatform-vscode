@@ -76,6 +76,10 @@ export enum exportType {
     SingleFile = "SingleFile"
 }
 
+export enum entityAttributesWithBase64Encoding {
+    documentbody = "documentbody"
+}
+
 export const columnExtension = new Map([
     ["customcss.css", "adx_customcss"],
     ["customjs.js", "adx_customjavascript"],
