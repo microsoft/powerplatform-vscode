@@ -96,7 +96,7 @@ export function activate(context: vscode.ExtensionContext): void {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-open-folder', async () => {
-		vscode.commands.executeCommand("workbench.action.focusSideBar");
+		vscode.commands.executeCommand("workbench.view.explorer");
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-learn-more', async () => {
