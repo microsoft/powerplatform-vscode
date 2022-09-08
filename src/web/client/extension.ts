@@ -36,7 +36,6 @@ export function activate(context: vscode.ExtensionContext): void {
             async (args) => {
                 _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
 
-                vscode.window.showInformationMessage("Opening VS Code for the web ...");
                 const { appName, entity, entityId, searchParams } = args;
                 sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
                 const queryParamsMap = new Map<string, string>();

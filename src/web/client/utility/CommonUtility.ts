@@ -4,9 +4,10 @@
  */
 
 import { Uri } from "vscode";
-import { dataverseUrlPathEntityName } from "../common/constants";
+import { dataverseUrlPathEntityName, entityAttributesWithBase64Encoding } from "../common/constants";
 
 let defaultFileUri: Uri;
+
 
 // decodes base64 to text
 export function fromBase64(data: string) {
@@ -18,8 +19,8 @@ export function toBase64(data: string) {
     return btoa(unescape(encodeURIComponent(data)));
 }
 
-export function useBase64(entity: string): boolean {
-    return entity === dataverseUrlPathEntityName.WEBFILES;
+export function useBase64(entity: string, attributeType: string): boolean {
+    return entity === dataverseUrlPathEntityName.WEBFILES && attributeType === entityAttributesWithBase64Encoding.documentbody;
 }
 
 export function GetFileNameWithExtension(
