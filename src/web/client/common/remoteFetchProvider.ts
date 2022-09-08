@@ -120,7 +120,7 @@ function createContentFiles(
         const fetchedFileName = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string)?.get(Constants.FILE_NAME_FIELD);
 
         if (fetchedFileName) {
-            fileName = result[fetchedFileName].toLowerCase();
+            fileName = result[fetchedFileName];
         }
 
         if (fileName === Constants.EMPTY_FILE_NAME) {
