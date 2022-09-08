@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
-  "version": "1.0.1-dev",
+  "version": "300.0.1-dev",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
@@ -687,7 +687,7 @@
 						"title": "%microsoft-powerapps-portals.walkthrough.overview.title%",
 						"description": "%microsoft-powerapps-portals.walkthrough.overview.description%",
 						"media": {
-							"svg": "./src/web/assets/overview.svg",
+							"svg": "./src/web/client/assets/overview.svg",
 							"altText": "%microsoft-powerapps-portals.walkthrough.overview.title%"
 						},
 						"completionEvents": [
@@ -709,7 +709,7 @@
 					{
 						"id": "advancedCapabilities",
 						"title": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.title%",
-						"description": "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description",
+						"description": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.description%",
 						"media": {
 							"svg": "./src/web/client/assets/advancedCapabilities.svg",
 							"altText": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.title%"
