@@ -260,12 +260,7 @@
       {
         "command": "microsoft-powerapps-portals.webExtension.init",
         "title": "%microsoft-powerapps-portals.webExtension.init.title%"
-      },
-      {
-				"title": "Getting Started Sample: Say Hello",
-				"shortTitle": "Say Hello (This is the name used in the New File quick pick)",
-				"command": "getting-started-sample.sayHello"
-			}
+      }
     ],
     "configuration": {
       "tile": "Power Platform",
