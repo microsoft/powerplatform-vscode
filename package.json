@@ -70,9 +70,9 @@
 		"onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
 		"onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
     "onStartupFinished",
-    "onFileSystem:powerplatform-vfs",
     "workspaceContains:**/**.portalconfig",
-    "onDebug"
+    "onDebug",
+    "onFileSystem:powerplatform-vfs"
   ],
   "capabilities": {
     "untrustedWorkspaces": {
