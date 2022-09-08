@@ -8,7 +8,7 @@ import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExten
 import { toBase64 } from '../utility/CommonUtility';
 import { getRequestURL } from '../utility/UrlBuilder';
 import { getHeader } from './authenticationProvider';
-import { BAD_REQUEST, CHARSET, httpMethod } from './constants';
+import { BAD_REQUEST, CHARSET, httpMethod, MIMETYPE } from './constants';
 import { showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { entitiesSchemaMap } from './localStore';
@@ -21,8 +21,7 @@ export function registerSaveProvider(
     accessToken: string,
     portalsFS: PortalsFS,
     dataVerseOrgUrl: string,
-    saveDataMap: Map<string, SaveEntityDetails>,
-    useBase64Encoding: boolean
+    saveDataMap: Map<string, SaveEntityDetails>
 ) {
     vscode.workspace.onDidSaveTextDocument(async (document) => {
         if (document?.uri?.fsPath) {
@@ -31,7 +30,7 @@ export function registerSaveProvider(
             const newFileData = portalsFS.readFile(document.uri);
             let stringDecodedValue = new TextDecoder(CHARSET).decode(newFileData);
 
-            if (useBase64Encoding) {
+            if (saveDataMap.get(document.uri.fsPath)?.getUseBase64Encoding as boolean) {
                 stringDecodedValue = toBase64(stringDecodedValue);
             }
 
@@ -59,6 +58,11 @@ export async function saveData(
     if (column) {
         const data: { [k: string]: string } = {};
         data[column] = value;
+
+        const mimeType = saveDataMap.get(fileUri.fsPath)?.getMimeType;
+        if (mimeType) {
+            data[MIMETYPE] = mimeType
+        }
         requestBody = JSON.stringify(data);
     } else {
         sendAPIFailureTelemetry(requestUrl, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value

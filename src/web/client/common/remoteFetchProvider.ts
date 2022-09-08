@@ -101,7 +101,6 @@ function createContentFiles(
     const exportType = entityEntry?.get('_exporttype');
     const portalFolderName = queryParamsMap.get(Constants.WEBSITE_NAME) as string;
     const subUri = Constants.entityFolder.get(entity) as string;
-    const useBase64Encoding = useBase64(entity);
     let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
 
     if (languageIdCodeMap?.size && lcid) {
@@ -140,6 +139,7 @@ function createContentFiles(
 
         let fileUri = '';
         for (counter; counter < attributeArray.length; counter++) {
+            const useBase64Encoding = useBase64(entity, attributeArray[counter]);
             const value = result[attributeArray[counter]] ? result[attributeArray[counter]] : Constants.NO_CONTENT;
             const fileNameWithExtension = GetFileNameWithExtension(entity,
                 fileName,
@@ -153,13 +153,15 @@ function createContentFiles(
                 useBase64Encoding ? fromBase64(value) : value,
                 updateEntityId(entity, entityId, entitiesSchemaMap, result),
                 attributeArray[counter] as string,
-                entity);
+                useBase64Encoding,
+                entity,
+                result[Constants.MIMETYPE]);
         }
 
         // Display only the last file
         vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
     }
-    registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap, useBase64Encoding);
+    registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap);
 }
 
 function createVirtualFile(
@@ -167,10 +169,12 @@ function createVirtualFile(
     fileUri: string,
     data: string | undefined,
     entityId: string,
-    saveDataAtribute: string,
-    entity: string
+    saveDataAttribute: string,
+    useBase64Encoding: boolean,
+    entity: string,
+    mimeType?: string
 ) {
-    const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAtribute);
+    const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAttribute, useBase64Encoding, mimeType);
 
     portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
     saveDataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
