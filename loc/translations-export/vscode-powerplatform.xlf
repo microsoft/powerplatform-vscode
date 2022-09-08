@@ -108,6 +108,46 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
     <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
       <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
     </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
+      <source xml:lang="en">Edit Power Pages code</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
+      <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
+      <source xml:lang="en">Overview</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
+      <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
+ 
+ The preview is linked to Power Pages and enables you to view your changes.
+[Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
+      <source xml:lang="en">File system</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
+      <source xml:lang="en">Your files are stored in nested folders under your site name. 
+ 
+ The individual page files can be found in the web-pages folder under your site name. 
+ 
+ All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. 
+ 
+ To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
+[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
+      <source xml:lang="en">Advanced capabilities</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
+      <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
+ 
+ For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop. 
+ 
+ [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.
+ 
+[Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</source>
+    </trans-unit>
   </body></file>
   <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cliAquisition.preparingMessage">
