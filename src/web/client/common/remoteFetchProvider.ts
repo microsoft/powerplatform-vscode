@@ -100,7 +100,7 @@ function createContentFiles(
     const attributes = entityEntry?.get('_attributes');
     const exportType = entityEntry?.get('_exporttype');
     const portalFolderName = queryParamsMap.get(Constants.WEBSITE_NAME) as string;
-    const subUri = Constants.entityFolder.get(entity) as string;
+    const subUri = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string)?.get(Constants.FILE_FOLDER_NAME);
     let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
 
     if (languageIdCodeMap?.size && lcid) {
