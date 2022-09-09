@@ -119,8 +119,6 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
       <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
- 
- The preview is linked to Power Pages and enables you to view your changes.
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
