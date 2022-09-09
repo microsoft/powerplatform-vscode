@@ -3,7 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { Uri } from "vscode";
 import { dataverseUrlPathEntityName, entityAttributesWithBase64Encoding } from "../common/constants";
+
+let defaultFileUri: Uri;
+
 
 // decodes base64 to text
 export function fromBase64(data: string) {
@@ -30,4 +34,12 @@ export function GetFileNameWithExtension(
     }
 
     return fileName;
+}
+
+export function GetDefaultFileUri(): Uri{
+    return defaultFileUri;
+}
+
+export function SetDefaultFileUri(uri: Uri) {
+    defaultFileUri = uri;
 }
