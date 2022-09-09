@@ -11,6 +11,8 @@ export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWe
     eventName: string,
     properties: {
         'orgUrl'?: string;
+        'orgId'?: string;
+        'tenantId'?: string;
         'websiteId'?: string;
         'dataSource'?: string;
         'schema'?: string;
@@ -72,6 +74,8 @@ export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearc
         eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
         properties: {
             orgUrl: getQueryParameterValue(queryParameters.ORG_URL, searchParams),
+            orgId: getQueryParameterValue(queryParameters.ORG_ID, searchParams),
+            tenantId: getQueryParameterValue(queryParameters.TENANT_ID, searchParams),
             websiteId: getQueryParameterValue(queryParameters.WEBSITE_ID, searchParams),
             dataSource: getQueryParameterValue(queryParameters.DATA_SOURCE, searchParams),
             schema: getQueryParameterValue(queryParameters.SCHEMA, searchParams),
