@@ -14,6 +14,8 @@ export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWe
         'orgId'?: string;
         'tenantId'?: string;
         'websiteId'?: string;
+        'portalUrl'?: string;
+        'portalId'?: string;
         'dataSource'?: string;
         'schema'?: string;
         'referrerSessionId'?: string;
@@ -76,6 +78,8 @@ export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearc
             orgUrl: getQueryParameterValue(queryParameters.ORG_URL, searchParams),
             orgId: getQueryParameterValue(queryParameters.ORG_ID, searchParams),
             tenantId: getQueryParameterValue(queryParameters.TENANT_ID, searchParams),
+            portalUrl: getQueryParameterValue(queryParameters.PORTAL_URL, searchParams),
+            portalId: getQueryParameterValue(queryParameters.PORTAL_ID, searchParams),
             websiteId: getQueryParameterValue(queryParameters.WEBSITE_ID, searchParams),
             dataSource: getQueryParameterValue(queryParameters.DATA_SOURCE, searchParams),
             schema: getQueryParameterValue(queryParameters.SCHEMA, searchParams),

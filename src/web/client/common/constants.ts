@@ -118,6 +118,8 @@ export enum queryParameters {
     ORG_URL = 'orgUrl',
     ORG_ID = 'organizationId',
     TENANT_ID = 'tenantId',
+    PORTAL_URL = 'portalUrl',
+    PORTAL_ID = 'portalId',
     WEBSITE_ID = 'websiteId',
     SCHEMA = 'schema',
     DATA_SOURCE = 'dataSource',
