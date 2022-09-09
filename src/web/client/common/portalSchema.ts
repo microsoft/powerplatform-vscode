@@ -1311,9 +1311,11 @@ export const portal_schema_data = {
                 "_disableplugins": "true",
                 "_foldername": "content-snippets",
                 "_propextension": "contentsnippet",
-                "_exporttype": "SubFolders",
+                "_exporttype": "SingleFolder",
                 "_languagefield": "adx_contentsnippetlanguageid",
-                "_languagegroupby": "adx_name"
+                "_languagegroupby": "adx_name",
+                "_fetchQueryParameters": "?$filter=adx_contentsnippetid%20eq%20{entityId}&$select=adx_name,adx_value",
+                "_attributes": "adx_value"
             },
             {
                 "fields": {
@@ -1387,9 +1389,9 @@ export const portal_schema_data = {
                 "_disableplugins": "true",
                 "_foldername": "web-templates",
                 "_propextension": "webtemplate",
-                "_exporttype": "SubFolders",
-                "_fetchQueryParameters": "?$select=adx_name,adx_webtemplateid",
-                "_attributes": "adx_copy,adx_source"
+                "_exporttype": "SingleFolder",
+                "_fetchQueryParameters": "?$filter=adx_webtemplateid%20eq%20{entityId}&$select=adx_name,adx_source",
+                "_attributes": "adx_source"
             },
             {
                 "fields": {
