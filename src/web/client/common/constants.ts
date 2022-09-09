@@ -24,6 +24,7 @@ export const DATA_SOURCE = 'dataSource';
 export const ADX_WEB_TEMPLATES = 'adx_webtemplates';
 export const EMPTY_FILE_NAME = 'defaultfilename';
 export const FILE_NAME_FIELD = '_primarynamefield';
+export const FILE_FOLDER_NAME = '_foldername';
 export const CHARSET = 'utf-8';
 export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
@@ -45,7 +46,8 @@ export enum httpMethod {
 export enum vscodeUrlPathEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
-    WEBTEMPLATES = "webtemplates"
+    WEBTEMPLATES = "webtemplates",
+    CONTENTSNIPPET = "contentsnippet"
 }
 
 /* Corresponding name of the entityType maintained in portalSchema file
@@ -55,7 +57,8 @@ export enum vscodeUrlPathEntityName {
 export enum schemaEntityName {
     WEBFILES = "adx_webfile",
     WEBPAGES = "adx_webpage",
-    WEBTEMPLATES = "adx_webtemplate"
+    WEBTEMPLATES = "adx_webtemplate",
+    CONTENTSNIPPET = "adx_contentsnippet"
 }
 
 /* Corresponding name of the entityType in Dataverse entities.
@@ -66,7 +69,8 @@ export enum schemaEntityName {
 export enum dataverseUrlPathEntityName {
     WEBFILES = "annotations",
     WEBPAGES = "adx_webpages",
-    WEBTEMPLATES = "adx_webtemplates"
+    WEBTEMPLATES = "adx_webtemplates",
+    CONTENTSNIPPET = "adx_contentsnippets"
 }
 
 /*This decides the folder hierarchy a file being displayed in File explorer will follow.
@@ -83,35 +87,26 @@ export enum entityAttributesWithBase64Encoding {
 }
 
 export const columnExtension = new Map([
-    ["customcss.css", "adx_customcss"],
-    ["customjs.js", "adx_customjavascript"],
-    ["webpage.copy.html", "adx_copy"],
     ["adx_customcss", "customcss.css"],
     ["adx_customjavascript", "customjs.js"],
     ["adx_copy", "webpage.copy.html"],
     ["documentbody", "css"]
 ]);
 
-export const entityFolder = new Map([
-    ["webpages", "web-pages"],
-    ["webtemplates", "web-templates"],
-    ["annotations", "web-files"],
-    ["contentpages", "content-pages"],
-    ["adx_webpages", "web-pages"]
-]);
-
 export const pathParamToSchema = new Map([
-    [vscodeUrlPathEntityName.WEBPAGES, "adx_webpages"],
-    [vscodeUrlPathEntityName.WEBFILES, "annotations"],
-    [vscodeUrlPathEntityName.WEBTEMPLATES, "adx_webtemplates"],
-    ["adx_webpages", "adx_webpage"],
-    ["adx_webtemplates", "adx_webtemplate"],
+    [vscodeUrlPathEntityName.WEBPAGES, dataverseUrlPathEntityName.WEBPAGES],
+    [vscodeUrlPathEntityName.WEBFILES, dataverseUrlPathEntityName.WEBFILES],
+    [vscodeUrlPathEntityName.WEBTEMPLATES, dataverseUrlPathEntityName.WEBTEMPLATES],
+    [vscodeUrlPathEntityName.CONTENTSNIPPET, dataverseUrlPathEntityName.CONTENTSNIPPET],
+    [dataverseUrlPathEntityName.CONTENTSNIPPET, schemaEntityName.CONTENTSNIPPET],
+    [dataverseUrlPathEntityName.WEBPAGES, schemaEntityName.WEBPAGES],
+    [dataverseUrlPathEntityName.WEBTEMPLATES, schemaEntityName.WEBTEMPLATES],
     ["adx_websites", "adx_website"],
     ["adx_portallanguages", "adx_portallanguage"],
     ["adx_websitelanguages", "adx_websitelanguage"],
     ["adx_webfiles", "adx_webfile"],
     ["adx_copy", "adx_copy"],
-    ["annotations", "adx_webfile"],
+    [dataverseUrlPathEntityName.WEBFILES, schemaEntityName.WEBFILES],
 ]);
 
 export enum queryParameters {
