@@ -303,7 +303,7 @@ const recompile = gulp.series(
     // translationsImport,
     // translationsGenerate,
     // setTelemetryTarget,
-    compile,
+    // compile,
     compileWeb
 );
 
