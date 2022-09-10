@@ -11,7 +11,7 @@ const util = require('util');
 const nls = require('vscode-nls-dev');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
-const rename = require('gulp-rename');
+// const rename = require('gulp-rename');
 const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
 const gulpTs = require("gulp-typescript");
@@ -23,7 +23,7 @@ const webpack = require('webpack');
 const vsce = require('vsce');
 const argv = require('yargs').argv;
 
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 const fs = require('fs-extra');
 const log = require('fancy-log');
 const path = require('path');
@@ -33,8 +33,8 @@ const [nodeConfig ,webConfig] = require('./webpack.config');
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
-const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
-const isOfficialBuild = argv.isOfficialBuild && argv.isOfficialBuild.toLowerCase() == "true";
+// const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
+// const isOfficialBuild = argv.isOfficialBuild && argv.isOfficialBuild.toLowerCase() == "true";
 
 async function clean() {
     (await pslist())
@@ -47,16 +47,16 @@ async function clean() {
     return fs.emptyDir(distdir);
 }
 
-function setTelemetryTarget() {
-    const telemetryConfigurationSource = isOfficialBuild
-        ? 'src/common/telemetry/telemetryConfigurationProd.ts'
-        : 'src/common/telemetry/telemetryConfigurationDev.ts';
+// function setTelemetryTarget() {
+//     const telemetryConfigurationSource = isOfficialBuild
+//         ? 'src/common/telemetry/telemetryConfigurationProd.ts'
+//         : 'src/common/telemetry/telemetryConfigurationDev.ts';
 
-    return gulp
-        .src(telemetryConfigurationSource)
-        .pipe(rename('telemetryConfiguration.ts'))
-        .pipe(gulp.dest(path.join('src', 'common', 'telemetry', 'generated')));
-}
+//     return gulp
+//         .src(telemetryConfigurationSource)
+//         .pipe(rename('telemetryConfiguration.ts'))
+//         .pipe(gulp.dest(path.join('src', 'common', 'telemetry', 'generated')));
+// }
 
 function compile() {
     return gulp
@@ -74,73 +74,73 @@ function compileWeb() {
     .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
 
-async function nugetInstall(nugetSource, packageName, version, targetDir) {
-    // https://docs.microsoft.com/en-us/nuget/api/package-base-address-resource
-    const feeds = {
-        'nuget.org': {
-            authenticated: false,
-            baseUrl: 'https://api.nuget.org/v3-flatcontainer/'
-        },
-        'CAP_ISVExp_Tools_Daily': {
-            authenticated: true,
-            // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Daily
-            baseUrl: 'https://pkgs.dev.azure.com/msazure/_packaging/d3fb5788-d047-47f9-9aba-76890f5cecf0/nuget/v3/flat2/'
-        },
-        'CAP_ISVExp_Tools_Stable': {
-            authenticated: true,
-            // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Stable
-            baseUrl: 'https://pkgs.dev.azure.com/msazure/_packaging/b0441cf8-0bc8-4fad-b126-841a6184e784/nuget/v3/flat2/'
-        },
-    }
+// async function nugetInstall(nugetSource, packageName, version, targetDir) {
+//     // https://docs.microsoft.com/en-us/nuget/api/package-base-address-resource
+//     const feeds = {
+//         'nuget.org': {
+//             authenticated: false,
+//             baseUrl: 'https://api.nuget.org/v3-flatcontainer/'
+//         },
+//         'CAP_ISVExp_Tools_Daily': {
+//             authenticated: true,
+//             // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Daily
+//             baseUrl: 'https://pkgs.dev.azure.com/msazure/_packaging/d3fb5788-d047-47f9-9aba-76890f5cecf0/nuget/v3/flat2/'
+//         },
+//         'CAP_ISVExp_Tools_Stable': {
+//             authenticated: true,
+//             // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Stable
+//             baseUrl: 'https://pkgs.dev.azure.com/msazure/_packaging/b0441cf8-0bc8-4fad-b126-841a6184e784/nuget/v3/flat2/'
+//         },
+//     }
 
-    const selectedFeed = feeds[nugetSource];
-    const baseUrl = selectedFeed.baseUrl;
+//     const selectedFeed = feeds[nugetSource];
+//     const baseUrl = selectedFeed.baseUrl;
 
-    packageName = packageName.toLowerCase();
-    version = version.toLowerCase();
-    const packagePath = `${packageName}/${version}/${packageName}.${version}.nupkg`;
+//     packageName = packageName.toLowerCase();
+//     version = version.toLowerCase();
+//     const packagePath = `${packageName}/${version}/${packageName}.${version}.nupkg`;
 
-    const nupkgUrl = new URL(packagePath, baseUrl);
-    const reqInit = {
-        headers: {
-            'User-Agent': 'gulpfile-DPX-team/0.1',
-            'Accept': '*/*'
-        },
-        redirect: 'manual'
-    };
-    if (selectedFeed.authenticated) {
-        if (!feedPAT) {
-            throw new Error(`nuget feed ${nugetSource} requires authN but neither '--feedToken' argument nor env var 'AZ_DevOps_Read_PAT' was defined!`);
-        }
-        reqInit.headers['Authorization'] = `Basic ${Buffer.from('PAT:' + feedPAT).toString('base64')}`;
-    }
+//     const nupkgUrl = new URL(packagePath, baseUrl);
+//     const reqInit = {
+//         headers: {
+//             'User-Agent': 'gulpfile-DPX-team/0.1',
+//             'Accept': '*/*'
+//         },
+//         redirect: 'manual'
+//     };
+//     if (selectedFeed.authenticated) {
+//         if (!feedPAT) {
+//             throw new Error(`nuget feed ${nugetSource} requires authN but neither '--feedToken' argument nor env var 'AZ_DevOps_Read_PAT' was defined!`);
+//         }
+//         reqInit.headers['Authorization'] = `Basic ${Buffer.from('PAT:' + feedPAT).toString('base64')}`;
+//     }
 
-    log.info(`Downloading package: ${nupkgUrl}...`);
-    let res = await fetch(nupkgUrl, reqInit);
-    if (res.status === 303) {
-        const location = res.headers.get('location');
-        const url = new URL(location);
-        log.info(` ... redirecting to: ${url.origin}${url.pathname}}...`);
-        // AzDevOps feeds will redirect to Azure storage with location url w/ SAS token: on 2nd request drop authZ header
-        delete reqInit.headers['Authorization'];
-        res = await fetch(location, reqInit);
-    }
-    if (!res.ok) {
-        const body = res.body.read();
-        throw new Error(`Cannot download ${res.url}, status: ${res.statusText} (${res.status}), body: ${body ? body.toString('ascii') : '<empty>'}`);
-    }
+//     log.info(`Downloading package: ${nupkgUrl}...`);
+//     let res = await fetch(nupkgUrl, reqInit);
+//     if (res.status === 303) {
+//         const location = res.headers.get('location');
+//         const url = new URL(location);
+//         log.info(` ... redirecting to: ${url.origin}${url.pathname}}...`);
+//         // AzDevOps feeds will redirect to Azure storage with location url w/ SAS token: on 2nd request drop authZ header
+//         delete reqInit.headers['Authorization'];
+//         res = await fetch(location, reqInit);
+//     }
+//     if (!res.ok) {
+//         const body = res.body.read();
+//         throw new Error(`Cannot download ${res.url}, status: ${res.statusText} (${res.status}), body: ${body ? body.toString('ascii') : '<empty>'}`);
+//     }
 
-    const localNupkg = path.join(targetDir, `${packageName}.${version}.nupkg`);
-    fs.ensureDirSync(targetDir);
-    return new Promise((resolve, reject) => {
-        res.body.pipe(fs.createWriteStream(localNupkg))
-            .on('close', () => {
-                resolve();
-            }).on('error', err => {
-                reject(err);
-            })
-    });
-}
+//     const localNupkg = path.join(targetDir, `${packageName}.${version}.nupkg`);
+//     fs.ensureDirSync(targetDir);
+//     return new Promise((resolve, reject) => {
+//         res.body.pipe(fs.createWriteStream(localNupkg))
+//             .on('close', () => {
+//                 resolve();
+//             }).on('error', err => {
+//                 reject(err);
+//             })
+//     });
+// }
 
 function lint() {
     return gulp
@@ -291,18 +291,18 @@ async function snapshot() {
     }
 }
 
-const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.17.5';
+// const feedName = 'CAP_ISVExp_Tools_Stable';
+// const cliVersion = '1.17.5';
 
 const recompile = gulp.series(
     clean,
-    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI',cliVersion, path.resolve(distdir, 'pac')),
-    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
-    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
-    translationsExport,
-    translationsImport,
-    translationsGenerate,
-    setTelemetryTarget,
+    // async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI',cliVersion, path.resolve(distdir, 'pac')),
+    // async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
+    // async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
+    // translationsExport,
+    // translationsImport,
+    // translationsGenerate,
+    // setTelemetryTarget,
     compile,
     compileWeb
 );
@@ -310,8 +310,8 @@ const recompile = gulp.series(
 const dist = gulp.series(
     recompile,
     packageVsix,
-    lint,
-    test
+    // lint,
+    // test
 );
 const translationExtensionName = "vscode-powerplatform";
 

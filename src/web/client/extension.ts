@@ -10,7 +10,7 @@ import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
 import { dataverseAuthentication } from "./common/authenticationProvider";
-// import { setContext } from "./common/localStore";
+import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
@@ -71,10 +71,10 @@ export function activate(context: vscode.ExtensionContext): void {
                                 }
                             }
                             const timeStampBeforeSettingContext = new Date().getTime();
-                            const portalFolderName = "MyWebsite"
-                            portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/`, true));
-                            vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/`), name: portalFolderName });
-                            // await setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
+                            // const portalFolderName = "MyWebsite"
+                            // portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/`, true));
+                            // vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/`), name: portalFolderName });
+                            await setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
                             const timeTakenToSetContext = new Date().getTime() - timeStampBeforeSettingContext;
                             sendPerfTelemetry(telemetryEventNames.WEB_EXTENSION_SET_CONTEXT_PERF, timeTakenToSetContext);
                         }

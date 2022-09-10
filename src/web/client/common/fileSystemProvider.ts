@@ -58,36 +58,36 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
-        // const entry = this._lookupAsDirectory(uri, false);
+        const entry = this._lookupAsDirectory(uri, false);
         const result: [string, vscode.FileType][] = [];
-        // for (const [name, child] of entry.entries) {
-        //     result.push([name, child.type]);
+        for (const [name, child] of entry.entries) {
+            result.push([name, child.type]);
+        }
+        // console.log('readDirectory uri = '+ uri.toString());
+        // await new Promise(resolve => setTimeout(resolve, 5000));
+        // const newFileBasename = 'xyz.txt';
+        // const newFileUri = path.posix.join(newFileBasename);
+        // console.log('readDirectory newFileUri = '+ newFileUri);
+        // const newFileParent = this._lookupParentDirectory(vscode.Uri.parse(newFileUri));
+        // console.log('readDirectory newFileParent = '+ newFileParent.name);
+        // let newEntry = newFileParent.entries.get(newFileBasename);
+        // if (!newEntry) {
+        //     console.log('creating newEntry');
+        //     newEntry = new File(newFileBasename);
+        //     newFileParent.entries.set(newFileBasename, newEntry);
+        //     this._fireSoon({ type: vscode.FileChangeType.Created, uri });
         // }
-        console.log('readDirectory uri = '+ uri.toString());
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        const newFileBasename = 'xyz.txt';
-        const newFileUri = path.posix.join(newFileBasename);
-        console.log('readDirectory newFileUri = '+ newFileUri);
-        const newFileParent = this._lookupParentDirectory(vscode.Uri.parse(newFileUri));
-        console.log('readDirectory newFileParent = '+ newFileParent.name);
-        let newEntry = newFileParent.entries.get(newFileBasename);
-        if (!newEntry) {
-            console.log('creating newEntry');
-            newEntry = new File(newFileBasename);
-            newFileParent.entries.set(newFileBasename, newEntry);
-            this._fireSoon({ type: vscode.FileChangeType.Created, uri });
-        }
-        if (newEntry instanceof Directory) {
-            console.log('newEntry is Directory');
-            throw vscode.FileSystemError.FileIsADirectory(uri);
-        }
-        const content = new TextEncoder().encode("hello fileSystemProvider_v2");
-        newEntry.mtime = Date.now();
-        newEntry.size = content.byteLength;
-        newEntry.data = content;
+        // if (newEntry instanceof Directory) {
+        //     console.log('newEntry is Directory');
+        //     throw vscode.FileSystemError.FileIsADirectory(uri);
+        // }
+        // const content = new TextEncoder().encode("hello fileSystemProvider_v2");
+        // newEntry.mtime = Date.now();
+        // newEntry.size = content.byteLength;
+        // newEntry.data = content;
 
-        this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
-        result.push([newFileBasename, vscode.FileType.File]);
+        // this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
+        // result.push([newFileBasename, vscode.FileType.File]);
         return result;
     }
 
@@ -102,21 +102,30 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
+        console.log('writeFile uri=' + uri.toString());
         const basename = path.posix.basename(uri.path);
+        console.log('writeFile basename=' + basename);
         const parent = this._lookupParentDirectory(uri);
+        console.log('writeFile parent=' + parent.name);
         let entry = parent.entries.get(basename);
         if (entry instanceof Directory) {
+            console.log('writeFile isDirectory uri=' + entry.name);
             throw vscode.FileSystemError.FileIsADirectory(uri);
         }
         if (!entry && !options.create) {
+            console.log('writeFile FileNotFound uri=' + uri.toString());
             throw vscode.FileSystemError.FileNotFound(uri);
         }
         if (entry && options.create && !options.overwrite) {
+            console.log('writeFile FileExists uri=' + uri.toString());
             throw vscode.FileSystemError.FileExists(uri);
         }
         if (!entry) {
+            console.log('writeFile NewFile uri=' + uri.toString());
             entry = new File(basename);
+            console.log('writeFile NewFile basename=' + basename);
             parent.entries.set(basename, entry);
+            console.log('writeFile NewFile parent=' + parent.name);
             this._fireSoon({ type: vscode.FileChangeType.Created, uri });
         }
         entry.mtime = Date.now();
