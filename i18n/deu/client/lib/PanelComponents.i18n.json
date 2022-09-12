@@ -8,5 +8,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "Name: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Ressource: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Benutzer: {0}",
+	"pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance": "Clound-Instanz: {0}",
 	"pacCLI.EnvOrSolutionTreeItem.toolTip": "Anzeigename: {0}\nEindeutiger Name: {1}\nVersion: {2}"
 }
