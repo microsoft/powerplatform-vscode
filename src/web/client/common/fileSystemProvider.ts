@@ -70,24 +70,16 @@ export class PortalsFS implements vscode.FileSystemProvider {
         console.log('readDirectory newFileUri = '+ newFileUri);
         const newFileParent = this._lookupParentDirectory(vscode.Uri.parse(newFileUri));
         console.log('readDirectory newFileParent = '+ newFileParent.name);
-        let newEntry = newFileParent.entries.get(newFileBasename);
-        if (!newEntry) {
-            console.log('creating newEntry');
-            newEntry = new File(newFileBasename);
-            newFileParent.entries.set(newFileBasename, newEntry);
-            this._fireSoon({ type: vscode.FileChangeType.Created, uri });
-        }
-        if (newEntry instanceof Directory) {
-            console.log('newEntry is Directory');
-            throw vscode.FileSystemError.FileIsADirectory(uri);
-        }
-        const content = new TextEncoder().encode("hello fileSystemProvider_v2");
-        newEntry.mtime = Date.now();
-        newEntry.size = content.byteLength;
-        newEntry.data = content;
 
-        this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
-        result.push([newFileBasename, vscode.FileType.File]);
+        this.writeFile(vscode.Uri.parse(newFileUri), new TextEncoder().encode("hello fileSystemProvider_v2"), { create: true, overwrite: true });
+
+        const newDirectoryBasename = 'abc';
+        const newDirectoryUri = path.posix.join(uri.toString(), newDirectoryBasename);
+        console.log('readDirectory newDirectoryUri = '+ newDirectoryUri);
+
+        this.createDirectory(vscode.Uri.parse(newDirectoryUri));
+
+        result.push([newFileBasename, vscode.FileType.File],[newDirectoryBasename, vscode.FileType.Directory]);
         return result;
     }
 
