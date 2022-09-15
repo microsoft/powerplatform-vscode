@@ -31,6 +31,19 @@ export function getRequestURL(dataverseOrgUrl: string, entity: string, entityId:
         .replace('{version}', dataSourcePropertiesMap.get('version') as string);
 }
 
+// this function removes hostName from the url
+export function sanitizeURL(url: string): string {
+    let sanitizedUrl = '';
+    try {
+        const completeUrl = new URL(url);
+        const hostName = completeUrl.hostname;
+        sanitizedUrl = url.replace(hostName, '[redact]');
+    } catch(error) {
+        return '';
+    }
+    return sanitizedUrl;
+}
+
 // TODO - Make Json for different response type and update any here
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function updateEntityId(entity: string, entityId: string, entitiesSchemaMap: Map<string, Map<string, string>>, result: any) {
