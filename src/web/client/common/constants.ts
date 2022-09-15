@@ -110,7 +110,9 @@ export const pathParamToSchema = new Map([
 ]);
 
 export enum queryParameters {
-    ORG_URL = 'orgUrl',
+    ORG_ID = 'organizationId',
+    TENANT_ID = 'tenantId',
+    PORTAL_ID = 'websitePreviewId',
     WEBSITE_ID = 'websiteId',
     SCHEMA = 'schema',
     DATA_SOURCE = 'dataSource',
