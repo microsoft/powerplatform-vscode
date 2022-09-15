@@ -32,12 +32,12 @@
 	"microsoft-powerapps-portals.preview-show.title": "Портал PowerApps -> Показать предварительную версию",
 	"microsoft-powerapps-portals.webExtension.init.title": "Инициализация веб-расширения",
 	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI не поддерживается в VS Code для Интернета",
-	"microsoft-powerapps-portals.walkthrough.title": "Edit Power Pages code",
-	"microsoft-powerapps-portals.walkthrough.description": "Discover how you can make complete, modern websites right in VS Code",
-	"microsoft-powerapps-portals.walkthrough.overview.title": "Overview",
-	"microsoft-powerapps-portals.walkthrough.overview.description": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n \n The preview is linked to Power Pages and enables you to view your changes.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
-	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "File system",
-	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "Your files are stored in nested folders under your site name. \n \n The individual page files can be found in the web-pages folder under your site name. \n \n All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. \n \n To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)",
-	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Advanced capabilities",
-	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Visual Studio Code for Web enables editing and publishing of web pages on your website.\n \n For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop. \n \n [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.\n \n[Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)"
+	"microsoft-powerapps-portals.walkthrough.title": "Изменить код Power Pages",
+	"microsoft-powerapps-portals.walkthrough.description": "Узнайте, как создавать работающие современные веб-сайты в VS Code",
+	"microsoft-powerapps-portals.walkthrough.overview.title": "Обзор",
+	"microsoft-powerapps-portals.walkthrough.overview.description": "Расширение Power Pages позволяет работать с файловой системой, которая синхронизируется со структурой проекта в студии Power Pages.\n \n Предварительный просмотр страниц доступен по ссылкам Power Pages.\n[Подробнее](command:powerplatform-walkthrough.overview-learn-more)",
+	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "Файловая система",
+	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "Файлы хранятся во вложенных папках в папке с именем сайта. \n \n Файлы отдельных страниц можно найти в папке веб-страниц. \n \n Все страницы состоят из файлов HTML, CSS и JS, находящихся в папке с именем соответствующей страницы. \n \n Подробнее о файловой системе Power Pages в веб-версии VS Code читайте в [документации](command:powerplatform-walkthrough.fileSystem-documentation). \n[Открыть папку сайта] (command:powerplatform-walkthrough.fileSystem-open-folder)",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Расширенные возможности",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Веб-версия Visual Studio Code позволяет редактировать и публиковать страницы веб-сайта.\n \n Для работы с интерфейсом командной строки и использования расширенных функций установите расширение Power Platform для VS Code из магазина классической версии VS Code. \n \n [Подробнее](command:powerplatform-walkthrough.advancedCapabilities-learn-more) о различиях между классической и веб-версией Visual Studio Code.\n \n[Писать код] (command:powerplatform-walkthrough.advancedCapabilities-start-coding)"
 }

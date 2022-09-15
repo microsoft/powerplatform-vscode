@@ -147,21 +147,29 @@ La autenticación interactiva no está disponible en escenarios remotos; los per
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
         <source xml:lang="en">Edit Power Pages code</source>
+        <target state="translated">Editar código de Power Pages</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
         <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
+        <target state="translated">Descubra cómo puede crear sitios web completos y modernos directamente en VS Code</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
+        <target state="translated">Información general</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
         <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
  
  The preview is linked to Power Pages and enables you to view your changes.
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
+        <target state="translated">La extensión de Power Pages permite disponer de un sistema de archivos personalizado que se sincroniza con la estructura del proyecto del estudio de diseño de Power Pages.
+ 
+ La vista previa está vinculada a Power Pages y le permite ver los cambios que ha realizado.
+[Más información](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>
+        <target state="translated">Sistema de archivos</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
         <source xml:lang="en">Your files are stored in nested folders under your site name. 
@@ -172,9 +180,18 @@ La autenticación interactiva no está disponible en escenarios remotos; los per
  
  To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
 [Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+        <target state="translated">Sus archivos se almacenan en carpetas anidadas bajo el nombre del sitio. 
+ 
+ Los archivos de página individuales se pueden encontrar en la carpeta de páginas web bajo el nombre de su sitio. 
+ 
+ Todas sus páginas están organizadas en archivos HTML, CSS y JS dentro de la carpeta con el nombre de página respectivo. 
+ 
+ Para obtener más información sobre el sistema de archivos de Power Pages en VS Code para web, visite nuestra [documentación](command:powerplatform-walkthrough.fileSystem-documentation). 
+[Abrir carpeta del sitio](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
         <source xml:lang="en">Advanced capabilities</source>
+        <target state="translated">Funcionalidades avanzadas</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
@@ -184,6 +201,13 @@ La autenticación interactiva no está disponible en escenarios remotos; los per
  [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.
  
 [Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</source>
+        <target state="translated">Visual Studio Code para web permite editar y publicar páginas web en su sitio web.
+ 
+ Si desea utilizar una interfaz de línea de comandos y funcionalidades más avanzadas, instale la Extensión Power Platform para VS Code, que está disponible en VS Code Marketplace para el escritorio. 
+ 
+ [Más información](command:powerplatform-walkthrough.advancedCapabilities-learn-more) sobre la diferencia entre Visual Studio Code para el escritorio y para la web.
+ 
+[Empiece a programar](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
       </trans-unit>
     </body>
   </file>

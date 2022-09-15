@@ -32,12 +32,12 @@
 	"microsoft-powerapps-portals.preview-show.title": "PowerApps 门户 -> 显示预览版",
 	"microsoft-powerapps-portals.webExtension.init.title": "初始化 Web 扩展",
 	"microsoft-powerapps-portals.webExtension.limitation": "Web 版 VS Code 不支持 PAC CLI",
-	"microsoft-powerapps-portals.walkthrough.title": "Edit Power Pages code",
-	"microsoft-powerapps-portals.walkthrough.description": "Discover how you can make complete, modern websites right in VS Code",
-	"microsoft-powerapps-portals.walkthrough.overview.title": "Overview",
-	"microsoft-powerapps-portals.walkthrough.overview.description": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n \n The preview is linked to Power Pages and enables you to view your changes.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
-	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "File system",
-	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "Your files are stored in nested folders under your site name. \n \n The individual page files can be found in the web-pages folder under your site name. \n \n All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. \n \n To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)",
-	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Advanced capabilities",
-	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Visual Studio Code for Web enables editing and publishing of web pages on your website.\n \n For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop. \n \n [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.\n \n[Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)"
+	"microsoft-powerapps-portals.walkthrough.title": "编辑 Power Pages 码",
+	"microsoft-powerapps-portals.walkthrough.description": "了解如何在 VS Code 中创建完整的新型网站",
+	"microsoft-powerapps-portals.walkthrough.overview.title": "概览",
+	"microsoft-powerapps-portals.walkthrough.overview.description": "Power Pages 扩展支持与 Power Pages 工作室的项目结构同步的自定义文件系统。\n \n预览版已链接到 Power Pages，并支持查看您所做的更改。\n[详细了解](command:powerplatform-walkthrough.overview-learn-more)",
+	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "文件系统",
+	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "您的文件将存储在网站名称下的嵌套文件夹中。\n \n您可以在网站名称下的网页文件夹中找到单个页面文件。\n \n您的所有页面均使用相应的页面名称在文件夹下以 HTML、CSS 和 JS 文件排列。\n \n要详细了解 VS Code Web 版的 Power Pages 文件系统，请阅读我们的[文档](command:powerplatform-walkthrough.fileSystem-documentation)。\n[打开网站文件夹](command:powerplatform-walkthrough.fileSystem-open-folder)",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "高级功能",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "通过 Visual Studio Code Web 版，您可以在网站上编辑和发布网页。\n \n要使用命令行接口和其他高级功能，请从 VS Code 市场桌面版下载安装 VS Code 的 Power Platform 扩展。\n \n[详细了解](command:powerplatform-walkthrough.advancedCapabilities-learn-more) Visual Studio Code 桌面版和 Web 版之间的差异。\n \n[开始编程](command:powerplatform-walkthrough.advancedCapabilities-start-coding)"
 }

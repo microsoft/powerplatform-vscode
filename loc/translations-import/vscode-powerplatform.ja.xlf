@@ -147,21 +147,29 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
         <source xml:lang="en">Edit Power Pages code</source>
+        <target state="translated">Power Pages コードの編集</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
         <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
+        <target state="translated">完全でモダンな Web サイトを VS Code で作成する方法を確認する</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
+        <target state="translated">概要</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
         <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
  
  The preview is linked to Power Pages and enables you to view your changes.
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
+        <target state="translated">Power Pages 拡張機能で、Power Pages スタジオのプロジェクト構造と同期するカスタマイズされたファイル システムを有効にします。
+ 
+ プレビューが Power Pages にリンクされ、変更を表示できます。
+[詳細情報](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>
+        <target state="translated">ファイル システム</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
         <source xml:lang="en">Your files are stored in nested folders under your site name. 
@@ -172,9 +180,18 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
  
  To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
 [Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+        <target state="translated">ファイルは、サイト名の下の入れ子になったフォルダーに保存されます。
+ 
+ 個々のページ ファイルは、サイト名の下の Web ページ フォルダーにあります。
+ 
+ すべてのページは、各ページ名のフォルダー内で、HTML、CSS、JS ファイルとして配置されます。
+ 
+ Web 用 VS Code の Power Pages ファイル システムの詳細については、[ドキュメント](command:powerplatform-walkthrough.fileSystem-documentation)を参照してください。
+[サイト フォルダーを開く](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
         <source xml:lang="en">Advanced capabilities</source>
+        <target state="translated">詳細な機能</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
@@ -184,6 +201,13 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
  [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.
  
 [Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</source>
+        <target state="translated">Web 用 Visual Studio Code を使用して、Web ページを編集して Web サイトに公開できます。
+ 
+ コマンド ライン インターフェイスおよびより詳細な機能のために、VS Code 用 Power Platform 拡張機能をインストールします (デスクトップ用 VS Code マーケットプレースで入手可能)。
+ 
+ デスクトップ用と Web 用の Visual Studio Code の違いについては、[詳細情報](command:powerplatform-walkthrough.advancedCapabilities-learn-more)をご確認ください。
+ 
+[コーディングの開始](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
       </trans-unit>
     </body>
   </file>
