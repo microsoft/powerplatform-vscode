@@ -120,6 +120,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
     <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
       <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
+      <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
       <source xml:lang="en">File system</source>
@@ -133,6 +135,9 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
  
  To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
 [Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+      <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
+The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
       <source xml:lang="en">Advanced capabilities</source>
@@ -145,6 +150,9 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
  [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.
  
 [Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</source>
+      <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
   </body></file>
   <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext"><body>
