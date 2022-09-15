@@ -8,5 +8,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "名称: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "资源: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "用户: {0}",
+	"pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance": "云实例: {0}",
 	"pacCLI.EnvOrSolutionTreeItem.toolTip": "显示名称: {0}\n唯一名称: {1}\n版本: {2}"
 }
