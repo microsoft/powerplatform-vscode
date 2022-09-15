@@ -8,5 +8,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "Jméno: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Prostředek: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Uživatel: {0}",
+	"pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance": "Cloudová instance: {0}",
 	"pacCLI.EnvOrSolutionTreeItem.toolTip": "Zobrazované jméno: {0}\nJedinečné jméno: {1}\nVerze: {2}"
 }
