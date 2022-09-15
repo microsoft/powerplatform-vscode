@@ -54,10 +54,30 @@
   "microsoft-powerapps-portals.walkthrough.title": "Edit Power Pages code",
   "microsoft-powerapps-portals.walkthrough.description": "Discover how you can make complete, modern websites right in VS Code",
   "microsoft-powerapps-portals.walkthrough.overview.title": "Overview",
-  "microsoft-powerapps-portals.walkthrough.overview.description": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n \n The preview is linked to Power Pages and enables you to view your changes.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
+  "microsoft-powerapps-portals.walkthrough.overview.description": {
+    "message": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
+    "comment": [
+      "This is a Markdown formatted string, and the formatting must persist across translations.",
+      "The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified"
+   ]
+  },
   "microsoft-powerapps-portals.walkthrough.fileSystem.title": "File system",
-  "microsoft-powerapps-portals.walkthrough.fileSystem.description": "Your files are stored in nested folders under your site name. \n \n The individual page files can be found in the web-pages folder under your site name. \n \n All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. \n \n To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)",
+  "microsoft-powerapps-portals.walkthrough.fileSystem.description": {
+    "message": "Your files are stored in nested folders under your site name. \n \n The individual page files can be found in the web-pages folder under your site name. \n \n All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. \n \n To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)",
+    "comment": [
+      "This is a Markdown formatted string, and the formatting must persist across translations.",
+      "The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified",
+      "The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified"
+   ]
+  },
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Advanced capabilities",
-  "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Visual Studio Code for Web enables editing and publishing of web pages on your website.\n \n For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop. \n \n [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.\n \n[Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)"
+  "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": {
+    "message": "Visual Studio Code for Web enables editing and publishing of web pages on your website.\n \n For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop. \n \n [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.\n \n[Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)",
+    "comment": [
+      "This is a Markdown formatted string, and the formatting must persist across translations.",
+      "The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified",
+      "The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified"
+   ]
+  }
 
 }
