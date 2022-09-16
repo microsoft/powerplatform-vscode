@@ -147,21 +147,25 @@ L'autenticazione interattiva non è disponibile per scenari remoti. I profili di
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
         <source xml:lang="en">Edit Power Pages code</source>
+        <target state="translated">Modifica codice Power Pages</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
         <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
+        <target state="translated">Scopri come puoi creare siti Web completi e moderni direttamente in VS Code</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
+        <target state="translated">Panoramica</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
         <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
- 
- The preview is linked to Power Pages and enables you to view your changes.
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>
+        <target state="translated">File system</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
         <source xml:lang="en">Your files are stored in nested folders under your site name. 
@@ -172,9 +176,21 @@ L'autenticazione interattiva non è disponibile per scenari remoti. I profili di
  
  To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
 [Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
+The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">I file vengono archiviati in cartelle annidate sotto il nome del sito. 
+ 
+ I singoli file di pagine sono disponibili nella cartella delle pagine Web sotto il nome del sito. 
+ 
+ Tutte le pagine sono organizzate in file HTML, CSS e JS all'interno della cartella con il rispettivo nome di pagina. 
+ 
+ Per altre informazioni sul file system Power Pages in VS Code per il Web, visita la nostra [documentazione](command:powerplatform-walkthrough.fileSystem-documentation). 
+ [Apri cartella del sito](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
         <source xml:lang="en">Advanced capabilities</source>
+        <target state="translated">Funzionalità avanzate</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
@@ -184,6 +200,16 @@ L'autenticazione interattiva non è disponibile per scenari remoti. I profili di
  [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.
  
 [Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Visual Studio Code per il Web consente la modifica e la pubblicazione di pagine Web sul sito Web.
+ 
+ Per un'interfaccia della riga di comando e funzionalità più avanzate, installa l'estensione Power Platform per VS Code, disponibile in VS Code Marketplace per desktop. 
+ 
+ [Altre informazioni](command:powerplatform-walkthrough.advancedCapabilities-learn-more) sulla differenza tra Visual Studio sulla Code per desktop e per il Web.
+ 
+[Codifica iniziale](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
       </trans-unit>
     </body>
   </file>

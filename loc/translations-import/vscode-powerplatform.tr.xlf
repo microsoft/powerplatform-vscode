@@ -147,21 +147,25 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
         <source xml:lang="en">Edit Power Pages code</source>
+        <target state="translated">Power Pages kodunu düzenle</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
         <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
+        <target state="translated">VS Code içinden eksiksiz ve modern web siteleri oluşturmayı keşfedin</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
+        <target state="translated">Genel bakış</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
         <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
- 
- The preview is linked to Power Pages and enables you to view your changes.
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>
+        <target state="translated">Dosya sistemi</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
         <source xml:lang="en">Your files are stored in nested folders under your site name. 
@@ -172,9 +176,21 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
  
  To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
 [Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
+The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Dosyalarınız, site adınızın altındaki iç içe klasörlerde depolanır. 
+ 
+ Tek tek sayfa dosyaları, site adınızın altındaki web sayfaları klasöründe bulunabilir. 
+ 
+ Tüm sayfalarınız, ilgili sayfa adıyla klasör içinde HTML, CSS ve JS dosyaları halinde düzenlenir. 
+ 
+ Web için VS Code'da Power Pages dosya sistemi hakkında daha fazla bilgi edinmek için [belgeler](command:powerplatform-walkthrough.fileSystem-documentation) bölümümüzü ziyaret edin. 
+[Site klasörünü aç](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
         <source xml:lang="en">Advanced capabilities</source>
+        <target state="translated">Gelişmiş özellikler</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
@@ -184,6 +200,16 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
  [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.
  
 [Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Web için Visual Studio Code, web sitenizde web sayfalarının düzenlenmesini ve yayınlanmasını sağlar.
+ 
+ Komut satırı arabirimi ve daha gelişmiş özellikler için Masaüstü için VS Code Marketinde bulunan VS Code için Power Platform Uzantısını yükleyin. 
+ 
+ Masaüstü ve web için Visual Studio Code arasındaki fark hakkında [daha fazla bilgi edinin](command:powerplatform-walkthrough.advancedCapabilities-learn-more).
+ 
+[Kodlamaya başlayın](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
       </trans-unit>
     </body>
   </file>
