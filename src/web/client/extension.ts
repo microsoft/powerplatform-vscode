@@ -10,9 +10,9 @@ import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
 import { dataverseAuthentication } from "./common/authenticationProvider";
-import { setContext } from "./common/localStore";
+// import { setContext } from "./common/localStore";
 import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC } from "./common/constants";
-import { PortalsFS } from "./common/fileSystemProvider";
+import { Directory, Entry, PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 import { sendErrorTelemetry, sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
 import { GetDefaultFileUri } from './utility/CommonUtility';
@@ -27,7 +27,8 @@ export function activate(context: vscode.ExtensionContext): void {
     setTelemetryReporter(_telemetry);
     _telemetry.sendTelemetryEvent("Start");
     _telemetry.sendTelemetryEvent("activated");
-    const portalsFS = new PortalsFS();
+    const serverBackedRootDirectory = new ServerBackedDirectory(vscode.Uri.parse('myTestUri'), '');
+    const portalsFS = new PortalsFS(PORTALS_URI_SCHEME, serverBackedRootDirectory);
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 
     context.subscriptions.push(
@@ -71,7 +72,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                 }
                             }
                             const timeStampBeforeSettingContext = new Date().getTime();
-                            await setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
+                            // await setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
                             const timeTakenToSetContext = new Date().getTime() - timeStampBeforeSettingContext;
                             sendPerfTelemetry(telemetryEventNames.WEB_EXTENSION_SET_CONTEXT_PERF, timeTakenToSetContext);
                         }
@@ -106,6 +107,51 @@ export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
 		vscode.window.showTextDocument(GetDefaultFileUri());
 	}));
+}
+
+// class ServerBackedFile implements File {
+// 	readonly type = vscode.FileType.File;
+// 	readonly stats = Promise.resolve({ type: vscode.FileType.File, ctime: Date.now(), mtime: Date.now(), size: 0 });
+// 	private _content: Promise<Uint8Array> | undefined;
+// 	constructor(private readonly _serverUri: vscode.Uri, public name: string) {
+// 	}
+// 	get content(): Promise<Uint8Array> {
+// 		console.log('ServerBackedFile getContent');
+// 		if (this._content === undefined) {
+// 			this._content = Promise.resolve(vscode.workspace.fs.readFile(this._serverUri));
+// 		}
+// 		return this._content;
+// 	}
+// 	set content(content: Promise<Uint8Array>) {
+// 		console.log('ServerBackedFile setContent');
+// 		this._content = content;
+// 	}
+// }
+
+class ServerBackedDirectory implements Directory {
+	readonly type = vscode.FileType.Directory;
+	readonly stats = Promise.resolve({ type: vscode.FileType.Directory, ctime: Date.now(), mtime: Date.now(), size: 0 });
+	private _entries: Promise<Map<string, Entry>> | undefined;
+	constructor(private readonly _serverUri: vscode.Uri, public name: string) {
+	}
+	get entries(): Promise<Map<string, Entry>> {
+		console.log('ServerBackedDirectory getEntries');
+		if (this._entries === undefined) {
+			this._entries = getEntries(this._serverUri);
+		}
+		return this._entries;
+	}
+	set entries(entries: Promise<Map<string, Entry>>) {
+		console.log('ServerBackedDirectory setEntries');
+		this._entries = entries;
+	}
+}
+
+async function getEntries(contentUri: vscode.Uri): Promise<Map<string, Entry>> {
+	console.log('getEntries contentUri= '+ contentUri.toString());
+
+	const result = new Map();
+	return result;
 }
 
 export async function deactivate(): Promise<void> {

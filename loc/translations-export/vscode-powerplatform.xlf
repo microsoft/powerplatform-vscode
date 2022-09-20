@@ -332,9 +332,6 @@ The {2} represents Solution's Version number</note>
     </trans-unit>
   </body></file>
   <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
-      <source xml:lang="en">Saving your file ...</source>
-    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
       <source xml:lang="en">Unable to complete the request</source>
     </trans-unit>

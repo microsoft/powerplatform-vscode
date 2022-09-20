@@ -24,7 +24,7 @@ import { PORTALS_URI_SCHEME } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
-import { registerSaveProvider } from './remoteSaveProvider';
+// import { registerSaveProvider } from './remoteSaveProvider';
 let saveDataMap = new Map<string, SaveEntityDetails>();
 
 export async function fetchData(
@@ -163,7 +163,7 @@ function createContentFiles(
         SetDefaultFileUri(defaultFileUri);
         vscode.window.showTextDocument(defaultFileUri);
     }
-    registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap);
+    // registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap);
 }
 
 function createVirtualFile(
