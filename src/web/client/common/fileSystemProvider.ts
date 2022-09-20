@@ -90,7 +90,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         if (data) {
             return data;
         }
-        throw vscode.FileSystemError.FileNotFound();
+        return new TextEncoder().encode('');
     }
 
     writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
