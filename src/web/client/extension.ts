@@ -9,12 +9,13 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
-import { dataverseAuthentication } from "./common/authenticationProvider";
-import { setContext } from "./common/localStore";
-import { ORG_URL, PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC } from "./common/constants";
+import PowerPlatformExtensionContextManager from "./common/localStore";
+import { PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC, WEBSITE_NAME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
-import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
-import { sendErrorTelemetry, sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
+import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS } from "./common/errorHandler";
+import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
+import { createFileSystem } from './common/createFileSystem';
+import { getDataFromDataVerse } from './common/remoteFetchProvider';
 let _telemetry: TelemetryReporter;
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
@@ -36,7 +37,6 @@ export function activate(context: vscode.ExtensionContext): void {
                 _telemetry.sendTelemetryEvent("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
 
                 const { appName, entity, entityId, searchParams } = args;
-                sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
                 const queryParamsMap = new Map<string, string>();
 
                 if (searchParams) {
@@ -46,31 +46,45 @@ export function activate(context: vscode.ExtensionContext): void {
                     }
                 }
 
+                if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
+
+                removeEncodingFromParameters(queryParamsMap);
+                await PowerPlatformExtensionContextManager.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap);
+                await createFileSystem(portalsFS, queryParamsMap.get(WEBSITE_NAME) as string);
+
+                sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
+
                 if (queryParamsMap.get(SITE_VISIBILITY) === PUBLIC) {
-                    const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit","Edit the site") };
-                    const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc","Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
+                    const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit", "Edit the site") };
+                    const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc", "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
                     const options = { detail: siteMessage, modal: true };
-                    await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title","You are editing a live, public site "), options, edit);
+                    await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title", "You are editing a live, public site "), options, edit);
                 }
 
-                let accessToken: string;
+                //let accessToken: string;
                 if (appName) {
                     switch (appName) {
                         case 'portal': {
                             sendExtensionInitQueryParametersTelemetry(searchParams);
-                            if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
-                            removeEncodingFromParameters(queryParamsMap);
+                            await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
+                            const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
 
-                            accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
-                            if (!accessToken) {
-                                {
-                                    showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init.error.desc", "Try refreshing the browser"));
-                                    sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
-                                    return;
-                                }
+                            if (!powerPlatformContext.dataverseAccessToken) {
+                                return;
                             }
+
+                            await getDataFromDataVerse(
+                                powerPlatformContext.dataverseAccessToken,
+                                powerPlatformContext.entity,
+                                powerPlatformContext.entityId,
+                                powerPlatformContext.queryParamsMap,
+                                powerPlatformContext.entitiesSchemaMap,
+                                powerPlatformContext.languageIdCodeMap,
+                                portalsFS,
+                                powerPlatformContext.websiteIdToLanguage);
+
                             const timeStampBeforeSettingContext = new Date().getTime();
-                            await setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
+                            //await setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
                             const timeTakenToSetContext = new Date().getTime() - timeStampBeforeSettingContext;
                             sendPerfTelemetry(telemetryEventNames.WEB_EXTENSION_SET_CONTEXT_PERF, timeTakenToSetContext);
                         }

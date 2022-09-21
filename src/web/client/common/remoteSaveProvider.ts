@@ -5,45 +5,13 @@
 
 import * as vscode from 'vscode';
 import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
-import { toBase64 } from '../utility/CommonUtility';
-import { getRequestURL } from '../utility/UrlBuilder';
 import { getHeader } from './authenticationProvider';
-import { BAD_REQUEST, CHARSET, httpMethod, MIMETYPE } from './constants';
+import { BAD_REQUEST, MIMETYPE } from './constants';
 import { showErrorDialog } from './errorHandler';
-import { PortalsFS } from './fileSystemProvider';
-import { entitiesSchemaMap } from './localStore';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import * as nls from 'vscode-nls';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-
-export function registerSaveProvider(
-    accessToken: string,
-    portalsFS: PortalsFS,
-    dataVerseOrgUrl: string,
-    saveDataMap: Map<string, SaveEntityDetails>
-) {
-    vscode.workspace.onDidSaveTextDocument(async (document) => {
-        if (document?.uri?.fsPath) {
-            vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.save.file.message", "Saving your file ..."));
-
-            const newFileData = portalsFS.readFile(document.uri);
-            let stringDecodedValue = new TextDecoder(CHARSET).decode(newFileData);
-
-            if (saveDataMap.get(document.uri.fsPath)?.getUseBase64Encoding as boolean) {
-                stringDecodedValue = toBase64(stringDecodedValue);
-            }
-
-            const patchRequestUrl = getRequestURL(dataVerseOrgUrl,
-                saveDataMap.get(document.uri.fsPath)?.getEntityName as string,
-                saveDataMap.get(document.uri.fsPath)?.getEntityId as string,
-                entitiesSchemaMap,
-                httpMethod.PATCH,
-                true);
-            await saveData(accessToken, patchRequestUrl, document.uri, saveDataMap, stringDecodedValue);
-        }
-    });
-}
 
 export async function saveData(
     accessToken: string,

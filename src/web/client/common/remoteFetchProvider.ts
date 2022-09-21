@@ -24,8 +24,7 @@ import { PORTALS_URI_SCHEME } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
-import { registerSaveProvider } from './remoteSaveProvider';
-let saveDataMap = new Map<string, SaveEntityDetails>();
+import PowerPlatformExtensionContextManager from "./localStore";
 
 export async function fetchData(
     accessToken: string,
@@ -42,7 +41,7 @@ export async function fetchData(
     try {
         const dataverseOrgUrl = queryParamsMap.get(Constants.ORG_URL) as string;
 
-        requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, entitiesSchemaMap, Constants.httpMethod.GET, false);
+        requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, Constants.httpMethod.GET, false);
         sendAPITelemetry(requestUrl);
 
         requestSentAtTime = new Date().getTime();
@@ -66,9 +65,10 @@ export async function fetchData(
         }
 
         for (let counter = 0; counter < data.length; counter++) {
-            createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
+            createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
         }
     } catch (error) {
+        console.log("fetchData", error);
         const authError = (error as Error)?.message;
         if (typeof error === "string" && error.includes("Unauthorized")) {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
@@ -80,7 +80,7 @@ export async function fetchData(
     }
 }
 
-function createContentFiles(
+async function createContentFiles(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result: any,
     entity: string,
@@ -88,8 +88,6 @@ function createContentFiles(
     entitiesSchemaMap: Map<string, Map<string, string>>,
     languageIdCodeMap: Map<string, string>,
     portalsFS: PortalsFS,
-    dataverseOrgUrl: string,
-    accessToken: string,
     entityId: string,
     websiteIdToLanguage: Map<string, string>
 ) {
@@ -103,6 +101,8 @@ function createContentFiles(
     const subUri = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string)?.get(Constants.FILE_FOLDER_NAME);
     let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
 
+    console.log("powerpagedebug createContentFiles", languageIdCodeMap?.size, lcid);
+
     if (languageIdCodeMap?.size && lcid) {
         languageCode = languageIdCodeMap.get(lcid) as string
             ? languageIdCodeMap.get(lcid) as string
@@ -112,7 +112,7 @@ function createContentFiles(
     let filePathInPortalFS = '';
     if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
         filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
-        portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
+        await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
     }
 
     if (attributes) {
@@ -131,7 +131,7 @@ function createContentFiles(
 
         if (exportType && (exportType === Constants.exportType.SubFolders)) {
             filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
-            portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
+            await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
         }
 
         const attributeArray = attributes.split(',');
@@ -147,11 +147,11 @@ function createContentFiles(
                 Constants.columnExtension.get(attributeArray[counter]) as string);
             fileUri = filePathInPortalFS + fileNameWithExtension;
 
-            saveDataMap = createVirtualFile(
+            await createVirtualFile(
                 portalsFS,
                 fileUri,
                 useBase64Encoding ? fromBase64(value) : value,
-                updateEntityId(entity, entityId, entitiesSchemaMap, result),
+                updateEntityId(entity, entityId, result),
                 attributeArray[counter] as string,
                 useBase64Encoding,
                 entity,
@@ -161,10 +161,10 @@ function createContentFiles(
         // Display only the last file
         vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
     }
-    registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap);
+    //registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap);
 }
 
-function createVirtualFile(
+async function createVirtualFile(
     portalsFS: PortalsFS,
     fileUri: string,
     data: string | undefined,
@@ -175,11 +175,12 @@ function createVirtualFile(
     mimeType?: string
 ) {
     const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAttribute, useBase64Encoding, mimeType);
+    const dataMap: Map<string, SaveEntityDetails> = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().saveDataMap;
 
-    portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
-    saveDataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
+    await portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
+    dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
 
-    return saveDataMap;
+    PowerPlatformExtensionContextManager.updatSaveDataDetailsInContext(dataMap);
 }
 
 export async function getDataFromDataVerse(accessToken: string,
@@ -191,6 +192,7 @@ export async function getDataFromDataVerse(accessToken: string,
     portalFs: PortalsFS,
     websiteIdToLanguage: Map<string, string>
 ) {
+    console.log("getDataFromDataVerse", accessToken, entity, entityId, queryParamMap.size, entitiesSchemaMap.size, languageIdCodeMap.size, websiteIdToLanguage.size);
     vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ..."));
     await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs, websiteIdToLanguage);
 }
