@@ -5,13 +5,16 @@
 
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { queryParameters, telemetryEventNames } from "../common/constants";
+import { sanitizeURL } from "../utility/UrlBuilder";
 
 let _telemetry: TelemetryReporter | undefined;
 export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWebExtensionTelemetryData {
     eventName: string,
     properties: {
-        'orgUrl'?: string;
+        'orgId'?: string;
+        'tenantId'?: string;
         'websiteId'?: string;
+        'portalId'?: string;
         'dataSource'?: string;
         'schema'?: string;
         'referrerSessionId'?: string;
@@ -71,7 +74,9 @@ export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearc
     const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
         eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
         properties: {
-            orgUrl: getQueryParameterValue(queryParameters.ORG_URL, searchParams),
+            orgId: getQueryParameterValue(queryParameters.ORG_ID, searchParams),
+            tenantId: getQueryParameterValue(queryParameters.TENANT_ID, searchParams),
+            portalId: getQueryParameterValue(queryParameters.PORTAL_ID, searchParams),
             websiteId: getQueryParameterValue(queryParameters.WEBSITE_ID, searchParams),
             dataSource: getQueryParameterValue(queryParameters.DATA_SOURCE, searchParams),
             schema: getQueryParameterValue(queryParameters.SCHEMA, searchParams),
@@ -111,7 +116,7 @@ export function sendAPITelemetry(URL: string, isSuccessful?: boolean, duration?:
     const telemetryData: IWebExtensionAPITelemetryData = {
         eventName: eventName ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST,
         properties: {
-            url: URL,
+            url: sanitizeURL(URL),
             isSuccessful: (isSuccessful === undefined) ? "" : (isSuccessful ? "true" : "false")
         },
         measurements: {

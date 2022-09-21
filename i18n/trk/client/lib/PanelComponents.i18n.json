@@ -8,5 +8,6 @@
 	"pacCLI.AuthProfileTreeItem.toolTipParts.profileName": "Ad: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.resource": "Kaynak: {0}",
 	"pacCLI.AuthProfileTreeItem.toolTipParts.user": "Kullanıcı: {0}",
+	"pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance": "Bulut Kurulumu: {0}",
 	"pacCLI.EnvOrSolutionTreeItem.toolTip": "Görünen Ad: {0}\nBenzersiz Ad: {1}\nSürüm: {2}"
 }

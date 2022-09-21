@@ -31,5 +31,19 @@
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Sürüm Numarasını Kopyala",
 	"microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Önizlemeyi göster",
 	"microsoft-powerapps-portals.webExtension.init.title": "Web Uzantısını Başlat",
-	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI, Web için VS Code'da desteklenmiyor"
+	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI, Web için VS Code'da desteklenmiyor",
+	"microsoft-powerapps-portals.walkthrough.title": "Power Pages kodunu düzenle",
+	"microsoft-powerapps-portals.walkthrough.description": "VS Code içinden eksiksiz ve modern web siteleri oluşturmayı keşfedin",
+	"microsoft-powerapps-portals.walkthrough.overview.title": "Genel bakış",
+	"microsoft-powerapps-portals.walkthrough.overview.description": {
+		"message": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
+		"comment": [
+			"This is a Markdown formatted string, and the formatting must persist across translations.",
+			"The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified"
+		]
+	},
+	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "Dosya sistemi",
+	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "Dosyalarınız, site adınızın altındaki iç içe klasörlerde depolanır. \n \n Tek tek sayfa dosyaları, site adınızın altındaki web sayfaları klasöründe bulunabilir. \n \n Tüm sayfalarınız, ilgili sayfa adıyla klasör içinde HTML, CSS ve JS dosyaları halinde düzenlenir. \n \n Web için VS Code'da Power Pages dosya sistemi hakkında daha fazla bilgi edinmek için [belgeler](command:powerplatform-walkthrough.fileSystem-documentation) bölümümüzü ziyaret edin. \n[Site klasörünü aç](command:powerplatform-walkthrough.fileSystem-open-folder)",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Gelişmiş özellikler",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Web için Visual Studio Code, web sitenizde web sayfalarının düzenlenmesini ve yayınlanmasını sağlar.\n \n Komut satırı arabirimi ve daha gelişmiş özellikler için Masaüstü için VS Code Marketinde bulunan VS Code için Power Platform Uzantısını yükleyin. \n \n Masaüstü ve web için Visual Studio Code arasındaki fark hakkında [daha fazla bilgi edinin](command:powerplatform-walkthrough.advancedCapabilities-learn-more).\n \n[Kodlamaya başlayın](command:powerplatform-walkthrough.advancedCapabilities-start-coding)"
 }

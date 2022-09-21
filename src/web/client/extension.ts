@@ -16,6 +16,7 @@ import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS } from "
 import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
 import { createFileSystem } from './common/createFileSystem';
 import { getDataFromDataVerse } from './common/remoteFetchProvider';
+import { GetDefaultFileUri } from './utility/CommonUtility';
 let _telemetry: TelemetryReporter;
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
@@ -100,6 +101,25 @@ export function activate(context: vscode.ExtensionContext): void {
             }
         )
     );
+    context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.overview-learn-more', async () => {
+        vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2207914"));
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-documentation', async () => {
+        vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2206616"));
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-open-folder', async () => {
+        vscode.commands.executeCommand("workbench.view.explorer");
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-learn-more', async () => {
+        vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2206366"));
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
+        vscode.window.showTextDocument(GetDefaultFileUri());
+    }));
 }
 
 export async function deactivate(): Promise<void> {

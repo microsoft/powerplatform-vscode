@@ -145,6 +145,72 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
         <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
         <target state="translated">PAC CLI, Web için VS Code'da desteklenmiyor</target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
+        <source xml:lang="en">Edit Power Pages code</source>
+        <target state="translated">Power Pages kodunu düzenle</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
+        <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
+        <target state="translated">VS Code içinden eksiksiz ve modern web siteleri oluşturmayı keşfedin</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
+        <source xml:lang="en">Overview</source>
+        <target state="translated">Genel bakış</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
+        <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
+[Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
+        <source xml:lang="en">File system</source>
+        <target state="translated">Dosya sistemi</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
+        <source xml:lang="en">Your files are stored in nested folders under your site name. 
+ 
+ The individual page files can be found in the web-pages folder under your site name. 
+ 
+ All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. 
+ 
+ To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
+[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
+The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Dosyalarınız, site adınızın altındaki iç içe klasörlerde depolanır. 
+ 
+ Tek tek sayfa dosyaları, site adınızın altındaki web sayfaları klasöründe bulunabilir. 
+ 
+ Tüm sayfalarınız, ilgili sayfa adıyla klasör içinde HTML, CSS ve JS dosyaları halinde düzenlenir. 
+ 
+ Web için VS Code'da Power Pages dosya sistemi hakkında daha fazla bilgi edinmek için [belgeler](command:powerplatform-walkthrough.fileSystem-documentation) bölümümüzü ziyaret edin. 
+[Site klasörünü aç](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
+        <source xml:lang="en">Advanced capabilities</source>
+        <target state="translated">Gelişmiş özellikler</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
+        <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
+ 
+ For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop. 
+ 
+ [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.
+ 
+[Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Web için Visual Studio Code, web sitenizde web sayfalarının düzenlenmesini ve yayınlanmasını sağlar.
+ 
+ Komut satırı arabirimi ve daha gelişmiş özellikler için Masaüstü için VS Code Marketinde bulunan VS Code için Power Platform Uzantısını yükleyin. 
+ 
+ Masaüstü ve web için Visual Studio Code arasındaki fark hakkında [daha fazla bilgi edinin](command:powerplatform-walkthrough.advancedCapabilities-learn-more).
+ 
+[Kodlamaya başlayın](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
+      </trans-unit>
     </body>
   </file>
   <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext" target-language="tr">
@@ -248,6 +314,11 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
         <note>The {0} represents auth profile's user name (email address))</note>
         <target state="translated">Kullanıcı: {0}</target>
       </trans-unit>
+      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance">
+        <source xml:lang="en">Cloud Instance: {0}</source>
+        <note>The {0} represents profile's Azure Cloud Instances</note>
+        <target state="translated">Bulut Kurulumu: {0}</target>
+      </trans-unit>
       <trans-unit id="pacCLI.EnvOrSolutionTreeItem.toolTip">
         <source xml:lang="en">Display Name: {0}
 Unique Name: {1}
@@ -259,6 +330,170 @@ The {2} represents Solution's Version number</note>
         <target state="translated">Görünen Ad: {0}
 Benzersiz Ad: {1}
 Sürüm: {2}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/extension" source-language="en" datatype="plaintext" target-language="tr">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit">
+        <source xml:lang="en">Edit the site</source>
+        <target state="translated">Siteyi düzenle</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc">
+        <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
+        <target state="translated">Değişiklik yaparken dikkatli olun. Herkes yaptığınız değişiklikleri anında görebilir. Düzenleme yapmak için Siteyi düzenle'yi seçin veya düzenlemeden iptal etmek için düzenleyici sekmesini kapatın.</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title">
+        <source xml:lang="en">You are editing a live, public site </source>
+        <target state="translated">Yayında olan, herkese açık bir siteyi düzenliyorsunuz </target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">Çalışma alanı açılırken bir sorun oluştu</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
+        <source xml:lang="en">Try refreshing the browser</source>
+        <target state="translated">Tarayıcınızı yenilemeyi deneyin</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
+        <source xml:lang="en">Unable to find that app</source>
+        <target state="translated">Bu uygulama bulunamadı</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext" target-language="tr">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">Yetkilendirme Başarısız Oldu. Lütfen yetkilendirmek için yeniden çalıştırın</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/errorHandler" source-language="en" datatype="plaintext" target-language="tr">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">Çalışma alanı açılırken bir sorun oluştu</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error.desc">
+        <source xml:lang="en">Check the URL and verify the parameters are correct</source>
+        <target state="translated">URL'yi denetleyin ve parametrelerin doğru olduğunu onaylayın</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">Çalışma alanı açılırken bir sorun oluştu</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+        <source xml:lang="en">Check the URL and verify the parameters are correct</source>
+        <target state="translated">URL'yi denetleyin ve parametrelerin doğru olduğunu onaylayın</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/localStore" source-language="en" datatype="plaintext" target-language="tr">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
+        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
+        <target state="translated">Arka uçta bir sorun oluştu</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.desc">
+        <source xml:lang="en">Try again</source>
+        <target state="translated">Yeniden dene</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">Yetkilendirme Başarısız Oldu. Lütfen yetkilendirmek için yeniden çalıştırın</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
+        <source xml:lang="en">There was a permissions problem with the server</source>
+        <target state="translated">Sunucuyla ilgili bir izin sorunu yaşandı</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+        <source xml:lang="en">One or more commands are invalid or malformed</source>
+        <target state="translated">Bir veya daha fazla komut geçersiz ya da hatalı biçimlendirilmiş</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+        <source xml:lang="en">Check the parameters and try again</source>
+        <target state="translated">Parametreleri denetleyin ve yeniden deneyin</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/remoteFetchProvider" source-language="en" datatype="plaintext" target-language="tr">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">Yetkilendirme Başarısız Oldu. Lütfen yetkilendirmek için yeniden çalıştırın</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.desc">
+        <source xml:lang="en">Try again</source>
+        <target state="translated">Yeniden dene</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">Yetkilendirme Başarısız Oldu. Lütfen yetkilendirmek için yeniden çalıştırın</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
+        <source xml:lang="en">There was a permissions problem with the server</source>
+        <target state="translated">Sunucuyla ilgili bir izin sorunu yaşandı</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+        <source xml:lang="en">One or more commands are invalid or malformed</source>
+        <target state="translated">Bir veya daha fazla komut geçersiz ya da hatalı biçimlendirilmiş</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+        <source xml:lang="en">Check the parameters and try again</source>
+        <target state="translated">Parametreleri denetleyin ve yeniden deneyin</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.error">
+        <source xml:lang="en">That file is not available</source>
+        <target state="translated">Bu dosya kullanılamıyor</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.desc">
+        <source xml:lang="en">The metadata may have changed on the Dataverse side. Contact your admin.</source>
+        <target state="translated">Meta veriler, Dataverse tarafında değişmiş olabilir. Yöneticinizle iletişime geçin.</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+        <source xml:lang="en">Fetching your file ...</source>
+        <target state="translated">Dosyanız alınıyor...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="tr">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
+        <source xml:lang="en">Saving your file ...</source>
+        <target state="translated">Dosyanız kaydediliyor...</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
+        <source xml:lang="en">Unable to complete the request</source>
+        <target state="translated">İstek tamamlanamadı</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error.desc">
+        <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
+        <target state="translated">Bir veya daha fazla öznitelik adı değiştirildi veya kaldırıldı. Yöneticinizle iletişime geçin.</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
+        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
+        <target state="translated">Arka uçta bir sorun oluştu</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.retry.desc">
+        <source xml:lang="en">Try again</source>
+        <target state="translated">Yeniden dene</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">Yetkilendirme Başarısız Oldu. Lütfen yetkilendirmek için yeniden çalıştırın</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
+        <source xml:lang="en">There was a permissions problem with the server</source>
+        <target state="translated">Sunucuyla ilgili bir izin sorunu yaşandı</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+        <source xml:lang="en">One or more commands are invalid or malformed</source>
+        <target state="translated">Bir veya daha fazla komut geçersiz ya da hatalı biçimlendirilmiş</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+        <source xml:lang="en">Check the parameters and try again</source>
+        <target state="translated">Parametreleri denetleyin ve yeniden deneyin</target>
       </trans-unit>
     </body>
   </file>

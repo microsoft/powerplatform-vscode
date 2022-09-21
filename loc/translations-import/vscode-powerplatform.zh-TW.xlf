@@ -145,6 +145,72 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
         <target state="translated">適用於 Web 的 VS Code 不支援 PAC CLI</target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
+        <source xml:lang="en">Edit Power Pages code</source>
+        <target state="translated">編輯 Power Pages 代碼</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
+        <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
+        <target state="translated">了解如何在 VS Code 中製作完整的現代網站</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
+        <source xml:lang="en">Overview</source>
+        <target state="translated">概觀</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
+        <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
+[Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
+        <source xml:lang="en">File system</source>
+        <target state="translated">檔案系統</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
+        <source xml:lang="en">Your files are stored in nested folders under your site name. 
+ 
+ The individual page files can be found in the web-pages folder under your site name. 
+ 
+ All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. 
+ 
+ To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
+[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
+The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">您的檔案儲存在網站名稱下的巢狀資料夾中。
+ 
+ 個別頁面的檔案可以在網站名稱下的網頁資料夾中找到。
+ 
+ 所有頁面都在對應頁面名稱的資料夾內以 HTML、CSS 和 JS 檔案排列。
+ 
+ 若要深入了解有關 VS Code 網頁版中的 Power Pages 檔案系統，請造訪我們的 [文件](command:powerplatform-walkthrough.fileSystem-documentation)。
+[開啟網站資料夾](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
+        <source xml:lang="en">Advanced capabilities</source>
+        <target state="translated">進階功能</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
+        <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
+ 
+ For a command line interface and more advanced capabilities, install the Power Platform Extension for VS Code, available in the VS Code Marketplace for desktop. 
+ 
+ [Learn More](command:powerplatform-walkthrough.advancedCapabilities-learn-more) about the difference between Visual Studio Code for desktop and web.
+ 
+[Start coding](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Visual Studio Code 網頁版讓您可以在您的網站上編輯和發佈網頁。
+ 
+ 如需命令列介面和更進階的功能，請安裝適用於 VS Code 的 Power Platform 擴充功能，您可以從電腦版 VS Code 服務商場中取得。
+ 
+ [深入了解](command:powerplatform-walkthrough.advancedCapabilities-learn-more) 關於 Visual Studio Code 電腦版與網頁版之間的差異。
+ 
+[開始撰寫程式碼](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
+      </trans-unit>
     </body>
   </file>
   <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext" target-language="zh-TW">
@@ -248,6 +314,11 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
         <note>The {0} represents auth profile's user name (email address))</note>
         <target state="translated">使用者: {0}</target>
       </trans-unit>
+      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance">
+        <source xml:lang="en">Cloud Instance: {0}</source>
+        <note>The {0} represents profile's Azure Cloud Instances</note>
+        <target state="translated">雲端執行個體: {0}</target>
+      </trans-unit>
       <trans-unit id="pacCLI.EnvOrSolutionTreeItem.toolTip">
         <source xml:lang="en">Display Name: {0}
 Unique Name: {1}
@@ -259,6 +330,170 @@ The {2} represents Solution's Version number</note>
         <target state="translated">顯示名稱: {0}
 唯一名稱: {1}
 版本: {2}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/extension" source-language="en" datatype="plaintext" target-language="zh-TW">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit">
+        <source xml:lang="en">Edit the site</source>
+        <target state="translated">編輯網站</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc">
+        <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
+        <target state="translated">進行變更時請務必小心，因為任何人都會立即看到您所做的變更。選擇 [編輯網站] 進行編輯，或關閉編輯器索引標籤以取消而不編輯。</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title">
+        <source xml:lang="en">You are editing a live, public site </source>
+        <target state="translated">您正在編輯已上線、公開的網站</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">開啟工作區時發生問題</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
+        <source xml:lang="en">Try refreshing the browser</source>
+        <target state="translated">請嘗試重新整理瀏覽器</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
+        <source xml:lang="en">Unable to find that app</source>
+        <target state="translated">找不到該應用程式</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext" target-language="zh-TW">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">授權失敗。請重新執行以進行授權</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/errorHandler" source-language="en" datatype="plaintext" target-language="zh-TW">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">開啟工作區時發生問題</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error.desc">
+        <source xml:lang="en">Check the URL and verify the parameters are correct</source>
+        <target state="translated">檢查 URL 並確認參數正確無誤</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">開啟工作區時發生問題</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+        <source xml:lang="en">Check the URL and verify the parameters are correct</source>
+        <target state="translated">檢查 URL 並確認參數正確無誤</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/localStore" source-language="en" datatype="plaintext" target-language="zh-TW">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
+        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
+        <target state="translated">後端發生問題</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.desc">
+        <source xml:lang="en">Try again</source>
+        <target state="translated">再試一次</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">授權失敗。請重新執行以進行授權</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
+        <source xml:lang="en">There was a permissions problem with the server</source>
+        <target state="translated">伺服器發生權限問題</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+        <source xml:lang="en">One or more commands are invalid or malformed</source>
+        <target state="translated">一或多個命令無效或格式錯誤</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+        <source xml:lang="en">Check the parameters and try again</source>
+        <target state="translated">請檢查參數，然後再試一次</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/remoteFetchProvider" source-language="en" datatype="plaintext" target-language="zh-TW">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">授權失敗。請重新執行以進行授權</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.desc">
+        <source xml:lang="en">Try again</source>
+        <target state="translated">再試一次</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">授權失敗。請重新執行以進行授權</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
+        <source xml:lang="en">There was a permissions problem with the server</source>
+        <target state="translated">伺服器發生權限問題</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+        <source xml:lang="en">One or more commands are invalid or malformed</source>
+        <target state="translated">一或多個命令無效或格式錯誤</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+        <source xml:lang="en">Check the parameters and try again</source>
+        <target state="translated">請檢查參數，然後再試一次</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.error">
+        <source xml:lang="en">That file is not available</source>
+        <target state="translated">該檔案無法使用</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.desc">
+        <source xml:lang="en">The metadata may have changed on the Dataverse side. Contact your admin.</source>
+        <target state="translated">中繼資料可能已在 Dataverse 端變更。請連絡您的管理員。</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+        <source xml:lang="en">Fetching your file ...</source>
+        <target state="translated">正在擷取您的檔案...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="zh-TW">
+    <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
+        <source xml:lang="en">Saving your file ...</source>
+        <target state="translated">正在儲存您的檔案...</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
+        <source xml:lang="en">Unable to complete the request</source>
+        <target state="translated">無法完成要求</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error.desc">
+        <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
+        <target state="translated">一或多個屬性名稱已變更或移除。請連絡您的管理員。</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
+        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
+        <target state="translated">後端發生問題</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.retry.desc">
+        <source xml:lang="en">Try again</source>
+        <target state="translated">再試一次</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">授權失敗。請重新執行以進行授權</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
+        <source xml:lang="en">There was a permissions problem with the server</source>
+        <target state="translated">伺服器發生權限問題</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+        <source xml:lang="en">One or more commands are invalid or malformed</source>
+        <target state="translated">一或多個命令無效或格式錯誤</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+        <source xml:lang="en">Check the parameters and try again</source>
+        <target state="translated">請檢查參數，然後再試一次</target>
       </trans-unit>
     </body>
   </file>

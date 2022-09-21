@@ -36,5 +36,12 @@
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copiar número de versión",
 	"microsoft-powerapps-portals.preview-show.title": "Portal de PowerApps -> Mostrar vista previa",
 	"microsoft-powerapps-portals.webExtension.init.title": "Inicializar extensión web",
-	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI no se admite en VS Code para la Web"
+	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI no se admite en VS Code para la Web",
+	"microsoft-powerapps-portals.walkthrough.title": "Editar código de Power Pages",
+	"microsoft-powerapps-portals.walkthrough.description": "Descubra cómo puede crear sitios web completos y modernos directamente en VS Code",
+	"microsoft-powerapps-portals.walkthrough.overview.title": "Información general",
+	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "Sistema de archivos",
+	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "Sus archivos se almacenan en carpetas anidadas bajo el nombre del sitio. \n \n Los archivos de página individuales se pueden encontrar en la carpeta de páginas web bajo el nombre de su sitio. \n \n Todas sus páginas están organizadas en archivos HTML, CSS y JS dentro de la carpeta con el nombre de página respectivo. \n \n Para obtener más información sobre el sistema de archivos de Power Pages en VS Code para web, visite nuestra [documentación](command:powerplatform-walkthrough.fileSystem-documentation). \n[Abrir carpeta del sitio](command:powerplatform-walkthrough.fileSystem-open-folder)",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Funcionalidades avanzadas",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Visual Studio Code para web permite editar y publicar páginas web en su sitio web.\n \n Si desea utilizar una interfaz de línea de comandos y funcionalidades más avanzadas, instale la Extensión Power Platform para VS Code, que está disponible en VS Code Marketplace para el escritorio. \n \n [Más información](command:powerplatform-walkthrough.advancedCapabilities-learn-more) sobre la diferencia entre Visual Studio Code para el escritorio y para la web.\n \n[Empiece a programar](command:powerplatform-walkthrough.advancedCapabilities-start-coding)"
 }

@@ -36,5 +36,12 @@
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Versionsnummer kopieren",
 	"microsoft-powerapps-portals.preview-show.title": "PowerApps-Portal -> Vorschauversion anzeigen",
 	"microsoft-powerapps-portals.webExtension.init.title": "Weberweiterung initialisieren",
-	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI wird im VS Code für das Web nicht unterstützt"
+	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI wird im VS Code für das Web nicht unterstützt",
+	"microsoft-powerapps-portals.walkthrough.title": "Power Pages-Code bearbeiten",
+	"microsoft-powerapps-portals.walkthrough.description": "Erfahren Sie, wie Sie vollständige und moderne Websites direkt in VS Code erstellen können.",
+	"microsoft-powerapps-portals.walkthrough.overview.title": "Übersicht",
+	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "Dateisystem",
+	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "Ihre Dateien werden in geschachtelten Ordnern unter Ihrem Websitenamen gespeichert. \n \n Die einzelnen Seitendateien finden Sie im Webseitenordner unter Ihrem Websitenamen. \n \n Alle Seiten sind in HTML-, CSS- und JS-Dateien im Ordner mit dem jeweiligen Seitennamen angeordnet. \n \n Weitere Informationen zum Power Pages-Dateisystem in VS Code für Web finden Sie in unserer [Dokumentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Websiteordner öffnen](command:powerplatform-walkthrough.fileSystem-open-folder)",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Erweiterte Funktionen",
+	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Visual Studio Code für Web ermöglicht das Bearbeiten und Veröffentlichen von Webseiten auf Ihrer Website.\n\n Für eine Befehlszeilenschnittstelle und erweiterte Funktionen installieren Sie die Power Platform-Erweiterung für VS Code, verfügbar im VS Code-Marketplace für Desktop.\n\n [Erfahren Sie mehr](command:powerplatform-walkthrough.advancedCapabilities-learn-more) über den Unterschied zwischen Visual StudioCode für Desktop und Web.\n\n [Codierung starten](command:powerplatform-walkthrough.advancedCapabilities-start-coding)"
 }
