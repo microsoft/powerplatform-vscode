@@ -149,8 +149,10 @@ class ServerBackedDirectory implements Directory {
 
 async function getEntries(contentUri: vscode.Uri): Promise<Map<string, Entry>> {
 	console.log('getEntries contentUri= '+ contentUri.toString());
-
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    const newEntry: Entry = new ServerBackedDirectory(vscode.Uri.parse('myTestUri/abc'), 'abc');
 	const result = new Map();
+    result.set('abc', newEntry);
 	return result;
 }
 
