@@ -17,7 +17,7 @@ import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParamet
 let _telemetry: TelemetryReporter;
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-export function activate(context: vscode.ExtensionContext): void {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
     context.subscriptions.push(_telemetry);
@@ -25,6 +25,7 @@ export function activate(context: vscode.ExtensionContext): void {
     setTelemetryReporter(_telemetry);
     _telemetry.sendTelemetryEvent("Start");
     _telemetry.sendTelemetryEvent("activated");
+    await vscode.commands.executeCommand('workbench.action.closeAllEditors');
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 

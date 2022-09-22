@@ -26,7 +26,7 @@ export interface IPowerPlatformExtensionContext {
     entity: string;
     rootDirectory: vscode.Uri;
     saveDataMap: Map<string, SaveEntityDetails>,
-    defaultFileUri: vscode.Uri // This will default to home page or current page in multifile scenario
+    defaultFileUri: vscode.Uri, // This will default to home page or current page in multifile scenario
 }
 
 class PowerPlatformExtensionContextManager {
@@ -47,7 +47,7 @@ class PowerPlatformExtensionContextManager {
         dataverseAccessToken: '',
         rootDirectory: vscode.Uri.parse(''),
         saveDataMap: new Map<string, SaveEntityDetails>(),
-        defaultFileUri: vscode.Uri.parse(``)
+        defaultFileUri: vscode.Uri.parse(``),
     };
 
     public getPowerPlatformExtensionContext() {
