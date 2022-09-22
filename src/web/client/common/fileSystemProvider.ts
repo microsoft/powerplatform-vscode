@@ -130,7 +130,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
             // Save data to dataverse
             const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
             if (powerPlatformContext.saveDataMap.has(uri.fsPath)) {
-                await this._saveFileToDataverseFromVFS(uri, content);
+                await vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Notification,
+                    title: `Saving...`
+                }, async () => {
+                    await this._saveFileToDataverseFromVFS(uri, content);
+                });
             }
         }
         entry.mtime = Date.now();
