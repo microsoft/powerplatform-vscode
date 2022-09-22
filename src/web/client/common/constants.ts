@@ -90,7 +90,8 @@ export const columnExtension = new Map([
     ["adx_customcss", "customcss.css"],
     ["adx_customjavascript", "customjs.js"],
     ["adx_copy", "webpage.copy.html"],
-    ["documentbody", "css"]
+    ["documentbody", "css"],
+    ["adx_source", "html"]
 ]);
 
 export const pathParamToSchema = new Map([

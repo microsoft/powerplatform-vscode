@@ -28,6 +28,8 @@ export function GetFileNameWithExtension(
 ) {
     if (entity === dataverseUrlPathEntityName.WEBPAGES) {
         return `${fileName}.${languageCode}.${extension}`;
+    } else if (entity === dataverseUrlPathEntityName.WEBTEMPLATES) {
+        return `${fileName}.${extension}`;
     }
 
     return fileName;

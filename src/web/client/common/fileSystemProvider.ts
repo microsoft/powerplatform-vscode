@@ -67,11 +67,21 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
-        const entry = await this._lookupAsDirectory(uri, false);
-
         const result: [string, vscode.FileType][] = [];
-        for (const [name, child] of entry.entries) {
-            result.push([name, child.type]);
+        try {
+            const entry = await this._lookupAsDirectory(uri, false);
+            for (const [name, child] of entry.entries) {
+                result.push([name, child.type]);
+            }
+        } catch (error) {
+            const castedError = error as vscode.FileSystemError;
+
+            if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
+                const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
+                if (powerPlatformContext.rootDirectory && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
+                    await this._loadFromDataverseToVFS();
+                }
+            }
         }
 
         return result;
@@ -227,29 +237,36 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const rootDirectory = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory;
 
         if (rootDirectory
-            && uri.toString().includes(rootDirectory.toString())
-            && PathHasEntityFolderName(uri.toString())) {
+            && uri.toString().includes(rootDirectory.toString())) {
+            if (PathHasEntityFolderName(uri.toString())) {
 
-            const powerPlatformContext = await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
-            await createFileSystem(this, powerPlatformContext.queryParamsMap.get(WEBSITE_NAME) as string);
-            if (!powerPlatformContext.dataverseAccessToken) {
-                throw vscode.FileSystemError.NoPermissions();
-            }
+                await this._loadFromDataverseToVFS();
 
-            await fetchDataFromDataverseAndUpdateVFS(
-                powerPlatformContext.dataverseAccessToken,
-                powerPlatformContext.entity,
-                powerPlatformContext.entityId,
-                powerPlatformContext.queryParamsMap,
-                powerPlatformContext.entitiesSchemaMap,
-                powerPlatformContext.languageIdCodeMap,
-                this,
-                powerPlatformContext.websiteIdToLanguage);
-
-            if (PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().defaultFileUri !== uri) {
-                throw vscode.FileSystemError.FileNotFound();
+                if (PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().defaultFileUri !== uri) {
+                    throw vscode.FileSystemError.FileNotFound();
+                }
+            } else {
+                this.readDirectory(rootDirectory);
             }
         }
+    }
+
+    private async _loadFromDataverseToVFS() {
+        const powerPlatformContext = await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
+        await createFileSystem(this, powerPlatformContext.queryParamsMap.get(WEBSITE_NAME) as string);
+        if (!powerPlatformContext.dataverseAccessToken) {
+            throw vscode.FileSystemError.NoPermissions();
+        }
+
+        await fetchDataFromDataverseAndUpdateVFS(
+            powerPlatformContext.dataverseAccessToken,
+            powerPlatformContext.entity,
+            powerPlatformContext.entityId,
+            powerPlatformContext.queryParamsMap,
+            powerPlatformContext.entitiesSchemaMap,
+            powerPlatformContext.languageIdCodeMap,
+            this,
+            powerPlatformContext.websiteIdToLanguage);
     }
 
     private async _saveFileToDataverseFromVFS(uri: vscode.Uri, content: Uint8Array) {
