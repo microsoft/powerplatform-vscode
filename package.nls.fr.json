@@ -35,13 +35,7 @@
 	"microsoft-powerapps-portals.walkthrough.title": "Modifier le code Power Pages",
 	"microsoft-powerapps-portals.walkthrough.description": "Découvrez comment créer des sites Web complets et modernes directement dans VS Code",
 	"microsoft-powerapps-portals.walkthrough.overview.title": "Vue d’ensemble",
-	"microsoft-powerapps-portals.walkthrough.overview.description": {
-		"message": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
-		"comment": [
-			"This is a Markdown formatted string, and the formatting must persist across translations.",
-			"The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified"
-		]
-	},
+	"microsoft-powerapps-portals.walkthrough.overview.description": "L’extension Power Pages active un système de fichiers personnalisé qui est synchronisé avec la structure de projet du studio Power Pages.\n[En savoir plus](command:powerplatform-walkthrough.overview-learn-more)",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "Système de fichiers",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "Vos fichiers sont stockés dans des dossiers imbriqués sous le nom de votre site. \n \n Les fichiers de page individuels se trouvent dans le dossier des pages Web sous le nom de votre site. \n \n Toutes vos pages sont organisées en fichiers HTML, CSS et JS dans le dossier avec le nom de page respectif. \n \n Pour en savoir plus sur le système de fichiers Power Pages dans VS Code pour le Web, consultez notre [documentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Ouvrir le dossier du site](command:powerplatform-walkthrough.fileSystem-open-folder)",
 	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Fonctionnalités avancées",

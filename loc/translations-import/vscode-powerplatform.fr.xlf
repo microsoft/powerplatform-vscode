@@ -162,6 +162,8 @@ L’authentification interactive n’est pas disponible pour les scénarios dist
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">L’extension Power Pages active un système de fichiers personnalisé qui est synchronisé avec la structure de projet du studio Power Pages.
+[En savoir plus](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>
