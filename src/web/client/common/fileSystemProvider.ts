@@ -7,10 +7,11 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { toBase64 } from '../utility/CommonUtility';
 import { getRequestURL, PathHasEntityFolderName } from '../utility/UrlBuilder';
-import { CHARSET, httpMethod, ORG_URL } from './constants';
+import { CHARSET, httpMethod, ORG_URL, WEBSITE_NAME } from './constants';
+import { createFileSystem } from './createFileSystem';
 import PowerPlatformExtensionContextManager from "./localStore";
 import { SaveEntityDetails } from './portalSchemaInterface';
-import { getDataFromDataVerse } from './remoteFetchProvider';
+import { fetchDataFromDataverseAndUpdateVFS } from './remoteFetchProvider';
 import { saveData } from './remoteSaveProvider';
 
 export class File implements vscode.FileStat {
@@ -66,63 +67,31 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
-        console.log("powerpagedebug readDirectory", uri.toString());
         const entry = await this._lookupAsDirectory(uri, false);
 
         const result: [string, vscode.FileType][] = [];
         for (const [name, child] of entry.entries) {
             result.push([name, child.type]);
         }
-        console.log("powerpagedebug readDirectory: entries", entry.entries);
 
-        const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-        console.log("powerpagedebug readDirectory: entries", powerPlatformContext.rootDirectory?.toString(), entry.entries.size, powerPlatformContext.rootDirectory === uri);
-        if (powerPlatformContext.rootDirectory && powerPlatformContext.rootDirectory.toString().includes(uri.toString()) && entry.entries.size === 0) {
-            console.log("powerpagedebug readDirectory: need to create files");
-        } else {
-            console.log("powerpagedebug readDirectory", result);
-        }
         return result;
     }
 
     // --- manage file contents
 
     async readFile(uri: vscode.Uri): Promise<Uint8Array> {
-        console.log("powerpagedebug readFile - updated", uri.toString());
-
         try {
             const data = await this._lookupAsFile(uri, false);
             return data.data;
         } catch (error) {
             const castedError = error as vscode.FileSystemError;
-            console.log("powerpagedebug readFile: in catch", castedError.code, vscode.FileSystemError.FileNotFound.toString());
+
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-                console.log("powerpagedebug readFile: values", powerPlatformContext.rootDirectory?.toString());
-                if (powerPlatformContext.rootDirectory
-                    && uri.toString().includes(powerPlatformContext.rootDirectory.toString())
-                    && PathHasEntityFolderName(uri.toString())) {
-                    console.log("powerpagedebug readFile: create content here");
 
-                    const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-                    if (!powerPlatformContext.dataverseAccessToken) {
-                        await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
-                    }
+                await this._loadFileFromDataverseToVFS(uri);
 
-                    await getDataFromDataVerse(
-                        powerPlatformContext.dataverseAccessToken,
-                        powerPlatformContext.entity,
-                        powerPlatformContext.entityId,
-                        powerPlatformContext.queryParamsMap,
-                        powerPlatformContext.entitiesSchemaMap,
-                        powerPlatformContext.languageIdCodeMap,
-                        this,
-                        powerPlatformContext.websiteIdToLanguage);
-
-                    const data = await this._lookupAsFile(uri, false);
-                    return data.data;
-                }
-                console.log("powerpagedebug readFile: no errors");
+                const data = await this._lookupAsFile(uri, false);
+                return data.data;
             }
         }
 
@@ -130,7 +99,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): Promise<void> {
-        console.log("powerpagedebug writefile", uri.toString());
         const basename = path.posix.basename(uri.path);
         const parent = await this._lookupParentDirectory(uri);
         let entry = parent.entries.get(basename);
@@ -153,72 +121,13 @@ export class PortalsFS implements vscode.FileSystemProvider {
         entry.data = content;
 
         // Save data to dataverse
-        let stringDecodedValue = new TextDecoder(CHARSET).decode(content);
-        const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-        const dataMap: Map<string, SaveEntityDetails> = powerPlatformContext.saveDataMap;
-
-        const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(ORG_URL) as string;
-
-        if (dataMap.get(uri.fsPath)?.getUseBase64Encoding as boolean) {
-            stringDecodedValue = toBase64(stringDecodedValue);
-        }
-
-        const patchRequestUrl = getRequestURL(dataverseOrgUrl,
-            dataMap.get(uri.fsPath)?.getEntityName as string,
-            dataMap.get(uri.fsPath)?.getEntityId as string,
-            httpMethod.PATCH,
-            true);
-
-        await saveData(powerPlatformContext.dataverseAccessToken,
-            patchRequestUrl,
-            uri,
-            dataMap,
-            stringDecodedValue);
+        await this._saveFileToDataverseFromVFS(uri, content);
 
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
     }
 
     // --- manage files/folders
-
-    async rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): Promise<void> {
-
-        if (!options.overwrite && await this._lookup(newUri, true)) {
-            throw vscode.FileSystemError.FileExists(newUri);
-        }
-
-
-        const entry = await this._lookup(oldUri, false);
-        const oldParent = await this._lookupParentDirectory(oldUri);
-
-        const newParent = await this._lookupParentDirectory(newUri);
-        const newName = path.posix.basename(newUri.path);
-
-        oldParent.entries.delete(entry.name);
-        entry.name = newName;
-        newParent.entries.set(newName, entry);
-
-        this._fireSoon(
-            { type: vscode.FileChangeType.Deleted, uri: oldUri },
-            { type: vscode.FileChangeType.Created, uri: newUri }
-        );
-    }
-
-    async delete(uri: vscode.Uri): Promise<void> {
-        console.log("powerpagedebug delete", uri.toString());
-        const dirname = uri.with({ path: path.posix.dirname(uri.path) });
-        const basename = path.posix.basename(uri.path);
-        const parent = await this._lookupAsDirectory(dirname, false);
-        if (!parent.entries.has(basename)) {
-            throw vscode.FileSystemError.FileNotFound();
-        }
-        parent.entries.delete(basename);
-        parent.mtime = Date.now();
-        parent.size -= 1;
-        this._fireSoon({ type: vscode.FileChangeType.Changed, uri: dirname }, { uri, type: vscode.FileChangeType.Deleted });
-    }
-
     async createDirectory(uri: vscode.Uri): Promise<void> {
-        console.log("powerpagedebug createDirectory", uri.toString());
         const basename = path.posix.basename(uri.path);
         const dirname = uri.with({ path: path.posix.dirname(uri.path) });
         const parent = await this._lookupAsDirectory(dirname, false);
@@ -228,6 +137,14 @@ export class PortalsFS implements vscode.FileSystemProvider {
         parent.mtime = Date.now();
         parent.size += 1;
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: dirname }, { type: vscode.FileChangeType.Created, uri });
+    }
+
+    async rename(): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+
+    async delete(): Promise<void> {
+        throw new Error('Method not implemented.');
     }
 
     // --- lookup
@@ -303,5 +220,59 @@ export class PortalsFS implements vscode.FileSystemProvider {
             this._emitter.fire(this._bufferedEvents);
             this._bufferedEvents.length = 0;
         }, 5);
+    }
+
+    // --- Dataverse calls
+    private async _loadFileFromDataverseToVFS(uri: vscode.Uri) {
+        const rootDirectory = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory;
+
+        if (rootDirectory
+            && uri.toString().includes(rootDirectory.toString())
+            && PathHasEntityFolderName(uri.toString())) {
+
+            const powerPlatformContext = await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
+            await createFileSystem(this, powerPlatformContext.queryParamsMap.get(WEBSITE_NAME) as string);
+            if (!powerPlatformContext.dataverseAccessToken) {
+                throw vscode.FileSystemError.NoPermissions();
+            }
+
+            await fetchDataFromDataverseAndUpdateVFS(
+                powerPlatformContext.dataverseAccessToken,
+                powerPlatformContext.entity,
+                powerPlatformContext.entityId,
+                powerPlatformContext.queryParamsMap,
+                powerPlatformContext.entitiesSchemaMap,
+                powerPlatformContext.languageIdCodeMap,
+                this,
+                powerPlatformContext.websiteIdToLanguage);
+
+            if (PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().defaultFileUri !== uri) {
+                throw vscode.FileSystemError.FileNotFound();
+            }
+        }
+    }
+
+    private async _saveFileToDataverseFromVFS(uri: vscode.Uri, content: Uint8Array) {
+        let stringDecodedValue = new TextDecoder(CHARSET).decode(content);
+        const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
+        const dataMap: Map<string, SaveEntityDetails> = powerPlatformContext.saveDataMap;
+
+        const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(ORG_URL) as string;
+
+        if (dataMap.get(uri.fsPath)?.getUseBase64Encoding as boolean) {
+            stringDecodedValue = toBase64(stringDecodedValue);
+        }
+
+        const patchRequestUrl = getRequestURL(dataverseOrgUrl,
+            dataMap.get(uri.fsPath)?.getEntityName as string,
+            dataMap.get(uri.fsPath)?.getEntityId as string,
+            httpMethod.PATCH,
+            true);
+
+        await saveData(powerPlatformContext.dataverseAccessToken,
+            patchRequestUrl,
+            uri,
+            dataMap,
+            stringDecodedValue);
     }
 }

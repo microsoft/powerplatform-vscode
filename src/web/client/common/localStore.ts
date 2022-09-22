@@ -5,11 +5,10 @@
 
 import * as vscode from "vscode";
 import { dataverseAuthentication, getCustomRequestURL, getHeader } from "./authenticationProvider";
-import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTALS_URI_SCHEME, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, telemetryEventNames, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
+import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTALS_URI_SCHEME, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesFolderNameMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { showErrorDialog } from "./errorHandler";
 import * as nls from 'vscode-nls';
-import { sendErrorTelemetry } from "../telemetry/webExtensionTelemetry";
 import { SaveEntityDetails } from "./portalSchemaInterface";
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
@@ -26,7 +25,8 @@ export interface IPowerPlatformExtensionContext {
     entityId: string;
     entity: string;
     rootDirectory: vscode.Uri;
-    saveDataMap: Map<string, SaveEntityDetails>
+    saveDataMap: Map<string, SaveEntityDetails>,
+    defaultFileUri: vscode.Uri // This will default to home page or current page in multifile scenario
 }
 
 class PowerPlatformExtensionContextManager {
@@ -46,11 +46,11 @@ class PowerPlatformExtensionContextManager {
         entityId: '',
         dataverseAccessToken: '',
         rootDirectory: vscode.Uri.parse(''),
-        saveDataMap: new Map<string, SaveEntityDetails>()
+        saveDataMap: new Map<string, SaveEntityDetails>(),
+        defaultFileUri: vscode.Uri.parse(``)
     };
 
     public getPowerPlatformExtensionContext() {
-        console.log("powerpagedebug getPowerPlatformExtensionContext", this.PowerPlatformExtensionContext.entitiesFolderNameMap.size);
         return this.PowerPlatformExtensionContext;
     }
 
@@ -62,20 +62,14 @@ class PowerPlatformExtensionContextManager {
             queryParamsMap: queryParamsMap,
             rootDirectory: vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${queryParamsMap.get(WEBSITE_NAME) as string}/`, true)
         };
+
+        return this.PowerPlatformExtensionContext;
     }
 
     public async authenticateAndUpdateDataverseProperties() {
         const dataverseOrgUrl = this.PowerPlatformExtensionContext.queryParamsMap.get(ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
-        if (!accessToken) {
-            {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init.error.desc", "Try refreshing the browser"));
-                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
-                return;
-            }
-        }
-        console.log("authenticateAndUpdateDataverseProperties got token");
-        console.log("powerpagedebug authenticateAndUpdateDataverseProperties:", dataverseOrgUrl);
+
         this.PowerPlatformExtensionContext = {
             ... this.PowerPlatformExtensionContext,
             websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl),
@@ -83,10 +77,8 @@ class PowerPlatformExtensionContextManager {
             languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl),
             dataverseAccessToken: accessToken,
         };
-        console.log("powerpagedebug authenticateAndUpdateDataverseProperties:",
-            this.PowerPlatformExtensionContext.websiteIdToLanguage.size,
-            this.PowerPlatformExtensionContext.websiteLanguageIdToPortalLanguageMap.size,
-            this.PowerPlatformExtensionContext.languageIdCodeMap.size);
+
+        return this.PowerPlatformExtensionContext;
     }
 
     public async updatSaveDataDetailsInContext(dataMap: Map<string, SaveEntityDetails>) {
@@ -94,8 +86,18 @@ class PowerPlatformExtensionContextManager {
             ...this.PowerPlatformExtensionContext,
             saveDataMap: dataMap
         };
+
+        return this.PowerPlatformExtensionContext;
     }
 
+    public async updatSingleFileUrisInContext(uri: vscode.Uri) {
+        this.PowerPlatformExtensionContext = {
+            ...this.PowerPlatformExtensionContext,
+            defaultFileUri: uri
+        };
+
+        return this.PowerPlatformExtensionContext;
+    }
 
     private async languageIdToCode(accessToken: string, dataverseOrgUrl: string): Promise<Map<string, string>> {
         const languageIdCodeMap = new Map<string, string>();

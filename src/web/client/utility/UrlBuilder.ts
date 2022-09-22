@@ -40,7 +40,7 @@ export function sanitizeURL(url: string): string {
         const completeUrl = new URL(url);
         const hostName = completeUrl.hostname;
         sanitizedUrl = url.replace(hostName, '[redact]');
-    } catch(error) {
+    } catch (error) {
         return '';
     }
     return sanitizedUrl;
@@ -60,29 +60,14 @@ export function updateEntityId(entity: string, entityId: string, result: any) {
     return entityId;
 }
 
-
-
 export function PathHasEntityFolderName(uri: string): boolean {
     const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-    console.log("powerpagedebug PathHasEntityFolderName", uri, powerPlatformContext.entitiesFolderNameMap.size);
-
-    powerPlatformContext.entitiesFolderNameMap.forEach((value) => {
-        console.log("powerpagedebug PathHasEntityFolderName inside for", value);
-        if (uri.includes(value)) {
-            console.log("powerpagedebug PathHasEntityFolderName valid value");
-            return true;
-        }
-    })
 
     for (const entry of powerPlatformContext.entitiesFolderNameMap.entries()) {
-        console.log("powerpagedebug PathHasEntityFolderName inside for", entry[1]);
         if (uri.includes(entry[1])) {
-            console.log("powerpagedebug PathHasEntityFolderName valid value");
             return true;
         }
     }
-
-    console.log("powerpagedebug PathHasEntityFolderName end");
 
     return false;
 }

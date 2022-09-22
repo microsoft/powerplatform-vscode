@@ -13,7 +13,7 @@ import {
     sendAPITelemetry,
     sendErrorTelemetry
 } from '../telemetry/webExtensionTelemetry';
-import { fromBase64, GetFileNameWithExtension, SetDefaultFileUri, useBase64 } from '../utility/CommonUtility';
+import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/CommonUtility';
 import {
     getRequestURL,
     updateEntityId
@@ -26,7 +26,7 @@ import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import PowerPlatformExtensionContextManager from "./localStore";
 
-export async function fetchData(
+export async function fetchDataFromDataverseAndUpdateVFS(
     accessToken: string,
     entity: string,
     entityId: string,
@@ -68,7 +68,6 @@ export async function fetchData(
             createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
         }
     } catch (error) {
-        console.log("fetchData", error);
         const authError = (error as Error)?.message;
         if (typeof error === "string" && error.includes("Unauthorized")) {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
@@ -100,8 +99,6 @@ async function createContentFiles(
     const portalFolderName = queryParamsMap.get(Constants.WEBSITE_NAME) as string;
     const subUri = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string)?.get(Constants.FILE_FOLDER_NAME);
     let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
-
-    console.log("powerpagedebug createContentFiles", languageIdCodeMap?.size, lcid);
 
     if (languageIdCodeMap?.size && lcid) {
         languageCode = languageIdCodeMap.get(lcid) as string
@@ -158,12 +155,11 @@ async function createContentFiles(
                 result[Constants.MIMETYPE]);
         }
 
+        PowerPlatformExtensionContextManager.updatSingleFileUrisInContext(vscode.Uri.parse(fileUri));
+
         // Display only the last file
-        const defaultFileUri = vscode.Uri.parse(fileUri);
-        SetDefaultFileUri(defaultFileUri);
-        vscode.window.showTextDocument(defaultFileUri);
+        vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
     }
-    //registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap);
 }
 
 async function createVirtualFile(
@@ -183,18 +179,4 @@ async function createVirtualFile(
     dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
 
     PowerPlatformExtensionContextManager.updatSaveDataDetailsInContext(dataMap);
-}
-
-export async function getDataFromDataVerse(accessToken: string,
-    entity: string,
-    entityId: string,
-    queryParamMap: Map<string, string>,
-    entitiesSchemaMap: Map<string, Map<string, string>>,
-    languageIdCodeMap: Map<string, string>,
-    portalFs: PortalsFS,
-    websiteIdToLanguage: Map<string, string>
-) {
-    console.log("getDataFromDataVerse", accessToken, entity, entityId, queryParamMap.size, entitiesSchemaMap.size, languageIdCodeMap.size, websiteIdToLanguage.size);
-    vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ..."));
-    await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs, websiteIdToLanguage);
 }

@@ -10,13 +10,10 @@ import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
 import PowerPlatformExtensionContextManager from "./common/localStore";
-import { PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC, WEBSITE_NAME } from "./common/constants";
+import { PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS } from "./common/errorHandler";
 import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
-import { createFileSystem } from './common/createFileSystem';
-import { getDataFromDataVerse } from './common/remoteFetchProvider';
-import { GetDefaultFileUri } from './utility/CommonUtility';
 let _telemetry: TelemetryReporter;
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
@@ -51,7 +48,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
                 removeEncodingFromParameters(queryParamsMap);
                 await PowerPlatformExtensionContextManager.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap);
-                await createFileSystem(portalsFS, queryParamsMap.get(WEBSITE_NAME) as string);
 
                 sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
 
@@ -67,25 +63,8 @@ export function activate(context: vscode.ExtensionContext): void {
                     switch (appName) {
                         case 'portal': {
                             sendExtensionInitQueryParametersTelemetry(searchParams);
-                            await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
-                            const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-
-                            if (!powerPlatformContext.dataverseAccessToken) {
-                                return;
-                            }
-
-                            await getDataFromDataVerse(
-                                powerPlatformContext.dataverseAccessToken,
-                                powerPlatformContext.entity,
-                                powerPlatformContext.entityId,
-                                powerPlatformContext.queryParamsMap,
-                                powerPlatformContext.entitiesSchemaMap,
-                                powerPlatformContext.languageIdCodeMap,
-                                portalsFS,
-                                powerPlatformContext.websiteIdToLanguage);
 
                             const timeStampBeforeSettingContext = new Date().getTime();
-                            //await setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
                             const timeTakenToSetContext = new Date().getTime() - timeStampBeforeSettingContext;
                             sendPerfTelemetry(telemetryEventNames.WEB_EXTENSION_SET_CONTEXT_PERF, timeTakenToSetContext);
                         }
@@ -118,7 +97,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
-        vscode.window.showTextDocument(GetDefaultFileUri());
+        vscode.window.showTextDocument(PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().defaultFileUri);
     }));
 }
 

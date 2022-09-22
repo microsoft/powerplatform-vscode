@@ -31,21 +31,16 @@ export function getDataSourcePropertiesMap(): Map<string, string> {
 }
 
 export function getEntitiesFolderNameMap(entitiesSchemaMap: Map<string, Map<string, string>>): Map<string, string> {
-    console.log("powerpagedebug getEntitiesFolderNameMap", Object.entries(schemaEntityName));
 
     const entitiesFolderNameMap = new Map<string, string>();
-    for (const [key, value] of Object.entries(schemaEntityName)) {
-        console.log("powerpagedebug getEntitiesFolderNameMap", value, key);
-        const folderName = entitiesSchemaMap.get(value)?.get(FILE_FOLDER_NAME);
-        console.log("powerpagedebug getEntitiesFolderNameMap", entitiesSchemaMap, folderName, entitiesSchemaMap.get(value));
+    for (const entry of Object.entries(schemaEntityName)) {
+        const folderName = entitiesSchemaMap.get(entry[1])?.get(FILE_FOLDER_NAME);
+
         if (folderName) {
-            console.log("powerpagedebug getEntitiesFolderNameMap: values", folderName, value);
-            entitiesFolderNameMap.set(value, folderName);
-            console.log("powerpagedebug getEntitiesFolderNameMap: get value", entitiesFolderNameMap.has(folderName));
+            entitiesFolderNameMap.set(entry[1], folderName);
         }
-        console.log("powerpagedebug getEntitiesFolderNameMap: inside for", entitiesFolderNameMap.size);
     }
-    console.log("powerpagedebug getEntitiesFolderNameMap: outside for", entitiesFolderNameMap.size);
+
     return entitiesFolderNameMap;
 }
 
