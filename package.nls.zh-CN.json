@@ -35,13 +35,7 @@
 	"microsoft-powerapps-portals.walkthrough.title": "编辑 Power Pages 码",
 	"microsoft-powerapps-portals.walkthrough.description": "了解如何在 VS Code 中创建完整的新型网站",
 	"microsoft-powerapps-portals.walkthrough.overview.title": "概览",
-	"microsoft-powerapps-portals.walkthrough.overview.description": {
-		"message": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
-		"comment": [
-			"This is a Markdown formatted string, and the formatting must persist across translations.",
-			"The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified"
-		]
-	},
+	"microsoft-powerapps-portals.walkthrough.overview.description": "Power Pages 扩展支持与 Power Pages 工作室的项目结构同步的自定义文件系统。\n[了解详细信息](command:powerplatform-walkthrough.overview-learn-more)",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "文件系统",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "您的文件将存储在网站名称下的嵌套文件夹中。\n \n您可以在网站名称下的网页文件夹中找到单个页面文件。\n \n您的所有页面均使用相应的页面名称在文件夹下以 HTML、CSS 和 JS 文件排列。\n \n要详细了解 VS Code Web 版的 Power Pages 文件系统，请阅读我们的[文档](command:powerplatform-walkthrough.fileSystem-documentation)。\n[打开网站文件夹](command:powerplatform-walkthrough.fileSystem-open-folder)",
 	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "高级功能",

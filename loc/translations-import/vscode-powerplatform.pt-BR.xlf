@@ -162,6 +162,8 @@ A Autenticação Interativa não está disponível para cenários remotos; os pe
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">A extensão do Power Pages permite um sistema de arquivos personalizado que é sincronizado com a estrutura do projeto do estúdio do Power Pages.
+[Saiba Mais](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>

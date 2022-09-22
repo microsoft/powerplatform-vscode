@@ -40,6 +40,7 @@
 	"microsoft-powerapps-portals.walkthrough.title": "Изменить код Power Pages",
 	"microsoft-powerapps-portals.walkthrough.description": "Узнайте, как создавать работающие современные веб-сайты в VS Code",
 	"microsoft-powerapps-portals.walkthrough.overview.title": "Обзор",
+	"microsoft-powerapps-portals.walkthrough.overview.description": "Расширение Power Pages поддерживает пользовательскую файловую систему, которая синхронизируется со структурой проекта в студии Power Pages.\n[Подробнее](command:powerplatform-walkthrough.overview-learn-more)",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "Файловая система",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "Файлы хранятся во вложенных папках в папке с именем сайта. \n \n Файлы отдельных страниц можно найти в папке веб-страниц. \n \n Все страницы состоят из файлов HTML, CSS и JS, находящихся в папке с именем соответствующей страницы. \n \n Подробнее о файловой системе Power Pages в веб-версии VS Code читайте в [документации](command:powerplatform-walkthrough.fileSystem-documentation). \n[Открыть папку сайта](command:powerplatform-walkthrough.fileSystem-open-folder)",
 	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Расширенные возможности",

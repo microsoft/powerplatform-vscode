@@ -162,6 +162,8 @@ L'autenticazione interattiva non è disponibile per scenari remoti. I profili di
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">L'estensione Power Pages abilita un file system personalizzato che viene sincronizzato con la struttura di progetto dello studio di Power Pages.
+[Altre informazioni](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>
