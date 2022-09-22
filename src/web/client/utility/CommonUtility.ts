@@ -5,7 +5,6 @@
 
 import { dataverseUrlPathEntityName, entityAttributesWithBase64Encoding } from "../common/constants";
 
-
 // decodes base64 to text
 export function fromBase64(data: string) {
     return decodeURIComponent(escape(atob(data)));

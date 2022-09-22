@@ -43,5 +43,3 @@ export function getEntitiesFolderNameMap(entitiesSchemaMap: Map<string, Map<stri
 
     return entitiesFolderNameMap;
 }
-
-

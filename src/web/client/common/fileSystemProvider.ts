@@ -83,7 +83,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 }
             }
         }
-
         return result;
     }
 
@@ -97,14 +96,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-
                 await this._loadFileFromDataverseToVFS(uri);
 
                 const data = await this._lookupAsFile(uri, false);
                 return data.data;
             }
         }
-
         return new Uint8Array();
     }
 
