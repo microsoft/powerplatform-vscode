@@ -35,13 +35,7 @@
 	"microsoft-powerapps-portals.walkthrough.title": "Power Pages コードの編集",
 	"microsoft-powerapps-portals.walkthrough.description": "完全でモダンな Web サイトを VS Code で作成する方法を確認する",
 	"microsoft-powerapps-portals.walkthrough.overview.title": "概要",
-	"microsoft-powerapps-portals.walkthrough.overview.description": {
-		"message": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
-		"comment": [
-			"This is a Markdown formatted string, and the formatting must persist across translations.",
-			"The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified"
-		]
-	},
+	"microsoft-powerapps-portals.walkthrough.overview.description": "Power Pages 拡張機能で、Power Pages スタジオのプロジェクト構造と同期するカスタマイズされたファイル システムを有効にします。\n[詳細情報](command:powerplatform-walkthrough.overview-learn-more)",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "ファイル システム",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "ファイルは、サイト名の下の入れ子になったフォルダーに保存されます。\n \n 個々のページ ファイルは、サイト名の下の Web ページ フォルダーにあります。\n \n すべてのページは、各ページ名のフォルダー内で、HTML、CSS、JS ファイルとして配置されます。\n \n Web 用 VS Code の Power Pages ファイル システムの詳細については、[ドキュメント](command:powerplatform-walkthrough.fileSystem-documentation)を参照してください。\n[サイト フォルダーを開く](command:powerplatform-walkthrough.fileSystem-open-folder)",
 	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "詳細な機能",

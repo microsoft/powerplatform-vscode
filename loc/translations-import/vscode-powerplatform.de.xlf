@@ -162,6 +162,8 @@ Die interaktive Authentifizierung ist für Remoteszenarien nicht verfügbar. Aut
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Die Power Pages-Erweiterung aktiviert ein angepasstes Dateisystem, das mit der Projektstruktur von Power Pages Studio synchronisiert wird.
+[Weitere Informationen](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>
