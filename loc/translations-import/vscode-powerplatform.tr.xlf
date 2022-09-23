@@ -162,6 +162,8 @@ Uzaktan senaryolar için Etkileşimli Kimlik Doğrulaması kullanılamaz; kimlik
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Power Pages uzantısı, Power Pages stüdyosunun proje yapısıyla eşleştirilen özelleştirilmiş bir dosya sistemini etkinleştirir.
+[Daha Fazla Bilgi](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>

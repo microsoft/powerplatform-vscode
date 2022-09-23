@@ -40,6 +40,7 @@
 	"microsoft-powerapps-portals.walkthrough.title": "Editar código de Power Pages",
 	"microsoft-powerapps-portals.walkthrough.description": "Descubra cómo puede crear sitios web completos y modernos directamente en VS Code",
 	"microsoft-powerapps-portals.walkthrough.overview.title": "Información general",
+	"microsoft-powerapps-portals.walkthrough.overview.description": "La extensión de Power Pages permite disponer de un sistema de archivos personalizado que se sincroniza con la estructura del proyecto del estudio de diseño de Power Pages.\n[Más información](command:powerplatform-walkthrough.overview-learn-more)",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.title": "Sistema de archivos",
 	"microsoft-powerapps-portals.walkthrough.fileSystem.description": "Sus archivos se almacenan en carpetas anidadas bajo el nombre del sitio. \n \n Los archivos de página individuales se pueden encontrar en la carpeta de páginas web bajo el nombre de su sitio. \n \n Todas sus páginas están organizadas en archivos HTML, CSS y JS dentro de la carpeta con el nombre de página respectivo. \n \n Para obtener más información sobre el sistema de archivos de Power Pages en VS Code para web, visite nuestra [documentación](command:powerplatform-walkthrough.fileSystem-documentation). \n[Abrir carpeta del sitio](command:powerplatform-walkthrough.fileSystem-open-folder)",
 	"microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Funcionalidades avanzadas",

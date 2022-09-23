@@ -162,6 +162,8 @@ The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keepi
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
         <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Power Pages 擴充功能實現了與 Power Pages 工作室的專案結構同步的自訂檔案系統。
+[深入了解](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
         <source xml:lang="en">File system</source>
