@@ -13,7 +13,7 @@ import {
     sendAPITelemetry,
     sendErrorTelemetry
 } from '../telemetry/webExtensionTelemetry';
-import { fromBase64, GetFileNameWithExtension, SetDefaultFileUri, useBase64 } from '../utility/CommonUtility';
+import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/CommonUtility';
 import {
     getRequestURL,
     updateEntityId
@@ -24,10 +24,9 @@ import { PORTALS_URI_SCHEME } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
-import { registerSaveProvider } from './remoteSaveProvider';
-let saveDataMap = new Map<string, SaveEntityDetails>();
+import PowerPlatformExtensionContextManager from "./localStore";
 
-export async function fetchData(
+export async function fetchDataFromDataverseAndUpdateVFS(
     accessToken: string,
     entity: string,
     entityId: string,
@@ -42,7 +41,7 @@ export async function fetchData(
     try {
         const dataverseOrgUrl = queryParamsMap.get(Constants.ORG_URL) as string;
 
-        requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, entitiesSchemaMap, Constants.httpMethod.GET, false);
+        requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, Constants.httpMethod.GET, false);
         sendAPITelemetry(requestUrl);
 
         requestSentAtTime = new Date().getTime();
@@ -66,7 +65,7 @@ export async function fetchData(
         }
 
         for (let counter = 0; counter < data.length; counter++) {
-            createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
+            createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
         }
     } catch (error) {
         const authError = (error as Error)?.message;
@@ -80,7 +79,7 @@ export async function fetchData(
     }
 }
 
-function createContentFiles(
+async function createContentFiles(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result: any,
     entity: string,
@@ -88,8 +87,6 @@ function createContentFiles(
     entitiesSchemaMap: Map<string, Map<string, string>>,
     languageIdCodeMap: Map<string, string>,
     portalsFS: PortalsFS,
-    dataverseOrgUrl: string,
-    accessToken: string,
     entityId: string,
     websiteIdToLanguage: Map<string, string>
 ) {
@@ -112,7 +109,7 @@ function createContentFiles(
     let filePathInPortalFS = '';
     if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
         filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
-        portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
+        await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
     }
 
     if (attributes) {
@@ -131,7 +128,7 @@ function createContentFiles(
 
         if (exportType && (exportType === Constants.exportType.SubFolders)) {
             filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
-            portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
+            await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
         }
 
         const attributeArray = attributes.split(',');
@@ -147,26 +144,25 @@ function createContentFiles(
                 Constants.columnExtension.get(attributeArray[counter]) as string);
             fileUri = filePathInPortalFS + fileNameWithExtension;
 
-            saveDataMap = createVirtualFile(
+            await createVirtualFile(
                 portalsFS,
                 fileUri,
                 useBase64Encoding ? fromBase64(value) : value,
-                updateEntityId(entity, entityId, entitiesSchemaMap, result),
+                updateEntityId(entity, entityId, result),
                 attributeArray[counter] as string,
                 useBase64Encoding,
                 entity,
                 result[Constants.MIMETYPE]);
         }
 
+        PowerPlatformExtensionContextManager.updateSingleFileUrisInContext(vscode.Uri.parse(fileUri));
+
         // Display only the last file
-        const defaultFileUri = vscode.Uri.parse(fileUri);
-        SetDefaultFileUri(defaultFileUri);
-        vscode.window.showTextDocument(defaultFileUri);
+        vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
     }
-    registerSaveProvider(accessToken, portalsFS, dataverseOrgUrl, saveDataMap);
 }
 
-function createVirtualFile(
+async function createVirtualFile(
     portalsFS: PortalsFS,
     fileUri: string,
     data: string | undefined,
@@ -177,22 +173,10 @@ function createVirtualFile(
     mimeType?: string
 ) {
     const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAttribute, useBase64Encoding, mimeType);
+    const dataMap: Map<string, SaveEntityDetails> = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().saveDataMap;
 
-    portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
-    saveDataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
+    await portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
+    dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
 
-    return saveDataMap;
-}
-
-export async function getDataFromDataVerse(accessToken: string,
-    entity: string,
-    entityId: string,
-    queryParamMap: Map<string, string>,
-    entitiesSchemaMap: Map<string, Map<string, string>>,
-    languageIdCodeMap: Map<string, string>,
-    portalFs: PortalsFS,
-    websiteIdToLanguage: Map<string, string>
-) {
-    vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ..."));
-    await fetchData(accessToken, entity, entityId, queryParamMap, entitiesSchemaMap, languageIdCodeMap, portalFs, websiteIdToLanguage);
+    PowerPlatformExtensionContextManager.updateSaveDataDetailsInContext(dataMap);
 }

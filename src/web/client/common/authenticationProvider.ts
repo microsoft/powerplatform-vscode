@@ -9,7 +9,8 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import { sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
 import { pathParamToSchema, PROVIDER_ID, telemetryEventNames } from './constants';
-import { dataSourcePropertiesMap } from './localStore';
+import { showErrorDialog } from './errorHandler';
+import PowerPlatformExtensionContextManager from "./localStore";
 
 export function getHeader(accessToken: string) {
     return {
@@ -26,6 +27,14 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
     try {
         const session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { createIfNone: true });
         accessToken = session.accessToken;
+
+        if (!accessToken) {
+            {
+                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init.error.desc", "Try refreshing the browser"));
+                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
+                return '';
+            }
+        }
     } catch (error) {
         vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.authorization.error", "Authorization Failed. Please run again to authorize it"));
         const authError = (error as Error)?.message;
@@ -34,9 +43,14 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
     return accessToken;
 }
 
-export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string, entitiesSchemaMap: Map<string, Map<string, string>>): string {
-    const parameterizedUrl = dataSourcePropertiesMap.get(urlQuery) as string;
-    const fetchQueryParameters = entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get("_fetchQueryParameters");
-    const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', entity).replace('{api}', dataSourcePropertiesMap.get('api') as string).replace('{data}', dataSourcePropertiesMap.get('data') as string).replace('{version}', dataSourcePropertiesMap.get('version') as string);
+export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQuery: string): string {
+    const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
+    const parameterizedUrl = powerPlatformContext.dataSourcePropertiesMap.get(urlQuery) as string;
+    const fetchQueryParameters = powerPlatformContext.entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get("_fetchQueryParameters");
+    const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl)
+        .replace('{entity}', entity)
+        .replace('{api}', powerPlatformContext.dataSourcePropertiesMap.get('api') as string)
+        .replace('{data}', powerPlatformContext.dataSourcePropertiesMap.get('data') as string)
+        .replace('{version}', powerPlatformContext.dataSourcePropertiesMap.get('version') as string);
     return requestUrl + fetchQueryParameters;
 }

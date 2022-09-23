@@ -253,17 +253,17 @@ The {2} represents Solution's Version number</note>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title">
       <source xml:lang="en">You are editing a live, public site </source>
     </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
+      <source xml:lang="en">Unable to find that app</source>
+    </trans-unit>
+  </body></file>
+  <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
       <source xml:lang="en">There was a problem opening the workspace</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
       <source xml:lang="en">Try refreshing the browser</source>
     </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
-      <source xml:lang="en">Unable to find that app</source>
-    </trans-unit>
-  </body></file>
-  <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
       <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
     </trans-unit>
@@ -327,14 +327,8 @@ The {2} represents Solution's Version number</note>
     <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.desc">
       <source xml:lang="en">The metadata may have changed on the Dataverse side. Contact your admin.</source>
     </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
-      <source xml:lang="en">Fetching your file ...</source>
-    </trans-unit>
   </body></file>
   <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
-      <source xml:lang="en">Saving your file ...</source>
-    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
       <source xml:lang="en">Unable to complete the request</source>
     </trans-unit>
