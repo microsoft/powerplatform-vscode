@@ -155,7 +155,7 @@ async function createContentFiles(
                 result[Constants.MIMETYPE]);
         }
 
-        PowerPlatformExtensionContextManager.updatSingleFileUrisInContext(vscode.Uri.parse(fileUri));
+        PowerPlatformExtensionContextManager.updateSingleFileUrisInContext(vscode.Uri.parse(fileUri));
 
         // Display only the last file
         vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
@@ -178,5 +178,5 @@ async function createVirtualFile(
     await portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
     dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
 
-    PowerPlatformExtensionContextManager.updatSaveDataDetailsInContext(dataMap);
+    PowerPlatformExtensionContextManager.updateSaveDataDetailsInContext(dataMap);
 }

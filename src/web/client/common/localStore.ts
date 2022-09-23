@@ -81,7 +81,7 @@ class PowerPlatformExtensionContextManager {
         return this.PowerPlatformExtensionContext;
     }
 
-    public async updatSaveDataDetailsInContext(dataMap: Map<string, SaveEntityDetails>) {
+    public async updateSaveDataDetailsInContext(dataMap: Map<string, SaveEntityDetails>) {
         this.PowerPlatformExtensionContext = {
             ...this.PowerPlatformExtensionContext,
             saveDataMap: dataMap
@@ -90,7 +90,7 @@ class PowerPlatformExtensionContextManager {
         return this.PowerPlatformExtensionContext;
     }
 
-    public async updatSingleFileUrisInContext(uri: vscode.Uri) {
+    public async updateSingleFileUrisInContext(uri: vscode.Uri) {
         this.PowerPlatformExtensionContext = {
             ...this.PowerPlatformExtensionContext,
             defaultFileUri: uri
