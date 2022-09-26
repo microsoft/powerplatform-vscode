@@ -78,10 +78,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-                if (powerPlatformContext.rootDirectory && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
-                    await this.fetchDataFromDataverse();
-                }
+                // const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
+                // if (powerPlatformContext.rootDirectory && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
+                //     await this.fetchDataFromDataverse();
+                // }
+                await this.fetchDataFromDataverse();
             }
         }
 
@@ -257,18 +258,29 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
         const rootDirectory = powerPlatformContext.rootDirectory;
 
-        if (rootDirectory
-            && uri.toString().includes(rootDirectory.toString())) {
-            if (PathHasEntityFolderName(uri.toString())) {
+        // if (rootDirectory
+        //     && uri.toString().includes(rootDirectory.toString())) {
+        //     if (PathHasEntityFolderName(uri.toString())) {
 
-                await this.fetchDataFromDataverse();
+        //         await this.fetchDataFromDataverse();
 
-                if (powerPlatformContext.defaultFileUri !== uri) {
-                    throw vscode.FileSystemError.FileNotFound();
-                }
-            } else {
-                this.readDirectory(rootDirectory);
+        //         if (powerPlatformContext.defaultFileUri !== uri) {
+        //             throw vscode.FileSystemError.FileNotFound();
+        //         }
+        //     } else {
+        //         this.readDirectory(rootDirectory);
+        //     }
+        // }
+
+        if (PathHasEntityFolderName(uri.toString())) {
+
+            await this.fetchDataFromDataverse();
+
+            if (powerPlatformContext.defaultFileUri !== uri) {
+                throw vscode.FileSystemError.FileNotFound();
             }
+        } else {
+            this.readDirectory(rootDirectory);
         }
     }
 

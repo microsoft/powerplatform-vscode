@@ -25,7 +25,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     setTelemetryReporter(_telemetry);
     _telemetry.sendTelemetryEvent("Start");
     _telemetry.sendTelemetryEvent("activated");
-    await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+    // await vscode.commands.executeCommand('workbench.action.closeAllEditors');
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 
