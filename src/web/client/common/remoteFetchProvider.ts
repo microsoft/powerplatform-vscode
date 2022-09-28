@@ -158,7 +158,8 @@ async function createContentFiles(
         PowerPlatformExtensionContextManager.updatSingleFileUrisInContext(vscode.Uri.parse(fileUri));
 
         // Display only the last file
-        vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
+        vscode.window.showTextDocument(await vscode.workspace.openTextDocument(vscode.Uri.parse(fileUri)), { viewColumn: vscode.ViewColumn.One });
+        await vscode.commands.executeCommand('workbench.action.openWalkthrough', 'microsoft-IsvExpTools.powerplatform-vscode-preview#PowerPage-gettingStarted', true);
     }
 }
 
