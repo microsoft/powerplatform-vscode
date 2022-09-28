@@ -10,7 +10,7 @@ import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
 import PowerPlatformExtensionContextManager from "./common/localStore";
-import { PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC } from "./common/constants";
+import { PORTALS_URI_SCHEME, telemetryEventNames, SITE_VISIBILITY, PUBLIC, IS_FIRST_RUN_EXPERIENCE } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS } from "./common/errorHandler";
 import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendPerfTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
@@ -62,10 +62,10 @@ export function activate(context: vscode.ExtensionContext): void {
                     switch (appName) {
                         case 'portal': {
                             sendExtensionInitQueryParametersTelemetry(searchParams);
-                            const isFirstRun = context.globalState.get('isFirstRun', true);
+                            const isFirstRun = context.globalState.get(IS_FIRST_RUN_EXPERIENCE, true);
                             if (isFirstRun) {
                                 vscode.commands.executeCommand(`workbench.action.openWalkthrough`,`microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted`, false);
-                                context.globalState.update('isFirstRun', false);
+                                context.globalState.update(IS_FIRST_RUN_EXPERIENCE, false);
                             }
                             const timeStampBeforeSettingContext = new Date().getTime();
                             const timeTakenToSetContext = new Date().getTime() - timeStampBeforeSettingContext;
