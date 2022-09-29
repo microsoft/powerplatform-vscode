@@ -65,7 +65,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         }
 
         for (let counter = 0; counter < data.length; counter++) {
-            createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
+            await createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
         }
     } catch (error) {
         const authError = (error as Error)?.message;
@@ -155,9 +155,9 @@ async function createContentFiles(
                 result[Constants.MIMETYPE]);
         }
 
-        PowerPlatformExtensionContextManager.updateSingleFileUrisInContext(vscode.Uri.parse(fileUri));
+        await PowerPlatformExtensionContextManager.updateSingleFileUrisInContext(vscode.Uri.parse(fileUri));
 
-        // Display only the last file
+        // Not awaited intentionally
         vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
     }
 }
@@ -174,9 +174,8 @@ async function createVirtualFile(
 ) {
     const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAttribute, useBase64Encoding, mimeType);
     const dataMap: Map<string, SaveEntityDetails> = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().saveDataMap;
+    dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
+    await PowerPlatformExtensionContextManager.updateSaveDataDetailsInContext(dataMap);
 
     await portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
-    dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
-
-    PowerPlatformExtensionContextManager.updateSaveDataDetailsInContext(dataMap);
 }

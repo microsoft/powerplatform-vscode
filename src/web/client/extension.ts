@@ -62,6 +62,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     switch (appName) {
                         case 'portal': {
                             sendExtensionInitQueryParametersTelemetry(searchParams);
+                            await vscode.workspace.fs.readDirectory(PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory);
 
                             const timeStampBeforeSettingContext = new Date().getTime();
                             const timeTakenToSetContext = new Date().getTime() - timeStampBeforeSettingContext;
