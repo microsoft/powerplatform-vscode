@@ -158,7 +158,7 @@ async function createContentFiles(
         PowerPlatformExtensionContextManager.updateSingleFileUrisInContext(vscode.Uri.parse(fileUri));
 
         // Display only the last file
-        vscode.window.showTextDocument(vscode.Uri.parse(fileUri));
+        vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(fileUri), {background: true, preview: false});
     }
 }
 
