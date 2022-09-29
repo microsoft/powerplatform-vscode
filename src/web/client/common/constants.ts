@@ -32,6 +32,7 @@ export const BAD_REQUEST = 'BAD_REQUEST';
 export const PUBLIC = 'public';
 export const SITE_VISIBILITY = 'siteVisibility';
 export const MIMETYPE = 'mimetype';
+export const IS_FIRST_RUN_EXPERIENCE = 'isFirstRunExperience';
 
 export enum httpMethod {
     PATCH = 'PATCH',
