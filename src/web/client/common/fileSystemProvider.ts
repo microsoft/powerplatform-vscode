@@ -78,7 +78,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
                 const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-                if (powerPlatformContext.rootDirectory && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
+                if (powerPlatformContext.rootDirectory && uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
                     await this._loadFromDataverseToVFS();
                 }
             }
@@ -96,10 +96,17 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                await this._loadFileFromDataverseToVFS(uri);
+                const rootDirectory = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory;
 
-                const data = await this._lookupAsFile(uri, false);
-                return data.data;
+                if (rootDirectory
+                    && uri.toString().includes(rootDirectory.toString())) {
+                    if (PathHasEntityFolderName(uri.toString())) {
+                        await this._loadFromDataverseToVFS();
+                        
+                        const data = await this._lookupAsFile(uri, false);
+                        return data.data;
+                    }
+                }
             }
         }
         return new Uint8Array();
@@ -122,13 +129,14 @@ export class PortalsFS implements vscode.FileSystemProvider {
             entry = new File(basename);
             parent.entries.set(basename, entry);
             this._fireSoon({ type: vscode.FileChangeType.Created, uri });
+        } else if (PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().saveDataMap.has(uri.fsPath)) {
+            // Save data to dataverse
+            await this._saveFileToDataverseFromVFS(uri, content);
         }
+
         entry.mtime = Date.now();
         entry.size = content.byteLength;
         entry.data = content;
-
-        // Save data to dataverse
-        await this._saveFileToDataverseFromVFS(uri, content);
 
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
     }
@@ -230,23 +238,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     // --- Dataverse calls
-    private async _loadFileFromDataverseToVFS(uri: vscode.Uri) {
-        const rootDirectory = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory;
-
-        if (rootDirectory
-            && uri.toString().includes(rootDirectory.toString())) {
-            if (PathHasEntityFolderName(uri.toString())) {
-
-                await this._loadFromDataverseToVFS();
-
-                if (PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().defaultFileUri !== uri) {
-                    throw vscode.FileSystemError.FileNotFound();
-                }
-            } else {
-                this.readDirectory(rootDirectory);
-            }
-        }
-    }
 
     private async _loadFromDataverseToVFS() {
         const powerPlatformContext = await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
