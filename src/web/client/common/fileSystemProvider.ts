@@ -102,13 +102,10 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     && uri.toString().includes(rootDirectory.toString())) {
                     if (PathHasEntityFolderName(uri.toString())) {
                         await this._loadFromDataverseToVFS();
-
-                        if (PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().defaultFileUri !== uri) {
-                            throw vscode.FileSystemError.FileNotFound();
-                        }
+                        
+                        const data = await this._lookupAsFile(uri, false);
+                        return data.data;
                     }
-                    const data = await this._lookupAsFile(uri, false);
-                    return data.data;
                 }
             }
         }
