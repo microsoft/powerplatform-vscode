@@ -7,7 +7,5 @@
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit": "编辑站点",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc": "进行更改时，请务必小心。所有人都可以立即看到您所做的更改。请选择“编辑站点”以进行编辑，或者关闭编辑器选项卡以取消编辑。",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title": "您正在编辑一个公共活动站点",
-	"microsoft-powerapps-portals.webExtension.init.error": "打开工作区时出现问题",
-	"microsoft-powerapps-portals.webExtension.init.error.desc": "尝试刷新浏览器",
 	"microsoft-powerapps-portals.webExtension.init.app-not-found": "找不到该应用"
 }
