@@ -11,6 +11,5 @@
 	"microsoft-powerapps-portals.webExtension.parameter.error": "Um ou mais comandos são inválidos ou foram malformados",
 	"microsoft-powerapps-portals.webExtension.parameter.desc": "Verificar os parâmetros e tentar novamente",
 	"microsoft-powerapps-portals.webExtension.file-not-found.error": "Esse arquivo não está disponível",
-	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Os metadados podem ter sido alterados no lado do Dataverse. Contate o administrador.",
-	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Buscando seu arquivo..."
+	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Os metadados podem ter sido alterados no lado do Dataverse. Contate o administrador."
 }

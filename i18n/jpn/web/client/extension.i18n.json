@@ -7,7 +7,5 @@
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit": "サイトの編集",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc": "変更には注意が必要です。行った変更は、すべてのユーザーに即座に表示されます。[サイトの編集] を選択して編集を行うか、エディター タブを閉じて、編集をキャンセルしてください。",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title": "ライブのパブリック サイトを編集中です ",
-	"microsoft-powerapps-portals.webExtension.init.error": "ワークスペースを開くときに問題が発生しました",
-	"microsoft-powerapps-portals.webExtension.init.error.desc": "ブラウザーを更新してください",
 	"microsoft-powerapps-portals.webExtension.init.app-not-found": "そのアプリが見つかりません"
 }
