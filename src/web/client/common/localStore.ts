@@ -70,13 +70,15 @@ class PowerPlatformExtensionContextManager {
         const dataverseOrgUrl = this.PowerPlatformExtensionContext.queryParamsMap.get(ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
 
-        this.PowerPlatformExtensionContext = {
-            ... this.PowerPlatformExtensionContext,
-            websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl),
-            websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl),
-            languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl),
-            dataverseAccessToken: accessToken,
-        };
+        if (accessToken) {
+            this.PowerPlatformExtensionContext = {
+                ... this.PowerPlatformExtensionContext,
+                websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl),
+                websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl),
+                languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl),
+                dataverseAccessToken: accessToken,
+            };
+        }
 
         return this.PowerPlatformExtensionContext;
     }

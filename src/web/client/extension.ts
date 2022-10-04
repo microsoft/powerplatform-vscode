@@ -62,15 +62,15 @@ export function activate(context: vscode.ExtensionContext): void {
                     switch (appName) {
                         case 'portal': {
                             sendExtensionInitQueryParametersTelemetry(searchParams);
-                            
+
                             const isFirstRun = context.globalState.get(IS_FIRST_RUN_EXPERIENCE, true);
                             if (isFirstRun) {
-                                vscode.commands.executeCommand(`workbench.action.openWalkthrough`,`microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted`, false);
+                                vscode.commands.executeCommand(`workbench.action.openWalkthrough`,`microsoft-IsvExpTools.powerplatform-vscode-preview#PowerPage-gettingStarted`, false);
                                 context.globalState.update(IS_FIRST_RUN_EXPERIENCE, false);
                             }
-                            
+
                             await vscode.workspace.fs.readDirectory(PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory);
-                            
+
                             const timeStampBeforeSettingContext = new Date().getTime();
                             const timeTakenToSetContext = new Date().getTime() - timeStampBeforeSettingContext;
                             sendPerfTelemetry(telemetryEventNames.WEB_EXTENSION_SET_CONTEXT_PERF, timeTakenToSetContext);

@@ -257,17 +257,6 @@ The {2} represents Solution's Version number</note>
       <source xml:lang="en">Unable to find that app</source>
     </trans-unit>
   </body></file>
-  <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
-      <source xml:lang="en">There was a problem opening the workspace</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
-      <source xml:lang="en">Try refreshing the browser</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
-      <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-    </trans-unit>
-  </body></file>
   <file original="./web/client/common/errorHandler" source-language="en" datatype="plaintext"><body>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error">
       <source xml:lang="en">There was a problem opening the workspace</source>
@@ -280,6 +269,14 @@ The {2} represents Solution's Version number</note>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
       <source xml:lang="en">Check the URL and verify the parameters are correct</source>
+    </trans-unit>
+  </body></file>
+  <file original="./web/client/common/fileSystemProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.fetching">
+      <source xml:lang="en">Fetching...</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.saving">
+      <source xml:lang="en">Saving...</source>
     </trans-unit>
   </body></file>
   <file original="./web/client/common/localStore" source-language="en" datatype="plaintext"><body>
