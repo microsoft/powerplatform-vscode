@@ -118,7 +118,7 @@ export function sendInfoTelemetry(eventName: string, properties?: Record<string,
     if (properties) {
         _telemetry?.sendTelemetryEvent(eventName, properties);
     } else {
-        _telemetry?.sendTelemetryEvent(eventName);``
+        _telemetry?.sendTelemetryEvent(eventName);
     }
 }
 
