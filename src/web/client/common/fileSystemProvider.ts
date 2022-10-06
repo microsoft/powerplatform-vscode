@@ -13,6 +13,9 @@ import PowerPlatformExtensionContextManager from "./localStore";
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { fetchDataFromDataverseAndUpdateVFS } from './remoteFetchProvider';
 import { saveData } from './remoteSaveProvider';
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export class File implements vscode.FileStat {
 
@@ -79,7 +82,13 @@ export class PortalsFS implements vscode.FileSystemProvider {
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
                 const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
                 if (powerPlatformContext.rootDirectory && uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
-                    await this._loadFromDataverseToVFS();
+                    await vscode.window.withProgress({
+                        location: vscode.ProgressLocation.Notification,
+                        cancellable: true,
+                        title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
+                    }, async () => {
+                        await this._loadFromDataverseToVFS();
+                    });
                 }
             }
         }
@@ -101,10 +110,15 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 if (rootDirectory
                     && uri.toString().includes(rootDirectory.toString())) {
                     if (PathHasEntityFolderName(uri.toString())) {
-                        await this._loadFromDataverseToVFS();
-                        
-                        const data = await this._lookupAsFile(uri, false);
-                        return data.data;
+                        await vscode.window.withProgress({
+                            location: vscode.ProgressLocation.Notification,
+                            cancellable: true,
+                            title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
+                        }, async () => {
+                            await this._loadFromDataverseToVFS();
+                            const data = await this._lookupAsFile(uri, false);
+                            return data.data;
+                        });
                     }
                 }
             }
@@ -131,7 +145,13 @@ export class PortalsFS implements vscode.FileSystemProvider {
             this._fireSoon({ type: vscode.FileChangeType.Created, uri });
         } else if (PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().saveDataMap.has(uri.fsPath)) {
             // Save data to dataverse
-            await this._saveFileToDataverseFromVFS(uri, content);
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                cancellable: true,
+                title: localize("microsoft-powerapps-portals.webExtension.save.file.message", "Saving your file ...")
+            }, async () => {
+                await this._saveFileToDataverseFromVFS(uri, content);
+            });
         }
 
         entry.mtime = Date.now();

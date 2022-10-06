@@ -7,11 +7,8 @@ import * as vscode from "vscode";
 import { dataverseAuthentication, getCustomRequestURL, getHeader } from "./authenticationProvider";
 import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTALS_URI_SCHEME, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesFolderNameMap, getEntitiesSchemaMap } from "./portalSchemaReader";
-import { showErrorDialog } from "./errorHandler";
-import * as nls from 'vscode-nls';
 import { SaveEntityDetails } from "./portalSchemaInterface";
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry } from "../telemetry/webExtensionTelemetry";
 
 export interface IPowerPlatformExtensionContext {
     dataSourcePropertiesMap: Map<string, string>; // dataSourceProperties in portal_schema_data
@@ -70,13 +67,15 @@ class PowerPlatformExtensionContextManager {
         const dataverseOrgUrl = this.PowerPlatformExtensionContext.queryParamsMap.get(ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
 
-        this.PowerPlatformExtensionContext = {
-            ... this.PowerPlatformExtensionContext,
-            websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl),
-            websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl),
-            languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl),
-            dataverseAccessToken: accessToken,
-        };
+        if (accessToken) {
+            this.PowerPlatformExtensionContext = {
+                ... this.PowerPlatformExtensionContext,
+                websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl),
+                websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl),
+                languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl),
+                dataverseAccessToken: accessToken,
+            };
+        }
 
         return this.PowerPlatformExtensionContext;
     }
@@ -100,16 +99,22 @@ class PowerPlatformExtensionContextManager {
     }
 
     private async languageIdToCode(accessToken: string, dataverseOrgUrl: string): Promise<Map<string, string>> {
+        let requestUrl = '';
+        let requestSentAtTime = new Date().getTime();
         const languageIdCodeMap = new Map<string, string>();
         try {
-            const requestUrl = getCustomRequestURL(dataverseOrgUrl, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY);
+            requestUrl = getCustomRequestURL(dataverseOrgUrl, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY);
+            sendAPITelemetry(requestUrl);
+
+            requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
                 headers: getHeader(accessToken),
             });
-            if (!response.ok) {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "There’s a problem on the back end"), localize("microsoft-powerapps-portals.webExtension.backend.desc", "Try again"));
+            if (!response?.ok) {
+                sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response?.statusText);
             }
-            const result = await response.json();
+            sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
+            const result = await response?.json();
             if (result) {
                 if (result.value?.length > 0) {
                     for (let counter = 0; counter < result.value.length; counter++) {
@@ -120,27 +125,29 @@ class PowerPlatformExtensionContextManager {
                 }
             }
         } catch (error) {
-            if (typeof error === "string" && error.includes("Unauthorized")) {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
-            }
-            else {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
-            }
+            const errorMsg = (error as Error)?.message;
+            sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, errorMsg);
         }
         return languageIdCodeMap;
     }
 
     private async websiteLanguageIdToPortalLanguage(accessToken: string, dataverseOrgUrl: string): Promise<Map<string, string>> {
+        let requestUrl = '';
+        let requestSentAtTime = new Date().getTime();
         const websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
         try {
-            const requestUrl = getCustomRequestURL(dataverseOrgUrl, WEBSITE_LANGUAGES, MULTI_ENTITY_URL_KEY);
+            requestUrl = getCustomRequestURL(dataverseOrgUrl, WEBSITE_LANGUAGES, MULTI_ENTITY_URL_KEY);
+            sendAPITelemetry(requestUrl);
+
+            requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
                 headers: getHeader(accessToken),
             });
-            if (!response.ok) {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.backend.desc", "Check the parameters and try again"));
+            if (!response?.ok) {
+                sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response?.statusText);
             }
-            const result = await response.json();
+            sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
+            const result = await response?.json();
             if (result) {
                 if (result.value?.length > 0) {
                     for (let counter = 0; counter < result.value.length; counter++) {
@@ -151,28 +158,30 @@ class PowerPlatformExtensionContextManager {
                 }
             }
         } catch (error) {
-            if (typeof error === "string" && error.includes("Unauthorized")) {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
-            }
-            else {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
-            }
+            const errorMsg = (error as Error)?.message;
+            sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, errorMsg);
         }
         return websiteLanguageIdToPortalLanguageMap;
     }
 
     private async websiteIdToLanguageMap(accessToken: string, dataverseOrgUrl: string): Promise<Map<string, string>> {
+        let requestUrl = '';
+        let requestSentAtTime = new Date().getTime();
         const websiteIdToLanguage = new Map<string, string>();
         try {
-            const requestUrl = getCustomRequestURL(dataverseOrgUrl, WEBSITES, MULTI_ENTITY_URL_KEY);
+            requestUrl = getCustomRequestURL(dataverseOrgUrl, WEBSITES, MULTI_ENTITY_URL_KEY);
+            sendAPITelemetry(requestUrl);
+
+            requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
                 headers: getHeader(accessToken),
             });
 
-            if (!response.ok) {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.backend.desc", "Check the parameters and try again"));
+            if (!response?.ok) {
+                sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response?.statusText);
             }
-            const result = await response.json();
+            sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
+            const result = await response?.json();
 
             if (result) {
                 if (result.value?.length > 0) {
@@ -185,12 +194,8 @@ class PowerPlatformExtensionContextManager {
             }
 
         } catch (error) {
-            if (typeof error === "string" && error.includes("Unauthorized")) {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
-            }
-            else {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
-            }
+            const errorMsg = (error as Error)?.message;
+            sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, errorMsg);
         }
         return websiteIdToLanguage;
     }
