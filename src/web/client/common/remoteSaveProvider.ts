@@ -4,7 +4,7 @@
  */
 
 import * as vscode from 'vscode';
-import { sendAPIFailureTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
+import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
 import { getHeader } from './authenticationProvider';
 import { BAD_REQUEST, MIMETYPE } from './constants';
 import { showErrorDialog } from './errorHandler';
@@ -53,6 +53,8 @@ export async function saveData(
                 showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "There’s a problem on the back end"), localize("microsoft-powerapps-portals.webExtension.retry.desc", "Try again"));
                 throw new Error(response.statusText);
             }
+
+            sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
         }
         catch (error) {
             const authError = (error as Error)?.message;
