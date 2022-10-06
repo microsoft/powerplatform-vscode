@@ -272,31 +272,11 @@ The {2} represents Solution's Version number</note>
     </trans-unit>
   </body></file>
   <file original="./web/client/common/fileSystemProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.fetching">
-      <source xml:lang="en">Fetching...</source>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+      <source xml:lang="en">Fetching your file ...</source>
     </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.saving">
-      <source xml:lang="en">Saving...</source>
-    </trans-unit>
-  </body></file>
-  <file original="./web/client/common/localStore" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
-      <source xml:lang="en">There’s a problem on the back end</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.backend.desc">
-      <source xml:lang="en">Try again</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
-      <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
-      <source xml:lang="en">There was a permissions problem with the server</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
-      <source xml:lang="en">One or more commands are invalid or malformed</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
-      <source xml:lang="en">Check the parameters and try again</source>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
+      <source xml:lang="en">Saving your file ...</source>
     </trans-unit>
   </body></file>
   <file original="./web/client/common/remoteFetchProvider" source-language="en" datatype="plaintext"><body>

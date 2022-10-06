@@ -11,7 +11,8 @@ import {
     sendAPIFailureTelemetry,
     sendAPISuccessTelemetry,
     sendAPITelemetry,
-    sendErrorTelemetry
+    sendErrorTelemetry,
+    sendInfoTelemetry
 } from '../telemetry/webExtensionTelemetry';
 import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/CommonUtility';
 import {
@@ -68,14 +69,14 @@ export async function fetchDataFromDataverseAndUpdateVFS(
             await createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
         }
     } catch (error) {
-        const authError = (error as Error)?.message;
+        const errorMsg = (error as Error)?.message;
         if (typeof error === "string" && error.includes("Unauthorized")) {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
         }
         else {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
         }
-        sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, authError);
+        sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, errorMsg);
     }
 }
 
@@ -93,6 +94,7 @@ async function createContentFiles(
     const lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string)
         ? websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string)
         : Constants.DEFAULT_LANGUAGE_CODE;
+    sendInfoTelemetry('WEB_EXTENSION_EDIT_LCID', { 'lcid': (lcid ? lcid.toString() : '') });
     const entityEntry = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string);
     const attributes = entityEntry?.get('_attributes');
     const exportType = entityEntry?.get('_exporttype');
@@ -105,7 +107,7 @@ async function createContentFiles(
             ? languageIdCodeMap.get(lcid) as string
             : Constants.DEFAULT_LANGUAGE_CODE;
     }
-
+    sendInfoTelemetry('WEB_EXTENSION_EDIT_LANGUAGE_CODE', { 'languageCode': (languageCode ? languageCode.toString(): '') });
     let filePathInPortalFS = '';
     if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
         filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
@@ -159,6 +161,7 @@ async function createContentFiles(
 
         // Not awaited intentionally
         vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(fileUri), {background: true, preview: false});
+        sendInfoTelemetry("StartCommand", { 'commandId': 'vscode.open', 'type': 'file' });
     }
 }
 

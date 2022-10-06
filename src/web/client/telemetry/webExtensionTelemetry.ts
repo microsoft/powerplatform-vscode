@@ -19,6 +19,7 @@ export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWe
         'schema'?: string;
         'referrerSessionId'?: string;
         'referrer'?: string;
+        'siteVisibility'?: string;
     }
 }
 
@@ -81,7 +82,8 @@ export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearc
             dataSource: getQueryParameterValue(queryParameters.DATA_SOURCE, searchParams),
             schema: getQueryParameterValue(queryParameters.SCHEMA, searchParams),
             referrerSessionId: getQueryParameterValue(queryParameters.REFERRER_SESSION_ID, searchParams),
-            referrer: getQueryParameterValue(queryParameters.REFERRER, searchParams)
+            referrer: getQueryParameterValue(queryParameters.REFERRER, searchParams),
+            siteVisibility: getQueryParameterValue(queryParameters.SITE_VISIBILITY, searchParams),
         }
     }
     _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
@@ -109,6 +111,14 @@ export function sendErrorTelemetry(eventName: string, errorMessage?: string) {
         _telemetry?.sendTelemetryErrorEvent(eventName, undefined, undefined, errorMessages);
     } else {
         _telemetry?.sendTelemetryErrorEvent(eventName);
+    }
+}
+
+export function sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
+    if (properties) {
+        _telemetry?.sendTelemetryEvent(eventName, properties);
+    } else {
+        _telemetry?.sendTelemetryEvent(eventName);``
     }
 }
 

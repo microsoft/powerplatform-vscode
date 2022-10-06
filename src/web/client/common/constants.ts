@@ -119,7 +119,8 @@ export enum queryParameters {
     SCHEMA = 'schema',
     DATA_SOURCE = 'dataSource',
     REFERRER_SESSION_ID = 'referrerSessionId',
-    REFERRER = 'referrer'
+    REFERRER = 'referrer',
+    SITE_VISIBILITY = 'siteVisibility'
 }
 
 export enum telemetryEventNames {
@@ -134,4 +135,6 @@ export enum telemetryEventNames {
     WEB_EXTENSION_API_REQUEST_SUCCESS = 'WebExtensionApiRequestSuccess',
     WEB_EXTENSION_EMPTY_FILE_NAME = 'WebExtensionEmptyFileName',
     WEB_EXTENSION_SET_CONTEXT_PERF = 'WebExtensionSetContextPerf',
+    WEB_EXTENSION_EDIT_LCID = 'WebExtensionEditLcid',
+    WEB_EXTENSION_EDIT_LANGUAGE_CODE = 'WebExtensionEditLanguageCode',
 }
