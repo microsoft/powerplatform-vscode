@@ -11,6 +11,5 @@
 	"microsoft-powerapps-portals.webExtension.parameter.error": "Některé příkazy jsou neplatné nebo chybné.",
 	"microsoft-powerapps-portals.webExtension.parameter.desc": "Zkontrolujte parametry a zkuste to znovu.",
 	"microsoft-powerapps-portals.webExtension.file-not-found.error": "Tento soubor není dostupný.",
-	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Metadata se mohla změnit na straně Dataverse. Obraťte se na správce.",
-	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Načítá se soubor..."
+	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Metadata se mohla změnit na straně Dataverse. Obraťte se na správce."
 }

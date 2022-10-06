@@ -349,14 +349,6 @@ The {2} represents Solution's Version number</note>
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">您正在編輯已上線、公開的網站</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
-        <source xml:lang="en">There was a problem opening the workspace</source>
-        <target state="translated">開啟工作區時發生問題</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
-        <source xml:lang="en">Try refreshing the browser</source>
-        <target state="translated">請嘗試重新整理瀏覽器</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">找不到該應用程式</target>
@@ -365,6 +357,14 @@ The {2} represents Solution's Version number</note>
   </file>
   <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext" target-language="zh-TW">
     <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">開啟工作區時發生問題</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
+        <source xml:lang="en">Try refreshing the browser</source>
+        <target state="translated">請嘗試重新整理瀏覽器</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
         <target state="translated">授權失敗。請重新執行以進行授權</target>
@@ -453,18 +453,10 @@ The {2} represents Solution's Version number</note>
         <source xml:lang="en">The metadata may have changed on the Dataverse side. Contact your admin.</source>
         <target state="translated">中繼資料可能已在 Dataverse 端變更。請連絡您的管理員。</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
-        <source xml:lang="en">Fetching your file ...</source>
-        <target state="translated">正在擷取您的檔案...</target>
-      </trans-unit>
     </body>
   </file>
   <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="zh-TW">
     <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
-        <source xml:lang="en">Saving your file ...</source>
-        <target state="translated">正在儲存您的檔案...</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
         <source xml:lang="en">Unable to complete the request</source>
         <target state="translated">無法完成要求</target>

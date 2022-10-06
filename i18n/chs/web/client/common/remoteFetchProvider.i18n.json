@@ -11,6 +11,5 @@
 	"microsoft-powerapps-portals.webExtension.parameter.error": "一个或多个命令无效或者格式错误",
 	"microsoft-powerapps-portals.webExtension.parameter.desc": "检查参数并重试",
 	"microsoft-powerapps-portals.webExtension.file-not-found.error": "该文件不可用",
-	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Dataverse 端的元数据可能已更改。请联系您的管理员。",
-	"microsoft-powerapps-portals.webExtension.fetch.file.message": "正在提取文件..."
+	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Dataverse 端的元数据可能已更改。请联系您的管理员。"
 }

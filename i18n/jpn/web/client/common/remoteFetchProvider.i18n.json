@@ -11,6 +11,5 @@
 	"microsoft-powerapps-portals.webExtension.parameter.error": "1 つ以上のコマンドが無効であるか、形式に誤りがあります",
 	"microsoft-powerapps-portals.webExtension.parameter.desc": "パラメーターを確認して、もう一度お試しください",
 	"microsoft-powerapps-portals.webExtension.file-not-found.error": "そのファイルは使用できません",
-	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "メタデータが Dataverse 側で変更された可能性があります。管理者にお問い合わせください。",
-	"microsoft-powerapps-portals.webExtension.fetch.file.message": "ファイルを取得しています..."
+	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "メタデータが Dataverse 側で変更された可能性があります。管理者にお問い合わせください。"
 }
