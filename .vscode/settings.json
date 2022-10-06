@@ -3,5 +3,6 @@
       "nupkg",
       "powerapps",
       "powerplatform"
-    ]
+    ],
+    "sarif-viewer.connectToGithubCodeScanning": "off"
 }
