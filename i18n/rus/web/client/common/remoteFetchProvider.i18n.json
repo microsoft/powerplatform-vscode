@@ -11,6 +11,5 @@
 	"microsoft-powerapps-portals.webExtension.parameter.error": "Одна или несколько команд являются недопустимыми или неправильными",
 	"microsoft-powerapps-portals.webExtension.parameter.desc": "Проверьте параметры и повторите попытку",
 	"microsoft-powerapps-portals.webExtension.file-not-found.error": "Этот файл недоступен",
-	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Метаданные могли быть изменены на стороне Dataverse. Обратитесь к администратору.",
-	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Извлечение файла..."
+	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Метаданные могли быть изменены на стороне Dataverse. Обратитесь к администратору."
 }

@@ -11,6 +11,5 @@
 	"microsoft-powerapps-portals.webExtension.parameter.error": "Uno o più comandi non sono validi o hanno un formato non valido",
 	"microsoft-powerapps-portals.webExtension.parameter.desc": "Controlla i parametri e riprova",
 	"microsoft-powerapps-portals.webExtension.file-not-found.error": "File non disponibile",
-	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "I metadati potrebbero essere stati modificati sul lato Dataverse. Contatta l'amministratore.",
-	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Recupero del file in corso ..."
+	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "I metadati potrebbero essere stati modificati sul lato Dataverse. Contatta l'amministratore."
 }

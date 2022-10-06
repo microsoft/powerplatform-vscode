@@ -349,14 +349,6 @@ Sürüm: {2}</target>
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">Yayında olan, herkese açık bir siteyi düzenliyorsunuz </target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
-        <source xml:lang="en">There was a problem opening the workspace</source>
-        <target state="translated">Çalışma alanı açılırken bir sorun oluştu</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
-        <source xml:lang="en">Try refreshing the browser</source>
-        <target state="translated">Tarayıcınızı yenilemeyi deneyin</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">Bu uygulama bulunamadı</target>
@@ -365,6 +357,14 @@ Sürüm: {2}</target>
   </file>
   <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext" target-language="tr">
     <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">Çalışma alanı açılırken bir sorun oluştu</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
+        <source xml:lang="en">Try refreshing the browser</source>
+        <target state="translated">Tarayıcıyı yenilemeyi deneyin</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
         <target state="translated">Yetkilendirme Başarısız Oldu. Lütfen yetkilendirmek için yeniden çalıştırın</target>
@@ -453,18 +453,10 @@ Sürüm: {2}</target>
         <source xml:lang="en">The metadata may have changed on the Dataverse side. Contact your admin.</source>
         <target state="translated">Meta veriler, Dataverse tarafında değişmiş olabilir. Yöneticinizle iletişime geçin.</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
-        <source xml:lang="en">Fetching your file ...</source>
-        <target state="translated">Dosyanız alınıyor...</target>
-      </trans-unit>
     </body>
   </file>
   <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="tr">
     <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
-        <source xml:lang="en">Saving your file ...</source>
-        <target state="translated">Dosyanız kaydediliyor...</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
         <source xml:lang="en">Unable to complete the request</source>
         <target state="translated">İstek tamamlanamadı</target>

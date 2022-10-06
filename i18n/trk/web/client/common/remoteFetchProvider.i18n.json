@@ -11,6 +11,5 @@
 	"microsoft-powerapps-portals.webExtension.parameter.error": "Bir veya daha fazla komut geçersiz ya da hatalı biçimlendirilmiş",
 	"microsoft-powerapps-portals.webExtension.parameter.desc": "Parametreleri denetleyin ve yeniden deneyin",
 	"microsoft-powerapps-portals.webExtension.file-not-found.error": "Bu dosya kullanılamıyor",
-	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Meta veriler, Dataverse tarafında değişmiş olabilir. Yöneticinizle iletişime geçin.",
-	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Dosyanız alınıyor..."
+	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Meta veriler, Dataverse tarafında değişmiş olabilir. Yöneticinizle iletişime geçin."
 }

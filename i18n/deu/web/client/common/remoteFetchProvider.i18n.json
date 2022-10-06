@@ -11,6 +11,5 @@
 	"microsoft-powerapps-portals.webExtension.parameter.error": "Mindestens ein Befehl ist ungültig oder nicht wohlgeformt",
 	"microsoft-powerapps-portals.webExtension.parameter.desc": "Überprüfen Sie die Parameter, und versuchen Sie es erneut",
 	"microsoft-powerapps-portals.webExtension.file-not-found.error": "Diese Datei ist nicht verfügbar",
-	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Die Metadaten wurden möglicherweise auf Dataverse-Seite geändert. Wenden Sie sich an den Administrator.",
-	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Datei wird abgerufen ..."
+	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Die Metadaten wurden möglicherweise auf Dataverse-Seite geändert. Wenden Sie sich an den Administrator."
 }

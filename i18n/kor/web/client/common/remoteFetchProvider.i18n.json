@@ -11,6 +11,5 @@
 	"microsoft-powerapps-portals.webExtension.parameter.error": "하나 이상의 명령이 올바르지 않거나 잘못된 형식입니다",
 	"microsoft-powerapps-portals.webExtension.parameter.desc": "매개 변수를 확인하고 다시 시도하세요",
 	"microsoft-powerapps-portals.webExtension.file-not-found.error": "해당 파일은 사용할 수 없습니다",
-	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Dataverse에서 메타데이터가 변경되었을 수 있습니다. 관리자에게 문의하세요.",
-	"microsoft-powerapps-portals.webExtension.fetch.file.message": "파일을 가져오는 중..."
+	"microsoft-powerapps-portals.webExtension.file-not-found.desc": "Dataverse에서 메타데이터가 변경되었을 수 있습니다. 관리자에게 문의하세요."
 }

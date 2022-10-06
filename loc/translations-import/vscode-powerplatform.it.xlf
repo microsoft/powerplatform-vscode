@@ -349,14 +349,6 @@ Versione: {2}</target>
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">Stai modificando un sito pubblico live </target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
-        <source xml:lang="en">There was a problem opening the workspace</source>
-        <target state="translated">Si è verificato un problema durante l'apertura dell'area di lavoro</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
-        <source xml:lang="en">Try refreshing the browser</source>
-        <target state="translated">Prova ad aggiornare il browser</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">Impossibile trovare tale app</target>
@@ -365,6 +357,14 @@ Versione: {2}</target>
   </file>
   <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">Si è verificato un problema durante l'apertura dell'area di lavoro</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
+        <source xml:lang="en">Try refreshing the browser</source>
+        <target state="translated">Prova ad aggiornare il browser</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
         <target state="translated">Autorizzazione non riuscita. Esegui di nuovo per autorizzarla</target>
@@ -453,18 +453,10 @@ Versione: {2}</target>
         <source xml:lang="en">The metadata may have changed on the Dataverse side. Contact your admin.</source>
         <target state="translated">I metadati potrebbero essere stati modificati sul lato Dataverse. Contatta l'amministratore.</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
-        <source xml:lang="en">Fetching your file ...</source>
-        <target state="translated">Recupero del file in corso ...</target>
-      </trans-unit>
     </body>
   </file>
   <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
-        <source xml:lang="en">Saving your file ...</source>
-        <target state="translated">Salvataggio del file in corso ...</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
         <source xml:lang="en">Unable to complete the request</source>
         <target state="translated">Impossibile completare la richiesta</target>

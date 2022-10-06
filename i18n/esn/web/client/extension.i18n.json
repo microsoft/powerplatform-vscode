@@ -7,7 +7,5 @@
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit": "Editar el sitio",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc": "Tenga cuidado al hacer cambios. Cualquier usuario puede ver inmediatamente los cambios que usted realice. Elija Editar el sitio para realizar cambios o cierre la pestaña del editor para cancelar sin hacer cambios.",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title": "Está editando un sitio público activo ",
-	"microsoft-powerapps-portals.webExtension.init.error": "Hubo un problema al abrir el área de trabajo",
-	"microsoft-powerapps-portals.webExtension.init.error.desc": "Intente actualizar el explorador",
 	"microsoft-powerapps-portals.webExtension.init.app-not-found": "No se puede encontrar esa aplicación"
 }
