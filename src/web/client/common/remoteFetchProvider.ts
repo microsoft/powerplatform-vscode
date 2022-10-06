@@ -94,7 +94,7 @@ async function createContentFiles(
     const lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string)
         ? websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string)
         : Constants.DEFAULT_LANGUAGE_CODE;
-    sendInfoTelemetry('WEB_EXTENSION_EDIT_LCID', { 'lcid': (lcid ? lcid.toString() : '') });
+    sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LCID, { 'lcid': (lcid ? lcid.toString() : '') });
     const entityEntry = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string);
     const attributes = entityEntry?.get('_attributes');
     const exportType = entityEntry?.get('_exporttype');
@@ -107,7 +107,7 @@ async function createContentFiles(
             ? languageIdCodeMap.get(lcid) as string
             : Constants.DEFAULT_LANGUAGE_CODE;
     }
-    sendInfoTelemetry('WEB_EXTENSION_EDIT_LANGUAGE_CODE', { 'languageCode': (languageCode ? languageCode.toString(): '') });
+    sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString(): '') });
     let filePathInPortalFS = '';
     if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
         filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
