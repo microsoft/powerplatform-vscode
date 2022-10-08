@@ -4,5 +4,6 @@
     "davidanson.vscode-markdownlint",
     "dbaeumer.vscode-eslint",
     "eamodio.gitlens",
+    "vsls-contrib.codetour",
   ]
 }
