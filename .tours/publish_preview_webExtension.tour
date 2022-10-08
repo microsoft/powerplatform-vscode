@@ -13,24 +13,54 @@
         },
         "end": {
           "line": 2,
-          "character": 11
+          "character": 34
         }
       }
     },
     {
       "file": "package.json",
       "description": "\"displayName\": \"Power Platform Tools [PREVIEW]\",",
-      "line": 3
+      "line": 3,
+      "selection": {
+        "start": {
+          "line": 3,
+          "character": 2
+        },
+        "end": {
+          "line": 3,
+          "character": 41
+        }
+      }
     },
     {
       "file": "src/web/client/extension.ts",
       "description": "vscode.commands.executeCommand(`workbench.action.openWalkthrough`,`microsoft-IsvExpTools.powerplatform-vscode-preview#PowerPage-gettingStarted`, false);",
-      "line": 68
+      "line": 68,
+      "selection": {
+        "start": {
+          "line": 68,
+          "character": 33
+        },
+        "end": {
+          "line": 68,
+          "character": 177
+        }
+      }
     },
     {
       "file": "src/web/client/extension.ts",
       "description": "sendInfoTelemetry(\"StartCommand\", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode-preview#PowerPage-gettingStarted' });",
-      "line": 70
+      "line": 70,
+      "selection": {
+        "start": {
+          "line": 70,
+          "character": 33
+        },
+        "end": {
+          "line": 70,
+          "character": 208
+        }
+      }
     }
   ]
 }
