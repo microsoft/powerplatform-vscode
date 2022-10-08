@@ -1,0 +1,36 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Publish Preview WebExtension",
+  "steps": [
+    {
+      "file": "package.json",
+      "description": " \"name\": \"powerplatform-vscode-preview\",",
+      "line": 2,
+      "selection": {
+        "start": {
+          "line": 2,
+          "character": 2
+        },
+        "end": {
+          "line": 2,
+          "character": 11
+        }
+      }
+    },
+    {
+      "file": "package.json",
+      "description": "\"displayName\": \"Power Platform Tools [PREVIEW]\",",
+      "line": 3
+    },
+    {
+      "file": "src/web/client/extension.ts",
+      "description": "vscode.commands.executeCommand(`workbench.action.openWalkthrough`,`microsoft-IsvExpTools.powerplatform-vscode-preview#PowerPage-gettingStarted`, false);",
+      "line": 68
+    },
+    {
+      "file": "src/web/client/extension.ts",
+      "description": "sendInfoTelemetry(\"StartCommand\", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode-preview#PowerPage-gettingStarted' });",
+      "line": 70
+    }
+  ]
+}
