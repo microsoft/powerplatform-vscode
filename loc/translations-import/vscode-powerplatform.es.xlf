@@ -355,22 +355,6 @@ Versión: {2}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext" target-language="es">
-    <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
-        <source xml:lang="en">There was a problem opening the workspace</source>
-        <target state="translated">Hubo un problema al abrir el área de trabajo</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
-        <source xml:lang="en">Try refreshing the browser</source>
-        <target state="translated">Intente actualizar el explorador</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
-        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">No se pudo autorizar. Vuelva a ejecutarlo para autorizarlo</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="./web/client/common/errorHandler" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error">
@@ -391,31 +375,15 @@ Versión: {2}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/localStore" source-language="en" datatype="plaintext" target-language="es">
+  <file original="./web/client/common/fileSystemProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
-        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
-        <target state="translated">Hay un problema en el back-end</target>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+        <source xml:lang="en">Fetching your file ...</source>
+        <target state="translated">Capturando su archivo...</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.desc">
-        <source xml:lang="en">Try again</source>
-        <target state="translated">Volver a intentarlo</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
-        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">No se pudo autorizar. Vuelva a ejecutarlo para autorizarlo</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
-        <source xml:lang="en">There was a permissions problem with the server</source>
-        <target state="translated">Se produjo un problema de permisos con el servidor</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
-        <source xml:lang="en">One or more commands are invalid or malformed</source>
-        <target state="translated">Una o más comandos no son válidos o no tienen el formato correcto</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
-        <source xml:lang="en">Check the parameters and try again</source>
-        <target state="translated">Compruebe los parámetros e inténtelo de nuevo</target>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
+        <source xml:lang="en">Saving your file ...</source>
+        <target state="translated">Guardando su archivo...</target>
       </trans-unit>
     </body>
   </file>
