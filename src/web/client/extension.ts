@@ -23,7 +23,6 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(_telemetry);
 
     setTelemetryReporter(_telemetry);
-    sendInfoTelemetry("Start");
     sendInfoTelemetry("activated");
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));

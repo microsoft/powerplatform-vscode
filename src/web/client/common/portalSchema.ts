@@ -8,7 +8,7 @@ export const portal_schema_data = {
         "dataSourceProperties": {
             api: "api",
             data: "data",
-            version: "v9.1",
+            version: "v9.2",
             singleEntityURL: "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}({entityId})",
             multiEntityURL: "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}"
         },

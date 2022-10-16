@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-import { sendErrorTelemetry } from '../telemetry/webExtensionTelemetry';
+import { sendErrorTelemetry, sendInfoTelemetry } from '../telemetry/webExtensionTelemetry';
 import { pathParamToSchema, PROVIDER_ID, telemetryEventNames } from './constants';
 import PowerPlatformExtensionContextManager from "./localStore";
 
@@ -31,6 +31,7 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
                 sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
             }
         }
+        sendInfoTelemetry("Auth", { 'web.userId': session.id });
     } catch (error) {
         const authError = (error as Error)?.message;
         sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);
