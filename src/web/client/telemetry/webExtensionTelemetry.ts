@@ -45,6 +45,12 @@ export interface IWebExtensionAPITelemetryData extends IWebExtensionTelemetryDat
     }
 }
 
+export interface IWebExtensionExceptionTelemetryData extends IWebExtensionTelemetryData {
+    properties: {
+        'eventName': string;
+    }
+}
+
 export interface IWebExtensionPerfTelemetryData extends IWebExtensionTelemetryData {
     eventName: string,
     measurements: {
@@ -107,12 +113,16 @@ export function getQueryParameterValue(parameter: string, searchParams: URLSearc
 }
 
 export function sendErrorTelemetry(eventName: string, errorMessage?: string) {
+    const telemetryData: IWebExtensionExceptionTelemetryData = {
+        properties: {
+            eventName: eventName
+        }
+    }
     if (errorMessage) {
-        const errorMessages: string[] = [];
-        errorMessages.push(errorMessage);
-        _telemetry?.sendTelemetryErrorEvent(eventName, undefined, undefined, errorMessages);
+        const error: Error = new Error(errorMessage);
+        _telemetry?.sendTelemetryException(error, telemetryData.properties);
     } else {
-        _telemetry?.sendTelemetryErrorEvent(eventName);
+        _telemetry?.sendTelemetryException(new Error(), telemetryData.properties);
     }
 }
 
@@ -138,11 +148,10 @@ export function sendAPITelemetry(URL: string, entity: string, httpMethod: string
         }
     }
     if (errorMessage) {
-        const errorMessages: string[] = [];
-        errorMessages.push(errorMessage);
-        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements, errorMessages);
+        const error: Error = new Error(errorMessage);
+        _telemetry?.sendTelemetryException(error, telemetryData.properties, telemetryData.measurements);
     } else {
-        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
+        _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
     }
 }
 
