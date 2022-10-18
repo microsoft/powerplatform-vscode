@@ -148,9 +148,11 @@ export function sendAPITelemetry(URL: string, entity: string, httpMethod: string
         }
     }
     if (errorMessage) {
+        // TODO: test these events before merging the PR
         const error: Error = new Error(errorMessage);
         _telemetry?.sendTelemetryException(error, telemetryData.properties, telemetryData.measurements);
     } else {
+        // TODO: test these events before merging the PR
         _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
     }
 }
