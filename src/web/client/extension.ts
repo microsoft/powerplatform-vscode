@@ -5,7 +5,6 @@
 
 import * as nls from 'vscode-nls';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
@@ -65,7 +64,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
                             const isFirstRun = context.globalState.get(IS_FIRST_RUN_EXPERIENCE, true);
                             if (isFirstRun) {
-                                vscode.commands.executeCommand(`workbench.action.openWalkthrough`,`microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted`, false);
+                                vscode.commands.executeCommand(`workbench.action.openWalkthrough`, `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted`, false);
                                 context.globalState.update(IS_FIRST_RUN_EXPERIENCE, false);
                                 sendInfoTelemetry("StartCommand", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted' });
                             }

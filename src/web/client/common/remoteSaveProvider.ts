@@ -10,7 +10,6 @@ import { BAD_REQUEST, MIMETYPE } from './constants';
 import { showErrorDialog } from './errorHandler';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import * as nls from 'vscode-nls';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function saveData(
