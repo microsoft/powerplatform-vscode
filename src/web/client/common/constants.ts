@@ -17,7 +17,7 @@ export const CONTENT_PAGES = 'contentpages';
 export const SCHEMA = "schema";
 export const WEBSITE_ID = "websiteId";
 export const WEBSITE_NAME = "websiteName";
-export const DEFAULT_LANGUAGE_CODE = ' ';
+export const DEFAULT_LANGUAGE_CODE = 'en-US';
 export const NO_CONTENT = ' ';
 export const ORG_URL = 'orgUrl';
 export const DATA_SOURCE = 'dataSource';
@@ -25,6 +25,7 @@ export const ADX_WEB_TEMPLATES = 'adx_webtemplates';
 export const EMPTY_FILE_NAME = 'defaultfilename';
 export const FILE_NAME_FIELD = '_primarynamefield';
 export const FILE_FOLDER_NAME = '_foldername';
+export const LANGUAGE_FIELD = '_languagefield';
 export const CHARSET = 'utf-8';
 export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION = "//.default";
@@ -92,7 +93,8 @@ export const columnExtension = new Map([
     ["adx_customjavascript", "customjs.js"],
     ["adx_copy", "webpage.copy.html"],
     ["documentbody", "css"],
-    ["adx_source", "html"]
+    ["adx_source", "html"],
+    ["adx_value", "html"]
 ]);
 
 export const pathParamToSchema = new Map([

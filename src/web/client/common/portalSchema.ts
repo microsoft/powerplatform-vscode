@@ -1312,9 +1312,9 @@ export const portal_schema_data = {
                 "_foldername": "content-snippets",
                 "_propextension": "contentsnippet",
                 "_exporttype": "SingleFolder",
-                "_languagefield": "adx_contentsnippetlanguageid",
+                "_languagefield": "_adx_contentsnippetlanguageid_value",
                 "_languagegroupby": "adx_name",
-                "_fetchQueryParameters": "?$filter=adx_contentsnippetid%20eq%20{entityId}&$select=adx_name,adx_value",
+                "_fetchQueryParameters": "?$filter=adx_contentsnippetid%20eq%20{entityId}&$select=adx_name,adx_value,_adx_contentsnippetlanguageid_value",
                 "_attributes": "adx_value"
             },
             {

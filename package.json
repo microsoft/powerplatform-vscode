@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
-  "version": "1.0.1-dev",
+  "version": "111.1.13-dev",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
@@ -65,10 +65,10 @@
     "onCommand:pacCLI.openDocumentation",
     "onCommand:microsoft-powerapps-portals.webExtension.init",
     "onCommand:powerplatform-walkthrough.overview-learn-more",
-		"onCommand:powerplatform-walkthrough.fileSystem-documentation",
-		"onCommand:powerplatform-walkthrough.fileSystem-open-folder",
-		"onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
-		"onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
+    "onCommand:powerplatform-walkthrough.fileSystem-documentation",
+    "onCommand:powerplatform-walkthrough.fileSystem-open-folder",
+    "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
+    "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
     "onStartupFinished",
     "workspaceContains:**/**.portalconfig",
     "onDebug",
@@ -666,51 +666,51 @@
       ]
     },
     "walkthroughs": [
-			{
-				"id": "PowerPage-gettingStarted",
-				"title": "%microsoft-powerapps-portals.walkthrough.title%",
-				"description": "%microsoft-powerapps-portals.walkthrough.description%",
-				"when": "isWeb && virtualWorkspace",
-				"steps": [
-					{
-						"id": "overview",
-						"title": "%microsoft-powerapps-portals.walkthrough.overview.title%",
-						"description": "%microsoft-powerapps-portals.walkthrough.overview.description%",
-						"media": {
-							"svg": "./src/web/client/assets/overview.svg",
-							"altText": "%microsoft-powerapps-portals.walkthrough.overview.title%"
-						},
-						"completionEvents": [
-							"onCommand:powerplatform-walkthrough.overview-learn-more"
-						]
-					},
-					{
-						"id": "fileSystem",
-						"title": "%microsoft-powerapps-portals.walkthrough.fileSystem.title%",
-						"description": "%microsoft-powerapps-portals.walkthrough.fileSystem.description%",
-						"media": {
-							"svg": "./src/web/client/assets/fileSystem.svg",
-							"altText": "%microsoft-powerapps-portals.walkthrough.fileSystem.title%"
-						},
-						"completionEvents": [
-							"onCommand:powerplatform-walkthrough.fileSystem-open-folder"
-						]
-					},
-					{
-						"id": "advancedCapabilities",
-						"title": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.title%",
-						"description": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.description%",
-						"media": {
-							"svg": "./src/web/client/assets/advancedCapabilities.svg",
-							"altText": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.title%"
-						},
-						"completionEvents": [
-							"onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding"
-						]
-					}
-				]
-			}
-		]
+      {
+        "id": "PowerPage-gettingStarted",
+        "title": "%microsoft-powerapps-portals.walkthrough.title%",
+        "description": "%microsoft-powerapps-portals.walkthrough.description%",
+        "when": "isWeb && virtualWorkspace",
+        "steps": [
+          {
+            "id": "overview",
+            "title": "%microsoft-powerapps-portals.walkthrough.overview.title%",
+            "description": "%microsoft-powerapps-portals.walkthrough.overview.description%",
+            "media": {
+              "svg": "./src/web/client/assets/overview.svg",
+              "altText": "%microsoft-powerapps-portals.walkthrough.overview.title%"
+            },
+            "completionEvents": [
+              "onCommand:powerplatform-walkthrough.overview-learn-more"
+            ]
+          },
+          {
+            "id": "fileSystem",
+            "title": "%microsoft-powerapps-portals.walkthrough.fileSystem.title%",
+            "description": "%microsoft-powerapps-portals.walkthrough.fileSystem.description%",
+            "media": {
+              "svg": "./src/web/client/assets/fileSystem.svg",
+              "altText": "%microsoft-powerapps-portals.walkthrough.fileSystem.title%"
+            },
+            "completionEvents": [
+              "onCommand:powerplatform-walkthrough.fileSystem-open-folder"
+            ]
+          },
+          {
+            "id": "advancedCapabilities",
+            "title": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.title%",
+            "description": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.description%",
+            "media": {
+              "svg": "./src/web/client/assets/advancedCapabilities.svg",
+              "altText": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.title%"
+            },
+            "completionEvents": [
+              "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding"
+            ]
+          }
+        ]
+      }
+    ]
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",

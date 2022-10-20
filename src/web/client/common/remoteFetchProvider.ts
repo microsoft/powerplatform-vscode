@@ -90,23 +90,15 @@ async function createContentFiles(
     entityId: string,
     websiteIdToLanguage: Map<string, string>
 ) {
-    const lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string)
-        ? websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string)
-        : Constants.DEFAULT_LANGUAGE_CODE;
+    let lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string) ?? '';
     sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LCID, { 'lcid': (lcid ? lcid.toString() : '') });
+
     const entityEntry = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string);
     const attributes = entityEntry?.get('_attributes');
     const exportType = entityEntry?.get('_exporttype');
     const portalFolderName = queryParamsMap.get(Constants.WEBSITE_NAME) as string;
     const subUri = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string)?.get(Constants.FILE_FOLDER_NAME);
-    let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
 
-    if (languageIdCodeMap?.size && lcid) {
-        languageCode = languageIdCodeMap.get(lcid) as string
-            ? languageIdCodeMap.get(lcid) as string
-            : Constants.DEFAULT_LANGUAGE_CODE;
-    }
-    sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
     let filePathInPortalFS = '';
     if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
         filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
@@ -131,6 +123,19 @@ async function createContentFiles(
             filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
             await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
         }
+
+        const languageCodeAttribute = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string)?.get(Constants.LANGUAGE_FIELD);
+
+        if (languageCodeAttribute) {
+            const languageCodeId = result[languageCodeAttribute];
+            lcid = websiteIdToLanguage.get(languageCodeId) ?? '';
+        }
+        let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
+
+        if (languageIdCodeMap?.size && lcid) {
+            languageCode = languageIdCodeMap.get(lcid) as string ?? Constants.DEFAULT_LANGUAGE_CODE;
+        }
+        sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
 
         const attributeArray = attributes.split(',');
         let counter = 0;
