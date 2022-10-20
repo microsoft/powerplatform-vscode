@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import {
     sendAPIFailureTelemetry,
@@ -107,7 +106,7 @@ async function createContentFiles(
             ? languageIdCodeMap.get(lcid) as string
             : Constants.DEFAULT_LANGUAGE_CODE;
     }
-    sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString(): '') });
+    sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
     let filePathInPortalFS = '';
     if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
         filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
@@ -160,7 +159,7 @@ async function createContentFiles(
         await PowerPlatformExtensionContextManager.updateSingleFileUrisInContext(vscode.Uri.parse(fileUri));
 
         // Not awaited intentionally
-        vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(fileUri), {background: true, preview: false});
+        vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(fileUri), { background: true, preview: false });
         sendInfoTelemetry("StartCommand", { 'commandId': 'vscode.open', 'type': 'file' });
     }
 }
