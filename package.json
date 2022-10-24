@@ -250,6 +250,11 @@
         "title": "%pacCLI.envAndSolutionsPanel.copyOrganizationId.title%"
       },
       {
+        "command": "pacCLI.solutionInitPanel.launch",
+        "category": "Power Platform CLI",
+        "title": "%pacCLI.solutionInitPanel.launch%"
+      },
+      {
         "command": "microsoft-powerapps-portals.preview-show",
         "title": "%microsoft-powerapps-portals.preview-show.title%",
         "icon": {
@@ -269,6 +274,11 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Disable the PowerPlatform activity bar panels"
+        },
+        "powerPlatform.experimental.enableInitPanels": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Experimental: Init scenario panels"
         },
         "powerPlatform.experimental.enablePcfDebuggingFeatures": {
           "type": "boolean",
@@ -445,6 +455,12 @@
         "path": "./src/client/portal_fileicons/portals-icon-theme.json"
       }
     ],
+    "submenus": [
+      {
+        "id": "pac.explorerContext.directory.menu",
+        "label": "Power Platform"
+      }
+    ],
     "menus": {
       "editor/title": [
         {
@@ -524,6 +540,10 @@
           "when": "never"
         },
         {
+          "command": "pacCLI.solutionInitPanel.launch",
+          "when": "!virtualWorkspace && config.powerPlatform.experimental.enableInitPanels"
+        },
+        {
           "command": "pacCLI.openDocumentation",
           "when": "!virtualWorkspace"
         },
@@ -562,6 +582,20 @@
         {
           "command": "pacCLI.authPanel.clearAuthProfile",
           "when": "!virtualWorkspace"
+        }
+      ],
+      "explorer/context": [
+        {
+          "submenu": "pac.explorerContext.directory.menu",
+          "when": "explorerResourceIsFolder && config.powerPlatform.experimental.enableInitPanels",
+          "group": "2_pacCommands"
+        }
+      ],
+      "pac.explorerContext.directory.menu":[
+        {
+          "command": "pacCLI.solutionInitPanel.launch",
+          "when": "explorerResourceIsFolder && config.powerPlatform.experimental.enableInitPanels",
+          "group": "2_pacCommands"
         }
       ],
       "view/title": [
