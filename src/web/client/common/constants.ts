@@ -33,6 +33,8 @@ export const PUBLIC = 'public';
 export const SITE_VISIBILITY = 'siteVisibility';
 export const MIMETYPE = 'mimetype';
 export const IS_FIRST_RUN_EXPERIENCE = 'isFirstRunExperience';
+export const OLD_SCHEMA_NAME = 'PortalSchemaV1';
+export const NEW_SCHEMA_NAME = 'PortalSchemaV2';
 
 export enum httpMethod {
     PATCH = 'PATCH',

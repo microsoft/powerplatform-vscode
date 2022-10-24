@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export const portal_schema_data = {
+export const portal_schema_V1 = {
     "entities": {
         "dataSourceProperties": {
             api: "api",
@@ -6265,4 +6265,741 @@ export const portal_schema_data = {
         ],
         "_xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"
     }
+}
+
+export const portal_schema_V2 = {
+	"entities": {
+        "dataSourceProperties": {
+            api: "api",
+            data: "data",
+            version: "v9.2",
+            singleEntityURL: "{dataverseOrgUrl}/{api}/{data}/{version}/powerpagecomponents",
+            singleEntityLanguageURL: "{dataverseOrgUrl}/{api}/{data}/{version}/powerpagesitelanguages",
+            multiEntityURL: "{dataverseOrgUrl}/{api}/{data}/{version}/powerpagecomponents",
+            portalSchemaVersion : "V2"
+        },
+		"entity": [
+			{
+				"fields": {
+					"field": [
+						{
+							"_displayname": "Component Type",
+							"_name": "componenttype",
+							"_type": "optionsetvalue",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Content",
+							"_name": "content",
+							"_type": "string",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Created By",
+							"_name": "createdby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Created By (Delegate)",
+							"_name": "createdonbehalfby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Created On",
+							"_name": "createdon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Import Sequence Number",
+							"_name": "importsequencenumber",
+							"_type": "number"
+						},
+						{
+							"_displayname": "Modified By",
+							"_name": "modifiedby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Modified By (Delegate)",
+							"_name": "modifiedonbehalfby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Modified On",
+							"_name": "modifiedon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Name",
+							"_name": "name",
+							"_type": "string",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Owner",
+							"_name": "ownerid",
+							"_type": "owner"
+						},
+						{
+							"_displayname": "Owning Business Unit",
+							"_name": "owningbusinessunit",
+							"_type": "entityreference",
+							"_lookupType": "businessunit"
+						},
+						{
+							"_displayname": "Owning Team",
+							"_name": "owningteam",
+							"_type": "entityreference",
+							"_lookupType": "team"
+						},
+						{
+							"_displayname": "Owning User",
+							"_name": "owninguser",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Power Page Component",
+							"_name": "powerpagecomponentid",
+							"_type": "guid",
+							"_primaryKey": "true"
+						},
+						{
+							"_displayname": "Power Page Parent Component Id",
+							"_name": "powerpageparentcomponentid",
+							"_type": "entityreference",
+							"_lookupType": "powerpagecomponent",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Power Page Site id",
+							"_name": "powerpagesiteid",
+							"_type": "entityreference",
+							"_lookupType": "powerpagesite",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Power Page Site Language Id",
+							"_name": "powerpagesitelanguageid",
+							"_type": "entityreference",
+							"_lookupType": "powerpagesitelanguage",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Record Created On",
+							"_name": "overriddencreatedon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Status",
+							"_name": "statecode",
+							"_type": "state"
+						},
+						{
+							"_displayname": "Status Reason",
+							"_name": "statuscode",
+							"_type": "status"
+						},
+						{
+							"_displayname": "Time Zone Rule Version Number",
+							"_name": "timezoneruleversionnumber",
+							"_type": "number"
+						},
+						{
+							"_displayname": "UTC Conversion Time Zone Code",
+							"_name": "utcconversiontimezonecode",
+							"_type": "number"
+						},
+						{
+							"_displayname": "Version Number",
+							"_name": "versionnumber",
+							"_type": "bigint"
+						}
+					]
+				},
+				"relationships": "",
+				"_name": "powerpagecomponent",
+				"_displayname": "Power Page Component",
+				"_etc": "10271",
+				"_primaryidfield": "powerpagecomponentid",
+				"_primarynamefield": "name",
+				"_disableplugins": "false",
+                "_fetchQueryParameters": "?$filter=powerpagecomponenttype%20eq%20{entityId}&$select=name,content",
+                "_attributes": "content"
+			},
+			{
+				"fields": {
+					"field": [
+						{
+							"_displayname": "Content",
+							"_name": "content",
+							"_type": "string",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Created By",
+							"_name": "createdby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Created By (Delegate)",
+							"_name": "createdonbehalfby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Created On",
+							"_name": "createdon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Import Sequence Number",
+							"_name": "importsequencenumber",
+							"_type": "number"
+						},
+						{
+							"_displayname": "Modified By",
+							"_name": "modifiedby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Modified By (Delegate)",
+							"_name": "modifiedonbehalfby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Modified On",
+							"_name": "modifiedon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Name",
+							"_name": "name",
+							"_type": "string",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Owner",
+							"_name": "ownerid",
+							"_type": "owner"
+						},
+						{
+							"_displayname": "Owning Business Unit",
+							"_name": "owningbusinessunit",
+							"_type": "entityreference",
+							"_lookupType": "businessunit"
+						},
+						{
+							"_displayname": "Owning Team",
+							"_name": "owningteam",
+							"_type": "entityreference",
+							"_lookupType": "team"
+						},
+						{
+							"_displayname": "Owning User",
+							"_name": "owninguser",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Power Page Site",
+							"_name": "powerpagesiteid",
+							"_type": "guid",
+							"_primaryKey": "true"
+						},
+						{
+							"_displayname": "Record Created On",
+							"_name": "overriddencreatedon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Status",
+							"_name": "statecode",
+							"_type": "state"
+						},
+						{
+							"_displayname": "Status Reason",
+							"_name": "statuscode",
+							"_type": "status"
+						},
+						{
+							"_displayname": "Time Zone Rule Version Number",
+							"_name": "timezoneruleversionnumber",
+							"_type": "number"
+						},
+						{
+							"_displayname": "UTC Conversion Time Zone Code",
+							"_name": "utcconversiontimezonecode",
+							"_type": "number"
+						},
+						{
+							"_displayname": "Version Number",
+							"_name": "versionnumber",
+							"_type": "bigint"
+						}
+					]
+				},
+				"relationships": "",
+				"_name": "powerpagesite",
+				"_displayname": "Power Page Site",
+				"_etc": "10272",
+				"_primaryidfield": "powerpagesiteid",
+				"_primarynamefield": "name",
+				"_disableplugins": "false"
+			},
+			{
+				"fields": {
+					"field": [
+						{
+							"_displayname": "Created By",
+							"_name": "createdby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Created By (Delegate)",
+							"_name": "createdonbehalfby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Created On",
+							"_name": "createdon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Display Name",
+							"_name": "displayname",
+							"_type": "string",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Import Sequence Number",
+							"_name": "importsequencenumber",
+							"_type": "number"
+						},
+						{
+							"_displayname": "Language Code",
+							"_name": "languagecode",
+							"_type": "string",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "LCID",
+							"_name": "lcid",
+							"_type": "number",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Modified By",
+							"_name": "modifiedby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Modified By (Delegate)",
+							"_name": "modifiedonbehalfby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Modified On",
+							"_name": "modifiedon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Name",
+							"_name": "name",
+							"_type": "string",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Owner",
+							"_name": "ownerid",
+							"_type": "owner"
+						},
+						{
+							"_displayname": "Owning Business Unit",
+							"_name": "owningbusinessunit",
+							"_type": "entityreference",
+							"_lookupType": "businessunit"
+						},
+						{
+							"_displayname": "Owning Team",
+							"_name": "owningteam",
+							"_type": "entityreference",
+							"_lookupType": "team"
+						},
+						{
+							"_displayname": "Owning User",
+							"_name": "owninguser",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Power Page Site Id",
+							"_name": "powerpagesiteid",
+							"_type": "entityreference",
+							"_lookupType": "powerpagesite",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Power Page Site Language",
+							"_name": "powerpagesitelanguageid",
+							"_type": "guid",
+							"_primaryKey": "true"
+						},
+						{
+							"_displayname": "Record Created On",
+							"_name": "overriddencreatedon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Status",
+							"_name": "statecode",
+							"_type": "state"
+						},
+						{
+							"_displayname": "Status Reason",
+							"_name": "statuscode",
+							"_type": "status"
+						},
+						{
+							"_displayname": "Time Zone Rule Version Number",
+							"_name": "timezoneruleversionnumber",
+							"_type": "number"
+						},
+						{
+							"_displayname": "UTC Conversion Time Zone Code",
+							"_name": "utcconversiontimezonecode",
+							"_type": "number"
+						},
+						{
+							"_displayname": "Version Number",
+							"_name": "versionnumber",
+							"_type": "bigint"
+						}
+					]
+				},
+				"relationships": "",
+				"_name": "powerpagesitelanguage",
+				"_displayname": "Power Page Site Language",
+				"_etc": "10273",
+				"_primaryidfield": "powerpagesitelanguageid",
+				"_primarynamefield": "name",
+				"_disableplugins": "false"
+			},
+			{
+				"fields": {
+					"field": [
+						{
+							"_displayname": "Created By",
+							"_name": "createdby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Created By (Delegate)",
+							"_name": "createdonbehalfby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Created On",
+							"_name": "createdon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Import Sequence Number",
+							"_name": "importsequencenumber",
+							"_type": "number"
+						},
+						{
+							"_displayname": "Modified By",
+							"_name": "modifiedby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Modified By (Delegate)",
+							"_name": "modifiedonbehalfby",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Modified On",
+							"_name": "modifiedon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "Name",
+							"_name": "name",
+							"_type": "string",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Owner",
+							"_name": "ownerid",
+							"_type": "owner"
+						},
+						{
+							"_displayname": "Owning Business Unit",
+							"_name": "owningbusinessunit",
+							"_type": "entityreference",
+							"_lookupType": "businessunit"
+						},
+						{
+							"_displayname": "Owning Team",
+							"_name": "owningteam",
+							"_type": "entityreference",
+							"_lookupType": "team"
+						},
+						{
+							"_displayname": "Owning User",
+							"_name": "owninguser",
+							"_type": "entityreference",
+							"_lookupType": "systemuser"
+						},
+						{
+							"_displayname": "Power Page Site Id",
+							"_name": "powerpagesiteid",
+							"_type": "entityreference",
+							"_lookupType": "powerpagesite",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Power Page Site Published",
+							"_name": "powerpagesitepublishedid",
+							"_type": "guid",
+							"_primaryKey": "true"
+						},
+						{
+							"_displayname": "Record Created On",
+							"_name": "overriddencreatedon",
+							"_type": "datetime"
+						},
+						{
+							"_displayname": "State",
+							"_name": "state",
+							"_type": "bool",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Status",
+							"_name": "statecode",
+							"_type": "state"
+						},
+						{
+							"_displayname": "Status Reason",
+							"_name": "statuscode",
+							"_type": "status"
+						},
+						{
+							"_displayname": "Time Zone Rule Version Number",
+							"_name": "timezoneruleversionnumber",
+							"_type": "number"
+						},
+						{
+							"_displayname": "UTC Conversion Time Zone Code",
+							"_name": "utcconversiontimezonecode",
+							"_type": "number"
+						},
+						{
+							"_displayname": "Version",
+							"_name": "version",
+							"_type": "string",
+							"_customfield": "true"
+						},
+						{
+							"_displayname": "Version Number",
+							"_name": "versionnumber",
+							"_type": "bigint"
+						}
+					]
+				},
+				"relationships": "",
+				"_name": "powerpagesitepublished",
+				"_displayname": "Power Page Site Published",
+				"_etc": "10227",
+				"_primaryidfield": "powerpagesitepublishedid",
+				"_primarynamefield": "name",
+				"_disableplugins": "false"
+			},{
+                "fields": {
+                    "field": [
+                        {
+                            "_displayname": "Copy",
+                            "_name": "adx_copy",
+                            "_type": "string",
+                            "_customfield": "true",
+                            "_fileType": "html",
+                            "_localize": "true"
+                        },
+                        {
+                            "_displayname": "Custom CSS",
+                            "_name": "adx_customcss",
+                            "_type": "string",
+                            "_customfield": "true",
+                            "_fileType": "css"
+                        },
+                        {
+                            "_displayname": "Custom JavaScript",
+                            "_name": "adx_customjavascript",
+                            "_type": "string",
+                            "_customfield": "true",
+                            "_fileType": "js"
+                        },
+                        {
+                            "_displayname": "Description",
+                            "_name": "adx_meta_description",
+                            "_type": "string",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Entity Form",
+                            "_name": "adx_entityform",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_entityform",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Entity List",
+                            "_name": "adx_entitylist",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_entitylist",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Master Web Page",
+                            "_name": "adx_masterwebpageid",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_webpage",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Name",
+                            "_name": "adx_name",
+                            "_type": "string",
+                            "_customfield": "true",
+                            "_templateLocalize": "true"
+                        },
+                        {
+                            "_displayname": "Navigation",
+                            "_name": "adx_navigation",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_weblinkset",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Page Template",
+                            "_name": "adx_pagetemplateid",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_pagetemplate",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Parent Page",
+                            "_name": "adx_parentpageid",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_webpage",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Partial URL",
+                            "_name": "adx_partialurl",
+                            "_type": "string",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Publishing State",
+                            "_name": "adx_publishingstateid",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_publishingstate",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Release Date",
+                            "_name": "adx_releasedate",
+                            "_type": "datetime",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Status",
+                            "_name": "statecode",
+                            "_type": "state"
+                        },
+                        {
+                            "_displayname": "Status Reason",
+                            "_name": "statuscode",
+                            "_type": "status"
+                        },
+                        {
+                            "_displayname": "Subject",
+                            "_name": "adx_subjectid",
+                            "_type": "entityreference",
+                            "_lookupType": "subject",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Summary",
+                            "_name": "adx_summary",
+                            "_type": "string",
+                            "_customfield": "true",
+                            "_fileType": "html",
+                            "_localize": "true"
+                        },
+                        {
+                            "_displayname": "Web Form",
+                            "_name": "adx_webform",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_webform",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_updateCompare": "true",
+                            "_displayname": "Web Page",
+                            "_name": "adx_webpageid",
+                            "_type": "guid",
+                            "_primaryKey": "true"
+                        },
+                        {
+                            "_displayname": "Website",
+                            "_name": "adx_websiteid",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_website",
+                            "_customfield": "true"
+                        },
+                        {
+                            "_displayname": "Webpage Language",
+                            "_name": "adx_webpagelanguageid",
+                            "_type": "entityreference",
+                            "_lookupType": "adx_websitelanguage",
+                            "_customfield": "true"
+                        }
+                    ]
+                },
+                "relationships": "",
+                "_name": "webpage",
+                "_displayname": "Web Page",
+                "_etc": "10024",
+                "_primaryidfield": "webpageid",
+                "_primarynamefield": "name",
+                "_disableplugins": "true",
+                "_foldername": "web-pages",
+                "_propextension": "webpage",
+                "_exporttype": "SubFolders",
+                "_languagefield": "adx_webpagelanguageid",
+                "_languagegroupby": "adx_rootwebpageid",
+                "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}",
+                "_attributes": "content"
+            }
+		]
+	}
 }
