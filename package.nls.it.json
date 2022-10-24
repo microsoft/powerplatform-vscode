@@ -29,6 +29,7 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Copia nome descrittivo",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copia nome univoco",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copia numero versione",
+	"pacCLI.solutionInitPanel.launch": "(Preview) New Solution",
 	"microsoft-powerapps-portals.preview-show.title": "Portale PowerApps -> Mostra anteprima",
 	"microsoft-powerapps-portals.webExtension.init.title": "Inizializza estensione Web",
 	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI non è supportata in VS Code per il Web",

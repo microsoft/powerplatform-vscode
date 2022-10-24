@@ -29,6 +29,7 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "Zkopírovat popisné jméno",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Zkopírovat jedinečné jméno",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Zkopírovat číslo verze",
+	"pacCLI.solutionInitPanel.launch": "(Preview) New Solution",
 	"microsoft-powerapps-portals.preview-show.title": "Portál PowerApps -> Zobrazit náhled",
 	"microsoft-powerapps-portals.webExtension.init.title": "Inicializovat webové rozšíření",
 	"microsoft-powerapps-portals.webExtension.limitation": "Rozhraní PAC CLI není v editoru VS Code pro web podporováno.",

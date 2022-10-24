@@ -29,6 +29,7 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "複製自訂名稱",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "複製唯一名稱",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "複製版本號碼",
+	"pacCLI.solutionInitPanel.launch": "(Preview) New Solution",
 	"microsoft-powerapps-portals.preview-show.title": "PowerApps 入口網站 -> 顯示預覽",
 	"microsoft-powerapps-portals.webExtension.init.title": "初始化 Web 擴充",
 	"microsoft-powerapps-portals.webExtension.limitation": "適用於 Web 的 VS Code 不支援 PAC CLI",

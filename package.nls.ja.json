@@ -29,6 +29,7 @@
 	"pacCLI.envAndSolutionsPanel.copyFriendlyName.title": "フレンドリ名のコピー",
 	"pacCLI.envAndSolutionsPanel.copyUniqueName.title": "一意の名前のコピー",
 	"pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "バージョン番号のコピー",
+	"pacCLI.solutionInitPanel.launch": "(Preview) New Solution",
 	"microsoft-powerapps-portals.preview-show.title": "PowerApps ポータル -> プレビューの表示",
 	"microsoft-powerapps-portals.webExtension.init.title": "Web拡張の初期化",
 	"microsoft-powerapps-portals.webExtension.limitation": "PAC CLI は Web の VS Code ではサポートされていません",
