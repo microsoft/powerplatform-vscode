@@ -20,7 +20,6 @@ import {
 } from '../utility/UrlBuilder';
 import { getHeader } from './authenticationProvider';
 import * as Constants from './constants';
-import { PORTALS_URI_SCHEME } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
@@ -64,8 +63,12 @@ export async function fetchDataFromDataverseAndUpdateVFS(
             vscode.window.showErrorMessage(ERRORS.EMPTY_RESPONSE);
         }
 
-        for (let counter = 0; counter < data.length; counter++) {
-            await createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
+        if (PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().dataSourcePropertiesMap.get(Constants.portalSchemaVersion) === 'V2') {
+            CreateDataFileNewDataModel(result, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
+        } else {
+            for (let counter = 0; counter < data.length; counter++) {
+                await createContentFiles(data[counter], entity, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
+            }
         }
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -77,6 +80,15 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         }
         sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, errorMsg);
     }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function CreateDataFileNewDataModel(result: any, queryParamsMap: Map<string, string>, entitiesSchemaMap: Map<string, Map<string, string>>, languageIdCodeMap: Map<string, string>, portalFs: PortalsFS, dataverseOrgUrl: string, accessToken: string, entityId: string, websiteIdToLanguage: Map<string, string>) {
+    if (!result) {
+        vscode.window.showErrorMessage(ERRORS.EMPTY_RESPONSE);
+    }
+    createContentFiles(result, Constants.powerpagecomponents, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
+    return result;
 }
 
 async function createContentFiles(
@@ -109,7 +121,7 @@ async function createContentFiles(
     sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
     let filePathInPortalFS = '';
     if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
-        filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
+        filePathInPortalFS = `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
         await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
     }
 
@@ -128,7 +140,7 @@ async function createContentFiles(
         }
 
         if (exportType && (exportType === Constants.exportType.SubFolders)) {
-            filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
+            filePathInPortalFS = `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
             await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
         }
 

@@ -37,6 +37,8 @@ export const OLD_SCHEMA_NAME = 'PortalSchemaV1';
 export const NEW_SCHEMA_NAME = 'PortalSchemaV2';
 export const NEW_PORTAL_LANGUAGES = 'powerpagesitelanguages';
 export const SINGLE_ENTITY_LANGUAGE_KEY = 'singleEntityLanguageURL';
+export const powerpagecomponents = 'powerpagecomponents';
+export const portalSchemaVersion = 'portalSchemaVersion';
 
 export enum httpMethod {
     PATCH = 'PATCH',
