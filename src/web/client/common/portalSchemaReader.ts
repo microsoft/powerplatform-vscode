@@ -47,8 +47,10 @@ export function getDataSourcePropertiesMap(schema: string): Map<string, string> 
         default:
             break;
     }
-    for (const [key, value] of Object.entries(dataSourceProperties)) {
-        dataSourcePropertiesMap.set(key, value)
+    if (dataSourceProperties) {
+        for (const [key, value] of Object.entries(dataSourceProperties)) {
+            dataSourcePropertiesMap.set(key, value)
+        }
     }
     return dataSourcePropertiesMap;
 }

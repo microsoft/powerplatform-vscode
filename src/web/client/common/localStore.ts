@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { dataverseAuthentication, getCustomRequestURL, getHeader } from "./authenticationProvider";
-import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTALS_URI_SCHEME, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
+import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTALS_URI_SCHEME, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, SCHEMA, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesFolderNameMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { SaveEntityDetails } from "./portalSchemaInterface";
 import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry } from "../telemetry/webExtensionTelemetry";
@@ -26,18 +26,15 @@ export interface IPowerPlatformExtensionContext {
 }
 
 class PowerPlatformExtensionContextManager {
-    private entitiesSchemaMap = getEntitiesSchemaMap();
-    private dataSourcePropertiesMap = getDataSourcePropertiesMap();
-    private entitiesFolderNameMap = getEntitiesFolderNameMap(this.entitiesSchemaMap);
 
     private PowerPlatformExtensionContext: IPowerPlatformExtensionContext = {
-        dataSourcePropertiesMap: this.dataSourcePropertiesMap,
-        entitiesSchemaMap: this.entitiesSchemaMap,
+        dataSourcePropertiesMap: new Map<string, string>(),
+        entitiesSchemaMap: new Map<string, Map<string, string>>(),
         languageIdCodeMap: new Map<string, string>(),
         websiteLanguageIdToPortalLanguageMap: new Map<string, string>(),
         websiteIdToLanguage: new Map<string, string>(),
         queryParamsMap: new Map<string, string>(),
-        entitiesFolderNameMap: this.entitiesFolderNameMap,
+        entitiesFolderNameMap: new Map<string, string>(),
         entity: '',
         entityId: '',
         rootDirectory: vscode.Uri.parse(''),
@@ -55,7 +52,10 @@ class PowerPlatformExtensionContextManager {
             entity: pathParamToSchema.get(pseudoEntityName) as string,
             entityId: entityId,
             queryParamsMap: queryParamsMap,
-            rootDirectory: vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${queryParamsMap.get(WEBSITE_NAME) as string}/`, true)
+            rootDirectory: vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${queryParamsMap.get(WEBSITE_NAME) as string}/`, true),
+            entitiesSchemaMap: getEntitiesSchemaMap(this.PowerPlatformExtensionContext.queryParamsMap.get(SCHEMA) as string),
+            dataSourcePropertiesMap: getDataSourcePropertiesMap(this.PowerPlatformExtensionContext.queryParamsMap.get(SCHEMA) as string),
+            entitiesFolderNameMap: getEntitiesFolderNameMap(this.PowerPlatformExtensionContext.entitiesSchemaMap)
         };
 
         return this.PowerPlatformExtensionContext;
