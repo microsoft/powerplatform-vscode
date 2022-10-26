@@ -3,9 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import TelemetryReporter from "@vscode/extension-telemetry";
+import TelemetryReporter, { TelemetryEventProperties } from "@vscode/extension-telemetry";
 import { queryParameters, telemetryEventNames } from "../common/constants";
 import { sanitizeURL } from "../utility/UrlBuilder";
+import PowerPlatformExtensionContextManager from "../common/localStore";
 
 let _telemetry: TelemetryReporter | undefined;
 export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWebExtensionTelemetryData {
@@ -82,19 +83,37 @@ export function sendExtensionInitPathParametersTelemetry(appName: string | undef
 export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearchParams | undefined | null) {
     const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
         eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
-        properties: {
-            orgId: getQueryParameterValue(queryParameters.ORG_ID, searchParams),
-            tenantId: getQueryParameterValue(queryParameters.TENANT_ID, searchParams),
-            portalId: getQueryParameterValue(queryParameters.PORTAL_ID, searchParams),
-            websiteId: getQueryParameterValue(queryParameters.WEBSITE_ID, searchParams),
-            dataSource: getQueryParameterValue(queryParameters.DATA_SOURCE, searchParams),
-            schema: getQueryParameterValue(queryParameters.SCHEMA, searchParams),
-            referrerSessionId: getQueryParameterValue(queryParameters.REFERRER_SESSION_ID, searchParams),
-            referrer: getQueryParameterValue(queryParameters.REFERRER, searchParams),
-            siteVisibility: getQueryParameterValue(queryParameters.SITE_VISIBILITY, searchParams),
-        }
+        properties: populateSearchParametersForTelemetryEvent(searchParams)
     }
     _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
+}
+
+export function populateSearchParametersForTelemetryEvent(searchParams: URLSearchParams | undefined | null): TelemetryEventProperties {
+    return {
+        orgId: getQueryParameterValue(queryParameters.ORG_ID, searchParams),
+        tenantId: getQueryParameterValue(queryParameters.TENANT_ID, searchParams),
+        portalId: getQueryParameterValue(queryParameters.PORTAL_ID, searchParams),
+        websiteId: getQueryParameterValue(queryParameters.WEBSITE_ID, searchParams),
+        dataSource: getQueryParameterValue(queryParameters.DATA_SOURCE, searchParams),
+        schema: getQueryParameterValue(queryParameters.SCHEMA, searchParams),
+        referrerSessionId: getQueryParameterValue(queryParameters.REFERRER_SESSION_ID, searchParams),
+        referrer: getQueryParameterValue(queryParameters.REFERRER, searchParams),
+        siteVisibility: getQueryParameterValue(queryParameters.SITE_VISIBILITY, searchParams),
+    } as TelemetryEventProperties;
+}
+
+export function populateQueryParametersForTelemetryEvent(queryParams: Map<string, string>): TelemetryEventProperties {
+    return {
+        orgId: queryParams.get(queryParameters.ORG_ID) as string,
+        tenantId: queryParams.get(queryParameters.TENANT_ID),
+        portalId: queryParams.get(queryParameters.PORTAL_ID),
+        websiteId: queryParams.get(queryParameters.WEBSITE_ID),
+        dataSource: queryParams.get(queryParameters.DATA_SOURCE),
+        schema: queryParams.get(queryParameters.SCHEMA),
+        referrerSessionId: queryParams.get(queryParameters.REFERRER_SESSION_ID),
+        referrer: queryParams.get(queryParameters.REFERRER),
+        siteVisibility: queryParams.get(queryParameters.SITE_VISIBILITY),
+    } as TelemetryEventProperties;
 }
 
 export function getPathParameterValue(parameter: string | undefined | null): string {
@@ -124,6 +143,9 @@ export function sendErrorTelemetry(eventName: string, errorMessage?: string) {
     } else {
         _telemetry?.sendTelemetryException(new Error(), telemetryData.properties);
     }
+
+    const queryParams = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().queryParamsMap;
+    _telemetry?.sendTelemetryEvent(eventName, populateQueryParametersForTelemetryEvent(queryParams));
 }
 
 export function sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
@@ -148,13 +170,11 @@ export function sendAPITelemetry(URL: string, entity: string, httpMethod: string
         }
     }
     if (errorMessage) {
-        // TODO: test these events before merging the PR
         const error: Error = new Error(errorMessage);
         _telemetry?.sendTelemetryException(error, telemetryData.properties, telemetryData.measurements);
-    } else {
-        // TODO: test these events before merging the PR
-        _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
     }
+
+    _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
 }
 
 export function sendAPISuccessTelemetry(URL: string, entity: string, httpMethod: string, duration: number) {
