@@ -9,9 +9,8 @@ import { getHeader } from './authenticationProvider';
 import { BAD_REQUEST, MIMETYPE } from './constants';
 import { showErrorDialog } from './errorHandler';
 import { SaveEntityDetails } from './portalSchemaInterface';
-import * as nls from 'vscode-nls';
 import { httpMethod } from './constants';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+import * as nls from 'vscode-nls';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function saveData(

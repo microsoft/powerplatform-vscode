@@ -355,22 +355,6 @@ The {2} represents Solution's Version number</note>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext" target-language="zh-TW">
-    <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
-        <source xml:lang="en">There was a problem opening the workspace</source>
-        <target state="translated">開啟工作區時發生問題</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
-        <source xml:lang="en">Try refreshing the browser</source>
-        <target state="translated">請嘗試重新整理瀏覽器</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
-        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">授權失敗。請重新執行以進行授權</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="./web/client/common/errorHandler" source-language="en" datatype="plaintext" target-language="zh-TW">
     <body>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error">
@@ -391,31 +375,15 @@ The {2} represents Solution's Version number</note>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/localStore" source-language="en" datatype="plaintext" target-language="zh-TW">
+  <file original="./web/client/common/fileSystemProvider" source-language="en" datatype="plaintext" target-language="zh-TW">
     <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
-        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
-        <target state="translated">後端發生問題</target>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+        <source xml:lang="en">Fetching your file ...</source>
+        <target state="translated">正在擷取您的檔案...</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.desc">
-        <source xml:lang="en">Try again</source>
-        <target state="translated">再試一次</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
-        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">授權失敗。請重新執行以進行授權</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
-        <source xml:lang="en">There was a permissions problem with the server</source>
-        <target state="translated">伺服器發生權限問題</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
-        <source xml:lang="en">One or more commands are invalid or malformed</source>
-        <target state="translated">一或多個命令無效或格式錯誤</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
-        <source xml:lang="en">Check the parameters and try again</source>
-        <target state="translated">請檢查參數，然後再試一次</target>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
+        <source xml:lang="en">Saving your file ...</source>
+        <target state="translated">正在儲存您的檔案...</target>
       </trans-unit>
     </body>
   </file>

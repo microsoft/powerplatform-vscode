@@ -355,22 +355,6 @@ The {2} represents Solution's Version number</note>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/authenticationProvider" source-language="en" datatype="plaintext" target-language="ru">
-    <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error">
-        <source xml:lang="en">There was a problem opening the workspace</source>
-        <target state="translated">При открытии рабочей области возникла проблема</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.error.desc">
-        <source xml:lang="en">Try refreshing the browser</source>
-        <target state="translated">Попробуйте обновить страницу в браузере</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.authorization.error">
-        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">Авторизация не пройдена. Запустите ее еще раз</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="./web/client/common/errorHandler" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error">
@@ -391,31 +375,15 @@ The {2} represents Solution's Version number</note>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/localStore" source-language="en" datatype="plaintext" target-language="ru">
+  <file original="./web/client/common/fileSystemProvider" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
-        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
-        <target state="translated">Возникла проблема на сервере</target>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+        <source xml:lang="en">Fetching your file ...</source>
+        <target state="translated">Извлечение файла...</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.desc">
-        <source xml:lang="en">Try again</source>
-        <target state="translated">Повторить попытку</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
-        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">Авторизация не пройдена. Запустите ее еще раз</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
-        <source xml:lang="en">There was a permissions problem with the server</source>
-        <target state="translated">Возникла проблема с разрешениями на сервере</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
-        <source xml:lang="en">One or more commands are invalid or malformed</source>
-        <target state="translated">Одна или несколько команд являются недопустимыми или неправильными</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
-        <source xml:lang="en">Check the parameters and try again</source>
-        <target state="translated">Проверьте параметры и повторите попытку</target>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
+        <source xml:lang="en">Saving your file ...</source>
+        <target state="translated">Сохранение файла...</target>
       </trans-unit>
     </body>
   </file>
