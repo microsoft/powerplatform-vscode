@@ -27,11 +27,10 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
         accessToken = session.accessToken;
 
         if (!accessToken) {
-            {
-                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
-            }
+            sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
+        } else {
+            sendInfoTelemetry("AuthSuccess");
         }
-        sendInfoTelemetry("Auth", { 'web.userId': session.id });
     } catch (error) {
         const authError = (error as Error)?.message;
         sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);

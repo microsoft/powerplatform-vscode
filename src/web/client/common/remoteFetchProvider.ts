@@ -51,7 +51,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
 
         if (!response.ok) {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.authorization.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.fetch.authorization.desc", "Try again"));
-            sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response.statusText);
+            sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response.json.toString());
             throw new Error(response.statusText);
         }
 
