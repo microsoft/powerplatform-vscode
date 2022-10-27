@@ -127,11 +127,7 @@ export function sendErrorTelemetry(eventName: string, errorMessage?: string) {
 }
 
 export function sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
-    if (properties) {
-        _telemetry?.sendTelemetryEvent(eventName, properties);
-    } else {
-        _telemetry?.sendTelemetryEvent(eventName);
-    }
+    _telemetry?.sendTelemetryEvent(eventName, properties);
 }
 
 export function sendAPITelemetry(URL: string, entity: string, httpMethod: string, isSuccessful?: boolean, duration?: number, errorMessage?: string, eventName?: string) {
@@ -148,11 +144,9 @@ export function sendAPITelemetry(URL: string, entity: string, httpMethod: string
         }
     }
     if (errorMessage) {
-        // TODO: test these events before merging the PR
         const error: Error = new Error(errorMessage);
         _telemetry?.sendTelemetryException(error, telemetryData.properties, telemetryData.measurements);
     } else {
-        // TODO: test these events before merging the PR
         _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
     }
 }
