@@ -87,7 +87,7 @@ function CreateDataFileNewDataModel(result: any, queryParamsMap: Map<string, str
     if (!result) {
         vscode.window.showErrorMessage(ERRORS.EMPTY_RESPONSE);
     }
-    createContentFiles(result, Constants.powerpagecomponents, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, dataverseOrgUrl, accessToken, entityId, websiteIdToLanguage);
+    createContentFiles(result, Constants.powerpagecomponents, queryParamsMap, entitiesSchemaMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
     return result;
 }
 
