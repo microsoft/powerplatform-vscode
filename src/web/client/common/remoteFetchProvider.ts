@@ -126,12 +126,11 @@ async function createContentFiles(
 
         const languageCodeAttribute = entitiesSchemaMap.get(Constants.pathParamToSchema.get(entity) as string)?.get(Constants.LANGUAGE_FIELD);
 
-        if (languageCodeAttribute) {
-            const languageCodeId = result[languageCodeAttribute];
-            lcid = websiteIdToLanguage.get(languageCodeId) ?? '';
+        if (languageCodeAttribute && result[languageCodeAttribute]) {
+            lcid = websiteIdToLanguage.get(result[languageCodeAttribute]) ?? '';
         }
-        let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
 
+        let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
         if (languageIdCodeMap?.size && lcid) {
             languageCode = languageIdCodeMap.get(lcid) as string ?? Constants.DEFAULT_LANGUAGE_CODE;
         }
