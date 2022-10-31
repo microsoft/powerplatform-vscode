@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { dataverseAuthentication, getCustomRequestURL, getHeader } from "./authenticationProvider";
-import { MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTALS_URI_SCHEME, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
+import { httpMethod, MULTI_ENTITY_URL_KEY, ORG_URL, pathParamToSchema, PORTALS_URI_SCHEME, PORTAL_LANGUAGES, PORTAL_LANGUAGE_DEFAULT, WEBSITES, WEBSITE_LANGUAGES, WEBSITE_NAME } from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesFolderNameMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { SaveEntityDetails } from "./portalSchemaInterface";
 import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry } from "../telemetry/webExtensionTelemetry";
@@ -101,16 +101,16 @@ class PowerPlatformExtensionContextManager {
         const languageIdCodeMap = new Map<string, string>();
         try {
             requestUrl = getCustomRequestURL(dataverseOrgUrl, PORTAL_LANGUAGES, MULTI_ENTITY_URL_KEY);
-            sendAPITelemetry(requestUrl);
+            sendAPITelemetry(requestUrl, PORTAL_LANGUAGES, httpMethod.GET);
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
                 headers: getHeader(accessToken),
             });
             if (!response?.ok) {
-                sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response?.statusText);
+                sendAPIFailureTelemetry(requestUrl, PORTAL_LANGUAGES, httpMethod.GET, new Date().getTime() - requestSentAtTime, response?.statusText);
             }
-            sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
+            sendAPISuccessTelemetry(requestUrl, PORTAL_LANGUAGES, httpMethod.GET, new Date().getTime() - requestSentAtTime);
             const result = await response?.json();
             if (result) {
                 if (result.value?.length > 0) {
@@ -123,7 +123,7 @@ class PowerPlatformExtensionContextManager {
             }
         } catch (error) {
             const errorMsg = (error as Error)?.message;
-            sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, errorMsg);
+            sendAPIFailureTelemetry(requestUrl, PORTAL_LANGUAGES, httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
         }
         return languageIdCodeMap;
     }
@@ -134,16 +134,16 @@ class PowerPlatformExtensionContextManager {
         const websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
         try {
             requestUrl = getCustomRequestURL(dataverseOrgUrl, WEBSITE_LANGUAGES, MULTI_ENTITY_URL_KEY);
-            sendAPITelemetry(requestUrl);
+            sendAPITelemetry(requestUrl, WEBSITE_LANGUAGES, httpMethod.GET);
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
                 headers: getHeader(accessToken),
             });
             if (!response?.ok) {
-                sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response?.statusText);
+                sendAPIFailureTelemetry(requestUrl, WEBSITE_LANGUAGES, httpMethod.GET, new Date().getTime() - requestSentAtTime, response?.statusText);
             }
-            sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
+            sendAPISuccessTelemetry(requestUrl, WEBSITE_LANGUAGES, httpMethod.GET, new Date().getTime() - requestSentAtTime);
             const result = await response?.json();
             if (result) {
                 if (result.value?.length > 0) {
@@ -156,7 +156,7 @@ class PowerPlatformExtensionContextManager {
             }
         } catch (error) {
             const errorMsg = (error as Error)?.message;
-            sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, errorMsg);
+            sendAPIFailureTelemetry(requestUrl, WEBSITE_LANGUAGES, httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
         }
         return websiteLanguageIdToPortalLanguageMap;
     }
@@ -167,7 +167,7 @@ class PowerPlatformExtensionContextManager {
         const websiteIdToLanguage = new Map<string, string>();
         try {
             requestUrl = getCustomRequestURL(dataverseOrgUrl, WEBSITES, MULTI_ENTITY_URL_KEY);
-            sendAPITelemetry(requestUrl);
+            sendAPITelemetry(requestUrl, WEBSITES, httpMethod.GET);
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
@@ -175,9 +175,9 @@ class PowerPlatformExtensionContextManager {
             });
 
             if (!response?.ok) {
-                sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response?.statusText);
+                sendAPIFailureTelemetry(requestUrl, WEBSITES, httpMethod.GET, new Date().getTime() - requestSentAtTime, response?.statusText);
             }
-            sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
+            sendAPISuccessTelemetry(requestUrl, WEBSITES, httpMethod.GET, new Date().getTime() - requestSentAtTime);
             const result = await response?.json();
 
             if (result) {
@@ -192,7 +192,7 @@ class PowerPlatformExtensionContextManager {
 
         } catch (error) {
             const errorMsg = (error as Error)?.message;
-            sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, errorMsg);
+            sendAPIFailureTelemetry(requestUrl, WEBSITES, httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
         }
         return websiteIdToLanguage;
     }

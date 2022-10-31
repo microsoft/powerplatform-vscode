@@ -42,7 +42,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const dataverseOrgUrl = queryParamsMap.get(Constants.ORG_URL) as string;
 
         requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, Constants.httpMethod.GET, false);
-        sendAPITelemetry(requestUrl);
+        sendAPITelemetry(requestUrl, entity, Constants.httpMethod.GET);
 
         requestSentAtTime = new Date().getTime();
         const response = await fetch(requestUrl, {
@@ -51,11 +51,11 @@ export async function fetchDataFromDataverseAndUpdateVFS(
 
         if (!response.ok) {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.authorization.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.fetch.authorization.desc", "Try again"));
-            sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, response.statusText);
+            sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response.json.toString());
             throw new Error(response.statusText);
         }
 
-        sendAPISuccessTelemetry(requestUrl, new Date().getTime() - requestSentAtTime);
+        sendAPISuccessTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
 
         const result = await response.json();
         const data = result.value;
@@ -75,7 +75,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         else {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "One or more commands are invalid or malformed"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the parameters and try again"));
         }
-        sendAPIFailureTelemetry(requestUrl, new Date().getTime() - requestSentAtTime, errorMsg);
+        sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
     }
 }
 
