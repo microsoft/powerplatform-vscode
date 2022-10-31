@@ -1,5 +1,9 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
+
 'use strict';
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -13,12 +17,12 @@ const nodeConfig = {
     mode: 'development',
 
     entry: {
-        extension:'./src/client/extension.ts',
+        extension: './src/client/extension.ts',
         yamlServer: './src/server/yamlServer.ts',
         htmlServer: './src/server/htmlServer.ts'
     },
     output: {
-        path: path.resolve(__dirname,'dist'),
+        path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
         libraryTarget: "commonjs2",
     },
@@ -49,61 +53,64 @@ const nodeConfig = {
             {
                 loader: 'ts-loader'
             }
-        ]
+            ]
         }]
     },
 };
 const webConfig = {
-	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
-	target: 'webworker', // extensions run in a webworker context
-	entry: {
-		'extension': './src/web/client/extension.ts',
-        'test/unit/extension': './src/web/client/test/unit/extension.test.ts'
-	},
-	output: {
-		filename: '[name].js',
-		path: path.join(__dirname, './dist/web'),
-		libraryTarget: 'commonjs',
-		devtoolModuleFilenameTemplate: '../../[resource-path]'
-	},
-	resolve: {
-		mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
-		extensions: ['.ts', '.js'], // support ts-files and js-files
-		alias: {
-			// provides alternate implementation for node module and source files
-		},
-		fallback: {
-			// Webpack 5 no longer polyfills Node.js core modules automatically.
-			// see https://webpack.js.org/configuration/resolve/#resolvefallback
-			// for the list of Node.js core module polyfills.
-			"path": require.resolve("path-browserify"),
-			'assert': require.resolve('assert'),
-		}
-	},
-	module: {
-		rules: [{
-			test: /\.ts$/,
-			exclude: /node_modules/,
-			use: [{
-				loader: 'ts-loader'
-			}]
-		}]
-	},
-	plugins: [
-		new webpack.ProvidePlugin({
-			process: 'process/browser', // provide a shim for the global `process` variable
-		}),
-	],
-	externals: {
-		'vscode': 'commonjs vscode', // ignored because it doesn't exist
-	},
-	performance: {
-		hints: false
-	},
-	devtool: 'nosources-source-map', // create a source map that points to the original source file
-	infrastructureLogging: {
-		level: "log", // enables logging required for problem matchers
-	},
+    mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+    target: 'webworker', // extensions run in a webworker context
+    entry: {
+        'extension': './src/web/client/extension.ts',
+        'test/unit/extension': './src/web/client/test/unit/extension.test.ts',
+        'test/integration/index': './src/web/client/test/integration/index.ts'
+    },
+    output: {
+        filename: '[name].js',
+        path: path.join(__dirname, './dist/web'),
+        libraryTarget: 'commonjs',
+        devtoolModuleFilenameTemplate: '../../[resource-path]'
+    },
+    resolve: {
+        mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
+        extensions: ['.ts', '.js'], // support ts-files and js-files
+        alias: {
+            // provides alternate implementation for node module and source files
+        },
+        fallback: {
+            // Webpack 5 no longer polyfills Node.js core modules automatically.
+            // see https://webpack.js.org/configuration/resolve/#resolvefallback
+            // for the list of Node.js core module polyfills.
+            "path": require.resolve("path-browserify"),
+            'assert': require.resolve('assert'),
+            'stream': require.resolve("stream-browserify"),
+            'util': false
+        }
+    },
+    module: {
+        rules: [{
+            test: /\.ts$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: 'ts-loader'
+            }]
+        }]
+    },
+    plugins: [
+        new webpack.ProvidePlugin({
+            process: 'process/browser', // provide a shim for the global `process` variable
+        }),
+    ],
+    externals: {
+        'vscode': 'commonjs vscode', // ignored because it doesn't exist
+    },
+    performance: {
+        hints: false
+    },
+    devtool: 'nosources-source-map', // create a source map that points to the original source file
+    infrastructureLogging: {
+        level: "log", // enables logging required for problem matchers
+    },
 };
 
 module.exports = [nodeConfig, webConfig];

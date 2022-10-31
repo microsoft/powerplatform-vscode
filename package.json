@@ -1,6 +1,6 @@
 {
-  "name": "powerplatform-vscode-preview",
-  "displayName": "Power Platform Tools [PREVIEW]",
+  "name": "powerplatform-vscode",
+  "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
   "version": "1.0.1-dev",
   "scripts": {
@@ -19,7 +19,8 @@
     "watch-web": "webpack --watch",
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
     "compile-tests": "node node_modules/gulp/bin/gulp.js compileIntegrationTests",
-    "test-integration": "node node_modules/gulp/bin/gulp.js testInt"
+    "test-integration": "node node_modules/gulp/bin/gulp.js testInt",
+    "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
