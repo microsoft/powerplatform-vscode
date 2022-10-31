@@ -295,14 +295,18 @@ export class PortalsFS implements vscode.FileSystemProvider {
             stringDecodedValue = toBase64(stringDecodedValue);
         }
 
+        const entityName = dataMap.get(uri.fsPath)?.getEntityName as string;
+        const entityId = dataMap.get(uri.fsPath)?.getEntityId as string;
+
         const patchRequestUrl = getRequestURL(dataverseOrgUrl,
-            dataMap.get(uri.fsPath)?.getEntityName as string,
-            dataMap.get(uri.fsPath)?.getEntityId as string,
+            entityName,
+            entityId,
             httpMethod.PATCH,
             true);
 
         await saveData(accessToken,
             patchRequestUrl,
+            entityName,
             uri,
             dataMap,
             stringDecodedValue);
