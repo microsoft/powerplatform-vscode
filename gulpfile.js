@@ -216,14 +216,35 @@ const testInt = gulp.series(testDebugger);
 
 async function packageVsix() {
     fs.emptyDirSync(packagedir);
+
+    // Set Preview extension name
+    await npm(['pkg', 'set', 'name=powerplatform-vscode-preview']);
+    await npm(['pkg', 'set', 'displayName="Power Platform Tools [PREVIEW]"']);
+
+    await vsce.createVSIX({
+        packagePath: packagedir,
+        preRelease: true,
+    });
+
+    // Reset to default name for standard package
+    await npm(['pkg', 'set', 'name=powerplatform-vscode']);
+    await npm(['pkg', 'set', 'displayName="Power Platform Tools"']);
+
     return vsce.createVSIX({
         packagePath: packagedir,
+        preRelease: false,
     });
 }
 
 
 async function git(args) {
     args.unshift('git');
+    const {stdout, stderr } = await exec(args.join(' '));
+    return {stdout: stdout, stderr: stderr};
+}
+
+async function npm(args) {
+    args.unshift('npm');
     const {stdout, stderr } = await exec(args.join(' '));
     return {stdout: stdout, stderr: stderr};
 }
