@@ -70,6 +70,11 @@ export class PacInterop implements IPacInterop {
 
             const env : NodeJS.ProcessEnv = {...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
 
+            // If the VS Code telemetry is disabled, disable telemetry on the PAC backing the Extension's UI
+            if (!vscode.env.isTelemetryEnabled) {
+                env['PP_TOOLS_TELEMETRY_OPTOUT'] = 'true';
+            }
+
             // Compatability for users on M1 Macs with .NET 6.0 installed - permit pac and pacTelemetryUpload
             // to roll up to 6.0 if 5.0 is not found on the system.
             if (os.platform() === 'darwin' && os.version().includes('ARM64')) {
