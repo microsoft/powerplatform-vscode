@@ -36,10 +36,18 @@ export interface IWebExtensionAPITelemetryData extends IWebExtensionTelemetryDat
     eventName: string,
     properties: {
         'url': string;
+        'entity': string;
+        'httpMethod': string;
         'isSuccessful'?: string;
     },
     measurements: {
         'durationInMillis': number;
+    }
+}
+
+export interface IWebExtensionExceptionTelemetryData extends IWebExtensionTelemetryData {
+    properties: {
+        'eventName': string;
     }
 }
 
@@ -105,28 +113,30 @@ export function getQueryParameterValue(parameter: string, searchParams: URLSearc
 }
 
 export function sendErrorTelemetry(eventName: string, errorMessage?: string) {
+    const telemetryData: IWebExtensionExceptionTelemetryData = {
+        properties: {
+            eventName: eventName
+        }
+    }
     if (errorMessage) {
-        const errorMessages: string[] = [];
-        errorMessages.push(errorMessage);
-        _telemetry?.sendTelemetryErrorEvent(eventName, undefined, undefined, errorMessages);
+        const error: Error = new Error(errorMessage);
+        _telemetry?.sendTelemetryException(error, telemetryData.properties);
     } else {
-        _telemetry?.sendTelemetryErrorEvent(eventName);
+        _telemetry?.sendTelemetryException(new Error(), telemetryData.properties);
     }
 }
 
 export function sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
-    if (properties) {
-        _telemetry?.sendTelemetryEvent(eventName, properties);
-    } else {
-        _telemetry?.sendTelemetryEvent(eventName);
-    }
+    _telemetry?.sendTelemetryEvent(eventName, properties);
 }
 
-export function sendAPITelemetry(URL: string, isSuccessful?: boolean, duration?: number, errorMessage?: string, eventName?: string) {
+export function sendAPITelemetry(URL: string, entity: string, httpMethod: string, isSuccessful?: boolean, duration?: number, errorMessage?: string, eventName?: string) {
     const telemetryData: IWebExtensionAPITelemetryData = {
         eventName: eventName ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST,
         properties: {
             url: sanitizeURL(URL),
+            entity: entity,
+            httpMethod: httpMethod,
             isSuccessful: (isSuccessful === undefined) ? "" : (isSuccessful ? "true" : "false")
         },
         measurements: {
@@ -134,20 +144,19 @@ export function sendAPITelemetry(URL: string, isSuccessful?: boolean, duration?:
         }
     }
     if (errorMessage) {
-        const errorMessages: string[] = [];
-        errorMessages.push(errorMessage);
-        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements, errorMessages);
+        const error: Error = new Error(errorMessage);
+        _telemetry?.sendTelemetryException(error, telemetryData.properties, telemetryData.measurements);
     } else {
-        _telemetry?.sendTelemetryErrorEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
+        _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
     }
 }
 
-export function sendAPISuccessTelemetry(URL: string, duration: number) {
-    sendAPITelemetry(URL, true, duration, undefined, telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+export function sendAPISuccessTelemetry(URL: string, entity: string, httpMethod: string, duration: number) {
+    sendAPITelemetry(URL, entity, httpMethod, true, duration, undefined, telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
 }
 
-export function sendAPIFailureTelemetry(URL: string, duration: number, errorMessage?: string) {
-    sendAPITelemetry(URL, false, duration, errorMessage, telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
+export function sendAPIFailureTelemetry(URL: string, entity: string, httpMethod: string, duration: number, errorMessage?: string) {
+    sendAPITelemetry(URL, entity, httpMethod, false, duration, errorMessage, telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
 }
 
 export function sendPerfTelemetry(eventName: string, duration: number) {
