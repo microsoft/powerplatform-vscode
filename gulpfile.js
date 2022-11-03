@@ -11,7 +11,6 @@ const util = require('util');
 const nls = require('vscode-nls-dev');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
-const rename = require('gulp-rename');
 const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
 const gulpTs = require("gulp-typescript");
@@ -45,17 +44,6 @@ async function clean() {
         });
     fs.emptyDirSync(outdir);
     return fs.emptyDir(distdir);
-}
-
-function setTelemetryTarget() {
-    const telemetryConfigurationSource = isOfficialBuild
-        ? 'src/common/telemetry/telemetryConfigurationProd.ts'
-        : 'src/common/telemetry/telemetryConfigurationDev.ts';
-
-    return gulp
-        .src(telemetryConfigurationSource)
-        .pipe(rename('telemetryConfiguration.ts'))
-        .pipe(gulp.dest(path.join('src', 'common', 'telemetry', 'generated')));
 }
 
 function compile() {
@@ -215,11 +203,15 @@ const test = gulp.series(testUnitTests, testWeb);
 const testInt = gulp.series(testDebugger);
 
 async function packageVsix() {
+    const devAiKey = '441859ca-4501-4653-bc1d-65fb8663108a'; // capisvtoolsappinsights-dev
+    const prodAiKey = '0d422197-d351-41c5-b371-a270ca3b13af'; // IsvTooling_AI_WUS2
+
     fs.emptyDirSync(packagedir);
 
     // Set Preview extension name
     await npm(['pkg', 'set', 'name=powerplatform-vscode-preview']);
     await npm(['pkg', 'set', 'displayName="Power Platform Tools [PREVIEW]"']);
+    await npm(['pkg', 'set', `aiKey=${devAiKey}`]);
 
     await vsce.createVSIX({
         packagePath: packagedir,
@@ -229,11 +221,15 @@ async function packageVsix() {
     // Reset to default name for standard package
     await npm(['pkg', 'set', 'name=powerplatform-vscode']);
     await npm(['pkg', 'set', 'displayName="Power Platform Tools"']);
+    await npm(['pkg', 'set', `aiKey=${isOfficialBuild ? prodAiKey : devAiKey}`]);
 
-    return vsce.createVSIX({
+    await vsce.createVSIX({
         packagePath: packagedir,
         preRelease: false,
     });
+
+    // reset to base state to prevent unnecessary diffs
+    return npm(['pkg', 'set', `aiKey=${devAiKey}`]);
 }
 
 
@@ -323,7 +319,6 @@ const recompile = gulp.series(
     translationsExport,
     translationsImport,
     translationsGenerate,
-    setTelemetryTarget,
     compile,
     compileWeb
 );
