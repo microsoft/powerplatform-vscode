@@ -11,6 +11,7 @@ const util = require('util');
 const nls = require('vscode-nls-dev');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
+const rename = require('gulp-rename');
 const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
 const gulpTs = require("gulp-typescript");
@@ -214,6 +215,13 @@ async function packageVsix() {
     await npm(['pkg', 'set', 'description="Unsupported extension for testing Power Platform Tools"']);
     await npm(['pkg', 'set', `aiKey=${devAiKey}`]);
 
+    gulp.src('README.md')
+        .pipe(rename('README.original.md'))
+        .pipe(gulp.dest('./'));
+    gulp.src('Preview.md')
+        .pipe(rename('README.md'))
+        .pipe(gulp.dest('./'));
+
     await vsce.createVSIX({
         packagePath: packagedir,
         preRelease: true,
@@ -224,6 +232,10 @@ async function packageVsix() {
     await npm(['pkg', 'set', 'displayName="Power Platform Tools"']);
     await npm(['pkg', 'set', 'description="Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals"']);
     await npm(['pkg', 'set', `aiKey=${isOfficialBuild ? prodAiKey : devAiKey}`]);
+
+    gulp.src('README.original.md')
+        .pipe(rename('README.md'))
+        .pipe(gulp.dest('./'));
 
     await vsce.createVSIX({
         packagePath: packagedir,

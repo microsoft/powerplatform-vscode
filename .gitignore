@@ -9,6 +9,9 @@ logs
 *.log
 npm-debug.log*
 
+# package type artifacts
+README.original.md
+
 # VS Code test infra
 .vscode-test/
 .vscode-test-web/
