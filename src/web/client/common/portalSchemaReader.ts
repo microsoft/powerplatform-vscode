@@ -3,24 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { portal_schema_V1, portal_schema_V2 } from "./portalSchema";
 import { FILE_FOLDER_NAME, NEW_SCHEMA_NAME, OLD_SCHEMA_NAME, schemaEntityName } from "./constants";
+import { getPortalSchema } from "../utility/schemaHelper";
 
 export function getEntitiesSchemaMap(schema: string): Map<string, Map<string, string>> {
+    console.log("getEntitiesSchemaMap", schema, OLD_SCHEMA_NAME, NEW_SCHEMA_NAME);
     const entitiesMap = new Map<string, Map<string, string>>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let schema_data: any;
-    switch (schema) {
-        case OLD_SCHEMA_NAME:
-            schema_data = portal_schema_V1;
-            break;
-        case NEW_SCHEMA_NAME:
-            schema_data = portal_schema_V2;
-            break;
-        default:
-            break;
-    }
 
+    const schema_data = getPortalSchema(schema);
+
+    console.log("getEntitiesSchemaMap", "Fetching data");
     for (let i = 0; i < schema_data.entities.entity.length; i++) {
         const entity = schema_data.entities.entity[i];
         const entitiesDetailsMap = new Map<string, string>();
@@ -31,26 +23,17 @@ export function getEntitiesSchemaMap(schema: string): Map<string, Map<string, st
         }
         entitiesMap.set(entity._name, entitiesDetailsMap)
     }
+
+    console.log("getEntitiesSchemaMap", "entities map created", entitiesMap.size);
     return entitiesMap;
 }
 
 export function getDataSourcePropertiesMap(schema: string): Map<string, string> {
-    let dataSourceProperties: { [key: string]: string } = portal_schema_V1.entities.dataSourceProperties;
+    const dataSourceProperties: { [key: string]: string } = getPortalSchema(schema).entities.dataSourceProperties;
     const dataSourcePropertiesMap = new Map<string, string>();
-    switch (schema) {
-        case OLD_SCHEMA_NAME:
-            dataSourceProperties = portal_schema_V1.entities.dataSourceProperties;
-            break;
-        case NEW_SCHEMA_NAME:
-            dataSourceProperties = portal_schema_V2.entities.dataSourceProperties;
-            break;
-        default:
-            break;
-    }
-    if (dataSourceProperties) {
-        for (const [key, value] of Object.entries(dataSourceProperties)) {
-            dataSourcePropertiesMap.set(key, value)
-        }
+
+    for (const [key, value] of Object.entries(dataSourceProperties)) {
+        dataSourcePropertiesMap.set(key, value)
     }
     return dataSourcePropertiesMap;
 }

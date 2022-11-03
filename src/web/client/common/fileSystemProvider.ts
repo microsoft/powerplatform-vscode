@@ -81,7 +81,9 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
                 const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-                if (powerPlatformContext.rootDirectory && uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
+                console.log("readDirectory", powerPlatformContext.contextSet)
+                if (powerPlatformContext.contextSet &&
+                    uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
                     await vscode.window.withProgress({
                         location: vscode.ProgressLocation.Notification,
                         cancellable: true,
@@ -105,10 +107,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const rootDirectory = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory;
+                const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
 
-                if (rootDirectory
-                    && uri.toString().includes(rootDirectory.toString())) {
+                console.log("readFile", powerPlatformContext.contextSet)
+                if (powerPlatformContext.contextSet
+                    && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
                     if (PathHasEntityFolderName(uri.toString())) {
                         await vscode.window.withProgress({
                             location: vscode.ProgressLocation.Notification,
@@ -273,7 +276,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
             powerPlatformContext.entity,
             powerPlatformContext.entityId,
             powerPlatformContext.queryParamsMap,
-            powerPlatformContext.entitiesSchemaMap,
             powerPlatformContext.languageIdCodeMap,
             this,
             powerPlatformContext.websiteIdToLanguage);

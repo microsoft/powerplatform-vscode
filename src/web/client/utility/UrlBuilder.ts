@@ -3,8 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { httpMethod, MULTI_ENTITY_URL_KEY, pathParamToSchema, SINGLE_ENTITY_URL_KEY } from "../common/constants";
+import { httpMethod, MULTI_ENTITY_URL_KEY, SINGLE_ENTITY_URL_KEY } from "../common/constants";
 import PowerPlatformExtensionContextManager from "../common/localStore";
+import { getEntity } from "./schemaHelper";
 
 export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
     const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
@@ -18,10 +19,11 @@ export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
 export function getRequestURL(dataverseOrgUrl: string, entity: string, entityId: string, method: string, isSingleEntity: boolean): string {
     const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
     let parameterizedUrlTemplate = getParameterizedRequestUrlTemplate(isSingleEntity);
+    console.log("remoteFetchProvider getRequestURL parameterizedUrlTemplate", parameterizedUrlTemplate);
     switch (method) {
         case httpMethod.GET:
             parameterizedUrlTemplate = parameterizedUrlTemplate
-                + powerPlatformContext.entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get('_fetchQueryParameters');
+                + getEntity(entity)?.get('_fetchQueryParameters');
             break;
         default:
             break;
@@ -49,9 +51,7 @@ export function sanitizeURL(url: string): string {
 // TODO - Make Json for different response type and update any here
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function updateEntityId(entity: string, entityId: string, result: any) {
-    const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-
-    const mappedEntityId = powerPlatformContext.entitiesSchemaMap.get(pathParamToSchema.get(entity) as string)?.get('_mappingEntityId');
+    const mappedEntityId = getEntity(entity)?.get('_mappingEntityId');
 
     if (mappedEntityId) {
         return result[mappedEntityId];

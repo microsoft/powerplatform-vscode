@@ -15,12 +15,12 @@ export const PORTALS_WORKSPACE_NAME = 'Power Portals';
 export const WEB_FILES = 'webfiles';
 export const CONTENT_PAGES = 'contentpages';
 export const SCHEMA = "schema";
-export const WEBSITE_ID = "websiteId";
+export const WEBSITE_ID = "websiteid";
 export const WEBSITE_NAME = "websiteName";
 export const DEFAULT_LANGUAGE_CODE = ' ';
 export const NO_CONTENT = ' ';
-export const ORG_URL = 'orgUrl';
-export const DATA_SOURCE = 'dataSource';
+export const ORG_URL = 'orgurl';
+export const DATA_SOURCE = 'datasource';
 export const ADX_WEB_TEMPLATES = 'adx_webtemplates';
 export const EMPTY_FILE_NAME = 'defaultfilename';
 export const FILE_NAME_FIELD = '_primarynamefield';
@@ -34,12 +34,12 @@ export const PUBLIC = 'public';
 export const SITE_VISIBILITY = 'siteVisibility';
 export const MIMETYPE = 'mimetype';
 export const IS_FIRST_RUN_EXPERIENCE = 'isFirstRunExperience';
-export const OLD_SCHEMA_NAME = 'PortalSchemaV1';
-export const NEW_SCHEMA_NAME = 'PortalSchemaV2';
+export const OLD_SCHEMA_NAME = 'portalschemav1';
+export const NEW_SCHEMA_NAME = 'portalschemav2';
 export const NEW_PORTAL_LANGUAGES = 'powerpagesitelanguages';
+export const NEW_PORTAL_WEBSITES = 'powerpagesites';
 export const SINGLE_ENTITY_LANGUAGE_KEY = 'singleEntityLanguageURL';
 export const powerpagecomponents = 'powerpagecomponents';
-export const portalSchemaVersion = 'portalSchemaVersion';
 
 export enum httpMethod {
     PATCH = 'PATCH',
@@ -66,7 +66,8 @@ export enum schemaEntityName {
     WEBFILES = "adx_webfile",
     WEBPAGES = "adx_webpage",
     WEBTEMPLATES = "adx_webtemplate",
-    CONTENTSNIPPET = "adx_contentsnippet"
+    CONTENTSNIPPET = "adx_contentsnippet",
+    POWERPAGECOMPONENT = "powerpagecomponents"
 }
 
 /* Corresponding name of the entityType in Dataverse entities.
@@ -78,7 +79,8 @@ export enum dataverseUrlPathEntityName {
     WEBFILES = "annotations",
     WEBPAGES = "adx_webpages",
     WEBTEMPLATES = "adx_webtemplates",
-    CONTENTSNIPPET = "adx_contentsnippets"
+    CONTENTSNIPPET = "adx_contentsnippets",
+    POWERPAGECOMPONENT = "powerpagecomponents"
 }
 
 /*This decides the folder hierarchy a file being displayed in File explorer will follow.
@@ -103,7 +105,7 @@ export const columnExtension = new Map([
     ["adx_value", "html"]
 ]);
 
-export const pathParamToSchema = new Map([
+export const pathParamToSchemaV1 = new Map([
     [vscodeUrlPathEntityName.WEBPAGES, dataverseUrlPathEntityName.WEBPAGES],
     [vscodeUrlPathEntityName.WEBFILES, dataverseUrlPathEntityName.WEBFILES],
     [vscodeUrlPathEntityName.WEBTEMPLATES, dataverseUrlPathEntityName.WEBTEMPLATES],
@@ -117,6 +119,16 @@ export const pathParamToSchema = new Map([
     ["adx_webfiles", "adx_webfile"],
     ["adx_copy", "adx_copy"],
     [dataverseUrlPathEntityName.WEBFILES, schemaEntityName.WEBFILES],
+]);
+
+export const pathParamToSchemaV2 = new Map([
+    [vscodeUrlPathEntityName.WEBPAGES, dataverseUrlPathEntityName.POWERPAGECOMPONENT],
+    [vscodeUrlPathEntityName.WEBFILES, dataverseUrlPathEntityName.POWERPAGECOMPONENT],
+    [vscodeUrlPathEntityName.WEBTEMPLATES, dataverseUrlPathEntityName.POWERPAGECOMPONENT],
+    [vscodeUrlPathEntityName.CONTENTSNIPPET, dataverseUrlPathEntityName.POWERPAGECOMPONENT],
+    [dataverseUrlPathEntityName.POWERPAGECOMPONENT, schemaEntityName.POWERPAGECOMPONENT],
+    ["powerpagesitelanguages", "powerpagesitelanguages"],
+    ["powerpagesites", "powerpagesites"]
 ]);
 
 export enum queryParameters {
