@@ -211,6 +211,7 @@ async function packageVsix() {
     // Set Preview extension name
     await npm(['pkg', 'set', 'name=powerplatform-vscode-preview']);
     await npm(['pkg', 'set', 'displayName="Power Platform Tools [PREVIEW]"']);
+    await npm(['pkg', 'set', 'description="Unsupported extension for testing Power Platform Tools"']);
     await npm(['pkg', 'set', `aiKey=${devAiKey}`]);
 
     await vsce.createVSIX({
@@ -221,6 +222,7 @@ async function packageVsix() {
     // Reset to default name for standard package
     await npm(['pkg', 'set', 'name=powerplatform-vscode']);
     await npm(['pkg', 'set', 'displayName="Power Platform Tools"']);
+    await npm(['pkg', 'set', 'description="Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals"']);
     await npm(['pkg', 'set', `aiKey=${isOfficialBuild ? prodAiKey : devAiKey}`]);
 
     await vsce.createVSIX({
