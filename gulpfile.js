@@ -218,7 +218,7 @@ async function packageVsix() {
     gulp.src('README.md')
         .pipe(rename('README.original.md'))
         .pipe(gulp.dest('./'));
-    gulp.src('Preview.md')
+    gulp.src('README.Preview.md')
         .pipe(rename('README.md'))
         .pipe(gulp.dest('./'));
 
