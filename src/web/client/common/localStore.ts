@@ -51,9 +51,10 @@ class PowerPlatformExtensionContextManager {
     }
 
     public async setPowerPlatformExtensionContext(pseudoEntityName: string, entityId: string, queryParamsMap: Map<string, string>) {
+        const schema = queryParamsMap.get(Constants.SCHEMA) as string;
         console.log("setPowerPlatformExtensionContext", "Initializing context");
         // Initialize context from URL params
-        this.PowerPlatformExtensionContext.entity = getEntityName(pseudoEntityName);
+        this.PowerPlatformExtensionContext.entity = getEntityName(pseudoEntityName, schema);
         this.PowerPlatformExtensionContext.entityId = entityId;
         this.PowerPlatformExtensionContext.queryParamsMap = queryParamsMap;
         this.PowerPlatformExtensionContext.rootDirectory = vscode.Uri.parse(`${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(Constants.WEBSITE_NAME) as string}/`, true);
@@ -61,8 +62,8 @@ class PowerPlatformExtensionContextManager {
         console.log("setPowerPlatformExtensionContext", queryParamsMap.size);
 
         // Initialize context from schema values
-        this.PowerPlatformExtensionContext.entitiesSchemaMap = getEntitiesSchemaMap(queryParamsMap.get(Constants.SCHEMA) as string);
-        this.PowerPlatformExtensionContext.dataSourcePropertiesMap = getDataSourcePropertiesMap(queryParamsMap.get(Constants.SCHEMA) as string);
+        this.PowerPlatformExtensionContext.entitiesSchemaMap = getEntitiesSchemaMap(schema);
+        this.PowerPlatformExtensionContext.dataSourcePropertiesMap = getDataSourcePropertiesMap(schema);
         this.PowerPlatformExtensionContext.entitiesFolderNameMap = getEntitiesFolderNameMap(this.PowerPlatformExtensionContext.entitiesSchemaMap);
         this.PowerPlatformExtensionContext.contextSet = true;
 

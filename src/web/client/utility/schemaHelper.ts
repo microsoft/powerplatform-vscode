@@ -17,6 +17,14 @@ export function getPortalSchema(schema: string) {
     return portal_schema_V1;
 }
 
+export function getEntityName(entity: string, schema: string) {
+    if (schema === Constants.NEW_SCHEMA_NAME) {
+        return Constants.pathParamToSchemaV2.get(entity) as string;
+    }
+
+    return Constants.pathParamToSchemaV1.get(entity) as string;
+}
+
 export function getWebsiteEntityName() {
     const powerPlatformExtensionContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
     if (powerPlatformExtensionContext.queryParamsMap.get(Constants.SCHEMA) as string === Constants.NEW_SCHEMA_NAME) {
@@ -42,16 +50,6 @@ export function getWebsiteLanguageEntityName() {
     }
 
     return Constants.WEBSITE_LANGUAGES;
-}
-
-export function getEntityName(entity: string) {
-    console.log("getRequestUrl");
-    const powerPlatformExtensionContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-    if (powerPlatformExtensionContext.queryParamsMap.get(Constants.SCHEMA) as string === Constants.NEW_SCHEMA_NAME) {
-        return Constants.pathParamToSchemaV2.get(entity) as string;
-    }
-
-    return Constants.pathParamToSchemaV1.get(entity) as string;
 }
 
 export function getEntity(entity: string) {

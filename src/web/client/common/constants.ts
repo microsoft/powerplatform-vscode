@@ -16,7 +16,7 @@ export const WEB_FILES = 'webfiles';
 export const CONTENT_PAGES = 'contentpages';
 export const SCHEMA = "schema";
 export const WEBSITE_ID = "websiteid";
-export const WEBSITE_NAME = "websiteName";
+export const WEBSITE_NAME = "websitename";
 export const DEFAULT_LANGUAGE_CODE = ' ';
 export const NO_CONTENT = ' ';
 export const ORG_URL = 'orgurl';
@@ -132,15 +132,15 @@ export const pathParamToSchemaV2 = new Map([
 ]);
 
 export enum queryParameters {
-    ORG_ID = 'organizationId',
-    TENANT_ID = 'tenantId',
-    PORTAL_ID = 'websitePreviewId',
-    WEBSITE_ID = 'websiteId',
+    ORG_ID = 'organizationid',
+    TENANT_ID = 'tenantid',
+    PORTAL_ID = 'websitePreviewid',
+    WEBSITE_ID = 'websiteid',
     SCHEMA = 'schema',
-    DATA_SOURCE = 'dataSource',
-    REFERRER_SESSION_ID = 'referrerSessionId',
+    DATA_SOURCE = 'datasource',
+    REFERRER_SESSION_ID = 'referrersessionid',
     REFERRER = 'referrer',
-    SITE_VISIBILITY = 'siteVisibility'
+    SITE_VISIBILITY = 'sitevisibility'
 }
 
 export enum telemetryEventNames {
