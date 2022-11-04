@@ -217,7 +217,7 @@ const test = gulp.series(testUnitTests, testWeb);
 const testInt = gulp.series(testDebugger);
 
 async function packageVsix() {
-    const stanardHeader = '# Power Platform Extension';
+    const standardHeader = '# Power Platform Extension';
     const previewHeader = '# Power Platform Tools [PREVIEW]\n\n## This extension is used for internal testing against targets such as vscode.dev which require Marketplace published extensions, and is not supported.';
 
     const setPackageInfo = async function(setPreviewState) {
@@ -226,7 +226,7 @@ async function packageVsix() {
         await npm(['pkg', 'set', `description=${setPreviewState ? '"Unsupported extension for testing Power Platform Tools"' : '"Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals"'}`]);
 
         gulp.src('README.md')
-            .pipe(setPreviewState ? replace(stanardHeader, previewHeader) : replace(previewHeader, stanardHeader))
+            .pipe(setPreviewState ? replace(standardHeader, previewHeader) : replace(previewHeader, standardHeader))
             .pipe(gulp.dest('./'));
     }
 
