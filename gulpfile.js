@@ -217,29 +217,43 @@ const test = gulp.series(testUnitTests, testWeb);
 const testInt = gulp.series(testDebugger);
 
 async function packageVsix() {
-    const setPackageInfo = async function(setPreviewState) {
-        const standardHeader = '# Power Platform Extension';
-        const previewHeader = '# Power Platform Tools [PREVIEW]\n\n## This extension is used for internal testing against targets such as vscode.dev which require Marketplace published extensions, and is not supported.';
+    const standardHeader = '# Power Platform Extension';
+    const previewHeader = '# Power Platform Tools [PREVIEW]\n\n## This extension is used for internal testing against targets such as vscode.dev which require Marketplace published extensions, and is not supported.';
+    const standardPackageOptions = {
+        name: 'powerplatform-vscode',
+        displayName: 'Power Platform Tools',
+        description: 'Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals',
+        readmeHeader: standardHeader,
+        readmeReplacementTarget: previewHeader,
+    };
+    const previewPackageOptions = {
+        name: 'powerplatform-vscode-preview',
+        displayName: 'Power Platform Tools [PREVIEW]',
+        description: 'Unsupported extension for testing Power Platform Tools',
+        readmeHeader: previewHeader,
+        readmeReplacementTarget: standardHeader,
+     };
 
-        await npm(['pkg', 'set', `name=${setPreviewState ? 'powerplatform-vscode-preview' : 'powerplatform-vscode'}`]);
-        await npm(['pkg', 'set', `displayName=${setPreviewState ? '"Power Platform Tools [PREVIEW]"' : '"Power Platform Tools"'}`]);
-        await npm(['pkg', 'set', `description=${setPreviewState ? '"Unsupported extension for testing Power Platform Tools"' : '"Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals"'}`]);
+    const setPackageInfo = async function(pkgOptions) {
+        await npm(['pkg', 'set', `name=${pkgOptions.name}`]);
+        await npm(['pkg', 'set', `displayName="${pkgOptions.displayName}"`]);
+        await npm(['pkg', 'set', `description="${pkgOptions.description}"`]);
 
         gulp.src('README.md')
-            .pipe(setPreviewState ? replace(standardHeader, previewHeader) : replace(previewHeader, standardHeader))
+            .pipe(replace(pkgOptions.readmeReplacementTarget, pkgOptions.readmeHeader))
             .pipe(gulp.dest('./'));
     }
 
-    await setPackageInfo(isPreviewBuild);
+    await setPackageInfo(isPreviewBuild ? previewPackageOptions : standardPackageOptions);
 
     await vsce.createVSIX({
         packagePath: packagedir,
         preRelease: isPreviewBuild,
     });
 
-    // Reset to non-preview settings to prevent preview values in diffs
+    // Reset to non-preview settings to prevent polluting git diffs
     if (isPreviewBuild) {
-        await setPackageInfo(false);
+        await setPackageInfo(standardPackageOptions);
     }
 }
 
