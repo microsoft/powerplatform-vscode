@@ -35,6 +35,7 @@ const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
 const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
 const isOfficialBuild = argv.isOfficialBuild && argv.isOfficialBuild.toLowerCase() == "true";
+const isPreviewBuild = argv.isPreviewBuild && argv.isPreviewBuild.toLowerCase() == "true";
 
 async function clean() {
     (await pslist())
@@ -48,7 +49,7 @@ async function clean() {
 }
 
 function setTelemetryTarget() {
-    const telemetryConfigurationSource = isOfficialBuild
+    const telemetryConfigurationSource = isOfficialBuild && !isPreviewBuild
         ? 'src/common/telemetry/telemetryConfigurationProd.ts'
         : 'src/common/telemetry/telemetryConfigurationDev.ts';
 
@@ -57,6 +58,7 @@ function setTelemetryTarget() {
         .pipe(rename('telemetryConfiguration.ts'))
         .pipe(gulp.dest(path.join('src', 'common', 'telemetry', 'generated')));
 }
+
 
 function compile() {
     return gulp
@@ -215,15 +217,55 @@ const test = gulp.series(testUnitTests, testWeb);
 const testInt = gulp.series(testDebugger);
 
 async function packageVsix() {
-    fs.emptyDirSync(packagedir);
-    return vsce.createVSIX({
+    const standardHeader = '# Power Platform Extension';
+    const previewHeader = '# Power Platform Tools [PREVIEW]\n\n## This extension is used for internal testing against targets such as vscode.dev which require Marketplace published extensions, and is not supported.';
+    const standardPackageOptions = {
+        name: 'powerplatform-vscode',
+        displayName: 'Power Platform Tools',
+        description: 'Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals',
+        readmeHeader: standardHeader,
+        readmeReplacementTarget: previewHeader,
+    };
+    const previewPackageOptions = {
+        name: 'powerplatform-vscode-preview',
+        displayName: 'Power Platform Tools [PREVIEW]',
+        description: 'Unsupported extension for testing Power Platform Tools',
+        readmeHeader: previewHeader,
+        readmeReplacementTarget: standardHeader,
+     };
+
+    const setPackageInfo = async function(pkgOptions) {
+        await npm(['pkg', 'set', `name=${pkgOptions.name}`]);
+        await npm(['pkg', 'set', `displayName="${pkgOptions.displayName}"`]);
+        await npm(['pkg', 'set', `description="${pkgOptions.description}"`]);
+
+        gulp.src('README.md')
+            .pipe(replace(pkgOptions.readmeReplacementTarget, pkgOptions.readmeHeader))
+            .pipe(gulp.dest('./'));
+    }
+
+    await setPackageInfo(isPreviewBuild ? previewPackageOptions : standardPackageOptions);
+
+    await vsce.createVSIX({
         packagePath: packagedir,
+        preRelease: isPreviewBuild,
     });
+
+    // Reset to non-preview settings to prevent polluting git diffs
+    if (isPreviewBuild) {
+        await setPackageInfo(standardPackageOptions);
+    }
 }
 
 
 async function git(args) {
     args.unshift('git');
+    const {stdout, stderr } = await exec(args.join(' '));
+    return {stdout: stdout, stderr: stderr};
+}
+
+async function npm(args) {
+    args.unshift('npm');
     const {stdout, stderr } = await exec(args.join(' '));
     return {stdout: stdout, stderr: stderr};
 }
