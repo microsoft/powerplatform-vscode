@@ -34,9 +34,9 @@ steps:
   displayName: Capture build version in package/version.csv
 
 - task: NodeTool@0
-  displayName: 'Use nodejs 14.x'
+  displayName: 'Use nodejs 16.x'
   inputs:
-    versionSpec: '14.x'
+    versionSpec: '16.x'
 
 - task: Npm@1
   displayName: 'Restore (npm install)'
