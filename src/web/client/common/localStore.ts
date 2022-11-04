@@ -4,12 +4,13 @@
  */
 
 import * as vscode from "vscode";
-import { dataverseAuthentication, getCustomRequestURL, getHeader } from "./authenticationProvider";
+import { dataverseAuthentication, getHeader } from "./authenticationProvider";
 import * as Constants from "./constants";
 import { getDataSourcePropertiesMap, getEntitiesFolderNameMap, getEntitiesSchemaMap } from "./portalSchemaReader";
 import { SaveEntityDetails } from "./portalSchemaInterface";
 import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry } from "../telemetry/webExtensionTelemetry";
-import { getEntityName, getPortalLanguageEntityName, getLanguageIdCodeMap, getWebsiteEntityName, getWebsiteLanguageEntityName, getWebsiteIdToLanguageMap, getwebsiteLanguageIdToPortalLanguageMap } from "../utility/schemaHelper";
+import { getLanguageIdCodeMap, getWebsiteIdToLanguageMap, getwebsiteLanguageIdToPortalLanguageMap } from "../utility/schemaHelper";
+import { getCustomRequestURL } from "../utility/UrlBuilder";
 
 export interface IPowerPlatformExtensionContext {
     dataSourcePropertiesMap: Map<string, string>; // dataSourceProperties in portal_schema_data
@@ -24,7 +25,8 @@ export interface IPowerPlatformExtensionContext {
     rootDirectory: vscode.Uri;
     saveDataMap: Map<string, SaveEntityDetails>,
     defaultFileUri: vscode.Uri, // This will default to home page or current page in multifile scenario
-    contextSet: boolean
+    contextSet: boolean,
+    currentSchema: string
 }
 
 class PowerPlatformExtensionContextManager {
@@ -42,38 +44,35 @@ class PowerPlatformExtensionContextManager {
         rootDirectory: vscode.Uri.parse(''),
         saveDataMap: new Map<string, SaveEntityDetails>(),
         defaultFileUri: vscode.Uri.parse(``),
-        contextSet: false
+        contextSet: false,
+        currentSchema: ""
     };
 
     public getPowerPlatformExtensionContext() {
-        console.log("getPowerPlatformExtensionContext", this.PowerPlatformExtensionContext, this.PowerPlatformExtensionContext.rootDirectory);
+        console.log("getPowerPlatformExtensionContext", this.PowerPlatformExtensionContext);
         return this.PowerPlatformExtensionContext;
     }
 
-    public async setPowerPlatformExtensionContext(pseudoEntityName: string, entityId: string, queryParamsMap: Map<string, string>) {
-        const schema = queryParamsMap.get(Constants.SCHEMA) as string;
-        console.log("setPowerPlatformExtensionContext", "Initializing context");
+    public async setPowerPlatformExtensionContext(entityName: string, entityId: string, queryParamsMap: Map<string, string>) {
+        const schema = queryParamsMap.get(Constants.schemaKey.SCHEMA_VERSION) as string;
         // Initialize context from URL params
-        this.PowerPlatformExtensionContext.entity = getEntityName(pseudoEntityName, schema);
+        this.PowerPlatformExtensionContext.currentSchema = schema;
+        this.PowerPlatformExtensionContext.entity = entityName.toLowerCase();
         this.PowerPlatformExtensionContext.entityId = entityId;
         this.PowerPlatformExtensionContext.queryParamsMap = queryParamsMap;
-        this.PowerPlatformExtensionContext.rootDirectory = vscode.Uri.parse(`${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(Constants.WEBSITE_NAME) as string}/`, true);
-
-        console.log("setPowerPlatformExtensionContext", queryParamsMap.size);
+        this.PowerPlatformExtensionContext.rootDirectory = vscode.Uri.parse(`${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(Constants.queryParameters.WEBSITE_NAME) as string}/`, true);
 
         // Initialize context from schema values
         this.PowerPlatformExtensionContext.entitiesSchemaMap = getEntitiesSchemaMap(schema);
         this.PowerPlatformExtensionContext.dataSourcePropertiesMap = getDataSourcePropertiesMap(schema);
         this.PowerPlatformExtensionContext.entitiesFolderNameMap = getEntitiesFolderNameMap(this.PowerPlatformExtensionContext.entitiesSchemaMap);
         this.PowerPlatformExtensionContext.contextSet = true;
-
-        console.log("setPowerPlatformExtensionContext", this.PowerPlatformExtensionContext);
     }
 
     public async authenticateAndUpdateDataverseProperties() {
-        const dataverseOrgUrl = this.PowerPlatformExtensionContext.queryParamsMap.get(Constants.ORG_URL) as string;
+        const dataverseOrgUrl = this.PowerPlatformExtensionContext.queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
-        const schema = this.PowerPlatformExtensionContext.queryParamsMap.get(Constants.SCHEMA) as string;
+        const schema = this.PowerPlatformExtensionContext.queryParamsMap.get(Constants.schemaKey.SCHEMA_VERSION) as string;
 
         if (accessToken) {
             this.PowerPlatformExtensionContext = {
@@ -84,8 +83,6 @@ class PowerPlatformExtensionContextManager {
             };
         }
 
-        console.log("authenticateAndUpdateDataverseProperties", this.PowerPlatformExtensionContext);
-
         return this.PowerPlatformExtensionContext;
     }
 
@@ -94,8 +91,6 @@ class PowerPlatformExtensionContextManager {
             ...this.PowerPlatformExtensionContext,
             saveDataMap: dataMap
         };
-
-        console.log("updateSaveDataDetailsInContext", this.PowerPlatformExtensionContext);
 
         return this.PowerPlatformExtensionContext;
     }
@@ -106,20 +101,17 @@ class PowerPlatformExtensionContextManager {
             defaultFileUri: uri
         };
 
-        console.log("updateSingleFileUrisInContext", this.PowerPlatformExtensionContext);
-
         return this.PowerPlatformExtensionContext;
     }
 
     private async languageIdToCode(accessToken: string, dataverseOrgUrl: string, schema: string): Promise<Map<string, string>> {
         let requestUrl = '';
         let requestSentAtTime = new Date().getTime(); let languageIdCodeMap = new Map<string, string>();
-        const languageEntityName = getPortalLanguageEntityName();
+        const languageEntityName = Constants.initializationEntityName.PORTALLANGUAGE;
 
         try {
-            requestUrl = getCustomRequestURL(dataverseOrgUrl, languageEntityName, Constants.MULTI_ENTITY_URL_KEY);
-            console.log("languageIdToCode getRequestUrl", requestUrl);
-            sendAPITelemetry(requestUrl, Constants.PORTAL_LANGUAGES, Constants.httpMethod.GET);
+            requestUrl = getCustomRequestURL(dataverseOrgUrl, languageEntityName);
+            sendAPITelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET);
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
@@ -143,10 +135,10 @@ class PowerPlatformExtensionContextManager {
         let requestUrl = '';
         let requestSentAtTime = new Date().getTime();
         const websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
-        const languageEntityName = getWebsiteLanguageEntityName();
+        const languageEntityName = Constants.initializationEntityName.WEBSITELANGUAGE;
 
         try {
-            requestUrl = getCustomRequestURL(dataverseOrgUrl, languageEntityName, Constants.MULTI_ENTITY_URL_KEY);
+            requestUrl = getCustomRequestURL(dataverseOrgUrl, languageEntityName);
             sendAPITelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET);
 
             requestSentAtTime = new Date().getTime();
@@ -170,10 +162,10 @@ class PowerPlatformExtensionContextManager {
         let requestUrl = '';
         let requestSentAtTime = new Date().getTime();
         let websiteIdToLanguage = new Map<string, string>();
-        const websiteEntityName = getWebsiteEntityName();
+        const websiteEntityName = Constants.initializationEntityName.WEBSITE;
 
         try {
-            requestUrl = getCustomRequestURL(dataverseOrgUrl, websiteEntityName, Constants.MULTI_ENTITY_URL_KEY);
+            requestUrl = getCustomRequestURL(dataverseOrgUrl, websiteEntityName);
             sendAPITelemetry(requestUrl, websiteEntityName, Constants.httpMethod.GET);
 
             requestSentAtTime = new Date().getTime();

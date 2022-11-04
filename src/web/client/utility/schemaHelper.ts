@@ -8,67 +8,27 @@ import * as Constants from "../common/constants";
 import PowerPlatformExtensionContextManager from "../common/localStore";
 
 export function getPortalSchema(schema: string) {
-    console.log("getPortalSchema", schema.toLowerCase(), Constants.NEW_SCHEMA_NAME.toLowerCase());
-    if (schema === Constants.NEW_SCHEMA_NAME) {
-        console.log("getPortalSchema", "inside new model");
+    if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {
         return portal_schema_V2;
     }
-    console.log("getPortalSchema", "inside OLD model");
     return portal_schema_V1;
 }
 
-export function getEntityName(entity: string, schema: string) {
-    if (schema === Constants.NEW_SCHEMA_NAME) {
-        return Constants.pathParamToSchemaV2.get(entity) as string;
-    }
-
-    return Constants.pathParamToSchemaV1.get(entity) as string;
-}
-
-export function getWebsiteEntityName() {
-    const powerPlatformExtensionContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-    if (powerPlatformExtensionContext.queryParamsMap.get(Constants.SCHEMA) as string === Constants.NEW_SCHEMA_NAME) {
-        return Constants.NEW_PORTAL_WEBSITES;
-    }
-
-    return Constants.WEBSITES;
-}
-
-export function getPortalLanguageEntityName() {
-    const powerPlatformExtensionContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-    if (powerPlatformExtensionContext.queryParamsMap.get(Constants.SCHEMA) as string === Constants.NEW_SCHEMA_NAME) {
-        return Constants.NEW_PORTAL_LANGUAGES;
-    }
-
-    return Constants.PORTAL_LANGUAGES;
-}
-
-export function getWebsiteLanguageEntityName() {
-    const powerPlatformExtensionContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-    if (powerPlatformExtensionContext.queryParamsMap.get(Constants.SCHEMA) as string === Constants.NEW_SCHEMA_NAME) {
-        return Constants.NEW_PORTAL_LANGUAGES;
-    }
-
-    return Constants.WEBSITE_LANGUAGES;
-}
-
 export function getEntity(entity: string) {
-    console.log("getRequestUrl");
     const powerPlatformExtensionContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-    if (powerPlatformExtensionContext.queryParamsMap.get(Constants.SCHEMA) as string === Constants.NEW_SCHEMA_NAME) {
-        return powerPlatformExtensionContext.entitiesSchemaMap.get(Constants.pathParamToSchemaV2.get(entity) as string);
+    if (powerPlatformExtensionContext.queryParamsMap.get(Constants.schemaKey.SCHEMA_VERSION) as string === portal_schema_V2.entities.dataSourceProperties.schema) {
+        return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
     }
 
-    return powerPlatformExtensionContext.entitiesSchemaMap.get(Constants.pathParamToSchemaV1.get(entity) as string);
+    return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getLanguageIdCodeMap(result: any, schema: string) {
-    console.log("getLanguageIdCodeMap");
     const languageIdCodeMap = new Map<string, string>();
     if (result) {
         if (result.value?.length > 0) {
-            if (schema === Constants.NEW_SCHEMA_NAME) {
+            if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {
                 for (let counter = 0; counter < result.value.length; counter++) {
                     const lcid = result.value[counter].lcid ?
                         result.value[counter].lcid :
@@ -85,18 +45,16 @@ export function getLanguageIdCodeMap(result: any, schema: string) {
             }
         }
     }
-    console.log("getLanguageIdCodeMap", languageIdCodeMap.size);
 
     return languageIdCodeMap;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getWebsiteIdToLanguageMap(result: any, schema: string) {
-    console.log("getWebsiteIdToLanguageMap");
     const websiteIdToLanguage = new Map<string, string>();
     if (result) {
         if (result.value?.length > 0) {
-            if (schema === Constants.NEW_SCHEMA_NAME) {
+            if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {
                 for (let counter = 0; counter < result.value.length; counter++) {
                     const powerpagesitelanguageid = result.value[counter].powerpagesitelanguageid ? result.value[counter].powerpagesitelanguageid : null;
                     const languagecode = result.value[counter].languagecode;
@@ -111,18 +69,16 @@ export function getWebsiteIdToLanguageMap(result: any, schema: string) {
             }
         }
     }
-    console.log("getWebsiteIdToLanguageMap", websiteIdToLanguage.size);
 
     return websiteIdToLanguage;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getwebsiteLanguageIdToPortalLanguageMap(result: any, schema: string) {
-    console.log("getWebsiteIdToLanguageMap");
     const websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
     if (result) {
         if (result.value?.length > 0) {
-            if (schema === Constants.NEW_SCHEMA_NAME) {
+            if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {
                 for (let counter = 0; counter < result.value.length; counter++) {
                     const powerpagesitelanguageid = result.value[counter].powerpagesitelanguageid ? result.value[counter].powerpagesitelanguageid : null;
                     websiteLanguageIdToPortalLanguageMap.set(powerpagesitelanguageid, powerpagesitelanguageid);
@@ -136,7 +92,6 @@ export function getwebsiteLanguageIdToPortalLanguageMap(result: any, schema: str
             }
         }
     }
-    console.log("getWebsiteIdToLanguageMap", websiteLanguageIdToPortalLanguageMap.size);
 
     return websiteLanguageIdToPortalLanguageMap;
 }

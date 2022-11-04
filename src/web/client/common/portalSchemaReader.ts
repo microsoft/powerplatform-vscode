@@ -3,11 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { FILE_FOLDER_NAME, NEW_SCHEMA_NAME, OLD_SCHEMA_NAME, schemaEntityName } from "./constants";
+import { schemaEntityKey, schemaEntityName } from "./constants";
 import { getPortalSchema } from "../utility/schemaHelper";
 
 export function getEntitiesSchemaMap(schema: string): Map<string, Map<string, string>> {
-    console.log("getEntitiesSchemaMap", schema, OLD_SCHEMA_NAME, NEW_SCHEMA_NAME);
     const entitiesMap = new Map<string, Map<string, string>>();
 
     const schema_data = getPortalSchema(schema);
@@ -21,7 +20,7 @@ export function getEntitiesSchemaMap(schema: string): Map<string, Map<string, st
                 entitiesDetailsMap.set(key, value as string)
             }
         }
-        entitiesMap.set(entity._name, entitiesDetailsMap)
+        entitiesMap.set(entity._vscodeentityname, entitiesDetailsMap)
     }
 
     console.log("getEntitiesSchemaMap", "entities map created", entitiesMap.size);
@@ -42,7 +41,7 @@ export function getEntitiesFolderNameMap(entitiesSchemaMap: Map<string, Map<stri
 
     const entitiesFolderNameMap = new Map<string, string>();
     for (const entry of Object.entries(schemaEntityName)) {
-        const folderName = entitiesSchemaMap.get(entry[1])?.get(FILE_FOLDER_NAME);
+        const folderName = entitiesSchemaMap.get(entry[1])?.get(schemaEntityKey.FILE_FOLDER_NAME);
 
         if (folderName) {
             entitiesFolderNameMap.set(entry[1], folderName);

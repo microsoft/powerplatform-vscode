@@ -39,7 +39,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     let requestUrl = '';
     let requestSentAtTime = new Date().getTime();
     try {
-        const dataverseOrgUrl = queryParamsMap.get(Constants.ORG_URL) as string;
+        const dataverseOrgUrl = queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
 
         requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, Constants.httpMethod.GET, false);
         console.log("remoteFetchProvider requestUrl", requestUrl);
@@ -92,15 +92,16 @@ async function createContentFiles(
     websiteIdToLanguage: Map<string, string>
 ) {
     console.log("remoteFetchProvider", "create content file");
-    let lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.WEBSITE_ID) as string) ?? '';
+    let lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.queryParameters.WEBSITE_ID) as string) ?? '';
     sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LCID, { 'lcid': (lcid ? lcid.toString() : '') });
 
-    const entityEntity = getEntity(entity);
-    const attributes = entityEntity?.get('_attributes');
-    const exportType = entityEntity?.get('_exporttype');
-    const portalFolderName = queryParamsMap.get(Constants.WEBSITE_NAME) as string;
-    const subUri = entityEntity?.get(Constants.FILE_FOLDER_NAME);
-    console.log("remoteFetchProvider values", entityEntity, attributes, exportType, portalFolderName, subUri);
+    const entityDetails = getEntity(entity);
+    const attributes = entityDetails?.get('_attributes');
+    const attributeExtension = entityDetails?.get(Constants.schemaEntityKey.ATTRIBUTES_EXTENSION);
+    const exportType = entityDetails?.get('_exporttype');
+    const portalFolderName = queryParamsMap.get(Constants.queryParameters.WEBSITE_NAME) as string;
+    const subUri = entityDetails?.get(Constants.schemaEntityKey.FILE_FOLDER_NAME);
+    console.log("remoteFetchProvider values", entityDetails, attributes, exportType, portalFolderName, subUri);
 
     let filePathInPortalFS = '';
     if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
@@ -108,9 +109,9 @@ async function createContentFiles(
         await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
     }
 
-    if (attributes) {
+    if (attributes && attributeExtension) {
         let fileName = Constants.EMPTY_FILE_NAME;
-        const fetchedFileName = entityEntity?.get(Constants.FILE_NAME_FIELD);
+        const fetchedFileName = entityDetails?.get(Constants.schemaEntityKey.FILE_NAME_FIELD);
 
         if (fetchedFileName) {
             fileName = result[fetchedFileName];
@@ -129,8 +130,8 @@ async function createContentFiles(
             await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
         }
 
-        const languageCodeAttribute = entityEntity?.get(Constants.LANGUAGE_FIELD);
-        console.log("remoteFetchProvider languageCodeAttribute", languageCodeAttribute);
+        const languageCodeAttribute = entityDetails?.get(Constants.schemaEntityKey.LANGUAGE_FIELD);
+        console.log("remoteFetchProvider languageCodeAttribute", languageCodeAttribute, lcid);
 
         if (languageCodeAttribute && result[languageCodeAttribute]) {
             lcid = websiteIdToLanguage.get(result[languageCodeAttribute]) ?? '';
@@ -141,9 +142,10 @@ async function createContentFiles(
             languageCode = languageIdCodeMap.get(lcid) as string ?? Constants.DEFAULT_LANGUAGE_CODE;
         }
         sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
-        console.log("remoteFetchProvider languageCode", languageCode);
+        console.log("remoteFetchProvider languageCode", languageCode, lcid);
 
         const attributeArray = attributes.split(',');
+        const attributeExtensionMap = attributeExtension as unknown as Map<string, string>;
         let counter = 0;
 
         let fileUri = '';
@@ -153,7 +155,7 @@ async function createContentFiles(
             const fileNameWithExtension = GetFileNameWithExtension(entity,
                 fileName,
                 languageCode,
-                Constants.columnExtension.get(attributeArray[counter]) as string);
+                attributeExtensionMap?.get(attributeArray[counter]) as string);
             fileUri = filePathInPortalFS + fileNameWithExtension;
             console.log("remoteFetchProvider createVirtualFile", fileUri.toString());
 

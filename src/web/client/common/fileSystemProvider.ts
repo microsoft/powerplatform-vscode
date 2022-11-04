@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { toBase64 } from '../utility/CommonUtility';
 import { getRequestURL, PathHasEntityFolderName } from '../utility/UrlBuilder';
-import { CHARSET, httpMethod, ORG_URL, WEBSITE_NAME } from './constants';
+import { CHARSET, httpMethod, queryParameters } from './constants';
 import { createFileSystem } from './createFileSystem';
 import PowerPlatformExtensionContextManager from "./localStore";
 import { SaveEntityDetails } from './portalSchemaInterface';
@@ -264,8 +264,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     private async _loadFromDataverseToVFS() {
         const powerPlatformContext = await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
-        await createFileSystem(this, powerPlatformContext.queryParamsMap.get(WEBSITE_NAME) as string);
-        const accessToken: string = await dataverseAuthentication(powerPlatformContext.queryParamsMap.get(ORG_URL) as string);
+        await createFileSystem(this, powerPlatformContext.queryParamsMap.get(queryParameters.WEBSITE_NAME) as string);
+        const accessToken: string = await dataverseAuthentication(powerPlatformContext.queryParamsMap.get(queryParameters.ORG_URL) as string);
 
         if (!accessToken) {
             throw vscode.FileSystemError.NoPermissions();
@@ -286,7 +286,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
         const dataMap: Map<string, SaveEntityDetails> = powerPlatformContext.saveDataMap;
 
-        const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(ORG_URL) as string;
+        const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(queryParameters.ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
 
         if (!accessToken) {
