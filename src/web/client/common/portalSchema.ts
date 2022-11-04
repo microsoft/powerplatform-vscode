@@ -6426,7 +6426,8 @@ export const portal_schema_V2 = {
                 "_primaryidfield": "powerpagecomponentid",
                 "_primarynamefield": "name",
                 "_disableplugins": "false",
-                "_fetchQueryParameters": "?$filter=powerpagecomponenttype%20eq%20{entityId}&$select=name,content",
+                "_exporttype": "SubFolders",
+                "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
                 "_attributes": "content"
             },
             {
