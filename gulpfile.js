@@ -217,35 +217,29 @@ const test = gulp.series(testUnitTests, testWeb);
 const testInt = gulp.series(testDebugger);
 
 async function packageVsix() {
-    if (isPreviewBuild) {
-        // Set Preview extension settings
-        await npm(['pkg', 'set', 'name=powerplatform-vscode-preview']);
-        await npm(['pkg', 'set', 'displayName="Power Platform Tools [PREVIEW]"']);
-        await npm(['pkg', 'set', 'description="Unsupported extension for testing Power Platform Tools"']);
+    const stanardHeader = '# Power Platform Extension';
+    const previewHeader = '# Power Platform Tools [PREVIEW]\n\n## This extension is used for internal testing against targets such as vscode.dev which require Marketplace published extensions, and is not supported.';
+
+    const setPackageInfo = async function(setPreviewState) {
+        await npm(['pkg', 'set', `name=${setPreviewState ? 'powerplatform-vscode-preview' : 'powerplatform-vscode'}`]);
+        await npm(['pkg', 'set', `displayName=${setPreviewState ? '"Power Platform Tools [PREVIEW]"' : '"Power Platform Tools"'}`]);
+        await npm(['pkg', 'set', `description=${setPreviewState ? '"Unsupported extension for testing Power Platform Tools"' : '"Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals"'}`]);
 
         gulp.src('README.md')
-            .pipe(rename('README.original.md'))
-            .pipe(gulp.dest('./'));
-        gulp.src('README.Preview.md')
-            .pipe(rename('README.md'))
+            .pipe(setPreviewState ? replace(stanardHeader, previewHeader) : replace(previewHeader, stanardHeader))
             .pipe(gulp.dest('./'));
     }
+
+    await setPackageInfo(isPreviewBuild);
 
     await vsce.createVSIX({
         packagePath: packagedir,
         preRelease: isPreviewBuild,
     });
 
-    // Reset to non-preview settings in case of dirty state
+    // Reset to non-preview settings to prevent preview values in diffs
     if (isPreviewBuild) {
-        // Reset to default name for standard package
-        await npm(['pkg', 'set', 'name=powerplatform-vscode']);
-        await npm(['pkg', 'set', 'displayName="Power Platform Tools"']);
-        await npm(['pkg', 'set', 'description="Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals"']);
-
-        gulp.src('README.original.md')
-            .pipe(rename('README.md'))
-            .pipe(gulp.dest('./'));
+        await setPackageInfo(false);
     }
 }
 
