@@ -712,7 +712,6 @@
       }
     ]
   },
-  "aiKey": "441859ca-4501-4653-bc1d-65fb8663108a",
   "devDependencies": {
     "@types/chai": "^4.2.14",
     "@types/fs-extra": "^9.0.11",

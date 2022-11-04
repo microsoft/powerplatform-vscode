@@ -35,6 +35,7 @@ const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
 const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
 const isOfficialBuild = argv.isOfficialBuild && argv.isOfficialBuild.toLowerCase() == "true";
+const isPreviewBuild = argv.isPreviewBuild && argv.isPreviewBuild.toLowerCase() == "true";
 
 async function clean() {
     (await pslist())
@@ -46,6 +47,18 @@ async function clean() {
     fs.emptyDirSync(outdir);
     return fs.emptyDir(distdir);
 }
+
+function setTelemetryTarget() {
+    const telemetryConfigurationSource = isOfficialBuild && !isPreviewBuild
+        ? 'src/common/telemetry/telemetryConfigurationProd.ts'
+        : 'src/common/telemetry/telemetryConfigurationDev.ts';
+
+    return gulp
+        .src(telemetryConfigurationSource)
+        .pipe(rename('telemetryConfiguration.ts'))
+        .pipe(gulp.dest(path.join('src', 'common', 'telemetry', 'generated')));
+}
+
 
 function compile() {
     return gulp
@@ -204,46 +217,36 @@ const test = gulp.series(testUnitTests, testWeb);
 const testInt = gulp.series(testDebugger);
 
 async function packageVsix() {
-    const devAiKey = '441859ca-4501-4653-bc1d-65fb8663108a'; // capisvtoolsappinsights-dev
-    const prodAiKey = '0d422197-d351-41c5-b371-a270ca3b13af'; // IsvTooling_AI_WUS2
+    if (isPreviewBuild) {
+        // Set Preview extension settings
+        await npm(['pkg', 'set', 'name=powerplatform-vscode-preview']);
+        await npm(['pkg', 'set', 'displayName="Power Platform Tools [PREVIEW]"']);
+        await npm(['pkg', 'set', 'description="Unsupported extension for testing Power Platform Tools"']);
 
-    fs.emptyDirSync(packagedir);
-
-    // Set Preview extension name
-    await npm(['pkg', 'set', 'name=powerplatform-vscode-preview']);
-    await npm(['pkg', 'set', 'displayName="Power Platform Tools [PREVIEW]"']);
-    await npm(['pkg', 'set', 'description="Unsupported extension for testing Power Platform Tools"']);
-    await npm(['pkg', 'set', `aiKey=${devAiKey}`]);
-
-    gulp.src('README.md')
-        .pipe(rename('README.original.md'))
-        .pipe(gulp.dest('./'));
-    gulp.src('README.Preview.md')
-        .pipe(rename('README.md'))
-        .pipe(gulp.dest('./'));
+        gulp.src('README.md')
+            .pipe(rename('README.original.md'))
+            .pipe(gulp.dest('./'));
+        gulp.src('README.Preview.md')
+            .pipe(rename('README.md'))
+            .pipe(gulp.dest('./'));
+    }
 
     await vsce.createVSIX({
         packagePath: packagedir,
-        preRelease: true,
+        preRelease: isPreviewBuild,
     });
 
-    // Reset to default name for standard package
-    await npm(['pkg', 'set', 'name=powerplatform-vscode']);
-    await npm(['pkg', 'set', 'displayName="Power Platform Tools"']);
-    await npm(['pkg', 'set', 'description="Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals"']);
-    await npm(['pkg', 'set', `aiKey=${isOfficialBuild ? prodAiKey : devAiKey}`]);
+    // Reset to non-preview settings in case of dirty state
+    if (isPreviewBuild) {
+        // Reset to default name for standard package
+        await npm(['pkg', 'set', 'name=powerplatform-vscode']);
+        await npm(['pkg', 'set', 'displayName="Power Platform Tools"']);
+        await npm(['pkg', 'set', 'description="Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals"']);
 
-    gulp.src('README.original.md')
-        .pipe(rename('README.md'))
-        .pipe(gulp.dest('./'));
-
-    await vsce.createVSIX({
-        packagePath: packagedir,
-        preRelease: false,
-    });
-
-    // reset to base state to prevent unnecessary diffs
-    return npm(['pkg', 'set', `aiKey=${devAiKey}`]);
+        gulp.src('README.original.md')
+            .pipe(rename('README.md'))
+            .pipe(gulp.dest('./'));
+    }
 }
 
 
@@ -333,6 +336,7 @@ const recompile = gulp.series(
     translationsExport,
     translationsImport,
     translationsGenerate,
+    setTelemetryTarget,
     compile,
     compileWeb
 );

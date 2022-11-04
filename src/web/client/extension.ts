@@ -7,6 +7,7 @@ import * as nls from 'vscode-nls';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
+import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
 import PowerPlatformExtensionContextManager from "./common/localStore";
 import { PORTALS_URI_SCHEME, SITE_VISIBILITY, PUBLIC, IS_FIRST_RUN_EXPERIENCE } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
@@ -17,7 +18,7 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
-    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, context.extension.packageJSON.aiKey);
+    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
     context.subscriptions.push(_telemetry);
 
     setTelemetryReporter(_telemetry);
