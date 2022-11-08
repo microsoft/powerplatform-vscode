@@ -131,7 +131,6 @@ async function createContentFiles(
         }
 
         const languageCodeAttribute = entityDetails?.get(Constants.schemaEntityKey.LANGUAGE_FIELD);
-        console.log("remoteFetchProvider languageCodeAttribute", languageCodeAttribute, lcid);
 
         if (languageCodeAttribute && result[languageCodeAttribute]) {
             lcid = websiteIdToLanguage.get(result[languageCodeAttribute]) ?? '';
@@ -140,6 +139,7 @@ async function createContentFiles(
         let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
         if (languageIdCodeMap?.size && lcid) {
             languageCode = languageIdCodeMap.get(lcid) as string ?? Constants.DEFAULT_LANGUAGE_CODE;
+            languageIdCodeMap.forEach((value, key) => console.log("remoteFetchProvider keys", key, typeof (key), key === lcid));
         }
         sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
         console.log("remoteFetchProvider languageCode", languageCode, lcid);
@@ -151,13 +151,18 @@ async function createContentFiles(
         let fileUri = '';
         for (counter; counter < attributeArray.length; counter++) {
             const useBase64Encoding = useBase64(entity, attributeArray[counter]);
-            const value = result[attributeArray[counter]] ? result[attributeArray[counter]] : Constants.NO_CONTENT;
+
+            const attributePathArray = attributeArray[counter].split('.', 2);
+            let value = result[attributePathArray[0]] ?? Constants.NO_CONTENT;
+            if (result[attributePathArray[0]] && attributePathArray.length > 1) {
+                value = JSON.parse(result[attributePathArray[0]])[attributePathArray[1]];
+            }
+
             const fileNameWithExtension = GetFileNameWithExtension(entity,
                 fileName,
                 languageCode,
                 attributeExtensionMap?.get(attributeArray[counter]) as string);
             fileUri = filePathInPortalFS + fileNameWithExtension;
-            console.log("remoteFetchProvider createVirtualFile", fileUri.toString());
 
             await createVirtualFile(
                 portalsFS,

@@ -106,7 +106,8 @@ class PowerPlatformExtensionContextManager {
 
     private async languageIdToCode(accessToken: string, dataverseOrgUrl: string, schema: string): Promise<Map<string, string>> {
         let requestUrl = '';
-        let requestSentAtTime = new Date().getTime(); let languageIdCodeMap = new Map<string, string>();
+        let requestSentAtTime = new Date().getTime();
+        let languageIdCodeMap = new Map<string, string>();
         const languageEntityName = Constants.initializationEntityName.PORTALLANGUAGE;
 
         try {

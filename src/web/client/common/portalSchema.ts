@@ -200,9 +200,9 @@ export const portal_schema_V2 = {
                 "_exporttype": "SubFolders",
                 "_foldername": "web-pages",
                 "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
-                "_attributes": "content",
+                "_attributes": "content.copy",
                 "_attributesExtension": new Map([
-                    ["content", "webpage.copy.html"],
+                    ["content.copy", "webpage.copy.html"],
                 ])
             },
             {
@@ -217,7 +217,7 @@ export const portal_schema_V2 = {
                 "_exporttype": "SingleFolder",
                 "_foldername": "web-files",
                 "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
-                "_attributes": "content",
+                "_attributes": "content.copy",
                 "_attributesExtension": new Map([
                     ["content", "css"]
                 ])
@@ -234,7 +234,7 @@ export const portal_schema_V2 = {
                 "_exporttype": "SingleFolder",
                 "_foldername": "content-snippets",
                 "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
-                "_attributes": "content",
+                "_attributes": "content.copy",
                 "_attributesExtension": new Map([
                     ["content", "html"]
                 ])
@@ -251,7 +251,7 @@ export const portal_schema_V2 = {
                 "_exporttype": "SingleFolder",
                 "_foldername": "web-templates",
                 "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
-                "_attributes": "content",
+                "_attributes": "content.source",
                 "_attributesExtension": new Map([
                     ["content", "html"]
                 ])

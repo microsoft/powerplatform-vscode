@@ -34,7 +34,7 @@ export function getLanguageIdCodeMap(result: any, schema: string) {
                         result.value[counter].lcid :
                         Constants.PORTAL_LANGUAGE_DEFAULT;
                     const languagecode = result.value[counter].languagecode;
-                    languageIdCodeMap.set(lcid, languagecode);
+                    languageIdCodeMap.set(lcid.toString(), languagecode);
                 }
             } else {
                 for (let counter = 0; counter < result.value.length; counter++) {
@@ -56,15 +56,15 @@ export function getWebsiteIdToLanguageMap(result: any, schema: string) {
         if (result.value?.length > 0) {
             if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {
                 for (let counter = 0; counter < result.value.length; counter++) {
-                    const powerpagesitelanguageid = result.value[counter].powerpagesitelanguageid ? result.value[counter].powerpagesitelanguageid : null;
-                    const languagecode = result.value[counter].languagecode;
-                    websiteIdToLanguage.set(powerpagesitelanguageid, languagecode);
+                    const powerpagesiteid = result.value[counter].powerpagesiteid ? result.value[counter].powerpagesiteid : null;
+                    const lcid = JSON.parse(result.value[counter].content).website_language as string;
+                    websiteIdToLanguage.set(powerpagesiteid, lcid.toString());
                 }
             } else {
                 for (let counter = 0; counter < result.value.length; counter++) {
                     const adx_websiteId = result.value[counter].adx_websiteid ? result.value[counter].adx_websiteid : null;
-                    const adx_website_language = result.value[counter].adx_website_language;
-                    websiteIdToLanguage.set(adx_websiteId, adx_website_language);
+                    const lcid = result.value[counter].adx_website_language;
+                    websiteIdToLanguage.set(adx_websiteId, lcid);
                 }
             }
         }
