@@ -234,9 +234,9 @@ export const portal_schema_V2 = {
                 "_exporttype": "SingleFolder",
                 "_foldername": "content-snippets",
                 "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
-                "_attributes": "content.copy",
+                "_attributes": "content.value",
                 "_attributesExtension": new Map([
-                    ["content", "html"]
+                    ["content.value", "html"]
                 ])
             },
             {
@@ -253,7 +253,7 @@ export const portal_schema_V2 = {
                 "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
                 "_attributes": "content.source",
                 "_attributesExtension": new Map([
-                    ["content", "html"]
+                    ["content.source", "html"]
                 ])
             },
         ]

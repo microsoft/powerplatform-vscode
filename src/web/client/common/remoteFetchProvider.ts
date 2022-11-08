@@ -150,7 +150,7 @@ async function createContentFiles(
 
         let fileUri = '';
         for (counter; counter < attributeArray.length; counter++) {
-            const useBase64Encoding = useBase64(entity, attributeArray[counter]);
+            const useBase64Encoding = useBase64(entity, attributeArray[counter]); // update func for webfiles for V2
 
             const attributePathArray = attributeArray[counter].split('.', 2);
             let value = result[attributePathArray[0]] ?? Constants.NO_CONTENT;
