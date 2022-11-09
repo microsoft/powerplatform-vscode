@@ -24,7 +24,7 @@ import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import PowerPlatformExtensionContextManager from "./localStore";
-import { getEntity } from '../utility/schemaHelper';
+import { getAttributeParts, getEntity } from '../utility/schemaHelper';
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     accessToken: string,
@@ -139,7 +139,6 @@ async function createContentFiles(
         let languageCode: string = Constants.DEFAULT_LANGUAGE_CODE;
         if (languageIdCodeMap?.size && lcid) {
             languageCode = languageIdCodeMap.get(lcid) as string ?? Constants.DEFAULT_LANGUAGE_CODE;
-            languageIdCodeMap.forEach((value, key) => console.log("remoteFetchProvider keys", key, typeof (key), key === lcid));
         }
         sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
         console.log("remoteFetchProvider languageCode", languageCode, lcid);
@@ -152,26 +151,38 @@ async function createContentFiles(
         for (counter; counter < attributeArray.length; counter++) {
             const useBase64Encoding = useBase64(entity, attributeArray[counter]); // update func for webfiles for V2
 
-            const attributePathArray = attributeArray[counter].split('.', 2);
-            let value = result[attributePathArray[0]] ?? Constants.NO_CONTENT;
-            if (result[attributePathArray[0]] && attributePathArray.length > 1) {
-                value = JSON.parse(result[attributePathArray[0]])[attributePathArray[1]];
+            const attributeParts = getAttributeParts(attributeArray[counter]);
+            console.log("remoteFetchProvider getAttributeParts", attributeParts.source, attributeParts.relativePath);
+            let fileContent = result[attributeParts.source] ?? Constants.NO_CONTENT;
+            console.log("remoteFetchProvider fileContent", fileContent);
+            const originalAttributeContent = result[attributeParts.source] ?? Constants.NO_CONTENT;
+            console.log("remoteFetchProvider originalAttributeContent", originalAttributeContent);
+            if (result[attributeParts.source] && attributeParts.relativePath.length) {
+                console.log("remoteFetchProvider attributeParts.relativePath", attributeParts.relativePath);
+                console.log("remoteFetchProvider JSON.parse(result[attributeParts.source])", JSON.parse(result[attributeParts.source]));
+                fileContent = JSON.parse(result[attributeParts.source])[attributeParts.relativePath];
+                console.log("remoteFetchProvider fileContent", fileContent);
             }
+            console.log("remoteFetchProvider fileNameWithExtension", counter, attributeArray.length);
+            console.log("remoteFetchProvider fileNameWithExtension", counter, attributeArray.length, attributeArray[counter] as string);
 
             const fileNameWithExtension = GetFileNameWithExtension(entity,
                 fileName,
                 languageCode,
                 attributeExtensionMap?.get(attributeArray[counter]) as string);
+            console.log("remoteFetchProvider fileNameWithExtension", fileNameWithExtension);
             fileUri = filePathInPortalFS + fileNameWithExtension;
+            console.log("remoteFetchProvider fileUri", fileUri);
 
             await createVirtualFile(
                 portalsFS,
                 fileUri,
-                useBase64Encoding ? fromBase64(value) : value,
+                useBase64Encoding ? fromBase64(fileContent) : fileContent,
                 updateEntityId(entity, entityId, result),
                 attributeArray[counter] as string,
                 useBase64Encoding,
                 entity,
+                originalAttributeContent,
                 result[Constants.MIMETYPE]);
         }
 
@@ -186,19 +197,20 @@ async function createContentFiles(
 async function createVirtualFile(
     portalsFS: PortalsFS,
     fileUri: string,
-    data: string | undefined,
+    fileContent: string | undefined,
     entityId: string,
-    saveDataAttribute: string,
+    attributePath: string,
     useBase64Encoding: boolean,
     entity: string,
+    originalAttributeContent: string,
     mimeType?: string
 ) {
     console.log("remoteFetchProvider createVirtualFile");
-    const saveEntityDetails = new SaveEntityDetails(entityId, entity, saveDataAttribute, useBase64Encoding, mimeType);
+    const saveEntityDetails = new SaveEntityDetails(entityId, entity, attributePath, originalAttributeContent, useBase64Encoding, mimeType);
     const dataMap: Map<string, SaveEntityDetails> = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().saveDataMap;
     dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
     await PowerPlatformExtensionContextManager.updateSaveDataDetailsInContext(dataMap);
 
-    await portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(data), { create: true, overwrite: true });
+    await portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(fileContent), { create: true, overwrite: true });
     console.log("remoteFetchProvider createVirtualFile", "create content file for old data model");
 }

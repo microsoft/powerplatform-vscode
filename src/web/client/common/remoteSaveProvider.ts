@@ -11,6 +11,7 @@ import { showErrorDialog } from './errorHandler';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { httpMethod } from './constants';
 import * as nls from 'vscode-nls';
+import { getAttributeParts } from '../utility/schemaHelper';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function saveData(
@@ -19,14 +20,31 @@ export async function saveData(
     entityName: string,
     fileUri: vscode.Uri,
     saveDataMap: Map<string, SaveEntityDetails>,
-    value: string
+    newFileContent: string
 ) {
     let requestBody = '';
     const column = saveDataMap.get(fileUri.fsPath)?.getSaveAttribute;
 
     if (column) {
+        const attributeParts = getAttributeParts(column);
         const data: { [k: string]: string } = {};
-        data[column] = value;
+
+        console.log("remoteSaveProvider getAttributeParts", attributeParts.source, attributeParts.relativePath);
+
+        if (attributeParts.relativePath.length) {
+            const originalAttributeContent = saveDataMap.get(fileUri.fsPath)?.getOriginalAttributeContent ?? '';
+            console.log("remoteSaveProvider originalAttributeContent", originalAttributeContent);
+
+            const jsonFromOriginalContent = JSON.parse(originalAttributeContent);
+            console.log("remoteSaveProvider jsonFromOriginalContent", jsonFromOriginalContent);
+            jsonFromOriginalContent[attributeParts.relativePath] = newFileContent;
+            console.log("remoteSaveProvider jsonFromOriginalContent after update", jsonFromOriginalContent);
+
+            newFileContent = JSON.stringify(jsonFromOriginalContent);
+            console.log("remoteSaveProvider fileContent", newFileContent);
+        }
+
+        data[attributeParts.source] = newFileContent;
 
         const mimeType = saveDataMap.get(fileUri.fsPath)?.getMimeType;
         if (mimeType) {

@@ -23,6 +23,12 @@ export function getEntity(entity: string) {
     return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
 }
 
+export function getAttributeParts(attribute: string): { source: string, relativePath: string } {
+    const attributePathArray = attribute.split('.', 2);
+
+    return { source: attributePathArray[0], relativePath: attributePathArray[1] ?? '' };
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getLanguageIdCodeMap(result: any, schema: string) {
     const languageIdCodeMap = new Map<string, string>();
