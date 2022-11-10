@@ -13,7 +13,7 @@ import {
     sendErrorTelemetry,
     sendInfoTelemetry
 } from '../telemetry/webExtensionTelemetry';
-import { fromBase64, GetFileNameWithExtension, useBase64 } from '../utility/CommonUtility';
+import { fromBase64, GetFileNameWithExtension } from '../utility/CommonUtility';
 import {
     getRequestURL,
     updateEntityId
@@ -24,7 +24,7 @@ import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import PowerPlatformExtensionContextManager from "./localStore";
-import { getAttributeParts, getEntity } from '../utility/schemaHelper';
+import { getAttributeParts, getEntity, useBase64Decoding, useBase64Encoding } from '../utility/schemaHelper';
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     accessToken: string,
@@ -35,14 +35,12 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
     websiteIdToLanguage: Map<string, string>
 ) {
-    console.log("remoteFetchProvider", "reached in Fetch from dataverse");
     let requestUrl = '';
     let requestSentAtTime = new Date().getTime();
     try {
         const dataverseOrgUrl = queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
 
         requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, Constants.httpMethod.GET, false);
-        console.log("remoteFetchProvider requestUrl", requestUrl);
         sendAPITelemetry(requestUrl, entity, Constants.httpMethod.GET);
 
         requestSentAtTime = new Date().getTime();
@@ -66,7 +64,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         }
 
         for (let counter = 0; counter < data.length; counter++) {
-            await createContentFiles(data[counter], entity, queryParamsMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage);
+            await createContentFiles(data[counter], entity, queryParamsMap, languageIdCodeMap, portalFs, entityId, websiteIdToLanguage, accessToken, dataverseOrgUrl);
         }
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -78,7 +76,6 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         }
         sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
     }
-    console.log("remoteFetchProvider", "ended in Fetch from dataverse");
 }
 
 async function createContentFiles(
@@ -89,19 +86,20 @@ async function createContentFiles(
     languageIdCodeMap: Map<string, string>,
     portalsFS: PortalsFS,
     entityId: string,
-    websiteIdToLanguage: Map<string, string>
+    websiteIdToLanguage: Map<string, string>,
+    accessToken: string,
+    dataverseOrgUrl: string
 ) {
-    console.log("remoteFetchProvider", "create content file");
     let lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.queryParameters.WEBSITE_ID) as string) ?? '';
     sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LCID, { 'lcid': (lcid ? lcid.toString() : '') });
 
     const entityDetails = getEntity(entity);
     const attributes = entityDetails?.get('_attributes');
     const attributeExtension = entityDetails?.get(Constants.schemaEntityKey.ATTRIBUTES_EXTENSION);
+    const mappingEntityFetchQuery = entityDetails?.get(Constants.schemaEntityKey.MAPPING_ATTRIBUTE_FETCH_QUERY);
     const exportType = entityDetails?.get('_exporttype');
     const portalFolderName = queryParamsMap.get(Constants.queryParameters.WEBSITE_NAME) as string;
     const subUri = entityDetails?.get(Constants.schemaEntityKey.FILE_FOLDER_NAME);
-    console.log("remoteFetchProvider values", entityDetails, attributes, exportType, portalFolderName, subUri);
 
     let filePathInPortalFS = '';
     if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
@@ -116,14 +114,12 @@ async function createContentFiles(
         if (fetchedFileName) {
             fileName = result[fetchedFileName];
         }
-        console.log("remoteFetchProvider fileName", fileName);
 
         if (fileName === Constants.EMPTY_FILE_NAME) {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.file-not-found.error", "That file is not available"), localize("microsoft-powerapps-portals.webExtension.file-not-found.desc", "The metadata may have changed on the Dataverse side. Contact your admin."));
             sendErrorTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
             return;
         }
-        console.log("remoteFetchProvider exportType", exportType);
 
         if (exportType && (exportType === Constants.exportType.SubFolders)) {
             filePathInPortalFS = `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
@@ -141,7 +137,6 @@ async function createContentFiles(
             languageCode = languageIdCodeMap.get(lcid) as string ?? Constants.DEFAULT_LANGUAGE_CODE;
         }
         sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
-        console.log("remoteFetchProvider languageCode", languageCode, lcid);
 
         const attributeArray = attributes.split(',');
         const attributeExtensionMap = attributeExtension as unknown as Map<string, string>;
@@ -149,38 +144,37 @@ async function createContentFiles(
 
         let fileUri = '';
         for (counter; counter < attributeArray.length; counter++) {
-            const useBase64Encoding = useBase64(entity, attributeArray[counter]); // update func for webfiles for V2
+            const decodeToBase64 = useBase64Decoding(entity, attributeArray[counter]); // update func for webfiles for V2
 
             const attributeParts = getAttributeParts(attributeArray[counter]);
-            console.log("remoteFetchProvider getAttributeParts", attributeParts.source, attributeParts.relativePath);
             let fileContent = result[attributeParts.source] ?? Constants.NO_CONTENT;
-            console.log("remoteFetchProvider fileContent", fileContent);
             const originalAttributeContent = result[attributeParts.source] ?? Constants.NO_CONTENT;
-            console.log("remoteFetchProvider originalAttributeContent", originalAttributeContent);
             if (result[attributeParts.source] && attributeParts.relativePath.length) {
-                console.log("remoteFetchProvider attributeParts.relativePath", attributeParts.relativePath);
-                console.log("remoteFetchProvider JSON.parse(result[attributeParts.source])", JSON.parse(result[attributeParts.source]));
                 fileContent = JSON.parse(result[attributeParts.source])[attributeParts.relativePath];
-                console.log("remoteFetchProvider fileContent", fileContent);
+            } else if (mappingEntityFetchQuery) {
+                const mappingEntityFetchQueryMap = mappingEntityFetchQuery as unknown as Map<string, string>;
+                const requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, Constants.httpMethod.GET, false, mappingEntityFetchQueryMap?.get(attributeArray[counter]) as string);
+                const response = await fetch(requestUrl, {
+                    headers: getHeader(accessToken),
+                });
+                const result = await response.json();
+                fileContent = result.value ?? Constants.NO_CONTENT
+
             }
-            console.log("remoteFetchProvider fileNameWithExtension", counter, attributeArray.length);
-            console.log("remoteFetchProvider fileNameWithExtension", counter, attributeArray.length, attributeArray[counter] as string);
 
             const fileNameWithExtension = GetFileNameWithExtension(entity,
                 fileName,
                 languageCode,
                 attributeExtensionMap?.get(attributeArray[counter]) as string);
-            console.log("remoteFetchProvider fileNameWithExtension", fileNameWithExtension);
             fileUri = filePathInPortalFS + fileNameWithExtension;
-            console.log("remoteFetchProvider fileUri", fileUri);
 
             await createVirtualFile(
                 portalsFS,
                 fileUri,
-                useBase64Encoding ? fromBase64(fileContent) : fileContent,
+                decodeToBase64 ? fromBase64(fileContent) : fileContent,
                 updateEntityId(entity, entityId, result),
                 attributeArray[counter] as string,
-                useBase64Encoding,
+                useBase64Encoding(entity, attributeArray[counter]),
                 entity,
                 originalAttributeContent,
                 result[Constants.MIMETYPE]);
@@ -205,12 +199,10 @@ async function createVirtualFile(
     originalAttributeContent: string,
     mimeType?: string
 ) {
-    console.log("remoteFetchProvider createVirtualFile");
     const saveEntityDetails = new SaveEntityDetails(entityId, entity, attributePath, originalAttributeContent, useBase64Encoding, mimeType);
     const dataMap: Map<string, SaveEntityDetails> = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().saveDataMap;
     dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
     await PowerPlatformExtensionContextManager.updateSaveDataDetailsInContext(dataMap);
 
     await portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(fileContent), { create: true, overwrite: true });
-    console.log("remoteFetchProvider createVirtualFile", "create content file for old data model");
 }

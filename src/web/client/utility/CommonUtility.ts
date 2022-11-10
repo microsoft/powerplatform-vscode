@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { schemaEntityName, entityAttributesWithBase64Encoding } from "../common/constants";
+import { schemaEntityName } from "../common/constants";
 
 // decodes base64 to text
 export function fromBase64(data: string) {
@@ -13,10 +13,6 @@ export function fromBase64(data: string) {
 // encodes text to UTF-8 bytes which are then encoded to base64
 export function toBase64(data: string) {
     return btoa(unescape(encodeURIComponent(data)));
-}
-
-export function useBase64(entity: string, attributeType: string): boolean {
-    return entity === schemaEntityName.WEBFILES && attributeType === entityAttributesWithBase64Encoding.documentbody;
 }
 
 export function GetFileNameWithExtension(

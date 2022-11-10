@@ -8,10 +8,8 @@ import { getPortalSchema } from "../utility/schemaHelper";
 
 export function getEntitiesSchemaMap(schema: string): Map<string, Map<string, string>> {
     const entitiesMap = new Map<string, Map<string, string>>();
-
     const schema_data = getPortalSchema(schema);
 
-    console.log("getEntitiesSchemaMap", "Fetching data");
     for (let i = 0; i < schema_data.entities.entity.length; i++) {
         const entity = schema_data.entities.entity[i];
         const entitiesDetailsMap = new Map<string, string>();
@@ -22,8 +20,6 @@ export function getEntitiesSchemaMap(schema: string): Map<string, Map<string, st
         }
         entitiesMap.set(entity._vscodeentityname, entitiesDetailsMap)
     }
-
-    console.log("getEntitiesSchemaMap", "entities map created", entitiesMap.size);
     return entitiesMap;
 }
 

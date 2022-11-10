@@ -81,7 +81,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
                 const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-                console.log("readDirectory", powerPlatformContext.contextSet)
+
                 if (powerPlatformContext.contextSet &&
                     uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
                     await vscode.window.withProgress({
@@ -109,7 +109,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
                 const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
 
-                console.log("readFile", powerPlatformContext.contextSet)
                 if (powerPlatformContext.contextSet
                     && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
                     if (PathHasEntityFolderName(uri.toString())) {

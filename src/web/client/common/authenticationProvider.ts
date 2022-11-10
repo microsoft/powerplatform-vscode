@@ -9,10 +9,10 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 import { sendErrorTelemetry, sendInfoTelemetry } from '../telemetry/webExtensionTelemetry';
 import { PROVIDER_ID, telemetryEventNames } from './constants';
 
-export function getHeader(accessToken: string) {
+export function getHeader(accessToken: string, useOctetStreamContentType?: boolean) {
     return {
         authorization: "Bearer " + accessToken,
-        'content-type': "application/json; charset=utf-8",
+        'content-type': useOctetStreamContentType ? 'application/octet-stream' : "application/json; charset=utf-8",
         accept: "application/json",
         'OData-MaxVersion': "4.0",
         'OData-Version': "4.0",

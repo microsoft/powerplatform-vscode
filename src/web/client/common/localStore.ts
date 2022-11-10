@@ -49,7 +49,6 @@ class PowerPlatformExtensionContextManager {
     };
 
     public getPowerPlatformExtensionContext() {
-        console.log("getPowerPlatformExtensionContext", this.PowerPlatformExtensionContext);
         return this.PowerPlatformExtensionContext;
     }
 

@@ -216,10 +216,13 @@ export const portal_schema_V2 = {
                 "_disableplugins": "false",
                 "_exporttype": "SingleFolder",
                 "_foldername": "web-files",
-                "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
-                "_attributes": "content.copy",
+                "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name",
+                "_attributes": "filecontent",
                 "_attributesExtension": new Map([
-                    ["content", "css"]
+                    ["filecontent", "css"]
+                ]),
+                "_mappingAttributeFetchQuery": new Map([
+                    ["filecontent", "({entityId})/filecontent"]
                 ])
             },
             {

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { httpMethod, schemaEntityKey, schemaKey } from "../common/constants";
+import { entityAttributesWithBase64Encoding, httpMethod, schemaEntityKey, schemaEntityName, schemaKey } from "../common/constants";
 import PowerPlatformExtensionContextManager from "../common/localStore";
 import { getEntity } from "./schemaHelper";
 
@@ -16,14 +16,20 @@ export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
     return powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.MULTI_ENTITY_URL) as string;
 };
 
-export function getRequestURL(dataverseOrgUrl: string, entity: string, entityId: string, method: string, isSingleEntity: boolean): string {
+export function getRequestURL(
+    dataverseOrgUrl: string,
+    entity: string,
+    entityId: string,
+    method: string,
+    isSingleEntity: boolean,
+    attributeQueryParameters?: string): string {
     const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
     let parameterizedUrlTemplate = getParameterizedRequestUrlTemplate(isSingleEntity);
-    console.log("remoteFetchProvider getRequestURL parameterizedUrlTemplate", parameterizedUrlTemplate);
+
     switch (method) {
         case httpMethod.GET:
             parameterizedUrlTemplate = parameterizedUrlTemplate
-                + getEntity(entity)?.get(schemaEntityKey.FETCH_QUERY_PARAMETERS);
+                + (attributeQueryParameters ?? getEntity(entity)?.get(schemaEntityKey.FETCH_QUERY_PARAMETERS));
             break;
         default:
             break;
@@ -46,6 +52,12 @@ export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, url
         .replace('{version}', powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.DATAVERSE_API_VERSION) as string);
 
     return requestUrl + fetchQueryParameters;
+}
+
+export function patchRequestUrl(entity: string, attributeType: string, requestUrl: string) {
+    return entity === schemaEntityName.WEBFILES && attributeType === entityAttributesWithBase64Encoding.filecontent ?
+        (requestUrl + '/' + attributeType) :
+        requestUrl;
 }
 
 // this function removes hostName from the url

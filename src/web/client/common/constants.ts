@@ -34,7 +34,8 @@ export enum schemaEntityKey {
     ATTRIBUTES_EXTENSION = '_attributesExtension',
     DATAVERSE_ENTITY_NAME = '_dataverseenityname',
     FETCH_QUERY_PARAMETERS = '_fetchQueryParameters',
-    MAPPING_ENTITY_ID = '_mappingEntityId'
+    MAPPING_ENTITY_ID = '_mappingEntityId',
+    MAPPING_ATTRIBUTE_FETCH_QUERY = '_mappingAttributeFetchQuery'
 }
 
 export enum initializationEntityName {
@@ -80,7 +81,8 @@ export enum exportType {
 
 // Entity attributes that need to be saved in base64 encoding - example documentBody
 export enum entityAttributesWithBase64Encoding {
-    documentbody = "documentbody"
+    documentbody = "documentbody",
+    filecontent = "filecontent"
 }
 
 export enum telemetryEventNames {
