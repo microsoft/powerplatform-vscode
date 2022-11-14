@@ -78,9 +78,9 @@ class PowerPlatformExtensionContextManager {
         if (accessToken) {
             this.PowerPlatformExtensionContext = {
                 ... this.PowerPlatformExtensionContext,
-                websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl),
-                websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl),
-                languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl),
+                websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl, schema),
+                websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguageMap(accessToken, dataverseOrgUrl, schema),
+                languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl, schema)
                 dataverseAccessToken: accessToken
             };
         }
