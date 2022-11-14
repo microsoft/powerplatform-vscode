@@ -20,6 +20,7 @@ export interface IPowerPlatformExtensionContext {
     websiteLanguageIdToPortalLanguageMap: Map<string, string>;
     websiteIdToLanguage: Map<string, string>;
     entitiesFolderNameMap: Map<string, string> // FolderName for entity, schemaEntityName
+    dataverseAccessToken: string;
     entityId: string;
     entity: string;
     rootDirectory: vscode.Uri;
@@ -41,6 +42,7 @@ class PowerPlatformExtensionContextManager {
         entitiesFolderNameMap: new Map<string, string>(),
         entity: '',
         entityId: '',
+        dataverseAccessToken: '',
         rootDirectory: vscode.Uri.parse(''),
         saveDataMap: new Map<string, SaveEntityDetails>(),
         defaultFileUri: vscode.Uri.parse(``),
@@ -76,9 +78,10 @@ class PowerPlatformExtensionContextManager {
         if (accessToken) {
             this.PowerPlatformExtensionContext = {
                 ... this.PowerPlatformExtensionContext,
-                websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl, schema),
-                websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguageMap(accessToken, dataverseOrgUrl, schema),
-                languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl, schema)
+                websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl),
+                websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguage(accessToken, dataverseOrgUrl),
+                languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl),
+                dataverseAccessToken: accessToken
             };
         }
 
