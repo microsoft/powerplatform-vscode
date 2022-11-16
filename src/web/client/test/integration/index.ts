@@ -6,7 +6,7 @@
 import * as path from "path";
 import Mocha from "mocha";
 import glob from "glob";
-import * as vscode from "vscode";
+//import * as vscode from "vscode";
 
 async function addTests(mocha: Mocha, root: string): Promise<void> {
     return new Promise((c, e) => {
@@ -40,9 +40,9 @@ async function addTests(mocha: Mocha, root: string): Promise<void> {
 export async function run(): Promise<void> {
     // Ensure the dev-mode extension is activated
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await vscode.extensions
-        .getExtension("microsoft-IsvExpTools.powerplatform-vscode")!
-        .activate();
+    // await vscode.extensions
+    //     .getExtension("microsoft-IsvExpTools.powerplatform-vscode")!
+    //     .activate();
 
     // Create the mocha test
     const mocha = new Mocha({

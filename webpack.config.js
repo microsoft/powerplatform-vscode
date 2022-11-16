@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-
 'use strict';
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -103,6 +102,7 @@ const webConfig = {
     ],
     externals: {
         'vscode': 'commonjs vscode', // ignored because it doesn't exist
+        'fs': 'fs',
     },
     performance: {
         hints: false

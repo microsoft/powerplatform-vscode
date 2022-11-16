@@ -10,7 +10,7 @@ import { IPowerPlatformExtensionContext } from "../../common/localStore";
 import { getParameterizedRequestUrlTemplate } from "../../utility/UrlBuilder";
 import PowerPlatformExtensionContextManager from "../../common/localStore";
 
-describe("Web Extension Unit Tests", async () => {
+describe("Web Extension Integration Tests", async () => {
     it("getParameterizedRequestUrlTemplate_should_return_SINGLE_ENTITY_URL_KEY_when_isSingleEntity_is_true", async () => {
         const powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
             dataSourcePropertiesMap: new Map<string, string>([
