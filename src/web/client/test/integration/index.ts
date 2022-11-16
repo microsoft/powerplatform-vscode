@@ -30,7 +30,7 @@ async function addTests(): Promise<void> {
             }
 
             // Add files to the test suite
-            files.forEach((f) => mocha.addFile(path.join(testsRoot, f)));
+            files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
 
             try {
                 // Run the mocha test
@@ -45,8 +45,6 @@ async function addTests(): Promise<void> {
                 console.error(err);
                 reject(err);
             }
-
-            resolve();
         });
     });
 }
