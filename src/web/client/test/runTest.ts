@@ -11,7 +11,7 @@ async function main() {
     try {
         // The folder containing the Extension Manifest package.json
         // Passed to `--extensionDevelopmentPath`
-        const extensionDevelopmentPath = path.resolve(__dirname, "../../../");
+        const extensionDevelopmentPath = path.resolve(__dirname, "../../../../");
 
         // The path to test runner
         // Passed to --extensionTestsPath
@@ -24,8 +24,7 @@ async function main() {
         await runTests({
             version: 'insiders',
             extensionDevelopmentPath,
-            extensionTestsPath,
-            launchArgs: ['--disable-extensions'],
+            extensionTestsPath
         });
     } catch (err) {
         console.error("Failed to run tests");

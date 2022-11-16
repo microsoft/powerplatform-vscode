@@ -6,43 +6,14 @@
 import * as path from "path";
 import Mocha from "mocha";
 import glob from "glob";
-//import * as vscode from "vscode";
+import * as vscode from "vscode";
 
-async function addTests(mocha: Mocha, root: string): Promise<void> {
-    return new Promise((c, e) => {
-        glob("**/**.test.js", { cwd: root }, (err, files) => {
-            if (err) {
-                return e(err);
-            }
-
-            // Add files to the test suite
-            files.forEach((f) => mocha.addFile(path.join(root, f)));
-
-            try {
-                // Run the mocha test
-                mocha.run((failures) => {
-                    if (failures > 0) {
-                        e(new Error(`${failures} tests failed.`));
-                    } else {
-                        c();
-                    }
-                });
-            } catch (err) {
-                console.error(err);
-                e(err);
-            }
-
-            c();
-        });
-    });
-}
-
-export async function run(): Promise<void> {
+async function addTests(): Promise<void> {
     // Ensure the dev-mode extension is activated
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    // await vscode.extensions
-    //     .getExtension("microsoft-IsvExpTools.powerplatform-vscode")!
-    //     .activate();
+    await vscode.extensions
+        .getExtension("microsoft-IsvExpTools.powerplatform-vscode")!
+        .activate();
 
     // Create the mocha test
     const mocha = new Mocha({
@@ -52,5 +23,34 @@ export async function run(): Promise<void> {
 
     const testsRoot = path.resolve(__dirname, "..");
 
-    await addTests(mocha, testsRoot);
+    return new Promise((resolve, reject) => {
+        glob("**/**.test.js", { cwd: testsRoot }, (err, files) => {
+            if (err) {
+                return reject(err);
+            }
+
+            // Add files to the test suite
+            files.forEach((f) => mocha.addFile(path.join(testsRoot, f)));
+
+            try {
+                // Run the mocha test
+                mocha.run((failures) => {
+                    if (failures > 0) {
+                        reject(new Error(`${failures} tests failed.`));
+                    } else {
+                        resolve();
+                    }
+                });
+            } catch (err) {
+                console.error(err);
+                reject(err);
+            }
+
+            resolve();
+        });
+    });
+}
+
+export function run(): void {
+    addTests();
 }
