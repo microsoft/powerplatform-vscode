@@ -81,7 +81,7 @@ class PowerPlatformExtensionContextManager {
                 websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl, schema),
                 websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguageMap(accessToken, dataverseOrgUrl, schema),
                 languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl, schema)
-                dataverseAccessToken: accessToken
+                dataverseAccessToken: accessToken,
             };
         }
 
