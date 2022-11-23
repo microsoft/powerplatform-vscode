@@ -130,6 +130,7 @@ export enum telemetryEventNames {
     WEB_EXTENSION_INIT_QUERY_PARAMETERS = 'WebExtensionInitQueryParameters',
     WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED = 'WebExtensionDataverseAuthenticationFailed',
     WEB_EXTENSION_NO_ACCESS_TOKEN = 'WebExtensionNoAccessToken',
+    WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED = 'WebExtensionDataverseAuthenticationCompleted',
     WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING = 'WebExtensionMandatoryPathParametersMissing',
     WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING = 'WebExtensionMandatoryQueryParametersMissing',
     WEB_EXTENSION_API_REQUEST = 'WebExtensionApiRequest',
@@ -139,4 +140,5 @@ export enum telemetryEventNames {
     WEB_EXTENSION_SET_CONTEXT_PERF = 'WebExtensionSetContextPerf',
     WEB_EXTENSION_EDIT_LCID = 'WebExtensionEditLcid',
     WEB_EXTENSION_EDIT_LANGUAGE_CODE = 'WebExtensionEditLanguageCode',
+    WEB_EXTENSION_VSCODE_START_COMMAND = 'WebExtensionVscodeStartCommand',
 }

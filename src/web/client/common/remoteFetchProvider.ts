@@ -51,7 +51,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
 
         if (!response.ok) {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.authorization.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.fetch.authorization.desc", "Try again"));
-            sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response.json.toString());
+            sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
             throw new Error(response.statusText);
         }
 
@@ -164,7 +164,7 @@ async function createContentFiles(
 
         // Not awaited intentionally
         vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(fileUri), { background: true, preview: false });
-        sendInfoTelemetry("StartCommand", { 'commandId': 'vscode.open', 'type': 'file' });
+        sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND, { 'commandId': 'vscode.open', 'type': 'file' });
     }
 }
 
