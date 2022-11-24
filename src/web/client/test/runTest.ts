@@ -7,7 +7,7 @@ import * as path from "path";
 
 import { runTests } from "@vscode/test-electron";
 
-async function main() {
+function main() {
     try {
         // The folder containing the Extension Manifest package.json
         // Passed to `--extensionDevelopmentPath`
@@ -21,7 +21,7 @@ async function main() {
         );
 
         // Download VS Code, unzip it and run the integration test
-        await runTests({
+        runTests({
             version: 'insiders',
             extensionDevelopmentPath,
             extensionTestsPath
