@@ -5,16 +5,16 @@
 
 import { expect } from "chai";
 import sinon from "sinon";
-import { SINGLE_ENTITY_URL_KEY } from "../../common/constants";
 import { IPowerPlatformExtensionContext } from "../../common/localStore";
 import { getParameterizedRequestUrlTemplate } from "../../utility/UrlBuilder";
 import PowerPlatformExtensionContextManager from "../../common/localStore";
+import { schemaKey } from "../../common/constants";
 
 describe("Web Extension Integration Tests", async () => {
     it("getParameterizedRequestUrlTemplate_should_return_SINGLE_ENTITY_URL_KEY_when_isSingleEntity_is_true", async () => {
         const powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
             dataSourcePropertiesMap: new Map<string, string>([
-                [SINGLE_ENTITY_URL_KEY, SINGLE_ENTITY_URL_KEY],
+                [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
             ]),
         } as IPowerPlatformExtensionContext;
         sinon
