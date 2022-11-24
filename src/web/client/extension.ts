@@ -9,7 +9,7 @@ import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
 import PowerPlatformExtensionContextManager from "./common/localStore";
-import { PORTALS_URI_SCHEME, SITE_VISIBILITY, PUBLIC, IS_FIRST_RUN_EXPERIENCE } from "./common/constants";
+import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS } from "./common/errorHandler";
 import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendInfoTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (searchParams) {
                     const queryParams = new URLSearchParams(searchParams);
                     for (const pair of queryParams.entries()) {
-                        queryParamsMap.set(pair[0], pair[1]);
+                        queryParamsMap.set(pair[0].trim().toLowerCase(), pair[1].trim().toLowerCase());
                     }
                 }
 
@@ -49,7 +49,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
                 sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
 
-                if (queryParamsMap.get(SITE_VISIBILITY) === PUBLIC) {
+                if (queryParamsMap.get(queryParameters.SITE_VISIBILITY) === PUBLIC) {
                     const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit", "Edit the site") };
                     const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc", "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
                     const options = { detail: siteMessage, modal: true };

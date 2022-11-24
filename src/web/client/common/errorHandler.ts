@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import * as nls from 'vscode-nls';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import { sendErrorTelemetry } from "../telemetry/webExtensionTelemetry";
-import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from "./constants";
+import { PORTALS_FOLDER_NAME_DEFAULT, telemetryEventNames, schemaKey, queryParameters } from "./constants";
 
 export const ERRORS = {
     WORKSPACE_INITIAL_LOAD: "There was a problem opening the workspace",
@@ -51,11 +51,11 @@ export function showErrorDialog(detailMessage: string, errorString: string) {
 
 export function removeEncodingFromParameters(queryParamsMap: Map<string, string>) {
     //NOTE: From extensibility perspective split attributes and attributes may contain encoded string which must be decoded before use.
-    const schemaFileName = decodeURI(queryParamsMap.get(SCHEMA) as string);
-    queryParamsMap.set(SCHEMA, schemaFileName);
-    const websiteName = decodeURI(queryParamsMap.get(WEBSITE_NAME) as string);
-    const portalFolderName = websiteName ? websiteName : PORTALS_FOLDER_NAME;
-    queryParamsMap.set(WEBSITE_NAME, portalFolderName);
+    const schemaFileName = decodeURI(queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string);
+    queryParamsMap.set(schemaKey.SCHEMA_VERSION, schemaFileName);
+    const websiteName = decodeURI(queryParamsMap.get(queryParameters.WEBSITE_NAME) as string);
+    const portalFolderName = websiteName ? websiteName : PORTALS_FOLDER_NAME_DEFAULT;
+    queryParamsMap.set(queryParameters.WEBSITE_NAME, portalFolderName);
 }
 
 export function checkMandatoryParameters(appName: string, entity: string, entityId: string, queryParamsMap: Map<string, string>): boolean {
@@ -80,10 +80,10 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
 export function checkMandatoryQueryParameters(appName: string, queryParamsMap: Map<string, string>): boolean {
     switch (appName) { // remove switch cases and use polymorphism
         case 'portal': {
-            const orgURL = queryParamsMap?.get(ORG_URL);
-            const dataSource = queryParamsMap?.get(DATA_SOURCE);
-            const schemaName = queryParamsMap?.get(SCHEMA);
-            const websiteId = queryParamsMap?.get(WEBSITE_ID);
+            const orgURL = queryParamsMap?.get(queryParameters.ORG_URL);
+            const dataSource = queryParamsMap?.get(queryParameters.DATA_SOURCE);
+            const schemaName = queryParamsMap?.get(schemaKey.SCHEMA_VERSION);
+            const websiteId = queryParamsMap?.get(queryParameters.WEBSITE_ID);
             if (orgURL && dataSource && schemaName && websiteId) {
                 return true;
             } else {

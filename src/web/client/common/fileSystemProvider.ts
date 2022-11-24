@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { toBase64 } from '../utility/CommonUtility';
 import { getRequestURL, PathHasEntityFolderName } from '../utility/UrlBuilder';
-import { CHARSET, httpMethod, ORG_URL, WEBSITE_NAME } from './constants';
+import { CHARSET, httpMethod, queryParameters } from './constants';
 import { createFileSystem } from './createFileSystem';
 import PowerPlatformExtensionContextManager from "./localStore";
 import { SaveEntityDetails } from './portalSchemaInterface';
@@ -80,7 +80,9 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
                 const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-                if (powerPlatformContext.rootDirectory && uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
+
+                if (powerPlatformContext.contextSet &&
+                    uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
                     await vscode.window.withProgress({
                         location: vscode.ProgressLocation.Notification,
                         cancellable: true,
@@ -104,10 +106,10 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const rootDirectory = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory;
+                const powerPlatformContext = await PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
 
-                if (rootDirectory
-                    && uri.toString().includes(rootDirectory.toString())) {
+                if (powerPlatformContext.contextSet
+                    && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
                     if (PathHasEntityFolderName(uri.toString())) {
                         await vscode.window.withProgress({
                             location: vscode.ProgressLocation.Notification,
@@ -260,7 +262,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     private async _loadFromDataverseToVFS() {
         const powerPlatformContext = await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
-        await createFileSystem(this, powerPlatformContext.queryParamsMap.get(WEBSITE_NAME) as string);
+        await createFileSystem(this, powerPlatformContext.queryParamsMap.get(queryParameters.WEBSITE_NAME) as string);
+        
         if (!powerPlatformContext.dataverseAccessToken) {
             throw vscode.FileSystemError.NoPermissions();
         }
@@ -270,7 +273,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
             powerPlatformContext.entity,
             powerPlatformContext.entityId,
             powerPlatformContext.queryParamsMap,
-            powerPlatformContext.entitiesSchemaMap,
             powerPlatformContext.languageIdCodeMap,
             this,
             powerPlatformContext.websiteIdToLanguage);
@@ -280,8 +282,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
         let stringDecodedValue = new TextDecoder(CHARSET).decode(content);
         const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
         const dataMap: Map<string, SaveEntityDetails> = powerPlatformContext.saveDataMap;
-
-        const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(ORG_URL) as string;
+        const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(queryParameters.ORG_URL) as string;
+        
+        if (!powerPlatformContext.dataverseAccessToken) {
+            throw vscode.FileSystemError.NoPermissions();
+        }
 
         if (dataMap.get(uri.fsPath)?.getUseBase64Encoding as boolean) {
             stringDecodedValue = toBase64(stringDecodedValue);
