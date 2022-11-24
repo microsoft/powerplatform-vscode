@@ -50,7 +50,7 @@ export async function saveData(
             sendAPITelemetry(requestUrl, entityName, httpMethod.PATCH);
 
             if (!response.ok) {
-                sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, response.json.toString());
+                sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
                 showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "There’s a problem on the back end"), localize("microsoft-powerapps-portals.webExtension.retry.desc", "Try again"));
                 throw new Error(response.statusText);
             }
