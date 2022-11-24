@@ -131,8 +131,10 @@ export function sendInfoTelemetry(eventName: string, properties?: Record<string,
 }
 
 export function sendAPITelemetry(URL: string, entity: string, httpMethod: string, isSuccessful?: boolean, duration?: number, errorMessage?: string, eventName?: string) {
+    eventName = eventName ?? telemetryEventNames.WEB_EXTENSION_API_REQUEST;
+
     const telemetryData: IWebExtensionAPITelemetryData = {
-        eventName: eventName ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST,
+        eventName: eventName,
         properties: {
             url: sanitizeURL(URL),
             entity: entity,
@@ -145,7 +147,7 @@ export function sendAPITelemetry(URL: string, entity: string, httpMethod: string
     }
     if (errorMessage) {
         const error: Error = new Error(errorMessage);
-        _telemetry?.sendTelemetryException(error, telemetryData.properties, telemetryData.measurements);
+        _telemetry?.sendTelemetryException(error, { ...telemetryData.properties, eventName: eventName }, telemetryData.measurements);
     } else {
         _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
     }
