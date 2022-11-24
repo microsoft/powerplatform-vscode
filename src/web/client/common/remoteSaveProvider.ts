@@ -11,6 +11,8 @@ import { showErrorDialog } from './errorHandler';
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { httpMethod } from './constants';
 import * as nls from 'vscode-nls';
+import { getAttributeParts, isWebFileV2OctetStream } from '../utility/schemaHelper';
+import { patchRequestUrl } from '../utility/UrlBuilder';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function saveData(
@@ -19,33 +21,45 @@ export async function saveData(
     entityName: string,
     fileUri: vscode.Uri,
     saveDataMap: Map<string, SaveEntityDetails>,
-    value: string
+    newFileContent: string
 ) {
-    let requestBody = '';
+    const requestInit: RequestInit = {
+        method: httpMethod.PATCH
+    };
     const column = saveDataMap.get(fileUri.fsPath)?.getSaveAttribute;
 
     if (column) {
+        const attributeParts = getAttributeParts(column);
         const data: { [k: string]: string } = {};
-        data[column] = value;
-
         const mimeType = saveDataMap.get(fileUri.fsPath)?.getMimeType;
+        const isWebFileV2 = isWebFileV2OctetStream(entityName, column);
+
         if (mimeType) {
             data[MIMETYPE] = mimeType
         }
-        requestBody = JSON.stringify(data);
+
+        if (attributeParts.relativePath.length) {
+            const originalAttributeContent = saveDataMap.get(fileUri.fsPath)?.getOriginalAttributeContent ?? '';
+            const jsonFromOriginalContent = JSON.parse(originalAttributeContent);
+
+            jsonFromOriginalContent[attributeParts.relativePath] = newFileContent;
+            newFileContent = JSON.stringify(jsonFromOriginalContent);
+        }
+        data[attributeParts.source] = newFileContent;
+
+        requestInit.body = isWebFileV2 ? newFileContent : JSON.stringify(data);
+        requestInit.headers = getHeader(accessToken, isWebFileV2);
+        requestUrl = patchRequestUrl(entityName, column, requestUrl);
     } else {
         sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
         showErrorDialog(localize("microsoft-powerapps-portals.webExtension.save.file.error", "Unable to complete the request"), localize("microsoft-powerapps-portals.webExtension.save.file.error.desc", "One or more attribute names have been changed or removed. Contact your admin."));
     }
 
-    if (requestBody) {
+    if (requestInit.body) {
         const requestSentAtTime = new Date().getTime();
         try {
-            const response = await fetch(requestUrl, {
-                method: httpMethod.PATCH,
-                headers: getHeader(accessToken),
-                body: requestBody
-            });
+
+            const response = await fetch(requestUrl, requestInit);
 
             sendAPITelemetry(requestUrl, entityName, httpMethod.PATCH);
 
