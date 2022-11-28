@@ -12,7 +12,7 @@ import { SaveEntityDetails } from './portalSchemaInterface';
 import { httpMethod } from './constants';
 import * as nls from 'vscode-nls';
 import { getAttributeParts, isWebFileV2OctetStream } from '../utility/schemaHelper';
-import { patchRequestUrl } from '../utility/UrlBuilder';
+import { getPatchRequestUrl } from '../utility/UrlBuilder';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function saveData(
@@ -49,7 +49,7 @@ export async function saveData(
 
         requestInit.body = isWebFileV2 ? newFileContent : JSON.stringify(data);
         requestInit.headers = getHeader(accessToken, isWebFileV2);
-        requestUrl = patchRequestUrl(entityName, column, requestUrl);
+        requestUrl = getPatchRequestUrl(entityName, column, requestUrl);
     } else {
         sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
         showErrorDialog(localize("microsoft-powerapps-portals.webExtension.save.file.error", "Unable to complete the request"), localize("microsoft-powerapps-portals.webExtension.save.file.error.desc", "One or more attribute names have been changed or removed. Contact your admin."));

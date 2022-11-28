@@ -6,10 +6,10 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { toBase64 } from '../utility/CommonUtility';
-import { getRequestURL, PathHasEntityFolderName } from '../utility/UrlBuilder';
+import { getRequestURL, pathHasEntityFolderName } from '../utility/UrlBuilder';
 import { CHARSET, httpMethod, queryParameters } from './constants';
 import { createFileSystem } from './createFileSystem';
-import PowerPlatformExtensionContextManager from "./localStore";
+import PowerPlatformExtensionContextManager from "./extensionContext";
 import { SaveEntityDetails } from './portalSchemaInterface';
 import { fetchDataFromDataverseAndUpdateVFS } from './remoteFetchProvider';
 import { saveData } from './remoteSaveProvider';
@@ -110,7 +110,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
                 if (powerPlatformContext.contextSet
                     && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
-                    if (PathHasEntityFolderName(uri.toString())) {
+                    if (pathHasEntityFolderName(uri.toString())) {
                         await vscode.window.withProgress({
                             location: vscode.ProgressLocation.Notification,
                             cancellable: true,
@@ -263,7 +263,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
     private async _loadFromDataverseToVFS() {
         const powerPlatformContext = await PowerPlatformExtensionContextManager.authenticateAndUpdateDataverseProperties();
         await createFileSystem(this, powerPlatformContext.queryParamsMap.get(queryParameters.WEBSITE_NAME) as string);
-        
+
         if (!powerPlatformContext.dataverseAccessToken) {
             throw vscode.FileSystemError.NoPermissions();
         }
@@ -283,7 +283,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
         const dataMap: Map<string, SaveEntityDetails> = powerPlatformContext.saveDataMap;
         const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(queryParameters.ORG_URL) as string;
-        
+
         if (!powerPlatformContext.dataverseAccessToken) {
             throw vscode.FileSystemError.NoPermissions();
         }

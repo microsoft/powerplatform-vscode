@@ -8,7 +8,7 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
-import PowerPlatformExtensionContextManager from "./common/localStore";
+import PowerPlatformExtensionContextManager from "./common/extensionContext";
 import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS } from "./common/errorHandler";

@@ -23,7 +23,7 @@ import * as Constants from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from './portalSchemaInterface';
-import PowerPlatformExtensionContextManager from "./localStore";
+import PowerPlatformExtensionContextManager from "./extensionContext";
 import { getAttributeParts, getEntity, useBase64Decoding, useBase64Encoding } from '../utility/schemaHelper';
 
 export async function fetchDataFromDataverseAndUpdateVFS(

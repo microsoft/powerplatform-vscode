@@ -5,7 +5,7 @@
 
 import { portal_schema_V1, portal_schema_V2 } from "../common/portalSchema";
 import * as Constants from "../common/constants";
-import PowerPlatformExtensionContextManager from "../common/localStore";
+import PowerPlatformExtensionContextManager from "../common/extensionContext";
 
 export function getPortalSchema(schema: string) {
     if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {

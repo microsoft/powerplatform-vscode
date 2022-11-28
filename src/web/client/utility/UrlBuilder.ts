@@ -4,7 +4,7 @@
  */
 
 import { entityAttributesWithBase64Encoding, httpMethod, schemaEntityKey, schemaEntityName, schemaKey } from "../common/constants";
-import PowerPlatformExtensionContextManager from "../common/localStore";
+import PowerPlatformExtensionContextManager from "../common/extensionContext";
 import { getEntity } from "./schemaHelper";
 
 export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
@@ -54,7 +54,7 @@ export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, url
     return requestUrl + fetchQueryParameters;
 }
 
-export function patchRequestUrl(entity: string, attributeType: string, requestUrl: string) {
+export function getPatchRequestUrl(entity: string, attributeType: string, requestUrl: string) {
     return entity === schemaEntityName.WEBFILES && attributeType === entityAttributesWithBase64Encoding.filecontent ?
         (requestUrl + '/' + attributeType) :
         requestUrl;
@@ -85,7 +85,7 @@ export function updateEntityId(entity: string, entityId: string, result: any) {
     return entityId;
 }
 
-export function PathHasEntityFolderName(uri: string): boolean {
+export function pathHasEntityFolderName(uri: string): boolean {
     const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
 
     for (const entry of powerPlatformContext.entitiesFolderNameMap.entries()) {
