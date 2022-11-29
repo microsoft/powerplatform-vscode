@@ -11,7 +11,6 @@
     "dist": "node node_modules/gulp/bin/gulp.js dist",
     "translations-export": "node node_modules/gulp/bin/gulp.js translationsExport",
     "translations-import": "node node_modules/gulp/bin/gulp.js translationsImport",
-    "translations-generate": "node node_modules/gulp/bin/gulp.js translationsGenerate",
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
     "increment-version-npm": "npm --no-git-tag-version version %VSIX_VERSION%",
     "compile-web": "webpack",
