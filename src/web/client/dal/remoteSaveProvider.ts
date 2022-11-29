@@ -5,14 +5,14 @@
 
 import * as vscode from 'vscode';
 import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry } from '../telemetry/webExtensionTelemetry';
-import { getHeader } from './authenticationProvider';
-import { BAD_REQUEST, MIMETYPE } from './constants';
-import { showErrorDialog } from './errorHandler';
-import { SaveEntityDetails } from './portalSchemaInterface';
-import { httpMethod } from './constants';
+import { getHeader } from '../common/authenticationProvider';
+import { BAD_REQUEST, MIMETYPE } from '../common/constants';
+import { showErrorDialog } from '../common/errorHandler';
+import { SaveEntityDetails } from '../schema/portalSchemaInterface';
+import { httpMethod } from '../common/constants';
 import * as nls from 'vscode-nls';
-import { getAttributeParts, isWebFileV2OctetStream } from '../utility/schemaHelper';
-import { getPatchRequestUrl } from '../utility/UrlBuilder';
+import { getAttributeParts, isWebFileV2OctetStream } from '../utilities/schemaHelperUtil';
+import { getPatchRequestUrl } from '../utilities/urlBuilderUtil';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function saveData(

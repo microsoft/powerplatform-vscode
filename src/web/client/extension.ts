@@ -8,9 +8,9 @@ nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFo
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
-import PowerPlatformExtensionContextManager from "./common/extensionContext";
+import PowerPlatformExtensionContextManager from "./extensionContext";
 import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } from "./common/constants";
-import { PortalsFS } from "./common/fileSystemProvider";
+import { PortalsFS } from "./dal/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS } from "./common/errorHandler";
 import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendInfoTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
 let _telemetry: TelemetryReporter;
@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (searchParams) {
                     const queryParams = new URLSearchParams(searchParams);
                     for (const pair of queryParams.entries()) {
-                        queryParamsMap.set(pair[0].trim().toLowerCase(), pair[1].trim().toLowerCase());
+                        queryParamsMap.set(pair[0].trim().toLowerCase(), pair[1].trim());
                     }
                 }
 
@@ -68,7 +68,13 @@ export function activate(context: vscode.ExtensionContext): void {
                                 sendInfoTelemetry("StartCommand", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted' });
                             }
 
-                            await vscode.workspace.fs.readDirectory(PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory);
+                            await vscode.window.withProgress({
+                                location: vscode.ProgressLocation.Notification,
+                                cancellable: true,
+                                title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
+                            }, async () => {
+                                await vscode.workspace.fs.readDirectory(PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory);
+                            });
                         }
                             break;
                         case 'default':

@@ -3,9 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { entityAttributesWithBase64Encoding, httpMethod, schemaEntityKey, schemaEntityName, schemaKey } from "../common/constants";
-import PowerPlatformExtensionContextManager from "../common/extensionContext";
-import { getEntity } from "./schemaHelper";
+import { httpMethod } from "../common/constants";
+import PowerPlatformExtensionContextManager from "../extensionContext";
+import { entityAttributesWithBase64Encoding, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
+import { getEntity } from "./schemaHelperUtil";
 
 export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
     const powerPlatformContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();

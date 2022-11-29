@@ -4,8 +4,9 @@
  */
 
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { queryParameters, telemetryEventNames } from "../common/constants";
-import { sanitizeURL } from "../utility/UrlBuilder";
+import { queryParameters } from "../common/constants";
+import { sanitizeURL } from "../utilities/urlBuilderUtil";
+import { telemetryEventNames } from "./constants";
 
 let _telemetry: TelemetryReporter | undefined;
 export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWebExtensionTelemetryData {

@@ -3,12 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { portal_schema_V1, portal_schema_V2 } from "../common/portalSchema";
+import { portal_schema_V1, portal_schema_V2 } from "../schema/portalSchema";
 import * as Constants from "../common/constants";
-import PowerPlatformExtensionContextManager from "../common/extensionContext";
+import PowerPlatformExtensionContextManager from "../extensionContext";
+import { entityAttributesWithBase64Encoding, schemaEntityName, schemaKey } from "../schema/constants";
 
 export function getPortalSchema(schema: string) {
-    if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {
+    if (schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
         return portal_schema_V2;
     }
     return portal_schema_V1;
@@ -16,7 +17,7 @@ export function getPortalSchema(schema: string) {
 
 export function getEntity(entity: string) {
     const powerPlatformExtensionContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext();
-    if (powerPlatformExtensionContext.queryParamsMap.get(Constants.schemaKey.SCHEMA_VERSION) as string === portal_schema_V2.entities.dataSourceProperties.schema) {
+    if (powerPlatformExtensionContext.queryParamsMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
         return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
     }
 
@@ -29,18 +30,18 @@ export function getAttributeParts(attribute: string): { source: string, relative
     return { source: attributePathArray[0], relativePath: attributePathArray[1] ?? '' };
 }
 
-export function useBase64Decoding(entity: string, attributeType: string): boolean {
-    return entity === Constants.schemaEntityName.WEBFILES &&
-        (attributeType === Constants.entityAttributesWithBase64Encoding.documentbody || attributeType === Constants.entityAttributesWithBase64Encoding.filecontent);
+export function isBase64Encoded(entity: string, attributeType: string): boolean {
+    return entity === schemaEntityName.WEBFILES &&
+        (attributeType === entityAttributesWithBase64Encoding.documentbody || attributeType === entityAttributesWithBase64Encoding.filecontent);
 }
 
 export function useBase64Encoding(entity: string, attributeType: string): boolean {
-    return entity === Constants.schemaEntityName.WEBFILES &&
-        (attributeType === Constants.entityAttributesWithBase64Encoding.documentbody);
+    return entity === schemaEntityName.WEBFILES &&
+        (attributeType === entityAttributesWithBase64Encoding.documentbody);
 }
 
 export function isWebFileV2OctetStream(entity: string, attributeType: string) {
-    return entity === Constants.schemaEntityName.WEBFILES && attributeType === Constants.entityAttributesWithBase64Encoding.filecontent;
+    return entity === schemaEntityName.WEBFILES && attributeType === entityAttributesWithBase64Encoding.filecontent;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,7 +49,7 @@ export function getLanguageIdCodeMap(result: any, schema: string) {
     const languageIdCodeMap = new Map<string, string>();
     if (result) {
         if (result.value?.length > 0) {
-            if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {
+            if (schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
                 for (let counter = 0; counter < result.value.length; counter++) {
                     const lcid = result.value[counter].lcid ?
                         result.value[counter].lcid :
@@ -74,7 +75,7 @@ export function getWebsiteIdToLanguageMap(result: any, schema: string) {
     const websiteIdToLanguage = new Map<string, string>();
     if (result) {
         if (result.value?.length > 0) {
-            if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {
+            if (schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
                 for (let counter = 0; counter < result.value.length; counter++) {
                     const powerpagesiteid = result.value[counter].powerpagesiteid ? result.value[counter].powerpagesiteid : null;
                     const lcid = JSON.parse(result.value[counter].content).website_language as string;
@@ -98,7 +99,7 @@ export function getwebsiteLanguageIdToPortalLanguageMap(result: any, schema: str
     const websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
     if (result) {
         if (result.value?.length > 0) {
-            if (schema === portal_schema_V2.entities.dataSourceProperties.schema) {
+            if (schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
                 for (let counter = 0; counter < result.value.length; counter++) {
                     const powerpagesitelanguageid = result.value[counter].powerpagesitelanguageid ? result.value[counter].powerpagesitelanguageid : null;
                     websiteLanguageIdToPortalLanguageMap.set(powerpagesitelanguageid, powerpagesitelanguageid);
