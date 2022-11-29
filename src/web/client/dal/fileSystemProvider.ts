@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { convertStringtoBase64 } from '../utilities/commonUtil';
 import { getRequestURL, pathHasEntityFolderName } from '../utilities/urlBuilderUtil';
 import { CHARSET, httpMethod, PORTALS_URI_SCHEME, queryParameters } from '../common/constants';
-import PowerPlatformExtensionContextManager from "../extensionContext";
+import PowerPlatformExtensionContextManager from "../powerPlatformExtensionContext";
 import { SaveEntityDetails } from '../schema/portalSchemaInterface';
 import { fetchDataFromDataverseAndUpdateVFS } from './remoteFetchProvider';
 import { saveData } from './remoteSaveProvider';

@@ -5,9 +5,9 @@
 
 import { expect } from "chai";
 import sinon from "sinon";
-import { IPowerPlatformExtensionContext } from "../../extensionContext";
+import { IPowerPlatformExtensionContext } from "../../powerPlatformExtensionContext";
 import { getParameterizedRequestUrlTemplate } from "../../utilities/urlBuilderUtil";
-import PowerPlatformExtensionContextManager from "../../extensionContext";
+import PowerPlatformExtensionContextManager from "../../powerPlatformExtensionContext";
 import { schemaKey } from "../../schema/constants";
 
 describe("Web Extension Integration Tests", async () => {

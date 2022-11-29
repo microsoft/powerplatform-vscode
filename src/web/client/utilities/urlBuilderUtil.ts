@@ -4,7 +4,7 @@
  */
 
 import { httpMethod } from "../common/constants";
-import PowerPlatformExtensionContextManager from "../extensionContext";
+import PowerPlatformExtensionContextManager from "../powerPlatformExtensionContext";
 import { entityAttributesWithBase64Encoding, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
 import { getEntity } from "./schemaHelperUtil";
 

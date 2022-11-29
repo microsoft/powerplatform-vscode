@@ -5,7 +5,7 @@
 
 import { portal_schema_V1, portal_schema_V2 } from "../schema/portalSchema";
 import * as Constants from "../common/constants";
-import PowerPlatformExtensionContextManager from "../extensionContext";
+import PowerPlatformExtensionContextManager from "../powerPlatformExtensionContext";
 import { entityAttributesWithBase64Encoding, schemaEntityName, schemaKey } from "../schema/constants";
 
 export function getPortalSchema(schema: string) {

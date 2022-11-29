@@ -23,7 +23,7 @@ import * as Constants from '../common/constants';
 import { ERRORS, showErrorDialog } from '../common/errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from '../schema/portalSchemaInterface';
-import PowerPlatformExtensionContextManager from "../extensionContext";
+import PowerPlatformExtensionContextManager from "../powerPlatformExtensionContext";
 import { getAttributeParts, getEntity, isBase64Encoded, useBase64Encoding } from '../utilities/schemaHelperUtil';
 import { telemetryEventNames } from '../telemetry/constants';
 import { folderExportType, schemaEntityKey } from '../schema/constants';
