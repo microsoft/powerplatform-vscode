@@ -3,10 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as nls from 'vscode-nls';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-
 import * as vscode from 'vscode';
 import { OrgListOutput, SolutionListing } from '../pac/PacTypes';
 import { PacWrapper } from '../pac/PacWrapper';
@@ -23,11 +19,11 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         vscode.window.registerTreeDataProvider("pacCLI.authPanel", authPanel),
         vscode.commands.registerCommand("pacCLI.authPanel.refresh", () => authPanel.refresh()),
         vscode.commands.registerCommand("pacCLI.authPanel.clearAuthProfile", async () => {
-            const confirm = localize("pacCLI.authPanel.clearAuthProfile.confirm", "Confirm");
+            const confirm = vscode.l10n.t("Confirm");
             const confirmResult = await vscode.window.showWarningMessage(
-                localize("pacCLI.authPanel.clearAuthProfile.prompt", "Are you sure you want to clear all the Auth Profiles?"),
+                vscode.l10n.t("Are you sure you want to clear all the Auth Profiles? TEST"),
                 confirm,
-                localize("pacCLI.authPanel.clearAuthProfile.cancel","Cancel"));
+                vscode.l10n.t("Cancel"));
             if (confirmResult && confirmResult === confirm) {
                 await pacWrapper.authClear();
                 authPanel.refresh();
@@ -45,15 +41,13 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
             envAndSolutionPanel.refresh();
         }),
         vscode.commands.registerCommand("pacCLI.authPanel.deleteAuthProfile", async (item: AuthProfileTreeItem) => {
-            const confirm = localize("pacCLI.authPanel.deleteAuthProfile.confirm", "Confirm");
+            const confirm = vscode.l10n.t("Confirm");
             const confirmResult = await vscode.window.showWarningMessage(
-                localize({ key: "pacCLI.authPanel.deleteAuthProfile.prompt",
-                    comment: ["{0} is the user name, {1} is the URL of environment of the auth profile"]},
-                    "Are you sure you want to delete the Auth Profile {0}-{1}?",
-                    item.model.User,
-                    item.model.Resource),
+                vscode.l10n.t({ message: "Are you sure you want to delete the Auth Profile {0}-{1}?",
+                    args: [item.model.User, item.model.Resource],
+                    comment: ["{0} is the user name, {1} is the URL of environment of the auth profile"] }),
                 confirm,
-                localize("pacCLI.authPanel.deleteAuthProfile.cancel", "Cancel"));
+                vscode.l10n.t("Cancel"));
             if (confirmResult && confirmResult === confirm) {
                 await pacWrapper.authDeleteByIndex(item.model.Index);
                 authPanel.refresh();
@@ -62,9 +56,9 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         }),
         vscode.commands.registerCommand('pacCLI.authPanel.nameAuthProfile', async (item: AuthProfileTreeItem) => {
             const authProfileName = await vscode.window.showInputBox({
-                title: localize("pacCLI.authPanel.nameAuthProfile.title", "Name/Rename Auth Profile"),
-                prompt: localize("pacCLI.authPanel.nameAuthProfile.prompt", "The name you want to give to this authentication profile"),
-                validateInput: value => value.length <= 30 ? null : localize("pacCLI.authPanel.nameAuthProfile.validation", 'Maximum 30 characters allowed')
+                title: vscode.l10n.t("Name/Rename Auth Profile"),
+                prompt: vscode.l10n.t("The name you want to give to this authentication profile"),
+                validateInput: value => value.length <= 30 ? null : vscode.l10n.t('Maximum 30 characters allowed')
             });
             if (authProfileName) {
                 await pacWrapper.authNameByIndex(item.model.Index, authProfileName);

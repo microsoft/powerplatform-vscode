@@ -5,10 +5,7 @@
 
 // https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel
 
-import * as nls from 'vscode-nls';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-
+import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
@@ -73,10 +70,10 @@ export class CliAcquisition implements IDisposable {
         }
         // nupkg has not been extracted yet:
         this._context.showInformationMessage(
-            localize({
-                key: "cliAquisition.preparingMessage",
-                comment: ["{0} represents the version number"]},
-                "Preparing pac CLI (v{0})...", this.cliVersion));
+            vscode.l10n.t({
+                message: "Preparing pac CLI (v{0})...",
+                args: [this.cliVersion],
+                comment: ["{0} represents the version number"]}));
         await this.killProcessesInUse(pacToolsPath);
         fs.emptyDirSync(this._cliPath);
         return new Promise((resolve, reject) => {
@@ -84,17 +81,17 @@ export class CliAcquisition implements IDisposable {
                 .pipe(Extract({ path: this._cliPath }))
                 .on('close', () => {
                     this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
-                    this._context.showInformationMessage(localize("cliAquisition.successMessage", 'The pac CLI is ready for use in your VS Code terminal!'));
+                    this._context.showInformationMessage(vscode.l10n.t('The pac CLI is ready for use in your VS Code terminal!'));
                     if (os.platform() !== 'win32') {
                         fs.chmodSync(this.cliExePath, 0o755);
                     }
                     this.setInstalledVersion(this._cliVersion);
                     resolve(pacToolsPath);
                 }).on('error', (err: unknown) => {
-                    this._context.showErrorMessage(localize({
-                        key: "cliAquisition.installationErrorMessage",
-                        comment: ["{0} represents the error message returned from the exception"]},
-                        "Cannot install pac CLI: {0}", String(err)));
+                    this._context.showErrorMessage(vscode.l10n.t({
+                        message: "Cannot install pac CLI: {0}",
+                        args: [String(err)],
+                        comment: ["{0} represents the error message returned from the exception"]}));
                     reject(err);
                 })
         });
