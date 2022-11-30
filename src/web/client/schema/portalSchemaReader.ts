@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { getPortalSchema } from "../utilities/schemaHelperUtil";
 import { schemaEntityKey, schemaEntityName } from "./constants";
-import { getPortalSchema } from "../utility/schemaHelper";
 
 export function getEntitiesSchemaMap(schema: string): Map<string, Map<string, string>> {
     const entitiesMap = new Map<string, Map<string, string>>();

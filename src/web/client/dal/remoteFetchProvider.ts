@@ -13,18 +13,20 @@ import {
     sendErrorTelemetry,
     sendInfoTelemetry
 } from '../telemetry/webExtensionTelemetry';
-import { fromBase64, GetFileNameWithExtension } from '../utility/CommonUtility';
+import { convertfromBase64ToString, GetFileNameWithExtension } from '../utilities/commonUtil';
 import {
     getRequestURL,
     updateEntityId
-} from '../utility/UrlBuilder';
-import { getHeader } from './authenticationProvider';
-import * as Constants from './constants';
-import { ERRORS, showErrorDialog } from './errorHandler';
+} from '../utilities/urlBuilderUtil';
+import { getHeader } from '../common/authenticationProvider';
+import * as Constants from '../common/constants';
+import { ERRORS, showErrorDialog } from '../common/errorHandler';
 import { PortalsFS } from './fileSystemProvider';
-import { SaveEntityDetails } from './portalSchemaInterface';
-import PowerPlatformExtensionContextManager from "./localStore";
-import { getAttributeParts, getEntity, useBase64Decoding, useBase64Encoding } from '../utility/schemaHelper';
+import { SaveEntityDetails } from '../schema/portalSchemaInterface';
+import PowerPlatformExtensionContextManager from "../powerPlatformExtensionContext";
+import { getAttributeParts, getEntity, isBase64Encoded, useBase64Encoding } from '../utilities/schemaHelperUtil';
+import { telemetryEventNames } from '../telemetry/constants';
+import { folderExportType, schemaEntityKey } from '../schema/constants';
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     accessToken: string,
@@ -91,25 +93,25 @@ async function createContentFiles(
     dataverseOrgUrl: string
 ) {
     let lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.queryParameters.WEBSITE_ID) as string) ?? '';
-    sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LCID, { 'lcid': (lcid ? lcid.toString() : '') });
+    sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_EDIT_LCID, { 'lcid': (lcid ? lcid.toString() : '') });
 
     const entityDetails = getEntity(entity);
     const attributes = entityDetails?.get('_attributes');
-    const attributeExtension = entityDetails?.get(Constants.schemaEntityKey.ATTRIBUTES_EXTENSION);
-    const mappingEntityFetchQuery = entityDetails?.get(Constants.schemaEntityKey.MAPPING_ATTRIBUTE_FETCH_QUERY);
+    const attributeExtension = entityDetails?.get(schemaEntityKey.ATTRIBUTES_EXTENSION);
+    const mappingEntityFetchQuery = entityDetails?.get(schemaEntityKey.MAPPING_ATTRIBUTE_FETCH_QUERY);
     const exportType = entityDetails?.get('_exporttype');
     const portalFolderName = queryParamsMap.get(Constants.queryParameters.WEBSITE_NAME) as string;
-    const subUri = entityDetails?.get(Constants.schemaEntityKey.FILE_FOLDER_NAME);
+    const subUri = entityDetails?.get(schemaEntityKey.FILE_FOLDER_NAME);
 
     let filePathInPortalFS = '';
-    if (exportType && (exportType === Constants.exportType.SubFolders || exportType === Constants.exportType.SingleFolder)) {
+    if (exportType && (exportType === folderExportType.SubFolders || exportType === folderExportType.SingleFolder)) {
         filePathInPortalFS = `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
         await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
     }
 
     if (attributes && attributeExtension) {
         let fileName = Constants.EMPTY_FILE_NAME;
-        const fetchedFileName = entityDetails?.get(Constants.schemaEntityKey.FILE_NAME_FIELD);
+        const fetchedFileName = entityDetails?.get(schemaEntityKey.FILE_NAME_FIELD);
 
         if (fetchedFileName) {
             fileName = result[fetchedFileName];
@@ -117,16 +119,16 @@ async function createContentFiles(
 
         if (fileName === Constants.EMPTY_FILE_NAME) {
             showErrorDialog(localize("microsoft-powerapps-portals.webExtension.file-not-found.error", "That file is not available"), localize("microsoft-powerapps-portals.webExtension.file-not-found.desc", "The metadata may have changed on the Dataverse side. Contact your admin."));
-            sendErrorTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
+            sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_EMPTY_FILE_NAME);
             return;
         }
 
-        if (exportType && (exportType === Constants.exportType.SubFolders)) {
+        if (exportType && (exportType === folderExportType.SubFolders)) {
             filePathInPortalFS = `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
             await portalsFS.createDirectory(vscode.Uri.parse(filePathInPortalFS, true));
         }
 
-        const languageCodeAttribute = entityDetails?.get(Constants.schemaEntityKey.LANGUAGE_FIELD);
+        const languageCodeAttribute = entityDetails?.get(schemaEntityKey.LANGUAGE_FIELD);
 
         if (languageCodeAttribute && result[languageCodeAttribute]) {
             lcid = websiteIdToLanguage.get(result[languageCodeAttribute]) ?? '';
@@ -136,7 +138,7 @@ async function createContentFiles(
         if (languageIdCodeMap?.size && lcid) {
             languageCode = languageIdCodeMap.get(lcid) as string ?? Constants.DEFAULT_LANGUAGE_CODE;
         }
-        sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
+        sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE, { 'languageCode': (languageCode ? languageCode.toString() : '') });
 
         const attributeArray = attributes.split(',');
         const attributeExtensionMap = attributeExtension as unknown as Map<string, string>;
@@ -144,7 +146,7 @@ async function createContentFiles(
 
         let fileUri = '';
         for (counter; counter < attributeArray.length; counter++) {
-            const decodeToBase64 = useBase64Decoding(entity, attributeArray[counter]); // update func for webfiles for V2
+            const isBase64Encoding = isBase64Encoded(entity, attributeArray[counter]); // update func for webfiles for V2
 
             const attributeParts = getAttributeParts(attributeArray[counter]);
             let fileContent = result[attributeParts.source] ?? Constants.NO_CONTENT;
@@ -171,7 +173,7 @@ async function createContentFiles(
             await createVirtualFile(
                 portalsFS,
                 fileUri,
-                decodeToBase64 ? fromBase64(fileContent) : fileContent,
+                isBase64Encoding ? convertfromBase64ToString(fileContent) : fileContent,
                 updateEntityId(entity, entityId, result),
                 attributeArray[counter] as string,
                 useBase64Encoding(entity, attributeArray[counter]),
@@ -184,7 +186,7 @@ async function createContentFiles(
 
         // Not awaited intentionally
         vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(fileUri), { background: true, preview: false });
-        sendInfoTelemetry(Constants.telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND, { 'commandId': 'vscode.open', 'type': 'file' });
+        sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND, { 'commandId': 'vscode.open', 'type': 'file' });
     }
 }
 

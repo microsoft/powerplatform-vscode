@@ -6,9 +6,11 @@
 
 import * as vscode from "vscode";
 import * as nls from 'vscode-nls';
+import { schemaKey } from "../schema/constants";
+import { telemetryEventNames } from "../telemetry/constants";
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import { sendErrorTelemetry } from "../telemetry/webExtensionTelemetry";
-import { PORTALS_FOLDER_NAME_DEFAULT, telemetryEventNames, schemaKey, queryParameters } from "./constants";
+import { PORTALS_FOLDER_NAME_DEFAULT, queryParameters } from "./constants";
 
 export const ERRORS = {
     WORKSPACE_INITIAL_LOAD: "There was a problem opening the workspace",

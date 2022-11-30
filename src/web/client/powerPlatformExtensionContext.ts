@@ -4,13 +4,14 @@
  */
 
 import * as vscode from "vscode";
-import { dataverseAuthentication, getHeader } from "./authenticationProvider";
-import * as Constants from "./constants";
-import { getDataSourcePropertiesMap, getEntitiesFolderNameMap, getEntitiesSchemaMap } from "./portalSchemaReader";
-import { SaveEntityDetails } from "./portalSchemaInterface";
-import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry } from "../telemetry/webExtensionTelemetry";
-import { getLanguageIdCodeMap, getWebsiteIdToLanguageMap, getwebsiteLanguageIdToPortalLanguageMap } from "../utility/schemaHelper";
-import { getCustomRequestURL } from "../utility/UrlBuilder";
+import { dataverseAuthentication, getHeader } from "./common/authenticationProvider";
+import * as Constants from "./common/constants";
+import { getDataSourcePropertiesMap, getEntitiesFolderNameMap, getEntitiesSchemaMap } from "./schema/portalSchemaReader";
+import { SaveEntityDetails } from "./schema/portalSchemaInterface";
+import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry } from "./telemetry/webExtensionTelemetry";
+import { getLanguageIdCodeMap, getWebsiteIdToLanguageMap, getwebsiteLanguageIdToPortalLanguageMap } from "./utilities/schemaHelperUtil";
+import { getCustomRequestURL } from "./utilities/urlBuilderUtil";
+import { schemaKey } from "./schema/constants";
 
 export interface IPowerPlatformExtensionContext {
     dataSourcePropertiesMap: Map<string, string>; // dataSourceProperties in portal_schema_data
@@ -26,8 +27,8 @@ export interface IPowerPlatformExtensionContext {
     rootDirectory: vscode.Uri;
     saveDataMap: Map<string, SaveEntityDetails>,
     defaultFileUri: vscode.Uri, // This will default to home page or current page in multifile scenario
-    contextSet: boolean,
-    currentSchema: string
+    isContextSet: boolean,
+    currentSchemaVersion: string
 }
 
 class PowerPlatformExtensionContextManager {
@@ -46,8 +47,8 @@ class PowerPlatformExtensionContextManager {
         rootDirectory: vscode.Uri.parse(''),
         saveDataMap: new Map<string, SaveEntityDetails>(),
         defaultFileUri: vscode.Uri.parse(``),
-        contextSet: false,
-        currentSchema: ""
+        isContextSet: false,
+        currentSchemaVersion: ""
     };
 
     public getPowerPlatformExtensionContext() {
@@ -55,9 +56,9 @@ class PowerPlatformExtensionContextManager {
     }
 
     public async setPowerPlatformExtensionContext(entityName: string, entityId: string, queryParamsMap: Map<string, string>) {
-        const schema = queryParamsMap.get(Constants.schemaKey.SCHEMA_VERSION) as string;
+        const schema = queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string;
         // Initialize context from URL params
-        this.PowerPlatformExtensionContext.currentSchema = schema;
+        this.PowerPlatformExtensionContext.currentSchemaVersion = schema;
         this.PowerPlatformExtensionContext.entity = entityName.toLowerCase();
         this.PowerPlatformExtensionContext.entityId = entityId;
         this.PowerPlatformExtensionContext.queryParamsMap = queryParamsMap;
@@ -67,13 +68,13 @@ class PowerPlatformExtensionContextManager {
         this.PowerPlatformExtensionContext.entitiesSchemaMap = getEntitiesSchemaMap(schema);
         this.PowerPlatformExtensionContext.dataSourcePropertiesMap = getDataSourcePropertiesMap(schema);
         this.PowerPlatformExtensionContext.entitiesFolderNameMap = getEntitiesFolderNameMap(this.PowerPlatformExtensionContext.entitiesSchemaMap);
-        this.PowerPlatformExtensionContext.contextSet = true;
+        this.PowerPlatformExtensionContext.isContextSet = true;
     }
 
     public async authenticateAndUpdateDataverseProperties() {
         const dataverseOrgUrl = this.PowerPlatformExtensionContext.queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
-        const schema = this.PowerPlatformExtensionContext.queryParamsMap.get(Constants.schemaKey.SCHEMA_VERSION) as string;
+        const schema = this.PowerPlatformExtensionContext.queryParamsMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() as string;
 
         if (accessToken) {
             this.PowerPlatformExtensionContext = {
@@ -81,6 +82,20 @@ class PowerPlatformExtensionContextManager {
                 websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl, schema),
                 websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguageMap(accessToken, dataverseOrgUrl, schema),
                 languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl, schema),
+                dataverseAccessToken: accessToken,
+            };
+        }
+
+        return this.PowerPlatformExtensionContext;
+    }
+
+    public async reAuthenticate() {
+        const dataverseOrgUrl = this.PowerPlatformExtensionContext.queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
+        const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
+
+        if (accessToken) {
+            this.PowerPlatformExtensionContext = {
+                ... this.PowerPlatformExtensionContext,
                 dataverseAccessToken: accessToken,
             };
         }

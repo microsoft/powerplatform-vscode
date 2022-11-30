@@ -5,9 +5,10 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import { telemetryEventNames } from '../telemetry/constants';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 import { sendErrorTelemetry, sendInfoTelemetry } from '../telemetry/webExtensionTelemetry';
-import { PROVIDER_ID, telemetryEventNames } from './constants';
+import { PROVIDER_ID } from './constants';
 
 export function getHeader(accessToken: string, useOctetStreamContentType?: boolean) {
     return {
@@ -22,13 +23,18 @@ export function getHeader(accessToken: string, useOctetStreamContentType?: boole
 export async function dataverseAuthentication(dataverseOrgURL: string): Promise<string> {
     let accessToken = '';
     try {
-        const session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { createIfNone: true });
-        accessToken = session.accessToken;
 
+        let session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { silent: true });
+
+        if (!session) {
+            session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { createIfNone: true });
+        }
+
+        accessToken = session?.accessToken ?? '';
         if (!accessToken) {
             sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
         }
-        sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED, { "userId": session.account.id.split('/').pop() ?? session.account.id });
+        sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED, { "userId": session?.account.id.split('/').pop() ?? session?.account.id ?? '' });
     } catch (error) {
         const authError = (error as Error)?.message;
         sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);
