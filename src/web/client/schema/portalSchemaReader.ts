@@ -3,27 +3,30 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { portal_schema_data } from "./portalSchema";
-import { FILE_FOLDER_NAME, schemaEntityName } from "./constants";
+import { getPortalSchema } from "../utilities/schemaHelperUtil";
+import { schemaEntityKey, schemaEntityName } from "./constants";
 
-export function getEntitiesSchemaMap(): Map<string, Map<string, string>> {
+export function getEntitiesSchemaMap(schema: string): Map<string, Map<string, string>> {
     const entitiesMap = new Map<string, Map<string, string>>();
-    for (let i = 0; i < portal_schema_data.entities.entity.length; i++) {
-        const entity = portal_schema_data.entities.entity[i];
+    const schema_data = getPortalSchema(schema);
+
+    for (let i = 0; i < schema_data.entities.entity.length; i++) {
+        const entity = schema_data.entities.entity[i];
         const entitiesDetailsMap = new Map<string, string>();
         if (entity) {
             for (const [key, value] of Object.entries(entity)) {
-                entitiesDetailsMap.set(key, value)
+                entitiesDetailsMap.set(key, value as string)
             }
         }
-        entitiesMap.set(entity._name, entitiesDetailsMap)
+        entitiesMap.set(entity._vscodeentityname, entitiesDetailsMap)
     }
     return entitiesMap;
 }
 
-export function getDataSourcePropertiesMap(): Map<string, string> {
-    const dataSourceProperties: { [key: string]: string } = portal_schema_data.entities.dataSourceProperties;
+export function getDataSourcePropertiesMap(schema: string): Map<string, string> {
+    const dataSourceProperties: { [key: string]: string } = getPortalSchema(schema).entities.dataSourceProperties;
     const dataSourcePropertiesMap = new Map<string, string>();
+
     for (const [key, value] of Object.entries(dataSourceProperties)) {
         dataSourcePropertiesMap.set(key, value)
     }
@@ -34,7 +37,7 @@ export function getEntitiesFolderNameMap(entitiesSchemaMap: Map<string, Map<stri
 
     const entitiesFolderNameMap = new Map<string, string>();
     for (const entry of Object.entries(schemaEntityName)) {
-        const folderName = entitiesSchemaMap.get(entry[1])?.get(FILE_FOLDER_NAME);
+        const folderName = entitiesSchemaMap.get(entry[1])?.get(schemaEntityKey.FILE_FOLDER_NAME);
 
         if (folderName) {
             entitiesFolderNameMap.set(entry[1], folderName);

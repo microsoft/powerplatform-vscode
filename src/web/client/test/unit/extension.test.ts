@@ -4,9 +4,15 @@
  */
 
 import { expect } from "chai";
+import { convertfromBase64ToString, convertStringtoBase64 } from "../../utilities/commonUtil";
 
-describe("Web Extension Unit Tests", () => {
-    it("Sample test", () => {
-        expect([1, 2, 3].indexOf(5)).to.be.eq(-1); // sample unit test for webExtension
+describe("Web Extension Unit Tests", async () => {
+    it("it should return text from base 64", () => {
+        const str = "this is test case";
+
+        const base64 = convertStringtoBase64(str);
+        const base64totext = convertfromBase64ToString(base64);
+        expect(base64).eq("dGhpcyBpcyB0ZXN0IGNhc2U=");
+        expect(base64totext).eq(str);
     });
 });
