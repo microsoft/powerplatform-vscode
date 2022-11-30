@@ -6,31 +6,19 @@
 import * as os from "os";
 import * as path from "path";
 import * as readline from "readline";
-import * as vscode from "vscode";
 import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
 import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput } from "./PacTypes";
 import { v4 } from "uuid";
-import { buildAgentString } from "../telemetry/batchedTelemetryAgent";
 
 export interface IPacWrapperContext {
     readonly globalStorageLocalPath: string;
     readonly telemetry: ITelemetry;
     readonly automationAgent: string;
+    IsTelemetryEnabled(): boolean;
 }
-
-export class PacWrapperContext implements IPacWrapperContext {
-    public constructor(
-        private readonly _context: vscode.ExtensionContext,
-        private readonly _telemetry: ITelemetry) {
-    }
-    public get globalStorageLocalPath(): string { return this._context.globalStorageUri.fsPath; }
-    public get telemetry(): ITelemetry { return this._telemetry; }
-    public get automationAgent(): string { return buildAgentString(this._context) }
-}
-
 
 export interface IPacInterop {
     executeCommand(args: PacArguments): Promise<string>;
@@ -71,7 +59,7 @@ export class PacInterop implements IPacInterop {
             const env : NodeJS.ProcessEnv = {...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
 
             // If the VS Code telemetry is disabled, disable telemetry on the PAC backing the Extension's UI
-            if (!vscode.env.isTelemetryEnabled) {
+            if (!this.context.IsTelemetryEnabled()) {
                 env['PP_TOOLS_TELEMETRY_OPTOUT'] = 'true';
             }
 
