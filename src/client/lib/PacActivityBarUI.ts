@@ -21,7 +21,7 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         vscode.commands.registerCommand("pacCLI.authPanel.clearAuthProfile", async () => {
             const confirm = vscode.l10n.t("Confirm");
             const confirmResult = await vscode.window.showWarningMessage(
-                vscode.l10n.t("Are you sure you want to clear all the Auth Profiles? TEST"),
+                vscode.l10n.t("Are you sure you want to clear all the Auth Profiles?"),
                 confirm,
                 vscode.l10n.t("Cancel"));
             if (confirmResult && confirmResult === confirm) {

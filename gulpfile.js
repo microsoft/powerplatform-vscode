@@ -11,7 +11,6 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
 const rename = require('gulp-rename');
-const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
 const gulpTs = require("gulp-typescript");
 const replace = require('gulp-replace');
@@ -369,7 +368,6 @@ const recompile = gulp.series(
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
     translationsImport,
-    translationsGenerate,
     setTelemetryTarget,
     compile,
     compileWeb
@@ -387,7 +385,10 @@ async function translationsExport() {
     await npx(["@vscode/l10n-dev", "export", "--outDir", "./l10n", "./src"]);
     await npx(["@vscode/l10n-dev", "generate-xlf",
         "./package.nls.json", "./l10n/bundle.l10n.json",
-        "--outFile", path.join(".", "loc", "translations-export", "vscode-powerplatform.xlf")]);
+        "--outFile", "./loc/translations-export/vscode-powerplatform.xlf"]);
+    return gulp.src('./loc/translations-export/vscode-powerplatform.xlf')
+        .pipe(replace("&apos;", "'"))
+        .pipe(gulp.dest('./loc/translations-export/'));
 }
 
 // const languages = [
@@ -410,34 +411,13 @@ async function translationsExport() {
 
 async function translationsImport() {
     await npx(["@vscode/l10n-dev", "import-xlf", "./loc/translations-import/*.xlf", "--outDir", "./l10n"]);
+
+    // Fix up changes from the XLF Export / Import process that cause lookup misses
+    return gulp.src('./l10n/bundle.l10n.*.json')
+        .pipe(replace("\\r\\n", "\\n"))
+        .pipe(replace("&apos;", "'"))
+        .pipe(gulp.dest('./l10n'));
 }
-
-// function translationsGeneratePackage() {
-//     return gulp.src(['package.nls.json'])
-//         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
-//         .pipe(gulp.dest('.'));
-// }
-// function translationsGenerate(done) {
-//     return gulp.series(
-//         async () => translationsGeneratePackage(),
-//         async () => translationsGenerateSrcLocBundles(),
-//         (seriesDone) => {
-//             seriesDone();
-//             done();
-//         }
-//     )();
-// }
-
-// function translationsGenerateSrcLocBundles() {
-//     return gulp.src('src/**/*.ts')
-//         .pipe(nls.createMetaDataFiles())
-//         .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
-//         .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', path.join('dist', 'src')))
-//         .pipe(nls.bundleLanguageFiles())
-//         .pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
-//         .pipe(filter(['**/nls.*.json']))
-//         .pipe(gulp.dest(path.join('dist', 'src')));
-// }
 
 exports.clean = clean;
 exports.compile = compile;
