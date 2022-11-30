@@ -410,6 +410,7 @@ async function translationsExport() {
 // ];
 
 async function translationsImport() {
+    // TODO: Move package.nls.*.json files to root instead of l10n
     await npx(["@vscode/l10n-dev", "import-xlf", "./loc/translations-import/*.xlf", "--outDir", "./l10n"]);
 
     // Fix up changes from the XLF Export / Import process that cause lookup misses

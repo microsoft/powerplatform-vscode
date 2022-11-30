@@ -13,7 +13,7 @@
     ]
   },
   "Confirm": "Confirm",
-  "Are you sure you want to clear all the Auth Profiles? TEST": "Are you sure you want to clear all the Auth Profiles? TEST",
+  "Are you sure you want to clear all the Auth Profiles?": "Are you sure you want to clear all the Auth Profiles?",
   "Cancel": "Cancel",
   "Are you sure you want to delete the Auth Profile {0}-{1}?/{0} is the user name, {1} is the URL of environment of the auth profile": {
     "message": "Are you sure you want to delete the Auth Profile {0}-{1}?",
