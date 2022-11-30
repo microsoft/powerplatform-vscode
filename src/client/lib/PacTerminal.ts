@@ -10,9 +10,10 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as os from 'os'
-import { PacInterop, PacWrapper, PacWrapperContext } from '../pac/PacWrapper';
+import { PacInterop, PacWrapper } from '../pac/PacWrapper';
 import { ITelemetry } from '../telemetry/ITelemetry';
 import { RegisterPanels } from './PacActivityBarUI';
+import { PacWrapperContext } from '../pac/PacWrapperContext';
 
 export class PacTerminal implements vscode.Disposable {
     private readonly _context: vscode.ExtensionContext;
