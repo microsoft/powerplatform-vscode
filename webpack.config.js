@@ -83,7 +83,8 @@ const webConfig = {
             "path": require.resolve("path-browserify"),
             'assert': require.resolve('assert'),
             'stream': require.resolve("stream-browserify"),
-            'util': false
+            'util': false,
+            "child_process": false,
         }
     },
     module: {

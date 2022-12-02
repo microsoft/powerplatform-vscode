@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
 
                 removeEncodingFromParameters(queryParamsMap);
-                await PowerPlatformExtensionContextManager.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap);
+                await PowerPlatformExtensionContextManager.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap, context);
 
                 sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
 

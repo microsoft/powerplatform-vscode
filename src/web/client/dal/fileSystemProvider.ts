@@ -14,6 +14,9 @@ import { fetchDataFromDataverseAndUpdateVFS } from './remoteFetchProvider';
 import { saveData } from './remoteSaveProvider';
 import * as nls from 'vscode-nls';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+import { showQuickPick, showInputBox } from './basicInput';
+import { multiStepInput } from './multiStepInput';
+import { quickOpen } from './quickOpen';
 
 export class File implements vscode.FileStat {
 
@@ -163,7 +166,24 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async rename(): Promise<void> {
-        throw new Error('Method not implemented.');
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const vscodeContext = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().vscodeExtensionContext!;
+        const options: { [key: string]: (context: vscode.ExtensionContext) => Promise<void> } = {
+            showInputBox,
+            showQuickPick,
+            multiStepInput,
+            quickOpen,
+        };
+        const quickPick = vscode.window.createQuickPick();
+        quickPick.items = Object.keys(options).map(label => ({ label }));
+        quickPick.onDidChangeSelection(selection => {
+            if (selection[0]) {
+                options[selection[0].label](vscodeContext)
+                    .catch(console.error);
+            }
+        });
+        quickPick.onDidHide(() => quickPick.dispose());
+        quickPick.show();
     }
 
     async delete(): Promise<void> {

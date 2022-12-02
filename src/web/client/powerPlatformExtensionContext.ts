@@ -14,6 +14,7 @@ import { getCustomRequestURL } from "./utilities/urlBuilderUtil";
 import { schemaKey } from "./schema/constants";
 
 export interface IPowerPlatformExtensionContext {
+    vscodeExtensionContext: vscode.ExtensionContext | undefined;
     dataSourcePropertiesMap: Map<string, string>; // dataSourceProperties in portal_schema_data
     entitiesSchemaMap: Map<string, Map<string, string>>;
     queryParamsMap: Map<string, string>;
@@ -34,6 +35,7 @@ export interface IPowerPlatformExtensionContext {
 class PowerPlatformExtensionContextManager {
 
     private PowerPlatformExtensionContext: IPowerPlatformExtensionContext = {
+        vscodeExtensionContext: undefined,
         dataSourcePropertiesMap: new Map<string, string>(),
         entitiesSchemaMap: new Map<string, Map<string, string>>(),
         languageIdCodeMap: new Map<string, string>(),
@@ -55,8 +57,14 @@ class PowerPlatformExtensionContextManager {
         return this.PowerPlatformExtensionContext;
     }
 
-    public async setPowerPlatformExtensionContext(entityName: string, entityId: string, queryParamsMap: Map<string, string>) {
+    public async setPowerPlatformExtensionContext(entityName: string,
+        entityId: string,
+        queryParamsMap: Map<string, string>,
+        context: vscode.ExtensionContext) {
         const schema = queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string;
+        // Initialize the vscode extension context
+        this.PowerPlatformExtensionContext.vscodeExtensionContext = context;
+
         // Initialize context from URL params
         this.PowerPlatformExtensionContext.currentSchemaVersion = schema;
         this.PowerPlatformExtensionContext.entity = entityName.toLowerCase();
