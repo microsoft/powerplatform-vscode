@@ -164,12 +164,25 @@ export function sendAPITelemetry(
     }
 }
 
-export function sendAPISuccessTelemetry(URL: string, entity: string, httpMethod: string, duration: number) {
-    sendAPITelemetry(URL, entity, httpMethod, undefined, true, duration, undefined, telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+export function sendAPISuccessTelemetry(
+    URL: string,
+    entity: string,
+    httpMethod: string,
+    duration: number,
+    entityFileExtensionType?: string, // TODO: Pass these as function properties parameters
+) {
+    sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, true, duration, undefined, telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
 }
 
-export function sendAPIFailureTelemetry(URL: string, entity: string, httpMethod: string, duration: number, errorMessage?: string) {
-    sendAPITelemetry(URL, entity, httpMethod, undefined, false, duration, errorMessage, telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
+export function sendAPIFailureTelemetry(
+    URL: string,
+    entity: string,
+    httpMethod: string,
+    duration: number,
+    errorMessage?: string,
+    entityFileExtensionType?: string, // TODO: Pass these as function properties parameters
+) {
+    sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, false, duration, errorMessage, telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
 }
 
 export function sendPerfTelemetry(eventName: string, duration: number) {
