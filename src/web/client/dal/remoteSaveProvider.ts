@@ -61,7 +61,7 @@ export async function saveData(
 
             const response = await fetch(requestUrl, requestInit);
 
-            sendAPITelemetry(requestUrl, entityName, httpMethod.PATCH);
+            sendAPITelemetry(requestUrl, entityName, httpMethod.PATCH, saveDataMap.get(fileUri.fsPath)?.getEntityFileExtensionType);
 
             if (!response.ok) {
                 sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, JSON.stringify(response));

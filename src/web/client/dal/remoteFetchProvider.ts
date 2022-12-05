@@ -164,10 +164,11 @@ async function createContentFiles(
 
             }
 
+            const fileExtension = attributeExtensionMap?.get(attributeArray[counter]) as string;
             const fileNameWithExtension = GetFileNameWithExtension(entity,
                 fileName,
                 languageCode,
-                attributeExtensionMap?.get(attributeArray[counter]) as string);
+                fileExtension);
             fileUri = filePathInPortalFS + fileNameWithExtension;
 
             await createVirtualFile(
@@ -179,6 +180,7 @@ async function createContentFiles(
                 useBase64Encoding(entity, attributeArray[counter]),
                 entity,
                 originalAttributeContent,
+                fileExtension,
                 result[Constants.MIMETYPE]);
         }
 
@@ -199,9 +201,10 @@ async function createVirtualFile(
     useBase64Encoding: boolean,
     entity: string,
     originalAttributeContent: string,
+    fileExtension: string,
     mimeType?: string
 ) {
-    const saveEntityDetails = new SaveEntityDetails(entityId, entity, attributePath, originalAttributeContent, useBase64Encoding, mimeType);
+    const saveEntityDetails = new SaveEntityDetails(entityId, entity, fileExtension, attributePath, originalAttributeContent, useBase64Encoding, mimeType);
     const dataMap: Map<string, SaveEntityDetails> = PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().saveDataMap;
     dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
     await PowerPlatformExtensionContextManager.updateSaveDataDetailsInContext(dataMap);
