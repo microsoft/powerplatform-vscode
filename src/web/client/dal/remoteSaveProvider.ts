@@ -57,11 +57,12 @@ export async function saveData(
 
     if (requestInit.body) {
         const requestSentAtTime = new Date().getTime();
+        const fileExtensionType = saveDataMap.get(fileUri.fsPath)?.getEntityFileExtensionType;
         try {
 
             const response = await fetch(requestUrl, requestInit);
 
-            sendAPITelemetry(requestUrl, entityName, httpMethod.PATCH);
+            sendAPITelemetry(requestUrl, entityName, httpMethod.PATCH, fileExtensionType);
 
             if (!response.ok) {
                 sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
@@ -69,11 +70,11 @@ export async function saveData(
                 throw new Error(response.statusText);
             }
 
-            sendAPISuccessTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime);
+            sendAPISuccessTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, fileExtensionType);
         }
         catch (error) {
             const authError = (error as Error)?.message;
-            sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, authError);
+            sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, authError, fileExtensionType);
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
             }

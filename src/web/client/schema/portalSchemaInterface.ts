@@ -44,19 +44,22 @@ export interface ISaveEntityDetails {
 export class SaveEntityDetails implements ISaveEntityDetails {
     entityName!: string;
     entityId!: string;
+    entityFileExtensionType!: string;
     saveAttributePath!: string;
     originalAttributeContent!: string;
     useBase64Encoding: boolean | undefined;
     mimeType: string | undefined;
     public get getEntityName(): string { return this.entityName; }
     public get getEntityId(): string { return this.entityId; }
+    public get getEntityFileExtensionType(): string { return this.entityFileExtensionType; }
     public get getSaveAttribute(): string { return this.saveAttributePath }
     public get getOriginalAttributeContent(): string { return this.originalAttributeContent }
     public get getUseBase64Encoding(): boolean | undefined { return this.useBase64Encoding }
     public get getMimeType(): string | undefined { return this.mimeType }
-    constructor(entityId: string, entityName: string, saveAttribute: string, originalAttributeContent: string, useBase64Encoding?: boolean, mimeType?: string) {
+    constructor(entityId: string, entityName: string, entityFileExtensionType: string, saveAttribute: string, originalAttributeContent: string, useBase64Encoding?: boolean, mimeType?: string) {
         this.entityId = entityId;
         this.entityName = entityName;
+        this.entityFileExtensionType = entityFileExtensionType;
         this.saveAttributePath = saveAttribute;
         this.originalAttributeContent = originalAttributeContent;
         this.useBase64Encoding = useBase64Encoding;
