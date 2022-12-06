@@ -81,19 +81,19 @@ export function sendExtensionInitPathParametersTelemetry(appName: string | undef
     _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
 }
 
-export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearchParams | undefined | null) {
+export function sendExtensionInitQueryParametersTelemetry(queryParamsMap: Map<string, string>) {
     const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
         eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
         properties: {
-            orgId: getQueryParameterValue(queryParameters.ORG_ID, searchParams),
-            tenantId: getQueryParameterValue(queryParameters.TENANT_ID, searchParams),
-            portalId: getQueryParameterValue(queryParameters.PORTAL_ID, searchParams),
-            websiteId: getQueryParameterValue(queryParameters.WEBSITE_ID, searchParams),
-            dataSource: getQueryParameterValue(queryParameters.DATA_SOURCE, searchParams),
-            schema: getQueryParameterValue(queryParameters.SCHEMA, searchParams),
-            referrerSessionId: getQueryParameterValue(queryParameters.REFERRER_SESSION_ID, searchParams),
-            referrer: getQueryParameterValue(queryParameters.REFERRER, searchParams),
-            siteVisibility: getQueryParameterValue(queryParameters.SITE_VISIBILITY, searchParams),
+            orgId: queryParamsMap.get(queryParameters.ORG_ID),
+            tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
+            portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
+            websiteId: queryParamsMap.get(queryParameters.WEBSITE_ID),
+            dataSource: queryParamsMap.get(queryParameters.DATA_SOURCE),
+            schema: queryParamsMap.get(queryParameters.SCHEMA),
+            referrerSessionId: queryParamsMap.get(queryParameters.REFERRER_SESSION_ID),
+            referrer: queryParamsMap.get(queryParameters.REFERRER),
+            siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
         }
     }
     _telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
@@ -101,17 +101,6 @@ export function sendExtensionInitQueryParametersTelemetry(searchParams: URLSearc
 
 export function getPathParameterValue(parameter: string | undefined | null): string {
     return (parameter) ? parameter : '';
-}
-
-export function getQueryParameterValue(parameter: string, searchParams: URLSearchParams | undefined | null): string {
-    if (searchParams) {
-        const queryParams = new URLSearchParams(searchParams);
-        const paramValue = queryParams.get(parameter);
-        return (paramValue) ? paramValue : '';
-    }
-    else {
-        return '';
-    }
 }
 
 export function sendErrorTelemetry(eventName: string, errorMessage?: string) {
