@@ -59,7 +59,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (appName) {
                     switch (appName) {
                         case 'portal': {
-                            sendExtensionInitQueryParametersTelemetry(searchParams);
+                            sendExtensionInitQueryParametersTelemetry(queryParamsMap);
 
                             const isFirstRun = context.globalState.get(IS_FIRST_RUN_EXPERIENCE, true);
                             if (isFirstRun) {

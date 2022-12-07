@@ -28,7 +28,7 @@ export enum initializationEntityName {
 export enum queryParameters {
     ORG_ID = 'organizationid',
     TENANT_ID = 'tenantid',
-    PORTAL_ID = 'websitePreviewid',
+    PORTAL_ID = 'websitepreviewid',
     WEBSITE_ID = 'websiteid',
     SCHEMA = 'schema',
     DATA_SOURCE = 'datasource',
