@@ -60,6 +60,7 @@ describe("fileSystemProvider", () => {
 
         const fileUri: vscode.Uri = {
             path: "testuri",
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             with: (path) => {
                 return fileUri;
             },
