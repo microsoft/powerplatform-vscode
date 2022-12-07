@@ -7,5 +7,6 @@
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit": "Изменить сайт",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc": "Будьте внимательны при внесении изменений. Кто угодно может сразу увидеть ваши изменения. Выберите \"Изменить сайт\", чтобы внести изменения, или закройте вкладку редактора, чтобы выйти без редактирования.",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title": "Вы редактируете опубликованный открытый сайт ",
+	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Извлечение файла...",
 	"microsoft-powerapps-portals.webExtension.init.app-not-found": "Не удалось найти приложение"
 }
