@@ -7,5 +7,6 @@
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit": "Modifier le site",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc": "Soyez prudent lorsque vous apportez des modifications. Tout le monde peut voir immédiatement les modifications. Choisissez Modifier le site pour apporter des modifications, ou fermez l’onglet de l’éditeur pour annuler sans modifier.",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title": "Vous modifiez un site public actif ",
+	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Récupération de votre fichier en cours...",
 	"microsoft-powerapps-portals.webExtension.init.app-not-found": "Impossible de trouver cette application"
 }

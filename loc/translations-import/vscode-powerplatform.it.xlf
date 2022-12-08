@@ -349,6 +349,10 @@ Versione: {2}</target>
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">Stai modificando un sito pubblico live </target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+        <source xml:lang="en">Fetching your file ...</source>
+        <target state="translated">Recupero del file in corso...</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">Impossibile trovare tale app</target>
@@ -375,19 +379,15 @@ Versione: {2}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/fileSystemProvider" source-language="en" datatype="plaintext" target-language="it">
+  <file original="./web/client/dal/fileSystemProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
-        <source xml:lang="en">Fetching your file ...</source>
-        <target state="translated">Recupero del file in corso...</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
         <source xml:lang="en">Saving your file ...</source>
         <target state="translated">Salvataggio del file in corso...</target>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/remoteFetchProvider" source-language="en" datatype="plaintext" target-language="it">
+  <file original="./web/client/dal/remoteFetchProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.error">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -423,7 +423,7 @@ Versione: {2}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="it">
+  <file original="./web/client/dal/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
         <source xml:lang="en">Unable to complete the request</source>
