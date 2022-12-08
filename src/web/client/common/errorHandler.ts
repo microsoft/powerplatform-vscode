@@ -80,7 +80,7 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
                 return false;
             }
         default:
-            vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+            vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
             return false;
     }
 }
@@ -101,7 +101,7 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
             }
         }
         default:
-            vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+            vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
             return false;
     }
 }
