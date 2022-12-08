@@ -10,9 +10,10 @@ import {
     getHeader,
 } from "../../common/authenticationProvider";
 import vscode from "vscode";
-import * as webExtensionTelemetry from "../../telemetry/webExtensionTelemetry";
-
+import PowerPlatformExtensionContext from "../../powerPlatformExtensionContext";
 import { telemetryEventNames } from '../../telemetry/constants';
+import * as errorHandler from '../../common/errorHandler';
+
 describe("Authentication Provider", () => {
     afterEach(() => {
         // Restore the default sandbox here
@@ -59,33 +60,32 @@ describe("Authentication Provider", () => {
                 scopes: [],
             });
 
-        const sendErrorTelemetry = sinon.spy(
-            webExtensionTelemetry,
-            "sendErrorTelemetry"
+
+        const showErrorDialog = sinon.spy(
+            errorHandler,
+            "showErrorDialog"
         );
 
-        const sendInfoTelemetry = sinon.spy(
-            webExtensionTelemetry,
-            "sendInfoTelemetry"
+        const sendErrorTelemetry = sinon.spy(
+            PowerPlatformExtensionContext.telemetry,
+            "sendErrorTelemetry"
         );
 
         //Act
         const result = await dataverseAuthentication(dataverseOrgURL);
 
         sinon.assert.calledWith(
-            sendErrorTelemetry,
-            telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN
+            showErrorDialog,
+            "Authorization Failed. Please run again to authorize it"
         );
 
         sinon.assert.calledWith(
-            sendInfoTelemetry,
-            telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
-            {
-                userId: "f068ee9f-a010-47b9-b1e1-7e6353730e7d",
-            }
+            sendErrorTelemetry,
+            telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED
         );
+
+        sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(sendErrorTelemetry);
-        sinon.assert.calledOnce(sendInfoTelemetry);
         sinon.assert.calledOnce(_mockgetSession);
         expect(result).empty;
     });
@@ -99,7 +99,7 @@ describe("Authentication Provider", () => {
             .throws({ message: errorMessage });
 
         const sendError = sinon.spy(
-            webExtensionTelemetry,
+            PowerPlatformExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         // Act

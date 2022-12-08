@@ -6,9 +6,9 @@
 export enum telemetryEventNames {
     WEB_EXTENSION_INIT_PATH_PARAMETERS = 'WebExtensionInitPathParameters',
     WEB_EXTENSION_INIT_QUERY_PARAMETERS = 'WebExtensionInitQueryParameters',
+    WEB_EXTENSION_DATAVERSE_AUTHENTICATION_STARTED = 'WebExtensionDataverseAuthenticationStarted',
     WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED = 'WebExtensionDataverseAuthenticationFailed',
     WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING = 'WebExtensionDataverseAuthenticationMissing',
-    WEB_EXTENSION_NO_ACCESS_TOKEN = 'WebExtensionNoAccessToken',
     WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED = 'WebExtensionDataverseAuthenticationCompleted',
     WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING = 'WebExtensionMandatoryPathParametersMissing',
     WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING = 'WebExtensionMandatoryQueryParametersMissing',

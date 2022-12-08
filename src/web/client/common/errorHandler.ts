@@ -14,6 +14,7 @@ import { PORTALS_FOLDER_NAME_DEFAULT, queryParameters } from "./constants";
 
 export const ERRORS = {
     SUBURI_EMPTY: "SubURI value for entity file is empty",
+    NO_ACCESS_TOKEN: "No access token was created",
     PORTAL_FOLDER_NAME_EMPTY: "portalFolderName value for entity file is empty",
     ATTRIBUTES_EMPTY: "Entity attributes or extensions fields empty",
     WORKSPACE_INITIAL_LOAD: "There was a problem opening the workspace",

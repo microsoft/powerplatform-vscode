@@ -7,9 +7,9 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import powerPlatformExtensionContext from '../powerPlatformExtensionContext';
 import { telemetryEventNames } from '../telemetry/constants';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 import { PROVIDER_ID, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS } from './constants';
-import { showErrorDialog } from './errorHandler';
+import { ERRORS, showErrorDialog } from './errorHandler';
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function getHeader(accessToken: string, useOctetStreamContentType?: boolean) {
     return {
@@ -23,6 +23,7 @@ export function getHeader(accessToken: string, useOctetStreamContentType?: boole
 
 export async function dataverseAuthentication(dataverseOrgURL: string): Promise<string> {
     let accessToken = '';
+    powerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_STARTED);
     try {
 
         let session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}${SCOPE_OPTION_DEFAULT}`, `${SCOPE_OPTION_OFFLINE_ACCESS}`], { silent: true });
@@ -31,16 +32,16 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
         }
 
         accessToken = session?.accessToken ?? '';
+        if (!accessToken) {
+            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+        }
+
         powerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED, { "userId": session?.account.id.split('/').pop() ?? session?.account.id ?? '' });
     } catch (error) {
         const authError = (error as Error)?.message;
+        showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"),
+            localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
         powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);
-    }
-
-    if (!accessToken) {
-        showErrorDialog(nls.localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"),
-            nls.localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
-        powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
     }
 
     return accessToken;

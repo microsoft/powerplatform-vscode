@@ -26,6 +26,7 @@ import * as schemaHelper from "../../utilities/schemaHelperUtil";
 import PowerPlatformExtensionContext, {
     IPowerPlatformExtensionContext,
 } from "../../powerPlatformExtensionContext";
+
 describe("URLBuilder", () => {
     afterEach(() => {
         sinon.restore();
