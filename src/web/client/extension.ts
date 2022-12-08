@@ -6,23 +6,19 @@
 import * as nls from 'vscode-nls';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 import * as vscode from "vscode";
-import TelemetryReporter from "@vscode/extension-telemetry";
-import { AI_KEY } from '../../common/telemetry/generated/telemetryConfiguration';
-import PowerPlatformExtensionContextManager from "./powerPlatformExtensionContext";
+import PowerPlatformExtensionContext from "./powerPlatformExtensionContext";
 import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
-import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS } from "./common/errorHandler";
-import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendInfoTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
-let _telemetry: TelemetryReporter;
+import { checkMandatoryParameters, removeEncodingFromParameters } from "./common/errorHandler";
+import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
-    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
-    context.subscriptions.push(_telemetry);
+    PowerPlatformExtensionContext.telemetry.setTelemetryReporter(context.extension.id, context.extension.packageJSON.version);
+    context.subscriptions.push(PowerPlatformExtensionContext.telemetry.getTelemetryReporter());
 
-    setTelemetryReporter(_telemetry);
-    sendInfoTelemetry("activated");
+    PowerPlatformExtensionContext.telemetry.sendInfoTelemetry("activated");
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 
@@ -30,7 +26,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
-                sendInfoTelemetry("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
+                PowerPlatformExtensionContext.telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
 
                 const { appName, entity, entityId, searchParams } = args;
                 const queryParamsMap = new Map<string, string>();
@@ -45,9 +41,9 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
 
                 removeEncodingFromParameters(queryParamsMap);
-                await PowerPlatformExtensionContextManager.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap);
+                await PowerPlatformExtensionContext.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap);
 
-                sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
+                PowerPlatformExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
 
                 if (queryParamsMap.get(queryParameters.SITE_VISIBILITY) === PUBLIC) {
                     const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit", "Edit the site") };
@@ -59,13 +55,13 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (appName) {
                     switch (appName) {
                         case 'portal': {
-                            sendExtensionInitQueryParametersTelemetry(queryParamsMap);
+                            PowerPlatformExtensionContext.telemetry.sendExtensionInitQueryParametersTelemetry(queryParamsMap);
 
                             const isFirstRun = context.globalState.get(IS_FIRST_RUN_EXPERIENCE, true);
                             if (isFirstRun) {
                                 vscode.commands.executeCommand(`workbench.action.openWalkthrough`, `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted`, false);
                                 context.globalState.update(IS_FIRST_RUN_EXPERIENCE, false);
-                                sendInfoTelemetry("StartCommand", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted' });
+                                PowerPlatformExtensionContext.telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted' });
                             }
 
                             await vscode.window.withProgress({
@@ -73,50 +69,51 @@ export function activate(context: vscode.ExtensionContext): void {
                                 cancellable: true,
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
-                                await vscode.workspace.fs.readDirectory(PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory);
+                                await vscode.workspace.fs.readDirectory(PowerPlatformExtensionContext.getPowerPlatformExtensionContext().rootDirectory);
                             });
                         }
                             break;
-                        case 'default':
                         default:
                             vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
                     }
                 } else {
                     vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
-                    throw new Error(ERRORS.UNKNOWN_APP);
                 }
             }
         )
     );
+}
+
+export function walkthrough(context: vscode.ExtensionContext, telemetry: WebExtensionTelemetry) {
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.overview-learn-more', async () => {
-        sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.overview-learn-more' });
+        telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.overview-learn-more' });
         vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2207914"));
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-documentation', async () => {
-        sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.fileSystem-documentation' });
+        telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.fileSystem-documentation' });
         vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2206616"));
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-open-folder', async () => {
-        sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.fileSystem-open-folder' });
+        telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.fileSystem-open-folder' });
         vscode.commands.executeCommand("workbench.view.explorer");
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-learn-more', async () => {
-        sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.advancedCapabilities-learn-more' });
+        telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.advancedCapabilities-learn-more' });
         vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2206366"));
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
-        sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.advancedCapabilities-start-coding' });
-        vscode.window.showTextDocument(PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().defaultFileUri);
+        telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.advancedCapabilities-start-coding' });
+        vscode.window.showTextDocument(PowerPlatformExtensionContext.getPowerPlatformExtensionContext().defaultFileUri);
     }));
 }
 
 export async function deactivate(): Promise<void> {
-    if (_telemetry) {
-        sendInfoTelemetry("End");
-        _telemetry.dispose();
+    const telemetry = PowerPlatformExtensionContext.telemetry;
+    if (telemetry) {
+        telemetry.sendInfoTelemetry("End");
     }
 }

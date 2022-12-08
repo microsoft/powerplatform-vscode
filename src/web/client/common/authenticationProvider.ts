@@ -5,10 +5,11 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import powerPlatformExtensionContext from '../powerPlatformExtensionContext';
 import { telemetryEventNames } from '../telemetry/constants';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-import { sendErrorTelemetry, sendInfoTelemetry } from '../telemetry/webExtensionTelemetry';
-import { PROVIDER_ID } from './constants';
+import { PROVIDER_ID, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS } from './constants';
+import { showErrorDialog } from './errorHandler';
 
 export function getHeader(accessToken: string, useOctetStreamContentType?: boolean) {
     return {
@@ -24,20 +25,23 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
     let accessToken = '';
     try {
 
-        let session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { silent: true });
-
+        let session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}${SCOPE_OPTION_DEFAULT}`, `${SCOPE_OPTION_OFFLINE_ACCESS}`], { silent: true });
         if (!session) {
-            session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}//.default`, 'offline_access'], { createIfNone: true });
+            session = await vscode.authentication.getSession(PROVIDER_ID, [`${dataverseOrgURL}${SCOPE_OPTION_DEFAULT}`, `${SCOPE_OPTION_OFFLINE_ACCESS}`], { createIfNone: true });
         }
 
         accessToken = session?.accessToken ?? '';
-        if (!accessToken) {
-            sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
-        }
-        sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED, { "userId": session?.account.id.split('/').pop() ?? session?.account.id ?? '' });
+        powerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED, { "userId": session?.account.id.split('/').pop() ?? session?.account.id ?? '' });
     } catch (error) {
         const authError = (error as Error)?.message;
-        sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);
+        powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);
     }
+
+    if (!accessToken) {
+        showErrorDialog(nls.localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"),
+            nls.localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
+        powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
+    }
+
     return accessToken;
 }

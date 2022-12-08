@@ -6,13 +6,16 @@
 
 import * as vscode from "vscode";
 import * as nls from 'vscode-nls';
+import powerPlatformExtensionContext from "../powerPlatformExtensionContext";
 import { schemaKey } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-import { sendErrorTelemetry } from "../telemetry/webExtensionTelemetry";
 import { PORTALS_FOLDER_NAME_DEFAULT, queryParameters } from "./constants";
 
 export const ERRORS = {
+    SUBURI_EMPTY: "SubURI value for entity file is empty",
+    PORTAL_FOLDER_NAME_EMPTY: "portalFolderName value for entity file is empty",
+    ATTRIBUTES_EMPTY: "Entity attributes or extensions fields empty",
     WORKSPACE_INITIAL_LOAD: "There was a problem opening the workspace",
     WORKSPACE_INITIAL_LOAD_DESC: "Try refreshing the browser",
     UNKNOWN_APP: "Unable to find that app",
@@ -43,10 +46,11 @@ export const ERRORS = {
     MANDATORY_PARAMETERS_NULL: "The workspace is not available ",
     MANDATORY_PARAMETERS_NULL_DESC: "Check the URL and verify the parameters are correct",
     FILE_NAME_NOT_SET: "That file is not available",
-    FILE_NAME_NOT_SET_DESC: "The metadata may have changed on the Dataverse side. Contact your admin. {message_attribute}"
+    FILE_NAME_NOT_SET_DESC: "The metadata may have changed on the Dataverse side. Contact your admin. {message_attribute}",
+    FILE_NAME_EMPTY: "File name is empty"
 };
 
-export function showErrorDialog(detailMessage: string, errorString: string) {
+export function showErrorDialog(errorString: string, detailMessage?: string) {
     const options = { detail: detailMessage, modal: true };
     vscode.window.showErrorMessage(errorString, options);
 }
@@ -70,11 +74,12 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
             if (entity && entityId) { // this will change when we start supporting multi-entity edits
                 return true;
             } else {
-                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
+                powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
                 showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init.workspace.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init.workspace.error.desc", "Check the URL and verify the parameters are correct"));
                 return false;
             }
         default:
+            vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
             return false;
     }
 }
@@ -89,12 +94,13 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
             if (orgURL && dataSource && schemaName && websiteId) {
                 return true;
             } else {
-                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
+                powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
                 showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the URL and verify the parameters are correct"));
                 return false;
             }
         }
         default:
+            vscode.window.showInformationMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
             return false;
     }
 }

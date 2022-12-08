@@ -8,7 +8,7 @@ import { dataverseAuthentication, getHeader } from "./common/authenticationProvi
 import * as Constants from "./common/constants";
 import { getDataSourcePropertiesMap, getEntitiesFolderNameMap, getEntitiesSchemaMap } from "./schema/portalSchemaReader";
 import { SaveEntityDetails } from "./schema/portalSchemaInterface";
-import { sendAPIFailureTelemetry, sendAPISuccessTelemetry, sendAPITelemetry } from "./telemetry/webExtensionTelemetry";
+import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
 import { getLanguageIdCodeMap, getWebsiteIdToLanguageMap, getwebsiteLanguageIdToPortalLanguageMap } from "./utilities/schemaHelperUtil";
 import { getCustomRequestURL } from "./utilities/urlBuilderUtil";
 import { schemaKey } from "./schema/constants";
@@ -31,9 +31,10 @@ export interface IPowerPlatformExtensionContext {
     currentSchemaVersion: string
 }
 
-class PowerPlatformExtensionContextManager {
+class PowerPlatformExtensionContext {
+    public telemetry: WebExtensionTelemetry = new WebExtensionTelemetry();
 
-    private PowerPlatformExtensionContext: IPowerPlatformExtensionContext = {
+    private powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
         dataSourcePropertiesMap: new Map<string, string>(),
         entitiesSchemaMap: new Map<string, Map<string, string>>(),
         languageIdCodeMap: new Map<string, string>(),
@@ -52,33 +53,33 @@ class PowerPlatformExtensionContextManager {
     };
 
     public getPowerPlatformExtensionContext() {
-        return this.PowerPlatformExtensionContext;
+        return this.powerPlatformExtensionContext;
     }
 
     public async setPowerPlatformExtensionContext(entityName: string, entityId: string, queryParamsMap: Map<string, string>) {
         const schema = queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string;
         // Initialize context from URL params
-        this.PowerPlatformExtensionContext.currentSchemaVersion = schema;
-        this.PowerPlatformExtensionContext.entity = entityName.toLowerCase();
-        this.PowerPlatformExtensionContext.entityId = entityId;
-        this.PowerPlatformExtensionContext.queryParamsMap = queryParamsMap;
-        this.PowerPlatformExtensionContext.rootDirectory = vscode.Uri.parse(`${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(Constants.queryParameters.WEBSITE_NAME) as string}/`, true);
+        this.powerPlatformExtensionContext.currentSchemaVersion = schema;
+        this.powerPlatformExtensionContext.entity = entityName.toLowerCase();
+        this.powerPlatformExtensionContext.entityId = entityId;
+        this.powerPlatformExtensionContext.queryParamsMap = queryParamsMap;
+        this.powerPlatformExtensionContext.rootDirectory = vscode.Uri.parse(`${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(Constants.queryParameters.WEBSITE_NAME) as string}/`, true);
 
         // Initialize context from schema values
-        this.PowerPlatformExtensionContext.entitiesSchemaMap = getEntitiesSchemaMap(schema);
-        this.PowerPlatformExtensionContext.dataSourcePropertiesMap = getDataSourcePropertiesMap(schema);
-        this.PowerPlatformExtensionContext.entitiesFolderNameMap = getEntitiesFolderNameMap(this.PowerPlatformExtensionContext.entitiesSchemaMap);
-        this.PowerPlatformExtensionContext.isContextSet = true;
+        this.powerPlatformExtensionContext.entitiesSchemaMap = getEntitiesSchemaMap(schema);
+        this.powerPlatformExtensionContext.dataSourcePropertiesMap = getDataSourcePropertiesMap(schema);
+        this.powerPlatformExtensionContext.entitiesFolderNameMap = getEntitiesFolderNameMap(this.powerPlatformExtensionContext.entitiesSchemaMap);
+        this.powerPlatformExtensionContext.isContextSet = true;
     }
 
     public async authenticateAndUpdateDataverseProperties() {
-        const dataverseOrgUrl = this.PowerPlatformExtensionContext.queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
+        const dataverseOrgUrl = this.powerPlatformExtensionContext.queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
-        const schema = this.PowerPlatformExtensionContext.queryParamsMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() as string;
+        const schema = this.powerPlatformExtensionContext.queryParamsMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() as string;
 
         if (accessToken) {
-            this.PowerPlatformExtensionContext = {
-                ... this.PowerPlatformExtensionContext,
+            this.powerPlatformExtensionContext = {
+                ... this.powerPlatformExtensionContext,
                 websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl, schema),
                 websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguageMap(accessToken, dataverseOrgUrl, schema),
                 languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl, schema),
@@ -86,39 +87,39 @@ class PowerPlatformExtensionContextManager {
             };
         }
 
-        return this.PowerPlatformExtensionContext;
+        return this.powerPlatformExtensionContext;
     }
 
     public async reAuthenticate() {
-        const dataverseOrgUrl = this.PowerPlatformExtensionContext.queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
+        const dataverseOrgUrl = this.powerPlatformExtensionContext.queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
 
         if (accessToken) {
-            this.PowerPlatformExtensionContext = {
-                ... this.PowerPlatformExtensionContext,
+            this.powerPlatformExtensionContext = {
+                ... this.powerPlatformExtensionContext,
                 dataverseAccessToken: accessToken,
             };
         }
 
-        return this.PowerPlatformExtensionContext;
+        return this.powerPlatformExtensionContext;
     }
 
     public async updateSaveDataDetailsInContext(dataMap: Map<string, SaveEntityDetails>) {
-        this.PowerPlatformExtensionContext = {
-            ...this.PowerPlatformExtensionContext,
+        this.powerPlatformExtensionContext = {
+            ...this.powerPlatformExtensionContext,
             saveDataMap: dataMap
         };
 
-        return this.PowerPlatformExtensionContext;
+        return this.powerPlatformExtensionContext;
     }
 
     public async updateSingleFileUrisInContext(uri: vscode.Uri) {
-        this.PowerPlatformExtensionContext = {
-            ...this.PowerPlatformExtensionContext,
+        this.powerPlatformExtensionContext = {
+            ...this.powerPlatformExtensionContext,
             defaultFileUri: uri
         };
 
-        return this.PowerPlatformExtensionContext;
+        return this.powerPlatformExtensionContext;
     }
 
     private async languageIdToCode(accessToken: string, dataverseOrgUrl: string, schema: string): Promise<Map<string, string>> {
@@ -129,22 +130,22 @@ class PowerPlatformExtensionContextManager {
 
         try {
             requestUrl = getCustomRequestURL(dataverseOrgUrl, languageEntityName);
-            sendAPITelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET);
+            this.telemetry.sendAPITelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET);
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
                 headers: getHeader(accessToken),
             });
             if (!response?.ok) {
-                sendAPIFailureTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response?.statusText);
+                this.telemetry.sendAPIFailureTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response?.statusText);
             }
-            sendAPISuccessTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
+            this.telemetry.sendAPISuccessTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
             const result = await response?.json();
             languageIdCodeMap = getLanguageIdCodeMap(result, schema);
 
         } catch (error) {
             const errorMsg = (error as Error)?.message;
-            sendAPIFailureTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
+            this.telemetry.sendAPIFailureTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
         }
         return languageIdCodeMap;
     }
@@ -157,21 +158,21 @@ class PowerPlatformExtensionContextManager {
 
         try {
             requestUrl = getCustomRequestURL(dataverseOrgUrl, languageEntityName);
-            sendAPITelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET);
+            this.telemetry.sendAPITelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET);
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
                 headers: getHeader(accessToken),
             });
             if (!response?.ok) {
-                sendAPIFailureTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response?.statusText);
+                this.telemetry.sendAPIFailureTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response?.statusText);
             }
-            sendAPISuccessTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
+            this.telemetry.sendAPISuccessTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
             const result = await response?.json();
             getwebsiteLanguageIdToPortalLanguageMap(result, schema);
         } catch (error) {
             const errorMsg = (error as Error)?.message;
-            sendAPIFailureTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
+            this.telemetry.sendAPIFailureTelemetry(requestUrl, languageEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
         }
         return websiteLanguageIdToPortalLanguageMap;
     }
@@ -184,7 +185,7 @@ class PowerPlatformExtensionContextManager {
 
         try {
             requestUrl = getCustomRequestURL(dataverseOrgUrl, websiteEntityName);
-            sendAPITelemetry(requestUrl, websiteEntityName, Constants.httpMethod.GET);
+            this.telemetry.sendAPITelemetry(requestUrl, websiteEntityName, Constants.httpMethod.GET);
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
@@ -192,19 +193,19 @@ class PowerPlatformExtensionContextManager {
             });
 
             if (!response?.ok) {
-                sendAPIFailureTelemetry(requestUrl, websiteEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response?.statusText);
+                this.telemetry.sendAPIFailureTelemetry(requestUrl, websiteEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, response?.statusText);
             }
-            sendAPISuccessTelemetry(requestUrl, websiteEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
+            this.telemetry.sendAPISuccessTelemetry(requestUrl, websiteEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
             const result = await response?.json();
 
             websiteIdToLanguage = getWebsiteIdToLanguageMap(result, schema);
 
         } catch (error) {
             const errorMsg = (error as Error)?.message;
-            sendAPIFailureTelemetry(requestUrl, websiteEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
+            this.telemetry.sendAPIFailureTelemetry(requestUrl, websiteEntityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
         }
         return websiteIdToLanguage;
     }
 }
 
-export default new PowerPlatformExtensionContextManager();
+export default new PowerPlatformExtensionContext();

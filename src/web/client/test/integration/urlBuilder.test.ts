@@ -7,7 +7,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import { IPowerPlatformExtensionContext } from "../../powerPlatformExtensionContext";
 import { getParameterizedRequestUrlTemplate } from "../../utilities/urlBuilderUtil";
-import PowerPlatformExtensionContextManager from "../../powerPlatformExtensionContext";
+import PowerPlatformExtensionContext from "../../powerPlatformExtensionContext";
 import { schemaKey } from "../../schema/constants";
 
 describe("Web Extension Integration Tests", async () => {
@@ -19,7 +19,7 @@ describe("Web Extension Integration Tests", async () => {
         } as IPowerPlatformExtensionContext;
         sinon
             .stub(
-                PowerPlatformExtensionContextManager,
+                PowerPlatformExtensionContext,
                 "getPowerPlatformExtensionContext"
             )
             .returns(powerPlatformExtensionContext);
