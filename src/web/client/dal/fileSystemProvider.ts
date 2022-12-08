@@ -84,7 +84,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
                 if (powerPlatformContext.isContextSet &&
                     uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
-                    PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_VSCODE_FETCH_DIRECTORY_TRIGGERED);
+                    PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED);
                     await this._loadFromDataverseToVFS();
                 }
             }
@@ -107,7 +107,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 if (powerPlatformContext.isContextSet
                     && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
                     if (pathHasEntityFolderName(uri.toString())) {
-                        PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_VSCODE_FETCH_FILE_TRIGGERED);
+                        PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED);
                         await this._loadFromDataverseToVFS();
                         const data = await this._lookupAsFile(uri, false);
                         return data.data;
@@ -142,7 +142,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 cancellable: true,
                 title: localize("microsoft-powerapps-portals.webExtension.save.file.message", "Saving your file ...")
             }, async () => {
-                PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_VSCODE_SAVE_FILE_TRIGGERED);
+                PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED);
                 await this._saveFileToDataverseFromVFS(uri, content);
             });
         }
