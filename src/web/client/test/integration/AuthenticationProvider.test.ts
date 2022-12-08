@@ -10,7 +10,7 @@ import {
     getHeader,
 } from "../../common/authenticationProvider";
 import vscode from "vscode";
-import PowerPlatformExtensionContext from "../../powerPlatformExtensionContext";
+import WebExtensionContext from "../../powerPlatformExtensionContext";
 import { telemetryEventNames } from '../../telemetry/constants';
 import * as errorHandler from '../../common/errorHandler';
 
@@ -67,7 +67,7 @@ describe("Authentication Provider", () => {
         );
 
         const sendErrorTelemetry = sinon.spy(
-            PowerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
 
@@ -99,7 +99,7 @@ describe("Authentication Provider", () => {
             .throws({ message: errorMessage });
 
         const sendError = sinon.spy(
-            PowerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         // Act

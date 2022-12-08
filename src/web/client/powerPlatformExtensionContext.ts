@@ -31,7 +31,7 @@ export interface IPowerPlatformExtensionContext {
     currentSchemaVersion: string
 }
 
-class PowerPlatformExtensionContext {
+class WebExtensionContext {
     public telemetry: WebExtensionTelemetry = new WebExtensionTelemetry();
 
     private powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
@@ -208,4 +208,4 @@ class PowerPlatformExtensionContext {
     }
 }
 
-export default new PowerPlatformExtensionContext();
+export default new WebExtensionContext();

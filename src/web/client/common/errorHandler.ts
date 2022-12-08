@@ -16,7 +16,7 @@ export const ERRORS = {
     SUBURI_EMPTY: "SubURI value for entity file is empty",
     NO_ACCESS_TOKEN: "No access token was created",
     PORTAL_FOLDER_NAME_EMPTY: "portalFolderName value for entity file is empty",
-    ATTRIBUTES_EMPTY: "Entity attributes or extensions fields empty",
+    ATTRIBUTES_EMPTY: "Entity file attribute or extension field empty",
     WORKSPACE_INITIAL_LOAD: "There was a problem opening the workspace",
     WORKSPACE_INITIAL_LOAD_DESC: "Try refreshing the browser",
     UNKNOWN_APP: "Unable to find that app",
@@ -47,7 +47,7 @@ export const ERRORS = {
     MANDATORY_PARAMETERS_NULL: "The workspace is not available ",
     MANDATORY_PARAMETERS_NULL_DESC: "Check the URL and verify the parameters are correct",
     FILE_NAME_NOT_SET: "That file is not available",
-    FILE_NAME_NOT_SET_DESC: "The metadata may have changed on the Dataverse side. Contact your admin. {message_attribute}",
+    FILE_NAME_NOT_SET_DESC: "The metadata may have changed in the Dataverse side. Contact your admin. {message_attribute}",
     FILE_NAME_EMPTY: "File name is empty"
 };
 

@@ -23,7 +23,7 @@ import {
 import { httpMethod } from "../../common/constants";
 import * as schemaHelper from "../../utilities/schemaHelperUtil";
 
-import PowerPlatformExtensionContext, {
+import WebExtensionContext, {
     IPowerPlatformExtensionContext,
 } from "../../powerPlatformExtensionContext";
 
@@ -40,7 +40,7 @@ describe("URLBuilder", () => {
         } as IPowerPlatformExtensionContext;
         sinon
             .stub(
-                PowerPlatformExtensionContext,
+                WebExtensionContext,
                 "getPowerPlatformExtensionContext"
             )
             .returns(powerPlatformExtensionContext);
@@ -57,7 +57,7 @@ describe("URLBuilder", () => {
         } as IPowerPlatformExtensionContext;
         sinon
             .stub(
-                PowerPlatformExtensionContext,
+                WebExtensionContext,
                 "getPowerPlatformExtensionContext"
             )
             .returns(powerPlatformExtensionContext);
@@ -128,7 +128,7 @@ describe("URLBuilder", () => {
 
         sinon
             .stub(
-                PowerPlatformExtensionContext,
+                WebExtensionContext,
                 "getPowerPlatformExtensionContext"
             )
             .returns(powerPlatformExtensionContext);
@@ -152,7 +152,7 @@ describe("URLBuilder", () => {
 
         sinon
             .stub(
-                PowerPlatformExtensionContext,
+                WebExtensionContext,
                 "getPowerPlatformExtensionContext"
             )
             .returns(powerPlatformExtensionContext);
@@ -193,7 +193,7 @@ describe("URLBuilder", () => {
 
         sinon
             .stub(
-                PowerPlatformExtensionContext,
+                WebExtensionContext,
                 "getPowerPlatformExtensionContext"
             )
             .returns(powerPlatformExtensionContext);
@@ -233,7 +233,7 @@ describe("URLBuilder", () => {
         } as IPowerPlatformExtensionContext;
         sinon
             .stub(
-                PowerPlatformExtensionContext,
+                WebExtensionContext,
                 "getPowerPlatformExtensionContext"
             )
             .returns(powerPlatformExtensionContext);
@@ -285,7 +285,7 @@ describe("URLBuilder", () => {
         } as IPowerPlatformExtensionContext;
         sinon
             .stub(
-                PowerPlatformExtensionContext,
+                WebExtensionContext,
                 "getPowerPlatformExtensionContext"
             )
             .returns(powerPlatformExtensionContext);

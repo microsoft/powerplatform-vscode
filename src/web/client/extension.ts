@@ -6,7 +6,7 @@
 import * as nls from 'vscode-nls';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 import * as vscode from "vscode";
-import PowerPlatformExtensionContext from "./powerPlatformExtensionContext";
+import WebExtensionContext from "./powerPlatformExtensionContext";
 import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters } from "./common/errorHandler";
@@ -15,10 +15,10 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
-    PowerPlatformExtensionContext.telemetry.setTelemetryReporter(context.extension.id, context.extension.packageJSON.version);
-    context.subscriptions.push(PowerPlatformExtensionContext.telemetry.getTelemetryReporter());
+    WebExtensionContext.telemetry.setTelemetryReporter(context.extension.id, context.extension.packageJSON.version);
+    context.subscriptions.push(WebExtensionContext.telemetry.getTelemetryReporter());
 
-    PowerPlatformExtensionContext.telemetry.sendInfoTelemetry("activated");
+    WebExtensionContext.telemetry.sendInfoTelemetry("activated");
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 
@@ -26,7 +26,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
-                PowerPlatformExtensionContext.telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
+                WebExtensionContext.telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'microsoft-powerapps-portals.webExtension.init' });
 
                 const { appName, entity, entityId, searchParams } = args;
                 const queryParamsMap = new Map<string, string>();
@@ -41,9 +41,9 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
 
                 removeEncodingFromParameters(queryParamsMap);
-                await PowerPlatformExtensionContext.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap);
+                await WebExtensionContext.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap);
 
-                PowerPlatformExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
+                WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
 
                 if (queryParamsMap.get(queryParameters.SITE_VISIBILITY) === PUBLIC) {
                     const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit", "Edit the site") };
@@ -55,13 +55,13 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (appName) {
                     switch (appName) {
                         case 'portal': {
-                            PowerPlatformExtensionContext.telemetry.sendExtensionInitQueryParametersTelemetry(queryParamsMap);
+                            WebExtensionContext.telemetry.sendExtensionInitQueryParametersTelemetry(queryParamsMap);
 
                             const isFirstRun = context.globalState.get(IS_FIRST_RUN_EXPERIENCE, true);
                             if (isFirstRun) {
                                 vscode.commands.executeCommand(`workbench.action.openWalkthrough`, `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted`, false);
                                 context.globalState.update(IS_FIRST_RUN_EXPERIENCE, false);
-                                PowerPlatformExtensionContext.telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted' });
+                                WebExtensionContext.telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted' });
                             }
 
                             await vscode.window.withProgress({
@@ -69,7 +69,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                 cancellable: true,
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
-                                await vscode.workspace.fs.readDirectory(PowerPlatformExtensionContext.getPowerPlatformExtensionContext().rootDirectory);
+                                await vscode.workspace.fs.readDirectory(WebExtensionContext.getPowerPlatformExtensionContext().rootDirectory);
                             });
                         }
                             break;
@@ -107,12 +107,12 @@ export function walkthrough(context: vscode.ExtensionContext, telemetry: WebExte
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
         telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.advancedCapabilities-start-coding' });
-        vscode.window.showTextDocument(PowerPlatformExtensionContext.getPowerPlatformExtensionContext().defaultFileUri);
+        vscode.window.showTextDocument(WebExtensionContext.getPowerPlatformExtensionContext().defaultFileUri);
     }));
 }
 
 export async function deactivate(): Promise<void> {
-    const telemetry = PowerPlatformExtensionContext.telemetry;
+    const telemetry = WebExtensionContext.telemetry;
     if (telemetry) {
         telemetry.sendInfoTelemetry("End");
     }

@@ -12,7 +12,7 @@ import { httpMethod } from '../common/constants';
 import * as nls from 'vscode-nls';
 import { getAttributeParts, isWebFileV2OctetStream } from '../utilities/schemaHelperUtil';
 import { getPatchRequestUrl } from '../utilities/urlBuilderUtil';
-import PowerPlatformExtensionContext from "../powerPlatformExtensionContext";
+import WebExtensionContext from "../powerPlatformExtensionContext";
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function saveData(
@@ -51,7 +51,7 @@ export async function saveData(
         requestInit.headers = getHeader(accessToken, isWebFileV2);
         requestUrl = getPatchRequestUrl(entityName, column, requestUrl);
     } else {
-        PowerPlatformExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
+        WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
         showErrorDialog(localize("microsoft-powerapps-portals.webExtension.save.file.error", "Unable to complete the request"), localize("microsoft-powerapps-portals.webExtension.save.file.error.desc", "One or more attribute names have been changed or removed. Contact your admin."));
     }
 
@@ -62,22 +62,22 @@ export async function saveData(
 
             const response = await fetch(requestUrl, requestInit);
 
-            PowerPlatformExtensionContext.telemetry.sendAPITelemetry(requestUrl, entityName, httpMethod.PATCH, fileExtensionType);
+            WebExtensionContext.telemetry.sendAPITelemetry(requestUrl, entityName, httpMethod.PATCH, fileExtensionType);
 
             if (!response.ok) {
-                PowerPlatformExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
                 showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "There’s a problem on the back end"), localize("microsoft-powerapps-portals.webExtension.retry.desc", "Try again"));
                 throw new Error(response.statusText);
             }
 
-            PowerPlatformExtensionContext.telemetry.sendAPISuccessTelemetry(requestUrl,
+            WebExtensionContext.telemetry.sendAPISuccessTelemetry(requestUrl,
                 entityName,
                 httpMethod.PATCH,
                 new Date().getTime() - requestSentAtTime, fileExtensionType);
         }
         catch (error) {
             const authError = (error as Error)?.message;
-            PowerPlatformExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, authError, fileExtensionType);
+            WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, authError, fileExtensionType);
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"), localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
             }

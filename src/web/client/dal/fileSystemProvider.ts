@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { convertStringtoBase64 } from '../utilities/commonUtil';
 import { getRequestURL, pathHasEntityFolderName } from '../utilities/urlBuilderUtil';
 import { CHARSET, httpMethod, PORTALS_URI_SCHEME, queryParameters } from '../common/constants';
-import PowerPlatformExtensionContext from "../powerPlatformExtensionContext";
+import WebExtensionContext from "../powerPlatformExtensionContext";
 import { SaveEntityDetails } from '../schema/portalSchemaInterface';
 import { fetchDataFromDataverseAndUpdateVFS } from './remoteFetchProvider';
 import { saveData } from './remoteSaveProvider';
@@ -80,11 +80,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const powerPlatformContext = await PowerPlatformExtensionContext.getPowerPlatformExtensionContext();
+                const powerPlatformContext = await WebExtensionContext.getPowerPlatformExtensionContext();
 
                 if (powerPlatformContext.isContextSet &&
                     uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
-                    PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED);
+                    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED);
                     await this._loadFromDataverseToVFS();
                 }
             }
@@ -102,12 +102,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const powerPlatformContext = await PowerPlatformExtensionContext.getPowerPlatformExtensionContext();
+                const powerPlatformContext = await WebExtensionContext.getPowerPlatformExtensionContext();
 
                 if (powerPlatformContext.isContextSet
                     && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
                     if (pathHasEntityFolderName(uri.toString())) {
-                        PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED);
+                        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED);
                         await this._loadFromDataverseToVFS();
                         const data = await this._lookupAsFile(uri, false);
                         return data.data;
@@ -135,14 +135,14 @@ export class PortalsFS implements vscode.FileSystemProvider {
             entry = new File(basename);
             parent.entries.set(basename, entry);
             this._fireSoon({ type: vscode.FileChangeType.Created, uri });
-        } else if (PowerPlatformExtensionContext.getPowerPlatformExtensionContext().saveDataMap.has(uri.fsPath)) {
+        } else if (WebExtensionContext.getPowerPlatformExtensionContext().saveDataMap.has(uri.fsPath)) {
             // Save data to dataverse
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 cancellable: true,
                 title: localize("microsoft-powerapps-portals.webExtension.save.file.message", "Saving your file ...")
             }, async () => {
-                PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED);
+                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED);
                 await this._saveFileToDataverseFromVFS(uri, content);
             });
         }
@@ -253,11 +253,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
     // --- VFS calls
     private async createFileSystem(portalsFS: PortalsFS, portalFolderName: string) {
         if (portalFolderName.length === 0) {
-            PowerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_EMPTY_PORTAL_FOLDER_NAME);
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_EMPTY_PORTAL_FOLDER_NAME);
             throw new Error(ERRORS.PORTAL_FOLDER_NAME_EMPTY);
         }
 
-        PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_CREATE_ROOT_FOLDER);
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_CREATE_ROOT_FOLDER);
 
         await portalsFS.createDirectory(vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/`, true));
         vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders.length : 0, null, { uri: vscode.Uri.parse(`${PORTALS_URI_SCHEME}:/${portalFolderName}/`), name: portalFolderName });
@@ -266,11 +266,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
     // --- Dataverse calls
 
     private async _loadFromDataverseToVFS() {
-        const powerPlatformContext = await PowerPlatformExtensionContext.authenticateAndUpdateDataverseProperties();
+        const powerPlatformContext = await WebExtensionContext.authenticateAndUpdateDataverseProperties();
         await this.createFileSystem(this, powerPlatformContext.queryParamsMap.get(queryParameters.WEBSITE_NAME) as string);
 
         if (!powerPlatformContext.dataverseAccessToken) {
-            PowerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING);
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING);
             throw vscode.FileSystemError.NoPermissions();
         }
 
@@ -286,13 +286,13 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     private async _saveFileToDataverseFromVFS(uri: vscode.Uri, content: Uint8Array) {
         let stringDecodedValue = new TextDecoder(CHARSET).decode(content);
-        let powerPlatformContext = PowerPlatformExtensionContext.getPowerPlatformExtensionContext();
+        let powerPlatformContext = WebExtensionContext.getPowerPlatformExtensionContext();
         const dataMap: Map<string, SaveEntityDetails> = powerPlatformContext.saveDataMap;
         const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(queryParameters.ORG_URL) as string;
 
-        powerPlatformContext = await PowerPlatformExtensionContext.reAuthenticate();
+        powerPlatformContext = await WebExtensionContext.reAuthenticate();
         if (!powerPlatformContext.dataverseAccessToken) {
-            PowerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING);
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING);
             throw vscode.FileSystemError.NoPermissions();
         }
 

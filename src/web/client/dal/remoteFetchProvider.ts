@@ -16,7 +16,7 @@ import * as Constants from '../common/constants';
 import { ERRORS, showErrorDialog } from '../common/errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from '../schema/portalSchemaInterface';
-import PowerPlatformExtensionContext from "../powerPlatformExtensionContext";
+import WebExtensionContext from "../powerPlatformExtensionContext";
 import { getAttributeParts, getEntity, isBase64Encoded, useBase64Encoding } from '../utilities/schemaHelperUtil';
 import { telemetryEventNames } from '../telemetry/constants';
 import { folderExportType, schemaEntityKey } from '../schema/constants';
@@ -36,7 +36,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const dataverseOrgUrl = queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
 
         requestUrl = getRequestURL(dataverseOrgUrl, entity, entityId, Constants.httpMethod.GET, false);
-        PowerPlatformExtensionContext.telemetry.sendAPITelemetry(requestUrl, entity, Constants.httpMethod.GET);
+        WebExtensionContext.telemetry.sendAPITelemetry(requestUrl, entity, Constants.httpMethod.GET);
 
         requestSentAtTime = new Date().getTime();
         const response = await fetch(requestUrl, {
@@ -45,11 +45,11 @@ export async function fetchDataFromDataverseAndUpdateVFS(
 
         if (!response.ok) {
             vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.fetch.file.error", "Failed to fetch file content."));
-            PowerPlatformExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
+            WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
             throw new Error(response.statusText);
         }
 
-        PowerPlatformExtensionContext.telemetry.sendAPISuccessTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
+        WebExtensionContext.telemetry.sendAPISuccessTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
 
         const result = await response.json();
         const data = result.value;
@@ -66,7 +66,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const errorMsg = (error as Error)?.message;
         showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.file", "There was a problem opening the workspace"),
             localize("microsoft-powerapps-portals.webExtension.fetch.file.desc", "We encountered an error preparing the file for edit."));
-        PowerPlatformExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
+        WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, errorMsg);
     }
 }
 
@@ -84,7 +84,7 @@ async function createContentFiles(
 ) {
     try {
         let lcid: string | undefined = websiteIdToLanguage.get(queryParamsMap.get(Constants.queryParameters.WEBSITE_ID) as string) ?? '';
-        PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_EDIT_LCID,
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_EDIT_LCID,
             { 'lcid': (lcid ? lcid.toString() : '') });
 
         const entityDetails = getEntity(entity);
@@ -125,7 +125,7 @@ async function createContentFiles(
         lcid = languageCodeAttribute && result[languageCodeAttribute] ? websiteIdToLanguage.get(result[languageCodeAttribute]) : lcid;
 
         const languageCode = languageIdCodeMap?.size && lcid ? languageIdCodeMap.get(lcid) as string : Constants.DEFAULT_LANGUAGE_CODE;
-        PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE,
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE,
             { 'languageCode': (languageCode ? languageCode.toString() : '') });
 
         const attributeArray = attributes.split(',');
@@ -173,16 +173,16 @@ async function createContentFiles(
                 result[Constants.MIMETYPE]);
         }
 
-        await PowerPlatformExtensionContext.updateSingleFileUrisInContext(vscode.Uri.parse(fileUri));
+        await WebExtensionContext.updateSingleFileUrisInContext(vscode.Uri.parse(fileUri));
 
         // Not awaited intentionally
         vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(fileUri), { background: true, preview: false });
-        PowerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
             { 'commandId': 'vscode.open', 'type': 'file' });
     } catch (error) {
         const errorMsg = (error as Error)?.message;
         vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.fetch.authorization.error", "Failed to get file ready for edit."));
-        PowerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED, errorMsg);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED, errorMsg);
     }
 
 }
@@ -204,7 +204,7 @@ async function getMappingEntityContent(
         false,
         mappingEntityFetchQueryMap?.get(attributeKey) as string);
 
-    PowerPlatformExtensionContext.telemetry.sendAPITelemetry(requestUrl,
+    WebExtensionContext.telemetry.sendAPITelemetry(requestUrl,
         entity,
         Constants.httpMethod.GET);
     requestSentAtTime = new Date().getTime();
@@ -214,11 +214,11 @@ async function getMappingEntityContent(
     });
 
     if (!response.ok) {
-        PowerPlatformExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
+        WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
         throw new Error(response.statusText);
     }
 
-    PowerPlatformExtensionContext.telemetry.sendAPISuccessTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
+    WebExtensionContext.telemetry.sendAPISuccessTelemetry(requestUrl, entity, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
 
     const result = await response.json();
     return result.value ?? Constants.NO_CONTENT;
@@ -237,9 +237,9 @@ async function createVirtualFile(
     mimeType?: string
 ) {
     const saveEntityDetails = new SaveEntityDetails(entityId, entity, fileExtension, attributePath, originalAttributeContent, useBase64Encoding, mimeType);
-    const dataMap: Map<string, SaveEntityDetails> = PowerPlatformExtensionContext.getPowerPlatformExtensionContext().saveDataMap;
+    const dataMap: Map<string, SaveEntityDetails> = WebExtensionContext.getPowerPlatformExtensionContext().saveDataMap;
     dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
-    await PowerPlatformExtensionContext.updateSaveDataDetailsInContext(dataMap);
+    await WebExtensionContext.updateSaveDataDetailsInContext(dataMap);
 
     await portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(fileContent), { create: true, overwrite: true });
 }
