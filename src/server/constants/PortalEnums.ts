@@ -25,7 +25,8 @@ export enum PortalTags {
 export enum PortalObjects {
     SNIPPETS = 'snippets',
     SETTINGS = 'settings',
-    WEBLINKS = 'weblinks'
+    WEBLINKS = 'weblinks',
+    SITEMARKER = 'sitemarker'
 }
 
 export enum PortalAttributeNames {

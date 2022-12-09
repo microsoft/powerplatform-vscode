@@ -72,7 +72,7 @@ const weblinksObjectRule: ILiquidAutoCompleteRule = {
 }
 
 const sitemakerObjectRule: ILiquidAutoCompleteRule = {
-    isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.WEBLINKS),
+    isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.SITEMARKER),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
         return portalObjectBaseRule(liquidToken as OutputToken, PortalEntityNames.SITE_MARKER, ctx)
@@ -219,7 +219,7 @@ const editableTagRule: ILiquidAutoCompleteRule = {
     apply: (tagToken, ctx) => {
         const suggestions: CompletionItem[] = []
         const tokenizer = new Tokenizer((tagToken as TagToken).args)
-        const identifier = tokenizer.readIdentifier().getText().toLowerCase();
+        const identifier = tokenizer.readIdentifier().getText();
         if (identifier.includes(AUTO_COMPLETE_PLACEHOLDER)) {
             return ['page', 'snippets', 'weblinks'].map(identifier => {
                 return {
@@ -231,10 +231,10 @@ const editableTagRule: ILiquidAutoCompleteRule = {
         }
         const value = tokenizer.readValue()
         const editableAttribute = value?.getText() || ''
-        if (editableAttribute.includes(AUTO_COMPLETE_PLACEHOLDER) && identifier === 'snippets') {
+        if (editableAttribute.includes(AUTO_COMPLETE_PLACEHOLDER) && identifier.toLowerCase() === 'snippets') {
             suggestions.push(...getSuggestionsForEntity(PortalEntityNames.CONTENT_SNIPPET, ctx, editableAttribute))
             return suggestions
-        } else if (editableAttribute.includes(AUTO_COMPLETE_PLACEHOLDER) && identifier === 'page') {
+        } else if (editableAttribute.includes(AUTO_COMPLETE_PLACEHOLDER) && identifier.toLowerCase() === 'page') {
             return ['adx_copy', 'adx_summary', 'adx_title', 'adx_partialurl'].map(identifier => {
                 return {
                     label: identifier,
