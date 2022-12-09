@@ -349,6 +349,10 @@ The {2} represents Solution's Version number</note>
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">라이브 상태인 공개 사이트를 편집하고 있습니다 </target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+        <source xml:lang="en">Fetching your file ...</source>
+        <target state="translated">파일을 가져오는 중...</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">해당 앱을 찾을 수 없음</target>
@@ -375,23 +379,19 @@ The {2} represents Solution's Version number</note>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/fileSystemProvider" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="./web/client/dal/fileSystemProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
-        <source xml:lang="en">Fetching your file ...</source>
-        <target state="translated">파일을 가져오는 중...</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
         <source xml:lang="en">Saving your file ...</source>
         <target state="translated">파일을 저장하는 중...</target>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/remoteFetchProvider" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="./web/client/dal/remoteFetchProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.error">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">인증하지 못했습니다. 인증하려면 다시 실행하세요</target>
+        <target state="translated">인증하지 못했습니다. 인증하려면 다시 실행하세요.</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.desc">
         <source xml:lang="en">Try again</source>
@@ -399,7 +399,7 @@ The {2} represents Solution's Version number</note>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">인증하지 못했습니다. 인증하려면 다시 실행하세요</target>
+        <target state="translated">인증하지 못했습니다. 인증하려면 다시 실행하세요.</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
         <source xml:lang="en">There was a permissions problem with the server</source>
@@ -423,7 +423,7 @@ The {2} represents Solution's Version number</note>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="./web/client/dal/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
         <source xml:lang="en">Unable to complete the request</source>
@@ -443,7 +443,7 @@ The {2} represents Solution's Version number</note>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">인증하지 못했습니다. 인증하려면 다시 실행하세요</target>
+        <target state="translated">인증하지 못했습니다. 인증하려면 다시 실행하세요.</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
         <source xml:lang="en">There was a permissions problem with the server</source>

@@ -349,6 +349,10 @@ Verze: {2}</target>
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">Upravujete živý veřejný web </target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
+        <source xml:lang="en">Fetching your file ...</source>
+        <target state="translated">Načítá se soubor...</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">Tuto aplikaci nelze najít.</target>
@@ -375,19 +379,15 @@ Verze: {2}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/fileSystemProvider" source-language="en" datatype="plaintext" target-language="cs">
+  <file original="./web/client/dal/fileSystemProvider" source-language="en" datatype="plaintext" target-language="cs">
     <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
-        <source xml:lang="en">Fetching your file ...</source>
-        <target state="translated">Načítá se soubor...</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
         <source xml:lang="en">Saving your file ...</source>
         <target state="translated">Ukládá se soubor...</target>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/remoteFetchProvider" source-language="en" datatype="plaintext" target-language="cs">
+  <file original="./web/client/dal/remoteFetchProvider" source-language="en" datatype="plaintext" target-language="cs">
     <body>
       <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.error">
         <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -419,11 +419,11 @@ Verze: {2}</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.desc">
         <source xml:lang="en">The metadata may have changed on the Dataverse side. Contact your admin.</source>
-        <target state="translated">Metadata se mohla změnit na straně Dataverse. Obraťte se na správce.</target>
+        <target state="translated">Na straně Dataverse mohlo dojít ke změně metadat. Obraťte se na správce.</target>
       </trans-unit>
     </body>
   </file>
-  <file original="./web/client/common/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="cs">
+  <file original="./web/client/dal/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="cs">
     <body>
       <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
         <source xml:lang="en">Unable to complete the request</source>

@@ -7,5 +7,6 @@
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit": "Upravit web",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc": "Při provádění změn dávejte pozor. Kdokoli okamžitě uvidí změny, které uděláte. Pokud chcete provést úpravy, zvolte Upravit web. Pokud chcete akci zrušit bez úprav, zavřete kartu editoru.",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title": "Upravujete živý veřejný web ",
+	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Načítá se soubor...",
 	"microsoft-powerapps-portals.webExtension.init.app-not-found": "Tuto aplikaci nelze najít."
 }
