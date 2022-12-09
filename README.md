@@ -11,6 +11,10 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+1.1.14:
+ - pac CLI 1.21.4 (Nov refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - support for new data model for Power Pages in Studio web extension
+
 1.1.9:
  - pac CLI 1.20.3 (Oct refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 
