@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { expect } from "chai";
 import Sinon from "sinon";
 import { PORTAL_FILTERS, PORTAL_OBJECTS } from "../../constants/AutoComplete";
