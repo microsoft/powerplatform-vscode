@@ -4,8 +4,9 @@
  */
 
 import { TagToken, Tokenizer, TokenKind } from "liquidjs";
-import { IdentifierToken, OutputToken, PropertyAccessToken } from "liquidjs/dist/tokens";
+import { FilterToken, IdentifierToken, OutputToken, PropertyAccessToken } from "liquidjs/dist/tokens";
 import { CompletionItem, CompletionItemKind } from "vscode-languageserver/node";
+import { EDITABLE_ATTRIBUTES, ENTITY_FORM_ATTRIBUTES, ENTITY_LIST_ATTRIBUTES, PAGE_ATTRIBUTES, PORTAL_FILTERS, PORTAL_OBJECTS, WEB_FORM_ATTRIBUTES } from "../constants/AutoComplete";
 import { PortalAttributeNames, PortalEntityNames, PortalObjects, PortalTags } from "../constants/PortalEnums";
 import { ILiquidRuleEngineContext } from "./LiquidAutoCompleteRuleEngine";
 import { getMatchedManifestRecords, IManifestElement } from "./PortalManifestReader";
@@ -41,7 +42,7 @@ const portalObjectBaseRule = (liquidToken: OutputToken, entityName: PortalEntity
     const tokenizer = new Tokenizer(liquidToken.content)
     const valueToken = tokenizer.readValue() as PropertyAccessToken
     const identifier = (valueToken.props[0] as PropertyAccessToken).variable as IdentifierToken
-    if (identifier.content.includes(AUTO_COMPLETE_PLACEHOLDER)) {
+    if (identifier?.content.includes(AUTO_COMPLETE_PLACEHOLDER)) {
         suggestions.push(...getSuggestionsForEntity(entityName, ctx, identifier.content))
     }
     return suggestions
@@ -86,7 +87,7 @@ const rootObjectRule: ILiquidAutoCompleteRule = {
         const suggestions: CompletionItem[] = []
         const property = liquidToken.content
         if (property.includes(AUTO_COMPLETE_PLACEHOLDER)) {
-            suggestions.push(...['page', 'snippets', 'settings', 'sitemap', 'sitemarkers', 'website', 'weblink'].map(key => {
+            suggestions.push(...PORTAL_OBJECTS.map(key => {
                 return {
                     label: key,
                     insertText: key,
@@ -108,7 +109,7 @@ const entityFormTagRule: ILiquidAutoCompleteRule = {
         hashes.forEach(hash => {
             const hashName = hash.name.getText()
             if (hashName?.includes(AUTO_COMPLETE_PLACEHOLDER)) {
-                suggestions.push(...['id', 'name', 'key', 'language_code'].map(key => {
+                suggestions.push(...ENTITY_FORM_ATTRIBUTES.map(key => {
                     return {
                         label: key,
                         insertText: `${key}:`,
@@ -137,7 +138,7 @@ const entityListTagRule: ILiquidAutoCompleteRule = {
         hashes.forEach(hash => {
             const hashName = hash.name.getText()
             if (hashName?.includes(AUTO_COMPLETE_PLACEHOLDER)) {
-                suggestions.push(...['id', 'name', 'key', 'language_code'].map(key => {
+                suggestions.push(...ENTITY_LIST_ATTRIBUTES.map(key => {
                     return {
                         label: key,
                         insertText: `${key}:`,
@@ -166,7 +167,7 @@ const webFormTagRule: ILiquidAutoCompleteRule = {
         hashes.forEach(hash => {
             const hashName = hash.name.getText()
             if (hashName?.includes(AUTO_COMPLETE_PLACEHOLDER)) {
-                suggestions.push(...['id', 'name', 'key', 'language_code'].map(key => {
+                suggestions.push(...WEB_FORM_ATTRIBUTES.map(key => {
                     return {
                         label: key,
                         insertText: `${key}:`,
@@ -235,7 +236,7 @@ const editableTagRule: ILiquidAutoCompleteRule = {
             suggestions.push(...getSuggestionsForEntity(PortalEntityNames.CONTENT_SNIPPET, ctx, editableAttribute))
             return suggestions
         } else if (editableAttribute.includes(AUTO_COMPLETE_PLACEHOLDER) && identifier.toLowerCase() === 'page') {
-            return ['adx_copy', 'adx_summary', 'adx_title', 'adx_partialurl'].map(identifier => {
+            return PAGE_ATTRIBUTES.map(identifier => {
                 return {
                     label: identifier,
                     insertText: identifier,
@@ -247,7 +248,7 @@ const editableTagRule: ILiquidAutoCompleteRule = {
         hashes.forEach(hash => {
             const hashName = hash.name.getText()
             if (hashName?.includes(AUTO_COMPLETE_PLACEHOLDER)) {
-                suggestions.push(...['class', 'default', 'escape', 'liquid', 'tag', 'title', 'type'].map(key => {
+                suggestions.push(...EDITABLE_ATTRIBUTES.map(key => {
                     return {
                         label: key,
                         insertText: `${key}:`,
@@ -255,6 +256,36 @@ const editableTagRule: ILiquidAutoCompleteRule = {
                     } as CompletionItem
                 }))
                 return
+            }
+        })
+        return suggestions
+    }
+}
+
+const allFiltersRule: ILiquidAutoCompleteRule = {
+    isValid: (liquidToken) => liquidToken.content.includes('|'),
+    priority: DEFAULT_TAG_PRIORITY,
+    apply: (liquidToken) => {
+        const suggestions: CompletionItem[] = []
+        let filters: FilterToken[] = []
+        if (liquidToken.kind === TokenKind.Output) {
+            const tk = new Tokenizer(liquidToken.content);
+            tk.readExpression()
+            filters = tk.readFilters();
+        } else{
+            const tk = new Tokenizer(liquidToken.content.substring(liquidToken.content.indexOf('|')));
+            filters = tk.readFilters();
+        }
+
+        filters.forEach(filter => {
+            if (filter.name.includes(AUTO_COMPLETE_PLACEHOLDER)) {
+                suggestions.push(...PORTAL_FILTERS.map(key => {
+                    return {
+                        label: key,
+                        insertText: key,
+                        kind: CompletionItemKind.Value
+                    } as CompletionItem
+                }))
             }
         })
         return suggestions
@@ -271,5 +302,6 @@ export const ruleDefinitions = [
     snippetObjectRule,
     settingsObjectRule,
     weblinksObjectRule,
-    sitemakerObjectRule
+    sitemakerObjectRule,
+    allFiltersRule
 ]

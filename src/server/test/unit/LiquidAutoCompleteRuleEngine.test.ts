@@ -5,6 +5,7 @@
 
 import { expect } from "chai";
 import Sinon from "sinon";
+import { PORTAL_FILTERS, PORTAL_OBJECTS } from "../../constants/AutoComplete";
 import { PortalEntityNames } from "../../constants/PortalEnums";
 import * as LineReader from "../../lib/LineReader";
 import { getSuggestions, initLiquidRuleEngine } from "../../lib/LiquidAutoCompleteRuleEngine";
@@ -261,6 +262,36 @@ describe('LiquidAutoCompleteRuleEngine', () => {
         const mockCompletionItems = [{ label: "Sample Name", insertText: "'Sample Name'", kind: 12 }]
 
         suggestionTestUtil(inputLine, mockManifestRecords, mockCompletionItems, PortalEntityNames.SITE_MARKER);
+
+    })
+
+    it('portal filters in tag auto complete', () => {
+
+        const inputLine = `{% assign redmond = entityview.records | _X_ %}`
+
+        const mockCompletionItems = PORTAL_FILTERS.map(filter =>{ return { label: filter, insertText: filter, kind: 12 } })
+
+        getEditedLineContent.returns(inputLine)
+        const colIndex = inputLine.indexOf('_X_')
+
+        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any)
+
+        Sinon.assert.calledOnce(getEditedLineContent);
+        expect(completionItems).deep.equal(mockCompletionItems);
+    })
+
+    it('portal filters in output auto complete', () => {
+
+        const inputLine = `{{ group1 | concat: group2 | _X_ }}`
+        const mockCompletionItems = PORTAL_OBJECTS.concat(PORTAL_FILTERS).map(filter =>{ return { label: filter, insertText: filter, kind: 12 } })
+
+        getEditedLineContent.returns(inputLine)
+        const colIndex = inputLine.indexOf('_X_')
+
+        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any)
+
+        Sinon.assert.calledOnce(getEditedLineContent);
+        expect(completionItems).deep.equal(mockCompletionItems);
 
     })
 })
