@@ -10,12 +10,13 @@ import { CompletionItem, Connection, WorkspaceFolder } from "vscode-languageserv
 import { getEditedLineContent } from "./LineReader";
 import { AUTO_COMPLETE_PLACEHOLDER, ILiquidAutoCompleteRule, ruleDefinitions } from "./LiquidAutoCompleteRule";
 import { sendTelemetryEvent } from '../telemetry/ServerTelemetry';
-import { IAutoCompleteTelemetryData, ITelemetryData } from "../../common/TelemetryData";
-
+import { IAutoCompleteTelemetryData } from "../../common/TelemetryData";
+import { performance } from "perf_hooks";
+import { start } from "repl";
 export interface ILiquidRuleEngineContext {
     workspaceRootFolders: WorkspaceFolder[] | null
     pathOfFileBeingEdited: string
-    connection:Connection
+    connection: Connection
 }
 
 interface ILiquidAutoComplete {
@@ -48,8 +49,9 @@ const getSuggestionsFromRules = (liquidToken: TagToken | OutputToken, context: I
         .sort((r1, r2) => { return r1.priority - r2.priority })
         .map(r => {
             if (r.isValid(liquidToken)) {
-                sendTelemetryEvent(context.connection, {...telemetryData, properties:{...telemetryData.properties, liquidTagForCompletion : r.name} } as ITelemetryData)
-                return r.apply(liquidToken, context)
+                const suggestions = r.apply(liquidToken, context)
+                sendTelemetryEvent(context.connection, { ...telemetryData, properties: { ...telemetryData.properties, liquidTagForCompletion: r.name, success: 'true' } } as IAutoCompleteTelemetryData)
+                return suggestions
             } else {
                 return []
             }
@@ -59,13 +61,14 @@ const getSuggestionsFromRules = (liquidToken: TagToken | OutputToken, context: I
         }, []);
 }
 
-export const getSuggestions = (rowIndex: number, colIndex: number, pathOfFileBeingEdited: string, workspaceRootFolders: WorkspaceFolder[] | null, editedTextDocument: TextDocument, connection:Connection) => {
+export const getSuggestions = (rowIndex: number, colIndex: number, pathOfFileBeingEdited: string, workspaceRootFolders: WorkspaceFolder[] | null, editedTextDocument: TextDocument, connection: Connection) => {
     const editedLine = getEditedLineContent(rowIndex, editedTextDocument);
     const liquidForAutocomplete = getEditedLiquidExpression(colIndex, editedLine);
     if (!liquidForAutocomplete) {
         return []
     }
     try {
+        const startTime = performance.now()
         const tokenizer = new Tokenizer(
             liquidForAutocomplete.LiquidExpression.slice(0, liquidForAutocomplete.AutoCompleteAtIndex)
             + AUTO_COMPLETE_PLACEHOLDER
@@ -75,7 +78,9 @@ export const getSuggestions = (rowIndex: number, colIndex: number, pathOfFileBei
         if (liquidTokens[0].kind === TokenKind.HTML) {
             return []
         }
-        return getSuggestionsFromRules(liquidTokens[0] as TagToken | OutputToken, { workspaceRootFolders, pathOfFileBeingEdited, connection })
+        const suggestions = getSuggestionsFromRules(liquidTokens[0] as TagToken | OutputToken, { workspaceRootFolders, pathOfFileBeingEdited, connection })
+        sendTelemetryEvent(connection, { ...telemetryData, measurements:{liquidAutoCompleteTimeMs : performance.now() - startTime} } as IAutoCompleteTelemetryData)
+        return suggestions
     } catch (e) {
         // Add telemetry log. Failed to parse liquid expression. (This may bloat up the logs so double check about this)
     }
