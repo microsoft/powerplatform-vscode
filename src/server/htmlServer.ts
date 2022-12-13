@@ -93,7 +93,7 @@ connection.onCompletion(
         const pathOfFileBeingEdited = _textDocumentPosition.textDocument.uri;
         const rowIndex = _textDocumentPosition.position.line;
         const colIndex = _textDocumentPosition.position.character;
-        return getSuggestions(rowIndex, colIndex, pathOfFileBeingEdited, workspaceRootFolders, editedTextDocument);
+        return getSuggestions(rowIndex, colIndex, pathOfFileBeingEdited, workspaceRootFolders, editedTextDocument, connection);
     }
 );
 

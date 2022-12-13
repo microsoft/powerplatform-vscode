@@ -16,6 +16,7 @@ const DEFAULT_TAG_PRIORITY = 0;
 export const AUTO_COMPLETE_PLACEHOLDER = '_AUTO_COMPLETE_PLACEHOLDER_'
 
 export interface ILiquidAutoCompleteRule {
+    name:string,
     isValid: (liquidToken: TagToken | OutputToken) => boolean
     priority: number
     apply: (liquidToken: TagToken | OutputToken, ctx: ILiquidRuleEngineContext) => CompletionItem[]
@@ -49,6 +50,7 @@ const portalObjectBaseRule = (liquidToken: OutputToken, entityName: PortalEntity
 }
 
 const snippetObjectRule: ILiquidAutoCompleteRule = {
+    name: 'snippetObject',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.SNIPPETS),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
@@ -57,6 +59,7 @@ const snippetObjectRule: ILiquidAutoCompleteRule = {
 }
 
 const settingsObjectRule: ILiquidAutoCompleteRule = {
+    name: 'settingsObject',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.SETTINGS),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
@@ -65,6 +68,7 @@ const settingsObjectRule: ILiquidAutoCompleteRule = {
 }
 
 const weblinksObjectRule: ILiquidAutoCompleteRule = {
+    name: 'weblinksObject',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.WEBLINKS),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
@@ -73,6 +77,7 @@ const weblinksObjectRule: ILiquidAutoCompleteRule = {
 }
 
 const sitemakerObjectRule: ILiquidAutoCompleteRule = {
+    name: 'sitemakerObject',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && liquidToken.content.includes(PortalObjects.SITEMARKER),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
@@ -81,6 +86,7 @@ const sitemakerObjectRule: ILiquidAutoCompleteRule = {
 }
 
 const rootObjectRule: ILiquidAutoCompleteRule = {
+    name: 'rootObject',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && !liquidToken.content.includes('.') && !liquidToken.content.includes('['),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken) => {
@@ -100,6 +106,7 @@ const rootObjectRule: ILiquidAutoCompleteRule = {
 }
 
 const entityFormTagRule: ILiquidAutoCompleteRule = {
+    name: 'entityFormTag',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Tag && (liquidToken as TagToken).name.toLowerCase() === PortalTags.ENTITYFORM,
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
@@ -129,6 +136,7 @@ const entityFormTagRule: ILiquidAutoCompleteRule = {
 }
 
 const entityListTagRule: ILiquidAutoCompleteRule = {
+    name: 'entityListTag',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Tag && (liquidToken as TagToken).name.toLowerCase() === PortalTags.ENTITYLIST,
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
@@ -158,6 +166,7 @@ const entityListTagRule: ILiquidAutoCompleteRule = {
 }
 
 const webFormTagRule: ILiquidAutoCompleteRule = {
+    name:'webFormTag',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Tag && (liquidToken as TagToken).name.toLowerCase() === PortalTags.WEBFORM,
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
@@ -187,6 +196,7 @@ const webFormTagRule: ILiquidAutoCompleteRule = {
 }
 
 const includeTagRule: ILiquidAutoCompleteRule = {
+    name: 'includeTag',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Tag && (liquidToken as TagToken).name.toLowerCase() === PortalTags.INCLUDE,
     priority: DEFAULT_TAG_PRIORITY,
     apply: (tagToken, ctx) => {
@@ -215,6 +225,7 @@ const includeTagRule: ILiquidAutoCompleteRule = {
 }
 
 const editableTagRule: ILiquidAutoCompleteRule = {
+    name:'editableTag',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Tag && (liquidToken as TagToken).name.toLowerCase() === PortalTags.EDITABLE,
     priority: DEFAULT_TAG_PRIORITY,
     apply: (tagToken, ctx) => {
@@ -263,6 +274,7 @@ const editableTagRule: ILiquidAutoCompleteRule = {
 }
 
 const allFiltersRule: ILiquidAutoCompleteRule = {
+    name:'allFilters',
     isValid: (liquidToken) => liquidToken.content.includes('|'),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken) => {
