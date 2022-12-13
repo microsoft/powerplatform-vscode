@@ -12,9 +12,11 @@ import { PortalEntityNames } from "../../constants/PortalEnums";
 import * as LineReader from "../../lib/LineReader";
 import { getSuggestions, initLiquidRuleEngine } from "../../lib/LiquidAutoCompleteRuleEngine";
 import * as ManifestReader from "../../lib/PortalManifestReader";
+import * as ServerTelemetry from "../../telemetry/ServerTelemetry";
 
 let getMatchedManifestRecords: any;
 let getEditedLineContent: any;
+let sendTelemetryEvent: any
 
 const suggestionTestUtil = (inputLine: string, mockManifestRecords: ManifestReader.IManifestElement[], mockCompletionItems: any, entityName: PortalEntityNames) => {
     const colIndex = inputLine.indexOf('_X_')
@@ -22,7 +24,7 @@ const suggestionTestUtil = (inputLine: string, mockManifestRecords: ManifestRead
     getMatchedManifestRecords.returns(mockManifestRecords)
     getEditedLineContent.returns(inputLine.replace('_X_', ''))
 
-    const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any)
+    const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any, {} as any)
 
     Sinon.assert.calledOnce(getEditedLineContent)
     Sinon.assert.calledWith(getMatchedManifestRecords, [], entityName, 'path')
@@ -35,6 +37,11 @@ describe('LiquidAutoCompleteRuleEngine', () => {
 
     before(() => {
         initLiquidRuleEngine()
+        sendTelemetryEvent = Sinon.stub(ServerTelemetry, "sendTelemetryEvent")
+    })
+
+    after(() => {
+        sendTelemetryEvent.restore()
     })
 
     beforeEach(() => {
@@ -107,7 +114,7 @@ describe('LiquidAutoCompleteRuleEngine', () => {
         getEditedLineContent.returns(inputLine)
         const colIndex = inputLine.indexOf('_X_')
 
-        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any)
+        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any, {} as any)
 
         Sinon.assert.calledOnce(getEditedLineContent);
         expect(completionItems).deep.equal(mockCompletionItems);
@@ -125,12 +132,12 @@ describe('LiquidAutoCompleteRuleEngine', () => {
             { label: 'tag', insertText: 'tag:', kind: 12 },
             { label: 'title', insertText: 'title:', kind: 12 },
             { label: 'type', insertText: 'type:', kind: 12 },
-          ];
+        ];
 
         getEditedLineContent.returns(inputLine)
         const colIndex = inputLine.indexOf('_X_')
 
-        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any)
+        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any, {} as any)
 
         Sinon.assert.calledOnce(getEditedLineContent);
         expect(completionItems).deep.equal(mockCompletionItems);
@@ -155,12 +162,12 @@ describe('LiquidAutoCompleteRuleEngine', () => {
             { label: 'adx_summary', insertText: 'adx_summary', kind: 12 },
             { label: 'adx_title', insertText: 'adx_title', kind: 12 },
             { label: 'adx_partialurl', insertText: 'adx_partialurl', kind: 12 },
-          ];
+        ];
 
         getEditedLineContent.returns(inputLine)
         const colIndex = inputLine.indexOf('_X_')
 
-        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any)
+        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any, {} as any)
 
         Sinon.assert.calledOnce(getEditedLineContent);
         expect(completionItems).deep.equal(mockCompletionItems);
@@ -215,12 +222,12 @@ describe('LiquidAutoCompleteRuleEngine', () => {
             { label: 'name', insertText: 'name:', kind: 12 },
             { label: 'key', insertText: 'key:', kind: 12 },
             { label: 'language_code', insertText: 'language_code:', kind: 12 },
-          ];
+        ];
 
         getEditedLineContent.returns(inputLine)
         const colIndex = inputLine.indexOf('_X_')
 
-        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any)
+        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any, {} as any)
 
         Sinon.assert.calledOnce(getEditedLineContent);
         expect(completionItems).deep.equal(mockCompletionItems);
@@ -271,12 +278,12 @@ describe('LiquidAutoCompleteRuleEngine', () => {
 
         const inputLine = `{% assign redmond = entityview.records | _X_ %}`
 
-        const mockCompletionItems = PORTAL_FILTERS.map(filter =>{ return { label: filter, insertText: filter, kind: 12 } })
+        const mockCompletionItems = PORTAL_FILTERS.map(filter => { return { label: filter, insertText: filter, kind: 12 } })
 
         getEditedLineContent.returns(inputLine)
         const colIndex = inputLine.indexOf('_X_')
 
-        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any)
+        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any, {} as any)
 
         Sinon.assert.calledOnce(getEditedLineContent);
         expect(completionItems).deep.equal(mockCompletionItems);
@@ -285,12 +292,12 @@ describe('LiquidAutoCompleteRuleEngine', () => {
     it('portal filters in output auto complete', () => {
 
         const inputLine = `{{ group1 | concat: group2 | _X_ }}`
-        const mockCompletionItems = PORTAL_OBJECTS.concat(PORTAL_FILTERS).map(filter =>{ return { label: filter, insertText: filter, kind: 12 } })
+        const mockCompletionItems = PORTAL_OBJECTS.concat(PORTAL_FILTERS).map(filter => { return { label: filter, insertText: filter, kind: 12 } })
 
         getEditedLineContent.returns(inputLine)
         const colIndex = inputLine.indexOf('_X_')
 
-        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any)
+        const completionItems = getSuggestions(1, colIndex, 'path', [], {} as any, {} as any)
 
         Sinon.assert.calledOnce(getEditedLineContent);
         expect(completionItems).deep.equal(mockCompletionItems);

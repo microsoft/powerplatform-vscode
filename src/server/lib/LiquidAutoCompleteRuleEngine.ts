@@ -5,14 +5,13 @@
 
 import { Tokenizer, TokenKind } from "liquidjs";
 import { OutputToken, TagToken } from "liquidjs/dist/tokens";
+import { performance } from "perf_hooks";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { CompletionItem, Connection, WorkspaceFolder } from "vscode-languageserver/node";
+import { IAutoCompleteTelemetryData } from "../../common/TelemetryData";
+import { sendTelemetryEvent } from '../telemetry/ServerTelemetry';
 import { getEditedLineContent } from "./LineReader";
 import { AUTO_COMPLETE_PLACEHOLDER, ILiquidAutoCompleteRule, ruleDefinitions } from "./LiquidAutoCompleteRule";
-import { sendTelemetryEvent } from '../telemetry/ServerTelemetry';
-import { IAutoCompleteTelemetryData } from "../../common/TelemetryData";
-import { performance } from "perf_hooks";
-import { start } from "repl";
 export interface ILiquidRuleEngineContext {
     workspaceRootFolders: WorkspaceFolder[] | null
     pathOfFileBeingEdited: string
