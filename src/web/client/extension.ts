@@ -13,17 +13,11 @@ import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } 
 import { PortalsFS } from "./dal/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters, ERRORS } from "./common/errorHandler";
 import { sendExtensionInitPathParametersTelemetry, sendExtensionInitQueryParametersTelemetry, sendInfoTelemetry, setTelemetryReporter } from "./telemetry/webExtensionTelemetry";
+//import { npsAuthentication } from './common/authenticationProvider';
+import {SimpleBrowserView} from './SimpleBrowserView';
+
 let _telemetry: TelemetryReporter;
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-import jwt_decode from 'jwt-decode';
-
-export function getCesHeader(accessToken: string) {
-    return {
-        authorization: "Bearer " + accessToken,
-        Accept: 'application/json',
-       'Content-Type': 'application/json',
-    };
-}
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -69,7 +63,6 @@ export function activate(context: vscode.ExtensionContext): void {
                     switch (appName) {
                         case 'portal': {
                             sendExtensionInitQueryParametersTelemetry(queryParamsMap);
-
                             const isFirstRun = context.globalState.get(IS_FIRST_RUN_EXPERIENCE, true);
                             if (isFirstRun) {
                                 vscode.commands.executeCommand(`workbench.action.openWalkthrough`, `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted`, false);
@@ -84,6 +77,8 @@ export function activate(context: vscode.ExtensionContext): void {
                             }, async () => {
                                 await vscode.workspace.fs.readDirectory(PowerPlatformExtensionContextManager.getPowerPlatformExtensionContext().rootDirectory);
                             });
+                            SimpleBrowserView.createOrShow(context.extensionUri);
+                           // npsAuthentication(context.extensionUri);
                         }
                             break;
                         case 'default':
@@ -98,9 +93,8 @@ export function activate(context: vscode.ExtensionContext): void {
         )
     );
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.overview-learn-more', async () => {
-        npsAuthentication();
-        // sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.overview-learn-more' });
-        // vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2207914"));
+        sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.overview-learn-more' });
+        vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2207914"));
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.fileSystem-documentation', async () => {
@@ -131,68 +125,3 @@ export async function deactivate(): Promise<void> {
     }
 }
 
-export async function npsAuthentication() {
-    let accessToken = '';
-    try {
-
-        const session = await vscode.authentication.getSession('microsoft', ['https://microsoft.onmicrosoft.com/cessurvey/user'], { createIfNone: true });
-
-       
-        accessToken = session?.accessToken ?? '';
-        const baseApiUrl = "https://ces-int.microsoftcloud.com/api/v1";
-        const teamName = "PowerPages"; //Each onboarding team has a unique team name which is used across all API calls
-        const surveyName = "PowerPages-NPS";
-        // const userId = '5bb097a9-d3e9-48b6-8e37-3b384e04fa9b';
-        // const tenantId = '72f988bf-86f1-41af-91ab-2d7cd011db47';
-        const eventName = 'visitHomepage';
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const parsedToken = jwt_decode(accessToken) as any;
-        const apiEndpoint = `${baseApiUrl}/${teamName}/Eligibilities/${surveyName}?userId=${parsedToken?.oid}&eventName=${eventName}&tenantId=${parsedToken.tid}`;
-        const requestInitPost: RequestInit = {
-            method: 'POST',
-            body:'{}',
-            headers:getCesHeader(accessToken)
-        };
-        const response = await fetch(apiEndpoint, requestInitPost);
-        if (!accessToken) {
-        //    sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_NO_ACCESS_TOKEN);
-        }
-        const result = await response?.json();
-            console.log("respo-->"+result);
-            
-            if (result){
-               // if(result.eligibility){
-                    const panel = vscode.window.createWebviewPanel(
-                        'testCESSurvey',
-                        'Test CES Survey',
-                        vscode.ViewColumn.Nine,
-                        {enableScripts:true}
-                      );
-                      panel.webview.html = getWebviewContent();
-                //    }
-            }
-        //sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED, { "userId": session?.account.id.split('/').pop() ?? session?.account.id ?? '' });
-    } catch (error) {
-        // const authError = (error as Error)?.message;
-        // sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED, authError);
-    }
-}
-
-function getWebviewContent() {
-    return `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Test CES Survey</title>
-    </head>
-    <body>
-        <div id="surveyDiv" style="height:800px; width:500px;"></div>
-        <script src="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css" /><script type = "text/javascript" >function renderSurvey(parentElementId,FirstName, LastName, locale, environmentId, geo, UserId, TenantId, prompted){var se = new SurveyEmbed("v4j5cvGGr0GRqy180BHbRzXjbn7jdBpBl5IXVzWMNmFUOTU4WEwzMFJBMDNQUlBJN1IyVUw3WExLNS4u","https://customervoice.microsoft.com/","https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/","true");var context = {"First Name": FirstName,"Last Name": LastName,"locale": locale,"environmentId": environmentId,"geo": geo,"UserId": UserId,"TenantId": TenantId,"prompted": prompted,};se.renderInline(parentElementId, context);}</script>
-        <script>
-        window.addEventListener('load', function () {
-            renderSurvey("surveyDiv", "Bert", "Hair", "en-US", "123", "IND", "bert.hair@contoso.com", "12345", "Product Overview");
-           }, false);
-        </script>
-    </body>
-    </html>`;
-}
