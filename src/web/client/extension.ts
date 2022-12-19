@@ -19,6 +19,11 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(WebExtensionContext.telemetry.getTelemetryReporter());
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
+    const backtostudiobutton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    backtostudiobutton.command = 'microsoft-powerapps-portals.webExtension.backtostudio.button.onclick';
+    backtostudiobutton.text = localize("microsoft-powerapps-portals.webExtension.backtostudio.button.title", "Edit in Studio");
+	backtostudiobutton.show();
+    context.subscriptions.push(backtostudiobutton);
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 
@@ -41,6 +46,14 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
 
                 removeEncodingFromParameters(queryParamsMap);
+
+                context.subscriptions.push(vscode.commands.registerCommand('microsoft-powerapps-portals.webExtension.backtostudio.button.onclick', () => {
+                    vscode.window.showInformationMessage('Navigating back to Studio.');
+                    if (queryParamsMap.has(queryParameters.MAKER_URL)) {
+                        vscode.env.openExternal(vscode.Uri.parse(queryParamsMap.get(queryParameters.MAKER_URL) as string));
+                    }
+                }));
+                
                 await WebExtensionContext.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(appName, entity, entityId);

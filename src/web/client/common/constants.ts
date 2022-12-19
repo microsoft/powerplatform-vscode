@@ -37,7 +37,8 @@ export enum queryParameters {
     REFERRER = 'referrer',
     SITE_VISIBILITY = 'sitevisibility',
     WEBSITE_NAME = 'websitename',
-    ORG_URL = 'orgurl'
+    ORG_URL = 'orgurl',
+    MAKER_URL = 'makerurl'
 }
 
 export enum httpMethod {
