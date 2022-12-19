@@ -190,7 +190,7 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
 
         // The server is implemented in node
         const serverModule = _context.asAbsolutePath(
-            path.join("dist", "htmlServer.js")
+            path.join("dist", "HtmlServer.js")
         );
         // If the extension is launched in debug mode then the debug server options are used
         // Otherwise the run options are used
@@ -230,7 +230,7 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             _context.subscriptions.push(disposable);
         }
 
-        // this is used to send htmlServer telemetry events
+        // this is used to send HtmlServer telemetry events
         registerClientToReceiveNotifications(client);
     }
 
