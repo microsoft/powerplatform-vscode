@@ -20,7 +20,9 @@ export enum schemaEntityKey {
     DATAVERSE_ENTITY_NAME = '_dataverseenityname',
     FETCH_QUERY_PARAMETERS = '_fetchQueryParameters',
     MAPPING_ENTITY_ID = '_mappingEntityId',
-    MAPPING_ATTRIBUTE_FETCH_QUERY = '_mappingAttributeFetchQuery'
+    MAPPING_ATTRIBUTE_FETCH_QUERY = '_mappingAttributeFetchQuery',
+    EXPORT_TYPE = '_exporttype',
+    ATTRIBUTES = '_attributes',
 }
 
 export enum schemaEntityName {
