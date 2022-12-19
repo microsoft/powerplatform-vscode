@@ -7,7 +7,16 @@ import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
 import {
-    CompletionItem, createConnection, DidChangeConfigurationNotification, InitializeParams, InitializeResult, ProposedFeatures, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind, WorkspaceFolder
+    CompletionItem,
+    createConnection,
+    DidChangeConfigurationNotification,
+    InitializeParams,
+    InitializeResult,
+    ProposedFeatures,
+    TextDocumentPositionParams,
+    TextDocuments,
+    TextDocumentSyncKind,
+    WorkspaceFolder
 } from 'vscode-languageserver/node';
 import { getSuggestions, initLiquidRuleEngine } from './lib/LiquidAutoCompleteRuleEngine';
 
@@ -25,10 +34,6 @@ let workspaceRootFolders: WorkspaceFolder[] | null = null;
 let editedTextDocument: TextDocument;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let hasDiagnosticRelatedInformationCapability = false;
-
-
-
-
 
 connection.onInitialize((params: InitializeParams) => {
     const capabilities = params.capabilities;

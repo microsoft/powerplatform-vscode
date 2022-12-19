@@ -6,14 +6,14 @@
 import { TagToken, Tokenizer, TokenKind } from "liquidjs";
 import { FilterToken, IdentifierToken, OutputToken, PropertyAccessToken } from "liquidjs/dist/tokens";
 import { CompletionItem, CompletionItemKind } from "vscode-languageserver/node";
-import { EDITABLE_ATTRIBUTES, ENTITY_FORM_ATTRIBUTES, ENTITY_LIST_ATTRIBUTES, PAGE_ATTRIBUTES, PORTAL_FILTERS, PORTAL_OBJECTS, WEB_FORM_ATTRIBUTES } from "../constants/AutoComplete";
+import { AUTO_COMPLETE_PLACEHOLDER, EDITABLE_ATTRIBUTES, ENTITY_FORM_ATTRIBUTES, ENTITY_LIST_ATTRIBUTES, PAGE_ATTRIBUTES, PORTAL_FILTERS, PORTAL_OBJECTS, WEB_FORM_ATTRIBUTES } from "../constants/AutoComplete";
 import { PortalAttributeNames, PortalEntityNames, PortalObjects, PortalTags } from "../constants/PortalEnums";
 import { ILiquidRuleEngineContext } from "./LiquidAutoCompleteRuleEngine";
 import { getMatchedManifestRecords, IManifestElement } from "./PortalManifestReader";
 
 const DEFAULT_TAG_PRIORITY = 0;
+const QUOTES_REGEX = /['"]/g;
 
-export const AUTO_COMPLETE_PLACEHOLDER = '_AUTO_COMPLETE_PLACEHOLDER_'
 
 export interface ILiquidAutoCompleteRule {
     name:string,
@@ -23,7 +23,7 @@ export interface ILiquidAutoCompleteRule {
 }
 
 const getSuggestionsForEntity = (entityName: PortalEntityNames, ctx: ILiquidRuleEngineContext, textForAutoComplete?: string, insertById?: boolean): CompletionItem[] => {
-    const partialMatch = textForAutoComplete?.replace(/['"]/g, '').replace(AUTO_COMPLETE_PLACEHOLDER, '') || ''
+    const partialMatch = textForAutoComplete?.replace(QUOTES_REGEX, '').replace(AUTO_COMPLETE_PLACEHOLDER, '') || ''
     // return list of web templates for auto completion
     const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(ctx.workspaceRootFolders, entityName, ctx.pathOfFileBeingEdited);
     return matchedManifestRecords.filter(record => record.DisplayName.toLowerCase().includes(partialMatch.toLowerCase()))
@@ -212,10 +212,10 @@ const includeTagRule: ILiquidAutoCompleteRule = {
         hashes.forEach(hash => {
             const hashName = hash.name.getText().toLowerCase()
             const hashValue = hash.value?.getText()
-            if (hashName === PortalAttributeNames.SNIPPET_NAME && hashValue?.includes(AUTO_COMPLETE_PLACEHOLDER) && templateName.replace(/['"]/g, '').toLowerCase() === PortalAttributeNames.SNIPPET) {
+            if (hashName === PortalAttributeNames.SNIPPET_NAME && hashValue?.includes(AUTO_COMPLETE_PLACEHOLDER) && templateName.replace(QUOTES_REGEX, '').toLowerCase() === PortalAttributeNames.SNIPPET) {
                 suggestions.push(...getSuggestionsForEntity(PortalEntityNames.CONTENT_SNIPPET, ctx, hashValue))
                 return;
-            } else if (hashName === 'key' && hashValue?.includes(AUTO_COMPLETE_PLACEHOLDER) && templateName.replace(/['"]/g, '').toLowerCase() === PortalAttributeNames.ENTITY_LIST) {
+            } else if (hashName === 'key' && hashValue?.includes(AUTO_COMPLETE_PLACEHOLDER) && templateName.replace(QUOTES_REGEX, '').toLowerCase() === PortalAttributeNames.ENTITY_LIST) {
                 suggestions.push(...getSuggestionsForEntity(PortalEntityNames.ENTITY_LIST, ctx, hashValue))
                 return;
             }
