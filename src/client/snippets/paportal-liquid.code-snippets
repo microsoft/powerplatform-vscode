@@ -38,7 +38,7 @@
     },
     "Tag include": {
         "prefix": "include",
-        "description": "Theme tag: include",
+        "description": "Dataverse tag: include",
         "body": [
             "{% include '$1' %}"
         ]
@@ -138,7 +138,7 @@
         "body": [
 			"{% codecomponent name:\"$1\" controlValue:\"$2\" controlApiKey:\"${3:<API Key Value here>}\" %}"
         ],
-        "description": "Adds an Iframe component"
+        "description": "Adds a code component liquid tag"
     },
     "FetchXml-Component": {
         "prefix": "fetchxml-component",
@@ -147,7 +147,7 @@
             "\t${2:FetchXml query}",
             "{% endfetchxml %}"
         ],
-        "description": "Adds an Iframe component"
+        "description": "Adds a fetchxml component tag"
     },
     // HTML based component below
     "Section-1-Column": {
