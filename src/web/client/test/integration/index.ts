@@ -49,6 +49,6 @@ async function addTests(): Promise<void> {
     });
 }
 
-export function run(): void {
-    addTests();
+export async function run(): Promise<void> {
+    await addTests();
 }
