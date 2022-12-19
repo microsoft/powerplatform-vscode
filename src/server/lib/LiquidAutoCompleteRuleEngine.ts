@@ -9,9 +9,10 @@ import { performance } from "perf_hooks";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { CompletionItem, Connection, WorkspaceFolder } from "vscode-languageserver/node";
 import { IAutoCompleteTelemetryData } from "../../common/TelemetryData";
+import { AUTO_COMPLETE_PLACEHOLDER } from "../constants/AutoComplete";
 import { sendTelemetryEvent } from '../telemetry/ServerTelemetry';
 import { getEditedLineContent } from "./LineReader";
-import { AUTO_COMPLETE_PLACEHOLDER, ILiquidAutoCompleteRule, ruleDefinitions } from "./LiquidAutoCompleteRule";
+import { ILiquidAutoCompleteRule, ruleDefinitions } from "./LiquidAutoCompleteRule";
 export interface ILiquidRuleEngineContext {
     workspaceRootFolders: WorkspaceFolder[] | null
     pathOfFileBeingEdited: string
