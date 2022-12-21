@@ -4,25 +4,22 @@
  */
 
 import {
-    createConnection,
-    TextDocuments,
-    ProposedFeatures,
-    InitializeParams,
-    DidChangeConfigurationNotification,
-    CompletionItem,
-    CompletionItemKind,
-    TextDocumentPositionParams,
-    TextDocumentSyncKind,
-    InitializeResult,
-    WorkspaceFolder
-} from 'vscode-languageserver/node';
-import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
-import { IAutoCompleteTelemetryData } from '../common/TelemetryData';
-import { sendTelemetryEvent } from './telemetry/ServerTelemetry';
-import { getEditedLineContent } from './lib/LineReader';
-import { getMatchedManifestRecords, IManifestElement } from './lib/PortalManifestReader';
+import {
+    CompletionItem,
+    createConnection,
+    DidChangeConfigurationNotification,
+    InitializeParams,
+    InitializeResult,
+    ProposedFeatures,
+    TextDocumentPositionParams,
+    TextDocuments,
+    TextDocumentSyncKind,
+    WorkspaceFolder
+} from 'vscode-languageserver/node';
+import { getSuggestions, initLiquidRuleEngine } from './lib/LiquidAutoCompleteRuleEngine';
+
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -33,10 +30,10 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
-let hasDiagnosticRelatedInformationCapability = false;
 let workspaceRootFolders: WorkspaceFolder[] | null = null;
 let editedTextDocument: TextDocument;
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+let hasDiagnosticRelatedInformationCapability = false;
 
 connection.onInitialize((params: InitializeParams) => {
     const capabilities = params.capabilities;
@@ -55,6 +52,7 @@ connection.onInitialize((params: InitializeParams) => {
         capabilities.textDocument.publishDiagnostics &&
         capabilities.textDocument.publishDiagnostics.relatedInformation
     );
+    initLiquidRuleEngine();
 
     const result: InitializeResult = {
         capabilities: {
@@ -91,63 +89,18 @@ connection.onInitialized(() => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
-	editedTextDocument = (change.document);
+    editedTextDocument = (change.document);
 });
-
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
     async (_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
         const pathOfFileBeingEdited = _textDocumentPosition.textDocument.uri;
         const rowIndex = _textDocumentPosition.position.line;
-        return await getSuggestions(rowIndex, pathOfFileBeingEdited);
+        const colIndex = _textDocumentPosition.position.character;
+        return getSuggestions(rowIndex, colIndex, pathOfFileBeingEdited, workspaceRootFolders, editedTextDocument, connection);
     }
 );
-
-function getSuggestions(rowIndex: number, pathOfFileBeingEdited: string) {
-    const telemetryData: IAutoCompleteTelemetryData = {
-        eventName: "AutoComplete",
-        properties: {
-            server: 'yaml',
-        },
-        measurements: {},
-    };
-    const portalAttributeKeyPattern = /(.*?):/; // regex to match text like adx_pagetemplateid:
-    const matches = getEditedLineContent(rowIndex, editedTextDocument)?.match(portalAttributeKeyPattern);
-    const completionItems: CompletionItem[] = [];
-    if (matches) {
-        telemetryData.properties.keyForCompletion = matches[1];
-        const keyForCompletion = getKeyForCompletion(matches);
-        const timeStampBeforeParsingManifestFile = new Date().getTime();
-        const matchedManifestRecords: IManifestElement[] = getMatchedManifestRecords(workspaceRootFolders, keyForCompletion, pathOfFileBeingEdited);
-        telemetryData.measurements.manifestParseTimeMs = new Date().getTime() - timeStampBeforeParsingManifestFile;
-        if (matchedManifestRecords) {
-            matchedManifestRecords.forEach((element: IManifestElement) => {
-                const item: CompletionItem = {
-                    label: element.DisplayName + " (" + element.RecordId + ")",
-                    insertText: element.RecordId,
-                    kind: CompletionItemKind.Value
-                }
-                completionItems.push(item);
-            });
-        }
-    }
-    // we send telemetry data only in case of success, otherwise the logs will be bloated with unnecessary data
-    if(completionItems.length > 0) {
-        telemetryData.properties.success = 'true';
-        telemetryData.measurements.countOfAutoCompleteResults = completionItems.length;
-        sendTelemetryEvent(connection, telemetryData);
-    }
-    return completionItems;
-}
-
-function getKeyForCompletion(matches: RegExpMatchArray) {
-    let portalAttributeKeyForCompletion = matches[1]; // returns text from the capture group e.g. adx_pagetemplateid
-    if (portalAttributeKeyForCompletion.length > 2 && portalAttributeKeyForCompletion.endsWith('id')) {
-        portalAttributeKeyForCompletion = portalAttributeKeyForCompletion.substring(0, portalAttributeKeyForCompletion.length - 2); // we remove the id
-    }
-    return portalAttributeKeyForCompletion;
-}
 
 
 // This handler resolves additional information for the item selected in
