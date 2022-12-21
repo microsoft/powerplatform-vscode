@@ -20,6 +20,7 @@ describe("portalSchemaReader", () => {
     });
     it("getEntitiesSchemaMap", () => {
         stub(schemaHelperUtil, "getPortalSchema").returns(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             portalSchemaReadeMock.schema_data as any
         );
 
@@ -37,6 +38,7 @@ describe("portalSchemaReader", () => {
 
     it("getEntitiesSchemaMap() - empty entity", () => {
         stub(schemaHelperUtil, "getPortalSchema").returns(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             portalSchemaReadeMock.schema_data_with_empty_array as any
         );
 
@@ -48,6 +50,7 @@ describe("portalSchemaReader", () => {
 
     it("getDataSourcePropertiesMap()", () => {
         stub(schemaHelperUtil, "getPortalSchema").returns(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             portalSchemaReadeMock.schema_data as any
         );
         const result = getDataSourcePropertiesMap("testSchema");
