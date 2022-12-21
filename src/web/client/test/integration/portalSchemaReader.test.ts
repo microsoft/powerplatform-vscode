@@ -23,7 +23,7 @@ describe("portalSchemaReader", () => {
             portalSchemaReadeMock.schema_data as any
         );
 
-        const result = getEntitiesSchemaMap("ddddd");
+        const result = getEntitiesSchemaMap("testSchema");
         for (const [key] of result) {
             expect(key).equal("websites");
         }
@@ -40,7 +40,7 @@ describe("portalSchemaReader", () => {
             portalSchemaReadeMock.schema_data_with_empty_array as any
         );
 
-        const result = getEntitiesSchemaMap("ddddd");
+        const result = getEntitiesSchemaMap("testSchema");
         for (const [key] of result) {
             expect(key).equal(undefined);
         }
@@ -50,7 +50,7 @@ describe("portalSchemaReader", () => {
         stub(schemaHelperUtil, "getPortalSchema").returns(
             portalSchemaReadeMock.schema_data as any
         );
-        const result = getDataSourcePropertiesMap("ddddd");
+        const result = getDataSourcePropertiesMap("testSchema");
         expect(result?.get("api")).equal("api");
         expect(result?.get("data")).equal("data");
         expect(result?.get("version")).equal("v9.2");
