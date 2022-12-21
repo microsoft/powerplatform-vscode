@@ -30,6 +30,7 @@ describe("portalSchemaReader", () => {
         >;
 
         portalSchemaReadeMock.schema_data.entities.entity.forEach(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (element: any) => {
                 const entitiesDetailsMap = result.get(
                     element._vscodeentityname
