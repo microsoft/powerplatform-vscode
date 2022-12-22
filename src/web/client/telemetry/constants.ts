@@ -26,4 +26,6 @@ export enum telemetryEventNames {
     WEB_EXTENSION_FETCH_FILE_TRIGGERED = 'WebExtensionFetchFileTriggered',
     WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED = 'WebExtensionFetchDirectoryTriggered',
     WEB_EXTENSION_CREATE_ROOT_FOLDER = 'WebExtensionCreateRootFolder',
+    WEB_EXTENSION_ENTITY_CONTENT_CHANGED = 'WebExtensionEntityConentChanged',
+    WEB_EXTENSION_ENTITY_CONTENT_SAME = 'WebExtensionEntityContentSame',
 }

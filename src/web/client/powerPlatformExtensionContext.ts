@@ -12,6 +12,7 @@ import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
 import { getLanguageIdCodeMap, getWebsiteIdToLanguageMap, getwebsiteLanguageIdToPortalLanguageMap } from "./utilities/schemaHelperUtil";
 import { getCustomRequestURL } from "./utilities/urlBuilderUtil";
 import { schemaKey } from "./schema/constants";
+import { telemetryEventNames } from "./telemetry/constants";
 
 export interface IPowerPlatformExtensionContext {
     dataSourcePropertiesMap: Map<string, string>; // dataSourceProperties in portal_schema_data
@@ -94,12 +95,15 @@ class WebExtensionContext {
         const dataverseOrgUrl = this.powerPlatformExtensionContext.queryParamsMap.get(Constants.queryParameters.ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
 
-        if (accessToken) {
-            this.powerPlatformExtensionContext = {
-                ... this.powerPlatformExtensionContext,
-                dataverseAccessToken: accessToken,
-            };
+        if (!accessToken) {
+            this.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING);
+            throw vscode.FileSystemError.NoPermissions();
         }
+
+        this.powerPlatformExtensionContext = {
+            ... this.powerPlatformExtensionContext,
+            dataverseAccessToken: accessToken,
+        };
 
         return this.powerPlatformExtensionContext;
     }

@@ -37,32 +37,44 @@ export interface ISaveEntityDetails {
     readonly entityName: string,
     readonly entityId: string,
     readonly saveAttributePath: string,
-    readonly useBase64Encoding?: boolean;
+    readonly isBase64Encoding?: boolean;
     readonly mimeType?: string;
 }
 
 export class SaveEntityDetails implements ISaveEntityDetails {
     entityName!: string;
     entityId!: string;
+    entityEtag!: string;
     entityFileExtensionType!: string;
     saveAttributePath!: string;
     originalAttributeContent!: string;
-    useBase64Encoding: boolean | undefined;
+    isBase64Encoding: boolean | undefined;
     mimeType: string | undefined;
     public get getEntityName(): string { return this.entityName; }
     public get getEntityId(): string { return this.entityId; }
+    public get getEntityEtag(): string { return this.entityEtag; }
     public get getEntityFileExtensionType(): string { return this.entityFileExtensionType; }
-    public get getSaveAttribute(): string { return this.saveAttributePath }
+    public get getSaveAttributePath(): string { return this.saveAttributePath }
     public get getOriginalAttributeContent(): string { return this.originalAttributeContent }
-    public get getUseBase64Encoding(): boolean | undefined { return this.useBase64Encoding }
+    public get hasBase64Encoding(): boolean | undefined { return this.isBase64Encoding }
     public get getMimeType(): string | undefined { return this.mimeType }
-    constructor(entityId: string, entityName: string, entityFileExtensionType: string, saveAttribute: string, originalAttributeContent: string, useBase64Encoding?: boolean, mimeType?: string) {
+    constructor(
+        entityId: string,
+        entityName: string,
+        entityEtag: string,
+        entityFileExtensionType: string,
+        saveAttribute: string,
+        originalAttributeContent: string,
+        useBase64Encoding?: boolean,
+        mimeType?: string
+    ) {
         this.entityId = entityId;
         this.entityName = entityName;
+        this.entityEtag = entityEtag;
         this.entityFileExtensionType = entityFileExtensionType;
         this.saveAttributePath = saveAttribute;
         this.originalAttributeContent = originalAttributeContent;
-        this.useBase64Encoding = useBase64Encoding;
+        this.isBase64Encoding = useBase64Encoding;
         this.mimeType = mimeType;
     }
 }

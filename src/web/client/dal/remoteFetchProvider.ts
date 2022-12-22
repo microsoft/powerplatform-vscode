@@ -17,7 +17,7 @@ import { ERRORS, showErrorDialog } from '../common/errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from '../schema/portalSchemaInterface';
 import WebExtensionContext from "../powerPlatformExtensionContext";
-import { getAttributeParts, getEntity, isBase64Encoded, useBase64Encoding } from '../utilities/schemaHelperUtil';
+import { getAttributePath, getEntity, IAttributePath, isBase64Encoded, useBase64Encoding } from '../utilities/schemaHelperUtil';
 import { telemetryEventNames } from '../telemetry/constants';
 import { folderExportType, schemaEntityKey } from '../schema/constants';
 
@@ -135,13 +135,11 @@ async function createContentFiles(
         let fileUri = '';
         for (counter; counter < attributeArray.length; counter++) {
             const isBase64Encoding = isBase64Encoded(entity, attributeArray[counter]); // update func for webfiles for V2
+            const attributePath: IAttributePath = getAttributePath(attributeArray[counter]);
+            let fileContent = result[attributePath.source] ?? Constants.NO_CONTENT;
 
-            const attributeParts = getAttributeParts(attributeArray[counter]);
-            let fileContent = result[attributeParts.source] ?? Constants.NO_CONTENT;
-            const originalAttributeContent = result[attributeParts.source] ?? Constants.NO_CONTENT;
-
-            if (result[attributeParts.source] && attributeParts.relativePath.length) {
-                fileContent = JSON.parse(result[attributeParts.source])[attributeParts.relativePath];
+            if (result[attributePath.source] && attributePath.relativePath.length) {
+                fileContent = JSON.parse(result[attributePath.source])[attributePath.relativePath];
             } else if (mappingEntityFetchQuery) {
                 fileContent = await getMappingEntityContent(
                     mappingEntityFetchQuery,
@@ -168,8 +166,9 @@ async function createContentFiles(
                 attributeArray[counter] as string,
                 useBase64Encoding(entity, attributeArray[counter]),
                 entity,
-                originalAttributeContent,
+                result[attributePath.source] ?? Constants.NO_CONTENT,
                 fileExtension,
+                result[Constants.ODATA_ETAG],
                 result[Constants.MIMETYPE]);
         }
 
@@ -234,9 +233,18 @@ async function createVirtualFile(
     entity: string,
     originalAttributeContent: string,
     fileExtension: string,
+    odataEtag: string,
     mimeType?: string
 ) {
-    const saveEntityDetails = new SaveEntityDetails(entityId, entity, fileExtension, attributePath, originalAttributeContent, useBase64Encoding, mimeType);
+    const saveEntityDetails = new SaveEntityDetails(entityId,
+        entity,
+        odataEtag,
+        fileExtension,
+        attributePath,
+        originalAttributeContent,
+        useBase64Encoding,
+        mimeType);
+
     const dataMap: Map<string, SaveEntityDetails> = WebExtensionContext.getPowerPlatformExtensionContext().saveDataMap;
     dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
     await WebExtensionContext.updateSaveDataDetailsInContext(dataMap);

@@ -291,28 +291,20 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(queryParameters.ORG_URL) as string;
 
         powerPlatformContext = await WebExtensionContext.reAuthenticate();
-        if (!powerPlatformContext.dataverseAccessToken) {
-            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING);
-            throw vscode.FileSystemError.NoPermissions();
-        }
 
-        if (dataMap.get(uri.fsPath)?.getUseBase64Encoding as boolean) {
+        if (dataMap.get(uri.fsPath)?.hasBase64Encoding as boolean) {
             stringDecodedValue = convertStringtoBase64(stringDecodedValue);
         }
 
-        const entityName = dataMap.get(uri.fsPath)?.getEntityName as string;
-        const entityId = dataMap.get(uri.fsPath)?.getEntityId as string;
-
         const patchRequestUrl = getRequestURL(dataverseOrgUrl,
-            entityName,
-            entityId,
+            dataMap.get(uri.fsPath)?.getEntityName as string,
+            dataMap.get(uri.fsPath)?.getEntityId as string,
             httpMethod.PATCH,
             true);
 
         await saveData(
             powerPlatformContext.dataverseAccessToken,
             patchRequestUrl,
-            entityName,
             uri,
             dataMap,
             stringDecodedValue);

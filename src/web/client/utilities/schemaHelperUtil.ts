@@ -8,6 +8,11 @@ import * as Constants from "../common/constants";
 import WebExtensionContext from "../powerPlatformExtensionContext";
 import { entityAttributesWithBase64Encoding, schemaEntityName, schemaKey } from "../schema/constants";
 
+export interface IAttributePath {
+    source: string,
+    relativePath: string
+}
+
 export function getPortalSchema(schema: string) {
     if (schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
         return portal_schema_V2;
@@ -24,7 +29,7 @@ export function getEntity(entity: string) {
     return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
 }
 
-export function getAttributeParts(attribute: string): { source: string, relativePath: string } {
+export function getAttributePath(attribute: string): IAttributePath {
     const attributePathArray = attribute.split('.', 2);
 
     return { source: attributePathArray[0], relativePath: attributePathArray[1] ?? '' };
