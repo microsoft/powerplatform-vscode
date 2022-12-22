@@ -144,7 +144,6 @@ async function getLatestContent(
 
         const response = await fetch(requestUrl, requestInit);
 
-        console.log("response for get ", response.status);
         if (response.ok) {
             const result = await response.json();
             if (result[attributePath.source]) {
