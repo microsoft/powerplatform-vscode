@@ -3,68 +3,40 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export interface Entities {
-    entity?: (Entity)[] | null;
-}
-export interface Entity {
-    _name: string;
-    _displayname: string;
-    _etc?: string | null;
-    _primaryidfield: string;
-    _primarynamefield: string;
-    _disableplugins: string;
-    _foldername: string;
-    _propextension: string;
-    _exporttype: string;
-    _downloadThroughChild?: string | null;
-    _languagefield?: string | null;
-    _languagegroupby?: string | null;
-    _parententityname?: string | null;
-    _parententityfield?: string | null;
-    _orderby?: string | null;
-    _topcount?: string | null;
-    _syncdirection?: string | null;
-    _fetchQueryParameters?: string | null;
-    _attributes?: string | null;
-}
+import { IAttributePath } from "../utilities/schemaHelperUtil";
 
-export interface WebsiteDetails {
-    adx_website_language: string,
-    adx_name: string
-}
-
-export interface ISaveEntityDetails {
+export interface IFileData {
     readonly entityName: string,
     readonly entityId: string,
-    readonly saveAttributePath: string,
+    readonly entityFileExtensionType: string,
+    readonly attributePath: IAttributePath,
     readonly isBase64Encoding?: boolean;
     readonly mimeType?: string;
 }
 
-export class SaveEntityDetails implements ISaveEntityDetails {
+export class FileData implements IFileData {
     entityName!: string;
     entityId!: string;
     entityEtag!: string;
     entityFileExtensionType!: string;
-    saveAttributePath!: string;
-    originalAttributeContent!: string;
+    attributePath!: IAttributePath;
     isBase64Encoding: boolean | undefined;
     mimeType: string | undefined;
+
     public get getEntityName(): string { return this.entityName; }
     public get getEntityId(): string { return this.entityId; }
     public get getEntityEtag(): string { return this.entityEtag; }
     public get getEntityFileExtensionType(): string { return this.entityFileExtensionType; }
-    public get getSaveAttributePath(): string { return this.saveAttributePath }
-    public get getOriginalAttributeContent(): string { return this.originalAttributeContent }
+    public get getSaveAttributePath(): IAttributePath { return this.attributePath }
     public get hasBase64Encoding(): boolean | undefined { return this.isBase64Encoding }
     public get getMimeType(): string | undefined { return this.mimeType }
+
     constructor(
         entityId: string,
         entityName: string,
         entityEtag: string,
         entityFileExtensionType: string,
-        saveAttribute: string,
-        originalAttributeContent: string,
+        attributePath: IAttributePath,
         useBase64Encoding?: boolean,
         mimeType?: string
     ) {
@@ -72,8 +44,7 @@ export class SaveEntityDetails implements ISaveEntityDetails {
         this.entityName = entityName;
         this.entityEtag = entityEtag;
         this.entityFileExtensionType = entityFileExtensionType;
-        this.saveAttributePath = saveAttribute;
-        this.originalAttributeContent = originalAttributeContent;
+        this.attributePath = attributePath;
         this.isBase64Encoding = useBase64Encoding;
         this.mimeType = mimeType;
     }

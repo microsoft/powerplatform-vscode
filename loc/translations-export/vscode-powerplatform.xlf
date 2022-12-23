@@ -317,12 +317,6 @@ The {2} represents Solution's Version number</note>
     <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
       <source xml:lang="en">There was a permissions problem with the server</source>
     </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
-      <source xml:lang="en">One or more commands are invalid or malformed</source>
-    </trans-unit>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
-      <source xml:lang="en">Check the parameters and try again</source>
-    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
       <source xml:lang="en">There’s a problem on the back end</source>
     </trans-unit>

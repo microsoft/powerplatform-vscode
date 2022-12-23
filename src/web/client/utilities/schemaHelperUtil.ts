@@ -22,11 +22,11 @@ export function getPortalSchema(schema: string) {
 
 export function getEntity(entity: string) {
     const powerPlatformExtensionContext = WebExtensionContext.getPowerPlatformExtensionContext();
-    if (powerPlatformExtensionContext.queryParamsMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
-        return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
+    if (powerPlatformExtensionContext.urlParametersMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
+        return powerPlatformExtensionContext.schemaEntitiesMap.get(entity);
     }
 
-    return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
+    return powerPlatformExtensionContext.schemaEntitiesMap.get(entity);
 }
 
 export function getAttributePath(attribute: string): IAttributePath {

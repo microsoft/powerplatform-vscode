@@ -34,7 +34,7 @@ describe("URLBuilder", () => {
 
     it("getParameterizedRequestUrlTemplate_should_return_SINGLE_ENTITY_URL_KEY_when_isSingleEntity_is_true", async () => {
         const powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
             ]),
         } as IPowerPlatformExtensionContext;
@@ -51,7 +51,7 @@ describe("URLBuilder", () => {
 
     it("getParameterizedRequestUrlTemplate_should_return_SINGLE_ENTITY_URL_KEY_when_isSingleEntity_is_false", async () => {
         const powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.MULTI_ENTITY_URL, schemaKey.MULTI_ENTITY_URL],
             ]),
         } as IPowerPlatformExtensionContext;
@@ -164,7 +164,7 @@ describe("URLBuilder", () => {
 
     it("getRequestURL_with_get_http_method", () => {
         const powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.API, "schemaKey.API"],
                 [
                     schemaKey.SINGLE_ENTITY_URL,
@@ -218,7 +218,7 @@ describe("URLBuilder", () => {
 
     it("getRequestURL_with_patch_http_method", () => {
         const powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.API, "schemaKey.API"],
                 [
                     schemaKey.SINGLE_ENTITY_URL,
@@ -270,7 +270,7 @@ describe("URLBuilder", () => {
 
     it("getCustomRequestURL", () => {
         const powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.API, "schemaKey.API"],
                 [
                     schemaKey.MULTI_ENTITY_URL,
