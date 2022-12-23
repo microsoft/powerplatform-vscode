@@ -12,24 +12,21 @@ import {
     getDataSourcePropertiesMap,
     getEntitiesFolderNameMap,
 } from "../../../client/schema/portalSchemaReader";
-import { expect } from "chai";
+import { expect, assert } from "chai";
 
 describe("portalSchemaReader", () => {
     afterEach(() => {
         Sinon.restore();
     });
-    it("getEntitiesSchemaMap_withValidSchema_shouldBeMap", () => {
-        stub(schemaHelperUtil, "getPortalSchema").returns(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            portalSchemaReadeMock.schema_data as any
+    it("getEntitiesSchemaMap_withValidSchemaV2_shouldBeMap", () => {
+        //Action
+        const result = getEntitiesSchemaMap(
+            portalSchemaReadeMock.portal_schema_V2.entities.dataSourceProperties
+                .schema
         );
 
-        const result = getEntitiesSchemaMap("testSchema") as Map<
-            string,
-            Map<string, string>
-        >;
-
-        portalSchemaReadeMock.schema_data.entities.entity.forEach(
+        //Assert
+        portalSchemaReadeMock.portal_schema_V2.entities.entity.forEach(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (element: any) => {
                 const entitiesDetailsMap = result.get(
@@ -37,7 +34,28 @@ describe("portalSchemaReader", () => {
                 );
                 if (entitiesDetailsMap) {
                     for (const [key, value] of entitiesDetailsMap) {
-                        expect(value).eq(element[key]);
+                        assert.deepStrictEqual(value, element[key]);
+                    }
+                } else {
+                    expect.fail();
+                }
+            }
+        );
+    });
+
+    it("getEntitiesSchemaMap_withValidSchemaV1_shouldBeMap", () => {
+        //Action
+        const result = getEntitiesSchemaMap("test");
+        //Assert
+        portalSchemaReadeMock.portal_schema_V1.entities.entity.forEach(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (element: any) => {
+                const entitiesDetailsMap = result.get(
+                    element._vscodeentityname
+                );
+                if (entitiesDetailsMap) {
+                    for (const [key, value] of entitiesDetailsMap) {
+                        assert.deepStrictEqual(value, element[key]);
                     }
                 } else {
                     expect.fail();
@@ -47,46 +65,83 @@ describe("portalSchemaReader", () => {
     });
 
     it("getEntitiesSchemaMap_withEmptyEntity_shouldBeEmptyMap", () => {
+        //Act
         stub(schemaHelperUtil, "getPortalSchema").returns(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             portalSchemaReadeMock.schema_data_with_empty_entity as any
         );
 
+        //Action
         const result = getEntitiesSchemaMap("testSchema");
+
+        //Assert
         for (const [key] of result) {
             expect(key).equal(undefined);
         }
         expect(result.size).eq(0);
     });
 
-    it("getDataSourcePropertiesMap_withValidSchema_shouldBeMap", () => {
-        stub(schemaHelperUtil, "getPortalSchema").returns(
+    it("getDataSourcePropertiesMap_withValidSchemaV2_shouldBeMap", () => {
+        //Action
+        const dataSourceProperties = {
+            api: "api",
+            data: "data",
+            version: "v9.2",
+            schema: "portalschemav2",
+            singleEntityURL:
+                "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}({entityId})",
+            multiEntityURL: "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}",
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            portalSchemaReadeMock.schema_data as any
+        } as any;
+        const result = getDataSourcePropertiesMap(
+            portalSchemaReadeMock.portal_schema_V2.entities.dataSourceProperties
+                .schema
         );
-        const result = getDataSourcePropertiesMap("testSchema");
-        expect(result?.get("data")).equal("data");
-        expect(result?.get("version")).equal("v9.2");
-        expect(result?.get("schema")).equal("portalschemav2");
-        expect(result?.get("singleEntityURL")).equal(
-            "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}({entityId})"
-        );
-        expect(result?.get("multiEntityURL")).equal(
-            "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}"
-        );
-        expect(result?.get("api")).equal("api");
+
+        //Assert
+        for (const key in dataSourceProperties) {
+            expect(result.get(key)).eq(dataSourceProperties[key]);
+        }
+    });
+
+    it("getDataSourcePropertiesMap_withValidSchemaV1_shouldBeMap", () => {
+        //Action
+
+        const dataSourceProperties = {
+            api: "api",
+            data: "data",
+            version: "v9.2",
+            schema: "portalschemav1",
+            singleEntityURL:
+                "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}({entityId})",
+            multiEntityURL: "{dataverseOrgUrl}/{api}/{data}/{version}/{entity}",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any;
+
+        const result = getDataSourcePropertiesMap("test");
+
+        //Assert
+        for (const key in dataSourceProperties) {
+            expect(result.get(key)).eq(dataSourceProperties[key]);
+        }
     });
 
     it("getDataSourcePropertiesMap_withEmptySchema_shouldBeEmptyMap", () => {
+        //Act
         stub(schemaHelperUtil, "getPortalSchema").returns(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             portalSchemaReadeMock.schema_data_with_empty_dataSourceProperties as any
         );
+
+        //Action
         const result = getDataSourcePropertiesMap("testSchema");
+
+        //Assert
         expect(result.size).eq(0);
     });
 
     it("getEntitiesFolderNameMap_withValidEntitiesSchema_shouldBeMap", () => {
+        //Act
         const folderNameMap = new Map<string, string>([
             [schemaEntityKey.FILE_FOLDER_NAME, "testFolderName"],
         ]);
@@ -105,13 +160,17 @@ describe("portalSchemaReader", () => {
             ["webtemplates", folderNameMap2],
         ]);
 
+        //Action
         const result = getEntitiesFolderNameMap(entitiesSchemaMap);
+
+        //Assert
         expect(result?.get("webfiles")).equal("testFolderName");
         expect(result?.get("webpages")).equal("testFolderName1");
         expect(result?.get("webtemplates")).equal("testFolderName2");
     });
 
     it("getEntitiesFolderNameMap_With_Different_schemaEntityKey_Should_Not_Map", () => {
+        //Act
         const folderNameMap = new Map<string, string>([
             [schemaEntityKey.ATTRIBUTES, "testFolderName"],
         ]);
@@ -129,11 +188,16 @@ describe("portalSchemaReader", () => {
             ["webpages", folderNameMap1],
             ["webtemplates", folderNameMap2],
         ]);
+
+        //Action
         const result = getEntitiesFolderNameMap(entitiesSchemaMap);
+
+        //Assert
         expect(result.size).eq(0);
     });
 
     it("getEntitiesFolderNameMap_With_Different_entitiesSchemaKey_Should_Not_Map", () => {
+        //Act
         const folderNameMap = new Map<string, string>([
             [schemaEntityKey.FILE_FOLDER_NAME, "testFolderName"],
         ]);
@@ -151,7 +215,11 @@ describe("portalSchemaReader", () => {
             ["webpagess", folderNameMap1],
             ["webtemplatess", folderNameMap2],
         ]);
+
+        //Action
         const result = getEntitiesFolderNameMap(entitiesSchemaMap);
+
+        //Assert
         expect(result.size).eq(0);
     });
 });
