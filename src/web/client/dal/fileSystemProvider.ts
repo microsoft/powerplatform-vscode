@@ -227,7 +227,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     private _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
     private _bufferedEvents: vscode.FileChangeEvent[] = [];
-    private _fireSoonHandle?: NodeJS.Timer;
+    private _fireSoonHandle?: NodeJS.Timeout;
 
     readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._emitter.event;
 
