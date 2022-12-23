@@ -6,7 +6,7 @@
 import * as nls from 'vscode-nls';
 nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 import * as vscode from "vscode";
-import WebExtensionContext from "./powerPlatformExtensionContext";
+import WebExtensionContext from "./WebExtensionContext";
 import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters } from "./common/errorHandler";
@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (!checkMandatoryParameters(appName, entity, entityId, queryParamsMap)) return;
 
                 removeEncodingFromParameters(queryParamsMap);
-                await WebExtensionContext.setPowerPlatformExtensionContext(entity, entityId, queryParamsMap);
+                WebExtensionContext.setWebExtensionContext(entity, entityId, queryParamsMap);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
 
@@ -69,7 +69,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                 cancellable: true,
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
-                                await vscode.workspace.fs.readDirectory(WebExtensionContext.getPowerPlatformExtensionContext().rootDirectory);
+                                await vscode.workspace.fs.readDirectory(WebExtensionContext.getWebExtensionContext().rootDirectory);
                             });
                         }
                             break;
@@ -107,7 +107,7 @@ export function walkthrough(context: vscode.ExtensionContext, telemetry: WebExte
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
         telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.advancedCapabilities-start-coding' });
-        vscode.window.showTextDocument(WebExtensionContext.getPowerPlatformExtensionContext().defaultFileUri);
+        vscode.window.showTextDocument(WebExtensionContext.getWebExtensionContext().defaultFileUri);
     }));
 }
 

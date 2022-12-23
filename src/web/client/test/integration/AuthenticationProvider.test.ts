@@ -10,7 +10,7 @@ import {
     getHeader,
 } from "../../common/authenticationProvider";
 import vscode from "vscode";
-import WebExtensionContext from "../../powerPlatformExtensionContext";
+import WebExtensionContext from "../../WebExtensionContext";
 import { telemetryEventNames } from '../../telemetry/constants';
 import * as errorHandler from '../../common/errorHandler';
 
