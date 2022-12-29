@@ -260,6 +260,26 @@
       {
         "command": "microsoft-powerapps-portals.webExtension.init",
         "title": "%microsoft-powerapps-portals.webExtension.init.title%"
+      },
+      {
+        "command": "microsoft-powerapps-portals.webpage",
+        "title": "New Webpage"
+      },
+      {
+        "command": "microsoft-powerapps-portals.webfile",
+        "title": "New Assets (Web files)"
+      },
+      {
+        "command": "microsoft-powerapps-portals.webtemplate",
+        "title": "New Web Template"
+      },
+      {
+        "command": "microsoft-powerapps-portals.contentsnippet",
+        "title": "New Content Snippet"
+      },
+      {
+        "command": "microsoft-powerapps-portals.pagetemplate",
+        "title": "New Page Template"
       }
     ],
     "configuration": {
@@ -446,6 +466,34 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "submenu": "microsoft-powerapps-portals.powerpages",
+          "group": "1_powerpages"
+        }
+      ],
+      "microsoft-powerapps-portals.powerpages": [
+        {
+          "command": "microsoft-powerapps-portals.webpage",
+          "group": "1_powerpages@1"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webfile",
+          "group": "1_powerpages@5"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webtemplate",
+          "group": "1_powerpages@3"
+        },
+        {
+          "command": "microsoft-powerapps-portals.contentsnippet",
+          "group": "1_powerpages@4"
+        },
+        {
+          "command": "microsoft-powerapps-portals.pagetemplate",
+          "group": "1_powerpages@2"
+        }
+      ],
       "editor/title": [
         {
           "when": "resourceLangId == html && !virtualWorkspace",
@@ -642,6 +690,12 @@
         }
       ]
     },
+    "submenus": [
+      {
+        "id": "microsoft-powerapps-portals.powerpages",
+        "label": "Power Pages"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
