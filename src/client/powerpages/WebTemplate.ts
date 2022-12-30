@@ -6,11 +6,10 @@
 import * as vscode from "vscode";
 
 export const webTemplate = (context: vscode.ExtensionContext) => {
-    let webTemplateName: string | undefined;
     vscode.window
         .showInputBox({ placeHolder: "Enter the name of the web template" })
         .then((value) => {
-            webTemplateName = value;
+            const webTemplateName = value;
             if (webTemplateName !== undefined && webTemplateName !== "") {
                 const terminal = vscode.window.createTerminal("Powerpages", "");
                 terminal.sendText(
