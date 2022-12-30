@@ -21,6 +21,7 @@ import {
 } from "vscode-languageclient/node";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
+import { webTemplate } from "./powerpages/WebTemplate";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -61,6 +62,15 @@ export async function activate(
             }
         )
     );
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.webtemplate",
+            () => {
+                webTemplate(_context);
+            }
+        )
+    )
 
     _context.subscriptions.push(
         vscode.workspace.onDidOpenTextDocument(() => {
