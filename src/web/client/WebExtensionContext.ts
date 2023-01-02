@@ -32,7 +32,7 @@ export interface IWebExtensionContext {
     // VScode specific details
     rootDirectory: vscode.Uri;
     fileDataMap: Map<string, FileData>, // VFS file URI to file detail map - TODO - convert to class
-    deafaultEntityId: string;
+    defaultEntityId: string;
     defaultEntityType: string;
     defaultFileUri: vscode.Uri, // This will default to home page or current page in multifile scenario
 
@@ -55,7 +55,7 @@ class WebExtensionContext {
         urlParametersMap: new Map<string, string>(),
         entitiesFolderNameMap: new Map<string, string>(),
         defaultEntityType: '',
-        deafaultEntityId: '',
+        defaultEntityId: '',
         dataverseAccessToken: '',
         rootDirectory: vscode.Uri.parse(''),
         fileDataMap: new Map<string, FileData>(),
@@ -74,7 +74,7 @@ class WebExtensionContext {
         // Initialize context from URL params
         this.webExtensionContext.currentSchemaVersion = schema;
         this.webExtensionContext.defaultEntityType = entityName.toLowerCase();
-        this.webExtensionContext.deafaultEntityId = entityId;
+        this.webExtensionContext.defaultEntityId = entityId;
         this.webExtensionContext.urlParametersMap = queryParamsMap;
         this.webExtensionContext.rootDirectory = vscode.Uri.parse(`${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(Constants.queryParameters.WEBSITE_NAME) as string}/`, true);
 

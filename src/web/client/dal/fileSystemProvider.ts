@@ -278,7 +278,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         await fetchDataFromDataverseAndUpdateVFS(
             powerPlatformContext.dataverseAccessToken,
             powerPlatformContext.defaultEntityType,
-            powerPlatformContext.deafaultEntityId,
+            powerPlatformContext.defaultEntityId,
             powerPlatformContext.urlParametersMap,
             powerPlatformContext.languageIdCodeMap,
             this,
