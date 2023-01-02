@@ -17,8 +17,8 @@ const nodeConfig = {
 
     entry: {
         extension: './src/client/extension.ts',
-        yamlServer: './src/server/yamlServer.ts',
-        htmlServer: './src/server/htmlServer.ts'
+        yamlServer: './src/server/YamlServer.ts',
+        htmlServer: './src/server/HtmlServer.ts'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),

@@ -15,7 +15,7 @@ import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 
-export interface IPowerPlatformExtensionContext {
+export interface IWebExtensionContext {
     // From portalSchema properties
     schemaDataSourcePropertiesMap: Map<string, string>; // dataSourceProperties in portal_schema_data
     schemaEntitiesMap: Map<string, Map<string, string>>;
@@ -46,7 +46,7 @@ export interface IPowerPlatformExtensionContext {
 class WebExtensionContext {
     public telemetry: WebExtensionTelemetry = new WebExtensionTelemetry();
 
-    private powerPlatformExtensionContext: IPowerPlatformExtensionContext = {
+    private webExtensionContext: IWebExtensionContext = {
         schemaDataSourcePropertiesMap: new Map<string, string>(),
         schemaEntitiesMap: new Map<string, Map<string, string>>(),
         languageIdCodeMap: new Map<string, string>(),
@@ -65,34 +65,34 @@ class WebExtensionContext {
         currentSchemaVersion: ""
     };
 
-    public getPowerPlatformExtensionContext() {
-        return this.powerPlatformExtensionContext;
+    public getWebExtensionContext() {
+        return this.webExtensionContext;
     }
 
-    public async setPowerPlatformExtensionContext(entityType: string, entityId: string, queryParamsMap: Map<string, string>) {
+    public setWebExtensionContext(entityName: string, entityId: string, queryParamsMap: Map<string, string>) {
         const schema = queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string;
         // Initialize context from URL params
-        this.powerPlatformExtensionContext.currentSchemaVersion = schema;
-        this.powerPlatformExtensionContext.defaultEntityType = entityType.toLowerCase();
-        this.powerPlatformExtensionContext.deafaultEntityId = entityId;
-        this.powerPlatformExtensionContext.urlParametersMap = queryParamsMap;
-        this.powerPlatformExtensionContext.rootDirectory = vscode.Uri.parse(`${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(Constants.queryParameters.WEBSITE_NAME) as string}/`, true);
+        this.webExtensionContext.currentSchemaVersion = schema;
+        this.webExtensionContext.defaultEntityType = entityName.toLowerCase();
+        this.webExtensionContext.deafaultEntityId = entityId;
+        this.webExtensionContext.urlParametersMap = queryParamsMap;
+        this.webExtensionContext.rootDirectory = vscode.Uri.parse(`${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(Constants.queryParameters.WEBSITE_NAME) as string}/`, true);
 
         // Initialize context from schema values
-        this.powerPlatformExtensionContext.schemaEntitiesMap = getEntitiesSchemaMap(schema);
-        this.powerPlatformExtensionContext.schemaDataSourcePropertiesMap = getDataSourcePropertiesMap(schema);
-        this.powerPlatformExtensionContext.entitiesFolderNameMap = getEntitiesFolderNameMap(this.powerPlatformExtensionContext.schemaEntitiesMap);
-        this.powerPlatformExtensionContext.isContextSet = true;
+        this.webExtensionContext.schemaEntitiesMap = getEntitiesSchemaMap(schema);
+        this.webExtensionContext.schemaDataSourcePropertiesMap = getDataSourcePropertiesMap(schema);
+        this.webExtensionContext.entitiesFolderNameMap = getEntitiesFolderNameMap(this.webExtensionContext.schemaEntitiesMap);
+        this.webExtensionContext.isContextSet = true;
     }
 
     public async authenticateAndUpdateDataverseProperties() {
-        const dataverseOrgUrl = this.powerPlatformExtensionContext.urlParametersMap.get(Constants.queryParameters.ORG_URL) as string;
+        const dataverseOrgUrl = this.webExtensionContext.urlParametersMap.get(Constants.queryParameters.ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
-        const schema = this.powerPlatformExtensionContext.urlParametersMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() as string;
+        const schema = this.webExtensionContext.urlParametersMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() as string;
 
         if (accessToken) {
-            this.powerPlatformExtensionContext = {
-                ... this.powerPlatformExtensionContext,
+            this.webExtensionContext = {
+                ... this.webExtensionContext,
                 websiteIdToLanguage: await this.websiteIdToLanguageMap(accessToken, dataverseOrgUrl, schema),
                 websiteLanguageIdToPortalLanguageMap: await this.websiteLanguageIdToPortalLanguageMap(accessToken, dataverseOrgUrl, schema),
                 languageIdCodeMap: await this.languageIdToCode(accessToken, dataverseOrgUrl, schema),
@@ -100,11 +100,11 @@ class WebExtensionContext {
             };
         }
 
-        return this.powerPlatformExtensionContext;
+        return this.webExtensionContext;
     }
 
     public async reAuthenticate() {
-        const dataverseOrgUrl = this.powerPlatformExtensionContext.urlParametersMap.get(Constants.queryParameters.ORG_URL) as string;
+        const dataverseOrgUrl = this.webExtensionContext.urlParametersMap.get(Constants.queryParameters.ORG_URL) as string;
         const accessToken: string = await dataverseAuthentication(dataverseOrgUrl);
 
         if (!accessToken) {
@@ -112,21 +112,22 @@ class WebExtensionContext {
             throw vscode.FileSystemError.NoPermissions();
         }
 
-        this.powerPlatformExtensionContext = {
-            ... this.powerPlatformExtensionContext,
+        this.webExtensionContext = {
+            ... this.webExtensionContext,
             dataverseAccessToken: accessToken,
         };
 
-        return this.powerPlatformExtensionContext;
+        return this.webExtensionContext;
     }
 
     public async updateFileDetailsInContext(dataMap: Map<string, FileData>) {
-        this.powerPlatformExtensionContext = {
-            ...this.powerPlatformExtensionContext,
+        this.webExtensionContext = {
+            ...this.webExtensionContext,
             fileDataMap: dataMap
+
         };
 
-        return this.powerPlatformExtensionContext;
+        return this.webExtensionContext;
     }
 
     public async updateEntityDetailsInContext(entityId: string,
@@ -134,16 +135,16 @@ class WebExtensionContext {
         odataEtag: string,
         attributePath: IAttributePath,
         attributeContent: string) {
-        this.powerPlatformExtensionContext.entityDataMap.setEntity(entityId, entityName, odataEtag, attributePath, attributeContent);
+        this.webExtensionContext.entityDataMap.setEntity(entityId, entityName, odataEtag, attributePath, attributeContent);
     }
 
     public async updateSingleFileUrisInContext(uri: vscode.Uri) {
-        this.powerPlatformExtensionContext = {
-            ...this.powerPlatformExtensionContext,
+        this.webExtensionContext = {
+            ...this.webExtensionContext,
             defaultFileUri: uri
         };
 
-        return this.powerPlatformExtensionContext;
+        return this.webExtensionContext;
     }
 
     private async languageIdToCode(accessToken: string, dataverseOrgUrl: string, schema: string): Promise<Map<string, string>> {

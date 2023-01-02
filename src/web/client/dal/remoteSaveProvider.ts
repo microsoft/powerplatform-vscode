@@ -12,8 +12,8 @@ import { httpMethod } from '../common/constants';
 import * as nls from 'vscode-nls';
 import { IAttributePath, isWebFileV2OctetStream } from '../utilities/schemaHelperUtil';
 import { getPatchRequestUrl } from '../utilities/urlBuilderUtil';
-import WebExtensionContext from "../powerPlatformExtensionContext";
 import { telemetryEventNames } from '../telemetry/constants';
+import WebExtensionContext from "../WebExtensionContext";
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 interface ISaveCallParameters {
@@ -27,7 +27,7 @@ export async function saveData(
     fileUri: vscode.Uri,
     newFileContent: string
 ) {
-    const fileDataMap = WebExtensionContext.getPowerPlatformExtensionContext().fileDataMap;
+    const fileDataMap = WebExtensionContext.getWebExtensionContext().fileDataMap;
     const saveCallParameters: ISaveCallParameters = await getSaveParameters(
         accessToken,
         requestUrl,
@@ -132,7 +132,7 @@ async function ensureLatestChanges(
         const finalColumnContent = JSON.stringify(jsonFromOriginalContent);
 
         // Update the latest content in context
-        WebExtensionContext.getPowerPlatformExtensionContext().entityDataMap
+        WebExtensionContext.getWebExtensionContext().entityDataMap
             .updateEntityContent(entityId, attributePath.source, finalColumnContent);
 
         return finalColumnContent;
@@ -153,7 +153,7 @@ async function getLatestContent(
     const fileExtensionType = fileDataMap.get(fileUri.fsPath)?.getEntityFileExtensionType;
     const entityEtag = fileDataMap.get(fileUri.fsPath)?.getEntityEtag;
 
-    const entityColumnContent: string = WebExtensionContext.getPowerPlatformExtensionContext()
+    const entityColumnContent: string = WebExtensionContext.getWebExtensionContext()
         .entityDataMap.getColumnContent(entityId, attributePath.source);
     try {
         const requestInit: RequestInit = {
