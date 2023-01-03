@@ -18,6 +18,7 @@ export class EntityDataMap {
     ) {
         let entityColumnMap = new Map<string, string>();
         const existingEntity = this.entityMap.get(entityId);
+
         if (existingEntity) {
             entityColumnMap = existingEntity.entityColumn;
         }
@@ -33,10 +34,32 @@ export class EntityDataMap {
 
     public updateEntityContent(entityId: string, columnName: string, columnContent: string) {
         const existingEntity = this.entityMap.get(entityId);
+
         if (existingEntity) {
             existingEntity.entityColumn.set(columnName, columnContent)
             this.entityMap.set(entityId, existingEntity);
             return;
+        }
+        throw Error("Entity does not exist in the map"); // TODO - Revisit errors and dialog experience here
+    }
+
+    public updateEntityColumnContent(entityId: string, columnName: IAttributePath, columnAttributeContent: string) {
+        const existingEntity = this.entityMap.get(entityId);
+
+        if (existingEntity) {
+            const existingColumnContent = existingEntity.entityColumn.get(columnName.source);
+
+            if (existingColumnContent && columnName.relativePath) {
+                const jsonFromOriginalContent = JSON.parse(existingColumnContent);
+
+                jsonFromOriginalContent[columnName.relativePath] = columnAttributeContent;
+                existingEntity.entityColumn.set(columnName.source, JSON.stringify(jsonFromOriginalContent));
+                this.entityMap.set(entityId, existingEntity);
+                return;
+            } else if (columnName.source) {
+                this.updateEntityContent(entityId, columnName.source, columnAttributeContent);
+                return;
+            }
         }
         throw Error("Entity does not exist in the map"); // TODO - Revisit errors and dialog experience here
     }

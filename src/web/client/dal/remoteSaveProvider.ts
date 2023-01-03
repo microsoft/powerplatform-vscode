@@ -24,8 +24,7 @@ interface ISaveCallParameters {
 export async function saveData(
     accessToken: string,
     requestUrl: string,
-    fileUri: vscode.Uri,
-    newFileContent: string
+    fileUri: vscode.Uri
 ) {
     const fileDataMap = WebExtensionContext.getWebExtensionContext().fileDataMap;
     const saveCallParameters: ISaveCallParameters = await getSaveParameters(
@@ -33,7 +32,6 @@ export async function saveData(
         requestUrl,
         fileUri,
         fileDataMap,
-        newFileContent,
         fileDataMap.get(fileUri.fsPath)?.getSaveAttributePath);
 
     await saveDataToDataverse(fileDataMap,
@@ -46,7 +44,6 @@ async function getSaveParameters(
     requestUrl: string,
     fileUri: vscode.Uri,
     fileDataMap: Map<string, FileData>,
-    newFileContent: string,
     attributePath?: IAttributePath
 ): Promise<ISaveCallParameters> {
     const entityName = fileDataMap.get(fileUri.fsPath)?.getEntityName as string;
@@ -65,7 +62,6 @@ async function getSaveParameters(
             requestUrl,
             fileUri,
             fileDataMap,
-            newFileContent,
             attributePath,
             isWebFileV2);
         saveCallParameters.requestInit.headers = getHeader(accessToken, isWebFileV2);
@@ -84,60 +80,28 @@ async function getRequestBody(
     requestUrl: string,
     fileUri: vscode.Uri,
     fileDataMap: Map<string, FileData>,
-    newFileContent: string,
     attributePath: IAttributePath,
     isWebFileV2: boolean
 ) {
     const data: { [k: string]: string } = {};
     const mimeType = fileDataMap.get(fileUri.fsPath)?.getMimeType;
 
-    data[attributePath.source] = await ensureLatestChanges(
+    const entityColumnContent = await getLatestContent(
         accessToken,
         attributePath,
-        fileUri,
         fileDataMap,
-        newFileContent,
+        fileUri,
         requestUrl);
 
-    if (mimeType) {
-        data[MIMETYPE] = mimeType
+    if (!isWebFileV2) {
+        data[attributePath.source] = entityColumnContent;
+        if (mimeType) {
+            data[MIMETYPE] = mimeType
+        }
+        return JSON.stringify(data);
     }
 
-    return isWebFileV2 ? newFileContent : JSON.stringify(data);
-}
-
-async function ensureLatestChanges(
-    accessToken: string,
-    attributePath: IAttributePath,
-    fileUri: vscode.Uri,
-    fileDataMap: Map<string, FileData>,
-    newFileContent: string,
-    requestUrl: string
-) {
-    const entityId = fileDataMap.get(fileUri.fsPath)?.getEntityId as string;
-
-    // TODO - show diff in case of etag changes
-    const latestContent = await getLatestContent(
-        accessToken,
-        attributePath,
-        fileDataMap,
-        fileUri,
-        requestUrl,
-        entityId);
-
-    if (attributePath.relativePath.length) {
-        const jsonFromOriginalContent = JSON.parse(latestContent);
-
-        jsonFromOriginalContent[attributePath.relativePath] = newFileContent;
-        const finalColumnContent = JSON.stringify(jsonFromOriginalContent);
-
-        // Update the latest content in context
-        WebExtensionContext.getWebExtensionContext().entityDataMap
-            .updateEntityContent(entityId, attributePath.source, finalColumnContent);
-
-        return finalColumnContent;
-    }
-    return newFileContent;
+    return entityColumnContent;
 }
 
 async function getLatestContent(
@@ -145,10 +109,10 @@ async function getLatestContent(
     attributePath: IAttributePath,
     fileDataMap: Map<string, FileData>,
     fileUri: vscode.Uri,
-    requestUrl: string,
-    entityId: string
+    requestUrl: string
 ) {
     const entityName = fileDataMap.get(fileUri.fsPath)?.getEntityName as string;
+    const entityId = fileDataMap.get(fileUri.fsPath)?.getEntityId as string;
     const requestSentAtTime = new Date().getTime();
     const fileExtensionType = fileDataMap.get(fileUri.fsPath)?.getEntityFileExtensionType;
     const entityEtag = fileDataMap.get(fileUri.fsPath)?.getEntityEtag;
@@ -177,12 +141,13 @@ async function getLatestContent(
 
         if (response.ok) {
             const result = await response.json();
-            if (result[attributePath.source]) {
+            if (result[attributePath.source] && entityColumnContent != result[attributePath.source]) {
                 // TODO - use this part for showing diff to user on changed values
                 // Compare the returned value with current updated content value
                 // This value will be in (result[attributePath.source])[attributePath.relativePath] -
                 // - in case of new data model webpages content
                 // entityColumnContent = result[attributePath.source];
+                // TODO - update entity etag value to latest here
             }
             WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_CHANGED);
         } else if (response.status === 304) {
