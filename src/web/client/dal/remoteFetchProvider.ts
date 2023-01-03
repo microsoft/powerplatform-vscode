@@ -16,7 +16,7 @@ import * as Constants from '../common/constants';
 import { ERRORS, showErrorDialog } from '../common/errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { SaveEntityDetails } from '../schema/portalSchemaInterface';
-import WebExtensionContext from "../powerPlatformExtensionContext";
+import WebExtensionContext from "../WebExtensionContext";
 import { getAttributeParts, getEntity, isBase64Encoded, useBase64Encoding } from '../utilities/schemaHelperUtil';
 import { telemetryEventNames } from '../telemetry/constants';
 import { folderExportType, schemaEntityKey } from '../schema/constants';
@@ -237,7 +237,7 @@ async function createVirtualFile(
     mimeType?: string
 ) {
     const saveEntityDetails = new SaveEntityDetails(entityId, entity, fileExtension, attributePath, originalAttributeContent, useBase64Encoding, mimeType);
-    const dataMap: Map<string, SaveEntityDetails> = WebExtensionContext.getPowerPlatformExtensionContext().saveDataMap;
+    const dataMap: Map<string, SaveEntityDetails> = WebExtensionContext.getWebExtensionContext().saveDataMap;
     dataMap.set(vscode.Uri.parse(fileUri).fsPath, saveEntityDetails);
     await WebExtensionContext.updateSaveDataDetailsInContext(dataMap);
 
