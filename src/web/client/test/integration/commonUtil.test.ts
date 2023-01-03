@@ -12,18 +12,19 @@ import {
 } from "../../utilities/commonUtil";
 
 describe("commonUtil", async () => {
-    it("it should return text from base 64", () => {
+    it("encodeBase64_And_DecodeBase64_string", () => {
         //Act
         const data = "this is test case";
+        const encodedString = "dGhpcyBpcyB0ZXN0IGNhc2U=";
         //Action
         const base64 = convertStringtoBase64(data);
         const base64totext = convertfromBase64ToString(base64);
         //Assert
-        expect(base64).eq("dGhpcyBpcyB0ZXN0IGNhc2U=");
+        expect(base64).eq(encodedString);
         expect(base64totext).eq(data);
     });
 
-    it("it should return file name name with extension if entity is webpages", () => {
+    it("GetFileNameWithExtension_withEntityWebpages_shouldAddFileNameWithExtension", () => {
         //Act
         const entity = schemaEntityName.WEBPAGES;
         const fileName = "test";
@@ -43,7 +44,7 @@ describe("commonUtil", async () => {
         expect(result).eq(expectedResult);
     });
 
-    it("it should return file name name with extension if entity is contentsnippet", () => {
+    it("GetFileNameWithExtension_withEntityContentsnippet_shouldAddFileNameWithExtension", () => {
         //Act
         const entity = schemaEntityName.CONTENTSNIPPETS;
         const fileName = "test";
@@ -63,7 +64,7 @@ describe("commonUtil", async () => {
         expect(result).eq(expectedResult);
     });
 
-    it("it should return file name name with extension if entity is webtemplates", () => {
+    it("GetFileNameWithExtension_withEntitywebtemplates_shouldAddFileNameWithExtension", () => {
         //Act
         const entity = schemaEntityName.WEBTEMPLATES;
         const fileName = "test";
@@ -83,7 +84,7 @@ describe("commonUtil", async () => {
         expect(result).eq(expectedResult);
     });
 
-    it("it should return file name without modifying when entity do not match ", () => {
+    it("GetFileNameWithExtension_withoutEntityMatch_shouldNotAddExtensionWithFileName", () => {
         //Act
         const entity = schemaEntityName.WEBFILES;
         const fileName = "test";
