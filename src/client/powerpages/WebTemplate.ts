@@ -4,13 +4,16 @@
  */
 
 import * as vscode from "vscode";
+import { localize } from "vscode-nls";
+import { isNullOrEmpty } from "./utils/CommonUtils";
 
 export const webTemplate = (context: vscode.ExtensionContext) => {
     vscode.window
-        .showInputBox({ placeHolder: "Enter the name of the web template" })
+        .showInputBox({ placeHolder: localize("microsoft-powerapps-portals.webExtension.webtemplate.name","Enter the name of the web template") })
         .then((value) => {
-            const webTemplateName = value;
-            if (webTemplateName !== undefined && webTemplateName !== "") {
+            let webTemplateName = value;
+            if (!isNullOrEmpty(webTemplateName)) {
+                webTemplateName = webTemplateName?.split(' ').join('-');
                 const terminal = vscode.window.createTerminal("Powerpages", "");
                 terminal.sendText(
                     `cd data\n ../node_modules/.bin/yo @microsoft/powerpages:webtemplate ${webTemplateName}`
@@ -33,7 +36,7 @@ export const webTemplate = (context: vscode.ExtensionContext) => {
                     {
                         location: vscode.ProgressLocation.Notification,
                         cancellable: true,
-                        title: "Creating Web Template",
+                        title: localize("microsoft-powerapps-portals.webExtension.webtemplate.create.message","Creating Web Template"),
                     },
                     async () => {
                         watcher.onDidCreate(async (uri) => {
