@@ -167,6 +167,7 @@ function testUnitTests() {
                 "src/server/test/unit/**/*.ts",
                 "src/client/test/unit/**/*.ts",
                 "src/debugger/test/unit/**/*.ts",
+                "src/web/client/test/unit/**/*.ts",
             ],
             {
                 read: false,
