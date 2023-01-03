@@ -196,7 +196,7 @@ describe("portalSchemaReader", () => {
         expect(result.size).eq(0);
     });
 
-    it("getEntitiesFolderNameMap_With_Different_entitiesSchemaKey_Should_Not_Map", () => {
+    it("getEntitiesFolderNameMap_withDifferentEntitiesSchemaMapKey_shouldNotBeMap", () => {
         //Act
         const folderNameMap = new Map<string, string>([
             [schemaEntityKey.FILE_FOLDER_NAME, "testFolderName"],
