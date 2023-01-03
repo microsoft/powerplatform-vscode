@@ -169,7 +169,7 @@ describe("portalSchemaReader", () => {
         expect(result?.get("webtemplates")).equal("testFolderName2");
     });
 
-    it("getEntitiesFolderNameMap_With_Different_schemaEntityKey_Should_Not_Map", () => {
+    it("getEntitiesFolderNameMap_withDifferentSchemaEntityKey_shouldNotBeMap", () => {
         //Act
         const folderNameMap = new Map<string, string>([
             [schemaEntityKey.ATTRIBUTES, "testFolderName"],
