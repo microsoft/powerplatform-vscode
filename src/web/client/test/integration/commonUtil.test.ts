@@ -12,16 +12,24 @@ import {
 } from "../../utilities/commonUtil";
 
 describe("commonUtil", async () => {
-    it("encodeBase64_And_DecodeBase64_string", () => {
+    it("convertfromBase64ToString_shouldConvertBase64ToString", () => {
+        //Act
+        const data = "this is test case";
+        const encodedString = "dGhpcyBpcyB0ZXN0IGNhc2U=";
+        //Action
+        const base64totext = convertfromBase64ToString(encodedString);
+        //Assert
+        expect(base64totext).eq(data);
+    });
+
+    it("convertStringtoBase64_shouldConvertStringToBase64", () => {
         //Act
         const data = "this is test case";
         const encodedString = "dGhpcyBpcyB0ZXN0IGNhc2U=";
         //Action
         const base64 = convertStringtoBase64(data);
-        const base64totext = convertfromBase64ToString(base64);
         //Assert
         expect(base64).eq(encodedString);
-        expect(base64totext).eq(data);
     });
 
     it("GetFileNameWithExtension_withEntityWebpages_shouldAddFileNameWithExtension", () => {
