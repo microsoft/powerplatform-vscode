@@ -8,7 +8,7 @@ import * as nls from "vscode-nls";
 import Sinon, { stub, assert, spy } from "sinon";
 import { expect } from "chai";
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-import powerPlatformExtensionContext from "../../../client/powerPlatformExtensionContext";
+import powerPlatformExtensionContext from "../../../client/WebExtensionContext";
 import { schemaKey } from "../../schema/constants";
 import { telemetryEventNames } from "../../telemetry/constants";
 
@@ -28,7 +28,7 @@ describe("errorHandler", () => {
     afterEach(() => {
         Sinon.restore();
     });
-    it("showErrorDialog_should_call_showErrorMessage", () => {
+    it("showErrorDialog_shouldCallShowErrorMessage", () => {
         //Act
         const errorString = "this is error message";
         const detailMessage = "not able to open";
@@ -47,7 +47,7 @@ describe("errorHandler", () => {
         );
     });
 
-    it("showErrorDialog_should_call_showErrorMessage_with_detailMessage_as_null", () => {
+    it("showErrorDialog_shouldCallShowErrorMessage_detailMessagesShouldBeNull", () => {
         //Act
         const errorString = "this is error message";
         const _mockShowErrorMessage = stub(vscode.window, "showErrorMessage");
