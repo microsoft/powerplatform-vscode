@@ -6,7 +6,7 @@
 
 import * as vscode from "vscode";
 import * as nls from 'vscode-nls';
-import powerPlatformExtensionContext from "../powerPlatformExtensionContext";
+import powerPlatformExtensionContext from "../WebExtensionContext";
 import { schemaKey } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();

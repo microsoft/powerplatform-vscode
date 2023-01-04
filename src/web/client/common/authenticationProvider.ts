@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import powerPlatformExtensionContext from '../powerPlatformExtensionContext';
+import powerPlatformExtensionContext from '../WebExtensionContext';
 import { telemetryEventNames } from '../telemetry/constants';
 import { PROVIDER_ID, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS } from './constants';
 import { ERRORS, showErrorDialog } from './errorHandler';
