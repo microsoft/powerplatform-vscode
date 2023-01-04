@@ -1,4 +1,49 @@
 {
+    // OOB liquid snippets
+    "Tag if": {
+        "prefix": "if",
+        "description": "Control flow tag: if",
+        "body": [
+            "{% if ${1:condition} %}",
+            "\t$2",
+            "{% endif %}"
+        ]
+    },
+    "Tag if else": {
+        "prefix": "ifelse",
+        "description": "Control flow tag: if else",
+        "body": [
+            "{% if ${1:condition} %}",
+            "\t$2",
+            "{% else %}",
+            "\t$3",
+            "{% endif %}"
+        ]
+    },
+    "Tag for": {
+        "prefix": "for",
+        "description": "Iteration tag: for",
+        "body": [
+            "{% for ${1:item} in ${2:collection} %}",
+            "\t$3",
+            "{% endfor %}"
+        ]
+    },
+    "Tag assign": {
+        "prefix": "assign",
+        "description": "Variable tag: assign",
+        "body": [
+            "{% assign ${1:variable} = ${2:value} %}"
+        ]
+    },
+    "Tag include": {
+        "prefix": "include",
+        "description": "Dataverse tag: include",
+        "body": [
+            "{% include '$1' %}"
+        ]
+    },
+    // PowerPortals specific snippets below
     "Chart": {
 		"prefix": "chart",
 		"body": ["{% chart id:\"$1\" viewid:\"$2\" %}"],
@@ -88,6 +133,23 @@
 		],
 		"description": "Fully renders a web form by its name"
 	},
+    "Code-Component": {
+        "prefix": "code-component",
+        "body": [
+			"{% codecomponent name:\"$1\" controlValue:\"$2\" controlApiKey:\"${3:<API Key Value here>}\" %}"
+        ],
+        "description": "Adds a code component liquid tag"
+    },
+    "FetchXml-Component": {
+        "prefix": "fetchxml-component",
+        "body": [
+			"{% fetchxml ${1:resultVariable} %}",
+            "\t${2:FetchXml query}",
+            "{% endfetchxml %}"
+        ],
+        "description": "Adds a fetchxml component tag"
+    },
+    // HTML based component below
     "Section-1-Column": {
         "prefix": "section-one-column",
         "body": [
@@ -158,4 +220,5 @@
         ],
         "description": "Adds an Iframe component"
     }
+
 }

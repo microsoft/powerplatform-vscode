@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { convertStringtoBase64 } from '../utilities/commonUtil';
 import { getRequestURL, pathHasEntityFolderName } from '../utilities/urlBuilderUtil';
 import { CHARSET, httpMethod, PORTALS_URI_SCHEME, queryParameters } from '../common/constants';
-import WebExtensionContext from "../powerPlatformExtensionContext";
+import WebExtensionContext from "../WebExtensionContext";
 import { SaveEntityDetails } from '../schema/portalSchemaInterface';
 import { fetchDataFromDataverseAndUpdateVFS } from './remoteFetchProvider';
 import { saveData } from './remoteSaveProvider';
@@ -80,7 +80,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const powerPlatformContext = await WebExtensionContext.getPowerPlatformExtensionContext();
+                const powerPlatformContext = await WebExtensionContext.getWebExtensionContext();
 
                 if (powerPlatformContext.isContextSet &&
                     uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
@@ -102,7 +102,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const powerPlatformContext = await WebExtensionContext.getPowerPlatformExtensionContext();
+                const powerPlatformContext = await WebExtensionContext.getWebExtensionContext();
 
                 if (powerPlatformContext.isContextSet
                     && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
@@ -135,7 +135,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             entry = new File(basename);
             parent.entries.set(basename, entry);
             this._fireSoon({ type: vscode.FileChangeType.Created, uri });
-        } else if (WebExtensionContext.getPowerPlatformExtensionContext().saveDataMap.has(uri.fsPath)) {
+        } else if (WebExtensionContext.getWebExtensionContext().saveDataMap.has(uri.fsPath)) {
             // Save data to dataverse
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
@@ -227,7 +227,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     private _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
     private _bufferedEvents: vscode.FileChangeEvent[] = [];
-    private _fireSoonHandle?: NodeJS.Timer;
+    private _fireSoonHandle?: NodeJS.Timeout;
 
     readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._emitter.event;
 
@@ -286,7 +286,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     private async _saveFileToDataverseFromVFS(uri: vscode.Uri, content: Uint8Array) {
         let stringDecodedValue = new TextDecoder(CHARSET).decode(content);
-        let powerPlatformContext = WebExtensionContext.getPowerPlatformExtensionContext();
+        let powerPlatformContext = WebExtensionContext.getWebExtensionContext();
         const dataMap: Map<string, SaveEntityDetails> = powerPlatformContext.saveDataMap;
         const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(queryParameters.ORG_URL) as string;
 
