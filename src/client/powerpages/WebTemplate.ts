@@ -4,8 +4,10 @@
  */
 
 import * as vscode from "vscode";
-import { localize } from "vscode-nls";
 import { isNullOrEmpty } from "./utils/CommonUtils";
+import * as nls from 'vscode-nls';
+nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export const webTemplate = (context: vscode.ExtensionContext) => {
     vscode.window

@@ -243,6 +243,14 @@ The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
     </trans-unit>
   </body></file>
+  <file original="./client/powerpages/WebTemplate" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.webtemplate.name">
+      <source xml:lang="en">Enter the name of the web template</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.webtemplate.create.message">
+      <source xml:lang="en">Creating Web Template</source>
+    </trans-unit>
+  </body></file>
   <file original="./web/client/extension" source-language="en" datatype="plaintext"><body>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit">
       <source xml:lang="en">Edit the site</source>
