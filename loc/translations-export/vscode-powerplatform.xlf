@@ -243,6 +243,20 @@ The {1} represents Solution's unique name
 The {2} represents Solution's Version number</note>
     </trans-unit>
   </body></file>
+  <file original="./client/powerpages/Contentsnippet" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.contentsnippet.create.message">
+      <source xml:lang="en">Creating Content Snippet...</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.title">
+      <source xml:lang="en">New Content Snippet</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.name.placeholder">
+      <source xml:lang="en">Add content snippet name</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.type.placeholder">
+      <source xml:lang="en">Select Type</source>
+    </trans-unit>
+  </body></file>
   <file original="./web/client/extension" source-language="en" datatype="plaintext"><body>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit">
       <source xml:lang="en">Edit the site</source>
