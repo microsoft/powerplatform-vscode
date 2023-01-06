@@ -16,7 +16,7 @@ import * as Constants from '../common/constants';
 import { ERRORS, showErrorDialog } from '../common/errorHandler';
 import { PortalsFS } from './fileSystemProvider';
 import { FileData } from '../context/fileData';
-import { getAttributePath, getEntity, IAttributePath, isBase64Encoded, useBase64Encoding } from '../utilities/schemaHelperUtil';
+import { getAttributePath, getEntity, IAttributePath, isBase64Encoded } from '../utilities/schemaHelperUtil';
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from '../telemetry/constants';
 import { folderExportType, schemaEntityKey } from '../schema/constants';
@@ -134,7 +134,7 @@ async function createContentFiles(
 
         let fileUri = '';
         for (counter; counter < attributeArray.length; counter++) {
-            const isBase64Encoding = isBase64Encoded(entityName, attributeArray[counter]); // update func for webfiles for V2
+            const base64Encoded: boolean = isBase64Encoded(entityName, attributeArray[counter]); // update func for webfiles for V2
             const attributePath: IAttributePath = getAttributePath(attributeArray[counter]);
             let fileContent = result[attributePath.source] ?? Constants.NO_CONTENT;
 
@@ -161,10 +161,10 @@ async function createContentFiles(
             await createVirtualFile(
                 portalsFS,
                 fileUri,
-                isBase64Encoding ? convertfromBase64ToString(fileContent) : fileContent,
+                base64Encoded ? convertfromBase64ToString(fileContent) : fileContent,
                 updateEntityId(entityName, entityId, result),
                 attributePath,
-                useBase64Encoding(entityName, attributeArray[counter]),
+                base64Encoded,
                 entityName,
                 result[attributePath.source] ?? Constants.NO_CONTENT,
                 fileExtension,
@@ -229,7 +229,7 @@ async function createVirtualFile(
     fileContent: string | undefined,
     entityId: string,
     attributePath: IAttributePath,
-    useBase64Encoding: boolean,
+    isBase64Encoded: boolean,
     entityName: string,
     originalAttributeContent: string,
     fileExtension: string,
@@ -242,7 +242,7 @@ async function createVirtualFile(
         odataEtag,
         fileExtension,
         attributePath,
-        useBase64Encoding,
+        isBase64Encoded,
         mimeType);
     const fileMap: Map<string, FileData> = WebExtensionContext.getWebExtensionContext().fileDataMap;
     fileMap.set(vscode.Uri.parse(fileUri).fsPath, fileData);

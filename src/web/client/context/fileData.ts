@@ -10,7 +10,7 @@ export interface IFileData {
     readonly entityId: string,
     readonly entityFileExtensionType: string,
     readonly attributePath: IAttributePath,
-    readonly isBase64Encoding?: boolean;
+    readonly isBase64Encoded?: boolean;
     readonly mimeType?: string;
 }
 
@@ -20,7 +20,7 @@ export class FileData implements IFileData {
     entityEtag!: string;
     entityFileExtensionType!: string;
     attributePath!: IAttributePath;
-    isBase64Encoding: boolean | undefined;
+    isBase64Encoded: boolean | undefined;
     mimeType: string | undefined;
 
     public get getEntityName(): string { return this.entityName; }
@@ -28,7 +28,7 @@ export class FileData implements IFileData {
     public get getEntityEtag(): string { return this.entityEtag; }
     public get getEntityFileExtensionType(): string { return this.entityFileExtensionType; }
     public get getSaveAttributePath(): IAttributePath { return this.attributePath }
-    public get hasBase64Encoding(): boolean | undefined { return this.isBase64Encoding }
+    public get hasBase64Encoding(): boolean | undefined { return this.isBase64Encoded }
     public get getMimeType(): string | undefined { return this.mimeType }
 
     constructor(
@@ -37,7 +37,7 @@ export class FileData implements IFileData {
         entityEtag: string,
         entityFileExtensionType: string,
         attributePath: IAttributePath,
-        useBase64Encoding?: boolean,
+        isBase64Encoded?: boolean,
         mimeType?: string
     ) {
         this.entityId = entityId;
@@ -45,7 +45,7 @@ export class FileData implements IFileData {
         this.entityEtag = entityEtag;
         this.entityFileExtensionType = entityFileExtensionType;
         this.attributePath = attributePath;
-        this.isBase64Encoding = useBase64Encoding;
+        this.isBase64Encoded = isBase64Encoded;
         this.mimeType = mimeType;
     }
 }
