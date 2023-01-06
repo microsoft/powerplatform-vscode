@@ -25,6 +25,7 @@ describe("remoteSaveProvider", () => {
         sinon.restore();
     });
     it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchRetrnsOKAndIsWebFileV2IsTrue", async () => {
+        //Act
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -69,6 +70,7 @@ describe("remoteSaveProvider", () => {
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const newFileContent = "newFileContent";
+        //Action
         await saveData(
             accessToken,
             requestUrl,
@@ -77,6 +79,8 @@ describe("remoteSaveProvider", () => {
             saveDataMap,
             newFileContent
         );
+
+        //Assert
 
         assert.calledOnce(_mockFetch);
         assert.calledWith(_mockFetch, requestUrl, {
@@ -101,6 +105,8 @@ describe("remoteSaveProvider", () => {
     });
 
     it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchRetrnsOKAndIsWebFileV2IsFalse", async () => {
+        //Act
+
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -145,6 +151,8 @@ describe("remoteSaveProvider", () => {
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const newFileContent = "newFileContent";
+
+        //Action
         await saveData(
             accessToken,
             requestUrl,
@@ -154,6 +162,7 @@ describe("remoteSaveProvider", () => {
             newFileContent
         );
 
+        //Assert
         assert.calledOnce(_mockFetch);
         assert.calledWith(_mockFetch, requestUrl, {
             method: httpMethod.PATCH,
@@ -177,6 +186,8 @@ describe("remoteSaveProvider", () => {
     });
 
     it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchRetrnsOKAndRequestUrlHavingAttributeType", async () => {
+        //Act
+
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -222,6 +233,8 @@ describe("remoteSaveProvider", () => {
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const newFileContent = "newFileContent";
+
+        //Action
         await saveData(
             accessToken,
             requestUrl,
@@ -231,6 +244,7 @@ describe("remoteSaveProvider", () => {
             newFileContent
         );
 
+        //Assert
         assert.calledOnce(_mockFetch);
         assert.calledWith(
             _mockFetch,
@@ -258,6 +272,8 @@ describe("remoteSaveProvider", () => {
     });
 
     it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchRetrnsOKAndMimeTypeIsNotDefined", async () => {
+        //Act
+
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -303,6 +319,8 @@ describe("remoteSaveProvider", () => {
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const newFileContent = "newFileContent";
+
+        //Action
         await saveData(
             accessToken,
             requestUrl,
@@ -312,6 +330,7 @@ describe("remoteSaveProvider", () => {
             newFileContent
         );
 
+        //Assert
         assert.calledOnce(_mockFetch);
         assert.calledWith(
             _mockFetch,
@@ -339,6 +358,8 @@ describe("remoteSaveProvider", () => {
     });
 
     it("saveData_shouldNotMakeFetchCall_whenRequestBodyIsNotDefined", async () => {
+        //Act
+
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -384,6 +405,8 @@ describe("remoteSaveProvider", () => {
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const newFileContent = "";
+
+        //Action
         await saveData(
             accessToken,
             requestUrl,
@@ -393,6 +416,7 @@ describe("remoteSaveProvider", () => {
             newFileContent
         );
 
+        //Assert
         assert.notCalled(_mockFetch);
         assert.notCalled(sendAPITelemetry);
         assert.notCalled(sendAPISuccessTelemetry);
@@ -405,6 +429,8 @@ describe("remoteSaveProvider", () => {
     });
 
     it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchRetrnsOKAndColumnIsNull", async () => {
+        //Act
+
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
             statusText: "statusText",
@@ -456,6 +482,8 @@ describe("remoteSaveProvider", () => {
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const newFileContent = "newFileContent";
+
+        //Action
         await saveData(
             accessToken,
             requestUrl,
@@ -465,6 +493,7 @@ describe("remoteSaveProvider", () => {
             newFileContent
         );
 
+        //Assert
         assert.notCalled(_mockFetch);
 
         assert.notCalled(sendAPITelemetry);
@@ -493,6 +522,8 @@ describe("remoteSaveProvider", () => {
         );
     });
     it("saveData_shouldNotCallAllSuccessTelemetryMethods_whenFetchRetrnsOKAsFalse", async () => {
+        //Act
+
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
             statusText: "Unauthorized",
