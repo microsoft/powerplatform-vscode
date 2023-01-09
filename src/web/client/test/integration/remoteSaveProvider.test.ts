@@ -34,6 +34,7 @@ describe("remoteSaveProvider", () => {
                     return resolve({ value: "value" });
                 });
             },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
         const isWebFileV2OctetStream = stub(
@@ -115,6 +116,7 @@ describe("remoteSaveProvider", () => {
                     return resolve({ value: "value" });
                 });
             },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
         const isWebFileV2OctetStream = stub(
@@ -196,6 +198,7 @@ describe("remoteSaveProvider", () => {
                     return resolve({ value: "value" });
                 });
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
         const isWebFileV2OctetStream = stub(
@@ -282,6 +285,7 @@ describe("remoteSaveProvider", () => {
                     return resolve({ value: "value" });
                 });
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
         const isWebFileV2OctetStream = stub(
@@ -368,6 +372,7 @@ describe("remoteSaveProvider", () => {
                     return resolve({ value: "value" });
                 });
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
         const isWebFileV2OctetStream = stub(
@@ -439,6 +444,7 @@ describe("remoteSaveProvider", () => {
                     return resolve({ value: "value" });
                 });
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
         const isWebFileV2OctetStream = stub(
@@ -532,6 +538,7 @@ describe("remoteSaveProvider", () => {
                     return resolve({ value: "value" });
                 });
             },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
         const isWebFileV2OctetStream = stub(
