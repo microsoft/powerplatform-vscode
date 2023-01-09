@@ -11,6 +11,7 @@ import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } 
 import { PortalsFS } from "./dal/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters } from "./common/errorHandler";
 import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
+import { convertStringtoBase64 } from './utilities/commonUtil';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -78,10 +79,42 @@ export function activate(context: vscode.ExtensionContext): void {
                     }
                 } else {
                     vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+                    return;
                 }
             }
         )
     );
+
+    context.subscriptions.push(
+        vscode.workspace.onWillSaveTextDocument((e) => {
+            const fileName = e.document.fileName;
+            if (vscode.window.activeTextEditor === undefined) {
+                return;
+            } else if (
+                isActiveDocument(fileName)
+            ) {
+                const fileData = WebExtensionContext.getWebExtensionContext().fileDataMap.get(fileName);
+                // Update the latest content in context
+                if (fileData?.entityId && fileData.attributePath) {
+                    let fileContent = e.document.getText();
+                    if (fileData.hasBase64Encoding as boolean) {
+                        fileContent = convertStringtoBase64(fileContent);
+                    }
+                    WebExtensionContext.getWebExtensionContext().entityDataMap
+                        .updateEntityColumnContent(fileData?.entityId, fileData.attributePath, fileContent);
+                }
+            }
+        })
+    );
+
+    walkthrough(context, WebExtensionContext.telemetry);
+}
+
+function isActiveDocument(fileName: string): boolean {
+    const webExtensionContext = WebExtensionContext.getWebExtensionContext();
+    return (vscode.workspace.workspaceFolders !== undefined) &&
+        webExtensionContext.isContextSet &&
+        webExtensionContext.fileDataMap.has(fileName);
 }
 
 export function walkthrough(context: vscode.ExtensionContext, telemetry: WebExtensionTelemetry) {
