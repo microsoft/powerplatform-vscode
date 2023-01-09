@@ -19,7 +19,25 @@
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
     "compile-tests": "node node_modules/gulp/bin/gulp.js compileIntegrationTests",
     "test-integration": "node node_modules/gulp/bin/gulp.js testInt",
-    "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt"
+    "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt",
+    "coverage": "nyc npm run test"
+  },
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "all":"true",
+    "include": [
+      "**/*.ts"
+    ],
+    "exclude": [
+      "**/*.test.ts"
+    ],
+    "reporter": [
+      "html",
+        "lcov",
+        "text",
+        "text-summary"
+    ],
+    "report-dir": "coverage"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -759,7 +777,9 @@
     "webpack": "^5.61.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
-    "yargs": "^16.2.0"
+    "yargs": "^16.2.0",
+    "nyc": "^15.1.0",
+    "@istanbuljs/nyc-config-typescript": "1.0.2"
   },
   "dependencies": {
     "@vscode/extension-telemetry": "^0.4.9",
