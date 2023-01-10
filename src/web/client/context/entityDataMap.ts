@@ -29,7 +29,7 @@ export class EntityDataMap {
     }
 
     public getColumnContent(entityId: string, columnName: string) {
-        return this.entityMap.get(entityId)?.getColumn.get(columnName) ?? "";
+        return this.entityMap.get(entityId)?.entityColumn.get(columnName) ?? "";
     }
 
     public updateEntityContent(entityId: string, columnName: string, columnContent: string) {
@@ -49,14 +49,14 @@ export class EntityDataMap {
         if (existingEntity) {
             const existingColumnContent = existingEntity.entityColumn.get(columnName.source);
 
-            if (existingColumnContent && columnName.relativePath) {
+            if (existingColumnContent && columnName.relativePath.length) {
                 const jsonFromOriginalContent = JSON.parse(existingColumnContent);
 
                 jsonFromOriginalContent[columnName.relativePath] = columnAttributeContent;
                 existingEntity.entityColumn.set(columnName.source, JSON.stringify(jsonFromOriginalContent));
                 this.entityMap.set(entityId, existingEntity);
                 return;
-            } else if (columnName.source) {
+            } else if (existingColumnContent && columnName.source.length) {
                 this.updateEntityContent(entityId, columnName.source, columnAttributeContent);
                 return;
             }

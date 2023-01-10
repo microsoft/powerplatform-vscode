@@ -41,7 +41,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
         const isSingleEntity = true;
@@ -58,7 +58,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
         const result = getParameterizedRequestUrlTemplate(false);
@@ -129,7 +129,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "entitiesFolderNameMap"
             )
             .returns(powerPlatformExtensionContext);
 
@@ -153,7 +153,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "entitiesFolderNameMap"
             )
             .returns(powerPlatformExtensionContext);
 
@@ -194,7 +194,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
 
@@ -234,7 +234,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
 
@@ -286,7 +286,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
 
