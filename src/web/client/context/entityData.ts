@@ -4,20 +4,22 @@
  */
 
 export interface IEntityData {
-    readonly entityName: string,
-    readonly entityId: string,
+    entityName: string,
+    entityId: string,
+    entityEtag: string,
+    entityColumn: Map<string, string>
 }
 
 export class EntityData implements IEntityData {
-    entityName!: string;
-    entityId!: string;
-    entityEtag!: string;
-    entityColumn!: Map<string, string>;
+    private _entityName!: string;
+    private _entityId!: string;
+    private _entityEtag!: string;
+    private _entityColumn!: Map<string, string>;
 
-    public get getEntityName(): string { return this.entityName; }
-    public get getEntityId(): string { return this.entityId; }
-    public get getEntityEtag(): string { return this.entityEtag; }
-    public get getColumn(): Map<string, string> { return this.entityColumn; }
+    public get entityName(): string { return this._entityName; }
+    public get entityId(): string { return this._entityId; }
+    public get entityEtag(): string { return this._entityEtag; }
+    public get entityColumn(): Map<string, string> { return this._entityColumn; }
 
     constructor(
         entityId: string,
@@ -25,9 +27,9 @@ export class EntityData implements IEntityData {
         entityEtag: string,
         entityColumn: Map<string, string>
     ) {
-        this.entityId = entityId;
-        this.entityName = entityName;
-        this.entityEtag = entityEtag;
-        this.entityColumn = entityColumn;
+        this._entityId = entityId;
+        this._entityName = entityName;
+        this._entityEtag = entityEtag;
+        this._entityColumn = entityColumn;
     }
 }

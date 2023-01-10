@@ -6,30 +6,39 @@
 import { IAttributePath } from "../utilities/schemaHelperUtil";
 
 export interface IFileData {
-    readonly entityName: string,
-    readonly entityId: string,
-    readonly entityFileExtensionType: string,
-    readonly attributePath: IAttributePath,
-    readonly isBase64Encoded?: boolean;
-    readonly mimeType?: string;
+    entityName: string,
+    entityId: string,
+    entityEtag: string,
+    entityFileExtensionType: string,
+    attributePath: IAttributePath,
+    hasDirtyChanges: boolean,
+    encodeAsBase64: boolean | undefined,
+    mimeType: string | undefined
 }
 
 export class FileData implements IFileData {
-    entityName!: string;
-    entityId!: string;
-    entityEtag!: string;
-    entityFileExtensionType!: string;
-    attributePath!: IAttributePath;
-    isBase64Encoded: boolean | undefined;
-    mimeType: string | undefined;
+    private _entityName: string;
+    private _entityId: string;
+    private _entityEtag: string;
+    private _entityFileExtensionType: string;
+    private _attributePath: IAttributePath;
+    private _hasDirtyChanges!: boolean;
+    private _encodeAsBase64: boolean | undefined;
+    private _mimeType: string | undefined;
 
-    public get getEntityName(): string { return this.entityName; }
-    public get getEntityId(): string { return this.entityId; }
-    public get getEntityEtag(): string { return this.entityEtag; }
-    public get getEntityFileExtensionType(): string { return this.entityFileExtensionType; }
-    public get getSaveAttributePath(): IAttributePath { return this.attributePath }
-    public get hasBase64Encoding(): boolean | undefined { return this.isBase64Encoded }
-    public get getMimeType(): string | undefined { return this.mimeType }
+    // Getters
+    public get entityName(): string { return this._entityName; }
+    public get entityId(): string { return this._entityId; }
+    public get entityEtag(): string { return this._entityEtag; }
+    public get entityFileExtensionType(): string { return this._entityFileExtensionType; }
+    public get attributePath(): IAttributePath { return this._attributePath; }
+    public get encodeAsBase64(): boolean | undefined { return this._encodeAsBase64; }
+    public get mimeType(): string | undefined { return this._mimeType; }
+    public get hasDirtyChanges(): boolean { return this._hasDirtyChanges; }
+
+    // Setters
+    public set setHasDirtyChanges(value: boolean) { this._hasDirtyChanges = value; }
+    public set setEntityEtag(value: string) { this._entityEtag = value; }
 
     constructor(
         entityId: string,
@@ -37,15 +46,16 @@ export class FileData implements IFileData {
         entityEtag: string,
         entityFileExtensionType: string,
         attributePath: IAttributePath,
-        isBase64Encoded?: boolean,
+        encodeAsBase64?: boolean,
         mimeType?: string
     ) {
-        this.entityId = entityId;
-        this.entityName = entityName;
-        this.entityEtag = entityEtag;
-        this.entityFileExtensionType = entityFileExtensionType;
-        this.attributePath = attributePath;
-        this.isBase64Encoded = isBase64Encoded;
-        this.mimeType = mimeType;
+        this._entityId = entityId;
+        this._entityName = entityName;
+        this._entityEtag = entityEtag;
+        this._entityFileExtensionType = entityFileExtensionType;
+        this._attributePath = attributePath;
+        this._encodeAsBase64 = encodeAsBase64;
+        this._mimeType = mimeType;
+        this._hasDirtyChanges = false;
     }
 }

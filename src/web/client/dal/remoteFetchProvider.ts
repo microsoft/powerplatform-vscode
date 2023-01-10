@@ -15,8 +15,7 @@ import { getHeader } from '../common/authenticationProvider';
 import * as Constants from '../common/constants';
 import { ERRORS, showErrorDialog } from '../common/errorHandler';
 import { PortalsFS } from './fileSystemProvider';
-import { FileData } from '../context/fileData';
-import { getAttributePath, getEntity, IAttributePath, isBase64Encoded } from '../utilities/schemaHelperUtil';
+import { encodeAsBase64, getAttributePath, getEntity, IAttributePath, isBase64Encoded } from '../utilities/schemaHelperUtil';
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from '../telemetry/constants';
 import { folderExportType, schemaEntityKey } from '../schema/constants';
@@ -164,7 +163,7 @@ async function createContentFiles(
                 base64Encoded ? convertfromBase64ToString(fileContent) : fileContent,
                 updateEntityId(entityName, entityId, result),
                 attributePath,
-                base64Encoded,
+                encodeAsBase64(entityName, attributeArray[counter]),
                 entityName,
                 result[attributePath.source] ?? Constants.NO_CONTENT,
                 fileExtension,
@@ -229,7 +228,7 @@ async function createVirtualFile(
     fileContent: string | undefined,
     entityId: string,
     attributePath: IAttributePath,
-    isBase64Encoded: boolean,
+    encodeAsBase64: boolean,
     entityName: string,
     originalAttributeContent: string,
     fileExtension: string,
@@ -237,16 +236,15 @@ async function createVirtualFile(
     mimeType?: string
 ) {
     // Maintain file information in context
-    const fileData = new FileData(entityId,
+    await WebExtensionContext.updateFileDetailsInContext(
+        fileUri,
+        entityId,
         entityName,
         odataEtag,
         fileExtension,
         attributePath,
-        isBase64Encoded,
+        encodeAsBase64,
         mimeType);
-    const fileMap: Map<string, FileData> = WebExtensionContext.getWebExtensionContext().fileDataMap;
-    fileMap.set(vscode.Uri.parse(fileUri).fsPath, fileData);
-    await WebExtensionContext.updateFileDetailsInContext(fileMap);
 
     // Call file system provider write call for buffering file data in VFS
     await portalsFS.writeFile(vscode.Uri.parse(fileUri), new TextEncoder().encode(fileContent), { create: true, overwrite: true });

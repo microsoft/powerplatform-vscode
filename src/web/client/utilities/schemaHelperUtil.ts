@@ -21,12 +21,11 @@ export function getPortalSchema(schema: string) {
 }
 
 export function getEntity(entity: string) {
-    const powerPlatformExtensionContext = WebExtensionContext.getWebExtensionContext();
-    if (powerPlatformExtensionContext.urlParametersMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
-        return powerPlatformExtensionContext.schemaEntitiesMap.get(entity);
+    if (WebExtensionContext.urlParametersMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
+        return WebExtensionContext.schemaEntitiesMap.get(entity);
     }
 
-    return powerPlatformExtensionContext.schemaEntitiesMap.get(entity);
+    return WebExtensionContext.schemaEntitiesMap.get(entity);
 }
 
 export function getAttributePath(attribute: string): IAttributePath {
@@ -40,7 +39,16 @@ export function isBase64Encoded(entity: string, attributeType: string): boolean 
         (attributeType === entityAttributesWithBase64Encoding.documentbody || attributeType === entityAttributesWithBase64Encoding.filecontent);
 }
 
-export function isWebFileV2OctetStream(entity: string, attributeType: string) {
+export function encodeAsBase64(entity: string, attributeType: string): boolean {
+    return entity === schemaEntityName.WEBFILES &&
+        attributeType === entityAttributesWithBase64Encoding.documentbody;
+}
+
+export function useOctetStreamContentType(entity: string, attributeType: string) {
+    return entity === schemaEntityName.WEBFILES && attributeType === entityAttributesWithBase64Encoding.filecontent;
+}
+
+export function isWebFileV2(entity: string, attributeType: string) {
     return entity === schemaEntityName.WEBFILES && attributeType === entityAttributesWithBase64Encoding.filecontent;
 }
 

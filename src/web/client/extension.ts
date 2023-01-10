@@ -70,7 +70,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                 cancellable: true,
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
-                                await vscode.workspace.fs.readDirectory(WebExtensionContext.getWebExtensionContext().rootDirectory);
+                                await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
                             });
                         }
                             break;
@@ -85,6 +85,12 @@ export function activate(context: vscode.ExtensionContext): void {
         )
     );
 
+    processWillSaveDocument(context);
+
+    showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function processWillSaveDocument(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onWillSaveTextDocument((e) => {
             const fileName = e.document.fileName;
@@ -93,31 +99,24 @@ export function activate(context: vscode.ExtensionContext): void {
             } else if (
                 isActiveDocument(fileName)
             ) {
-                const fileData = WebExtensionContext.getWebExtensionContext().fileDataMap.get(fileName);
+                const fileData = WebExtensionContext.fileDataMap.getFileMap.get(fileName);
                 // Update the latest content in context
                 if (fileData?.entityId && fileData.attributePath) {
                     let fileContent = e.document.getText();
-                    if (fileData.hasBase64Encoding as boolean) {
+                    if (fileData.encodeAsBase64 as boolean) {
                         fileContent = convertStringtoBase64(fileContent);
                     }
-                    WebExtensionContext.getWebExtensionContext().entityDataMap
+                    WebExtensionContext.entityDataMap
                         .updateEntityColumnContent(fileData?.entityId, fileData.attributePath, fileContent);
+                    WebExtensionContext.fileDataMap
+                        .updateDirtyChanges(fileName, true);
                 }
             }
         })
     );
-
-    walkthrough(context, WebExtensionContext.telemetry);
 }
 
-function isActiveDocument(fileName: string): boolean {
-    const webExtensionContext = WebExtensionContext.getWebExtensionContext();
-    return (vscode.workspace.workspaceFolders !== undefined) &&
-        webExtensionContext.isContextSet &&
-        webExtensionContext.fileDataMap.has(fileName);
-}
-
-export function walkthrough(context: vscode.ExtensionContext, telemetry: WebExtensionTelemetry) {
+export function showWalkthrough(context: vscode.ExtensionContext, telemetry: WebExtensionTelemetry) {
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.overview-learn-more', async () => {
         telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.overview-learn-more' });
         vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2207914"));
@@ -140,7 +139,7 @@ export function walkthrough(context: vscode.ExtensionContext, telemetry: WebExte
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
         telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.advancedCapabilities-start-coding' });
-        vscode.window.showTextDocument(WebExtensionContext.getWebExtensionContext().defaultFileUri);
+        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri);
     }));
 }
 
@@ -149,4 +148,10 @@ export async function deactivate(): Promise<void> {
     if (telemetry) {
         telemetry.sendInfoTelemetry("End");
     }
+}
+
+function isActiveDocument(fileName: string): boolean {
+    return (vscode.workspace.workspaceFolders !== undefined) &&
+        WebExtensionContext.isContextSet &&
+        WebExtensionContext.fileDataMap.getFileMap.has(fileName);
 }

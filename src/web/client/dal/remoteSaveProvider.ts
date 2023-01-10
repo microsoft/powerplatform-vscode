@@ -10,7 +10,7 @@ import { showErrorDialog } from '../common/errorHandler';
 import { FileData } from '../context/fileData';
 import { httpMethod } from '../common/constants';
 import * as nls from 'vscode-nls';
-import { IAttributePath, isWebFileV2OctetStream } from '../utilities/schemaHelperUtil';
+import { IAttributePath, isWebFileV2, useOctetStreamContentType } from '../utilities/schemaHelperUtil';
 import { getPatchRequestUrl } from '../utilities/urlBuilderUtil';
 import { telemetryEventNames } from '../telemetry/constants';
 import WebExtensionContext from "../WebExtensionContext";
@@ -26,13 +26,13 @@ export async function saveData(
     requestUrl: string,
     fileUri: vscode.Uri
 ) {
-    const fileDataMap = WebExtensionContext.getWebExtensionContext().fileDataMap;
+    const fileDataMap = WebExtensionContext.fileDataMap.getFileMap;
     const saveCallParameters: ISaveCallParameters = await getSaveParameters(
         accessToken,
         requestUrl,
         fileUri,
         fileDataMap,
-        fileDataMap.get(fileUri.fsPath)?.getSaveAttributePath);
+        fileDataMap.get(fileUri.fsPath)?.attributePath);
 
     await saveDataToDataverse(fileDataMap,
         fileUri,
@@ -46,7 +46,7 @@ async function getSaveParameters(
     fileDataMap: Map<string, FileData>,
     attributePath?: IAttributePath
 ): Promise<ISaveCallParameters> {
-    const entityName = fileDataMap.get(fileUri.fsPath)?.getEntityName as string;
+    const entityName = fileDataMap.get(fileUri.fsPath)?.entityName as string;
     const saveCallParameters: ISaveCallParameters = {
         requestInit: {
             method: httpMethod.PATCH
@@ -55,7 +55,7 @@ async function getSaveParameters(
     }
 
     if (attributePath) {
-        const isWebFileV2 = isWebFileV2OctetStream(entityName, attributePath.source);
+        const webFileV2 = isWebFileV2(entityName, attributePath.source);
 
         saveCallParameters.requestInit.body = await getRequestBody(
             accessToken,
@@ -63,8 +63,8 @@ async function getSaveParameters(
             fileUri,
             fileDataMap,
             attributePath,
-            isWebFileV2);
-        saveCallParameters.requestInit.headers = getHeader(accessToken, isWebFileV2);
+            webFileV2);
+        saveCallParameters.requestInit.headers = getHeader(accessToken, useOctetStreamContentType(entityName, attributePath.source));
         saveCallParameters.requestUrl = getPatchRequestUrl(entityName, attributePath.source, requestUrl);
     } else {
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
@@ -84,7 +84,7 @@ async function getRequestBody(
     isWebFileV2: boolean
 ) {
     const data: { [k: string]: string } = {};
-    const mimeType = fileDataMap.get(fileUri.fsPath)?.getMimeType;
+    const mimeType = fileDataMap.get(fileUri.fsPath)?.mimeType;
 
     const entityColumnContent = await getLatestContent(
         accessToken,
@@ -111,14 +111,13 @@ async function getLatestContent(
     fileUri: vscode.Uri,
     requestUrl: string
 ) {
-    const entityName = fileDataMap.get(fileUri.fsPath)?.getEntityName as string;
-    const entityId = fileDataMap.get(fileUri.fsPath)?.getEntityId as string;
+    const entityName = fileDataMap.get(fileUri.fsPath)?.entityName as string;
+    const entityId = fileDataMap.get(fileUri.fsPath)?.entityId as string;
     const requestSentAtTime = new Date().getTime();
-    const fileExtensionType = fileDataMap.get(fileUri.fsPath)?.getEntityFileExtensionType;
-    const entityEtag = fileDataMap.get(fileUri.fsPath)?.getEntityEtag;
+    const fileExtensionType = fileDataMap.get(fileUri.fsPath)?.entityFileExtensionType;
+    const entityEtag = fileDataMap.get(fileUri.fsPath)?.entityEtag;
 
-    const entityColumnContent: string = WebExtensionContext.getWebExtensionContext()
-        .entityDataMap.getColumnContent(entityId, attributePath.source);
+    const entityColumnContent: string = WebExtensionContext.entityDataMap.getColumnContent(entityId, attributePath.source);
     try {
         const requestInit: RequestInit = {
             method: httpMethod.GET,
@@ -179,9 +178,9 @@ async function saveDataToDataverse(
     saveCallParameters: ISaveCallParameters
 ) {
     if (saveCallParameters.requestInit.body) {
-        const entityName = fileDataMap.get(fileUri.fsPath)?.getEntityName as string;
+        const entityName = fileDataMap.get(fileUri.fsPath)?.entityName as string;
         const requestSentAtTime = new Date().getTime();
-        const fileExtensionType = fileDataMap.get(fileUri.fsPath)?.getEntityFileExtensionType;
+        const fileExtensionType = fileDataMap.get(fileUri.fsPath)?.entityFileExtensionType;
 
         try {
             WebExtensionContext.telemetry.sendAPITelemetry(saveCallParameters.requestUrl, entityName, httpMethod.PATCH, fileExtensionType);
@@ -200,6 +199,9 @@ async function saveDataToDataverse(
                 entityName,
                 httpMethod.PATCH,
                 new Date().getTime() - requestSentAtTime, fileExtensionType);
+
+            WebExtensionContext.fileDataMap
+                .updateDirtyChanges(fileUri.fsPath, false);
         }
         catch (error) {
             const authError = (error as Error)?.message;
