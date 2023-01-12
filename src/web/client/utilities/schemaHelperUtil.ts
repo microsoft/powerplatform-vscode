@@ -8,6 +8,11 @@ import * as Constants from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { entityAttributesWithBase64Encoding, schemaEntityName, schemaKey } from "../schema/constants";
 
+export interface IAttributePath {
+    source: string,
+    relativePath: string
+}
+
 export function getPortalSchema(schema: string) {
     if (schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
         return portal_schema_V2;
@@ -16,15 +21,14 @@ export function getPortalSchema(schema: string) {
 }
 
 export function getEntity(entity: string) {
-    const powerPlatformExtensionContext = WebExtensionContext.getWebExtensionContext();
-    if (powerPlatformExtensionContext.queryParamsMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
-        return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
+    if (WebExtensionContext.urlParametersMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
+        return WebExtensionContext.schemaEntitiesMap.get(entity);
     }
 
-    return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
+    return WebExtensionContext.schemaEntitiesMap.get(entity);
 }
 
-export function getAttributeParts(attribute: string): { source: string, relativePath: string } {
+export function getAttributePath(attribute: string): IAttributePath {
     const attributePathArray = attribute.split('.', 2);
 
     return { source: attributePathArray[0], relativePath: attributePathArray[1] ?? '' };
@@ -35,12 +39,16 @@ export function isBase64Encoded(entity: string, attributeType: string): boolean 
         (attributeType === entityAttributesWithBase64Encoding.documentbody || attributeType === entityAttributesWithBase64Encoding.filecontent);
 }
 
-export function useBase64Encoding(entity: string, attributeType: string): boolean {
+export function encodeAsBase64(entity: string, attributeType: string): boolean {
     return entity === schemaEntityName.WEBFILES &&
-        (attributeType === entityAttributesWithBase64Encoding.documentbody);
+        attributeType === entityAttributesWithBase64Encoding.documentbody;
 }
 
-export function isWebFileV2OctetStream(entity: string, attributeType: string) {
+export function useOctetStreamContentType(entity: string, attributeType: string) {
+    return entity === schemaEntityName.WEBFILES && attributeType === entityAttributesWithBase64Encoding.filecontent;
+}
+
+export function isWebFileV2(entity: string, attributeType: string) {
     return entity === schemaEntityName.WEBFILES && attributeType === entityAttributesWithBase64Encoding.filecontent;
 }
 
