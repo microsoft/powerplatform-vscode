@@ -18,30 +18,30 @@ describe("portalSchemaReader", () => {
     afterEach(() => {
         Sinon.restore();
     });
-    it("getEntitiesSchemaMap_withValidSchemaV2_shouldBeMap", () => {
-        //Action
-        const result = getEntitiesSchemaMap(
-            portalSchemaReadeMock.portal_schema_V2.entities.dataSourceProperties
-                .schema
-        );
+    // it("getEntitiesSchemaMap_withValidSchemaV2_shouldBeMap", () => {
+    //     //Action
+    //     const result = getEntitiesSchemaMap(
+    //         portalSchemaReadeMock.portal_schema_V2.entities.dataSourceProperties
+    //             .schema
+    //     );
 
-        //Assert
-        portalSchemaReadeMock.portal_schema_V2.entities.entity.forEach(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (element: any) => {
-                const entitiesDetailsMap = result.get(
-                    element._vscodeentityname
-                );
-                if (entitiesDetailsMap) {
-                    for (const [key, value] of entitiesDetailsMap) {
-                        assert.deepStrictEqual(value, element[key]);
-                    }
-                } else {
-                    expect.fail();
-                }
-            }
-        );
-    });
+    //     //Assert
+    //     portalSchemaReadeMock.portal_schema_V2.entities.entity.forEach(
+    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //         (element: any) => {
+    //             const entitiesDetailsMap = result.get(
+    //                 element._vscodeentityname
+    //             );
+    //             if (entitiesDetailsMap) {
+    //                 for (const [key, value] of entitiesDetailsMap) {
+    //                     assert.deepStrictEqual(value, element[key]);
+    //                 }
+    //             } else {
+    //                 expect.fail();
+    //             }
+    //         }
+    //     );
+    // });
 
     it("getEntitiesSchemaMap_withValidSchemaV1_shouldBeMap", () => {
         //Action

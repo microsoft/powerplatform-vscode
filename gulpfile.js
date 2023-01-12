@@ -363,7 +363,8 @@ const dist = gulp.series(
     recompile,
     packageVsix,
     lint,
-    test
+    test,
+    testWebInt
 );
 const translationExtensionName = "vscode-powerplatform";
 
