@@ -34,31 +34,31 @@ describe("URLBuilder", () => {
 
     it("getParameterizedRequestUrlTemplate_should_return_SINGLE_ENTITY_URL_KEY_when_isSingleEntity_is_true", async () => {
         const powerPlatformExtensionContext: IWebExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
             ]),
         } as IWebExtensionContext;
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
         const isSingleEntity = true;
-        const result : string= getParameterizedRequestUrlTemplate(isSingleEntity);
+        const result: string = getParameterizedRequestUrlTemplate(isSingleEntity);
         expect(result).eq("singleEntityURL");
     });
 
     it("getParameterizedRequestUrlTemplate_should_return_SINGLE_ENTITY_URL_KEY_when_isSingleEntity_is_false", async () => {
         const powerPlatformExtensionContext: IWebExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.MULTI_ENTITY_URL, schemaKey.MULTI_ENTITY_URL],
             ]),
         } as IWebExtensionContext;
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
         const result = getParameterizedRequestUrlTemplate(false);
@@ -129,7 +129,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "entitiesFolderNameMap"
             )
             .returns(powerPlatformExtensionContext);
 
@@ -153,7 +153,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "entitiesFolderNameMap"
             )
             .returns(powerPlatformExtensionContext);
 
@@ -164,7 +164,7 @@ describe("URLBuilder", () => {
 
     it("getRequestURL_with_get_http_method", () => {
         const powerPlatformExtensionContext: IWebExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.API, "schemaKey.API"],
                 [
                     schemaKey.SINGLE_ENTITY_URL,
@@ -194,7 +194,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
 
@@ -218,7 +218,7 @@ describe("URLBuilder", () => {
 
     it("getRequestURL_with_patch_http_method", () => {
         const powerPlatformExtensionContext: IWebExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.API, "schemaKey.API"],
                 [
                     schemaKey.SINGLE_ENTITY_URL,
@@ -234,7 +234,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
 
@@ -270,7 +270,7 @@ describe("URLBuilder", () => {
 
     it("getCustomRequestURL", () => {
         const powerPlatformExtensionContext: IWebExtensionContext = {
-            dataSourcePropertiesMap: new Map<string, string>([
+            schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.API, "schemaKey.API"],
                 [
                     schemaKey.MULTI_ENTITY_URL,
@@ -286,7 +286,7 @@ describe("URLBuilder", () => {
         sinon
             .stub(
                 WebExtensionContext,
-                "getWebExtensionContext"
+                "schemaDataSourcePropertiesMap"
             )
             .returns(powerPlatformExtensionContext);
 

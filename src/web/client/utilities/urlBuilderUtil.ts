@@ -9,12 +9,11 @@ import { entityAttributesWithBase64Encoding, schemaEntityKey, schemaEntityName, 
 import { getEntity } from "./schemaHelperUtil";
 
 export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
-    const powerPlatformContext = WebExtensionContext.getWebExtensionContext();
     if (isSingleEntity) {
-        return powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.SINGLE_ENTITY_URL) as string;
+        return WebExtensionContext.schemaDataSourcePropertiesMap.get(schemaKey.SINGLE_ENTITY_URL) as string;
     }
 
-    return powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.MULTI_ENTITY_URL) as string;
+    return WebExtensionContext.schemaDataSourcePropertiesMap.get(schemaKey.MULTI_ENTITY_URL) as string;
 };
 
 export function getRequestURL(
@@ -24,7 +23,6 @@ export function getRequestURL(
     method: string,
     isSingleEntity: boolean,
     attributeQueryParameters?: string): string {
-    const powerPlatformContext = WebExtensionContext.getWebExtensionContext();
     let parameterizedUrlTemplate = getParameterizedRequestUrlTemplate(isSingleEntity);
 
     switch (method) {
@@ -37,20 +35,19 @@ export function getRequestURL(
     }
 
     return parameterizedUrlTemplate.replace('{dataverseOrgUrl}', dataverseOrgUrl).replace('{entity}', getEntity(entity)?.get(schemaEntityKey.DATAVERSE_ENTITY_NAME) as string)
-        .replace('{entityId}', entityId).replace('{api}', powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.API) as string)
-        .replace('{data}', powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.DATA) as string)
-        .replace('{version}', powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.DATAVERSE_API_VERSION) as string);
+        .replace('{entityId}', entityId).replace('{api}', WebExtensionContext.schemaDataSourcePropertiesMap.get(schemaKey.API) as string)
+        .replace('{data}', WebExtensionContext.schemaDataSourcePropertiesMap.get(schemaKey.DATA) as string)
+        .replace('{version}', WebExtensionContext.schemaDataSourcePropertiesMap.get(schemaKey.DATAVERSE_API_VERSION) as string);
 }
 
 export function getCustomRequestURL(dataverseOrgUrl: string, entity: string, urlQueryKey: string = schemaKey.MULTI_ENTITY_URL): string {
-    const powerPlatformContext = WebExtensionContext.getWebExtensionContext();
-    const parameterizedUrl = powerPlatformContext.dataSourcePropertiesMap.get(urlQueryKey) as string;
+    const parameterizedUrl = WebExtensionContext.schemaDataSourcePropertiesMap.get(urlQueryKey) as string;
     const fetchQueryParameters = getEntity(entity)?.get("_fetchQueryParameters");
     const requestUrl = parameterizedUrl.replace('{dataverseOrgUrl}', dataverseOrgUrl)
         .replace('{entity}', getEntity(entity)?.get(schemaEntityKey.DATAVERSE_ENTITY_NAME) as string)
-        .replace('{api}', powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.API) as string)
-        .replace('{data}', powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.DATA) as string)
-        .replace('{version}', powerPlatformContext.dataSourcePropertiesMap.get(schemaKey.DATAVERSE_API_VERSION) as string);
+        .replace('{api}', WebExtensionContext.schemaDataSourcePropertiesMap.get(schemaKey.API) as string)
+        .replace('{data}', WebExtensionContext.schemaDataSourcePropertiesMap.get(schemaKey.DATA) as string)
+        .replace('{version}', WebExtensionContext.schemaDataSourcePropertiesMap.get(schemaKey.DATAVERSE_API_VERSION) as string);
 
     return requestUrl + fetchQueryParameters;
 }
@@ -87,9 +84,7 @@ export function updateEntityId(entity: string, entityId: string, result: any) {
 }
 
 export function pathHasEntityFolderName(uri: string): boolean {
-    const powerPlatformContext = WebExtensionContext.getWebExtensionContext();
-
-    for (const entry of powerPlatformContext.entitiesFolderNameMap.entries()) {
+    for (const entry of WebExtensionContext.entitiesFolderNameMap.entries()) {
         if (uri.includes(entry[1])) {
             return true;
         }
