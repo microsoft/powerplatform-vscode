@@ -9,6 +9,5 @@ export * from './AppInsightsResource';
 export * from './AppInsightsResourceProvider';
 export * from './TelemetryUserSettingsFileProvider';
 export * as TelemetryConstants from './TelemetryConstants';
-export * as AppInsightsConfigUtility from './AppInsightsConfigUtility';
 export * as AppTelemetryConfigUtility from './AppTelemetryConfigUtility';
 export * as AppTelemetryUtility from './AppTelemetryUtility';
