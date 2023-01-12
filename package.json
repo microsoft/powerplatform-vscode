@@ -782,7 +782,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@vscode/extension-telemetry": "^0.4.9",
+    "@vscode/extension-telemetry": "^0.6.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
     "liquidjs": "^10.2.0",
