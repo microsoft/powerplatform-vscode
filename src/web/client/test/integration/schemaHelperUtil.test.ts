@@ -693,7 +693,6 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
             [null, null],
         ]);
         const schema = "portalschemav2".toUpperCase();
-        
         //Action
         const resultData = getwebsiteLanguageIdToPortalLanguageMap(
             result,
