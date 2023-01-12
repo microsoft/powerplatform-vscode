@@ -25,9 +25,7 @@ import {
     portal_schema_V1,
     portal_schema_V2,
 } from "../integration/portalSchemaReader.mock";
-import WebExtensionContext, {
-    IWebExtensionContext,
-} from "../../WebExtensionContext";
+import WebExtensionContext from "../../WebExtensionContext";
 import * as Constants from "../../common/constants";
 
 describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
@@ -83,7 +81,8 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         ).returns({
             queryParamsMap: queryParamsMap,
             entitiesSchemaMap: entitiesSchemaMap,
-        } as IWebExtensionContext);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
         //Action
         const result = getEntity(entity);
         //Assert
@@ -111,7 +110,8 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         ).returns({
             queryParamsMap: queryParamsMap,
             entitiesSchemaMap: entitiesSchemaMap,
-        } as IWebExtensionContext);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
         //Action
         const result = getEntity(entity);
         //Assert
@@ -139,7 +139,8 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         ).returns({
             queryParamsMap: queryParamsMap,
             entitiesSchemaMap: entitiesSchemaMap,
-        } as IWebExtensionContext);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
         //Action
         const result = getEntity(entity);
         //Assert
@@ -167,7 +168,8 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         ).returns({
             queryParamsMap: queryParamsMap,
             entitiesSchemaMap: entitiesSchemaMap,
-        } as IWebExtensionContext);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
         //Action
         const result = getEntity(entity);
         //Assert
@@ -195,7 +197,8 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         ).returns({
             queryParamsMap: queryParamsMap,
             entitiesSchemaMap: entitiesSchemaMap,
-        } as IWebExtensionContext);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
         //Action
         const result = getEntity(entity);
         //Assert
@@ -223,7 +226,8 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         ).returns({
             queryParamsMap: queryParamsMap,
             entitiesSchemaMap: entitiesSchemaMap,
-        } as IWebExtensionContext);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
         //Action
         const result = getEntity(entity);
         //Assert
