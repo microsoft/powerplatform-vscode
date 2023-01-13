@@ -13,7 +13,7 @@ import sinon from "sinon";
 //     getCustomRequestURL,
 //     getPatchRequestUrl,
 // } from "../../utilities/urlBuilderUtil";
-// import { expect } from "chai";
+import { expect } from "chai";
 // import {
 //     schemaKey,
 //     schemaEntityKey,
@@ -30,6 +30,10 @@ import sinon from "sinon";
 describe("URLBuilder", () => {
     afterEach(() => {
         sinon.restore();
+    });
+
+    it("testing", () => {
+        expect(1).eq(1);
     });
 
     // it("getParameterizedRequestUrlTemplate_should_return_SINGLE_ENTITY_URL_KEY_when_isSingleEntity_is_true", async () => {
