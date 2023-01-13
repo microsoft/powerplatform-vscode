@@ -56,7 +56,7 @@ function setTelemetryTarget() {
     return gulp
         .src(telemetryConfigurationSource)
         .pipe(rename('telemetryConfiguration.ts'))
-        .pipe(gulp.dest(path.join('src', 'common', 'telemetry', 'generated')));
+        .pipe(gulp.dest(path.join('src', 'common', 'telemetry-generated')));
 }
 
 
