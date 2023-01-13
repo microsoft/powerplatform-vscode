@@ -4,14 +4,14 @@
  */
 
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
-import * as portalSchemaReadeMock from "../integration/portalSchemaReader.mock";
-import { schemaEntityKey } from "../../../client/schema/constants";
+import * as portalSchemaReadeMock from "./portalSchemaReader.mock";
+import { schemaEntityKey } from "../../schema/constants";
 import Sinon, { stub } from "sinon";
 import {
     getEntitiesSchemaMap,
     getDataSourcePropertiesMap,
     getEntitiesFolderNameMap,
-} from "../../../client/schema/portalSchemaReader";
+} from "../../schema/portalSchemaReader";
 import { expect, assert } from "chai";
 
 describe("portalSchemaReader", () => {
