@@ -817,6 +817,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@microsoft/generator-powerpages": "file:dist/microsoft-generator-powerpages-0.0.1.tgz",
     "@vscode/extension-telemetry": "^0.4.9",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
