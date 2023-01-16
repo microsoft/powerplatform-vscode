@@ -23,6 +23,7 @@ import { readUserSettings } from "./telemetry/localfileusersettings";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
 import { contentSnippet } from "./powerpages/Contentsnippet";
 import { pageTemplate } from "./powerpages/PageTemplate";
+import { webpage } from "./powerpages/Webpage";
 
 
 let client: LanguageClient;
@@ -79,6 +80,16 @@ export async function activate(
             "microsoft-powerapps-portals.pagetemplate",
             () => {
                 pageTemplate(_context);
+
+            }
+        )
+    )
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.webpage",
+            () => {
+                webpage(_context);
 
             }
         )
