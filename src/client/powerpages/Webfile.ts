@@ -30,7 +30,7 @@ function getPaths(pages: Map<string, any>): {
     pathsMap: Map<string, string>;
 } {
     if (pages.size === 0) {
-        return {paths: [], pathsMap: new Map()};
+        return { paths: [], pathsMap: new Map() };
     }
     const paths: Array<string> = [];
     const pathsMap: Map<string, string> = new Map();
@@ -52,7 +52,7 @@ function getPaths(pages: Map<string, any>): {
             if (!pages.has(page.adx_parentpageid)) {
                 break;
             }
-             // to check for circular reference
+            // to check for circular reference
             if (prevPage === page) {
                 break;
             }
@@ -60,7 +60,7 @@ function getPaths(pages: Map<string, any>): {
             page = pages.get(page.adx_parentpageid);
             path = `${page.adx_name}/${path}`;
         }
-        if(paths.indexOf(path) === -1) {
+        if (paths.indexOf(path) === -1) {
             paths.push(path);
             pathsMap.set(path, webpageid);
         }
@@ -69,8 +69,7 @@ function getPaths(pages: Map<string, any>): {
     return { paths, pathsMap };
 }
 
-
-export const webfile =  async () => {
+export const webfile = async () => {
     // Get the root directory of the workspace
     const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     if (!rootDir) {
@@ -91,7 +90,7 @@ export const webfile =  async () => {
 
     const { paths, pathsMap } = getPaths(parentPages);
 
-    if(paths.length === 0) {
+    if (paths.length === 0) {
         vscode.window.showErrorMessage("No webpages found");
         return;
     }
@@ -101,64 +100,23 @@ export const webfile =  async () => {
 
     const parentPageId = pathsMap.get(webfileInputs.id);
 
-    // Create the webfile using the yo command
-    // if (!isNullOrEmpty(parentPageId)) {
-    //     vscode.window.withProgress(
-    //         {
-    //             location: vscode.ProgressLocation.Notification,
-    //             title: "Adding web files...",
-    //             cancellable: true,
-    //         },
-    //         async (progress) => {
-    //             progress.report({ message: "Running command..." });
-
-    //             const openDialog: vscode.OpenDialogOptions = {
-    //                 canSelectMany: true,
-    //             };
-    //             vscode.window.showOpenDialog(openDialog).then((value) => {
-    //                 value?.forEach((filepath) => {
-    //                     const webfilePath = filepath.fsPath;
-    //                     vscode.window
-    //                         .createTerminal("Powerpages", "")
-    //                         .sendText(
-    //                             `cd data\n ../node_modules/.bin/yo @microsoft/powerpages:webfile "${webfilePath}" "${parentPageId}"`
-    //                         );
-    //                 });
-    //             });
-
-    //         }
-    //     );
-    // }
-
     if (!isNullOrEmpty(parentPageId)) {
-        vscode.window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                title: "Adding web files...",
-                cancellable: true,
-            },
-            async (progress) => {
-                progress.report({ message: "Running command..." });
-
-                const openDialogOptions = { canSelectMany: true };
-                const selectedFiles = await vscode.window.showOpenDialog(
-                    openDialogOptions
-                );
-
-                if (selectedFiles) {
-                    for (const file of selectedFiles) {
-                        const webfilePath = file.fsPath;
-                        const terminal = vscode.window.createTerminal(
-                            "Powerpages",
-                            ""
-                        );
-                        terminal.sendText(
-                            `cd data\n ../node_modules/.bin/yo @microsoft/powerpages:webfile "${webfilePath}" "${parentPageId}"`
-                        );
-                    }
-                }
-            }
+        const openDialogOptions = { canSelectMany: true };
+        const selectedFiles = await vscode.window.showOpenDialog(
+            openDialogOptions
         );
+        vscode.window.showInformationMessage(
+            localize("microsoft-powerapps-portals.desktopExt.webfile.adding", `Adding ${selectedFiles?.length} web files...`)
+        );
+        if (selectedFiles) {
+            for (const file of selectedFiles) {
+                const webfilePath = file.fsPath;
+                const terminal = vscode.window.createTerminal("Powerpages", "");
+                terminal.sendText(
+                    `cd data\n ../node_modules/.bin/yo @microsoft/powerpages:webfile "${webfilePath}" "${parentPageId}"`
+                );
+            }
+        }
     }
 };
 
@@ -181,7 +139,7 @@ async function myMultiStepInput(parentPage: string[]) {
     }
 
     const title = localize(
-        "microsoft-powerapps-portals.webExtension.webfile.quickpick.title",
+        "microsoft-powerapps-portals.desktopExt.webfile.quickpick.title",
         "Web files"
     );
 
@@ -194,7 +152,7 @@ async function myMultiStepInput(parentPage: string[]) {
             step: 1,
             totalSteps: 1,
             placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.webfile.quickpick.parentpage.placeholder",
+                "microsoft-powerapps-portals.desktopExt.webfile.quickpick.parentpage.placeholder",
                 "Choose parent page"
             ),
             items: parentPages,
