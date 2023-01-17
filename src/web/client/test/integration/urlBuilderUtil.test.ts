@@ -22,7 +22,7 @@ import {
 } from "../../schema/constants";
 import { httpMethod } from "../../common/constants";
 import * as schemaHelper from "../../utilities/schemaHelperUtil";
-
+import * as portalSchemaReader from "../../schema/portalSchemaReader";
 import WebExtensionContext, {
     IWebExtensionContext,
 } from "../../WebExtensionContext";
@@ -33,34 +33,38 @@ describe("URLBuilder", () => {
     });
 
     it("getParameterizedRequestUrlTemplate_should_return_SINGLE_ENTITY_URL_KEY_when_isSingleEntity_is_true", async () => {
-        const powerPlatformExtensionContext: IWebExtensionContext = {
-            schemaDataSourcePropertiesMap: new Map<string, string>([
-                [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
-            ]),
-        } as IWebExtensionContext;
         sinon
-            .stub(
-                WebExtensionContext,
-                "schemaDataSourcePropertiesMap"
-            )
-            .returns(powerPlatformExtensionContext);
+            .stub(portalSchemaReader, "getDataSourcePropertiesMap")
+            .returns(
+                new Map<string, string>([
+                    [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
+                ])
+            );
+
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(new Map());
+        WebExtensionContext.setWebExtensionContext("", "", new Map());
+
         const isSingleEntity = true;
-        const result: string = getParameterizedRequestUrlTemplate(isSingleEntity);
+        const result: string =
+            getParameterizedRequestUrlTemplate(isSingleEntity);
         expect(result).eq("singleEntityURL");
     });
 
     it("getParameterizedRequestUrlTemplate_should_return_SINGLE_ENTITY_URL_KEY_when_isSingleEntity_is_false", async () => {
-        const powerPlatformExtensionContext: IWebExtensionContext = {
-            schemaDataSourcePropertiesMap: new Map<string, string>([
-                [schemaKey.MULTI_ENTITY_URL, schemaKey.MULTI_ENTITY_URL],
-            ]),
-        } as IWebExtensionContext;
         sinon
-            .stub(
-                WebExtensionContext,
-                "schemaDataSourcePropertiesMap"
-            )
-            .returns(powerPlatformExtensionContext);
+            .stub(portalSchemaReader, "getDataSourcePropertiesMap")
+            .returns(
+                new Map<string, string>([
+                    [schemaKey.MULTI_ENTITY_URL, schemaKey.MULTI_ENTITY_URL],
+                ])
+            );
+
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(new Map());
+        WebExtensionContext.setWebExtensionContext("", "", new Map());
         const result = getParameterizedRequestUrlTemplate(false);
         expect(result).eq(schemaKey.MULTI_ENTITY_URL);
     });
@@ -120,18 +124,26 @@ describe("URLBuilder", () => {
                 [schemaKey.MULTI_ENTITY_URL, schemaKey.MULTI_ENTITY_URL],
             ])
         );
-        const powerPlatformExtensionContext: IWebExtensionContext = {
-            entitiesFolderNameMap: new Map<string, string>([
-                ["make.powerpages.com", "make.powerpages.com"],
-            ]),
-        } as IWebExtensionContext;
 
         sinon
-            .stub(
-                WebExtensionContext,
-                "entitiesFolderNameMap"
-            )
-            .returns(powerPlatformExtensionContext);
+            .stub(portalSchemaReader, "getEntitiesFolderNameMap")
+            .returns(
+                new Map<string, string>([
+                    ["make.powerpages.com", "make.powerpages.com"],
+                ])
+            );
+
+        sinon
+            .stub(portalSchemaReader, "getDataSourcePropertiesMap")
+            .returns(
+                new Map<string, string>([
+                    [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
+                ])
+            );
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(new Map());
+        WebExtensionContext.setWebExtensionContext("", "", new Map());
 
         const uriName = "make.powerpages.com";
         const res = pathHasEntityFolderName(uriName);
@@ -139,23 +151,21 @@ describe("URLBuilder", () => {
     });
 
     it("pathHasEntityFolderName_should_return_false", async () => {
-        const entitiesSchemaMap = new Map<string, Map<string, string>>();
-        entitiesSchemaMap.set(
-            "adx_webpages",
-            new Map<string, string>([
-                [schemaKey.MULTI_ENTITY_URL, schemaKey.MULTI_ENTITY_URL],
-            ])
-        );
-        const powerPlatformExtensionContext: IWebExtensionContext = {
-            entitiesFolderNameMap: new Map<string, string>([["123", "123"]]),
-        } as IWebExtensionContext;
+        sinon
+            .stub(portalSchemaReader, "getEntitiesFolderNameMap")
+            .returns(new Map());
 
         sinon
-            .stub(
-                WebExtensionContext,
-                "entitiesFolderNameMap"
-            )
-            .returns(powerPlatformExtensionContext);
+            .stub(portalSchemaReader, "getDataSourcePropertiesMap")
+            .returns(
+                new Map<string, string>([
+                    [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
+                ])
+            );
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(new Map());
+        WebExtensionContext.setWebExtensionContext("", "", new Map());
 
         const uriName = "make.powerpages.com";
         const res = pathHasEntityFolderName(uriName);
@@ -192,10 +202,7 @@ describe("URLBuilder", () => {
         );
 
         sinon
-            .stub(
-                WebExtensionContext,
-                "schemaDataSourcePropertiesMap"
-            )
+            .stub(WebExtensionContext, "schemaDataSourcePropertiesMap")
             .returns(powerPlatformExtensionContext);
 
         const dataverseOrgUrl = "dataverseOrgUrl";
@@ -211,12 +218,28 @@ describe("URLBuilder", () => {
             isSingleEntity
         );
 
-        const expResult =
-            "dataverseOrgUrl DATAVERSE_ENTITY_NAME id api data 1.0FETCH_QUERY_PARAMETERS";
+        const expResult = "singleEntityURLFETCH_QUERY_PARAMETERS";
         expect(result).eq(expResult);
     });
 
     it("getRequestURL_with_patch_http_method", () => {
+        sinon.stub(portalSchemaReader, "getDataSourcePropertiesMap").returns(
+            new Map<string, string>([
+                [
+                    schemaKey.SINGLE_ENTITY_URL,
+                    "{dataverseOrgUrl} {entity} {entityId} {api} {data} {version}",
+                ],
+                [schemaKey.DATA, "api"],
+                [schemaKey.API, "data"],
+                [schemaKey.DATAVERSE_API_VERSION, "1.0"],
+            ])
+        );
+
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(new Map());
+        WebExtensionContext.setWebExtensionContext("", "", new Map());
+
         const powerPlatformExtensionContext: IWebExtensionContext = {
             schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.API, "schemaKey.API"],
@@ -232,10 +255,7 @@ describe("URLBuilder", () => {
             ]),
         } as IWebExtensionContext;
         sinon
-            .stub(
-                WebExtensionContext,
-                "schemaDataSourcePropertiesMap"
-            )
+            .stub(WebExtensionContext, "schemaDataSourcePropertiesMap")
             .returns(powerPlatformExtensionContext);
 
         sinon.stub(schemaHelper, "getEntity").returns(
@@ -264,44 +284,35 @@ describe("URLBuilder", () => {
             isSingleEntity
         );
 
-        const expResult = `dataverseOrgUrl DATAVERSE_ENTITY_NAME id api data 1.0`;
+        const expResult = `dataverseOrgUrl DATAVERSE_ENTITY_NAME id data api 1.0`;
         expect(result).eq(expResult);
     });
 
     it("getCustomRequestURL", () => {
-        const powerPlatformExtensionContext: IWebExtensionContext = {
-            schemaDataSourcePropertiesMap: new Map<string, string>([
-                [schemaKey.API, "schemaKey.API"],
+        const mock = new Map<string, string>([
+            ["_fetchQueryParameters", schemaEntityKey.FETCH_QUERY_PARAMETERS],
+            [schemaEntityKey.DATAVERSE_ENTITY_NAME, "DATAVERSE_ENTITY_NAME"],
+            [schemaKey.DATA, "schemaKey.DATA"],
+            [schemaKey.DATAVERSE_API_VERSION, "1.0"],
+        ]);
+
+        sinon.stub(portalSchemaReader, "getDataSourcePropertiesMap").returns(
+            new Map<string, string>([
                 [
                     schemaKey.MULTI_ENTITY_URL,
                     "{dataverseOrgUrl} {entity} {api} {data} {version}",
                 ],
-                [schemaKey.DATA, "schemaKey.DATA"],
-                [schemaKey.DATAVERSE_API_VERSION, "1.0"],
                 [schemaKey.API, "api"],
                 [schemaKey.DATA, "data"],
                 [schemaKey.DATAVERSE_API_VERSION, "1.0"],
-            ]),
-        } as IWebExtensionContext;
-        sinon
-            .stub(
-                WebExtensionContext,
-                "schemaDataSourcePropertiesMap"
-            )
-            .returns(powerPlatformExtensionContext);
-
-        sinon.stub(schemaHelper, "getEntity").returns(
-            new Map<string, string>([
-                [
-                    schemaEntityKey.FETCH_QUERY_PARAMETERS,
-                    "_fetchQueryParameters",
-                ],
-                [
-                    schemaEntityKey.DATAVERSE_ENTITY_NAME,
-                    "DATAVERSE_ENTITY_NAME",
-                ],
             ])
         );
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(
+                new Map<string, Map<string, string>>([["WEBPAGES", mock]])
+            );
+        WebExtensionContext.setWebExtensionContext("", "", new Map());
 
         const dataverseOrgUrl = "dataverseOrgUrl";
         const entity = "WEBPAGES";
@@ -316,7 +327,7 @@ describe("URLBuilder", () => {
         const attributeType = entityAttributesWithBase64Encoding.filecontent;
         const requestUrl = "microsoft.com";
         const result = getPatchRequestUrl(entity, attributeType, requestUrl);
-        expect(result).eq(requestUrl + '/' + attributeType);
+        expect(result).eq(requestUrl + "/" + attributeType);
     });
 
     it("getPatchRequestUrl should / if attributeType is documentbody", () => {
@@ -334,5 +345,4 @@ describe("URLBuilder", () => {
         const result = getPatchRequestUrl(entity, attributeType, requestUrl);
         expect(result).eq(requestUrl);
     });
-
 });

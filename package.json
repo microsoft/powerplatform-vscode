@@ -750,6 +750,7 @@
     "@vscode/test-web": "^0.0.24",
     "assert": "^2.0.0",
     "chai": "^4.3.6",
+    "constants-browserify": "^1.0.0",
     "eslint": "^8.11.0",
     "eslint-plugin-header": "^3.1.1",
     "fancy-log": "^1.3.3",
@@ -766,6 +767,7 @@
     "moment": "^2.29.4",
     "node-fetch": "^2.6.7",
     "nyc": "^15.1.0",
+    "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "ps-list": "^7.2.0",
@@ -782,7 +784,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@vscode/extension-telemetry": "^0.4.9",
+    "@vscode/extension-telemetry": "^0.6.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
     "liquidjs": "^10.2.0",

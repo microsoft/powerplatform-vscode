@@ -4,7 +4,7 @@
  */
 
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { AI_KEY } from "../../../common/telemetry/generated/telemetryConfiguration";
+import { AppInsightsResource } from "../../../common/pp-tooling-telemetry-node";
 import { queryParameters } from "../common/constants";
 import { sanitizeURL } from "../utilities/urlBuilderUtil";
 import { telemetryEventNames } from "./constants";
@@ -13,8 +13,8 @@ import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITe
 export class WebExtensionTelemetry {
     private _telemetry: TelemetryReporter | undefined;
 
-    setTelemetryReporter(extensionId: string, extensionVersion: string) {
-        this._telemetry = new TelemetryReporter(extensionId, extensionVersion, AI_KEY);
+    setTelemetryReporter(extensionId: string, extensionVersion: string, appInsightsResource: AppInsightsResource) {
+        this._telemetry = new TelemetryReporter(extensionId, extensionVersion, appInsightsResource.instrumentationKey);
     }
 
     getTelemetryReporter() {
