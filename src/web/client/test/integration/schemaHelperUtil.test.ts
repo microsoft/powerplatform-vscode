@@ -21,6 +21,7 @@ import {
     getLanguageIdCodeMap,
     getWebsiteIdToLanguageMap,
     getwebsiteLanguageIdToPortalLanguageMap,
+    useOctetStreamContentType,
 } from "../../utilities/schemaHelperUtil";
 import {
     portal_schema_V1,
@@ -33,7 +34,7 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
     afterEach(() => {
         sinon.restore();
     });
-    it("getPortalSchema_ShouldReturnportalSchemaV2", () => {
+    it("getPortalSchema_ShouldReturnPortalSchemaV2_WhenSchemaIsPortalschemav2", () => {
         //Act
         const schema = "portalschemav2";
         //Action
@@ -316,7 +317,7 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         expect(result).false;
     });
 
-    it("encodeAsBase64_shouldReturnTrueWhenEntityIsWEBFILES_and_attributeTypeIsFilecontent", () => {
+    it("isWebFileV2_shouldReturnTrueWhenEntityIsWEBFILES_and_attributeTypeIsFilecontent", () => {
         //Act
         const entity = schemaEntityName.WEBFILES;
         const attributeType = entityAttributesWithBase64Encoding.filecontent;
@@ -326,7 +327,7 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         expect(result).true;
     });
 
-    it("encodeAsBase64_shouldReturnFalseWhenEntityIsNotWEBFILES_and_attributeTypeIsFilecontent", () => {
+    it("isWebFileV2_shouldReturnFalseWhenEntityIsNotWEBFILES_and_attributeTypeIsFilecontent", () => {
         //Act
         const entity = schemaEntityName.WEBPAGES;
         const attributeType = entityAttributesWithBase64Encoding.filecontent;
@@ -336,7 +337,7 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         expect(result).false;
     });
 
-    it("encodeAsBase64_shouldReturnFalseWhenEntityIsWEBFILES_and_attributeTypeIsNotFilecontent", () => {
+    it("isWebFileV2_shouldReturnFalseWhenEntityIsWEBFILES_and_attributeTypeIsNotFilecontent", () => {
         //Act
         const entity = schemaEntityName.WEBPAGES;
         const attributeType = entityAttributesWithBase64Encoding.documentbody;
@@ -787,5 +788,49 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         );
         //Assert
         expect(resultData).empty;
+    });
+
+    it("getwebsiteLanguageIdToPortalLanguageMap_shouldReturnEmptyWhenResultIsUndefined", () => {
+        //Act
+        const result = undefined;
+
+        const schema = "portalschemav1";
+        //Action
+        const resultData = getwebsiteLanguageIdToPortalLanguageMap(
+            result,
+            schema
+        );
+        //Assert
+        expect(resultData).empty;
+    });
+
+    it("useOctetStreamContentType_shouldReturnTrueWhenEntityIsWEBFILES_and_attributeTypeIsFilecontent", () => {
+        //Act
+        const entity = schemaEntityName.WEBFILES;
+        const attributeType = entityAttributesWithBase64Encoding.filecontent;
+        //Action
+        const result = useOctetStreamContentType(entity, attributeType);
+        //Assert
+        expect(result).true;
+    });
+
+    it("useOctetStreamContentType_shouldReturnFalseWhenEntityIsNotWEBFILES_and_attributeTypeIsFilecontent", () => {
+        //Act
+        const entity = schemaEntityName.WEBPAGES;
+        const attributeType = entityAttributesWithBase64Encoding.filecontent;
+        //Action
+        const result = useOctetStreamContentType(entity, attributeType);
+        //Assert
+        expect(result).false;
+    });
+
+    it("useOctetStreamContentType_shouldReturnFalseWhenEntityIsWEBFILES_and_attributeTypeIsNotFilecontent", () => {
+        //Act
+        const entity = schemaEntityName.WEBPAGES;
+        const attributeType = entityAttributesWithBase64Encoding.documentbody;
+        //Action
+        const result = useOctetStreamContentType(entity, attributeType);
+        //Assert
+        expect(result).false;
     });
 });
