@@ -4,19 +4,20 @@
  */
 
 import { expect } from "chai";
-import sinon, { stub, assert } from "sinon";
+import sinon from "sinon";
 import {
     entityAttributesWithBase64Encoding,
     schemaEntityName,
     schemaKey,
 } from "../../schema/constants";
+import * as portalSchemaReader from "../../schema/portalSchemaReader";
 import {
     getPortalSchema,
     getEntity,
-    getAttributeParts,
+    getAttributePath,
     isBase64Encoded,
-    useBase64Encoding,
-    isWebFileV2OctetStream,
+    encodeAsBase64,
+    isWebFileV2,
     getLanguageIdCodeMap,
     getWebsiteIdToLanguageMap,
     getwebsiteLanguageIdToPortalLanguageMap,
@@ -75,20 +76,23 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         const entitiesSchemaMap = new Map<string, Map<string, string>>([
             [entity, entityMap],
         ]);
-        const getWebExtensionContext = stub(
-            WebExtensionContext,
-            "getWebExtensionContext"
-        ).returns({
-            queryParamsMap: queryParamsMap,
-            entitiesSchemaMap: entitiesSchemaMap,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any);
+
+        sinon
+            .stub(portalSchemaReader, "getDataSourcePropertiesMap")
+            .returns(
+                new Map<string, string>([
+                    [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
+                ])
+            );
+
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(entitiesSchemaMap);
+        WebExtensionContext.setWebExtensionContext("", "", queryParamsMap);
         //Action
         const result = getEntity(entity);
         //Assert
-
-        expect(result).equal(entityMap);
-        assert.calledOnce(getWebExtensionContext);
+        expect(result).deep.be.eq(entityMap);
     });
 
     it("getEntity_ShouldReturnEntitiesSchemaMapWhenSchemaIsportalschemav2AndInCaps", () => {
@@ -104,49 +108,25 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         const entitiesSchemaMap = new Map<string, Map<string, string>>([
             [entity, entityMap],
         ]);
-        const getWebExtensionContext = stub(
-            WebExtensionContext,
-            "getWebExtensionContext"
-        ).returns({
-            queryParamsMap: queryParamsMap,
-            entitiesSchemaMap: entitiesSchemaMap,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any);
+
+        sinon
+            .stub(portalSchemaReader, "getDataSourcePropertiesMap")
+            .returns(
+                new Map<string, string>([
+                    [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
+                ])
+            );
+
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(entitiesSchemaMap);
+        WebExtensionContext.setWebExtensionContext("", "", queryParamsMap);
+
         //Action
         const result = getEntity(entity);
         //Assert
 
         expect(result).equal(entityMap);
-        assert.calledOnce(getWebExtensionContext);
-    });
-
-    it("getEntity_ShouldReturnEntitiesSchemaMapWhenSchemaIsportalschemav2AndInCaps", () => {
-        //Act
-        const schema = "portalschemav1".toUpperCase();
-        const entity = "webPages";
-        const queryParamsMap = new Map<string, string>([
-            [schemaKey.SCHEMA_VERSION, schema],
-        ]);
-
-        const entityMap = new Map<string, string>([["test", "Entity"]]);
-
-        const entitiesSchemaMap = new Map<string, Map<string, string>>([
-            [entity, entityMap],
-        ]);
-        const getWebExtensionContext = stub(
-            WebExtensionContext,
-            "getWebExtensionContext"
-        ).returns({
-            queryParamsMap: queryParamsMap,
-            entitiesSchemaMap: entitiesSchemaMap,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any);
-        //Action
-        const result = getEntity(entity);
-        //Assert
-
-        expect(result).equal(entityMap);
-        assert.calledOnce(getWebExtensionContext);
     });
 
     it("getEntity_ShouldReturnEntitiesSchemaMapWhenQueryParamsMapIsNotSchema", () => {
@@ -154,7 +134,7 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         const schema = "portalschemav2";
         const entity = "webPages";
         const queryParamsMap = new Map<string, string>([
-            [schemaKey.MULTI_ENTITY_URL, schema],
+            [schemaKey.SCHEMA_VERSION, schema],
         ]);
 
         const entityMap = new Map<string, string>([["test", "Entity"]]);
@@ -162,49 +142,52 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         const entitiesSchemaMap = new Map<string, Map<string, string>>([
             [entity, entityMap],
         ]);
-        const getWebExtensionContext = stub(
-            WebExtensionContext,
-            "getWebExtensionContext"
-        ).returns({
-            queryParamsMap: queryParamsMap,
-            entitiesSchemaMap: entitiesSchemaMap,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any);
+
+        sinon
+            .stub(portalSchemaReader, "getDataSourcePropertiesMap")
+            .returns(
+                new Map<string, string>([
+                    [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
+                ])
+            );
+
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(entitiesSchemaMap);
+        WebExtensionContext.setWebExtensionContext("", "", queryParamsMap);
+
         //Action
         const result = getEntity(entity);
         //Assert
 
         expect(result).equal(entityMap);
-        assert.calledOnce(getWebExtensionContext);
     });
 
     it("getEntity_ShouldReturnEmptySchemaWhenEntityDoNotMapAndschemaIsportalschemav2", () => {
         //Act
         const schema = "portalschemav2";
-        const entity = "webPages";
+        const entity = "webPages1";
         const queryParamsMap = new Map<string, string>([
             [schemaKey.SCHEMA_VERSION, schema],
         ]);
 
-        const entityMap = new Map<string, string>([["test", "Entity"]]);
+        sinon
+            .stub(portalSchemaReader, "getDataSourcePropertiesMap")
+            .returns(
+                new Map<string, string>([
+                    [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
+                ])
+            );
 
-        const entitiesSchemaMap = new Map<string, Map<string, string>>([
-            ["entity", entityMap],
-        ]);
-        const getWebExtensionContext = stub(
-            WebExtensionContext,
-            "getWebExtensionContext"
-        ).returns({
-            queryParamsMap: queryParamsMap,
-            entitiesSchemaMap: entitiesSchemaMap,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any);
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(new Map());
+        WebExtensionContext.setWebExtensionContext("", "", queryParamsMap);
         //Action
         const result = getEntity(entity);
         //Assert
 
         expect(result).undefined;
-        assert.calledOnce(getWebExtensionContext);
     });
 
     it("getEntity_ShouldReturnEmptySchemaWhenEntityDoNotMapAndschemaIsNotPortalschemav2", () => {
@@ -215,50 +198,49 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
             [schemaKey.SCHEMA_VERSION, schema],
         ]);
 
-        const entityMap = new Map<string, string>([["test", "Entity"]]);
+        sinon
+            .stub(portalSchemaReader, "getDataSourcePropertiesMap")
+            .returns(
+                new Map<string, string>([
+                    [schemaKey.SINGLE_ENTITY_URL, schemaKey.SINGLE_ENTITY_URL],
+                ])
+            );
 
-        const entitiesSchemaMap = new Map<string, Map<string, string>>([
-            ["entity", entityMap],
-        ]);
-        const getWebExtensionContext = stub(
-            WebExtensionContext,
-            "getWebExtensionContext"
-        ).returns({
-            queryParamsMap: queryParamsMap,
-            entitiesSchemaMap: entitiesSchemaMap,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any);
+        sinon
+            .stub(portalSchemaReader, "getEntitiesSchemaMap")
+            .returns(new Map());
+        WebExtensionContext.setWebExtensionContext("", "", queryParamsMap);
         //Action
         const result = getEntity(entity);
         //Assert
         expect(result).undefined;
-        assert.calledOnce(getWebExtensionContext);
     });
-    it("getAttributeParts_souldReturnSourceAndRelativePath", () => {
+
+    it("getAttributePath_souldReturnSourceAndRelativePath", () => {
         //Act
         const attribute = "test.file";
         //Action
-        const result = getAttributeParts(attribute);
+        const result = getAttributePath(attribute);
         //Assert
         expect(result.source).eq("test");
         expect(result.relativePath).eq("file");
     });
 
-    it("getAttributeParts_shouldReturnRelativePathEmpty", () => {
+    it("getAttributePath_shouldReturnRelativePathEmpty", () => {
         //Act
         const attribute = "test";
         //Action
-        const result = getAttributeParts(attribute);
+        const result = getAttributePath(attribute);
         //Assert
         expect(result.source).eq("test");
         expect(result.relativePath).empty;
     });
 
-    it("getAttributeParts_shouldReturnSourceAndRelativePathAsBlank", () => {
+    it("getAttributePath_shouldReturnSourceAndRelativePathAsBlank", () => {
         //Act
         const attribute = "";
         //Action
-        const result = getAttributeParts(attribute);
+        const result = getAttributePath(attribute);
         //Assert
         expect(result.source).empty;
         expect(result.relativePath).empty;
@@ -304,62 +286,62 @@ describe("schemaHelperUtil_ShouldReturnportalSchemaV2", () => {
         expect(result).false;
     });
 
-    it("useBase64Encoding_shouldReturnTrueWhenEntityIsWEBFILES_and_attributeTypeIsdocumentbody", () => {
+    it("encodeAsBase64_shouldReturnTrueWhenEntityIsWEBFILES_and_attributeTypeIsdocumentbody", () => {
         //Act
         const entity = schemaEntityName.WEBFILES;
         const attributeType = entityAttributesWithBase64Encoding.documentbody;
         //Action
-        const result = useBase64Encoding(entity, attributeType);
+        const result = encodeAsBase64(entity, attributeType);
         //Assert
         expect(result).true;
     });
 
-    it("useBase64Encoding_shouldReturnFalseWhenEntityIsWEBFILES_and_attributeTypeIsNotdocumentbody", () => {
+    it("encodeAsBase64_shouldReturnFalseWhenEntityIsWEBFILES_and_attributeTypeIsNotdocumentbody", () => {
         //Act
         const entity = schemaEntityName.WEBFILES;
         const attributeType = entityAttributesWithBase64Encoding.filecontent;
         //Action
-        const result = useBase64Encoding(entity, attributeType);
+        const result = encodeAsBase64(entity, attributeType);
         //Assert
         expect(result).false;
     });
 
-    it("useBase64Encoding_shouldReturnFalseWhenEntityIsNotWEBFILES_and_attributeTypeIsfilecontent", () => {
+    it("encodeAsBase64_shouldReturnFalseWhenEntityIsNotWEBFILES_and_attributeTypeIsfilecontent", () => {
         //Act
         const entity = schemaEntityName.WEBTEMPLATES;
         const attributeType = entityAttributesWithBase64Encoding.filecontent;
         //Action
-        const result = useBase64Encoding(entity, attributeType);
+        const result = encodeAsBase64(entity, attributeType);
         //Assert
         expect(result).false;
     });
 
-    it("useBase64Encoding_shouldReturnTrueWhenEntityIsWEBFILES_and_attributeTypeIsFilecontent", () => {
+    it("encodeAsBase64_shouldReturnTrueWhenEntityIsWEBFILES_and_attributeTypeIsFilecontent", () => {
         //Act
         const entity = schemaEntityName.WEBFILES;
         const attributeType = entityAttributesWithBase64Encoding.filecontent;
         //Action
-        const result = isWebFileV2OctetStream(entity, attributeType);
+        const result = isWebFileV2(entity, attributeType);
         //Assert
         expect(result).true;
     });
 
-    it("useBase64Encoding_shouldReturnFalseWhenEntityIsNotWEBFILES_and_attributeTypeIsFilecontent", () => {
+    it("encodeAsBase64_shouldReturnFalseWhenEntityIsNotWEBFILES_and_attributeTypeIsFilecontent", () => {
         //Act
         const entity = schemaEntityName.WEBPAGES;
         const attributeType = entityAttributesWithBase64Encoding.filecontent;
         //Action
-        const result = isWebFileV2OctetStream(entity, attributeType);
+        const result = isWebFileV2(entity, attributeType);
         //Assert
         expect(result).false;
     });
 
-    it("useBase64Encoding_shouldReturnFalseWhenEntityIsWEBFILES_and_attributeTypeIsNotFilecontent", () => {
+    it("encodeAsBase64_shouldReturnFalseWhenEntityIsWEBFILES_and_attributeTypeIsNotFilecontent", () => {
         //Act
         const entity = schemaEntityName.WEBPAGES;
         const attributeType = entityAttributesWithBase64Encoding.documentbody;
         //Action
-        const result = isWebFileV2OctetStream(entity, attributeType);
+        const result = isWebFileV2(entity, attributeType);
         //Assert
         expect(result).false;
     });
