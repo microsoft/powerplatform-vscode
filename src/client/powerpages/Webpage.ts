@@ -27,7 +27,8 @@ import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import { Tables } from "./constants";
 
-// import{DesktopFS, Context} from "@microsoft/generator-powerpages";
+
+// import { DesktopFS, Context, YeomanConstants} from "@microsoft/generator-powerpages";
 
 export const webpage = async (context: vscode.ExtensionContext) => {
     // Get the root directory of the workspace
@@ -38,10 +39,13 @@ export const webpage = async (context: vscode.ExtensionContext) => {
 
     // Get the web templates & webpages from the data directory
     const portalDir = `${rootDir}\\data`;
-    const fs: DesktopFS = new DesktopFS();
-    const ctx = Context.getInstance(portalDir, fs);
+    const fs: DesktopFS.default = new DesktopFS.default();
+    const ctx = Context.default.getInstance(portalDir, fs);
     try {
-        await ctx.init([Tables.WEBPAGE, Tables.PAGETEMPLATE]);
+        await ctx?.init([
+            Tables.WEBPAGE,
+            Tables.PAGETEMPLATE,
+        ]);
     } catch (error) {
         vscode.window.showErrorMessage("Error while loading data: " + error);
         return;
@@ -54,7 +58,7 @@ export const webpage = async (context: vscode.ExtensionContext) => {
         return;
     }
 
-    const { paths, pathsMap } = getParentPagePaths(ctx);
+    const { paths, pathsMap, webpageNames } = getParentPagePaths(ctx);
 
     if (paths.length === 0) {
         vscode.window.showErrorMessage("No webpages found");
@@ -62,7 +66,11 @@ export const webpage = async (context: vscode.ExtensionContext) => {
     }
 
     // Show a quick pick
-    const webpageInputs = await myMultiStepInput(pageTemplateNames, paths);
+    const webpageInputs = await myMultiStepInput(
+        pageTemplateNames,
+        paths,
+        webpageNames
+    );
 
     const pageTemplateId = pageTemplateMap.get(webpageInputs.pageTemplate);
 
@@ -83,6 +91,7 @@ export const webpage = async (context: vscode.ExtensionContext) => {
 
                 // Execute terminal command
                 const terminal = vscode.window.createTerminal("Powerpages", "");
+                terminal.show()
                 terminal.sendText(
                     `cd data\n ../node_modules/.bin/yo @microsoft/powerpages:webpage "${webpageName}" "${parentPageId}" "${pageTemplateId}"`
                 );
@@ -114,7 +123,8 @@ export const webpage = async (context: vscode.ExtensionContext) => {
 
 async function myMultiStepInput(
     pageTemplateName: string[],
-    parentPage: string[]
+    parentPage: string[],
+    webpageNames: string[]
 ) {
     const pageTemplates: QuickPickItem[] = pageTemplateName.map((label) => ({
         label,
@@ -204,10 +214,15 @@ async function myMultiStepInput(
 
     async function validateNameIsUnique(name: string) {
         // ...validate...
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        if (name) {
-            return undefined;
+        if (
+            webpageNames
+                .map((n) => n.toLowerCase())
+                .includes(name.toLowerCase())
+        ) {
+            return "Name not unique";
         }
+
+        return undefined;
     }
 
     const state = await collectInputs();
