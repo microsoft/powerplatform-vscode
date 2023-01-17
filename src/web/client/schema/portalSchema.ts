@@ -200,8 +200,10 @@ export const portal_schema_V2 = {
                 "_exporttype": "SubFolders",
                 "_foldername": "web-pages",
                 "_fetchQueryParameters": "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
-                "_attributes": "content.copy",
+                "_attributes": "content.customcss,content.customjavascript,content.copy",
                 "_attributesExtension": new Map([
+                    ["content.customcss", "customcss.css"],
+                    ["content.customjavascript", "customjs.js"],
                     ["content.copy", "webpage.copy.html"],
                 ])
             },

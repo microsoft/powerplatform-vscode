@@ -3,4 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export const AI_KEY = '441859ca-4501-4653-bc1d-65fb8663108a'; // capisvtoolsappinsights-dev
+import { AppInsightsResource, AppInsightsResourceProvider } from "../pp-tooling-telemetry-node";
+
+export const vscodeExtAppInsightsResourceProvider = new AppInsightsResourceProvider(
+    /* appi-dpxt-dev-us-vscode */ new AppInsightsResource("InstrumentationKey=e3c234e7-4bfb-4f31-9540-30fa08a62a77;IngestionEndpoint=https://westus2-2.in.applicationinsights.azure.com/;LiveEndpoint=https://westus2.livediagnostics.monitor.azure.com/"),
+    /* appi-dpxt-dev-eu-vscode */ new AppInsightsResource("InstrumentationKey=bb2f90c5-5c39-42e1-80bb-ab91d8326509;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/", "EU")
+    );

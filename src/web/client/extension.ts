@@ -11,11 +11,16 @@ import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } 
 import { PortalsFS } from "./dal/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters } from "./common/errorHandler";
 import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
+import { convertStringtoBase64 } from './utilities/commonUtil';
+import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
-    WebExtensionContext.telemetry.setTelemetryReporter(context.extension.id, context.extension.packageJSON.version);
+    // TODO: Determine how to determine the user's dataBoundary
+    const dataBoundary = undefined;
+    const appInsightsResource = vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(dataBoundary);
+    WebExtensionContext.telemetry.setTelemetryReporter(context.extension.id, context.extension.packageJSON.version, appInsightsResource);
     context.subscriptions.push(WebExtensionContext.telemetry.getTelemetryReporter());
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
@@ -69,7 +74,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                 cancellable: true,
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
-                                await vscode.workspace.fs.readDirectory(WebExtensionContext.getWebExtensionContext().rootDirectory);
+                                await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
                             });
                         }
                             break;
@@ -78,13 +83,44 @@ export function activate(context: vscode.ExtensionContext): void {
                     }
                 } else {
                     vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+                    return;
                 }
             }
         )
     );
+
+    processWillSaveDocument(context);
+
+    showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
-export function walkthrough(context: vscode.ExtensionContext, telemetry: WebExtensionTelemetry) {
+export function processWillSaveDocument(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.workspace.onWillSaveTextDocument((e) => {
+            const fileName = e.document.fileName;
+            if (vscode.window.activeTextEditor === undefined) {
+                return;
+            } else if (
+                isActiveDocument(fileName)
+            ) {
+                const fileData = WebExtensionContext.fileDataMap.getFileMap.get(fileName);
+                // Update the latest content in context
+                if (fileData?.entityId && fileData.attributePath) {
+                    let fileContent = e.document.getText();
+                    if (fileData.encodeAsBase64 as boolean) {
+                        fileContent = convertStringtoBase64(fileContent);
+                    }
+                    WebExtensionContext.entityDataMap
+                        .updateEntityColumnContent(fileData?.entityId, fileData.attributePath, fileContent);
+                    WebExtensionContext.fileDataMap
+                        .updateDirtyChanges(fileName, true);
+                }
+            }
+        })
+    );
+}
+
+export function showWalkthrough(context: vscode.ExtensionContext, telemetry: WebExtensionTelemetry) {
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.overview-learn-more', async () => {
         telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.overview-learn-more' });
         vscode.env.openExternal(vscode.Uri.parse("https://go.microsoft.com/fwlink/?linkid=2207914"));
@@ -107,7 +143,7 @@ export function walkthrough(context: vscode.ExtensionContext, telemetry: WebExte
 
     context.subscriptions.push(vscode.commands.registerCommand('powerplatform-walkthrough.advancedCapabilities-start-coding', async () => {
         telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'powerplatform-walkthrough.advancedCapabilities-start-coding' });
-        vscode.window.showTextDocument(WebExtensionContext.getWebExtensionContext().defaultFileUri);
+        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri);
     }));
 }
 
@@ -116,4 +152,10 @@ export async function deactivate(): Promise<void> {
     if (telemetry) {
         telemetry.sendInfoTelemetry("End");
     }
+}
+
+function isActiveDocument(fileName: string): boolean {
+    return (vscode.workspace.workspaceFolders !== undefined) &&
+        WebExtensionContext.isContextSet &&
+        WebExtensionContext.fileDataMap.getFileMap.has(fileName);
 }
