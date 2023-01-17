@@ -28,7 +28,8 @@ describe("errorHandler", () => {
     afterEach(() => {
         Sinon.restore();
     });
-    it("showErrorDialog_shouldCallShowErrorMessage", () => {
+
+    it("showErrorDialog_shouldCallShowErrorMessage_whenDetailMessageAndErrorString", () => {
         //Act
         const errorString = "this is error message";
         const detailMessage = "not able to open";
@@ -92,6 +93,7 @@ describe("errorHandler", () => {
             [schemaKey.SCHEMA_VERSION, "3A%20test_file_name"],
             [queryParameters.WEBSITE_NAME, ""],
         ]);
+        const portalFolderName = PORTALS_FOLDER_NAME_DEFAULT;
 
         //Action
         removeEncodingFromParameters(queryParamsMap);
@@ -106,14 +108,14 @@ describe("errorHandler", () => {
         ) as string;
 
         expect(schemaFileName).eq("3A test_file_name");
-        expect(websiteName).eq(PORTALS_FOLDER_NAME_DEFAULT);
+        expect(websiteName).eq(portalFolderName);
     });
 
-    it("checkMandatoryParameters_shouldReturnTrueWhenAppNameIsPortalAndEntityAndEntityIdHavingValues", () => {
+    it("checkMandatoryParameters_shouldReturnTrue_whenAppNameIsPortalAndEntityAndEntityIdHavingValues", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
-        const entityId = "3";
+        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "url"],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -140,7 +142,7 @@ describe("errorHandler", () => {
         //Act
         const appName = "portal";
         const entity = "";
-        const entityId = "3";
+        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "url"],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -195,7 +197,7 @@ describe("errorHandler", () => {
         const _mockShowErrorMessage = stub(vscode.window, "showErrorMessage");
         const appName = "por";
         const entity = "entity";
-        const entityId = "3";
+        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "url"],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -226,7 +228,7 @@ describe("errorHandler", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
-        const entityId = "3";
+        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, ""],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -251,7 +253,7 @@ describe("errorHandler", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
-        const entityId = "3";
+        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "orgUrl"],
             [queryParameters.DATA_SOURCE, ""],
@@ -278,7 +280,7 @@ describe("errorHandler", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
-        const entityId = "3";
+        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "orgUrl"],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -305,7 +307,7 @@ describe("errorHandler", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
-        const entityId = "3";
+        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "orgUrl"],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -329,7 +331,7 @@ describe("errorHandler", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
-        const entityId = "3";
+        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         //Action
         const result = checkMandatoryPathParameters(appName, entity, entityId);
         //Assert
@@ -345,7 +347,7 @@ describe("errorHandler", () => {
         );
         const appName = "portal";
         const entity = "";
-        const entityId = "3";
+        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         //Action
         const result = checkMandatoryPathParameters(appName, entity, entityId);
         //Assert
