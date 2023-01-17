@@ -36,16 +36,16 @@ export async function activate(
     // setup telemetry
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
     context.subscriptions.push(_telemetry);
-    _telemetry.sendTelemetryEvent("Start", {'pac.userId': readUserSettings().uniqueId});
+    _telemetry.sendTelemetryEvent("Start", { 'pac.userId': readUserSettings().uniqueId });
 
     // Setup context switches
-    if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl"){
+    if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl") {
         // PAC Interactive Login works when we are the UI is running on the same machine
         // as the extension (i.e. NOT remote), or the remote is WSL
         vscode.commands.executeCommand('setContext', 'pacCLI.authPanel.interactiveLoginSupported', true);
     }
     else {
-        _context.environmentVariableCollection.replace('PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE','true');
+        _context.environmentVariableCollection.replace('PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE', 'true');
     }
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
@@ -56,7 +56,7 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent('StartCommand', {'commandId': 'microsoft-powerapps-portals.preview-show'});
+                _telemetry.sendTelemetryEvent('StartCommand', { 'commandId': 'microsoft-powerapps-portals.preview-show' });
                 PortalWebView.createOrShow();
             }
         )
@@ -70,7 +70,7 @@ export async function activate(
                 !isCurrentDocumentEdited() &&
                 PortalWebView.checkDocumentIsHTML()
             ) {
-                if ( PortalWebView?.currentPanel) {
+                if (PortalWebView?.currentPanel) {
                     _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'NewPage' });
                     PortalWebView?.currentPanel?._update();
                 }
@@ -91,6 +91,11 @@ export async function activate(
             }
         })
     );
+
+    await processOnWillDeleteFiles(context);
+    await processOnDidDeleteFiles(context);
+    processOnWillRenameFiles(context);
+    processOnDidRenameFiles(context);
 
     if (vscode.window.registerWebviewPanelSerializer) {
         vscode.window.registerWebviewPanelSerializer(
@@ -130,6 +135,75 @@ export async function deactivate(): Promise<void> {
 
     deactivateDebugger();
 
+}
+
+async function processOnWillDeleteFiles(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.workspace.onWillDeleteFiles((e) => {
+            e.files.forEach(async f => {
+                if (
+                    isValidDocument()
+                ) {
+                    const edit: vscode.MessageItem = {
+                        isCloseAffordance: true, title: "Delete"
+                    };
+                    const siteMessage = "Places where this file has been used will be affected.";
+                    const options = { detail: siteMessage, modal: true };
+                    await vscode.window.showInformationMessage(`Are you sure you want to delete ${f.fsPath}`, options, edit);
+                }
+            })
+        })
+    );
+}
+
+async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.workspace.onDidDeleteFiles((e) => {
+            e.files.forEach(async f => {
+                if (
+                    isValidDocument()
+                ) {
+                    await vscode.window.setStatusBarMessage(`Please check output window for list of files affected by delete of ${f.fsPath}.`);
+                    const logChannel = await vscode.window.createOutputChannel(`deleted file ${f.fsPath}`, { log: true });
+                    logChannel.show(true);
+                    logChannel.info("hard dependency files");
+                    logChannel.warn("Any soft dependencies goes in warnings");
+                    logChannel.trace("Any long output you want to send");
+
+                    //PoC for searching files
+                    vscode.commands.executeCommand('workbench.action.findInFiles', { query: "(Pages.webpage)|(f46f005c-9d7f-ed11-81a9-6045bd06e503)", triggerSearch: true, isRegex: true });
+                }
+            })
+        })
+    );
+}
+
+function processOnWillRenameFiles(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.workspace.onWillRenameFiles((e) => {
+            e.files.forEach(f => {
+                if (
+                    isValidDocument()
+                ) {
+                    console.log("Renaming file:", f.oldUri.fsPath, f.newUri.fsPath)
+                }
+            })
+        })
+    );
+}
+
+function processOnDidRenameFiles(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.workspace.onDidRenameFiles((e) => {
+            e.files.forEach(f => {
+                if (
+                    isValidDocument()
+                ) {
+                    console.log("Renamed file:", f.oldUri.fsPath, f.newUri.fsPath)
+                }
+            })
+        })
+    );
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {
@@ -239,21 +313,26 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
 function registerClientToReceiveNotifications(client: LanguageClient) {
     client.onReady().then(() => {
         client.onNotification("telemetry/event", (payload: string) => {
-            const serverTelemetry = JSON.parse(payload) as ITelemetryData ;
-            if(!!serverTelemetry && !!serverTelemetry.eventName) {
+            const serverTelemetry = JSON.parse(payload) as ITelemetryData;
+            if (!!serverTelemetry && !!serverTelemetry.eventName) {
                 _telemetry.sendTelemetryEvent(serverTelemetry.eventName, serverTelemetry.properties, serverTelemetry.measurements);
             }
         });
     });
 }
 
-function isCurrentDocumentEdited() : boolean{
+function isCurrentDocumentEdited(): boolean {
     const workspaceFolderExists = vscode.workspace.workspaceFolders !== undefined;
     let currentPanelExists = false;
     if (PortalWebView?.currentPanel) {
         currentPanelExists = true;
     }
     return (workspaceFolderExists && currentPanelExists && PortalWebView.currentDocument === vscode?.window?.activeTextEditor?.document?.fileName);
+}
+
+function isValidDocument() {
+    // TODO - add conditions
+    return true;
 }
 
 class CliAcquisitionContext implements ICliAcquisitionContext {
