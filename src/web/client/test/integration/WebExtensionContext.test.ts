@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as fetch from "node-fetch";
 import * as vscode from "vscode";
 import sinon, { stub, assert } from "sinon";
 import { expect } from "chai";
@@ -13,6 +14,8 @@ import * as Constants from "../../common/constants";
 import * as authenticationProvider from "../../common/authenticationProvider";
 import { telemetryEventNames } from "../../telemetry/constants";
 import { IAttributePath } from "../../utilities/schemaHelperUtil";
+import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
+import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 
 describe("WebExtensionContext", () => {
     afterEach(() => {
@@ -81,32 +84,6 @@ describe("WebExtensionContext", () => {
         );
         expect(WebExtensionContext.isContextSet).eq(true);
         expect(WebExtensionContext.rootDirectory).eq(fileUri);
-    });
-
-    it("authenticateAndUpdateDataverseProperties_whenSessionDontHaveAccessToken_shouldThrowError", () => {
-        //Act
-
-        stub(vscode.authentication, "getSession").resolves({
-            accessToken: "",
-        } as vscode.AuthenticationSession);
-
-        const entityName = "webPages";
-        const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
-        const queryParamsMap = new Map<string, string>([
-            [schemaKey.SCHEMA_VERSION, "1.1"],
-            [Constants.queryParameters.ORG_URL, "PowerPages.com"],
-        ]);
-
-        stub(authenticationProvider, "dataverseAuthentication").resolves("");
-
-        WebExtensionContext.setWebExtensionContext(
-            entityName,
-            entityId,
-            queryParamsMap
-        );
-        //Action
-
-        WebExtensionContext.authenticateAndUpdateDataverseProperties();
     });
 
     it("reAuthenticate_whenDataverseAuthenticationDidNotReturnAccessToken_shouldSetDataverseAccessToken", async () => {
@@ -312,5 +289,134 @@ describe("WebExtensionContext", () => {
 
         //Assert
         expect(WebExtensionContext.defaultFileUri).eq(fileUri);
+    });
+
+    it("authenticateAndUpdateDataverseProperties_whenSessionDontHaveAccessToken_shouldThrowError", () => {
+        //Act
+
+        stub(vscode.authentication, "getSession").resolves({
+            accessToken: "",
+        } as vscode.AuthenticationSession);
+
+        const entityName = "webPages";
+        const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
+        const queryParamsMap = new Map<string, string>([
+            [schemaKey.SCHEMA_VERSION, "1.1"],
+            [Constants.queryParameters.ORG_URL, "PowerPages.com"],
+        ]);
+
+        stub(authenticationProvider, "dataverseAuthentication").resolves("");
+
+        WebExtensionContext.setWebExtensionContext(
+            entityName,
+            entityId,
+            queryParamsMap
+        );
+        //Action
+
+        WebExtensionContext.authenticateAndUpdateDataverseProperties();
+    });
+
+    it("authenticateAndUpdateDataverseProperties_withAccessToken", async () => {
+        //Act
+
+        const languageIdCodeMap = new Map<string, string>([["En", "English"]]);
+        const requestUrl = "make.powerPortal.com";
+        const accessToken =
+            "4cdf3b4d873a65135553afdf420a47dbc898ba0c1c0ece2407bbbf2bde02a68b";
+
+        const entityName = "webPages";
+        const entityId = "3355d5ec-b38d-46ca-a150-c00386b0a4be";
+        const queryParamsMap = new Map<string, string>([
+            [schemaKey.SCHEMA_VERSION, "powerPage"],
+            [Constants.queryParameters.ORG_URL, "PowerPages.com"],
+        ]);
+
+        const dataverseAuthentication = stub(
+            authenticationProvider,
+            "dataverseAuthentication"
+        ).resolves(accessToken);
+
+        const getCustomRequestURL = stub(
+            urlBuilderUtil,
+            "getCustomRequestURL"
+        ).returns(requestUrl);
+
+        const sendAPITelemetry = stub(
+            WebExtensionContext.telemetry,
+            "sendAPITelemetry"
+        );
+
+        const sendAPISuccessTelemetry = stub(
+            WebExtensionContext.telemetry,
+            "sendAPISuccessTelemetry"
+        );
+
+        const getLanguageIdCodeMap = stub(
+            schemaHelperUtil,
+            "getLanguageIdCodeMap"
+        ).returns(languageIdCodeMap);
+
+        const getwebsiteLanguageIdToPortalLanguageMap = stub(
+            schemaHelperUtil,
+            "getwebsiteLanguageIdToPortalLanguageMap"
+        ).returns(languageIdCodeMap);
+
+        const getWebsiteIdToLanguageMap = stub(
+            schemaHelperUtil,
+            "getWebsiteIdToLanguageMap"
+        ).returns(languageIdCodeMap);
+
+        const _mockFetch = stub(fetch, "default").resolves({
+            ok: true,
+            statusText: "statusText",
+            json: () => {
+                return new Promise(() => {
+                    return { value: "value" };
+                });
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
+
+        WebExtensionContext.setWebExtensionContext(
+            entityName,
+            entityId,
+            queryParamsMap
+        );
+        //Action
+
+        WebExtensionContext.authenticateAndUpdateDataverseProperties().then(
+            (a) => {
+                expect(WebExtensionContext.websiteIdToLanguage).eq(
+                    languageIdCodeMap
+                );
+
+                expect(
+                    WebExtensionContext.websiteLanguageIdToPortalLanguageMap
+                ).eq(languageIdCodeMap);
+
+                expect(WebExtensionContext.languageIdCodeMap).eq(
+                    languageIdCodeMap
+                );
+
+                expect(WebExtensionContext.dataverseAccessToken).eq(
+                    accessToken
+                );
+                assert.calledOnceWithExactly(
+                    dataverseAuthentication,
+                    "PowerPages.com"
+                );
+
+                assert.calledOnce(getCustomRequestURL);
+                assert.calledOnce(sendAPITelemetry);
+                assert.calledTwice(sendAPISuccessTelemetry);
+                assert.calledOnce(getLanguageIdCodeMap);
+                assert.calledOnce(getWebsiteIdToLanguageMap);
+                assert.calledOnce(getwebsiteLanguageIdToPortalLanguageMap);
+                assert.callCount(_mockFetch, 6);
+            }
+        );
+
+        //Assert
     });
 });

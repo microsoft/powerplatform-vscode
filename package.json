@@ -765,7 +765,7 @@
     "gulp-typescript": "^6.0.0-alpha.1",
     "mocha": "^9.2.2",
     "moment": "^2.29.4",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.6.8",
     "nyc": "^15.1.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
@@ -784,6 +784,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
