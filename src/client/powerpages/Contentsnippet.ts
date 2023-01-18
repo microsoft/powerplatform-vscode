@@ -10,19 +10,19 @@ nls.config({
 })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
-import { fileName, folderName, isNullOrEmpty } from "./utils/CommonUtils";
+import { formatFileName, formatFolderName, isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 
-export const contentSnippet = async (context: vscode.ExtensionContext) => {
-    const { name, type } = await myMultiStepInput();
+export const createContentSnippet = async (context: vscode.ExtensionContext) => {
+    const { contentSnippetName, contentSnippetType } = await getContentSnippetInputs();
 
-    if (!isNullOrEmpty(name)) {
+    if (!isNullOrEmpty(contentSnippetName)) {
         const terminal = vscode.window.createTerminal("Powerpages", "");
-        terminal.sendText(`cd data\n ../node_modules/.bin/yo @microsoft/powerpages:contentsnippet "${name}" "${type}"`);
+        terminal.sendText(`cd data\n ../node_modules/.bin/yo @microsoft/powerpages:contentsnippet "${contentSnippetName}" "${contentSnippetType}"`);
 
-        const folder = folderName(name);
-        const file = fileName(name);
+        const folder = formatFolderName(contentSnippetName);
+        const file = formatFileName(contentSnippetName);
 
         const watcher = vscode.workspace.createFileSystemWatcher(
             new vscode.RelativePattern(
@@ -51,7 +51,7 @@ export const contentSnippet = async (context: vscode.ExtensionContext) => {
 };
 
 
-async function myMultiStepInput() {
+async function getContentSnippetInputs() {
     const contentSnippetTypes: QuickPickItem[] = ["html", "text"].map(
         (label) => ({ label })
     );
@@ -60,8 +60,8 @@ async function myMultiStepInput() {
         title: string;
         step: number;
         totalSteps: number;
-        type: QuickPickItem | string;
-        name: string;
+        contentSnippetType: QuickPickItem | string;
+        contentSnippetName: string;
     }
 
     async function collectInputs() {
@@ -76,21 +76,21 @@ async function myMultiStepInput() {
     );
 
     async function inputName(input: MultiStepInput, state: Partial<State>) {
-        state.name = await input.showInputBox({
+        state.contentSnippetName = await input.showInputBox({
             title,
             step: 1,
             totalSteps: 2,
-            value: state.name || "",
+            value: state.contentSnippetName || "",
             placeholder: localize(
                 "microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.name.placeholder",
                 "Add content snippet name"
             ),
             validate: validateNameIsUnique,
         });
-        return (input: MultiStepInput) => picktype(input, state);
+        return (input: MultiStepInput) => pickType(input, state);
     }
 
-    async function picktype(input: MultiStepInput, state: Partial<State>) {
+    async function pickType(input: MultiStepInput, state: Partial<State>) {
         const pick = await input.showQuickPick({
             title,
             step: 2,
@@ -100,10 +100,10 @@ async function myMultiStepInput() {
                 "Select Type"
             ),
             items: contentSnippetTypes,
-            activeItem: typeof state.type !== "string" ? state.type : undefined,
+            activeItem: typeof state.contentSnippetType !== "string" ? state.contentSnippetType : undefined,
         });
 
-        state.type = pick.label;
+        state.contentSnippetType = pick.label;
     }
 
     async function validateNameIsUnique(name: string) {

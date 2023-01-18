@@ -21,7 +21,7 @@ import {
 } from "vscode-languageclient/node";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
-import { contentSnippet } from "./powerpages/Contentsnippet";
+import { createContentSnippet } from "./powerpages/Contentsnippet";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -67,7 +67,7 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.contentsnippet",
             () => {
-                contentSnippet(_context);
+                createContentSnippet(_context);
             }
         )
     )
