@@ -12,42 +12,17 @@ nls.config({
 })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
-import { fileName, isNullOrEmpty } from "./utils/CommonUtils";
+import { fileName, getWebTemplates, isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { DesktopFS } from "@microsoft/generator-powerpages/generators/desktopFs";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { Context } from "@microsoft/generator-powerpages/generators/context";
+
 import { MultiStepInput } from "./utils/MultiStepInput";
 
 // import{DesktopFS, Context} from "@microsoft/generator-powerpages";
 
-interface WebTemplate {
-    name: string;
-    value: string;
-}
 
-async function getWebTemplates(
-    rootDir: string,
-    portalDir: string,
-    fs: DesktopFS
-): Promise<{
-    webTemplateNames: string[];
-    webTemplateMap: Map<string, string>;
-}> {
-    const context = Context.getInstance(portalDir, fs);
-    await context.init(["WebTemplate"]);
-    const webTemplates: WebTemplate[] = context.getWebTemplates();
-
-    const webTemplateNames = webTemplates.map((template) => template.name);
-    const webTemplateMap = new Map<string, string>();
-    webTemplates.forEach((template) => {
-        webTemplateMap.set(template.name, template.value);
-    });
-    return { webTemplateNames, webTemplateMap };
-}
 
 export const pageTemplate = async (context: vscode.ExtensionContext) => {
     // Get the root directory of the workspace
@@ -60,13 +35,12 @@ export const pageTemplate = async (context: vscode.ExtensionContext) => {
     const portalDir = `${rootDir}\\data`;
     const fs: DesktopFS = new DesktopFS();
     const { webTemplateNames, webTemplateMap } = await getWebTemplates(
-        rootDir,
         portalDir,
         fs
     );
 
     // Show a quick pick to enter name select the web template
-    const pageTemplateInputs = await myMultiStepInput(webTemplateNames);
+    const pageTemplateInputs = await getMultiStepInput(webTemplateNames);
 
     const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
 
@@ -77,11 +51,17 @@ export const pageTemplate = async (context: vscode.ExtensionContext) => {
         vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
-                title: "Creating Page Template...",
+                title: localize(
+                    "microsoft-powerapps-portals.webExtension.pagetemplate.progress.notification",
+                    "Creating page template..."
+                ),
                 cancellable: true,
             },
             async (progress) => {
-                progress.report({ message: "Running command..." });
+                progress.report({ message: localize(
+                    "microsoft-powerapps-portals.webExtension.pagetemplate.progress.report",
+                    "Running command..."
+                )});
 
                 // Execute terminal command
                 const terminal = vscode.window.createTerminal("Powerpages", "");
@@ -113,7 +93,7 @@ export const pageTemplate = async (context: vscode.ExtensionContext) => {
     }
 };
 
-async function myMultiStepInput(webTemplateNames: string[]) {
+async function getMultiStepInput(webTemplateNames: string[]) {
     const webTemplates: QuickPickItem[] = webTemplateNames.map((label) => ({
         label,
     }));
@@ -149,10 +129,10 @@ async function myMultiStepInput(webTemplateNames: string[]) {
             ),
             validate: validateNameIsUnique,
         });
-        return (input: MultiStepInput) => picktype(input, state);
+        return (input: MultiStepInput) => pickType(input, state);
     }
 
-    async function picktype(input: MultiStepInput, state: Partial<State>) {
+    async function pickType(input: MultiStepInput, state: Partial<State>) {
         const pick = await input.showQuickPick({
             title,
             step: 2,
