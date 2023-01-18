@@ -147,12 +147,12 @@ async function processOnWillDeleteFiles(context: vscode.ExtensionContext) {
                 if (
                     isValidDocument()
                 ) {
-                    const edit: vscode.MessageItem = {
-                        isCloseAffordance: true, title: "Delete"
-                    };
-                    const siteMessage = "Places where this file has been used will be affected.";
-                    const options = { detail: siteMessage, modal: true };
-                    await vscode.window.showInformationMessage(`Are you sure you want to delete ${f.fsPath}`, options, edit);
+                    // const edit: vscode.MessageItem = {
+                    //     isCloseAffordance: true, title: "Delete"
+                    // };
+                    // const siteMessage = "Places where this file has been used will be affected.";
+                    // const options = { detail: siteMessage, modal: true };
+                    // await vscode.window.showInformationMessage(`Are you sure you want to delete ${f.fsPath}`, options, edit);
                 }
             })
         })
@@ -166,15 +166,24 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
                 if (
                     isValidDocument()
                 ) {
-                    await vscode.window.setStatusBarMessage(`Please check output window for list of files affected by delete of ${f.fsPath}.`);
-                    const logChannel = await vscode.window.createOutputChannel(`deleted file ${f.fsPath}`, { log: true });
-                    logChannel.show(true);
-                    logChannel.info("hard dependency files");
-                    logChannel.warn("Any soft dependencies goes in warnings");
-                    logChannel.trace("Any long output you want to send");
+                    const fileCompleteName = f.fsPath.split("\\").pop();
+                    const fileName = fileCompleteName?.split('.').shift();
+                    const edit: vscode.MessageItem = {
+                        isCloseAffordance: true, title: "Delete"
+                    };
+                    const siteMessage = "Places where this file has been used will be affected.";
+                    const options = { detail: siteMessage, modal: true };
+                    await vscode.window.showInformationMessage(`Are you sure you want to delete ${f.fsPath}`, options, edit);
+
+                    //  vscode.window.setStatusBarMessage(`Please check output window for list of files affected by delete of ${fileCompleteName}}.`);
+                    // const logChannel = await vscode.window.createOutputChannel(`deleted file ${f.fsPath}`, { log: true });
+                    // logChannel.show(true);
+                    // logChannel.info("hard dependency files");
+                    // logChannel.warn("Any soft dependencies goes in warnings");
+                    // logChannel.trace("Any long output you want to send");
 
                     //PoC for searching files
-                    vscode.commands.executeCommand('workbench.action.findInFiles', { query: "(Pages.webpage)|(f46f005c-9d7f-ed11-81a9-6045bd06e503)", triggerSearch: true, isRegex: true });
+                    vscode.commands.executeCommand('workbench.action.findInFiles', { query: `(${fileName})|(f46f005c-9d7f-ed11-81a9-6045bd06e503)`, triggerSearch: true, isRegex: true });
                 }
             })
         })
