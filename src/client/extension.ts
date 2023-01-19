@@ -10,7 +10,8 @@ import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import * as path from "path";
 import { PortalWebView } from './PortalWebView';
-import { AI_KEY } from '../common/telemetry/generated/telemetryConfiguration';
+import { vscodeExtAppInsightsResourceProvider } from '../common/telemetry-generated/telemetryConfiguration';
+import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
 import { ITelemetryData } from "../common/TelemetryData";
 
 import {
@@ -34,7 +35,9 @@ export async function activate(
     _context = context;
 
     // setup telemetry
-    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
+    const telemetryEnv = AppTelemetryConfigUtility.createGlobalTelemetryEnvironment();
+    const appInsightsResource = vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(telemetryEnv.dataBoundary);
+    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, appInsightsResource.instrumentationKey);
     context.subscriptions.push(_telemetry);
     _telemetry.sendTelemetryEvent("Start", {'pac.userId': readUserSettings().uniqueId});
 

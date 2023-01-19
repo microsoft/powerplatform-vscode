@@ -12,11 +12,15 @@ import { PortalsFS } from "./dal/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters } from "./common/errorHandler";
 import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 import { convertStringtoBase64 } from './utilities/commonUtil';
+import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
-    WebExtensionContext.telemetry.setTelemetryReporter(context.extension.id, context.extension.packageJSON.version);
+    // TODO: Determine how to determine the user's dataBoundary
+    const dataBoundary = undefined;
+    const appInsightsResource = vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(dataBoundary);
+    WebExtensionContext.telemetry.setTelemetryReporter(context.extension.id, context.extension.packageJSON.version, appInsightsResource);
     context.subscriptions.push(WebExtensionContext.telemetry.getTelemetryReporter());
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
