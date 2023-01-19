@@ -7,6 +7,7 @@
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
     "test": "node node_modules/gulp/bin/gulp.js test",
+    "testWebCoverage": "node node_modules/gulp/bin/gulp.js testWebCoverage",
     "ci": "node node_modules/gulp/bin/gulp.js ci",
     "dist": "node node_modules/gulp/bin/gulp.js dist",
     "translations-export": "node node_modules/gulp/bin/gulp.js translationsExport",
@@ -20,24 +21,7 @@
     "compile-tests": "node node_modules/gulp/bin/gulp.js compileIntegrationTests",
     "test-integration": "node node_modules/gulp/bin/gulp.js testInt",
     "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt",
-    "coverage": "nyc npm run test"
-  },
-  "nyc": {
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "all": "true",
-    "include": [
-      "**/*.ts"
-    ],
-    "exclude": [
-      "**/*.test.ts"
-    ],
-    "reporter": [
-      "html",
-      "lcov",
-      "text",
-      "text-summary"
-    ],
-    "report-dir": "coverage"
+    "coverage": "nyc npm run test-web-integration"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -731,7 +715,10 @@
     ]
   },
   "devDependencies": {
-    "@istanbuljs/nyc-config-typescript": "1.0.2",
+    "@babel/register": "^7.12.10",
+    "babel-plugin-istanbul": "^6.0.0",
+    "@babel/preset-typescript": "^7.12.7",
+    "@istanbuljs/nyc-config-typescript": "1.0.1",
     "@types/chai": "^4.2.14",
     "@types/fs-extra": "^9.0.11",
     "@types/glob": "^7.1.3",
@@ -784,6 +771,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@vscode/extension-telemetry": "^0.6.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
