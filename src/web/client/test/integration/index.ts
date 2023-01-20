@@ -8,7 +8,7 @@ import Mocha from "mocha";
 import glob from "glob";
 import * as vscode from "vscode";
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars
-const NYC = require('nyc');
+//const NYC = require('nyc');
 
 // Simulates the recommended config option
 // extends: "@istanbuljs/nyc-config-typescript",
@@ -22,30 +22,36 @@ const NYC = require('nyc');
 
 async function addTests(): Promise<void> {
     // Ensure the dev-mode extension is activated
+    
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars
+    const NYC = require('nyc');
+    const nyc = new NYC({
+        cwd: path.join(__dirname, '..','..','..',"..",".."),
+        reporter: ['text-summary', 'html'],
+        all: true,
+        instrument: true,
+        hookRequire: true,
+        hookRunInContext: true,
+        hookRunInThisContext: true,
+        sourceMap: true,
+        include: ["**/*.ts"],
+        exclude: ["**/*.test.ts","**/*.js","**/*.index.js"],
+      });
+      nyc.reset();
+      nyc.wrap();
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await vscode.extensions
         .getExtension("microsoft-IsvExpTools.powerplatform-vscode")!
         .activate();
         console.log("tttt->"+path.join(__dirname, '..'));
-        const nyc = new NYC({
-             cwd: path.join(__dirname, '..','..','..','..','..'),
-             reporter: ['text-summary', 'html','lcov','text'],
-             all: true,
-             extends: "@istanbuljs/nyc-config-typescript",
-             instrument: true,
-             hookRequire: true,
-             hookRunInContext: true,
-             hookRunInThisContext: true,
-             include: [  "out/**/*.ts" ],
-             exclude: [  "out/**/*.test.ts" ],
-           });
-           nyc.wrap();
+       
  
-           const myFilesRegex = /powerplatform-vscode/;
-   const filterFn = myFilesRegex.test.bind(myFilesRegex);
-   if (Object.keys(require.cache).filter(filterFn).length > 1) {
-     console.warn('NYC initialized after modules were loaded', Object.keys(require.cache).filter(filterFn));
-   }
+//            const myFilesRegex = /powerplatform-vscode/;
+//    const filterFn = myFilesRegex.test.bind(myFilesRegex);
+//    if (Object.keys(require.cache).filter(filterFn).length > 1) {
+//      console.warn('NYC initialized after modules were loaded', Object.keys(require.cache).filter(filterFn));
+//    }
  
            
     // Create the mocha test
@@ -74,14 +80,18 @@ async function addTests(): Promise<void> {
                         reject(new Error(`${failures} tests failed.`));
                     } else {
                         resolve();
-                        nyc.writeCoverageFile();
-                        await nyc.report();
-                        console.log(await captureStdout(nyc.report.bind(nyc)));
+                        console.log("here--------")
+                        // nyc.writeCoverageFile();
+                        // nyc.report();
+                      //  console.log(await captureStdout(nyc.report.bind(nyc)));
                     }
                 });
             } catch (err) {
                 console.error(err);
                 reject(err);
+            }finally{
+                nyc.writeCoverageFile();
+                nyc.report();
             }
         });
     });
