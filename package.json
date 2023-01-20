@@ -772,6 +772,7 @@
     "process": "^0.11.10",
     "ps-list": "^7.2.0",
     "sinon": "^14.0.0",
+    "source-map-support": "^0.5.19",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",

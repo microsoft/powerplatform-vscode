@@ -85,7 +85,12 @@ const webConfig = {
             "os": require.resolve("os-browserify"),
             "path": require.resolve("path-browserify"),
             'stream': require.resolve("stream-browserify"),
-            'util': false
+            'util': false,
+            "child_process": false,
+            "crypto": false,
+            "vm":false,
+            "module": false,
+            "../self-coverage-helper":false
         }
     },
     module: {

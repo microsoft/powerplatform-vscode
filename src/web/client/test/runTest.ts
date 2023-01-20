@@ -20,11 +20,19 @@ async function main() {
             "./integration/index"
         );
 
+        const basedir = path.resolve(__dirname, '../../../../');
         // Download VS Code, unzip it and run the integration test
         await runTests({
-            version: 'insiders',
+           // version: 'insiders',
             extensionDevelopmentPath,
-            extensionTestsPath
+            extensionTestsPath,
+            launchArgs: [
+                basedir,
+                `--extensions-dir=${path.resolve(basedir, 'node_modules/.code-extensions')}`,
+                '--disable-extension=ms-vscode.js-debug',
+                '--disable-user-env-probe',
+                '--disable-workspace-trust',
+              ],
         });
     } catch (err) {
         console.error("Failed to run tests");
