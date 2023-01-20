@@ -24,3 +24,8 @@ export const SETTINGS_DEBUGGER_DEFAULT_PORT = 9222;
  * Default value for the `powerPlatform.experimental.enablePcfDebuggingFeatures` flag.
  */
 export const DEBUGGER_ENABLED_DEFAULT_VALUE = false;
+
+
+export const entityFolderName = [
+    "web-pages"
+];
