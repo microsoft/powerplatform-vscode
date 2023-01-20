@@ -4,19 +4,9 @@
  */
 
 import sinon, { stub, assert } from "sinon";
-import TelemetryReporter from "@vscode/extension-telemetry";
-import { AppInsightsResource } from "../../../../common/pp-tooling-telemetry-node";
 import { queryParameters } from "../../common/constants";
 import { sanitizeURL } from "../../utilities/urlBuilderUtil";
 import { telemetryEventNames } from "../../telemetry/constants";
-import {
-    IPortalWebExtensionInitQueryParametersTelemetryData,
-    IWebExtensionAPITelemetryData,
-    IWebExtensionExceptionTelemetryData,
-    IWebExtensionInitPathTelemetryData,
-    IWebExtensionPerfTelemetryData,
-} from "../../telemetry/webExtensionTelemetryInterface";
-import WebExtensionContext from "../../../client/WebExtensionContext";
 import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
 import { vscodeExtAppInsightsResourceProvider } from "../../../../common/telemetry-generated/telemetryConfiguration";
 import { expect } from "chai";
@@ -250,5 +240,301 @@ describe("webExtensionTelemetry", () => {
 
         //Assert
         assert.calledOnceWithExactly(sendTelemetryEvent, eventName, properties);
+    });
+
+    it("sendAPITelemetry_whenErrorMessageIsPassed_shouldCallsendTelemetryException", () => {
+        //Act
+        const URL = "powerPages.com";
+        const entity = "webPages";
+        const httpMethod = "GET";
+        const entityFileExtensionType = "adx";
+        const isSuccessful = true;
+        const duration = 4;
+        const errorMessage = "this is error";
+        const eventName = "update";
+
+        const sendTelemetryException = stub(
+            telemetry,
+            "sendTelemetryException"
+        );
+
+        const properties = {
+            url: sanitizeURL(URL),
+            entity: entity,
+            httpMethod: httpMethod,
+            entityFileExtensionType: entityFileExtensionType,
+            eventName: "update",
+            isSuccessful: "true",
+        };
+
+        //Action
+
+        webExtensionTelemetry.sendAPITelemetry(
+            URL,
+            entity,
+            httpMethod,
+            entityFileExtensionType, // TODO: Pass these as function properties parameters
+            isSuccessful,
+            duration,
+            errorMessage,
+            eventName
+        );
+
+        const measurements = {
+            durationInMillis: duration,
+        };
+        //Assert
+        const error: Error = new Error(errorMessage);
+        assert.calledOnce(sendTelemetryException);
+
+        const sendTelemetryExceptionCalls =
+            sendTelemetryException.getCalls()[0];
+
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(measurements);
+    });
+
+    it("sendAPITelemetry_whenErrorMessageNotPassed_shouldCallsendTelemetryException", () => {
+        //Act
+        const URL = "powerPages.com";
+        const entity = "webPages";
+        const httpMethod = "GET";
+        const entityFileExtensionType = "adx";
+        const isSuccessful = true;
+        const duration = 4;
+        const errorMessage = "";
+        const eventName = "update";
+
+        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
+
+        const properties = {
+            url: sanitizeURL(URL),
+            entity: entity,
+            httpMethod: httpMethod,
+            entityFileExtensionType: entityFileExtensionType,
+            isSuccessful: "true",
+        };
+
+        //Action
+
+        webExtensionTelemetry.sendAPITelemetry(
+            URL,
+            entity,
+            httpMethod,
+            entityFileExtensionType, // TODO: Pass these as function properties parameters
+            isSuccessful,
+            duration,
+            errorMessage,
+            eventName
+        );
+
+        const measurements = {
+            durationInMillis: duration,
+        };
+        //Assert
+        assert.calledOnceWithExactly(
+            sendTelemetryEvent,
+            eventName,
+            properties,
+            measurements
+        );
+    });
+
+    it("sendAPITelemetry_whenIsSuccessfulAndDurationIsUndefined_shouldSetDurationInMillisAs0orIsSuccessfulAsBlankString", () => {
+        //Act
+        const URL = "powerPages.com";
+        const entity = "webPages";
+        const httpMethod = "GET";
+        const entityFileExtensionType = "adx";
+        const isSuccessful = undefined;
+        const duration = undefined;
+        const errorMessage = "";
+        const eventName = "update";
+
+        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
+
+        const properties = {
+            url: sanitizeURL(URL),
+            entity: entity,
+            httpMethod: httpMethod,
+            entityFileExtensionType: entityFileExtensionType,
+            isSuccessful: "",
+        };
+
+        //Action
+
+        webExtensionTelemetry.sendAPITelemetry(
+            URL,
+            entity,
+            httpMethod,
+            entityFileExtensionType, // TODO: Pass these as function properties parameters
+            isSuccessful,
+            duration,
+            errorMessage,
+            eventName
+        );
+
+        const measurements = {
+            durationInMillis: 0,
+        };
+        //Assert
+        assert.calledOnceWithExactly(
+            sendTelemetryEvent,
+            eventName,
+            properties,
+            measurements
+        );
+    });
+
+    it("sendAPITelemetry_whenIsSuccessfulIsFalse_shouldSetIsSuccessfulAsFalse", () => {
+        //Act
+        const URL = "powerPages.com";
+        const entity = "webPages";
+        const httpMethod = "GET";
+        const entityFileExtensionType = "adx";
+        const isSuccessful = false;
+        const duration = undefined;
+        const errorMessage = "";
+        const eventName = "update";
+
+        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
+
+        const properties = {
+            url: sanitizeURL(URL),
+            entity: entity,
+            httpMethod: httpMethod,
+            entityFileExtensionType: entityFileExtensionType,
+            isSuccessful: "false",
+        };
+
+        //Action
+        webExtensionTelemetry.sendAPITelemetry(
+            URL,
+            entity,
+            httpMethod,
+            entityFileExtensionType, // TODO: Pass these as function properties parameters
+            isSuccessful,
+            duration,
+            errorMessage,
+            eventName
+        );
+
+        const measurements = {
+            durationInMillis: 0,
+        };
+        //Assert
+        assert.calledOnceWithExactly(
+            sendTelemetryEvent,
+            eventName,
+            properties,
+            measurements
+        );
+    });
+
+    it("sendAPISuccessTelemetry_whenCall_shouldCallSendAPITelemetryWithoutErrorMessage", () => {
+        //Act
+        const URL = "powerPages.com";
+        const entity = "webPages";
+        const httpMethod = "GET";
+        const entityFileExtensionType = "adx";
+        const duration = 3;
+        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
+        const properties = {
+            url: sanitizeURL(URL),
+            entity: entity,
+            httpMethod: httpMethod,
+            entityFileExtensionType: entityFileExtensionType,
+            isSuccessful: "true",
+        };
+
+        const measurements = {
+            durationInMillis: duration,
+        };
+
+        //Action
+        webExtensionTelemetry.sendAPISuccessTelemetry(
+            URL,
+            entity,
+            httpMethod,
+            duration,
+            entityFileExtensionType
+        );
+
+        //Assert
+        assert.calledOnceWithExactly(
+            sendTelemetryEvent,
+            telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
+            properties,
+            measurements
+        );
+    });
+
+    it("sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException", () => {
+        //Act
+        const URL = "powerPages.com";
+        const entity = "webPages";
+        const httpMethod = "GET";
+        const entityFileExtensionType = "adx";
+        const duration = 3;
+        const errorMessage = "this is error message";
+        const sendTelemetryException = stub(
+            telemetry,
+            "sendTelemetryException"
+        );
+        const properties = {
+            url: sanitizeURL(URL),
+            entity: entity,
+            httpMethod: httpMethod,
+            entityFileExtensionType: entityFileExtensionType,
+            eventName: telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+            isSuccessful: "false",
+        };
+
+        const measurements = {
+            durationInMillis: duration,
+        };
+
+        //Action
+        webExtensionTelemetry.sendAPIFailureTelemetry(
+            URL,
+            entity,
+            httpMethod,
+            duration,
+            errorMessage,
+            entityFileExtensionType
+        );
+
+        //Assert
+        const error: Error = new Error(errorMessage);
+        assert.calledOnce(sendTelemetryException);
+
+        const sendTelemetryExceptionCalls =
+            sendTelemetryException.getCalls()[0];
+
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(measurements);
+    });
+
+    it("sendPerfTelemetry_whenSendProperValues_shouldCallWithAllValidData", () => {
+        //Act
+        const eventName = telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS;
+        const duration = 3;
+        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
+
+        //Action
+        webExtensionTelemetry.sendPerfTelemetry(eventName, duration);
+
+        //Assert
+        const measurements = {
+            durationInMillis: 3,
+        };
+        assert.calledOnceWithExactly(
+            sendTelemetryEvent,
+            telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
+            undefined,
+            measurements
+        );
     });
 });
