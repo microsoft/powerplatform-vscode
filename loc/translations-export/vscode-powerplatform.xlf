@@ -244,9 +244,6 @@ The {2} represents Solution's Version number</note>
     </trans-unit>
   </body></file>
   <file original="./client/powerpages/Contentsnippet" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="microsoft-powerapps-portals.webExtension.contentsnippet.create.message">
-      <source xml:lang="en">Creating Content Snippet...</source>
-    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.title">
       <source xml:lang="en">New Content Snippet</source>
     </trans-unit>

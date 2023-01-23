@@ -10,46 +10,88 @@ nls.config({
 })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
-import { formatFileName, formatFolderName, isNullOrEmpty } from "./utils/CommonUtils";
+import {
+    checkPackageExistence,
+    formatFileName,
+    formatFolderName,
+    isNullOrEmpty,
+} from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
+import { exec } from "child_process";
+import path from "path";
 
-export const createContentSnippet = async (context: vscode.ExtensionContext) => {
-    const { contentSnippetName, contentSnippetType } = await getContentSnippetInputs();
+export const createContentSnippet = async (
+    context: vscode.ExtensionContext
+) => {
+    if (await checkPackageExistence("yo")) {
+        //TODO: check for powerpages package also
+        const { contentSnippetName, contentSnippetType } =
+            await getContentSnippetInputs();
 
-    if (!isNullOrEmpty(contentSnippetName)) {
-        const terminal = vscode.window.createTerminal("Powerpages", "");
-        terminal.sendText(`cd data\n ../node_modules/.bin/yo @microsoft/powerpages:contentsnippet "${contentSnippetName}" "${contentSnippetType}"`);
+        if (!isNullOrEmpty(contentSnippetName)) {
+            const folder = formatFolderName(contentSnippetName);
+            const file = formatFileName(contentSnippetName);
 
-        const folder = formatFolderName(contentSnippetName);
-        const file = formatFileName(contentSnippetName);
+            const watcher = vscode.workspace.createFileSystemWatcher(
+                new vscode.RelativePattern(
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    vscode.workspace.workspaceFolders![0],
+                    path.join(
+                        "content-snippets",
+                        folder,
+                        `${file}.*.contentsnippet.yml`
+                    )
+                ),
+                false,
+                true,
+                true
+            );
 
-        const watcher = vscode.workspace.createFileSystemWatcher(
-            new vscode.RelativePattern(
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                vscode.workspace.workspaceFolders![0],
-                `**/content-snippets/${folder}/${file}.en-US.contentsnippet.yml`
-            ),
-            false,
-            true,
-            true
-        );
+            context.subscriptions.push(watcher);
+            const portalDir = `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}`;
+            const yoPath = path.join("node_modules", ".bin", "yo");
+            const packagePath =
+                "@microsoft/powerpages:contentsnippet";
+            const command = `${yoPath} ${packagePath} "${contentSnippetName}" "${contentSnippetType}"`;
 
-        context.subscriptions.push(watcher);
+            vscode.window
+                .withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: "Creating Content Snippet...",
+                    },
+                    () => {
+                        return new Promise((resolve, reject) => {
+                            exec(
+                                command,
+                                { cwd: portalDir },
+                                (error, stderr) => {
+                                    if (error) {
+                                        vscode.window.showErrorMessage(
+                                            error.message
+                                        );
+                                        reject(error);
+                                    } else {
+                                        resolve(stderr);
+                                    }
+                                }
+                            );
+                        });
+                    }
+                )
+                .then(() => {
+                    vscode.window.showInformationMessage(
+                        "Content Snippet Created!"
+                    );
+                });
 
-        vscode.window.withProgress({
-            location: vscode.ProgressLocation.Notification,
-            cancellable: true,
-            title: localize("microsoft-powerapps-portals.webExtension.contentsnippet.create.message", "Creating Content Snippet..."),
-        }, async () => {
             watcher.onDidCreate(async (uri) => {
                 await vscode.window.showTextDocument(uri);
-                terminal.dispose();
             });
-        });
+        }
     }
 };
-
 
 async function getContentSnippetInputs() {
     const contentSnippetTypes: QuickPickItem[] = ["html", "text"].map(
@@ -100,7 +142,10 @@ async function getContentSnippetInputs() {
                 "Select Type"
             ),
             items: contentSnippetTypes,
-            activeItem: typeof state.contentSnippetType !== "string" ? state.contentSnippetType : undefined,
+            activeItem:
+                typeof state.contentSnippetType !== "string"
+                    ? state.contentSnippetType
+                    : undefined,
         });
 
         state.contentSnippetType = pick.label;
