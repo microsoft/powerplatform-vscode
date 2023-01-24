@@ -125,7 +125,7 @@ async function getContentSnippetInputs() {
             value: state.contentSnippetName || "",
             placeholder: localize(
                 "microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.name.placeholder",
-                "Add content snippet name"
+                "Add content snippet name (name should be unique)"
             ),
             validate: validateNameIsUnique,
         });
