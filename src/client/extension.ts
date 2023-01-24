@@ -152,12 +152,12 @@ async function processOnWillDeleteFiles(context: vscode.ExtensionContext) {
                 if (
                     isValidDocument()
                 ) {
-                    // const edit: vscode.MessageItem = {
-                    //     isCloseAffordance: true, title: "Delete"
-                    // };
-                    // const siteMessage = "Places where this file has been used will be affected.";
-                    // const options = { detail: siteMessage, modal: true };
-                    // await vscode.window.showInformationMessage(`Are you sure you want to delete ${f.fsPath}`, options, edit);
+                    const edit: vscode.MessageItem = {
+                        isCloseAffordance: true, title: "Delete"
+                    };
+                    const siteMessage = "Places where this file has been used will be affected.";
+                    const options = { detail: siteMessage, modal: true };
+                    await vscode.window.showInformationMessage(`Before the delete command ${f.fsPath}`, options, edit);
                 }
             })
         })
