@@ -40,7 +40,6 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
                             if (fileProperties.fileCompleteName) {
                                 const pathUris = getDeletePathUris(f.fsPath, fileEntityType, fileProperties);
                                 pathUris.forEach(pathUri => {
-                                    console.log(fileProperties.fileCompleteName, fileProperties.fileName, pathUri);
                                     vscode.workspace.fs.delete(pathUri, { recursive: true, useTrash: true });
                                 });
 
