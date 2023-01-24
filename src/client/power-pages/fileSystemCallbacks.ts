@@ -16,7 +16,7 @@ export async function handleFileSystemCallbacks(context: vscode.ExtensionContext
 async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onDidDeleteFiles(async (e) => {
-            let deleteInfoMessage = `Are you sure you want to delete these files`;
+            let deleteInfoMessage = `Are you sure you want to delete these files?`;
             const deleteInfoMessageDetail = "Places where this file has been used might be affected.";
             const messageOptions = { detail: deleteInfoMessageDetail, modal: true };
             const edit: vscode.MessageItem = {
@@ -26,19 +26,18 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
             if (e.files.length === 1) {
                 const fileProperties = getFileProperties(e.files[0].fsPath);
                 if (fileProperties.fileName) {
-                    deleteInfoMessage = `Are you sure you want to delete ${fileProperties.fileName}`;
+                    deleteInfoMessage = `Are you sure you want to delete "${fileProperties.fileName}"?`;
                 }
             }
 
             await vscode.window.showInformationMessage(deleteInfoMessage, messageOptions, edit).then(selection => {
-                if (selection) {   //PoC for searching files
+                if (selection) {
                     e.files.forEach(async f => {
                         const fileEntityType = isValidDocument(f.fsPath)
                         if (fileEntityType !== PowerPagesEntityType.UNKNOWN) {
                             const fileProperties = getFileProperties(f.fsPath);
 
                             if (fileProperties.fileCompleteName) {
-                                //Delete all files
                                 const pathUris = getDeletePathUris(f.fsPath, fileEntityType, fileProperties);
                                 pathUris.forEach(pathUri => {
                                     console.log(fileProperties.fileCompleteName, fileProperties.fileName, pathUri);

@@ -50,11 +50,26 @@ export function getDeletePathUris(fsPath: string,
     fileProperties: IFileProperties
 ): vscode.Uri[] {
     const pathUris: vscode.Uri[] = [];
-    if (fileEntityType === PowerPagesEntityType.WEBPAGES) {
+    const deletePathUri = vscode.Uri.file(fsPath.substring(0, fileProperties.fileNameIndex));
+    if (fileEntityType === PowerPagesEntityType.WEBPAGES && isValidUri(deletePathUri.fsPath)) {
         pathUris.push(vscode.Uri.file(fsPath.substring(0, fileProperties.fileNameIndex)));
     }
 
     return pathUris;
+}
+
+export function isValidUri(fsPath: string): boolean {
+    let validUri = true;
+
+    EntityFolderName.forEach(folderName => {
+        folderName = folderName.toLowerCase();
+
+        if (fsPath.endsWith(`\\${folderName}\\`)) {
+            validUri = false;
+        }
+    });
+
+    return validUri;
 }
 
 
