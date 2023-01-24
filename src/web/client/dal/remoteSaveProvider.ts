@@ -64,7 +64,10 @@ async function getSaveParameters(
             fileDataMap,
             attributePath,
             webFileV2);
+
         saveCallParameters.requestInit.headers = getHeader(accessToken, useOctetStreamContentType(entityName, attributePath.source));
+        if (webFileV2) { saveCallParameters.requestInit.headers = { ...saveCallParameters.requestInit.headers, 'x-ms-file-name': fileDataMap.get(fileUri.fsPath)?.fileName as string } }
+
         saveCallParameters.requestUrl = getPatchRequestUrl(entityName, attributePath.source, requestUrl);
     } else {
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
