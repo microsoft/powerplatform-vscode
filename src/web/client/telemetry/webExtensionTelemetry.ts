@@ -13,8 +13,8 @@ import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITe
 export class WebExtensionTelemetry {
     private _telemetry: TelemetryReporter | undefined;
 
-    setTelemetryReporter(extensionId: string, extensionVersion: string, appInsightsResource: AppInsightsResource) {
-        this._telemetry = new TelemetryReporter(extensionId, extensionVersion, appInsightsResource.instrumentationKey);
+    setTelemetryReporter(extensionId: string, extensionVersion: string, appInsightsResource?: AppInsightsResource) {
+        this._telemetry = new TelemetryReporter(extensionId, extensionVersion, appInsightsResource?.instrumentationKey ?? "");
     }
 
     getTelemetryReporter() {
