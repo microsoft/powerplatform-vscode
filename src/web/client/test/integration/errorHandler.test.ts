@@ -24,12 +24,13 @@ import {
     checkMandatoryPathParameters,
     checkMandatoryQueryParameters,
 } from "../../common/errorHandler";
+
 describe("errorHandler", () => {
     afterEach(() => {
         Sinon.restore();
     });
 
-    it("showErrorDialog_shouldCallShowErrorMessage_whenDetailMessageAndErrorString", () => {
+    it("showErrorDialog_whenDetailMessageAndErrorStringPassed_shouldCallShowErrorMessage", () => {
         //Act
         const errorString = "this is error message";
         const detailMessage = "not able to open";
@@ -47,7 +48,7 @@ describe("errorHandler", () => {
         );
     });
 
-    it("showErrorDialog_shouldCallShowErrorMessage_whenDetailMessagesIsNotPassed", () => {
+    it("showErrorDialog_whenDetailMessagesIsNotPassed_shouldCallShowErrorMessage", () => {
         //Act
         const errorString = "this is error message";
         const _mockShowErrorMessage = stub(vscode.window, "showErrorMessage");
@@ -64,7 +65,7 @@ describe("errorHandler", () => {
         );
     });
 
-    it("removeEncodingFromParameters_shouldDecodeSCHEMAVERSIONAndWEBSITENAME", () => {
+    it("removeEncodingFromParameters_whenEncodedStrginPassed_shouldDecodeSCHEMAVERSIONAndWEBSITENAME", () => {
         //Act
         const queryParamsMap = new Map<string, string>([
             [schemaKey.SCHEMA_VERSION, "3A%20test_file_name"],
@@ -87,7 +88,7 @@ describe("errorHandler", () => {
         expect(websiteName).eq("3A test_test_webSiteName");
     });
 
-    it("removeEncodingFromParameters_shouldMapPORTALSFOLDERNAMEDEFAULT_whenWebsiteNameIsBlank_", () => {
+    it("removeEncodingFromParameters__whenWebsiteNameIsBlank_shouldMapPORTALSFOLDERNAMEDEFAULT", () => {
         //Act
         const queryParamsMap = new Map<string, string>([
             [schemaKey.SCHEMA_VERSION, "3A%20test_file_name"],
@@ -111,7 +112,7 @@ describe("errorHandler", () => {
         expect(websiteName).eq(portalFolderName);
     });
 
-    it("checkMandatoryParameters_shouldReturnTrue_whenAppNameIsPortalAndEntityAndEntityIdHavingValues", () => {
+    it("checkMandatoryParameters_whenAppNameIsPortalAndEntityAndEntityIdHavingValues_shouldReturnTrue", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
@@ -138,7 +139,7 @@ describe("errorHandler", () => {
         expect(result).true;
     });
 
-    it("checkMandatoryParameters_shouldReturnFalseWhenEntityIsBlank", () => {
+    it("checkMandatoryParameters_whenEntityPassedAsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
         const entity = "";
@@ -165,7 +166,7 @@ describe("errorHandler", () => {
         expect(result).false;
     });
 
-    it("checkMandatoryParameters_shouldReturnFalseWhenEntityIdIsBlank", () => {
+    it("checkMandatoryParameters_whenEntityIdPassedAsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
@@ -192,7 +193,7 @@ describe("errorHandler", () => {
         expect(result).false;
     });
 
-    it("checkMandatoryParameters_shouldReturnFalseWhenAppNameIsDifferentFromPortal", () => {
+    it("checkMandatoryParameters_whenAppNameIsDifferentFromPortal_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = stub(vscode.window, "showErrorMessage");
         const appName = "por";
@@ -224,7 +225,7 @@ describe("errorHandler", () => {
         assert.calledOnce(_mockShowErrorMessage);
     });
 
-    it("checkMandatoryParameters_shouldReturnFalseWhenOrgURLIsBlank", () => {
+    it("checkMandatoryParameters_whenOrgURLIsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
@@ -249,7 +250,7 @@ describe("errorHandler", () => {
         expect(result).false;
     });
 
-    it("checkMandatoryParameters_shouldReturnFalseWhenDATASOURCEIsBlank", () => {
+    it("checkMandatoryParameters_whenDATASOURCEIsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
@@ -276,7 +277,7 @@ describe("errorHandler", () => {
         expect(result).false;
     });
 
-    it("checkMandatoryParameters_shouldReturnFalseWhenSCHEMAVERSIONIsBlank", () => {
+    it("checkMandatoryParameters_whenSCHEMAVERSIONIsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
@@ -303,7 +304,7 @@ describe("errorHandler", () => {
         expect(result).false;
     });
 
-    it("checkMandatoryParameters_shouldReturnFalseWhenWEBSITEIDIsBlank", () => {
+    it("checkMandatoryParameters_whenWEBSITEIDIsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
@@ -327,7 +328,7 @@ describe("errorHandler", () => {
         expect(result).false;
     });
 
-    it("checkMandatoryPathParameters_shouldReturnTrueWhenEveryParameterIsPassedOrValid", () => {
+    it("checkMandatoryPathParameters_whenEveryParameterIsPassedOrValid_shouldReturnTrue", () => {
         //Act
         const appName = "portal";
         const entity = "entity";
@@ -338,7 +339,7 @@ describe("errorHandler", () => {
         expect(result).true;
     });
 
-    it("checkMandatoryPathParameters_shouldReturnFalseWhenEntityIsBlank", () => {
+    it("checkMandatoryPathParameters_whenEntityIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorDialog = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -371,7 +372,7 @@ describe("errorHandler", () => {
         );
     });
 
-    it("checkMandatoryPathParameters_shouldReturnFalseWhenEntityIdIsBlank", () => {
+    it("checkMandatoryPathParameters_whenEntityIdIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorDialog = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -404,7 +405,7 @@ describe("errorHandler", () => {
         );
     });
 
-    it("checkMandatoryPathParameters_shouldReturnFalseWhenPppNameIsDifferentFromPortal", () => {
+    it("checkMandatoryPathParameters_whenPppNameIsDifferentFromPortal_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = stub(vscode.window, "showErrorMessage");
         const appName = "por";
@@ -422,7 +423,7 @@ describe("errorHandler", () => {
         assert.calledOnce(_mockShowErrorMessage);
     });
 
-    it("checkMandatoryQueryParameters__shouldReturnTrueWhenAllParameterIsPassedAndValid", () => {
+    it("checkMandatoryQueryParameters_whenAllParameterIsPassedAndValid_shouldReturnTrue", () => {
         //Act
         const appName = "portal";
         const queryParamsMap = new Map<string, string>([
@@ -440,7 +441,7 @@ describe("errorHandler", () => {
         expect(result).true;
     });
 
-    it("checkMandatoryQueryParameters_shouldReturnFalseWhenORGURLIsBlank", () => {
+    it("checkMandatoryQueryParameters_whenORGURLIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -484,7 +485,7 @@ describe("errorHandler", () => {
         );
     });
 
-    it("checkMandatoryQueryParameters_shouldReturnFalseWhenDATASOURCEIsBlank", () => {
+    it("checkMandatoryQueryParameters_whenDATASOURCEIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -527,7 +528,7 @@ describe("errorHandler", () => {
         );
     });
 
-    it("checkMandatoryQueryParameters_shouldReturnFalseWhenSCHEMAVERSIONIsBlank", () => {
+    it("checkMandatoryQueryParameters_whenSCHEMAVERSIONIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -570,7 +571,7 @@ describe("errorHandler", () => {
         );
     });
 
-    it("checkMandatoryQueryParameters_shouldReturnFalseWhenWEBSITEIDIsBlank", () => {
+    it("checkMandatoryQueryParameters_whenWEBSITEIDIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -610,7 +611,7 @@ describe("errorHandler", () => {
         );
     });
 
-    it("checkMandatoryQueryParameters_shouldReturnFalseWhenAppNameIsNotPortal", () => {
+    it("checkMandatoryQueryParameters_whenAppNameIsNotPortal_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const appName = "por";
