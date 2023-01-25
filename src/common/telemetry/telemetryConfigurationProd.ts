@@ -3,7 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AppInsightsResource, AppInsightsResourceProvider } from "../pp-tooling-telemetry-node";
+// We can't pull in the entire telemetry package because it has a dependency on 'fs' which is not available in the browser.
+import { AppInsightsResource } from "../pp-tooling-telemetry-node/AppInsightsResource";
+import { AppInsightsResourceProvider } from "../pp-tooling-telemetry-node/AppInsightsResourceProvider";
 
 export const vscodeExtAppInsightsResourceProvider = new AppInsightsResourceProvider(
     /* appi-dpxt-prod-us-vscode */ new AppInsightsResource("InstrumentationKey=469863ae-9b12-4717-b712-107ae38a1d96;IngestionEndpoint=https://westus2-2.in.applicationinsights.azure.com/;LiveEndpoint=https://westus2.livediagnostics.monitor.azure.com/"),
