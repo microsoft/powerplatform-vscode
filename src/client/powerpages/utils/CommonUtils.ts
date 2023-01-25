@@ -3,9 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { Context } from "@microsoft/generator-powerpages/generators/context";
+import { Context } from "@microsoft/generator-powerpages/generators/context/Context";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
     return !str || str.trim().length === 0;
@@ -56,7 +54,7 @@ export function getPageTemplate(context: Context): {
 export function getParentPagePaths(ctx: Context): {
     paths: Array<string>;
     pathsMap: Map<string, string>;
-    webpageNames: Array<string>
+    webpageNames: Array<string>;
 } {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pages: Map<string, any> = new Map();
@@ -71,7 +69,7 @@ export function getParentPagePaths(ctx: Context): {
     }
     const paths: Array<string> = [];
     const pathsMap: Map<string, string> = new Map();
-    const webpageNames : Array<string> = []
+    const webpageNames: Array<string> = [];
     // eslint-disable-next-line prefer-const
     for (let [webpageid, page] of pages) {
         if (!page.adx_name || !webpageid) {
