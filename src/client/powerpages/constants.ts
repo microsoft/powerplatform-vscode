@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import path from "path";
+
 export enum Tables {
     WEBPAGE = "Webpage",
     PAGETEMPLATE = "PageTemplate",
@@ -12,3 +14,4 @@ export enum Tables {
     WEBTEMPLATE = "WebTemplate",
 }
 
+export const yoPath = path.join("node_modules", ".bin", "yo");

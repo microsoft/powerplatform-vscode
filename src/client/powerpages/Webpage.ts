@@ -18,19 +18,18 @@ import {
     isNullOrEmpty,
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { DesktopFS } from "@microsoft/generator-powerpages/generators/desktopFs";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
-// @ts-ignore
+
 import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { MultiStepInput } from "./utils/MultiStepInput";
-import { Tables } from "./constants";
+import { Tables, yoPath } from "./constants";
+import DesktopFS from "./utils/DesktopFS";
+import path from "path";
+import { exec } from "child_process";
 
-
-// import { DesktopFS, Context, YeomanConstants} from "@microsoft/generator-powerpages";
-
-export const webpage = async (context: vscode.ExtensionContext) => {
+export const webpage = async (
+    context: vscode.ExtensionContext,
+    selectedWorkspaceFolder: string | undefined
+) => {
     // Get the root directory of the workspace
     const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     if (!rootDir) {
@@ -38,14 +37,11 @@ export const webpage = async (context: vscode.ExtensionContext) => {
     }
 
     // Get the web templates & webpages from the data directory
-    const portalDir = `${rootDir}\\data`;
-    const fs: DesktopFS.default = new DesktopFS.default();
-    const ctx = Context.default.getInstance(portalDir, fs);
+    const portalDir = `${selectedWorkspaceFolder}`;
+    const fs: DesktopFS = new DesktopFS();
+    const ctx = Context.getInstance(portalDir, fs);
     try {
-        await ctx?.init([
-            Tables.WEBPAGE,
-            Tables.PAGETEMPLATE,
-        ]);
+        await ctx?.init([Tables.WEBPAGE, Tables.PAGETEMPLATE]);
     } catch (error) {
         vscode.window.showErrorMessage("Error while loading data: " + error);
         return;
@@ -80,47 +76,55 @@ export const webpage = async (context: vscode.ExtensionContext) => {
 
     // Create the webpage using the yo command
     if (!isNullOrEmpty(webpageName)) {
-        vscode.window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                title: "Creating webpage...",
-                cancellable: true,
-            },
-            async (progress) => {
-                progress.report({ message: "Running command..." });
+        const file = fileName(webpageName);
+        const folder = folderName(webpageName);
 
-                // Execute terminal command
-                const terminal = vscode.window.createTerminal("Powerpages", "");
-                terminal.show()
-                terminal.sendText(
-                    `cd data\n ../node_modules/.bin/yo @microsoft/powerpages:webpage "${webpageName}" "${parentPageId}" "${pageTemplateId}"`
+        const watcher: vscode.FileSystemWatcher =
+            vscode.workspace.createFileSystemWatcher(
+                new vscode.RelativePattern(
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    vscode.workspace.workspaceFolders![0],
+                    path.join("web-pages", folder, "content-pages", `${file}.*.webpage.copy.html`) // TODO: Use default language
+                ),
+                false,
+                true,
+                true
+            );
+        context.subscriptions.push(watcher);
+        const portalDir = selectedWorkspaceFolder;
+        const packagePath = "@microsoft/powerpages:webpage";
+        const command = `${yoPath} ${packagePath} "${webpageName}" "${parentPageId}" "${pageTemplateId}"`;
+
+        vscode.window
+            .withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: "Creating Webpage...",
+                },
+                () => {
+                    return new Promise((resolve, reject) => {
+                        exec(command, { cwd: portalDir }, (error, stderr) => {
+                            if (error) {
+                                vscode.window.showErrorMessage(error.message);
+                                reject(error);
+                            } else {
+                                resolve(stderr);
+                            }
+                        });
+                    });
+                }
+            )
+            .then(() => {
+                vscode.window.showInformationMessage(
+                    "Webpage Created!"
                 );
+            });
 
-                // Wait for the file to be created
-                const file = fileName(webpageName);
-                const folder = folderName(webpageName);
-                const watcher: vscode.FileSystemWatcher =
-                    vscode.workspace.createFileSystemWatcher(
-                        new vscode.RelativePattern(
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            vscode.workspace.workspaceFolders![0],
-                            `**/web-pages/${folder}/${file}.webpage.yml`
-                        ),
-                        false,
-                        true,
-                        true
-                    );
-
-                context.subscriptions.push(watcher);
-                watcher.onDidCreate(async (uri) => {
-                    await vscode.window.showTextDocument(uri);
-                    terminal.dispose();
-                });
-            }
-        );
+        watcher.onDidCreate(async (uri) => {
+            await vscode.window.showTextDocument(uri);
+        });
     }
 };
-
 async function myMultiStepInput(
     pageTemplateName: string[],
     parentPage: string[],

@@ -88,8 +88,15 @@ export async function activate(
     _context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webpage",
-            () => {
-                webpage(_context);
+            (uri) => {
+                let selectedWorkspaceFolder:string | undefined;
+                if(uri){
+                    selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
+                }
+                else{
+                    selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath; // TODO: handle multiple workspace folders
+                }
+                webpage(_context,selectedWorkspaceFolder);
 
             }
         )
