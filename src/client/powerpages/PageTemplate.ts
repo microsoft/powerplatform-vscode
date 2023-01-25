@@ -14,15 +14,11 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import { fileName, isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { DesktopFS } from "@microsoft/generator-powerpages/generators/desktopFs";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
-// @ts-ignore
+
 import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { MultiStepInput } from "./utils/MultiStepInput";
-
-// import{DesktopFS, Context} from "@microsoft/generator-powerpages";
+import DesktopFS from "./utils/DesktopFS";
+import { Tables } from "./constants";
 
 interface WebTemplate {
     name: string;
@@ -38,7 +34,7 @@ async function getWebTemplates(
     webTemplateMap: Map<string, string>;
 }> {
     const context = Context.getInstance(portalDir, fs);
-    await context.init(["WebTemplate"]);
+    await context.init([Tables.WEBTEMPLATE]);
     const webTemplates: WebTemplate[] = context.getWebTemplates();
 
     const webTemplateNames = webTemplates.map((template) => template.name);
@@ -170,8 +166,7 @@ async function myMultiStepInput(webTemplateNames: string[]) {
     async function validateNameIsUnique(name: string) {
         // ...validate...
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        if(name)
-        {
+        if (name) {
             return undefined;
         }
     }
