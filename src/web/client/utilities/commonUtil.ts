@@ -7,12 +7,12 @@ import { schemaEntityName } from "../schema/constants";
 
 // decodes base64 to text
 export function convertfromBase64ToString(data: string) {
-    return decodeURIComponent(encodeURI(atob(data)));
+    return decodeURIComponent(escape(atob(data)));
 }
 
 // encodes text to UTF-8 bytes which are then encoded to base64
 export function convertStringtoBase64(data: string) {
-    return btoa(decodeURI(encodeURIComponent(data)));
+    return btoa(unescape(encodeURIComponent(data)));
 }
 
 export function GetFileNameWithExtension(
