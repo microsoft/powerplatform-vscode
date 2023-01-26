@@ -492,7 +492,8 @@
       "explorer/context": [
         {
           "submenu": "microsoft-powerapps-portals.powerpages",
-          "group": "1_powerpages"
+          "group": "1_powerpages",
+          "when": "powerPlatform.experimental.portalCRUDoperations"
         }
       ],
       "microsoft-powerapps-portals.powerpages": [
