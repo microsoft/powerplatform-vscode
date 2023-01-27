@@ -7,6 +7,7 @@ import { IAttributePath } from "../utilities/schemaHelperUtil";
 
 export interface IFileData {
     entityName: string,
+    fileName: string,
     entityId: string,
     entityEtag: string,
     entityFileExtensionType: string,
@@ -18,6 +19,7 @@ export interface IFileData {
 
 export class FileData implements IFileData {
     private _entityName: string;
+    private _fileName: string;
     private _entityId: string;
     private _entityEtag: string;
     private _entityFileExtensionType: string;
@@ -28,6 +30,7 @@ export class FileData implements IFileData {
 
     // Getters
     public get entityName(): string { return this._entityName; }
+    public get fileName(): string { return this._fileName; }
     public get entityId(): string { return this._entityId; }
     public get entityEtag(): string { return this._entityEtag; }
     public get entityFileExtensionType(): string { return this._entityFileExtensionType; }
@@ -43,6 +46,7 @@ export class FileData implements IFileData {
     constructor(
         entityId: string,
         entityName: string,
+        fileName: string,
         entityEtag: string,
         entityFileExtensionType: string,
         attributePath: IAttributePath,
@@ -51,6 +55,7 @@ export class FileData implements IFileData {
     ) {
         this._entityId = entityId;
         this._entityName = entityName;
+        this._fileName = fileName;
         this._entityEtag = entityEtag;
         this._entityFileExtensionType = entityFileExtensionType;
         this._attributePath = attributePath;
