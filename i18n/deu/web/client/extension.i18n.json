@@ -7,5 +7,6 @@
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit": "Website bearbeiten",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc": "Vorsicht beim Vornehmen von Änderungen. Alle Benutzer können die vorgenommenen Änderungen sofort sehen. Wählen Sie „\"Website bearbeiten“ aus, um Änderungen vorzunehmen, oder schließen Sie die Editorregisterkarte, um die Bearbeitung abzubrechen.",
 	"microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title": "Sie bearbeiten eine öffentliche Live-Website ",
+	"microsoft-powerapps-portals.webExtension.fetch.file.message": "Datei wird abgerufen ...",
 	"microsoft-powerapps-portals.webExtension.init.app-not-found": "Diese App wurde nicht gefunden"
 }

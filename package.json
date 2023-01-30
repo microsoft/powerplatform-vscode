@@ -14,12 +14,12 @@
     "translations-generate": "node node_modules/gulp/bin/gulp.js translationsGenerate",
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
     "increment-version-npm": "npm --no-git-tag-version version %VSIX_VERSION%",
-    "build-grammar": "nearleyc ./src/server/Parser/liquidTagGrammar.ne -o ./src/server/Parser/liquidTagGrammar.js",
     "compile-web": "webpack",
     "watch-web": "webpack --watch",
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
     "compile-tests": "node node_modules/gulp/bin/gulp.js compileIntegrationTests",
-    "test-integration": "node node_modules/gulp/bin/gulp.js testInt"
+    "test-integration": "node node_modules/gulp/bin/gulp.js testInt",
+    "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -69,6 +69,7 @@
     "onCommand:powerplatform-walkthrough.fileSystem-open-folder",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
+    "onCommand:microsoft-powerapps-portals.contentsnippet",
     "onStartupFinished",
     "workspaceContains:**/**.portalconfig",
     "onDebug",
@@ -260,6 +261,26 @@
       {
         "command": "microsoft-powerapps-portals.webExtension.init",
         "title": "%microsoft-powerapps-portals.webExtension.init.title%"
+      },
+      {
+        "command": "microsoft-powerapps-portals.webpage",
+        "title": "New Webpage"
+      },
+      {
+        "command": "microsoft-powerapps-portals.webfile",
+        "title": "New Assets (Web files)"
+      },
+      {
+        "command": "microsoft-powerapps-portals.webtemplate",
+        "title": "New Web Template"
+      },
+      {
+        "command": "microsoft-powerapps-portals.contentsnippet",
+        "title": "New Content Snippet"
+      },
+      {
+        "command": "microsoft-powerapps-portals.pagetemplate",
+        "title": "New Page Template"
       }
     ],
     "configuration": {
@@ -446,6 +467,34 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "submenu": "microsoft-powerapps-portals.powerpages",
+          "group": "1_powerpages"
+        }
+      ],
+      "microsoft-powerapps-portals.powerpages": [
+        {
+          "command": "microsoft-powerapps-portals.webpage",
+          "group": "1_powerpages@1"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webfile",
+          "group": "1_powerpages@5"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webtemplate",
+          "group": "1_powerpages@3"
+        },
+        {
+          "command": "microsoft-powerapps-portals.contentsnippet",
+          "group": "1_powerpages@4"
+        },
+        {
+          "command": "microsoft-powerapps-portals.pagetemplate",
+          "group": "1_powerpages@2"
+        }
+      ],
       "editor/title": [
         {
           "when": "resourceLangId == html && !virtualWorkspace",
@@ -642,6 +691,12 @@
         }
       ]
     },
+    "submenus": [
+      {
+        "id": "microsoft-powerapps-portals.powerpages",
+        "label": "Power Pages"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -717,9 +772,9 @@
     "@types/fs-extra": "^9.0.11",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.3",
-    "@types/nearley": "^2.11.1",
     "@types/node": "^14.14.6",
     "@types/puppeteer-core": "^5.4.0",
+    "@types/recursive-readdir": "^2.2.1",
     "@types/sinon": "^10.0.12",
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
@@ -730,6 +785,7 @@
     "@typescript-eslint/parser": "^5.15.0",
     "@vscode/test-electron": "^2.1.5",
     "@vscode/test-web": "^0.0.24",
+    "assert": "^2.0.0",
     "chai": "^4.3.6",
     "eslint": "^8.11.0",
     "eslint-plugin-header": "^3.1.1",
@@ -750,6 +806,7 @@
     "process": "^0.11.10",
     "ps-list": "^7.2.0",
     "sinon": "^14.0.0",
+    "stream-browserify": "^3.0.0",
     "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
@@ -761,11 +818,12 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@microsoft/generator-powerpages": "file:dist/microsoft-generator-powerpages-0.0.1.tgz",
     "@vscode/extension-telemetry": "^0.4.9",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
+    "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
-    "nearley": "^2.20.1",
     "puppeteer-core": "^14.4.1",
     "unzip-stream": "^0.3.1",
     "uuid": "^8.3.2",

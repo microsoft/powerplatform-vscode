@@ -6,11 +6,17 @@
 
 import * as vscode from "vscode";
 import * as nls from 'vscode-nls';
+import powerPlatformExtensionContext from "../WebExtensionContext";
+import { schemaKey } from "../schema/constants";
+import { telemetryEventNames } from "../telemetry/constants";
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-import { sendErrorTelemetry } from "../telemetry/webExtensionTelemetry";
-import { ORG_URL, DATA_SOURCE, PORTALS_FOLDER_NAME, SCHEMA, WEBSITE_ID, WEBSITE_NAME, telemetryEventNames } from "./constants";
+import { PORTALS_FOLDER_NAME_DEFAULT, queryParameters } from "./constants";
 
 export const ERRORS = {
+    SUBURI_EMPTY: "SubURI value for entity file is empty",
+    NO_ACCESS_TOKEN: "No access token was created",
+    PORTAL_FOLDER_NAME_EMPTY: "portalFolderName value for entity file is empty",
+    ATTRIBUTES_EMPTY: "Entity file attribute or extension field empty",
     WORKSPACE_INITIAL_LOAD: "There was a problem opening the workspace",
     WORKSPACE_INITIAL_LOAD_DESC: "Try refreshing the browser",
     UNKNOWN_APP: "Unable to find that app",
@@ -41,21 +47,22 @@ export const ERRORS = {
     MANDATORY_PARAMETERS_NULL: "The workspace is not available ",
     MANDATORY_PARAMETERS_NULL_DESC: "Check the URL and verify the parameters are correct",
     FILE_NAME_NOT_SET: "That file is not available",
-    FILE_NAME_NOT_SET_DESC: "The metadata may have changed on the Dataverse side. Contact your admin. {message_attribute}"
+    FILE_NAME_NOT_SET_DESC: "The metadata may have changed in the Dataverse side. Contact your admin. {message_attribute}",
+    FILE_NAME_EMPTY: "File name is empty"
 };
 
-export function showErrorDialog(detailMessage: string, errorString: string) {
+export function showErrorDialog(errorString: string, detailMessage?: string) {
     const options = { detail: detailMessage, modal: true };
     vscode.window.showErrorMessage(errorString, options);
 }
 
 export function removeEncodingFromParameters(queryParamsMap: Map<string, string>) {
     //NOTE: From extensibility perspective split attributes and attributes may contain encoded string which must be decoded before use.
-    const schemaFileName = decodeURI(queryParamsMap.get(SCHEMA) as string);
-    queryParamsMap.set(SCHEMA, schemaFileName);
-    const websiteName = decodeURI(queryParamsMap.get(WEBSITE_NAME) as string);
-    const portalFolderName = websiteName ? websiteName : PORTALS_FOLDER_NAME;
-    queryParamsMap.set(WEBSITE_NAME, portalFolderName);
+    const schemaFileName = decodeURI(queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string);
+    queryParamsMap.set(schemaKey.SCHEMA_VERSION, schemaFileName);
+    const websiteName = decodeURI(queryParamsMap.get(queryParameters.WEBSITE_NAME) as string);
+    const portalFolderName = websiteName ? websiteName : PORTALS_FOLDER_NAME_DEFAULT;
+    queryParamsMap.set(queryParameters.WEBSITE_NAME, portalFolderName);
 }
 
 export function checkMandatoryParameters(appName: string, entity: string, entityId: string, queryParamsMap: Map<string, string>): boolean {
@@ -68,11 +75,12 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
             if (entity && entityId) { // this will change when we start supporting multi-entity edits
                 return true;
             } else {
-                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
+                powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
                 showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init.workspace.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init.workspace.error.desc", "Check the URL and verify the parameters are correct"));
                 return false;
             }
         default:
+            vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
             return false;
     }
 }
@@ -80,19 +88,20 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
 export function checkMandatoryQueryParameters(appName: string, queryParamsMap: Map<string, string>): boolean {
     switch (appName) { // remove switch cases and use polymorphism
         case 'portal': {
-            const orgURL = queryParamsMap?.get(ORG_URL);
-            const dataSource = queryParamsMap?.get(DATA_SOURCE);
-            const schemaName = queryParamsMap?.get(SCHEMA);
-            const websiteId = queryParamsMap?.get(WEBSITE_ID);
+            const orgURL = queryParamsMap?.get(queryParameters.ORG_URL);
+            const dataSource = queryParamsMap?.get(queryParameters.DATA_SOURCE);
+            const schemaName = queryParamsMap?.get(schemaKey.SCHEMA_VERSION);
+            const websiteId = queryParamsMap?.get(queryParameters.WEBSITE_ID);
             if (orgURL && dataSource && schemaName && websiteId) {
                 return true;
             } else {
-                sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
+                powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
                 showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the URL and verify the parameters are correct"));
                 return false;
             }
         }
         default:
+            vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
             return false;
     }
 }
