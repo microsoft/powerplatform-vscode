@@ -23,7 +23,7 @@ import { readUserSettings } from "./telemetry/localfileusersettings";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
 import { contentSnippet } from "./powerpages/Contentsnippet";
 import { pageTemplate } from "./powerpages/PageTemplate";
-import { webpage } from "./powerpages/Webpage";
+import { createWebpage } from "./powerpages/Webpage";
 
 
 let client: LanguageClient;
@@ -96,7 +96,7 @@ export async function activate(
                 else{
                     selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath; // TODO: handle multiple workspace folders
                 }
-                webpage(_context,selectedWorkspaceFolder);
+                createWebpage(_context,selectedWorkspaceFolder);
 
             }
         )

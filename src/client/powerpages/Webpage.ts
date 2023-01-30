@@ -26,12 +26,12 @@ import DesktopFS from "./utils/DesktopFS";
 import path from "path";
 import { exec } from "child_process";
 
-export const webpage = async (
+export const createWebpage = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined
 ) => {
     // Get the root directory of the workspace
-    const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+    const rootDir = selectedWorkspaceFolder
     if (!rootDir) {
         throw new Error("Root directory not found");
     }
@@ -62,7 +62,7 @@ export const webpage = async (
     }
 
     // Show a quick pick
-    const webpageInputs = await myMultiStepInput(
+    const webpageInputs = await getWebpageInputs(
         pageTemplateNames,
         paths,
         webpageNames
@@ -75,15 +75,14 @@ export const webpage = async (
     const parentPageId = pathsMap.get(webpageInputs.parentPage);
 
     // Create the webpage using the yo command
-    if (!isNullOrEmpty(webpageName)) {
+    if (!isNullOrEmpty(webpageName) && selectedWorkspaceFolder) {
         const file = fileName(webpageName);
         const folder = folderName(webpageName);
 
         const watcher: vscode.FileSystemWatcher =
             vscode.workspace.createFileSystemWatcher(
                 new vscode.RelativePattern(
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    vscode.workspace.workspaceFolders![0],
+                    selectedWorkspaceFolder,
                     path.join("web-pages", folder, "content-pages", `${file}.*.webpage.copy.html`) // TODO: Use default language
                 ),
                 false,
@@ -125,7 +124,7 @@ export const webpage = async (
         });
     }
 };
-async function myMultiStepInput(
+async function getWebpageInputs(
     pageTemplateName: string[],
     parentPage: string[],
     webpageNames: string[]
@@ -149,7 +148,7 @@ async function myMultiStepInput(
 
     async function collectInputs() {
         const state = {} as Partial<State>;
-        await MultiStepInput.run((input) => inputName(input, state));
+        await MultiStepInput.run((input) => inputWebpageName(input, state));
         return state as State;
     }
 
@@ -158,7 +157,7 @@ async function myMultiStepInput(
         "New Webpage"
     );
 
-    async function inputName(input: MultiStepInput, state: Partial<State>) {
+    async function inputWebpageName(input: MultiStepInput, state: Partial<State>) {
         state.name = await input.showInputBox({
             title,
             step: 1,
