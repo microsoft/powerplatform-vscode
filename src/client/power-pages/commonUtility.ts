@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { EntityFolderMap, EntityFolderName, PowerPagesEntityType } from "./constants";
+import { ContentPages, EntityFolderMap, EntityFolderName, PowerPagesEntityType } from "./constants";
 
 export interface IFileProperties {
     fileCompleteName?: string,
@@ -51,7 +51,10 @@ export function getDeletePathUris(fsPath: string,
 ): vscode.Uri[] {
     const pathUris: vscode.Uri[] = [];
     const deletePathUri = vscode.Uri.file(fsPath.substring(0, fileProperties.fileNameIndex));
-    if (fileEntityType === PowerPagesEntityType.WEBPAGES && isValidUri(deletePathUri.fsPath)) {
+    if (fileEntityType === PowerPagesEntityType.WEBPAGES
+        && isValidUri(deletePathUri.fsPath)
+        && ContentPages !== fileProperties.fileName?.toLowerCase()
+    ) {
         pathUris.push(vscode.Uri.file(fsPath.substring(0, fileProperties.fileNameIndex)));
     }
 

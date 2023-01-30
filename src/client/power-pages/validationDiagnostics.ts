@@ -4,12 +4,13 @@
  */
 
 import * as vscode from "vscode";
+//import * as nls from 'vscode-nls';
+//const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-// Create a connection for the server, using Node's IPC as a transport.
-// Also include all preview / proposed LSP features.
+// Create a diagnostics connection to output warning/error messages to "Problems" tab
 const connection = vscode.languages.createDiagnosticCollection("FileDeleteEvent");
 
-export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], message: string): Promise<void> {
+export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], searchByName: boolean): Promise<void> {
     const textDocument = await vscode.workspace.openTextDocument(uri);
     const text = textDocument.getText();
     let m: RegExpExecArray | null;
@@ -21,7 +22,8 @@ export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], 
             const diagnostic: vscode.Diagnostic = {
                 severity: vscode.DiagnosticSeverity.Warning,
                 range: new vscode.Range(textDocument.positionAt(m.index), textDocument.positionAt(m.index + m[0].length)),
-                message: `${m[0]}: ` + message,
+                // localize("powerPages.searchByNameReferenceMessage", `Deleted file might be referenced by name here.`)
+                message: `${m[0]}: ` + (searchByName ? `Deleted file might be referenced by name here.` : ""),
                 source: 'ex',
                 // relatedInformation: [
                 //     new vscode.DiagnosticRelatedInformation(new vscode.Location(textDocument.uri, new vscode.Range(new vscode.Position(1, 8), new vscode.Position(1, 9))), 'first assignment to `x`')

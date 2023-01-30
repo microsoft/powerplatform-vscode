@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+export const ContentPages = "content-pages"
+
 export const EntityFolderName = [
     "web-pages"
 ];
@@ -19,6 +21,6 @@ export const EntityFolderMap: Map<string, PowerPagesEntityType> = new Map<string
     ["web-pages", PowerPagesEntityType.WEBPAGES],
     ["web-files", PowerPagesEntityType.WEBFILES],
     ["web-template", PowerPagesEntityType.WEBTEMPLATE],
-    ["content - snippet", PowerPagesEntityType.CONTENT_SNIPPET]
+    ["content-snippet", PowerPagesEntityType.CONTENT_SNIPPET]
 ]);
 
