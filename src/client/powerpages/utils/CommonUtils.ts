@@ -5,7 +5,7 @@
 
 
 import { Context } from "@microsoft/generator-powerpages/generators/context";
-import { Tables } from "../constants";
+import { Tables, Template } from "../constants";
 import DesktopFS from "./DesktopFS";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
@@ -23,10 +23,7 @@ export const fileName = (name: string) => {
     return words.map((word) => word[0].toUpperCase() + word.slice(1)).join("-");
 };
 
-interface pageTemplate {
-    name: string;
-    value: string;
-}
+
 
 // Function to get the names and values of page templates from a provided context
 export function getPageTemplate(context: Context): {
@@ -34,7 +31,7 @@ export function getPageTemplate(context: Context): {
     pageTemplateMap: Map<string, string>;
 } {
     // Get the page templates from the provided context
-    const pageTemplates: pageTemplate[] = context.getPageTemplates();
+    const pageTemplates: Template[] = context.getPageTemplates();
 
     // Check if pageTemplates is not empty
     if (!pageTemplates.length) {
@@ -121,7 +118,7 @@ export async function getWebTemplates(
 }> {
     const context = Context.getInstance(portalDir, fs);
     await context.init([Tables.WEBTEMPLATE]);
-    const webTemplates: WebTemplate[] = context.getWebTemplates();
+    const webTemplates: Template[] = context.getWebTemplates();
 
     const webTemplateNames = webTemplates.map((template) => template.name);
     const webTemplateMap = new Map<string, string>();
@@ -131,7 +128,4 @@ export async function getWebTemplates(
     return { webTemplateNames, webTemplateMap };
 }
 
-interface WebTemplate {
-    name: string;
-    value: string;
-}
+

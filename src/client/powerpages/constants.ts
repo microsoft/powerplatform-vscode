@@ -15,3 +15,10 @@ export enum Tables {
 }
 
 export const yoPath = path.join("node_modules", ".bin", "yo");
+
+export interface Template {
+    name: string;
+    value: string;
+}
+
+
