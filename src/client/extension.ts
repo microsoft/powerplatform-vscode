@@ -26,6 +26,8 @@ import {
     shouldEnableDebugger,
 } from "../debugger";
 import { createPageTemplate } from "./powerpages/PageTemplate";
+import { createWebpage } from "./powerpages/Webpage";
+
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -98,6 +100,23 @@ export async function activate(
         )
     )
 
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.webpage",
+            (uri) => {
+                let selectedWorkspaceFolder:string | undefined;
+                if(uri){
+                    selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
+                }
+                else{
+                    selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath; // TODO: handle multiple workspace folders
+                }
+                createWebpage(_context,selectedWorkspaceFolder);
+
+            }
+        )
+    )
 
     _context.subscriptions.push(
         vscode.workspace.onDidOpenTextDocument(() => {
