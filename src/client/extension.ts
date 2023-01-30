@@ -25,7 +25,7 @@ import {
     deactivateDebugger,
     shouldEnableDebugger,
 } from "../debugger";
-import { pageTemplate } from "./powerpages/PageTemplate";
+import { createPageTemplate } from "./powerpages/PageTemplate";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -92,7 +92,7 @@ export async function activate(
                 if(uri){
                     selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
                 }
-                pageTemplate(_context, selectedWorkspaceFolder);
+                createPageTemplate(_context, selectedWorkspaceFolder);
 
             }
         )

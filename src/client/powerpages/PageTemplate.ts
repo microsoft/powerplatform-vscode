@@ -21,7 +21,7 @@ import { exec } from "child_process";
 import { yoPath } from "./constants";
 
 
-export const pageTemplate = async (context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined) => {
+export const createPageTemplate = async (context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined) => {
     // Get the root directory of the workspace
     const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     if (!rootDir) {
@@ -37,7 +37,7 @@ export const pageTemplate = async (context: vscode.ExtensionContext, selectedWor
     );
 
     // Show a quick pick to enter name select the web template
-    const pageTemplateInputs = await getMultiStepInput(webTemplateNames);
+    const pageTemplateInputs = await getPageTemplateInputs(webTemplateNames);
 
     const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
 
@@ -104,7 +104,7 @@ export const pageTemplate = async (context: vscode.ExtensionContext, selectedWor
     }
 };
 
-async function getMultiStepInput(webTemplateNames: string[]) {
+async function getPageTemplateInputs(webTemplateNames: string[]) {
     const webTemplates: QuickPickItem[] = webTemplateNames.map((label) => ({
         label,
     }));
@@ -140,10 +140,10 @@ async function getMultiStepInput(webTemplateNames: string[]) {
             ),
             validate: validateNameIsUnique,
         });
-        return (input: MultiStepInput) => pickType(input, state);
+        return (input: MultiStepInput) => pickWebtemplate(input, state);
     }
 
-    async function pickType(input: MultiStepInput, state: Partial<State>) {
+    async function pickWebtemplate(input: MultiStepInput, state: Partial<State>) {
         const pick = await input.showQuickPick({
             title,
             step: 2,
