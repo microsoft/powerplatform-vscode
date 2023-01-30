@@ -23,6 +23,7 @@ import {
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
 import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "./constants";
+import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -110,6 +111,7 @@ export async function activate(
     const areCRUDoperationEnabled = vscode.workspace.getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME).get(PORTAL_CRUD_OPERATION_SETTING_NAME);
     if (areCRUDoperationEnabled) {
         // Add CRUD related callback subscription here
+        await handleFileSystemCallbacks(_context);
     }
 
     const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
