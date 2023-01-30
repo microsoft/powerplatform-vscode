@@ -22,6 +22,8 @@ import {
 } from "vscode-languageclient/node";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
+import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "./constants";
+import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -39,16 +41,16 @@ export async function activate(
     const appInsightsResource = vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(telemetryEnv.dataBoundary);
     _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, appInsightsResource.instrumentationKey);
     context.subscriptions.push(_telemetry);
-    _telemetry.sendTelemetryEvent("Start", {'pac.userId': readUserSettings().uniqueId});
+    _telemetry.sendTelemetryEvent("Start", { 'pac.userId': readUserSettings().uniqueId });
 
     // Setup context switches
-    if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl"){
+    if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl") {
         // PAC Interactive Login works when we are the UI is running on the same machine
         // as the extension (i.e. NOT remote), or the remote is WSL
         vscode.commands.executeCommand('setContext', 'pacCLI.authPanel.interactiveLoginSupported', true);
     }
     else {
-        _context.environmentVariableCollection.replace('PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE','true');
+        _context.environmentVariableCollection.replace('PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE', 'true');
     }
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
@@ -59,7 +61,7 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent('StartCommand', {'commandId': 'microsoft-powerapps-portals.preview-show'});
+                _telemetry.sendTelemetryEvent('StartCommand', { 'commandId': 'microsoft-powerapps-portals.preview-show' });
                 PortalWebView.createOrShow();
             }
         )
@@ -73,7 +75,7 @@ export async function activate(
                 !isCurrentDocumentEdited() &&
                 PortalWebView.checkDocumentIsHTML()
             ) {
-                if ( PortalWebView?.currentPanel) {
+                if (PortalWebView?.currentPanel) {
                     _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'NewPage' });
                     PortalWebView?.currentPanel?._update();
                 }
@@ -104,6 +106,12 @@ export async function activate(
                 },
             }
         );
+    }
+
+    const areCRUDoperationEnabled = vscode.workspace.getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME).get(PORTAL_CRUD_OPERATION_SETTING_NAME);
+    if (areCRUDoperationEnabled) {
+        // Add CRUD related callback subscription here
+        await handleFileSystemCallbacks(_context);
     }
 
     const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
@@ -242,15 +250,15 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
 function registerClientToReceiveNotifications(client: LanguageClient) {
     client.onReady().then(() => {
         client.onNotification("telemetry/event", (payload: string) => {
-            const serverTelemetry = JSON.parse(payload) as ITelemetryData ;
-            if(!!serverTelemetry && !!serverTelemetry.eventName) {
+            const serverTelemetry = JSON.parse(payload) as ITelemetryData;
+            if (!!serverTelemetry && !!serverTelemetry.eventName) {
                 _telemetry.sendTelemetryEvent(serverTelemetry.eventName, serverTelemetry.properties, serverTelemetry.measurements);
             }
         });
     });
 }
 
-function isCurrentDocumentEdited() : boolean{
+function isCurrentDocumentEdited(): boolean {
     const workspaceFolderExists = vscode.workspace.workspaceFolders !== undefined;
     let currentPanelExists = false;
     if (PortalWebView?.currentPanel) {
