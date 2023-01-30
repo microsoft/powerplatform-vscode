@@ -11,8 +11,8 @@ nls.config({
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import {
-    fileName,
-    folderName,
+    formatFileName,
+    formatFolderName,
     getPageTemplate,
     getParentPagePaths,
     isNullOrEmpty,
@@ -76,8 +76,8 @@ export const createWebpage = async (
 
     // Create the webpage using the yo command
     if (!isNullOrEmpty(webpageName) && selectedWorkspaceFolder) {
-        const file = fileName(webpageName);
-        const folder = folderName(webpageName);
+        const file = formatFileName(webpageName);
+        const folder = formatFolderName(webpageName);
 
         const watcher: vscode.FileSystemWatcher =
             vscode.workspace.createFileSystemWatcher(

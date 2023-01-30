@@ -12,7 +12,7 @@ nls.config({
 })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
-import { fileName, getWebTemplates, isNullOrEmpty } from "./utils/CommonUtils";
+import {  formatFileName, getWebTemplates, isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 import DesktopFS from "./utils/DesktopFS";
 import { MultiStepInput } from "./utils/MultiStepInput";
@@ -45,7 +45,7 @@ export const createPageTemplate = async (context: vscode.ExtensionContext, selec
 
     // Create the page template using the yo command
     if (!isNullOrEmpty(pageTemplateName) && selectedWorkspaceFolder) {
-        const file = fileName(pageTemplateName);
+        const file = formatFileName(pageTemplateName);
         const watcher: vscode.FileSystemWatcher =
             vscode.workspace.createFileSystemWatcher(
                 new vscode.RelativePattern(
@@ -159,7 +159,7 @@ async function getPageTemplateInputs(webTemplateNames: string[]) {
     }
 
     async function validateNameIsUnique(name: string): Promise<string | undefined> {
-        const file = fileName(name)
+        const file = formatFileName(name)
         return await vscode.workspace.findFiles(path.join("page-templates", `${file}.pagetemplate.yml`),'', 1).then((uris) => {
             if(uris.length > 0){
                 return "Name not unique";

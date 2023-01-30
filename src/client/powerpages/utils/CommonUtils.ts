@@ -12,11 +12,19 @@ export const isNullOrEmpty = (str: string | undefined): boolean => {
     return !str || str.trim().length === 0;
 };
 
-export const folderName = (name: string) => {
+/**
+ * @example
+ * formatFolderName("My Folder Name"); // "my-folder-name"
+ */
+export const formatFolderName = (name: string) => {
     return name.replace(/[/ ]/g, "-").toLowerCase();
 };
 
-export const fileName = (name: string) => {
+/**
+ * @example
+ * formatFileName("My File Name"); // "My-File-Name"
+ */
+export const formatFileName = (name: string) => {
     const words = name.split(/[/ ]/);
 
     // Uppercase the first letter of each word and join the words back together
