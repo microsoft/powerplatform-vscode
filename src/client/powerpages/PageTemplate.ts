@@ -19,9 +19,8 @@ import { QuickPickItem } from "vscode";
 import { DesktopFS } from "@microsoft/generator-powerpages/generators/desktopFs";
 
 import { MultiStepInput } from "./utils/MultiStepInput";
-
-// import{DesktopFS, Context} from "@microsoft/generator-powerpages";
-
+import path from "path";
+import { exec } from "child_process";
 
 
 export const pageTemplate = async (context: vscode.ExtensionContext) => {
@@ -32,7 +31,7 @@ export const pageTemplate = async (context: vscode.ExtensionContext) => {
     }
 
     // Get the web templates from the data directory
-    const portalDir = `${rootDir}\\data`;
+    const portalDir = `${rootDir}`;
     const fs: DesktopFS = new DesktopFS();
     const { webTemplateNames, webTemplateMap } = await getWebTemplates(
         portalDir,
@@ -48,6 +47,27 @@ export const pageTemplate = async (context: vscode.ExtensionContext) => {
 
     // Create the page template using the yo command
     if (!isNullOrEmpty(pageTemplateName)) {
+        const file = fileName(pageTemplateName);
+        const watcher: vscode.FileSystemWatcher =
+            vscode.workspace.createFileSystemWatcher(
+                new vscode.RelativePattern(
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    vscode.workspace.workspaceFolders![0],
+                    `**/page-templates/${file}.pagetemplate.yml`
+                ),
+                false,
+                true,
+                true
+            );
+
+        context.subscriptions.push(watcher);
+        const portalDir = `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}`;
+        const yoPath = path.join("node_modules", ".bin", "yo");
+        const packagePath =
+            "@microsoft/powerpages:pagetemplate";
+        const command = `${yoPath} ${packagePath} "${pageTemplateName}" "${webtemplateId}"`;
+
+
         vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
@@ -57,39 +77,33 @@ export const pageTemplate = async (context: vscode.ExtensionContext) => {
                 ),
                 cancellable: true,
             },
-            async (progress) => {
-                progress.report({ message: localize(
-                    "microsoft-powerapps-portals.webExtension.pagetemplate.progress.report",
-                    "Running command..."
-                )});
-
-                // Execute terminal command
-                const terminal = vscode.window.createTerminal("Powerpages", "");
-                terminal.sendText(
-                    `cd data\n ../node_modules/.bin/yo @microsoft/powerpages:pagetemplate "${pageTemplateName}" "${webtemplateId}"`
-                );
-
-                // Wait for the file to be created
-                const file = fileName(pageTemplateName);
-                const watcher: vscode.FileSystemWatcher =
-                    vscode.workspace.createFileSystemWatcher(
-                        new vscode.RelativePattern(
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            vscode.workspace.workspaceFolders![0],
-                            `**/page-templates/${file}.pagetemplate.yml`
-                        ),
-                        false,
-                        true,
-                        true
+            () => {
+                return new Promise((resolve, reject) => {
+                    exec(
+                        command,
+                        { cwd: portalDir },
+                        (error, stderr) => {
+                            if (error) {
+                                vscode.window.showErrorMessage(
+                                    error.message
+                                );
+                                reject(error);
+                            } else {
+                                resolve(stderr);
+                            }
+                        }
                     );
-
-                context.subscriptions.push(watcher);
-                watcher.onDidCreate(async (uri) => {
-                    await vscode.window.showTextDocument(uri);
-                    terminal.dispose();
                 });
             }
-        );
+        ).then(() => {
+            vscode.window.showInformationMessage(
+                "Page template Created!"
+            );
+        });
+
+        watcher.onDidCreate(async (uri) => {
+            await vscode.window.showTextDocument(uri);
+        });
     }
 };
 
