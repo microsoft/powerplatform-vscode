@@ -4,9 +4,11 @@
  */
 
 import * as vscode from "vscode";
-import { getDeletePathUris, getFileProperties, isValidDocument } from "./commonUtility";
+import * as nls from 'vscode-nls';
+import { getCurrentWorkspaceURI, getDeletePathUris, getFileProperties, isValidDocument } from "./commonUtility";
 import { PowerPagesEntityType } from "./constants";
 import { validateTextDocument } from "./validationDiagnostics";
+const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function handleFileSystemCallbacks(context: vscode.ExtensionContext) {
     // Add file system callback flows here - for rename and delete file actions
@@ -16,8 +18,9 @@ export async function handleFileSystemCallbacks(context: vscode.ExtensionContext
 async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onDidDeleteFiles(async (e) => {
-            let deleteInfoMessage = `Are you sure you want to delete these files?`;
-            const deleteInfoMessageDetail = "Places where this file has been used might be affected.";
+            let deleteInfoMessage = localize("powerPages.deleteFileConfirmation", `Are you sure you want to delete these files?`);
+            const deleteInfoMessageDetail = localize("powerPages.deleteFileWarningMessage", "Places where this file has been used might be affected.");
+            const FileReferencedByNameMessage = localize("powerPages.searchByNameReferenceMessage", "Deleted file might be referenced by name here.");
             const messageOptions = { detail: deleteInfoMessageDetail, modal: true };
             const edit: vscode.MessageItem = {
                 title: "Delete"
@@ -44,7 +47,12 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
                                 });
 
                                 // TODO - Add search validation for entity guid
-                                vscode.workspace.textDocuments.forEach(document => validateTextDocument(document, [RegExp(`${fileProperties.fileName}`, "g")]));
+                                const currentWorkspaceURI = getCurrentWorkspaceURI();
+                                if (currentWorkspaceURI) {
+                                    const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, `**/.*/**`, 1000);
+                                    await allDocumentsUriInWorkspace.forEach(uri =>
+                                        validateTextDocument(uri, [RegExp(`${fileProperties.fileName}`, "g")], FileReferencedByNameMessage));
+                                }
                             }
                         }
                     });

@@ -72,5 +72,12 @@ export function isValidUri(fsPath: string): boolean {
     return validUri;
 }
 
+export function getCurrentWorkspaceURI(): vscode.Uri | undefined {
+    // TODO - This will not cover multi-WorkspaceFolderScenario
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (workspaceFolders && workspaceFolders.length > 0) {
+        return workspaceFolders[0].uri;
+    }
 
-
+    return undefined;
+}

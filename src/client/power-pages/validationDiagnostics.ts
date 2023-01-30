@@ -9,7 +9,8 @@ import * as vscode from "vscode";
 // Also include all preview / proposed LSP features.
 const connection = vscode.languages.createDiagnosticCollection("FileDeleteEvent");
 
-export async function validateTextDocument(textDocument: vscode.TextDocument, patterns: RegExp[]): Promise<void> {
+export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], message: string): Promise<void> {
+    const textDocument = await vscode.workspace.openTextDocument(uri);
     const text = textDocument.getText();
     let m: RegExpExecArray | null;
 
@@ -20,7 +21,7 @@ export async function validateTextDocument(textDocument: vscode.TextDocument, pa
             const diagnostic: vscode.Diagnostic = {
                 severity: vscode.DiagnosticSeverity.Warning,
                 range: new vscode.Range(textDocument.positionAt(m.index), textDocument.positionAt(m.index + m[0].length)),
-                message: `${m[0]} here might be referencing deleted file by name.`,
+                message: `${m[0]}: ` + message,
                 source: 'ex',
                 // relatedInformation: [
                 //     new vscode.DiagnosticRelatedInformation(new vscode.Location(textDocument.uri, new vscode.Range(new vscode.Position(1, 8), new vscode.Position(1, 9))), 'first assignment to `x`')
@@ -31,5 +32,5 @@ export async function validateTextDocument(textDocument: vscode.TextDocument, pa
     });
 
     // Send the computed diagnostics to VSCode.
-    connection.set(textDocument.uri, diagnostics);
+    connection.set(uri, diagnostics);
 }
