@@ -14,16 +14,14 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import { fileName, getWebTemplates, isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { DesktopFS } from "@microsoft/generator-powerpages/generators/desktopFs";
-
+import DesktopFS from "./utils/DesktopFS";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
 import { exec } from "child_process";
+import { yoPath } from "./constants";
 
 
-export const pageTemplate = async (context: vscode.ExtensionContext) => {
+export const pageTemplate = async (context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined) => {
     // Get the root directory of the workspace
     const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     if (!rootDir) {
@@ -46,14 +44,13 @@ export const pageTemplate = async (context: vscode.ExtensionContext) => {
     const pageTemplateName = pageTemplateInputs.name;
 
     // Create the page template using the yo command
-    if (!isNullOrEmpty(pageTemplateName)) {
+    if (!isNullOrEmpty(pageTemplateName) && selectedWorkspaceFolder) {
         const file = fileName(pageTemplateName);
         const watcher: vscode.FileSystemWatcher =
             vscode.workspace.createFileSystemWatcher(
                 new vscode.RelativePattern(
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    vscode.workspace.workspaceFolders![0],
-                    `**/page-templates/${file}.pagetemplate.yml`
+                    selectedWorkspaceFolder,
+                    path.join("page-templates", `${file}.pagetemplate.yml`)
                 ),
                 false,
                 true,
@@ -61,8 +58,8 @@ export const pageTemplate = async (context: vscode.ExtensionContext) => {
             );
 
         context.subscriptions.push(watcher);
-        const portalDir = `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}`;
-        const yoPath = path.join("node_modules", ".bin", "yo");
+        const portalDir = selectedWorkspaceFolder;
+
         const packagePath =
             "@microsoft/powerpages:pagetemplate";
         const command = `${yoPath} ${packagePath} "${pageTemplateName}" "${webtemplateId}"`;
@@ -75,7 +72,7 @@ export const pageTemplate = async (context: vscode.ExtensionContext) => {
                     "microsoft-powerapps-portals.webExtension.pagetemplate.progress.notification",
                     "Creating page template..."
                 ),
-                cancellable: true,
+                cancellable: false,
             },
             () => {
                 return new Promise((resolve, reject) => {
@@ -161,14 +158,16 @@ async function getMultiStepInput(webTemplateNames: string[]) {
         state.type = pick.label;
     }
 
-    async function validateNameIsUnique(name: string) {
-        // ...validate...
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        if(name)
-        {
+    async function validateNameIsUnique(name: string): Promise<string | undefined> {
+        const file = fileName(name)
+        return await vscode.workspace.findFiles(path.join("page-templates", `${file}.pagetemplate.yml`),'', 1).then((uris) => {
+            if(uris.length > 0){
+                return "Name not unique";
+            }
             return undefined;
-        }
+        });
     }
+
 
     const state = await collectInputs();
     return state;

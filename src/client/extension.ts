@@ -87,11 +87,17 @@ export async function activate(
     _context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.pagetemplate",
-            () => {
-                pageTemplate(_context);
+            (uri) => {
+                let selectedWorkspaceFolder:string | undefined;
+                if(uri){
+                    selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
+                }
+                pageTemplate(_context, selectedWorkspaceFolder);
+
             }
         )
-    );
+    )
+
 
     _context.subscriptions.push(
         vscode.workspace.onDidOpenTextDocument(() => {
