@@ -14,16 +14,12 @@ const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import { isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { DesktopFS } from "@microsoft/generator-powerpages/generators/desktopFs";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { MultiStepInput } from "./utils/MultiStepInput";
-import { Tables } from "./constants";
+import { Tables, yoPath } from "./constants";
+import DesktopFS from "./utils/DesktopFS";
+import { exec } from "child_process";
 
-// import{DesktopFS, Context} from "@microsoft/generator-powerpages";
 
 function getPaths(pages: Map<string, any>): {
     paths: Array<string>;
@@ -69,7 +65,7 @@ function getPaths(pages: Map<string, any>): {
     return { paths, pathsMap };
 }
 
-export const webfile = async () => {
+export const createWebfile = async () => {
     // Get the root directory of the workspace
     const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     if (!rootDir) {
@@ -77,7 +73,7 @@ export const webfile = async () => {
     }
 
     // Get the web templates from the data directory
-    const portalDir = `${rootDir}\\data`;
+    const portalDir = `${rootDir}`;
     const fs: DesktopFS = new DesktopFS();
     const ctx = Context.getInstance(portalDir, fs);
     await ctx.init([Tables.WEBPAGE]);
@@ -91,12 +87,12 @@ export const webfile = async () => {
     const { paths, pathsMap } = getPaths(parentPages);
 
     if (paths.length === 0) {
-        vscode.window.showErrorMessage("No webpages found");
+        vscode.window.showErrorMessage("No parent pages found");
         return;
     }
 
     // Show a quick pick to enter name select the web template
-    const webfileInputs = await myMultiStepInput(paths);
+    const webfileInputs = await getWebfileInputs(paths);
 
     const parentPageId = pathsMap.get(webfileInputs.id);
 
@@ -105,22 +101,56 @@ export const webfile = async () => {
         const selectedFiles = await vscode.window.showOpenDialog(
             openDialogOptions
         );
-        vscode.window.showInformationMessage(
-            localize("microsoft-powerapps-portals.desktopExt.webfile.adding", `Adding ${selectedFiles?.length} web files...`)
-        );
+  
+        const yoWebfileSubGenerator = "@microsoft/powerpages:webfile";
+        const webfileCount = selectedFiles?.length;
+        
+        
+          
+
         if (selectedFiles) {
-            for (const file of selectedFiles) {
-                const webfilePath = file.fsPath;
-                const terminal = vscode.window.createTerminal("Powerpages", "");
-                terminal.sendText(
-                    `cd data\n ../node_modules/.bin/yo @microsoft/powerpages:webfile "${webfilePath}" "${parentPageId}"`
+            vscode.window
+            .withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: `Adding ${webfileCount} web files...`,
+                },
+                () => {
+
+                    for (let i = 0; i < selectedFiles.length - 1; i++) {
+                        const file = selectedFiles[i];
+                        const webfilePath = file.fsPath;
+                        const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
+                        exec(command, {cwd: portalDir});
+                      }
+
+                    return new Promise((resolve, reject) => {
+                        const lastFile = selectedFiles[selectedFiles.length -1 ];
+                        const webfilePath = lastFile.fsPath;
+                        const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
+                        exec(command, { cwd: portalDir }, (error, stderr) => {
+                            if (error) {
+                                vscode.window.showErrorMessage(error.message);
+                                reject(error);
+                            } else {
+                                resolve(stderr);
+                            }
+                        });
+                    });
+                }
+            )
+            .then(() => {
+                vscode.window.showInformationMessage(
+                    "Webfiles Added!"
                 );
-            }
+            });
         }
+
+
     }
 };
 
-async function myMultiStepInput(parentPage: string[]) {
+async function getWebfileInputs(parentPage: string[]) {
     const parentPages: QuickPickItem[] = parentPage.map((label) => ({
         label,
     }));
