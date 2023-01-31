@@ -5,7 +5,7 @@
 
 import { portal_schema_V1, portal_schema_V2 } from "../schema/portalSchema";
 import * as Constants from "../common/constants";
-import WebExtensionContext from "../powerPlatformExtensionContext";
+import WebExtensionContext from "../WebExtensionContext";
 import { entityAttributesWithBase64Encoding, schemaEntityName, schemaKey } from "../schema/constants";
 
 export function getPortalSchema(schema: string) {
@@ -16,7 +16,7 @@ export function getPortalSchema(schema: string) {
 }
 
 export function getEntity(entity: string) {
-    const powerPlatformExtensionContext = WebExtensionContext.getPowerPlatformExtensionContext();
+    const powerPlatformExtensionContext = WebExtensionContext.getWebExtensionContext();
     if (powerPlatformExtensionContext.queryParamsMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
         return powerPlatformExtensionContext.entitiesSchemaMap.get(entity);
     }

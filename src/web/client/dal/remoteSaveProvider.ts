@@ -12,7 +12,7 @@ import { httpMethod } from '../common/constants';
 import * as nls from 'vscode-nls';
 import { getAttributeParts, isWebFileV2OctetStream } from '../utilities/schemaHelperUtil';
 import { getPatchRequestUrl } from '../utilities/urlBuilderUtil';
-import WebExtensionContext from "../powerPlatformExtensionContext";
+import WebExtensionContext from "../WebExtensionContext";
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function saveData(

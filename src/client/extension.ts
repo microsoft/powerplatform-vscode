@@ -10,8 +10,8 @@ import { AI_KEY } from '../common/telemetry/generated/telemetryConfiguration';
 import { ITelemetryData } from "../common/TelemetryData";
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
-import { PortalWebView } from './PortalWebView';
-import { ITelemetry } from './telemetry/ITelemetry';
+import { PortalWebView } from "./PortalWebView";
+import { ITelemetry } from "./telemetry/ITelemetry";
 
 import {
     LanguageClient,
@@ -23,7 +23,13 @@ import {
 import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
 import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
+import { createContentSnippet } from "./powerpages/Contentsnippet";
+import { createPageTemplate } from "./powerpages/PageTemplate";
+import { createWebfile } from "./powerpages/Webfile";
+import { createWebpage } from "./powerpages/Webpage";
+import { createWebTemplate } from "./powerpages/WebTemplate";
 import { readUserSettings } from "./telemetry/localfileusersettings";
+
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -37,18 +43,33 @@ export async function activate(
     _context = context;
 
     // setup telemetry
-    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
+    _telemetry = new TelemetryReporter(
+        context.extension.id,
+        context.extension.packageJSON.version,
+        AI_KEY
+    );
     context.subscriptions.push(_telemetry);
-    _telemetry.sendTelemetryEvent("Start", { 'pac.userId': readUserSettings().uniqueId });
+    _telemetry.sendTelemetryEvent("Start", {
+        "pac.userId": readUserSettings().uniqueId,
+    });
 
     // Setup context switches
-    if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl") {
+    if (
+        vscode.env.remoteName === undefined ||
+        vscode.env.remoteName === "wsl"
+    ) {
         // PAC Interactive Login works when we are the UI is running on the same machine
         // as the extension (i.e. NOT remote), or the remote is WSL
-        vscode.commands.executeCommand('setContext', 'pacCLI.authPanel.interactiveLoginSupported', true);
-    }
-    else {
-        _context.environmentVariableCollection.replace('PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE', 'true');
+        vscode.commands.executeCommand(
+            "setContext",
+            "pacCLI.authPanel.interactiveLoginSupported",
+            true
+        );
+    } else {
+        _context.environmentVariableCollection.replace(
+            "PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE",
+            "true"
+        );
     }
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
@@ -59,11 +80,72 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent('StartCommand', { 'commandId': 'microsoft-powerapps-portals.preview-show' });
+                _telemetry.sendTelemetryEvent("StartCommand", {
+                    commandId: "microsoft-powerapps-portals.preview-show",
+                });
                 PortalWebView.createOrShow();
             }
         )
     );
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.pagetemplate",
+            (uri) => {
+                let selectedWorkspaceFolder:string | undefined;
+                if(uri){
+                    selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
+                }
+                createPageTemplate(_context, selectedWorkspaceFolder);
+
+            }
+        )
+    )
+
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.webpage",
+            (uri) => {
+                let selectedWorkspaceFolder:string | undefined;
+                if(uri){
+                    selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
+                }
+                else{
+                    selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath; // TODO: handle multiple workspace folders
+                }
+                createWebpage(_context,selectedWorkspaceFolder);
+
+            }
+        )
+    )
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.contentsnippet",
+            () => {
+                createContentSnippet(_context);
+            }
+        )
+    )
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.webfile",
+            () => {
+               createWebfile();
+            }
+        )
+    )
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.webtemplate",
+            () => {
+                createWebTemplate(_context);
+            }
+        )
+    )
 
     _context.subscriptions.push(
         vscode.workspace.onDidOpenTextDocument(() => {
@@ -74,7 +156,9 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'NewPage' });
+                    _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
+                        page: "NewPage",
+                    });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -84,11 +168,11 @@ export async function activate(
         vscode.workspace.onDidChangeTextDocument(() => {
             if (vscode.window.activeTextEditor === undefined) {
                 return;
-            } else if (
-                isCurrentDocumentEdited()
-            ) {
+            } else if (isCurrentDocumentEdited()) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'ExistingPage' });
+                    _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
+                        page: "ExistingPage",
+                    });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -96,14 +180,11 @@ export async function activate(
     );
 
     if (vscode.window.registerWebviewPanelSerializer) {
-        vscode.window.registerWebviewPanelSerializer(
-            PortalWebView.viewType,
-            {
-                async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel) {
-                    PortalWebView.revive(webviewPanel);
-                },
-            }
-        );
+        vscode.window.registerWebviewPanelSerializer(PortalWebView.viewType, {
+            async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel) {
+                PortalWebView.revive(webviewPanel);
+            },
+        });
     }
 
     const cliContext = new CliAcquisitionContext(_context, _telemetry)
@@ -140,18 +221,14 @@ export async function deactivate(): Promise<void> {
     }
 
     deactivateDebugger();
-
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {
-
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
     const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
 
-
-    if (document.languageId === 'yaml' && !yamlServerRunning) {
-
+    if (document.languageId === "yaml" && !yamlServerRunning) {
         // The server is implemented in node
         const serverModule = _context.asAbsolutePath(
             path.join("dist", "yamlServer.js")
@@ -174,9 +251,8 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             documentSelector: [{ scheme: "file", language: "yaml" }],
             synchronize: {
                 // Notify the server about file changes to '.clientrc files contained in the workspace
-                fileEvents: vscode.workspace.createFileSystemWatcher(
-                    "**/.clientrc"
-                ),
+                fileEvents:
+                    vscode.workspace.createFileSystemWatcher("**/.clientrc"),
             },
         };
 
@@ -197,8 +273,7 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
 
         // this is used to send yamlServer telemetry events
         registerClientToReceiveNotifications(client);
-    } else if (document.languageId === 'html' && !htmlServerRunning) {
-
+    } else if (document.languageId === "html" && !htmlServerRunning) {
         // The server is implemented in node
         const serverModule = _context.asAbsolutePath(
             path.join("dist", "HtmlServer.js")
@@ -220,9 +295,8 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
             documentSelector: [{ scheme: "file", language: "html" }],
             synchronize: {
                 // Notify the server about file changes to '.clientrc files contained in the workspace
-                fileEvents: vscode.workspace.createFileSystemWatcher(
-                    "**/.clientrc"
-                ),
+                fileEvents:
+                    vscode.workspace.createFileSystemWatcher("**/.clientrc"),
             },
         };
 
@@ -244,7 +318,6 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
         // this is used to send HtmlServer telemetry events
         registerClientToReceiveNotifications(client);
     }
-
 }
 
 function registerClientToReceiveNotifications(client: LanguageClient) {
@@ -252,30 +325,46 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
         client.onNotification("telemetry/event", (payload: string) => {
             const serverTelemetry = JSON.parse(payload) as ITelemetryData;
             if (!!serverTelemetry && !!serverTelemetry.eventName) {
-                _telemetry.sendTelemetryEvent(serverTelemetry.eventName, serverTelemetry.properties, serverTelemetry.measurements);
+                _telemetry.sendTelemetryEvent(
+                    serverTelemetry.eventName,
+                    serverTelemetry.properties,
+                    serverTelemetry.measurements
+                );
             }
         });
     });
 }
 
 function isCurrentDocumentEdited(): boolean {
-    const workspaceFolderExists = vscode.workspace.workspaceFolders !== undefined;
+    const workspaceFolderExists =
+        vscode.workspace.workspaceFolders !== undefined;
     let currentPanelExists = false;
     if (PortalWebView?.currentPanel) {
         currentPanelExists = true;
     }
-    return (workspaceFolderExists && currentPanelExists && PortalWebView.currentDocument === vscode?.window?.activeTextEditor?.document?.fileName);
+    return (
+        workspaceFolderExists &&
+        currentPanelExists &&
+        PortalWebView.currentDocument ===
+            vscode?.window?.activeTextEditor?.document?.fileName
+    );
 }
 
 class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(
         private readonly _context: vscode.ExtensionContext,
-        private readonly _telemetry: ITelemetry) {
-    }
+        private readonly _telemetry: ITelemetry
+    ) {}
 
-    public get extensionPath(): string { return this._context.extensionPath; }
-    public get globalStorageLocalPath(): string { return this._context.globalStorageUri.fsPath; }
-    public get telemetry(): ITelemetry { return this._telemetry; }
+    public get extensionPath(): string {
+        return this._context.extensionPath;
+    }
+    public get globalStorageLocalPath(): string {
+        return this._context.globalStorageUri.fsPath;
+    }
+    public get telemetry(): ITelemetry {
+        return this._telemetry;
+    }
 
     showInformationMessage(message: string, ...items: string[]): void {
         vscode.window.showInformationMessage(message, ...items);
