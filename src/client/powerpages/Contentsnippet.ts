@@ -19,6 +19,7 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import { exec } from "child_process";
 import path from "path";
+import { yoPath } from "./constants";
 
 export const createContentSnippet = async (
     context: vscode.ExtensionContext
@@ -48,9 +49,8 @@ export const createContentSnippet = async (
 
         context.subscriptions.push(watcher);
         const portalDir = `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}`;
-        const yoPath = path.join("node_modules", ".bin", "yo");
-        const packagePath = "@microsoft/powerpages:contentsnippet";
-        const command = `${yoPath} ${packagePath} "${contentSnippetName}" "${contentSnippetType}"`;
+        const yoContentSnippetGenerator = "@microsoft/powerpages:contentsnippet";
+        const command = `${yoPath} ${yoContentSnippetGenerator} "${contentSnippetName}" "${contentSnippetType}"`;
 
         vscode.window
             .withProgress(

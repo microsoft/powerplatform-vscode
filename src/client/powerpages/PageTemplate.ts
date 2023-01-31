@@ -60,9 +60,9 @@ export const createPageTemplate = async (context: vscode.ExtensionContext, selec
         context.subscriptions.push(watcher);
         const portalDir = selectedWorkspaceFolder;
 
-        const packagePath =
+        const yoPageTemplateGenerator =
             "@microsoft/powerpages:pagetemplate";
-        const command = `${yoPath} ${packagePath} "${pageTemplateName}" "${webtemplateId}"`;
+        const command = `${yoPath} ${yoPageTemplateGenerator} "${pageTemplateName}" "${webtemplateId}"`;
 
 
         vscode.window.withProgress(

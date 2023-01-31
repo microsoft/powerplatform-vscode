@@ -48,8 +48,8 @@ export const createWebTemplate = (context: vscode.ExtensionContext) => {
 
                 context.subscriptions.push(watcher);
                 const portalDir = `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}`;
-                const yoSubgenerator = "@microsoft/powerpages:webtemplate";
-                const command = `${yoPath} ${yoSubgenerator} "${value}"`;
+                const yoWebTemplateGenerator = "@microsoft/powerpages:webtemplate";
+                const command = `${yoPath} ${yoWebTemplateGenerator} "${value}"`;
 
                 vscode.window
                     .withProgress(
