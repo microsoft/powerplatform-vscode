@@ -169,7 +169,7 @@ describe("WebExtensionContext", () => {
         const attributePath = attributePaths;
         const encodeAsBase64 = true;
         const mimeType = "pdf";
-
+        const fileName = "testFileName";
         //Action
         await WebExtensionContext.updateFileDetailsInContext(
             fileUri,
@@ -177,6 +177,7 @@ describe("WebExtensionContext", () => {
             entityName,
             odataEtag,
             fileExtension,
+            fileName,
             attributePath,
             encodeAsBase64,
             mimeType
@@ -188,16 +189,16 @@ describe("WebExtensionContext", () => {
         );
 
         const expectedResult = {
-            _entityId: entityId,
-            _entityName: entityName,
-            _entityEtag: odataEtag,
-            _entityFileExtensionType: fileExtension,
-            _attributePath: attributePath,
-            _encodeAsBase64: encodeAsBase64,
-            _mimeType: mimeType,
+            _entityId: "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d",
+            _entityName: "webPage",
+            _fileName: "testOData",
+            _entityEtag: ".exe",
+            _entityFileExtensionType: "testFileName",
+            _attributePath: { relativePath: "relativePath", source: "source" },
+            _encodeAsBase64: true,
+            _mimeType: "pdf",
             _hasDirtyChanges: false,
         };
-
         expect(fileMap).deep.eq(expectedResult);
     });
 
@@ -217,12 +218,14 @@ describe("WebExtensionContext", () => {
         const fileExtension = ".exe";
         const attributePath = attributePaths;
         const encodeAsBase64 = true;
+        const fileName = "testFileName";
 
         //Action
         await WebExtensionContext.updateFileDetailsInContext(
             fileUri,
             entityId,
             entityName,
+            fileName,
             odataEtag,
             fileExtension,
             attributePath,
@@ -237,12 +240,13 @@ describe("WebExtensionContext", () => {
         const expectedResult = {
             _entityId: entityId,
             _entityName: entityName,
+            _fileName: "testFileName",
             _entityEtag: odataEtag,
             _entityFileExtensionType: fileExtension,
             _attributePath: attributePath,
             _encodeAsBase64: encodeAsBase64,
-            _mimeType: undefined,
             _hasDirtyChanges: false,
+            _mimeType: undefined,
         };
 
         expect(fileMap).deep.eq(expectedResult);
