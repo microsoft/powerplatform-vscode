@@ -7,6 +7,7 @@
 import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { Tables, Template } from "../constants";
 import DesktopFS from "./DesktopFS";
+import * as vscode from "vscode";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
     return !str || str.trim().length === 0;
@@ -134,6 +135,36 @@ export async function getWebTemplates(
         webTemplateMap.set(template.name, template.value);
     });
     return { webTemplateNames, webTemplateMap };
+}
+
+export async function getSelectedWorkspaceFolder( uri: vscode.Uri, activeEditor: vscode.TextEditor | undefined) {
+    let selectedWorkspaceFolder;
+
+    if (!vscode.workspace.workspaceFolders) {
+        throw new Error("No workspace folder found");
+    }
+
+    const workspaceFolder = activeEditor ?
+        vscode.workspace.getWorkspaceFolder(activeEditor.document.uri) :
+        null;
+
+    switch (true) {
+        case Boolean(uri):
+            selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
+            break;
+        case Boolean(workspaceFolder):
+            selectedWorkspaceFolder = workspaceFolder?.uri?.fsPath;
+            break;
+        case vscode.workspace.workspaceFolders.length > 1:
+            return vscode.window.showWorkspaceFolderPick().then((folder) => {
+                return folder?.uri.fsPath;
+            });
+        default:
+            selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+            break;
+    }
+
+    return selectedWorkspaceFolder;
 }
 
 
