@@ -9,8 +9,9 @@ import { ITelemetry } from "./telemetry/ITelemetry";
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import * as path from "path";
-import { PortalWebView } from "./PortalWebView";
-import { AI_KEY } from "../common/telemetry/generated/telemetryConfiguration";
+import { PortalWebView } from './PortalWebView';
+import { vscodeExtAppInsightsResourceProvider } from '../common/telemetry-generated/telemetryConfiguration';
+import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
 import { ITelemetryData } from "../common/TelemetryData";
 
 import {
@@ -25,6 +26,8 @@ import {
     deactivateDebugger,
     shouldEnableDebugger,
 } from "../debugger";
+import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "./constants";
+import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { createPageTemplate } from "./powerpages/PageTemplate";
 
 let client: LanguageClient;
@@ -39,15 +42,11 @@ export async function activate(
     _context = context;
 
     // setup telemetry
-    _telemetry = new TelemetryReporter(
-        context.extension.id,
-        context.extension.packageJSON.version,
-        AI_KEY
-    );
+    const telemetryEnv = AppTelemetryConfigUtility.createGlobalTelemetryEnvironment();
+    const appInsightsResource = vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(telemetryEnv.dataBoundary);
+    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, appInsightsResource.instrumentationKey);
     context.subscriptions.push(_telemetry);
-    _telemetry.sendTelemetryEvent("Start", {
-        "pac.userId": readUserSettings().uniqueId,
-    });
+    _telemetry.sendTelemetryEvent("Start", { 'pac.userId': readUserSettings().uniqueId });
 
     // Setup context switches
     if (
@@ -108,9 +107,7 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
-                        page: "NewPage",
-                    });
+                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'NewPage' });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -137,6 +134,11 @@ export async function activate(
                 PortalWebView.revive(webviewPanel);
             },
         });
+    }
+    const areCRUDoperationEnabled = vscode.workspace.getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME).get(PORTAL_CRUD_OPERATION_SETTING_NAME);
+    if (areCRUDoperationEnabled) {
+        // Add CRUD related callback subscription here
+        await handleFileSystemCallbacks(_context);
     }
 
     const cli = new CliAcquisition(
@@ -271,19 +273,14 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
         client.onNotification("telemetry/event", (payload: string) => {
             const serverTelemetry = JSON.parse(payload) as ITelemetryData;
             if (!!serverTelemetry && !!serverTelemetry.eventName) {
-                _telemetry.sendTelemetryEvent(
-                    serverTelemetry.eventName,
-                    serverTelemetry.properties,
-                    serverTelemetry.measurements
-                );
+                _telemetry.sendTelemetryEvent(serverTelemetry.eventName, serverTelemetry.properties, serverTelemetry.measurements);
             }
         });
     });
 }
 
 function isCurrentDocumentEdited(): boolean {
-    const workspaceFolderExists =
-        vscode.workspace.workspaceFolders !== undefined;
+    const workspaceFolderExists = vscode.workspace.workspaceFolders !== undefined;
     let currentPanelExists = false;
     if (PortalWebView?.currentPanel) {
         currentPanelExists = true;

@@ -18,6 +18,7 @@ export const BAD_REQUEST = 'BAD_REQUEST';
 export const PUBLIC = 'public';
 export const MIMETYPE = 'mimetype';
 export const IS_FIRST_RUN_EXPERIENCE = 'isFirstRunExperience';
+export const ODATA_ETAG = "@odata.etag";
 
 export enum initializationEntityName {
     WEBSITE = "websites",
