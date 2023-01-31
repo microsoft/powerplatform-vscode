@@ -69,7 +69,6 @@
     "onCommand:powerplatform-walkthrough.fileSystem-open-folder",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
-    "onCommand:microsoft-powerapps-portals.contentsnippet",
     "onStartupFinished",
     "workspaceContains:**/**.portalconfig",
     "onDebug",
