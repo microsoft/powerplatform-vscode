@@ -28,6 +28,7 @@ import {
 import { createPageTemplate } from "./powerpages/PageTemplate";
 import { createWebpage } from "./powerpages/Webpage";
 import { createContentSnippet } from "./powerpages/Contentsnippet";
+import { createWebfile } from "./powerpages/Webfile";
 
 
 let client: LanguageClient;
@@ -124,6 +125,15 @@ export async function activate(
             "microsoft-powerapps-portals.contentsnippet",
             () => {
                 createContentSnippet(_context);
+            }
+        )
+    )
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.webfile",
+            () => {
+               createWebfile();
             }
         )
     )
