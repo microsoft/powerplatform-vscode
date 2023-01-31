@@ -16,6 +16,7 @@ export class FileDataMap {
         fileUri: string,
         entityId: string,
         entityName: string,
+        fileName: string,
         odataEtag: string,
         fileExtension: string,
         attributePath: IAttributePath,
@@ -24,6 +25,7 @@ export class FileDataMap {
     ) {
         const fileData = new FileData(entityId,
             entityName,
+            fileName,
             odataEtag,
             fileExtension,
             attributePath,

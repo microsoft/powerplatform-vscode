@@ -4,7 +4,7 @@
  */
 
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { AppInsightsResource } from "../../../common/pp-tooling-telemetry-node";
+import { AppInsightsResource } from "../../../common/pp-tooling-telemetry-node/AppInsightsResource";
 import { queryParameters } from "../common/constants";
 import { sanitizeURL } from "../utilities/urlBuilderUtil";
 import { telemetryEventNames } from "./constants";
