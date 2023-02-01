@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import { createPageTemplate } from "../powerpages/PageTemplate";
 //import * as nls from 'vscode-nls';
 import { getCurrentWorkspaceURI, getDeletePathUris, getFileProperties, isValidDocument } from "./commonUtility";
 import { PowerPagesEntityType } from "./constants";
@@ -13,6 +14,8 @@ import { validateTextDocument } from "./validationDiagnostics";
 export async function handleFileSystemCallbacks(context: vscode.ExtensionContext) {
     // Add file system callback flows here - for rename and delete file actions
     await processOnDidDeleteFiles(context);
+
+    await registerCreateCommands(context);
 }
 
 async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
@@ -71,3 +74,19 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
         })
     );
 }
+
+async function registerCreateCommands(_context: vscode.ExtensionContext) {
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "microsoft-powerapps-portals.pagetemplate",
+            (uri) => {
+                let selectedWorkspaceFolder:string | undefined;
+                if(uri){
+                    selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath; //TODO: Handle Multi Root
+                }
+                createPageTemplate(_context, selectedWorkspaceFolder);
+            }
+        )
+    )
+}
+

@@ -28,7 +28,6 @@ import {
 } from "../debugger";
 import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "./constants";
 import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
-import { createPageTemplate } from "./powerpages/PageTemplate";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -83,19 +82,6 @@ export async function activate(
         )
     );
 
-    _context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "microsoft-powerapps-portals.pagetemplate",
-            (uri) => {
-                let selectedWorkspaceFolder:string | undefined;
-                if(uri){
-                    selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
-                }
-                createPageTemplate(_context, selectedWorkspaceFolder);
-
-            }
-        )
-    )
 
 
     _context.subscriptions.push(
