@@ -127,8 +127,6 @@ async function getLatestContent(
             method: httpMethod.GET,
             headers: getHeader(accessToken)
         }
-        console.log("dddddddddddddddd","dssd")
-
         if (entityEtag) {
             requestInit.headers = {
                 ...requestInit.headers,
