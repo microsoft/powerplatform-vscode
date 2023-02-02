@@ -58,7 +58,7 @@ export function getDeletePathUris(fsPath: string,
                 pathUris.push(vscode.Uri.file(fsPath.substring(0, ymlExtensionIndex)));
         } else {
             const folderPathNameIndex = fileEntityType === PowerPagesEntityType.WEBPAGES ? fsPath.indexOf(ContentPages) :
-                fsPath.indexOf(fileProperties.fileName?.toLowerCase()) + fileProperties.fileName?.length;
+                fsPath.indexOf(`\\${fileProperties.fileName?.toLowerCase()}\\`) + fileProperties.fileName?.length + 2; // offset for path separator
             pathUris.push(vscode.Uri.file(fsPath.substring(0, folderPathNameIndex)));
         }
     }
