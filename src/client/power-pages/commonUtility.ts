@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { ContentPages, EntityFolderMap, EntityFolderName, PowerPagesEntityType } from "./constants";
+import { ContentPages, EntityFolderMap, EntityFolderName, PowerPagesEntityType, WebFileYmlExtension } from "./constants";
 
 export interface IFileProperties {
     fileCompleteName?: string,
@@ -50,12 +50,17 @@ export function getDeletePathUris(fsPath: string,
     fileProperties: IFileProperties
 ): vscode.Uri[] {
     const pathUris: vscode.Uri[] = [];
-    const deletePathUri = vscode.Uri.file(fsPath.substring(0, fileProperties.fileNameIndex));
-    if (fileEntityType === PowerPagesEntityType.WEBPAGES
-        && isValidUri(deletePathUri.fsPath)
-        && ContentPages !== fileProperties.fileName?.toLowerCase()
-    ) {
-        pathUris.push(vscode.Uri.file(fsPath.substring(0, fileProperties.fileNameIndex)));
+
+    if (isValidUri(fsPath) && fileProperties.fileName) {
+        if (fileEntityType === PowerPagesEntityType.WEBFILES) {
+            const ymlExtensionIndex = fsPath.indexOf(WebFileYmlExtension);
+            ymlExtensionIndex === -1 ? pathUris.push(vscode.Uri.file(fsPath.concat(WebFileYmlExtension))) :
+                pathUris.push(vscode.Uri.file(fsPath.substring(0, ymlExtensionIndex)));
+        } else {
+            const folderPathNameIndex = fileEntityType === PowerPagesEntityType.WEBPAGES ? fsPath.indexOf(ContentPages) :
+                fsPath.indexOf(`\\${fileProperties.fileName?.toLowerCase()}\\`) + fileProperties.fileName?.length + 2; // offset for path separator
+            pathUris.push(vscode.Uri.file(fsPath.substring(0, folderPathNameIndex)));
+        }
     }
 
     return pathUris;
@@ -75,12 +80,7 @@ export function isValidUri(fsPath: string): boolean {
     return validUri;
 }
 
-export function getCurrentWorkspaceURI(): vscode.Uri | undefined {
-    // TODO - This will not cover multi-WorkspaceFolderScenario
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (workspaceFolders && workspaceFolders.length > 0) {
-        return workspaceFolders[0].uri;
-    }
-
-    return undefined;
+export function getCurrentWorkspaceURI(fsPath: string): vscode.Uri | undefined {
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(fsPath));
+    return workspaceFolder ? workspaceFolder.uri : undefined;
 }
