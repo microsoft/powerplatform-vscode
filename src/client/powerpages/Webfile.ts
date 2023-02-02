@@ -12,7 +12,7 @@ nls.config({
 })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
-import { isNullOrEmpty } from "./utils/CommonUtils";
+import { getParentPagePaths, isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { MultiStepInput } from "./utils/MultiStepInput";
@@ -21,49 +21,49 @@ import DesktopFS from "./utils/DesktopFS";
 import { exec } from "child_process";
 
 
-function getPaths(pages: Map<string, any>): {
-    paths: Array<string>;
-    pathsMap: Map<string, string>;
-} {
-    if (pages.size === 0) {
-        return { paths: [], pathsMap: new Map() };
-    }
-    const paths: Array<string> = [];
-    const pathsMap: Map<string, string> = new Map();
-    // eslint-disable-next-line prefer-const
-    for (let [webpageid, page] of pages) {
-        if (!page.adx_name || !webpageid) {
-            continue;
-        }
-        let path = page.adx_name;
+// function getPaths(pages: Map<string, any>): {
+//     paths: Array<string>;
+//     pathsMap: Map<string, string>;
+// } {
+//     if (pages.size === 0) {
+//         return { paths: [], pathsMap: new Map() };
+//     }
+//     const paths: Array<string> = [];
+//     const pathsMap: Map<string, string> = new Map();
+//     // eslint-disable-next-line prefer-const
+//     for (let [webpageid, page] of pages) {
+//         if (!page.adx_name || !webpageid) {
+//             continue;
+//         }
+//         let path = page.adx_name;
 
-        // If the page is a home page, add it to the paths array
-        if (!page.adx_parentpageid && page.adx_partialurl === "/") {
-            paths.push(path);
-            pathsMap.set(webpageid, path);
-            continue;
-        }
-        let prevPage = null;
-        while (page.adx_parentpageid) {
-            if (!pages.has(page.adx_parentpageid)) {
-                break;
-            }
-            // to check for circular reference
-            if (prevPage === page) {
-                break;
-            }
-            prevPage = page;
-            page = pages.get(page.adx_parentpageid);
-            path = `${page.adx_name}/${path}`;
-        }
-        if (paths.indexOf(path) === -1) {
-            paths.push(path);
-            pathsMap.set(path, webpageid);
-        }
-    }
-    paths.sort();
-    return { paths, pathsMap };
-}
+//         // If the page is a home page, add it to the paths array
+//         if (!page.adx_parentpageid && page.adx_partialurl === "/") {
+//             paths.push(path);
+//             pathsMap.set(webpageid, path);
+//             continue;
+//         }
+//         let prevPage = null;
+//         while (page.adx_parentpageid) {
+//             if (!pages.has(page.adx_parentpageid)) {
+//                 break;
+//             }
+//             // to check for circular reference
+//             if (prevPage === page) {
+//                 break;
+//             }
+//             prevPage = page;
+//             page = pages.get(page.adx_parentpageid);
+//             path = `${page.adx_name}/${path}`;
+//         }
+//         if (paths.indexOf(path) === -1) {
+//             paths.push(path);
+//             pathsMap.set(path, webpageid);
+//         }
+//     }
+//     paths.sort();
+//     return { paths, pathsMap };
+// }
 
 export const createWebfile = async () => {
     // Get the root directory of the workspace
@@ -76,15 +76,13 @@ export const createWebfile = async () => {
     const portalDir = `${rootDir}`;
     const fs: DesktopFS = new DesktopFS();
     const ctx = Context.getInstance(portalDir, fs);
-    await ctx.init([Tables.WEBPAGE]);
-
-    const parentPages: Map<string, any> = new Map();
-
-    ctx.webpageMap.forEach((page: any) => {
-        parentPages.set(page.id, page.content);
-    });
-
-    const { paths, pathsMap } = getPaths(parentPages);
+    try {
+        await ctx?.init([Tables.WEBPAGE, Tables.PAGETEMPLATE]);
+    } catch (error) {
+        vscode.window.showErrorMessage("Error while loading data: " + error);
+        return;
+    }
+    const { paths, pathsMap} = getParentPagePaths(ctx);
 
     if (paths.length === 0) {
         vscode.window.showErrorMessage("No parent pages found");
@@ -101,12 +99,12 @@ export const createWebfile = async () => {
         const selectedFiles = await vscode.window.showOpenDialog(
             openDialogOptions
         );
-  
+
         const yoWebfileSubGenerator = "@microsoft/powerpages:webfile";
         const webfileCount = selectedFiles?.length;
-        
-        
-          
+
+
+
 
         if (selectedFiles) {
             vscode.window
