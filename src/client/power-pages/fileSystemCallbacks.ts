@@ -84,7 +84,8 @@ async function registerCreateCommands(_context: vscode.ExtensionContext) {
                 if(uri){
                     selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath; //TODO: Handle Multi Root
                 }
-                createPageTemplate(_context, selectedWorkspaceFolder);
+                if(selectedWorkspaceFolder){createPageTemplate(_context, selectedWorkspaceFolder);}
+
             }
         )
     )

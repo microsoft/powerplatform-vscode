@@ -3,10 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-
 import { Context } from "@microsoft/generator-powerpages/generators/context";
-import { Tables, Template } from "../constants";
+import { PageTemplates, ParentPagePaths, Tables, Template, WebTemplates } from "../constants";
 import DesktopFS from "./DesktopFS";
+import * as vscode from "vscode";
+import { exec } from "child_process";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
     return !str || str.trim().length === 0;
@@ -26,10 +27,7 @@ export const fileName = (name: string) => {
 
 
 // Function to get the names and values of page templates from a provided context
-export function getPageTemplate(context: Context): {
-    pageTemplateNames: string[];
-    pageTemplateMap: Map<string, string>;
-} {
+export function getPageTemplate(context: Context): PageTemplates {
     // Get the page templates from the provided context
     const pageTemplates: Template[] = context.getPageTemplates();
 
@@ -51,16 +49,12 @@ export function getPageTemplate(context: Context): {
     return { pageTemplateNames, pageTemplateMap };
 }
 
-export function getParentPagePaths(ctx: Context): {
-    paths: Array<string>;
-    pathsMap: Map<string, string>;
-    webpageNames: Array<string>;
-} {
+export function getParentPagePaths(portalContext: Context): ParentPagePaths {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pages: Map<string, any> = new Map();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ctx.webpageMap.forEach((page: any) => {
+    portalContext.webpageMap.forEach((page: any) => {
         pages.set(page.id, page.content);
     });
 
@@ -110,15 +104,10 @@ export function getParentPagePaths(ctx: Context): {
 }
 
 export async function getWebTemplates(
-    portalDir: string,
-    fs: DesktopFS
-): Promise<{
-    webTemplateNames: string[];
-    webTemplateMap: Map<string, string>;
-}> {
-    const context = Context.getInstance(portalDir, fs);
-    await context.init([Tables.WEBTEMPLATE]);
-    const webTemplates: Template[] = context.getWebTemplates();
+  portalContext: Context
+): Promise<WebTemplates> {
+    await portalContext.init([Tables.WEBTEMPLATE]);
+    const webTemplates: Template[] = portalContext.getWebTemplates();
 
     const webTemplateNames = webTemplates.map((template) => template.name);
     const webTemplateMap = new Map<string, string>();
@@ -128,4 +117,64 @@ export async function getWebTemplates(
     return { webTemplateNames, webTemplateMap };
 }
 
+export function createFileWatcher(
+    context: vscode.ExtensionContext,
+    selectedWorkspaceFolder: string,
+    pattern: string
+) {
+    const watcher: vscode.FileSystemWatcher =
+        vscode.workspace.createFileSystemWatcher(
+            new vscode.RelativePattern(selectedWorkspaceFolder, pattern),
+            false,
+            true,
+            true
+        );
+    context.subscriptions.push(watcher);
 
+    return watcher;
+}
+
+export async function createRecord(
+    entityType: string,
+    execCommand: string,
+    portalDirectory: string,
+    watcher: vscode.FileSystemWatcher
+) {
+    return vscode.window
+        .withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: `Creating ${entityType}...`,
+                cancellable: false,
+            },
+            () => {
+                return new Promise((resolve, reject) => {
+                    exec(
+                        execCommand,
+                        { cwd: portalDirectory },
+                        (error, stderr) => {
+                            if (error) {
+                                vscode.window.showErrorMessage(error.message);
+                                reject(error);
+                            } else {
+                                resolve(stderr);
+                            }
+                        }
+                    );
+                });
+            }
+        )
+        .then(() => {
+            vscode.window.showInformationMessage(`${entityType} created!`);
+            watcher.onDidCreate(async (uri) => {
+                await vscode.window.showTextDocument(uri);
+            });
+        });
+}
+
+
+export function getPortalContext(portalDir:string): Context {
+    const fs: DesktopFS = new DesktopFS();
+    const portalContext = Context.getInstance(portalDir, fs);
+    return portalContext;
+}

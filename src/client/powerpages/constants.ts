@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+
 import path from "path";
 
 export enum Tables {
@@ -21,4 +22,36 @@ export interface Template {
     value: string;
 }
 
+export interface ParentPagePaths {
+    paths: Array<string>;
+    pathsMap: Map<string, string>;
+    webpageNames: Array<string>;
+}
 
+export interface PageTemplates {
+    pageTemplateNames: string[];
+    pageTemplateMap: Map<string, string>;
+}
+
+export interface WebTemplates {
+    webTemplateNames: string[];
+    webTemplateMap: Map<string, string>;
+}
+
+export enum YoSubGenerator {
+    PAGETEMPLATE = "@microsoft/powerpages:pagetemplate",
+    WEBPAGE = "@microsoft/powerpages:webpage",
+    WEBFILE = "@microsoft/powerpages:webfile",
+    WEBTEMPLATE = "@microsoft/powerpages:webtemplate",
+    CONTENT_SNIPPET = "@microsoft/powerpages:contentsnippet"
+}
+
+export enum TableFolder {
+    WEBPAGE_FOLDER = "web-pages",
+    PAGETEMPLATE_FOLDER = "page-templates",
+    WEBTEMPLATE_FOLDER = "web-templates",
+    CONTENT_SNIPPET_FOLDER = "content-snippets",
+    WEBFILE_FOLDER = "web-files",
+}
+
+export const pageTemplate = 'Page Template';
