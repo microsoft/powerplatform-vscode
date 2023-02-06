@@ -19,7 +19,25 @@
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
     "compile-tests": "node node_modules/gulp/bin/gulp.js compileIntegrationTests",
     "test-integration": "node node_modules/gulp/bin/gulp.js testInt",
-    "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt"
+    "test-web-integration": "node node_modules/gulp/bin/gulp.js testWebInt",
+    "coverage": "nyc npm run test"
+  },
+  "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "all": "true",
+    "include": [
+      "**/*.ts"
+    ],
+    "exclude": [
+      "**/*.test.ts"
+    ],
+    "reporter": [
+      "html",
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "report-dir": "coverage"
   },
   "author": "PowerApps-ISV-Tools",
   "license": "SEE LICENSE IN LICENSE",
@@ -330,6 +348,11 @@
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Dev version",
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Canary version"
           ]
+        },
+        "powerPlatform.experimental.portalCRUDoperations": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable create, delete and rename operation in desktop extension"
         }
       }
     },
@@ -713,6 +736,7 @@
     ]
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@types/chai": "^4.2.14",
     "@types/fs-extra": "^9.0.11",
     "@types/glob": "^7.1.3",
@@ -731,6 +755,7 @@
     "@vscode/test-web": "^0.0.24",
     "assert": "^2.0.0",
     "chai": "^4.3.6",
+    "constants-browserify": "^1.0.0",
     "eslint": "^8.11.0",
     "eslint-plugin-header": "^3.1.1",
     "fancy-log": "^1.3.3",
@@ -746,6 +771,8 @@
     "mocha": "^9.2.2",
     "moment": "^2.29.4",
     "node-fetch": "^2.6.7",
+    "nyc": "^15.1.0",
+    "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "ps-list": "^7.2.0",
@@ -762,7 +789,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@vscode/extension-telemetry": "^0.4.9",
+    "@vscode/extension-telemetry": "^0.6.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
     "liquidjs": "^10.2.0",

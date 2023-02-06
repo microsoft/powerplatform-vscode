@@ -5,8 +5,8 @@
 
 import TelemetryReporter from "@vscode/extension-telemetry";
 import * as path from "path";
-import * as vscode from "vscode";
-import { AI_KEY } from '../common/telemetry/generated/telemetryConfiguration';
+import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
+import { vscodeExtAppInsightsResourceProvider } from '../common/telemetry-generated/telemetryConfiguration';
 import { ITelemetryData } from "../common/TelemetryData";
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
@@ -22,8 +22,8 @@ import {
 } from "vscode-languageclient/node";
 import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
-import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
-import { readUserSettings } from "./telemetry/localfileusersettings";
+import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "./constants";
+import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -37,7 +37,9 @@ export async function activate(
     _context = context;
 
     // setup telemetry
-    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, AI_KEY);
+    const telemetryEnv = AppTelemetryConfigUtility.createGlobalTelemetryEnvironment();
+    const appInsightsResource = vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(telemetryEnv.dataBoundary);
+    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, appInsightsResource.instrumentationKey);
     context.subscriptions.push(_telemetry);
     _telemetry.sendTelemetryEvent("Start", { 'pac.userId': readUserSettings().uniqueId });
 
@@ -106,8 +108,13 @@ export async function activate(
         );
     }
 
-    const cliContext = new CliAcquisitionContext(_context, _telemetry)
-    const cli = new CliAcquisition(cliContext);
+    const areCRUDoperationEnabled = vscode.workspace.getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME).get(PORTAL_CRUD_OPERATION_SETTING_NAME);
+    if (areCRUDoperationEnabled) {
+        // Add CRUD related callback subscription here
+        await handleFileSystemCallbacks(_context);
+    }
+
+    const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));

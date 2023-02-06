@@ -5,11 +5,10 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { convertStringtoBase64 } from '../utilities/commonUtil';
 import { getRequestURL, pathHasEntityFolderName } from '../utilities/urlBuilderUtil';
-import { CHARSET, httpMethod, PORTALS_URI_SCHEME, queryParameters } from '../common/constants';
-import WebExtensionContext from "../powerPlatformExtensionContext";
-import { SaveEntityDetails } from '../schema/portalSchemaInterface';
+import { httpMethod, PORTALS_URI_SCHEME, queryParameters } from '../common/constants';
+import { FileData } from '../context/fileData';
+import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from './remoteFetchProvider';
 import { saveData } from './remoteSaveProvider';
 import * as nls from 'vscode-nls';
@@ -80,10 +79,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const powerPlatformContext = await WebExtensionContext.getPowerPlatformExtensionContext();
-
-                if (powerPlatformContext.isContextSet &&
-                    uri.toString().toLowerCase() === powerPlatformContext.rootDirectory.toString().toLowerCase()) {
+                if (WebExtensionContext.isContextSet &&
+                    uri.toString().toLowerCase() === WebExtensionContext.rootDirectory.toString().toLowerCase()) {
                     WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED);
                     await this._loadFromDataverseToVFS();
                 }
@@ -102,10 +99,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
             const castedError = error as vscode.FileSystemError;
 
             if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                const powerPlatformContext = await WebExtensionContext.getPowerPlatformExtensionContext();
-
-                if (powerPlatformContext.isContextSet
-                    && uri.toString().includes(powerPlatformContext.rootDirectory.toString())) {
+                if (WebExtensionContext.isContextSet
+                    && uri.toString().includes(WebExtensionContext.rootDirectory.toString())) {
                     if (pathHasEntityFolderName(uri.toString())) {
                         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED);
                         await this._loadFromDataverseToVFS();
@@ -135,7 +130,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             entry = new File(basename);
             parent.entries.set(basename, entry);
             this._fireSoon({ type: vscode.FileChangeType.Created, uri });
-        } else if (WebExtensionContext.getPowerPlatformExtensionContext().saveDataMap.has(uri.fsPath)) {
+        } else if (WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)?.hasDirtyChanges) {
             // Save data to dataverse
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
@@ -143,7 +138,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 title: localize("microsoft-powerapps-portals.webExtension.save.file.message", "Saving your file ...")
             }, async () => {
                 WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED);
-                await this._saveFileToDataverseFromVFS(uri, content);
+                await this._saveFileToDataverseFromVFS(uri);
             });
         }
 
@@ -266,55 +261,38 @@ export class PortalsFS implements vscode.FileSystemProvider {
     // --- Dataverse calls
 
     private async _loadFromDataverseToVFS() {
-        const powerPlatformContext = await WebExtensionContext.authenticateAndUpdateDataverseProperties();
-        await this.createFileSystem(this, powerPlatformContext.queryParamsMap.get(queryParameters.WEBSITE_NAME) as string);
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+        await this.createFileSystem(this, WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_NAME) as string);
 
-        if (!powerPlatformContext.dataverseAccessToken) {
+        if (!WebExtensionContext.dataverseAccessToken) {
             WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING);
             throw vscode.FileSystemError.NoPermissions();
         }
 
         await fetchDataFromDataverseAndUpdateVFS(
-            powerPlatformContext.dataverseAccessToken,
-            powerPlatformContext.entity,
-            powerPlatformContext.entityId,
-            powerPlatformContext.queryParamsMap,
-            powerPlatformContext.languageIdCodeMap,
+            WebExtensionContext.dataverseAccessToken,
+            WebExtensionContext.defaultEntityType,
+            WebExtensionContext.defaultEntityId,
+            WebExtensionContext.urlParametersMap,
+            WebExtensionContext.languageIdCodeMap,
             this,
-            powerPlatformContext.websiteIdToLanguage);
+            WebExtensionContext.websiteIdToLanguage);
     }
 
-    private async _saveFileToDataverseFromVFS(uri: vscode.Uri, content: Uint8Array) {
-        let stringDecodedValue = new TextDecoder(CHARSET).decode(content);
-        let powerPlatformContext = WebExtensionContext.getPowerPlatformExtensionContext();
-        const dataMap: Map<string, SaveEntityDetails> = powerPlatformContext.saveDataMap;
-        const dataverseOrgUrl = powerPlatformContext.queryParamsMap.get(queryParameters.ORG_URL) as string;
+    private async _saveFileToDataverseFromVFS(uri: vscode.Uri) {
+        const dataMap: Map<string, FileData> = WebExtensionContext.fileDataMap.getFileMap;
+        const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string;
 
-        powerPlatformContext = await WebExtensionContext.reAuthenticate();
-        if (!powerPlatformContext.dataverseAccessToken) {
-            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING);
-            throw vscode.FileSystemError.NoPermissions();
-        }
-
-        if (dataMap.get(uri.fsPath)?.getUseBase64Encoding as boolean) {
-            stringDecodedValue = convertStringtoBase64(stringDecodedValue);
-        }
-
-        const entityName = dataMap.get(uri.fsPath)?.getEntityName as string;
-        const entityId = dataMap.get(uri.fsPath)?.getEntityId as string;
-
+        await WebExtensionContext.reAuthenticate();
         const patchRequestUrl = getRequestURL(dataverseOrgUrl,
-            entityName,
-            entityId,
+            dataMap.get(uri.fsPath)?.entityName as string,
+            dataMap.get(uri.fsPath)?.entityId as string,
             httpMethod.PATCH,
             true);
 
         await saveData(
-            powerPlatformContext.dataverseAccessToken,
+            WebExtensionContext.dataverseAccessToken,
             patchRequestUrl,
-            entityName,
-            uri,
-            dataMap,
-            stringDecodedValue);
+            uri);
     }
 }

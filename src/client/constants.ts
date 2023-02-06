@@ -41,3 +41,8 @@ export const PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME = "@microsoft/generator-powerp
  * Name of the powerpages generator tarball
  */
 export const PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME = "microsoft-generator-powerpages";
+
+/**
+ * Name of the configuration setting name used for enabling CRUD operations for power pages using pac-cli support.
+ */
+export const PORTAL_CRUD_OPERATION_SETTING_NAME = "portalCRUDoperations";
