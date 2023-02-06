@@ -337,4 +337,21 @@ The {2} represents Solution's Version number</note>
       <source xml:lang="en">Try again</source>
     </trans-unit>
   </body></file>
+  <file original="./web/client/test/integration/errorHandler.test" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
+      <source xml:lang="en">Unable to find that app</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error.desc">
+      <source xml:lang="en">Check the URL and verify the parameters are correct</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error">
+      <source xml:lang="en">There was a problem opening the workspace</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
+      <source xml:lang="en">Check the URL and verify the parameters are correct</source>
+    </trans-unit>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
+      <source xml:lang="en">There was a problem opening the workspace</source>
+    </trans-unit>
+  </body></file>
 </xliff>

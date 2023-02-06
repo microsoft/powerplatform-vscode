@@ -13,9 +13,11 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import { PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME, PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME, PORTAL_YEOMAN_GENERATOR_VERSION } from '../constants';
+import { PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME, PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME } from '../constants';
 import { ICliAcquisitionContext } from './CliAcquisition';
 import { glob } from 'glob';
+
+declare const __GENERATOR_PACKAGE_VERSION__: string | undefined;
 
 export interface IDisposable {
     dispose(): void;
@@ -60,7 +62,7 @@ export class GeneratorAcquisition implements IDisposable {
         this._ppagesGlobalPath = path.resolve(context.globalStorageLocalPath, 'powerpages');
         this._installedPackageJson = path.resolve(this._ppagesGlobalPath, 'package.json');
         this._tgzFolder = path.join(this._context.extensionPath, 'dist', 'powerpages');
-        this._generatorVersion = PORTAL_YEOMAN_GENERATOR_VERSION;
+        this._generatorVersion = __GENERATOR_PACKAGE_VERSION__ || "1.0.0";
     }
 
     public dispose(): void {
