@@ -417,8 +417,6 @@ describe("remoteFetchProvider", () => {
             WebExtensionContext.telemetry,
             "sendAPITelemetry"
         );
-        const requestURL = "make.powerpgaes.com";
-
         //Action
         await fetchDataFromDataverseAndUpdateVFS(
             accessToken,
@@ -501,8 +499,7 @@ describe("remoteFetchProvider", () => {
             WebExtensionContext.telemetry,
             "sendAPITelemetry"
         );
-        const requestURL = "make.powerpgaes.com";
-
+        
         //Action
         await fetchDataFromDataverseAndUpdateVFS(
             accessToken,
