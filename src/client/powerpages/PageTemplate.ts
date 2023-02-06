@@ -59,13 +59,20 @@ export const createPageTemplate = async (
             watcherPattern
         );
 
+        //command to run, to create the page template
         const command = `${yoPath} ${YoSubGenerator.PAGETEMPLATE} "${pageTemplateName}" "${webtemplateId}"`;
         await createRecord(pageTemplate, command, portalDir, watcher);
+
     } catch (error: any) {
         throw new Error(error);
     }
 };
 
+/*
+ * Get inputs from user for creating a new page template
+ * @param webTemplateNames - list of web template names
+ * @returns - page template name and web template id
+ */
 async function getPageTemplateInputs(webTemplateNames: string[]) {
     const webTemplates: QuickPickItem[] = webTemplateNames.map((label) => ({
         label,
