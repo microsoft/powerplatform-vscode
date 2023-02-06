@@ -111,7 +111,7 @@ async function createContentFiles(
 
         const fetchedFileName = entityDetails?.get(schemaEntityKey.FILE_NAME_FIELD);
         const fileName = fetchedFileName ? result[fetchedFileName] : Constants.EMPTY_FILE_NAME;
-
+      
         if (fileName === Constants.EMPTY_FILE_NAME) {
             throw new Error(ERRORS.FILE_NAME_EMPTY);
         }
@@ -150,7 +150,7 @@ async function createContentFiles(
                     dataverseOrgUrl
                 );
             }
-          
+            
             const fileExtension = attributeExtensionMap?.get(attributeArray[counter]) as string;
             const fileNameWithExtension = GetFileNameWithExtension(entityName,
                 fileName,
