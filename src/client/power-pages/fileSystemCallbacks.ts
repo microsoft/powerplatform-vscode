@@ -5,8 +5,9 @@
 
 import * as vscode from "vscode";
 //import * as nls from 'vscode-nls';
-import { fileRenameValidation, getCurrentWorkspaceURI, getDeletePathUris, getFileProperties, getPowerPageEntityType, updateEntityPathNames } from "./commonUtility";
+import { getCurrentWorkspaceURI, getDeletePathUris, getFileProperties, getPowerPageEntityType } from "./commonUtility";
 import { PowerPagesEntityType } from "./constants";
+import { fileRenameValidation, updateEntityPathNames } from "./fileSystemUpdatesUtility";
 import { validateTextDocument } from "./validationDiagnostics";
 //const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
