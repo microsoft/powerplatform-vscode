@@ -3,34 +3,33 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { ITelemetry } from "./telemetry/ITelemetry";
+import * as path from "path";
+import * as vscode from "vscode";
+import { AI_KEY } from '../common/telemetry/generated/telemetryConfiguration';
+import { ITelemetryData } from "../common/TelemetryData";
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
-import * as path from "path";
 import { PortalWebView } from "./PortalWebView";
-import { AI_KEY } from "../common/telemetry/generated/telemetryConfiguration";
-import { ITelemetryData } from "../common/TelemetryData";
+import { ITelemetry } from "./telemetry/ITelemetry";
 
 import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
     TransportKind,
+    WorkspaceFolder
 } from "vscode-languageclient/node";
-import { readUserSettings } from "./telemetry/localfileusersettings";
-import {
-    activateDebugger,
-    deactivateDebugger,
-    shouldEnableDebugger,
-} from "../debugger";
-import { createPageTemplate } from "./powerpages/PageTemplate";
-import { createWebpage } from "./powerpages/Webpage";
+import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
+import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
+import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
 import { createContentSnippet } from "./powerpages/Contentsnippet";
+import { createPageTemplate } from "./powerpages/PageTemplate";
 import { createWebfile } from "./powerpages/Webfile";
+import { createWebpage } from "./powerpages/Webpage";
 import { createWebTemplate } from "./powerpages/WebTemplate";
 import { getSelectedWorkspaceFolder } from "./powerpages/utils/CommonUtils";
+import { readUserSettings } from "./telemetry/localfileusersettings";
 
 
 let client: LanguageClient;
@@ -184,12 +183,18 @@ export async function activate(
         });
     }
 
-    const cli = new CliAcquisition(
-        new CliAcquisitionContext(_context, _telemetry)
-    );
+    const cliContext = new CliAcquisitionContext(_context, _telemetry)
+    const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
+
+    const workspaceFolders = vscode.workspace.workspaceFolders?.map(fl => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)) || []
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+        const generator = new GeneratorAcquisition(cliContext)
+        generator.ensureInstalled();
+        _context.subscriptions.push(generator);
+    }
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
