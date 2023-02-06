@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 //import * as nls from 'vscode-nls';
-import { getCurrentWorkspaceURI, getDeletePathUris, getFileProperties, isValidDocument } from "./commonUtility";
+import { fileRenameValidation, getCurrentWorkspaceURI, getDeletePathUris, getFileProperties, getPowerPageEntityType, updateEntityPathNames } from "./commonUtility";
 import { PowerPagesEntityType } from "./constants";
 import { validateTextDocument } from "./validationDiagnostics";
 //const localize: nls.LocalizeFunc = nls.loadMessageBundle();
@@ -13,6 +13,7 @@ import { validateTextDocument } from "./validationDiagnostics";
 export async function handleFileSystemCallbacks(context: vscode.ExtensionContext) {
     // Add file system callback flows here - for rename and delete file actions
     await processOnDidDeleteFiles(context);
+    await processOnDidRenameFiles(context);
 }
 
 async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
@@ -27,14 +28,12 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
 
             if (e.files.length > 0) {
                 const singleFileFsPath = e.files[0].fsPath;
-                const fileProperties = getFileProperties(singleFileFsPath);
+                let fileProperties = getFileProperties(singleFileFsPath);
 
                 currentWorkspaceURI = getCurrentWorkspaceURI(singleFileFsPath);
                 // localize("powerPages.deleteFileConfirmation", `Are you sure you want to delete {0}?`, `"${fileProperties.fileName}")
                 deleteInfoMessage = fileProperties.fileName ? `Are you sure you want to delete "${fileProperties.fileName}"?` :
                     `Are you sure you want to delete these files?`;
-
-
 
                 await vscode.window.showInformationMessage(deleteInfoMessage,
                     {
@@ -44,11 +43,11 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
                     }, edit)
                     .then(async selection => {
                         if (selection) {
-                            const patterns: RegExp[] = [];
-                            e.files.forEach(async f => {
-                                const fileEntityType = isValidDocument(f.fsPath)
+                            let patterns: RegExp[] = [];
+                            patterns = await Promise.all(e.files.map(async f => {
+                                const fileEntityType = getPowerPageEntityType(f.fsPath)
                                 if (fileEntityType !== PowerPagesEntityType.UNKNOWN) {
-                                    const fileProperties = getFileProperties(f.fsPath);
+                                    fileProperties = getFileProperties(f.fsPath);
 
                                     if (fileProperties.fileCompleteName) {
                                         const pathUris = getDeletePathUris(f.fsPath, fileEntityType, fileProperties);
@@ -57,20 +56,53 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
                                         });
 
                                         // TODO - Add search validation for entity guid
-                                        patterns.push(RegExp(`${fileProperties.fileName}`, "g"));
+                                        return RegExp(`${fileProperties.fileName}`, "g");
                                     }
                                 }
-                            });
+                            })) as RegExp[];
 
-                            // TODO - Add search validation for entity guid
                             if (currentWorkspaceURI && patterns.length > 0) {
                                 const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, `**/*.{png,jpg,jpeg,gif,mp4}`, 1000);
-                                await allDocumentsUriInWorkspace.forEach(uri =>
-                                    validateTextDocument(uri, patterns, true));
+                                allDocumentsUriInWorkspace.forEach(async uri =>
+                                    await validateTextDocument(uri, patterns, true));
                             }
 
                         }
                     });
+            }
+        })
+    );
+}
+
+async function processOnDidRenameFiles(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.workspace.onDidRenameFiles(async (e) => {
+            if (e.files.length > 0) {
+                let patterns: RegExp[] = [];
+                const currentWorkspaceURI = getCurrentWorkspaceURI(e.files[0].oldUri.fsPath);
+
+                patterns = await Promise.all(e.files.map(async f => {
+                    const fileEntityType = getPowerPageEntityType(f.oldUri.fsPath);
+                    if (fileEntityType !== PowerPagesEntityType.UNKNOWN) {
+                        const fileProperties = getFileProperties(f.oldUri.fsPath);
+
+                        if (fileProperties.fileCompleteName) {
+                            const isValidationSuccess = await fileRenameValidation(f.oldUri, f.newUri, fileProperties);
+                            if (isValidationSuccess) {
+                                await updateEntityPathNames(f.oldUri, f.newUri, fileProperties, fileEntityType);
+                            }
+
+                            // TODO - Add search validation for entity guid
+                            return RegExp(`${fileProperties.fileName}`, "g");
+                        }
+                    }
+                })) as RegExp[];
+
+                if (currentWorkspaceURI && patterns.length > 0) {
+                    const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, `**/*.{png,jpg,jpeg,gif,mp4}`, 1000);
+                    allDocumentsUriInWorkspace.forEach(async uri =>
+                        await validateTextDocument(uri, patterns, true));
+                }
             }
         })
     );

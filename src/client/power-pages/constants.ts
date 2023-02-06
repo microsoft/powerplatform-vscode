@@ -3,12 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export const ContentPages = "content-pages";
 export const WebFileYmlExtension = ".webfile.yml";
+export const WebFilesFolder = "web-files";
 
 export const EntityFolderName = [
     "web-pages",
-    "web-files",
+    WebFilesFolder,
     "web-templates",
     "content-snippets",
     "polls",
@@ -31,7 +31,7 @@ export enum PowerPagesEntityType { // EntityType to foldername mapping
 
 export const EntityFolderMap: Map<string, PowerPagesEntityType> = new Map<string, PowerPagesEntityType>([
     ["web-pages", PowerPagesEntityType.WEBPAGES],
-    ["web-files", PowerPagesEntityType.WEBFILES],
+    [WebFilesFolder, PowerPagesEntityType.WEBFILES],
     ["web-templates", PowerPagesEntityType.WEBTEMPLATES],
     ["content-snippets", PowerPagesEntityType.CONTENT_SNIPPETS],
     ["weblink-sets", PowerPagesEntityType.WEBLINK_SETS],
