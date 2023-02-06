@@ -19,7 +19,7 @@ nls.config({
 })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-export const createWebTemplate = (context: vscode.ExtensionContext) => {
+export const createWebTemplate = (context: vscode.ExtensionContext, selectedWorkspaceFolder: string | undefined) => {
     vscode.window
         .showInputBox({
             placeHolder: localize(
@@ -38,7 +38,7 @@ export const createWebTemplate = (context: vscode.ExtensionContext) => {
                     vscode.workspace.createFileSystemWatcher(
                         new vscode.RelativePattern(
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            vscode.workspace.workspaceFolders![0],
+                            selectedWorkspaceFolder!,
                             path.join("web-templates", webTemplateFolder, `${webTemplateFile}.webtemplate.source.html`)
                         ),
                         false,
@@ -47,7 +47,7 @@ export const createWebTemplate = (context: vscode.ExtensionContext) => {
                     );
 
                 context.subscriptions.push(watcher);
-                const portalDir = `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}`;
+                const portalDir = selectedWorkspaceFolder;
                 const yoWebTemplateGenerator = "@microsoft/powerpages:webtemplate";
                 const command = `${yoPath} ${yoWebTemplateGenerator} "${value}"`;
 

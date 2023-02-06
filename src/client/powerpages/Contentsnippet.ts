@@ -22,7 +22,7 @@ import path from "path";
 import { yoPath } from "./constants";
 
 export const createContentSnippet = async (
-    context: vscode.ExtensionContext
+    context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined
 ) => {
     //TODO: check for powerpages package also
     const { contentSnippetName, contentSnippetType } =
@@ -35,7 +35,7 @@ export const createContentSnippet = async (
         const watcher = vscode.workspace.createFileSystemWatcher(
             new vscode.RelativePattern(
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                vscode.workspace.workspaceFolders![0],
+                selectedWorkspaceFolder!,
                 path.join(
                     "content-snippets",
                     folder,
@@ -48,7 +48,7 @@ export const createContentSnippet = async (
         );
 
         context.subscriptions.push(watcher);
-        const portalDir = `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}`;
+        const portalDir = selectedWorkspaceFolder;
         const yoContentSnippetGenerator = "@microsoft/powerpages:contentsnippet";
         const command = `${yoPath} ${yoContentSnippetGenerator} "${contentSnippetName}" "${contentSnippetType}"`;
 
