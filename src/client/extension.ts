@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import * as path from "path";
 import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
@@ -24,6 +25,8 @@ import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinde
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
 import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "./constants";
 import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
+import { readUserSettings } from "./telemetry/localfileusersettings";
+import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -114,7 +117,8 @@ export async function activate(
         await handleFileSystemCallbacks(_context);
     }
 
-    const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
+    const cliContext = new CliAcquisitionContext(_context, _telemetry)
+    const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
