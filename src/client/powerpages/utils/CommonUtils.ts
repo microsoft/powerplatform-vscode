@@ -152,7 +152,7 @@ export async function getSelectedWorkspaceFolder( uri: vscode.Uri, activeEditor:
         case Boolean(uri):
             selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
             break;
-        case Boolean(workspaceFolder):
+        case Boolean(workspaceFolder && vscode.workspace.workspaceFolders.length === 1):
             selectedWorkspaceFolder = workspaceFolder?.uri?.fsPath;
             break;
         case vscode.workspace.workspaceFolders.length > 1:
