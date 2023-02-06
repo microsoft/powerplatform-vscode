@@ -4,8 +4,10 @@
  */
 
 import * as vscode from "vscode";
+import * as fs from 'fs';
+import * as YAML from 'yaml';
 import { getEntityFolderName, getEntityFolderPathIndex, getFileProperties, getUpdatedFolderPath, getValidatedEntityPath, IFileProperties, isValidRenamedFile, isValidUri } from "./commonUtility";
-import { PowerPagesEntityType } from "./constants";
+import { PowerPagesEntityType, WebFileYmlExtension } from "./constants";
 
 export async function updateEntityPathNames(oldUri: vscode.Uri,
     newUri: vscode.Uri,
@@ -13,33 +15,43 @@ export async function updateEntityPathNames(oldUri: vscode.Uri,
     fileEntityType: PowerPagesEntityType
 ) {
     const entityFolderName = getEntityFolderName(oldUri.fsPath);
-    if (isValidUri(oldUri.fsPath) && oldFileProperties.fileName && isValidRenamedFile(oldUri.fsPath, entityFolderName, oldFileProperties.fileName, fileEntityType)) {
+    if (isValidUri(oldUri.fsPath) &&
+        oldFileProperties.fileName &&
+        isValidRenamedFile(oldUri.fsPath, entityFolderName, oldFileProperties.fileName, fileEntityType)
+    ) {
         const newFileProperties = getFileProperties(newUri.fsPath);
         const entityFolderIndex = getEntityFolderPathIndex(newUri.fsPath, oldFileProperties.fileName, fileEntityType);
         const fileEntityFolderPath = oldFileProperties.fileFolderPath.substring(0, entityFolderIndex);
         const allFilesInFolder = await vscode.workspace.findFiles(fileEntityType === PowerPagesEntityType.WEBFILES ?
             `**/${entityFolderName}/${oldFileProperties.fileName}.*` : `**/${entityFolderName}/${oldFileProperties.fileName.toLowerCase()}/**/*`);
 
-        if (fileEntityType !== PowerPagesEntityType.ADVANCED_FORMS) {
-            await Promise.all(allFilesInFolder.map(async file => {
-                const fileProperties = getFileProperties(file.fsPath);
-                if (fileProperties.fileCompleteName) {
-                    const newFilePath = file.fsPath.replace(fileProperties.fileCompleteName, [newFileProperties.fileName, fileProperties.fileExtension].join('.'));
-                    if (newFilePath !== file.fsPath) {
-                        await vscode.workspace.fs.rename(file, vscode.Uri.file(newFilePath), { overwrite: true });
+        if (newFileProperties.fileName) {
+            if (fileEntityType !== PowerPagesEntityType.ADVANCED_FORMS) {
+                await Promise.all(allFilesInFolder.map(async file => {
+                    const fileProperties = getFileProperties(file.fsPath);
+                    if (fileProperties.fileCompleteName) {
+                        const newFilePath = file.fsPath.replace(fileProperties.fileCompleteName, [newFileProperties.fileName, fileProperties.fileExtension].join('.'));
+                        if (newFilePath !== file.fsPath) {
+                            await vscode.workspace.fs.rename(file, vscode.Uri.file(newFilePath), { overwrite: true });
+                        }
                     }
-                }
-            }));
-        }
+                }));
+            }
 
-        // FolderName update
-        if (newFileProperties.fileName && fileEntityType !== PowerPagesEntityType.WEBFILES) {
-            await vscode.workspace.fs.rename(vscode.Uri.file(fileEntityFolderPath),
-                getUpdatedFolderPath(fileEntityFolderPath, oldFileProperties.fileName, newFileProperties.fileName),
-                { overwrite: true });
-        }
+            // FolderName update
+            if (fileEntityType !== PowerPagesEntityType.WEBFILES) {
+                await vscode.workspace.fs.rename(vscode.Uri.file(fileEntityFolderPath),
+                    getUpdatedFolderPath(fileEntityFolderPath, oldFileProperties.fileName, newFileProperties.fileName),
+                    { overwrite: true });
+            }
 
-        // File Name update in yml file
+            // File Name update in yml file
+            const ymlFileInFolder = await vscode.workspace.findFiles(fileEntityType === PowerPagesEntityType.WEBFILES ?
+                `**/${entityFolderName}/${newFileProperties.fileName}.*.yml` : `**/${entityFolderName}/${newFileProperties.fileName.toLowerCase()}/**/*.yml`);
+            ymlFileInFolder.forEach(file => {
+                updateEntityNameInYml(file.fsPath, fileEntityType);
+            });
+        }
     }
 }
 
@@ -59,4 +71,36 @@ export async function fileRenameValidation(oldUri: vscode.Uri,
         }
     }
     return success;
+}
+
+export function updateEntityNameInYml(fsPath: string, fileEntityType: PowerPagesEntityType) {
+    try {
+        const newFileName = getFormattedName(fsPath, fileEntityType);
+        const fileContents = fs.readFileSync(fsPath, 'utf8');
+        const parsedFileContents = YAML.parse(fileContents);
+
+        // update data object
+        parsedFileContents['adx_name'] = newFileName;
+
+        const newFileContents = YAML.stringify(parsedFileContents);
+        fs.writeFileSync(fsPath, newFileContents);
+
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export function getFormattedName(fsPath: string, fileEntityType: PowerPagesEntityType) {
+    const fileProperties = getFileProperties(fsPath);
+    let formattedName = fileProperties.fileName?.replace('-', ' ');
+
+    if (fileProperties.fileName) {
+        const ymlExtensionIndex = fileProperties.fileCompleteName?.indexOf(WebFileYmlExtension) ?? -1;
+
+        if (fileEntityType === PowerPagesEntityType.WEBFILES && ymlExtensionIndex > 0) {
+            formattedName = fileProperties.fileCompleteName?.substring(0, ymlExtensionIndex);
+        }
+    }
+
+    return formattedName;
 }
