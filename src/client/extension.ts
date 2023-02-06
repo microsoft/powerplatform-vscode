@@ -119,7 +119,7 @@ export async function activate(
             "microsoft-powerapps-portals.contentsnippet",
             async (uri) => {
                 selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                createContentSnippet(_context);
+                createContentSnippet(_context, selectedWorkspaceFolder);
             }
         )
     )
@@ -129,7 +129,7 @@ export async function activate(
             "microsoft-powerapps-portals.webfile",
             async (uri) => {
                 selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-               createWebfile();
+               createWebfile(selectedWorkspaceFolder);
             }
         )
     )
@@ -139,7 +139,7 @@ export async function activate(
             "microsoft-powerapps-portals.webtemplate",
             async (uri) => {
                 selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                createWebTemplate(_context);
+                createWebTemplate(_context, selectedWorkspaceFolder);
             }
         )
     )

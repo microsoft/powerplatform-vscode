@@ -65,7 +65,7 @@ import { exec } from "child_process";
 //     return { paths, pathsMap };
 // }
 
-export const createWebfile = async () => {
+export const createWebfile = async (selectedWorkspaceFolder: string | undefined) => {
     // Get the root directory of the workspace
     const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     if (!rootDir) {
@@ -73,9 +73,10 @@ export const createWebfile = async () => {
     }
 
     // Get the web templates from the data directory
-    const portalDir = `${rootDir}`;
+    const portalDir = selectedWorkspaceFolder;
     const fs: DesktopFS = new DesktopFS();
-    const ctx = Context.getInstance(portalDir, fs);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const ctx = Context.getInstance(portalDir!, fs);
     try {
         await ctx?.init([Tables.WEBPAGE, Tables.PAGETEMPLATE]);
     } catch (error) {
