@@ -15,55 +15,16 @@ import * as vscode from "vscode";
 import {
     createFileWatcher,
     createRecord,
-    fileName,
+    formatFileName,
     getPortalContext,
     getWebTemplates,
+    isNullOrEmpty,
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
 import { pageTemplate, TableFolder, yoPath } from "./constants";
 import { YoSubGenerator } from "../powerpages/constants";
-
-// export const createPageTemplate = async (
-//     context: vscode.ExtensionContext,
-//     selectedWorkspaceFolder: string
-// ) => {
-
-//     // Get the web templates from the portal directory
-//     const portalDir = selectedWorkspaceFolder;
-//     const portalContext = getPortalContext(portalDir);
-//     const { webTemplateNames, webTemplateMap } = await getWebTemplates(
-//         portalContext
-//     );
-
-//     // Show a quick pick to enter name select the web template
-//     const pageTemplateInputs = await getPageTemplateInputs(webTemplateNames);
-
-//     const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
-
-//     const pageTemplateName = pageTemplateInputs.name;
-
-//     // Create the page template using the yo command
-//     if (!isNullOrEmpty(pageTemplateName)) {
-//         const file = fileName(pageTemplateName);
-//         const watcherPattern = path.join(
-//             TableFolder.PAGETEMPLATE_FOLDER,
-//             `${file}.pagetemplate.yml`
-//         );
-//         const watcher = createFileWatcher(
-//             context,
-//             selectedWorkspaceFolder,
-//             watcherPattern
-//         );
-
-//         const portalDir = selectedWorkspaceFolder;
-//         const command = `${yoPath} ${YoSubGenerator.PAGETEMPLATE} "${pageTemplateName}" "${webtemplateId}"`;
-
-//         await createRecord(pageTemplate, command, portalDir, watcher);
-
-//     }
-// };
 
 export const createPageTemplate = async (
     context: vscode.ExtensionContext,
@@ -87,7 +48,7 @@ export const createPageTemplate = async (
             throw new Error("Page Template name cannot be empty.");
         }
 
-        const file = fileName(pageTemplateName);
+        const file = formatFileName(pageTemplateName);
         const watcherPattern = path.join(
             TableFolder.PAGETEMPLATE_FOLDER,
             `${file}.pagetemplate.yml`
@@ -165,7 +126,10 @@ async function getPageTemplateInputs(webTemplateNames: string[]) {
     async function validateNameIsUnique(
         name: string
     ): Promise<string | undefined> {
-        const file = fileName(name);
+        if (isNullOrEmpty(name)) {
+            return "Name cannot be empty";
+        }
+        const file = formatFileName(name);
         return await vscode.workspace
             .findFiles(
                 path.join("page-templates", `${file}.pagetemplate.yml`),
