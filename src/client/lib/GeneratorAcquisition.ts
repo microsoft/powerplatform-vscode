@@ -107,7 +107,7 @@ export class GeneratorAcquisition implements IDisposable {
                     "Cannot install Power Pages generator: {0}", String(child.error)));
             } else {
                 this._context.telemetry.sendTelemetryEvent('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion });
-                this._context.showInformationMessage(localize("generatorAcquisition.successMessage", 'The pac CLI is ready for use in your VS Code terminal!'));
+                this._context.showInformationMessage(localize("generatorAcquisition.successMessage", 'The Power Pages generator is ready for use in your VS Code extension!'));
             }
         }
         return this.yoCommandPath
