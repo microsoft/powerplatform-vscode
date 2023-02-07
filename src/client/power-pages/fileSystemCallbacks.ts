@@ -66,6 +66,7 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
                                 const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, `**/*.{png,jpg,jpeg,gif,mp4}`, 1000);
                                 allDocumentsUriInWorkspace.forEach(async uri =>
                                     await validateTextDocument(uri, patterns, true));
+
                             }
 
                         }

@@ -62,6 +62,7 @@ export function getDeletePathUris(fsPath: string,
                 pathUris.push(vscode.Uri.file(fsPath.substring(0, ymlExtensionIndex)));
         } else {
             const folderPathNameIndex = getEntityFolderPathIndex(fsPath, fileProperties.fileName, fileEntityType);
+
             pathUris.push(vscode.Uri.file(fsPath.substring(0, folderPathNameIndex)));
         }
     }
