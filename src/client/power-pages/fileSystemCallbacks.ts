@@ -103,7 +103,8 @@ async function processOnDidRenameFiles(context: vscode.ExtensionContext) {
                 if (currentWorkspaceURI && patterns.length > 0) {
                     const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, `**/*.{png,jpg,jpeg,gif,mp4}`, 1000);
                     allDocumentsUriInWorkspace.forEach(async uri =>
-                        await validateTextDocument(uri, patterns, true));
+                        await validateTextDocument(uri, patterns, true)
+                    );
                 }
             }
         })
