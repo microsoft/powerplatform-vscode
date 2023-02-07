@@ -127,6 +127,7 @@ async function getLatestContent(
             method: httpMethod.GET,
             headers: getHeader(accessToken)
         }
+
         if (entityEtag) {
             requestInit.headers = {
                 ...requestInit.headers,
@@ -140,6 +141,7 @@ async function getLatestContent(
             fileExtensionType);
 
         const response = await fetch(requestUrl, requestInit);
+        
         if (response.ok) {
             const result = await response.json();
             if (result[attributePath.source] && entityColumnContent != result[attributePath.source]) {
