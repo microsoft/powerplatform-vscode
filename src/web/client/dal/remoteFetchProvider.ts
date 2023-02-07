@@ -150,7 +150,6 @@ async function createContentFiles(
                     dataverseOrgUrl
                 );
             }
-            
             const fileExtension = attributeExtensionMap?.get(attributeArray[counter]) as string;
             const fileNameWithExtension = GetFileNameWithExtension(entityName,
                 fileName,
