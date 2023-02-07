@@ -789,6 +789,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
