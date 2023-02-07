@@ -9,12 +9,18 @@ import {
 import { URL } from 'url';
 import * as path from 'path';
 import * as fs from 'fs';
+import { glob } from 'glob';
 
 const portalConfigFolderName = '.portalconfig';
 
+export function workspaceContainsPortalConfigFolder(workspaceRootFolders: WorkspaceFolder[] | null): boolean {
+    return workspaceRootFolders?.some(workspaceRootFolder => {
+        return glob.sync('**/website.yml', { cwd: workspaceRootFolder.uri }).length
+    }) || false
+}
 
-export function getPortalConfigFolderUrl(workspaceRootFolders : WorkspaceFolder[] | null, pathOfFileBeingEdited: string): URL | null {
-    for (let i = 0; workspaceRootFolders && i < workspaceRootFolders?.length; i++ ){
+export function getPortalConfigFolderUrl(workspaceRootFolders: WorkspaceFolder[] | null, pathOfFileBeingEdited: string): URL | null {
+    for (let i = 0; workspaceRootFolders && i < workspaceRootFolders?.length; i++) {
         const portalConfigFolderUrl = searchPortalConfigFolder(workspaceRootFolders[i].uri, pathOfFileBeingEdited);
         if (portalConfigFolderUrl) {
             return portalConfigFolderUrl;

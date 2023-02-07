@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+
 export const EXTENSION_ID = "microsoft-IsvExpTools.powerplatform-vscode";
 
 /**
@@ -24,6 +25,16 @@ export const SETTINGS_DEBUGGER_DEFAULT_PORT = 9222;
  * Default value for the `powerPlatform.experimental.enablePcfDebuggingFeatures` flag.
  */
 export const DEBUGGER_ENABLED_DEFAULT_VALUE = false;
+
+/**
+ * Name of the powerpages generator
+ */
+export const PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME = "@microsoft/generator-powerpages";
+
+/**
+ * Name of the powerpages generator tarball
+ */
+export const PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME = "microsoft-generator-powerpages";
 
 /**
  * Name of the configuration setting name used for enabling CRUD operations for power pages using pac-cli support.
