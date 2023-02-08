@@ -14,7 +14,7 @@ provided by the bot. You will only need to do this once across all repos using o
 
 Windows, macOS or Linux:
 
-- [Node.js LTS (currently v16)](https://nodejs.org/en/download/)
+- [Node.js LTS (currently v18)](https://nodejs.org/en/download/)
 - gulp CLI: ```npm install -g gulp-cli```
 - [git](https://git-scm.com/downloads)
 - [VS Code](https://code.visualstudio.com/Download) or your different favorite editor

@@ -12,3 +12,6 @@ npm-debug.log*
 # VS Code test infra
 .vscode-test/
 .vscode-test-web/
+
+# don't check in generated folders
+telemetry-generated

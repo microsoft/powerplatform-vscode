@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-declare const __GENERATOR_PACKAGE_VERSION__: string;
 
 export const EXTENSION_ID = "microsoft-IsvExpTools.powerplatform-vscode";
 
@@ -28,11 +27,6 @@ export const SETTINGS_DEBUGGER_DEFAULT_PORT = 9222;
 export const DEBUGGER_ENABLED_DEFAULT_VALUE = false;
 
 /**
- * Current version of the powerpages generator
- */
-export const PORTAL_YEOMAN_GENERATOR_VERSION = __GENERATOR_PACKAGE_VERSION__ || "1.0.0";
-
-/**
  * Name of the powerpages generator
  */
 export const PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME = "@microsoft/generator-powerpages";
@@ -41,3 +35,8 @@ export const PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME = "@microsoft/generator-powerp
  * Name of the powerpages generator tarball
  */
 export const PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME = "microsoft-generator-powerpages";
+
+/**
+ * Name of the configuration setting name used for enabling CRUD operations for power pages using pac-cli support.
+ */
+export const PORTAL_CRUD_OPERATION_SETTING_NAME = "portalCRUDoperations";
