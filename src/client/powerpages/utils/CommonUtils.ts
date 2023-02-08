@@ -139,16 +139,56 @@ export async function getWebTemplates(
     return { webTemplateNames, webTemplateMap };
 }
 
-export async function getSelectedWorkspaceFolder( uri: vscode.Uri, activeEditor: vscode.TextEditor | undefined) {
-    let selectedWorkspaceFolder:string | undefined;
+// export async function getSelectedWorkspaceFolder( uri: vscode.Uri, activeEditor: vscode.TextEditor | undefined) {
+//     let selectedWorkspaceFolder:string | undefined;
+
+//     if (!vscode.workspace.workspaceFolders) {
+//         throw new Error("No workspace folder found");
+//     }
+
+//     const workspaceFolder = activeEditor ?
+//         vscode.workspace.getWorkspaceFolder(activeEditor.document.uri) :
+//         null;
+
+//     switch (true) {
+//         case Boolean(uri):
+//             selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
+//             break;
+//         case Boolean(workspaceFolder && vscode.workspace.workspaceFolders.length === 1):
+//             selectedWorkspaceFolder = workspaceFolder?.uri?.fsPath;
+//             break;
+//         case vscode.workspace.workspaceFolders.length > 1:
+//             return vscode.window.showWorkspaceFolderPick().then(async (folder) => {
+//                 if(await checkForPortalDir(folder?.uri.fsPath)){
+//                     return folder?.uri.fsPath;
+//                 }
+//                 else{
+//                     throw new Error("This is not a portal directory found, open a portal directory to continue");
+//                 }
+//             });
+//         default:
+//             selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+//             break;
+//     }
+
+//     if(await checkForPortalDir(selectedWorkspaceFolder)){
+//         return selectedWorkspaceFolder;
+//     }
+//     else{
+//         throw new Error("This is not a portal directory found, open a portal directory to continue");
+//     }
+// }
+
+export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: vscode.TextEditor | undefined) {
+    let selectedWorkspaceFolder: string | undefined;
 
     if (!vscode.workspace.workspaceFolders) {
         throw new Error("No workspace folder found");
     }
 
-    const workspaceFolder = activeEditor ?
-        vscode.workspace.getWorkspaceFolder(activeEditor.document.uri) :
-        null;
+    const workspaceFolder = activeEditor
+        ? vscode.workspace.getWorkspaceFolder(activeEditor.document.uri)
+        : null;
 
     switch (true) {
         case Boolean(uri):
@@ -158,31 +198,44 @@ export async function getSelectedWorkspaceFolder( uri: vscode.Uri, activeEditor:
             selectedWorkspaceFolder = workspaceFolder?.uri?.fsPath;
             break;
         case vscode.workspace.workspaceFolders.length > 1:
-            return vscode.window.showWorkspaceFolderPick().then((folder) => {
-                if(checkForPortalDir(folder?.uri.fsPath)){
-                    return folder?.uri.fsPath;
-                }
-            });
+            return vscode.window
+                .showWorkspaceFolderPick()
+                .then(async (folder) => {
+                    const isPortalDirectory = await checkForPortalDir(folder?.uri.fsPath);
+                    if (isPortalDirectory) {
+                        return folder?.uri.fsPath;
+                    } else {
+                        throw new Error("This is not a portal directory, open a directory which contains portal downloaded data");
+                    }
+                });
         default:
             selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
             break;
     }
 
-    if(checkForPortalDir(selectedWorkspaceFolder)){
+    const isPortalDirectory = await checkForPortalDir(selectedWorkspaceFolder);
+    if (isPortalDirectory) {
         return selectedWorkspaceFolder;
+    } else {
+        vscode.window.showErrorMessage("This is not a portal directory, open a directory which contains portal downloaded data");
+        throw new Error("This is not a portal directory, open a directory which contains portal downloaded data");
     }
 }
 
 
-export function checkForPortalDir (selectedFolder:string|undefined) {
-    if(selectedFolder){
-        stat(path.join(selectedFolder, "website.yml"),(err) => {
-            if (err) {
-                vscode.window.showErrorMessage("This is not a portal directory, open a portal directory to continue")
-                throw new Error("No website.yml file found");
-            }
-        })
 
-    }
-    return true;
+export function checkForPortalDir(selectedFolder: string | undefined): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        if (selectedFolder) {
+            stat(path.join(selectedFolder, "website.yml"), (err) => {
+                if (err) {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            });
+        } else {
+            reject(new Error("No selected folder"));
+        }
+    });
 }
