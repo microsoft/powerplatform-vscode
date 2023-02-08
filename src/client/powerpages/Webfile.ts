@@ -117,7 +117,7 @@ export const createWebfile = async (selectedWorkspaceFolder: string | undefined,
               async () => {
                 const promises = selectedFiles.map((file) => {
                   const webfilePath = file.fsPath;
-                  const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
+                  const command = `"${yoPath}" ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
                   return new Promise((resolve, reject) => {
                     exec(command, { cwd: portalDir }, (error, stderr, stdout) => {
                       if (error || stdout.toString().includes("Error")) {

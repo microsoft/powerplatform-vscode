@@ -49,7 +49,7 @@ export const createContentSnippet = async (
         context.subscriptions.push(watcher);
         const portalDir = selectedWorkspaceFolder;
         const yoContentSnippetGenerator = "@microsoft/powerpages:contentsnippet";
-        const command = `${yoPath} ${yoContentSnippetGenerator} "${contentSnippetName}" "${contentSnippetType}"`;
+        const command = `"${yoPath}" ${yoContentSnippetGenerator} "${contentSnippetName}" "${contentSnippetType}"`;
 
         vscode.window
             .withProgress(

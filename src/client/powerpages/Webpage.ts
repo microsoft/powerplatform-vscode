@@ -93,7 +93,7 @@ export const createWebpage = async (
         context.subscriptions.push(watcher);
         const portalDir = selectedWorkspaceFolder;
         const yoWebpageGenerator = "@microsoft/powerpages:webpage";
-        const command = `${yoPath} ${yoWebpageGenerator} "${webpageName}" "${parentPageId}" "${pageTemplateId}"`;
+        const command = `"${yoPath}" ${yoWebpageGenerator} "${webpageName}" "${parentPageId}" "${pageTemplateId}"`;
 
         vscode.window
             .withProgress(
