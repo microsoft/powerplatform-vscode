@@ -16,56 +16,12 @@ import { getParentPagePaths, isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { MultiStepInput } from "./utils/MultiStepInput";
-import { Tables, yoPath } from "./constants";
+import { Tables, } from "./constants";
 import DesktopFS from "./utils/DesktopFS";
 import { exec } from "child_process";
 
 
-// function getPaths(pages: Map<string, any>): {
-//     paths: Array<string>;
-//     pathsMap: Map<string, string>;
-// } {
-//     if (pages.size === 0) {
-//         return { paths: [], pathsMap: new Map() };
-//     }
-//     const paths: Array<string> = [];
-//     const pathsMap: Map<string, string> = new Map();
-//     // eslint-disable-next-line prefer-const
-//     for (let [webpageid, page] of pages) {
-//         if (!page.adx_name || !webpageid) {
-//             continue;
-//         }
-//         let path = page.adx_name;
-
-//         // If the page is a home page, add it to the paths array
-//         if (!page.adx_parentpageid && page.adx_partialurl === "/") {
-//             paths.push(path);
-//             pathsMap.set(webpageid, path);
-//             continue;
-//         }
-//         let prevPage = null;
-//         while (page.adx_parentpageid) {
-//             if (!pages.has(page.adx_parentpageid)) {
-//                 break;
-//             }
-//             // to check for circular reference
-//             if (prevPage === page) {
-//                 break;
-//             }
-//             prevPage = page;
-//             page = pages.get(page.adx_parentpageid);
-//             path = `${page.adx_name}/${path}`;
-//         }
-//         if (paths.indexOf(path) === -1) {
-//             paths.push(path);
-//             pathsMap.set(path, webpageid);
-//         }
-//     }
-//     paths.sort();
-//     return { paths, pathsMap };
-// }
-
-export const createWebfile = async (selectedWorkspaceFolder: string | undefined) => {
+export const createWebfile = async (selectedWorkspaceFolder: string | undefined, yoPath: string | null) => {
     // Get the root directory of the workspace
     const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     if (!rootDir) {
@@ -107,43 +63,78 @@ export const createWebfile = async (selectedWorkspaceFolder: string | undefined)
 
 
 
+        // if (selectedFiles) {
+        //     vscode.window
+        //     .withProgress(
+        //         {
+        //             location: vscode.ProgressLocation.Notification,
+        //             title: `Adding ${webfileCount} web files...`,
+        //         },
+        //         () => {
+
+        //             for (let i = 0; i < selectedFiles.length - 1; i++) {
+        //                 const file = selectedFiles[i];
+        //                 const webfilePath = file.fsPath;
+        //                 const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
+        //                 exec(command, {cwd: portalDir});
+        //               }
+
+        //             return new Promise((resolve, reject) => {
+        //                 const lastFile = selectedFiles[selectedFiles.length -1 ];
+        //                 const webfilePath = lastFile.fsPath;
+        //                 const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
+        //                 exec(command, { cwd: portalDir }, (error, stderr, stdout) => {
+        //                     if (error || stdout.toString().includes("Error")) {
+        //                         if(error){
+        //                         vscode.window.showErrorMessage(error.message);
+        //                             reject(error);
+        //                         }
+        //                         else{
+        //                             vscode.window.showErrorMessage(stdout.toString());
+        //                             reject(stdout)
+        //                         }
+
+        //                     } else {
+        //                         stdout.toString();
+        //                         resolve(stderr);
+        //                     }
+        //                 });
+        //             });
+        //         }
+        //     )
+        //     .then(() => {
+        //         vscode.window.showInformationMessage(
+        //             "Webfiles Added!"
+        //         );
+        //     });
+        // }
         if (selectedFiles) {
-            vscode.window
-            .withProgress(
-                {
-                    location: vscode.ProgressLocation.Notification,
-                    title: `Adding ${webfileCount} web files...`,
-                },
-                () => {
-
-                    for (let i = 0; i < selectedFiles.length - 1; i++) {
-                        const file = selectedFiles[i];
-                        const webfilePath = file.fsPath;
-                        const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
-                        exec(command, {cwd: portalDir});
+            vscode.window.withProgress(
+              {
+                location: vscode.ProgressLocation.Notification,
+                title: `Adding ${webfileCount} web files...`,
+              },
+              async () => {
+                const promises = selectedFiles.map((file) => {
+                  const webfilePath = file.fsPath;
+                  const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
+                  return new Promise((resolve, reject) => {
+                    exec(command, { cwd: portalDir }, (error, stderr, stdout) => {
+                      if (error || stdout.toString().includes("Error")) {
+                        vscode.window.showErrorMessage(error ? error.message : stdout.toString());
+                        reject(error || stdout);
+                      } else {
+                        resolve(stderr);
                       }
-
-                    return new Promise((resolve, reject) => {
-                        const lastFile = selectedFiles[selectedFiles.length -1 ];
-                        const webfilePath = lastFile.fsPath;
-                        const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
-                        exec(command, { cwd: portalDir }, (error, stderr) => {
-                            if (error) {
-                                vscode.window.showErrorMessage(error.message);
-                                reject(error);
-                            } else {
-                                resolve(stderr);
-                            }
-                        });
                     });
-                }
-            )
-            .then(() => {
-                vscode.window.showInformationMessage(
-                    "Webfiles Added!"
-                );
-            });
-        }
+                  });
+                });
+
+                await Promise.all(promises);
+                vscode.window.showInformationMessage("Webfiles Added!");
+              }
+            );
+          }
 
 
     }

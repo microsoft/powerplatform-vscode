@@ -37,7 +37,7 @@ let _context: vscode.ExtensionContext;
 let htmlServerRunning = false;
 let yamlServerRunning = false;
 let _telemetry: TelemetryReporter;
-let selectedWorkspaceFolder: string | undefined;
+let selectedWorkspaceFolder: string|undefined;
 const activeEditor = vscode.window.activeTextEditor;
 
 export async function activate(
@@ -91,57 +91,7 @@ export async function activate(
         )
     );
 
-    _context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "microsoft-powerapps-portals.pagetemplate",
-            async (uri) => {
-                selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                createPageTemplate(_context, selectedWorkspaceFolder);
 
-            }
-        )
-    )
-
-
-    _context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "microsoft-powerapps-portals.webpage",
-            async (uri) => {
-                selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                createWebpage(_context,selectedWorkspaceFolder);
-            }
-        )
-    )
-
-    _context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "microsoft-powerapps-portals.contentsnippet",
-            async (uri) => {
-                selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                createContentSnippet(_context, selectedWorkspaceFolder);
-            }
-        )
-    )
-
-    _context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "microsoft-powerapps-portals.webfile",
-            async (uri) => {
-                selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-               createWebfile(selectedWorkspaceFolder);
-            }
-        )
-    )
-
-    _context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "microsoft-powerapps-portals.webtemplate",
-            async (uri) => {
-                selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                createWebTemplate(_context, selectedWorkspaceFolder);
-            }
-        )
-    )
 
     _context.subscriptions.push(
         vscode.workspace.onDidOpenTextDocument(() => {
@@ -192,8 +142,60 @@ export async function activate(
     const workspaceFolders = vscode.workspace.workspaceFolders?.map(fl => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)) || []
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
         const generator = new GeneratorAcquisition(cliContext)
-        generator.ensureInstalled();
+        await generator.ensureInstalled();
         _context.subscriptions.push(generator);
+        const yoCommandPath = generator.yoCommandPath;
+        _context.subscriptions.push(
+            vscode.commands.registerCommand(
+                "microsoft-powerapps-portals.pagetemplate",
+                async (uri) => {
+                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
+                    createPageTemplate(_context, selectedWorkspaceFolder, yoCommandPath);
+
+                }
+            )
+        )
+
+
+        _context.subscriptions.push(
+            vscode.commands.registerCommand(
+                "microsoft-powerapps-portals.webpage",
+                async (uri) => {
+                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
+                    createWebpage(_context,selectedWorkspaceFolder, yoCommandPath);
+                }
+            )
+        )
+
+        _context.subscriptions.push(
+            vscode.commands.registerCommand(
+                "microsoft-powerapps-portals.contentsnippet",
+                async (uri) => {
+                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
+                    createContentSnippet(_context, selectedWorkspaceFolder, yoCommandPath);
+                }
+            )
+        )
+
+        _context.subscriptions.push(
+            vscode.commands.registerCommand(
+                "microsoft-powerapps-portals.webfile",
+                async (uri) => {
+                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
+                   createWebfile(selectedWorkspaceFolder, yoCommandPath);
+                }
+            )
+        )
+
+        _context.subscriptions.push(
+            vscode.commands.registerCommand(
+                "microsoft-powerapps-portals.webtemplate",
+                async (uri) => {
+                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
+                    createWebTemplate(_context, selectedWorkspaceFolder, yoCommandPath);
+                }
+            )
+        )
     }
 
     if (shouldEnableDebugger()) {

@@ -71,7 +71,7 @@ export class GeneratorAcquisition implements IDisposable {
         return spawnSync(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', args, { cwd: this._ppagesGlobalPath });
     }
 
-    public ensureInstalled(): string | null {
+    public async ensureInstalled(): Promise<string | null> {
         if (!fs.existsSync(this._ppagesGlobalPath)) {
             fs.mkdirSync(this._ppagesGlobalPath);
         }

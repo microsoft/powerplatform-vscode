@@ -12,14 +12,13 @@ import {
 import * as nls from "vscode-nls";
 import { exec } from "child_process";
 import path from "path";
-import { yoPath } from "./constants";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-export const createWebTemplate = (context: vscode.ExtensionContext, selectedWorkspaceFolder: string | undefined) => {
+export const createWebTemplate = (context: vscode.ExtensionContext, selectedWorkspaceFolder: string | undefined, yoPath: string | null) => {
     vscode.window
         .showInputBox({
             placeHolder: localize(

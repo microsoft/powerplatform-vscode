@@ -8,6 +8,8 @@ import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { Tables, Template } from "../constants";
 import DesktopFS from "./DesktopFS";
 import * as vscode from "vscode";
+import { stat } from "fs";
+import path from "path";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
     return !str || str.trim().length === 0;
@@ -138,7 +140,7 @@ export async function getWebTemplates(
 }
 
 export async function getSelectedWorkspaceFolder( uri: vscode.Uri, activeEditor: vscode.TextEditor | undefined) {
-    let selectedWorkspaceFolder;
+    let selectedWorkspaceFolder:string | undefined;
 
     if (!vscode.workspace.workspaceFolders) {
         throw new Error("No workspace folder found");
@@ -157,14 +159,30 @@ export async function getSelectedWorkspaceFolder( uri: vscode.Uri, activeEditor:
             break;
         case vscode.workspace.workspaceFolders.length > 1:
             return vscode.window.showWorkspaceFolderPick().then((folder) => {
-                return folder?.uri.fsPath;
+                if(checkForPortalDir(folder?.uri.fsPath)){
+                    return folder?.uri.fsPath;
+                }
             });
         default:
             selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
             break;
     }
 
-    return selectedWorkspaceFolder;
+    if(checkForPortalDir(selectedWorkspaceFolder)){
+        return selectedWorkspaceFolder;
+    }
 }
 
 
+export function checkForPortalDir (selectedFolder:string|undefined) {
+    if(selectedFolder){
+        stat(path.join(selectedFolder, "website.yml"),(err) => {
+            if (err) {
+                vscode.window.showErrorMessage("This is not a portal directory, open a portal directory to continue")
+                throw new Error("No website.yml file found");
+            }
+        })
+
+    }
+    return true;
+}

@@ -19,10 +19,9 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import { exec } from "child_process";
 import path from "path";
-import { yoPath } from "./constants";
 
 export const createContentSnippet = async (
-    context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined
+    context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined, yoPath: string | null
 ) => {
     //TODO: check for powerpages package also
     const { contentSnippetName, contentSnippetType } =

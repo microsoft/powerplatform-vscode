@@ -18,10 +18,8 @@ import DesktopFS from "./utils/DesktopFS";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
 import { exec } from "child_process";
-import { yoPath } from "./constants";
 
-
-export const createPageTemplate = async (context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined) => {
+export const createPageTemplate = async (context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined, yoPath: string | null) => {
     // Get the root directory of the workspace
     const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
     if (!rootDir) {

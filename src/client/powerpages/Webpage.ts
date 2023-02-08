@@ -21,14 +21,15 @@ import { QuickPickItem } from "vscode";
 
 import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { MultiStepInput } from "./utils/MultiStepInput";
-import { Tables, yoPath } from "./constants";
+import { Tables } from "./constants";
 import DesktopFS from "./utils/DesktopFS";
 import path from "path";
 import { exec } from "child_process";
 
 export const createWebpage = async (
     context: vscode.ExtensionContext,
-    selectedWorkspaceFolder: string | undefined
+    selectedWorkspaceFolder: string | undefined,
+    yoPath: string | null
 ) => {
     // Get the root directory of the workspace
     const rootDir = selectedWorkspaceFolder
