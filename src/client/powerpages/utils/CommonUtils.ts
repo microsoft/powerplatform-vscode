@@ -8,7 +8,7 @@ import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { Tables, Template } from "../constants";
 import DesktopFS from "./DesktopFS";
 import * as vscode from "vscode";
-import { stat } from "fs";
+import { stat, existsSync } from "fs";
 import path from "path";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
@@ -181,6 +181,7 @@ export async function getWebTemplates(
 
 export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: vscode.TextEditor | undefined) {
     let selectedWorkspaceFolder: string | undefined;
+    let filePath: string;
 
     if (!vscode.workspace.workspaceFolders) {
         throw new Error("No workspace folder found");
@@ -192,7 +193,9 @@ export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: 
 
     switch (true) {
         case Boolean(uri):
-            selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
+            filePath = uri.fsPath;
+            selectedWorkspaceFolder = checkForWebsiteYML(filePath);
+            // selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
             break;
         case Boolean(workspaceFolder && vscode.workspace.workspaceFolders.length === 1):
             selectedWorkspaceFolder = workspaceFolder?.uri?.fsPath;
@@ -217,7 +220,6 @@ export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: 
     if (isPortalDirectory) {
         return selectedWorkspaceFolder;
     } else {
-        vscode.window.showErrorMessage("This is not a portal directory, open a directory which contains portal downloaded data");
         throw new Error("This is not a portal directory, open a directory which contains portal downloaded data");
     }
 }
@@ -238,4 +240,20 @@ export function checkForPortalDir(selectedFolder: string | undefined): Promise<b
             reject(new Error("No selected folder"));
         }
     });
+}
+
+
+export function checkForWebsiteYML(filePath: string): string {
+    let directory = path.dirname(filePath);
+    while (directory !== path.parse(directory).root) {
+        const websiteYMLPath = path.join(directory, 'website.yml');
+        if (existsSync(websiteYMLPath)) {
+            return directory;
+        }
+        directory = path.dirname(directory);
+    }
+
+    throw new Error("No Portal directory found");
+    // vscode.window.showErrorMessage("The 'website.yml' file was not found in the parent directories of the selected file.");
+    // return '';
 }

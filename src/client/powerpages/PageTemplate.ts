@@ -21,7 +21,7 @@ import { exec } from "child_process";
 
 export const createPageTemplate = async (context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined, yoPath: string | null) => {
     // Get the root directory of the workspace
-    const rootDir = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+    const rootDir = selectedWorkspaceFolder;
     if (!rootDir) {
         throw new Error("Root directory not found");
     }
