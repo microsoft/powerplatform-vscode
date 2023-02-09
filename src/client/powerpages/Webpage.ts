@@ -25,6 +25,7 @@ import { Tables } from "./constants";
 import DesktopFS from "./utils/DesktopFS";
 import path from "path";
 import { exec } from "child_process";
+import { generatePageCopy } from "./utils/Openai-api-client";
 
 export const createWebpage = async (
     context: vscode.ExtensionContext,
@@ -73,6 +74,12 @@ export const createWebpage = async (
 
     const webpageName = webpageInputs.name;
 
+    const pageCopyPrompt = webpageInputs.pageCopyPrompt;
+
+    let pageCopy = await generatePageCopy(pageCopyPrompt);
+
+    pageCopy = pageCopy.replace(/\n/g, '')
+
     const parentPageId = pathsMap.get(webpageInputs.parentPage);
 
     // Create the webpage using the yo command
@@ -93,7 +100,7 @@ export const createWebpage = async (
         context.subscriptions.push(watcher);
         const portalDir = selectedWorkspaceFolder;
         const yoWebpageGenerator = "@microsoft/powerpages:webpage";
-        const command = `"${yoPath}" ${yoWebpageGenerator} "${webpageName}" "${parentPageId}" "${pageTemplateId}"`;
+        const command = `"${yoPath}" ${yoWebpageGenerator} "${webpageName}" "${parentPageId}" "${pageTemplateId}" "${pageCopy}"`;
 
         vscode.window
             .withProgress(
@@ -145,6 +152,7 @@ async function getWebpageInputs(
         pageTemplate: string;
         name: string;
         parentPage: string;
+        pageCopyPrompt: string;
     }
 
     async function collectInputs() {
@@ -162,7 +170,7 @@ async function getWebpageInputs(
         state.name = await input.showInputBox({
             title,
             step: 1,
-            totalSteps: 3,
+            totalSteps: 4,
             value: state.name || "",
             placeholder: localize(
                 "microsoft-powerapps-portals.webExtension.webpage.quickpick.name.placeholder",
@@ -180,7 +188,7 @@ async function getWebpageInputs(
         const pick = await input.showQuickPick({
             title,
             step: 2,
-            totalSteps: 3,
+            totalSteps: 4,
             placeholder: localize(
                 "microsoft-powerapps-portals.webExtension.webpage.quickpick.pagetemplate.placeholder",
                 "Choose page template"
@@ -202,7 +210,7 @@ async function getWebpageInputs(
         const pick = await input.showQuickPick({
             title,
             step: 3,
-            totalSteps: 3,
+            totalSteps: 4,
             placeholder: localize(
                 "microsoft-powerapps-portals.webExtension.webpage.quickpick.parentpage.placeholder",
                 "Choose parent page"
@@ -214,6 +222,18 @@ async function getWebpageInputs(
                     : undefined,
         });
         state.parentPage = pick.label;
+        return (input: MultiStepInput) => inputPageCopyPrompt(input, state);
+    }
+
+    async function inputPageCopyPrompt(input: MultiStepInput, state: Partial<State>) {
+        state.pageCopyPrompt = await input.showInputBox({
+            title,
+            step: 4,
+            totalSteps: 4,
+            value: state.pageCopyPrompt || "",
+            placeholder: "Describe the page content you want to have",
+            validate: validateNameIsUnique,
+        });
     }
 
     async function validateNameIsUnique(name: string) {
