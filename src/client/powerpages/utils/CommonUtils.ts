@@ -139,45 +139,6 @@ export async function getWebTemplates(
     return { webTemplateNames, webTemplateMap };
 }
 
-// export async function getSelectedWorkspaceFolder( uri: vscode.Uri, activeEditor: vscode.TextEditor | undefined) {
-//     let selectedWorkspaceFolder:string | undefined;
-
-//     if (!vscode.workspace.workspaceFolders) {
-//         throw new Error("No workspace folder found");
-//     }
-
-//     const workspaceFolder = activeEditor ?
-//         vscode.workspace.getWorkspaceFolder(activeEditor.document.uri) :
-//         null;
-
-//     switch (true) {
-//         case Boolean(uri):
-//             selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
-//             break;
-//         case Boolean(workspaceFolder && vscode.workspace.workspaceFolders.length === 1):
-//             selectedWorkspaceFolder = workspaceFolder?.uri?.fsPath;
-//             break;
-//         case vscode.workspace.workspaceFolders.length > 1:
-//             return vscode.window.showWorkspaceFolderPick().then(async (folder) => {
-//                 if(await checkForPortalDir(folder?.uri.fsPath)){
-//                     return folder?.uri.fsPath;
-//                 }
-//                 else{
-//                     throw new Error("This is not a portal directory found, open a portal directory to continue");
-//                 }
-//             });
-//         default:
-//             selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-//             break;
-//     }
-
-//     if(await checkForPortalDir(selectedWorkspaceFolder)){
-//         return selectedWorkspaceFolder;
-//     }
-//     else{
-//         throw new Error("This is not a portal directory found, open a portal directory to continue");
-//     }
-// }
 
 export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: vscode.TextEditor | undefined) {
     let selectedWorkspaceFolder: string | undefined;
@@ -195,7 +156,6 @@ export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: 
         case Boolean(uri):
             filePath = uri.fsPath;
             selectedWorkspaceFolder = checkForWebsiteYML(filePath);
-            // selectedWorkspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.uri.fsPath;
             break;
         case Boolean(workspaceFolder && vscode.workspace.workspaceFolders.length === 1):
             selectedWorkspaceFolder = workspaceFolder?.uri?.fsPath;
@@ -244,7 +204,7 @@ export function checkForPortalDir(selectedFolder: string | undefined): Promise<b
 
 
 export function checkForWebsiteYML(filePath: string): string {
-    let directory = path.dirname(filePath);
+    let directory = filePath;
     while (directory !== path.parse(directory).root) {
         const websiteYMLPath = path.join(directory, 'website.yml');
         if (existsSync(websiteYMLPath)) {
@@ -252,8 +212,6 @@ export function checkForWebsiteYML(filePath: string): string {
         }
         directory = path.dirname(directory);
     }
-
-    throw new Error("No Portal directory found");
-    // vscode.window.showErrorMessage("The 'website.yml' file was not found in the parent directories of the selected file.");
-    // return '';
+    vscode.window.showErrorMessage("The 'website.yml' file was not found in the parent directories of the selected file.");
+    throw new Error("");
 }

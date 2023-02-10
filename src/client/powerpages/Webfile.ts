@@ -63,51 +63,6 @@ export const createWebfile = async (selectedWorkspaceFolder: string | undefined,
 
 
 
-        // if (selectedFiles) {
-        //     vscode.window
-        //     .withProgress(
-        //         {
-        //             location: vscode.ProgressLocation.Notification,
-        //             title: `Adding ${webfileCount} web files...`,
-        //         },
-        //         () => {
-
-        //             for (let i = 0; i < selectedFiles.length - 1; i++) {
-        //                 const file = selectedFiles[i];
-        //                 const webfilePath = file.fsPath;
-        //                 const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
-        //                 exec(command, {cwd: portalDir});
-        //               }
-
-        //             return new Promise((resolve, reject) => {
-        //                 const lastFile = selectedFiles[selectedFiles.length -1 ];
-        //                 const webfilePath = lastFile.fsPath;
-        //                 const command = `${yoPath} ${yoWebfileSubGenerator} "${webfilePath}" "${parentPageId}"`;
-        //                 exec(command, { cwd: portalDir }, (error, stderr, stdout) => {
-        //                     if (error || stdout.toString().includes("Error")) {
-        //                         if(error){
-        //                         vscode.window.showErrorMessage(error.message);
-        //                             reject(error);
-        //                         }
-        //                         else{
-        //                             vscode.window.showErrorMessage(stdout.toString());
-        //                             reject(stdout)
-        //                         }
-
-        //                     } else {
-        //                         stdout.toString();
-        //                         resolve(stderr);
-        //                     }
-        //                 });
-        //             });
-        //         }
-        //     )
-        //     .then(() => {
-        //         vscode.window.showInformationMessage(
-        //             "Webfiles Added!"
-        //         );
-        //     });
-        // }
         if (selectedFiles) {
             vscode.window.withProgress(
               {
