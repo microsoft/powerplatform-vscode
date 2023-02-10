@@ -73,7 +73,9 @@ function compileWeb() {
         .src('src/web/**/*.ts')
         .pipe(gulpWebpack(webConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
-        .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
+        .pipe(gulp.dest(path.resolve(`${distdir}/web`)))
+        // .pipe(gulp.dest(path.resolve(`${distdir}/client`))
+        // );
 }
 
 async function nugetInstall(nugetSource, packageName, version, targetDir) {
@@ -227,6 +229,17 @@ const testWebIntegration = gulp.series(compileIntegrationTests, async () => {
 
 // tests that require vscode-electron (which requires a display or xvfb)
 const testWebInt = gulp.series(testWebIntegration);
+
+/**
+ * Tests the power-pages integration tests after transpiling the source files to /out
+ */
+const testDesktopIntegration = gulp.series(compileIntegrationTests, async () => {
+    const testRunner = require("./out/client/test/runTest");
+    await testRunner.main();
+});
+
+// tests that require vscode-electron (which requires a display or xvfb)
+const testDesktopInt = gulp.series(testDesktopIntegration);
 
 async function packageVsix() {
     const standardHeader = '# Power Platform Extension';
@@ -453,6 +466,7 @@ exports.testWeb = testWeb;
 exports.compileIntegrationTests = compileIntegrationTests;
 exports.testInt = testInt;
 exports.testWebInt = testWebInt;
+exports.testDesktopInt = testDesktopInt;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;
