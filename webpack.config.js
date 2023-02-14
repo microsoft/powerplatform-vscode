@@ -9,6 +9,8 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const { dependencies } = require('./package.json');
+
 
 /**@type {import('webpack').Configuration}*/
 const nodeConfig = {
@@ -55,6 +57,11 @@ const nodeConfig = {
             ]
         }]
     },
+    plugins:[
+        new webpack.DefinePlugin({
+            __GENERATOR_PACKAGE_VERSION__: JSON.stringify(dependencies["@microsoft/generator-powerpages"] || "1.0.0"), // get the currently used version of powerpages generator with fallback to ^1.0.0
+        }),
+    ]
 };
 const webConfig = {
     mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
@@ -62,7 +69,8 @@ const webConfig = {
     entry: {
         'extension': './src/web/client/extension.ts',
         'test/unit/extension': './src/web/client/test/unit/extension.test.ts',
-        'test/integration/index': './src/web/client/test/integration/index.ts'
+        'client/test/integration/index': './src/client/test/Integration/index.ts',
+        'test/integration/index': './src/web/client/test/integration/index.ts',
     },
     output: {
         filename: '[name].js',
