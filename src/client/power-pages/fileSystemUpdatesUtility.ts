@@ -6,8 +6,20 @@
 import * as vscode from "vscode";
 import * as fs from 'fs';
 import * as YAML from 'yaml';
-import { getEntityFolderName, getEntityFolderPathIndex, getFileProperties, getUpdatedFolderPath, getValidatedEntityPath, IFileProperties, isSingleFileEntity as isSingleFileEntity, isValidRenamedFile, isValidUri } from "./commonUtility";
-import { PowerPagesEntityType, WebFileYmlExtension } from "./constants";
+import {
+    getEntityFolderName,
+    getEntityFolderPathIndex,
+    getFieldsToUpdate,
+    getFileProperties,
+    getFileNameProperties,
+    getUpdatedFolderPath,
+    getValidatedEntityPath,
+    IFileProperties,
+    isSingleFileEntity,
+    isValidRenamedFile,
+    isValidUri
+} from "./commonUtility";
+import { DataverseFieldAdxPartialUrl, PowerPagesEntityType } from "./constants";
 
 export async function updateEntityPathNames(oldUri: vscode.Uri,
     newUri: vscode.Uri,
@@ -76,33 +88,23 @@ export async function fileRenameValidation(oldUri: vscode.Uri,
 
 export function updateEntityNameInYml(fsPath: string, fileEntityType: PowerPagesEntityType) {
     try {
-        const newFileName = getFormattedName(fsPath, fileEntityType);
+        const fileNameProperties = getFileNameProperties(fsPath, fileEntityType);
         const fileContents = fs.readFileSync(fsPath, 'utf8');
         const parsedFileContents = YAML.parse(fileContents);
 
         // update data object
-        parsedFileContents['adx_name'] = newFileName;
+        const fieldsToUpdate = getFieldsToUpdate(fileEntityType);
+        fieldsToUpdate.forEach(field => {
+            if (field === DataverseFieldAdxPartialUrl) {
+                parsedFileContents[field] = fileNameProperties.fileName;
+            } else {
+                parsedFileContents[field] = fileNameProperties.formattedFileName;
+            }
+        });
 
         const newFileContents = YAML.stringify(parsedFileContents);
         fs.writeFileSync(fsPath, newFileContents);
-
     } catch (e) {
-        console.log(e);
+        // TODO - update for telemetry
     }
-}
-
-export function getFormattedName(fsPath: string, fileEntityType: PowerPagesEntityType) {
-    const fileProperties = getFileProperties(fsPath);
-    let formattedName = fileProperties.fileName?.replace('-', ' ');
-
-    if (fileProperties.fileName) {
-        const ymlExtensionIndex = fileProperties.fileCompleteName?.indexOf(WebFileYmlExtension) ?? -1;
-
-        if (fileEntityType === PowerPagesEntityType.WEBFILES && ymlExtensionIndex > 0) {
-            formattedName = fileProperties.fileCompleteName?.substring(0, ymlExtensionIndex);
-        }
-        // TODO - Update for other entity files
-    }
-
-    return formattedName;
 }
