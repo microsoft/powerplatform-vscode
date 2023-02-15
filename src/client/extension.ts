@@ -5,24 +5,28 @@
 
 import * as vscode from "vscode";
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { ITelemetry } from './telemetry/ITelemetry';
+import * as path from "path";
+import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
+import { vscodeExtAppInsightsResourceProvider } from '../common/telemetry-generated/telemetryConfiguration';
+import { ITelemetryData } from "../common/TelemetryData";
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
-import * as path from "path";
 import { PortalWebView } from './PortalWebView';
-import { vscodeExtAppInsightsResourceProvider } from '../common/telemetry-generated/telemetryConfiguration';
-import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
-import { ITelemetryData } from "../common/TelemetryData";
+import { ITelemetry } from './telemetry/ITelemetry';
 
 import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
     TransportKind,
+    WorkspaceFolder
 } from "vscode-languageclient/node";
-import { readUserSettings } from "./telemetry/localfileusersettings";
+import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
 import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
 import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "./constants";
+import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
+import { readUserSettings } from "./telemetry/localfileusersettings";
+import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -110,12 +114,21 @@ export async function activate(
     const areCRUDoperationEnabled = vscode.workspace.getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME).get(PORTAL_CRUD_OPERATION_SETTING_NAME);
     if (areCRUDoperationEnabled) {
         // Add CRUD related callback subscription here
+        await handleFileSystemCallbacks(_context);
     }
 
-    const cli = new CliAcquisition(new CliAcquisitionContext(_context, _telemetry));
+    const cliContext = new CliAcquisitionContext(_context, _telemetry)
+    const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
+
+    const workspaceFolders = vscode.workspace.workspaceFolders?.map(fl => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)) || []
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+        const generator = new GeneratorAcquisition(cliContext)
+        generator.ensureInstalled();
+        _context.subscriptions.push(generator);
+    }
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
