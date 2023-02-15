@@ -5,7 +5,7 @@
 
 
 import { Context } from "@microsoft/generator-powerpages/generators/context";
-import { Tables, Template } from "../constants";
+import { NOT_A_PORTAL_DIRECTORY, Tables, Template } from "../constants";
 import DesktopFS from "./DesktopFS";
 import * as vscode from "vscode";
 import { stat, existsSync } from "fs";
@@ -168,7 +168,7 @@ export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: 
                     if (isPortalDirectory) {
                         return folder?.uri.fsPath;
                     } else {
-                        throw new Error("This is not a portal directory, open a directory which contains portal downloaded data");
+                        throw new Error(NOT_A_PORTAL_DIRECTORY);
                     }
                 });
         default:
@@ -180,7 +180,7 @@ export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: 
     if (isPortalDirectory) {
         return selectedWorkspaceFolder;
     } else {
-        throw new Error("This is not a portal directory, open a directory which contains portal downloaded data");
+        throw new Error(NOT_A_PORTAL_DIRECTORY);
     }
 }
 
@@ -212,6 +212,6 @@ export function checkForWebsiteYML(filePath: string): string {
         }
         directory = path.dirname(directory);
     }
-    vscode.window.showErrorMessage("The 'website.yml' file was not found in the parent directories of the selected file.");
+    vscode.window.showErrorMessage(NOT_A_PORTAL_DIRECTORY)
     throw new Error("");
 }

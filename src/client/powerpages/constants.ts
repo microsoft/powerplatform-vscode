@@ -21,4 +21,5 @@ export interface Template {
     value: string;
 }
 
+export const NOT_A_PORTAL_DIRECTORY = 'No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.';
 
