@@ -281,22 +281,27 @@
       },
       {
         "command": "microsoft-powerapps-portals.webpage",
+        "category": "Powerpages",
         "title": "New Webpage"
       },
       {
         "command": "microsoft-powerapps-portals.webfile",
+        "category": "Powerpages",
         "title": "New Assets (Web files)"
       },
       {
         "command": "microsoft-powerapps-portals.webtemplate",
+        "category": "Powerpages",
         "title": "New Web Template"
       },
       {
         "command": "microsoft-powerapps-portals.contentsnippet",
+        "category": "Powerpages",
         "title": "New Content Snippet"
       },
       {
         "command": "microsoft-powerapps-portals.pagetemplate",
+        "category": "Powerpages",
         "title": "New Page Template"
       }
     ],
