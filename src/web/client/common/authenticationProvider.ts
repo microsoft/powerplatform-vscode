@@ -51,13 +51,11 @@ export async function npsAuthentication(cesSurveyAuthorizationEndpoint: string):
     let accessToken = '';
     powerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.NPS_AUTHENTICATION_STARTED);
     try {
-
         const session = await vscode.authentication.getSession(PROVIDER_ID, [cesSurveyAuthorizationEndpoint], { silent: true });
         accessToken = session?.accessToken ?? '';
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
-
         powerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.NPS_AUTHENTICATION_COMPLETED);
     } catch (error) {
         const authError = (error as Error)?.message;
