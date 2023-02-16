@@ -18,7 +18,7 @@ export class NPSService{
     }
 
     public static async getEligibility() : Promise<boolean> {
-        const baseApiUrl = "https://ces-int.microsoftcloud.com/api/v1"; // TODO: change int to prod
+        const baseApiUrl = "https://ces-int.microsoftcloud.com/api/v1"; // TODO: change int to prod based on the query params from Studio
         const accessToken: string = await npsAuthentication(CESSurvey.AUTHORIZATION_ENDPOINT);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const parsedToken = jwt_decode(accessToken) as any;
