@@ -54,7 +54,6 @@ export async function npsAuthentication(cesSurveyAuthorizationEndpoint: string):
 
         const session = await vscode.authentication.getSession(PROVIDER_ID, [cesSurveyAuthorizationEndpoint], { silent: true });
         accessToken = session?.accessToken ?? '';
-        console.log("accessToken-->"+accessToken);
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
