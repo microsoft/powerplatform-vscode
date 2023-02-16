@@ -12,6 +12,7 @@ import { PortalsFS } from "./dal/fileSystemProvider";
 import { checkMandatoryParameters, removeEncodingFromParameters } from "./common/errorHandler";
 import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 import { convertStringtoBase64 } from './utilities/commonUtil';
+import {NPSService} from './services/NPSService'
 import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
@@ -24,6 +25,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(WebExtensionContext.telemetry.getTelemetryReporter());
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
+    NPSService.getEligibility();
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 

@@ -46,3 +46,26 @@ export async function dataverseAuthentication(dataverseOrgURL: string): Promise<
 
     return accessToken;
 }
+
+export async function npsAuthentication(cesSurveyAuthorizationEndpoint: string): Promise<string> {
+    let accessToken = '';
+    powerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.NPS_AUTHENTICATION_STARTED);
+    try {
+
+        const session = await vscode.authentication.getSession(PROVIDER_ID, [cesSurveyAuthorizationEndpoint], { silent: true });
+        accessToken = session?.accessToken ?? '';
+        console.log("accessToken-->"+accessToken);
+        if (!accessToken) {
+            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+        }
+
+        powerPlatformExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.NPS_AUTHENTICATION_COMPLETED);
+    } catch (error) {
+        const authError = (error as Error)?.message;
+        showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"),
+            localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
+        powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.NPS_AUTHENTICATION_FAILED, authError);
+    }
+
+    return accessToken;
+}
