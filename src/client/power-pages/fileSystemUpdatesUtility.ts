@@ -70,7 +70,6 @@ export async function updateEntityPathNames(oldUri: vscode.Uri,
         }
     } catch (e) {
         // Log telemetry
-        console.log(e);
     }
 }
 
@@ -113,6 +112,5 @@ export function updateEntityNameInYml(uriPath: string, fileEntityType: PowerPage
         fs.writeFileSync(uri.fsPath, newFileContents);
     } catch (e) {
         // Log telemetry
-        console.log(e);
     }
 }
