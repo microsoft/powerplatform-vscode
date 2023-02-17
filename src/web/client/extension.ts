@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(WebExtensionContext.telemetry.getTelemetryReporter());
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
-    // TODO Bidisha: As of now kept here for testing. In subsequent PR will be fixed
+    // TODO As of now kept here for testing. In subsequent PR will be fixed
     NPSService.getEligibility();
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
