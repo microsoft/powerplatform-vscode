@@ -20,6 +20,7 @@ import {
     getEntityFolderPathIndex
 } from "./commonUtility";
 import { DataverseFieldAdxPartialUrl, PowerPagesEntityType } from "./constants";
+import { removeTrailingSlash } from "../../debugger/utils";
 
 export async function updateEntityPathNames(oldUri: vscode.Uri,
     newUri: vscode.Uri,
@@ -60,8 +61,8 @@ export async function updateEntityPathNames(oldUri: vscode.Uri,
                 });
 
                 // FolderName update
-                 if (!isUpdateNeeded) {
-                    await vscode.workspace.fs.rename(vscode.Uri.file(fileEntityFolderPath),
+                if (!isUpdateNeeded) {
+                    await vscode.workspace.fs.rename(vscode.Uri.file(removeTrailingSlash(fileEntityFolderPath)),
                         getUpdatedFolderPath(fileEntityFolderPath, oldFileProperties.fileName, newFileProperties.fileName),
                         { overwrite: true });
                 }

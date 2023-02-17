@@ -5,6 +5,7 @@
 
 import path from "path";
 import * as vscode from "vscode";
+import { removeTrailingSlash } from "../../debugger/utils";
 import * as Constants from "./constants";
 
 export interface IFileProperties {
@@ -119,7 +120,7 @@ export function isValidRenamedFile(uriPath: string, entityFolderName: string, fi
 }
 
 export function getUpdatedFolderPath(uriPath: string, oldFileName: string, newFileName: string): vscode.Uri {
-    return vscode.Uri.file(uriPath.replace(`/${oldFileName.toLowerCase()}/`, `/${newFileName.toLowerCase()}/`));
+    return vscode.Uri.file(removeTrailingSlash(uriPath.replace(`/${oldFileName.toLowerCase()}/`, `/${newFileName.toLowerCase()}/`)));
 }
 
 export function getCurrentWorkspaceURI(fsPath: string): vscode.Uri | undefined {
