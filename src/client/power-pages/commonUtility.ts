@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import path from "path";
 import * as vscode from "vscode";
 import * as Constants from "./constants";
 
@@ -19,13 +20,13 @@ export interface IFileNameProperties {
     formattedFileName?: string
 }
 
-export function getFileProperties(fsPath: string): IFileProperties {
-    const filePathTokens = fsPath.split("\\");
+export function getFileProperties(uriPath: string): IFileProperties {
+    const filePathTokens = uriPath.split("/");
     const fileCompleteName = filePathTokens.pop();
     let fileNameIndex, fileName, fileExtension = '';
 
     if (fileCompleteName) {
-        fileNameIndex = fsPath.indexOf(fileCompleteName);
+        fileNameIndex = uriPath.indexOf(fileCompleteName);
         const fileNameTokens = fileCompleteName?.split('.');
         fileName = fileNameTokens.shift();
         fileExtension = fileNameTokens.join('.');
@@ -36,17 +37,17 @@ export function getFileProperties(fsPath: string): IFileProperties {
         fileName: fileName,
         fileExtension: fileExtension,
         fileNameIndex: fileNameIndex,
-        fileFolderPath: filePathTokens.join('\\') + '\\'
+        fileFolderPath: filePathTokens.join('/') + '/'
     }
 }
 
-export function getPowerPageEntityType(fsPath: string): Constants.PowerPagesEntityType {
+export function getPowerPageEntityType(uriPath: string): Constants.PowerPagesEntityType {
     let pagesEntityType = Constants.PowerPagesEntityType.UNKNOWN;
 
     Constants.EntityFolderName.forEach(folderName => {
         folderName = folderName.toLowerCase();
 
-        if (fsPath.includes(`\\${folderName}\\`)) {
+        if (uriPath.includes(`/${folderName}/`)) {
             pagesEntityType = Constants.EntityFolderMap.get(folderName) ?? Constants.PowerPagesEntityType.UNKNOWN;
         }
     });
@@ -54,32 +55,32 @@ export function getPowerPageEntityType(fsPath: string): Constants.PowerPagesEnti
     return pagesEntityType;
 }
 
-export function getDeletePathUris(fsPath: string,
+export function getDeletePathUris(uriPath: string,
     fileEntityType: Constants.PowerPagesEntityType,
     fileProperties: IFileProperties
 ): vscode.Uri[] {
     const pathUris: vscode.Uri[] = [];
-    const entityFolderName = getEntityFolderName(fsPath);
-    if (isValidUri(fsPath) && fileProperties.fileName) {
+    const entityFolderName = getEntityFolderName(uriPath);
+    if (isValidUri(uriPath) && fileProperties.fileName) {
         if (fileEntityType === Constants.PowerPagesEntityType.WEBFILES) {
-            const ymlExtensionIndex = fsPath.indexOf(Constants.WebFileYmlExtension);
-            ymlExtensionIndex === -1 ? pathUris.push(vscode.Uri.file(fsPath.concat(Constants.WebFileYmlExtension))) :
-                pathUris.push(vscode.Uri.file(fsPath.substring(0, ymlExtensionIndex)));
+            const ymlExtensionIndex = uriPath.indexOf(Constants.WebFileYmlExtension);
+            ymlExtensionIndex === -1 ? pathUris.push(vscode.Uri.file(uriPath.concat(Constants.WebFileYmlExtension))) :
+                pathUris.push(vscode.Uri.file(uriPath.substring(0, ymlExtensionIndex)));
         } else if (!isSingleFileEntity(fileEntityType)) {
-            const folderPathNameIndex = getEntityFolderPathIndex(fsPath, fileProperties.fileName, fileEntityType, entityFolderName);
+            const folderPathNameIndex = getEntityFolderPathIndex(uriPath, fileProperties.fileName, fileEntityType, entityFolderName);
 
-            pathUris.push(vscode.Uri.file(fsPath.substring(0, folderPathNameIndex)));
+            pathUris.push(vscode.Uri.file(uriPath.substring(0, folderPathNameIndex)));
         }
     }
 
     return pathUris;
 }
 
-export function isValidUri(fsPath: string): boolean {
+export function isValidUri(uriPath: string): boolean {
     let validUri = true;
 
     Constants.EntityFolderName.forEach(folderName => {
-        if (fsPath.toLowerCase().endsWith(`\\${folderName}\\`)) {
+        if (uriPath.toLowerCase().endsWith(`/${folderName}/`)) {
             validUri = false;
         }
     });
@@ -87,14 +88,14 @@ export function isValidUri(fsPath: string): boolean {
     return validUri;
 }
 
-export function getEntityFolderName(fsPath: string): string {
+export function getEntityFolderName(uriPath: string): string {
     let entityFolderPath = '';
 
-    if (fsPath.includes(`\\${Constants.AdvancedFormsStep}\\`)) {
+    if (uriPath.includes(`/${Constants.AdvancedFormsStep}/`)) {
         entityFolderPath = Constants.AdvancedFormsStep;
     } else {
         Constants.EntityFolderName.forEach(folderName => {
-            if (fsPath.includes(`\\${folderName}\\`)) {
+            if (uriPath.includes(`/${folderName}/`)) {
                 entityFolderPath = folderName;
             }
         });
@@ -103,22 +104,22 @@ export function getEntityFolderName(fsPath: string): string {
     return entityFolderPath;
 }
 
-export function getEntityFolderPathIndex(fsPath: string, fileName: string, fileEntityType: Constants.PowerPagesEntityType, entityFolderName: string) {
-    return isSingleFileEntity(fileEntityType) ? fsPath.indexOf(`\\${entityFolderName}\\`) + entityFolderName.length + 2 :
-        fsPath.indexOf(`\\${fileName?.toLowerCase()}\\`) + fileName?.length + 2; // offset for path separator
+export function getEntityFolderPathIndex(uriPath: string, fileName: string, fileEntityType: Constants.PowerPagesEntityType, entityFolderName: string) {
+    return isSingleFileEntity(fileEntityType) ? uriPath.indexOf(`/${entityFolderName}/`) + entityFolderName.length + 2 :
+        uriPath.indexOf(`/${fileName?.toLowerCase()}/`) + fileName?.length + 2; // offset for path separator
 }
 
 export function getValidatedEntityPath(folderPath: string, fileName: string, fileExtension: string): vscode.Uri {
-    return vscode.Uri.file(folderPath + [fileName, fileExtension].join('.'));
+    return vscode.Uri.file(path.join(folderPath, [fileName, fileExtension].join('.')));
 }
 
-export function isValidRenamedFile(fsPath: string, entityFolderName: string, fileName: string, fileEntityType: Constants.PowerPagesEntityType): boolean {
-    return isSingleFileEntity(fileEntityType) ? fsPath.includes(`\\${entityFolderName}\\${fileName}`) :
-        fsPath.includes(`\\${entityFolderName}\\${fileName.toLowerCase()}\\`);
+export function isValidRenamedFile(uriPath: string, entityFolderName: string, fileName: string, fileEntityType: Constants.PowerPagesEntityType): boolean {
+    return isSingleFileEntity(fileEntityType) ? uriPath.includes(`/${entityFolderName}/${fileName}`) :
+        uriPath.includes(`/${entityFolderName}/${fileName.toLowerCase()}/`);
 }
 
-export function getUpdatedFolderPath(fsPath: string, oldFileName: string, newFileName: string): vscode.Uri {
-    return vscode.Uri.file(fsPath.replace(`\\${oldFileName.toLowerCase()}\\`, `\\${newFileName.toLowerCase()}\\`));
+export function getUpdatedFolderPath(uriPath: string, oldFileName: string, newFileName: string): vscode.Uri {
+    return vscode.Uri.file(uriPath.replace(`/${oldFileName.toLowerCase()}/`, `/${newFileName.toLowerCase()}/`));
 }
 
 export function getCurrentWorkspaceURI(fsPath: string): vscode.Uri | undefined {
@@ -134,8 +135,8 @@ export function isSingleFileEntity(fileEntityType: Constants.PowerPagesEntityTyp
         || fileEntityType === Constants.PowerPagesEntityType.LISTS;
 }
 
-export function getFileNameProperties(fsPath: string, fileEntityType: Constants.PowerPagesEntityType): IFileNameProperties {
-    const fileProperties = getFileProperties(fsPath);
+export function getFileNameProperties(uriPath: string, fileEntityType: Constants.PowerPagesEntityType): IFileNameProperties {
+    const fileProperties = getFileProperties(uriPath);
     let formattedName = fileProperties.fileName?.replace('-', ' ');
 
     if (fileProperties.fileName) {
