@@ -28,7 +28,7 @@ export const formatFolderName = (name: string) => {
  * formatFileName("My File Name"); // "My-File-Name"
  */
 export const formatFileName = (name: string) => {
-    const words = name.split(/[/ ]/);
+    const words = name.trim().split(/[/ ]/);
 
     // Uppercase the first letter of each word and join the words back together
     return words.map((word) => word[0].toUpperCase() + word.slice(1)).join("-");

@@ -18,6 +18,7 @@ import DesktopFS from "./utils/DesktopFS";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
 import { exec } from "child_process";
+import { statSync } from "fs";
 
 export const createPageTemplate = async (context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined, yoPath: string | null) => {
     // Get the root directory of the workspace
@@ -35,7 +36,7 @@ export const createPageTemplate = async (context: vscode.ExtensionContext, selec
     );
 
     // Show a quick pick to enter name select the web template
-    const pageTemplateInputs = await getPageTemplateInputs(webTemplateNames);
+    const pageTemplateInputs = await getPageTemplateInputs(webTemplateNames, selectedWorkspaceFolder);
 
     const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
 
@@ -102,7 +103,7 @@ export const createPageTemplate = async (context: vscode.ExtensionContext, selec
     }
 };
 
-async function getPageTemplateInputs(webTemplateNames: string[]) {
+async function getPageTemplateInputs(webTemplateNames: string[], selectedWorkspaceFolder: string) {
     const webTemplates: QuickPickItem[] = webTemplateNames.map((label) => ({
         label,
     }));
@@ -158,12 +159,17 @@ async function getPageTemplateInputs(webTemplateNames: string[]) {
 
     async function validateNameIsUnique(name: string): Promise<string | undefined> {
         const file = formatFileName(name)
-        return await vscode.workspace.findFiles(path.join("page-templates", `${file}.pagetemplate.yml`),'', 1).then((uris) => {
-            if(uris.length > 0){
-                return "Name not unique";
+        const filePath = path.join(selectedWorkspaceFolder, "page-templates", `${file}.pagetemplate.yml`);
+        try {
+            const stat = statSync(filePath);
+            if(stat){
+                return "A page template with the same name already exists. Please enter a different name.";
             }
-            return undefined;
-        });
+          } catch (error: any) {
+            if (error.code === 'ENOENT') {
+                return undefined
+            }
+          }
     }
 
 
