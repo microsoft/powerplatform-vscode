@@ -6,7 +6,7 @@
 import { portal_schema_V1, portal_schema_V2 } from "../schema/portalSchema";
 import * as Constants from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
-import { entityAttributesWithBase64Encoding, schemaEntityName, schemaKey } from "../schema/constants";
+import { entityAttributesWithBase64Encoding, schemaEntityName } from "../schema/constants";
 
 export interface IAttributePath {
     source: string,
@@ -21,10 +21,6 @@ export function getPortalSchema(schema: string) {
 }
 
 export function getEntity(entity: string) {
-    if (WebExtensionContext.urlParametersMap.get(schemaKey.SCHEMA_VERSION)?.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
-        return WebExtensionContext.schemaEntitiesMap.get(entity);
-    }
-
     return WebExtensionContext.schemaEntitiesMap.get(entity);
 }
 
