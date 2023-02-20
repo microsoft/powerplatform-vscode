@@ -3,11 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable no-undef */
-
-//import * as cancel from '../src/web/client/assets/cancel.svg';
-
 // "use strict";
 // const path = require('path');
 // const cancel = path.resolve('../src/web/client/assets/cancel.svg');
@@ -66,7 +61,8 @@ function applyCustomStyles() {
     // eslint-disable-next-line no-undef
     const crossButtonDiv = document.getElementById('MfpEmbed_CrossButton');
     if (crossButtonDiv) {
-      crossButtonDiv.setAttribute('src',cancel.toString());
+      // TODO: need to render cancel button
+     // crossButtonDiv.setAttribute('src',cancel.toString());
       crossButtonDiv.style.width = '14px';
       crossButtonDiv.style.height = '14px';
       crossButtonDiv.style.boxSizing = 'unset';
@@ -116,16 +112,5 @@ function applyCustomStyles() {
     resizeSurvey();
     applyCustomStyles();
   }
-
-// eslint-disable-next-line no-undef
-// window.addEventListener('load', () => {
-//     // TODO: data needs to be changed
-//     renderSurvey("surveyDiv", "Bert", "Hair", "en-US", "123", "IND", "bert.hair@contoso.com", "12345", "Product Overview");
-//     resizeSurvey();
-//     applyCustomStyles();
-//    }, false);
-
-// exports.loadSurvey = loadSurvey;
-// module.exports = [loadSurvey];
 
 loadSurvey();
