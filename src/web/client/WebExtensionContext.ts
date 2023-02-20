@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import fetch from "node-fetch";
 import * as vscode from "vscode";
 import { dataverseAuthentication, getHeader } from "./common/authenticationProvider";
 import * as Constants from "./common/constants";
