@@ -19,13 +19,18 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import { exec } from "child_process";
 import path from "path";
+import { statSync } from "fs";
 
 export const createContentSnippet = async (
-    context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined, yoPath: string | null
+    context: vscode.ExtensionContext,
+    selectedWorkspaceFolder: string | undefined,
+    yoPath: string | null
 ) => {
-    //TODO: check for powerpages package also
+    if (!selectedWorkspaceFolder) {
+        throw new Error("Root directory not found");
+    }
     const { contentSnippetName, contentSnippetType } =
-        await getContentSnippetInputs();
+        await getContentSnippetInputs(selectedWorkspaceFolder);
 
     if (!isNullOrEmpty(contentSnippetName)) {
         const folder = formatFolderName(contentSnippetName);
@@ -82,7 +87,7 @@ export const createContentSnippet = async (
     }
 };
 
-async function getContentSnippetInputs() {
+async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
     const contentSnippetTypes: QuickPickItem[] = ["html", "text"].map(
         (label) => ({ label })
     );
@@ -140,10 +145,24 @@ async function getContentSnippetInputs() {
         state.contentSnippetType = pick.label;
     }
 
-    async function validateNameIsUnique(name: string) {
-        // ...validate...
-        if (name) {
-            return undefined;
+    async function validateNameIsUnique(
+        name: string
+    ): Promise<string | undefined> {
+        const folder = formatFolderName(name);
+        const filePath = path.join(
+            selectedWorkspaceFolder,
+            "content-snippets",
+            folder
+        );
+        try {
+            const stat = statSync(filePath);
+            if (stat) {
+                return "A content snippet with the same name already exists. Please enter a different name.";
+            }
+        } catch (error: any) {
+            if (error.code === "ENOENT") {
+                return undefined;
+            }
         }
     }
 

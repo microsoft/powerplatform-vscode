@@ -223,7 +223,7 @@ async function getWebpageInputs(
                 .map((n) => n.toLowerCase())
                 .includes(name.toLowerCase())
         ) {
-            return "Name not unique";
+            return "A webpage with the same name already exists. Please enter a different name.";
         }
 
         return undefined;
