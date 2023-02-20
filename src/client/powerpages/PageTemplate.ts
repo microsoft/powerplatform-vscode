@@ -12,98 +12,68 @@ nls.config({
 })();
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
-import {  formatFileName, getWebTemplates, isNullOrEmpty } from "./utils/CommonUtils";
+import {
+    createFileWatcher,
+    createRecord,
+    formatFileName,
+    getPortalContext,
+    getWebTemplates,
+    isNullOrEmpty,
+} from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
-import DesktopFS from "./utils/DesktopFS";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
-import { exec } from "child_process";
-import { statSync } from "fs";
+import { pageTemplate, TableFolder, yoPath } from "./constants";
+import { YoSubGenerator } from "../powerpages/constants";
 
-export const createPageTemplate = async (context: vscode.ExtensionContext, selectedWorkspaceFolder:string | undefined, yoPath: string | null) => {
-    // Get the root directory of the workspace
-    const rootDir = selectedWorkspaceFolder;
-    if (!rootDir) {
-        throw new Error("Root directory not found");
-    }
-
-    // Get the web templates from the data directory
-    const portalDir = `${rootDir}`;
-    const fs: DesktopFS = new DesktopFS();
-    const { webTemplateNames, webTemplateMap } = await getWebTemplates(
-        portalDir,
-        fs
-    );
-
-    // Show a quick pick to enter name select the web template
-    const pageTemplateInputs = await getPageTemplateInputs(webTemplateNames, selectedWorkspaceFolder);
-
-    const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
-
-    const pageTemplateName = pageTemplateInputs.name;
-
-    // Create the page template using the yo command
-    if (!isNullOrEmpty(pageTemplateName) && selectedWorkspaceFolder) {
-        const file = formatFileName(pageTemplateName);
-        const watcher: vscode.FileSystemWatcher =
-            vscode.workspace.createFileSystemWatcher(
-                new vscode.RelativePattern(
-                    selectedWorkspaceFolder,
-                    path.join("page-templates", `${file}.pagetemplate.yml`)
-                ),
-                false,
-                true,
-                true
-            );
-
-        context.subscriptions.push(watcher);
+export const createPageTemplate = async (
+    context: vscode.ExtensionContext,
+    selectedWorkspaceFolder: string
+): Promise<void> => {
+    try {
         const portalDir = selectedWorkspaceFolder;
+        const portalContext = getPortalContext(portalDir);
 
-        const yoPageTemplateGenerator =
-            "@microsoft/powerpages:pagetemplate";
-        const command = `"${yoPath}" ${yoPageTemplateGenerator} "${pageTemplateName}" "${webtemplateId}"`;
+        const { webTemplateNames, webTemplateMap } = await getWebTemplates(
+            portalContext
+        );
 
+        const pageTemplateInputs = await getPageTemplateInputs(
+            webTemplateNames
+        );
+        const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
+        const pageTemplateName = pageTemplateInputs.name;
 
-        vscode.window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                title: localize(
-                    "microsoft-powerapps-portals.webExtension.pagetemplate.progress.notification",
-                    "Creating page template..."
-                ),
-                cancellable: false,
-            },
-            () => {
-                return new Promise((resolve, reject) => {
-                    exec(
-                        command,
-                        { cwd: portalDir },
-                        (error, stderr) => {
-                            if (error) {
-                                vscode.window.showErrorMessage(
-                                    error.message
-                                );
-                                reject(error);
-                            } else {
-                                resolve(stderr);
-                            }
-                        }
-                    );
-                });
-            }
-        ).then(() => {
-            vscode.window.showInformationMessage(
-                "Page template Created!"
-            );
-        });
+        if (!pageTemplateName) {
+            throw new Error("Page Template name cannot be empty.");
+        }
 
-        watcher.onDidCreate(async (uri) => {
-            await vscode.window.showTextDocument(uri);
-        });
+        const file = formatFileName(pageTemplateName);
+        const watcherPattern = path.join(
+            TableFolder.PAGETEMPLATE_FOLDER,
+            `${file}.pagetemplate.yml`
+        );
+        const watcher = createFileWatcher(
+            context,
+            selectedWorkspaceFolder,
+            watcherPattern
+        );
+
+        //command to run, to create the page template
+        const command = `${yoPath} ${YoSubGenerator.PAGETEMPLATE} "${pageTemplateName}" "${webtemplateId}"`;
+        await createRecord(pageTemplate, command, portalDir, watcher);
+
+    } catch (error: any) {
+        throw new Error(error);
     }
 };
 
-async function getPageTemplateInputs(webTemplateNames: string[], selectedWorkspaceFolder: string) {
+/*
+ * Get inputs from user for creating a new page template
+ * @param webTemplateNames - list of web template names
+ * @returns - page template name and web template id
+ */
+async function getPageTemplateInputs(webTemplateNames: string[]) {
     const webTemplates: QuickPickItem[] = webTemplateNames.map((label) => ({
         label,
     }));
@@ -142,7 +112,10 @@ async function getPageTemplateInputs(webTemplateNames: string[], selectedWorkspa
         return (input: MultiStepInput) => pickWebtemplate(input, state);
     }
 
-    async function pickWebtemplate(input: MultiStepInput, state: Partial<State>) {
+    async function pickWebtemplate(
+        input: MultiStepInput,
+        state: Partial<State>
+    ) {
         const pick = await input.showQuickPick({
             title,
             step: 2,

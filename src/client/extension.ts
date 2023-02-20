@@ -56,13 +56,22 @@ export async function activate(
     _telemetry.sendTelemetryEvent("Start", { 'pac.userId': readUserSettings().uniqueId });
 
     // Setup context switches
-    if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl") {
+    if (
+        vscode.env.remoteName === undefined ||
+        vscode.env.remoteName === "wsl"
+    ) {
         // PAC Interactive Login works when we are the UI is running on the same machine
         // as the extension (i.e. NOT remote), or the remote is WSL
-        vscode.commands.executeCommand('setContext', 'pacCLI.authPanel.interactiveLoginSupported', true);
-    }
-    else {
-        _context.environmentVariableCollection.replace('PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE', 'true');
+        vscode.commands.executeCommand(
+            "setContext",
+            "pacCLI.authPanel.interactiveLoginSupported",
+            true
+        );
+    } else {
+        _context.environmentVariableCollection.replace(
+            "PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE",
+            "true"
+        );
     }
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
@@ -73,7 +82,9 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent('StartCommand', { 'commandId': 'microsoft-powerapps-portals.preview-show' });
+                _telemetry.sendTelemetryEvent("StartCommand", {
+                    commandId: "microsoft-powerapps-portals.preview-show",
+                });
                 PortalWebView.createOrShow();
             }
         )
@@ -118,7 +129,6 @@ export async function activate(
             },
         });
     }
-
     const areCRUDoperationEnabled = vscode.workspace.getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME).get(PORTAL_CRUD_OPERATION_SETTING_NAME);
     if (areCRUDoperationEnabled) {
         // Add CRUD related callback subscription here
@@ -130,7 +140,6 @@ export async function activate(
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
-
     const workspaceFolders = vscode.workspace.workspaceFolders?.map(fl => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)) || []
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
         const generator = new GeneratorAcquisition(cliContext)
@@ -142,7 +151,8 @@ export async function activate(
                 "microsoft-powerapps-portals.pagetemplate",
                 async (uri) => {
                     selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                    createPageTemplate(_context, selectedWorkspaceFolder, yoCommandPath);
+
+                    createPageTemplate(_context, selectedWorkspaceFolder!, yoCommandPath!);
 
                 }
             )
