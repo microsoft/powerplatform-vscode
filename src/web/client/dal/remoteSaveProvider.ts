@@ -181,7 +181,6 @@ async function saveDataToDataverse(
     fileUri: vscode.Uri,
     saveCallParameters: ISaveCallParameters
 ) {
-    console.log("bidisha data editor-->"+vscode.workspace)
     if (saveCallParameters.requestInit.body) {
         const entityName = fileDataMap.get(fileUri.fsPath)?.entityName as string;
         const requestSentAtTime = new Date().getTime();
@@ -207,7 +206,6 @@ async function saveDataToDataverse(
 
             WebExtensionContext.fileDataMap
                 .updateDirtyChanges(fileUri.fsPath, false);
-                console.log("bidisha data editor-->"+vscode.workspace)
         }
         catch (error) {
             const authError = (error as Error)?.message;
