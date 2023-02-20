@@ -78,7 +78,6 @@ export function activate(context: vscode.ExtensionContext): void {
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
                                 await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
-                              
                             });
                         }
                             break;
@@ -102,7 +101,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onWillSaveTextDocument((e) => {
             const fileName = e.document.fileName;
-            if (vscode.workspace === undefined) {
+            if (vscode.window.activeTextEditor === undefined) {
                 return;
             } else if (
                 isActiveDocument(fileName)
