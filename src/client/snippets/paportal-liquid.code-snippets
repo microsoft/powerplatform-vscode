@@ -43,6 +43,33 @@
             "{% include '$1' %}"
         ]
     },
+    "Tag comment": {
+        "prefix": "comment",
+        "description": "Liquid template tag: comment",
+        "body": [
+            "{% comment %}",
+            "\t$1",
+            "{% endcomment %}"
+        ]
+    },
+    "Tag raw": {
+        "prefix": "raw",
+        "description": "Liquid template tag: raw",
+        "body": [
+            "{% raw %}",
+            "\t$1",
+            "{% endraw %}"
+        ]
+    },
+    "Tag substitution": {
+        "prefix": "substitution",
+        "description": "Liquid template tag: substitution",
+        "body": [
+            "{% substitution %}",
+            "\t$1",
+            "{% endsubstitution %}"
+        ]
+    },
     // PowerPortals specific snippets below
     "Chart": {
 		"prefix": "chart",
