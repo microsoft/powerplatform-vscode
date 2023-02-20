@@ -6,7 +6,7 @@
 import { TagToken, Tokenizer, TokenKind } from "liquidjs";
 import { FilterToken, IdentifierToken, OutputToken, PropertyAccessToken } from "liquidjs/dist/tokens";
 import { CompletionItem, CompletionItemKind } from "vscode-languageserver/node";
-import { AUTO_COMPLETE_PLACEHOLDER, EDITABLE_ATTRIBUTES, ENTITY_FORM_ATTRIBUTES, ENTITY_LIST_ATTRIBUTES, PAGE_ATTRIBUTES, PORTAL_FILTERS, PORTAL_OBJECTS, WEB_FORM_ATTRIBUTES } from "../constants/AutoComplete";
+import { AUTO_COMPLETE_PLACEHOLDER, EDITABLE_ATTRIBUTES, ENTITY_FORM_ATTRIBUTES, ENTITY_LIST_ATTRIBUTES, PAGE_ATTRIBUTES, PORTAL_FILTERS, PORTAL_OBJECTS, WEB_FORM_ATTRIBUTES, OBJECT_ATTRIBUTES_MAP } from "../constants/AutoComplete";
 import { PortalAttributeNames, PortalEntityNames, PortalObjects, PortalTags } from "../constants/PortalEnums";
 import { ILiquidRuleEngineContext } from "./LiquidAutoCompleteRuleEngine";
 import { getMatchedManifestRecords, IManifestElement } from "./PortalManifestReader";
@@ -16,7 +16,7 @@ const QUOTES_REGEX = /['"]/g;
 
 
 export interface ILiquidAutoCompleteRule {
-    name:string,
+    name: string,
     isValid: (liquidToken: TagToken | OutputToken) => boolean
     priority: number
     apply: (liquidToken: TagToken | OutputToken, ctx: ILiquidRuleEngineContext) => CompletionItem[]
@@ -105,6 +105,27 @@ const rootObjectRule: ILiquidAutoCompleteRule = {
     }
 }
 
+const rootObjectAttributesRule: ILiquidAutoCompleteRule = {
+    name: 'rootObjectAttributes',
+    isValid: (liquidToken) => liquidToken.kind === TokenKind.Output && (liquidToken.content.includes('.') || liquidToken.content.includes('[')),
+    priority: DEFAULT_TAG_PRIORITY,
+    apply: (liquidToken) => {
+        const suggestions: CompletionItem[] = []
+        const property = liquidToken.content
+        const portalObject = property.includes('.') ? property.split(".")[0] : property.includes("[") ? property.split("[")[0] : null;
+        if (property.includes(AUTO_COMPLETE_PLACEHOLDER) && portalObject && PORTAL_OBJECTS.includes(portalObject)) {
+            suggestions.push(...(OBJECT_ATTRIBUTES_MAP.get(portalObject) ?? []).map(key => {
+                return {
+                    label: key,
+                    insertText: key,
+                    kind: CompletionItemKind.Value
+                } as CompletionItem
+            }))
+        }
+        return suggestions
+    }
+}
+
 const entityFormTagRule: ILiquidAutoCompleteRule = {
     name: 'entityFormTag',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Tag && (liquidToken as TagToken).name.toLowerCase() === PortalTags.ENTITYFORM,
@@ -166,7 +187,7 @@ const entityListTagRule: ILiquidAutoCompleteRule = {
 }
 
 const webFormTagRule: ILiquidAutoCompleteRule = {
-    name:'webFormTag',
+    name: 'webFormTag',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Tag && (liquidToken as TagToken).name.toLowerCase() === PortalTags.WEBFORM,
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken, ctx) => {
@@ -225,7 +246,7 @@ const includeTagRule: ILiquidAutoCompleteRule = {
 }
 
 const editableTagRule: ILiquidAutoCompleteRule = {
-    name:'editableTag',
+    name: 'editableTag',
     isValid: (liquidToken) => liquidToken.kind === TokenKind.Tag && (liquidToken as TagToken).name.toLowerCase() === PortalTags.EDITABLE,
     priority: DEFAULT_TAG_PRIORITY,
     apply: (tagToken, ctx) => {
@@ -274,7 +295,7 @@ const editableTagRule: ILiquidAutoCompleteRule = {
 }
 
 const allFiltersRule: ILiquidAutoCompleteRule = {
-    name:'allFilters',
+    name: 'allFilters',
     isValid: (liquidToken) => liquidToken.content.includes('|'),
     priority: DEFAULT_TAG_PRIORITY,
     apply: (liquidToken) => {
@@ -284,7 +305,7 @@ const allFiltersRule: ILiquidAutoCompleteRule = {
             const tk = new Tokenizer(liquidToken.content);
             tk.readExpression()
             filters = tk.readFilters();
-        } else{
+        } else {
             const tk = new Tokenizer(liquidToken.content.substring(liquidToken.content.indexOf('|')));
             filters = tk.readFilters();
         }
@@ -311,6 +332,7 @@ export const ruleDefinitions = [
     webFormTagRule,
     entityListTagRule,
     rootObjectRule,
+    rootObjectAttributesRule,
     snippetObjectRule,
     settingsObjectRule,
     weblinksObjectRule,
