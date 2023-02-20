@@ -108,6 +108,7 @@ function applyCustomStyles() {
   }
   
   function loadSurvey(){
+    // TODO: Replace by actual value
     renderSurvey("surveyDiv", "Bert", "Hair", "en-US", "123", "IND", "bert.hair@contoso.com", "12345", "Product Overview");
     resizeSurvey();
     applyCustomStyles();
