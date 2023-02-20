@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
-  "version": "2.2.10",
+  "version": "1.0.1-dev",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
@@ -744,7 +744,6 @@
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.14.6",
     "@types/puppeteer-core": "^5.4.0",
-    "@types/requirejs": "^2.1.28",
     "@types/sinon": "^10.0.12",
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
@@ -794,7 +793,6 @@
   "dependencies": {
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
-    "@types/requirejs": "^2.1.28",
     "@vscode/extension-telemetry": "^0.6.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",

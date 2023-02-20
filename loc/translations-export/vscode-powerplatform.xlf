@@ -178,7 +178,7 @@ The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough
       <note>{0} represents the error message returned from the exception</note>
     </trans-unit>
     <trans-unit id="generatorAcquisition.successMessage">
-      <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
+      <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
     </trans-unit>
   </body></file>
   <file original="./client/lib/PacActivityBarUI" source-language="en" datatype="plaintext"><body>
