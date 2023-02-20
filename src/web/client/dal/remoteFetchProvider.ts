@@ -176,6 +176,7 @@ async function createContentFiles(
 
         // Not awaited intentionally
         vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(fileUri), { background: true, preview: false });
+        console.log("bidisha data editor-->"+vscode.workspace)
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
             { 'commandId': 'vscode.open', 'type': 'file' });
     } catch (error) {

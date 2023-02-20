@@ -61,6 +61,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _isContextSet: boolean;
     private _currentSchemaVersion: string;
     private _telemetry: WebExtensionTelemetry;
+    private _npsEligibility: boolean;
 
     public get schemaDataSourcePropertiesMap() { return this._schemaDataSourcePropertiesMap; }
     public get schemaEntitiesMap() { return this._schemaEntitiesMap; }
@@ -79,6 +80,7 @@ class WebExtensionContext implements IWebExtensionContext {
     public get isContextSet() { return this._isContextSet; }
     public get currentSchemaVersion() { return this._currentSchemaVersion; }
     public get telemetry() { return this._telemetry; }
+    public get npsEligibility() { return this._npsEligibility; }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -98,6 +100,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._isContextSet = false;
         this._currentSchemaVersion = "";
         this._telemetry = new WebExtensionTelemetry();
+        this._npsEligibility = false;
     }
 
     public setWebExtensionContext(entityName: string, entityId: string, queryParamsMap: Map<string, string>) {
@@ -261,6 +264,10 @@ class WebExtensionContext implements IWebExtensionContext {
         }
         return websiteIdToLanguage;
     }
+
+    public setNPSEligibility(eligibility: boolean) {
+        this._npsEligibility = eligibility;
+    } 
 }
 
 export default new WebExtensionContext();

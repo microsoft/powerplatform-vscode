@@ -14,6 +14,8 @@ import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 import { convertStringtoBase64 } from './utilities/commonUtil';
 import {NPSService} from './services/NPSService'
 import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
+import { NPSWebView } from './NPSWebView';
+// import { NPSWebView } from './NPSWebView';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -27,6 +29,9 @@ export function activate(context: vscode.ExtensionContext): void {
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
     // TODO Bidisha: As of now kept here for testing. In subsequent PR will be fixed
     NPSService.getEligibility();
+    //NPSWebView.createOrShow(vscode.Uri.joinPath(context.extensionUri, 'src','web/client'));
+    NPSWebView.createOrShow(context.extensionUri);
+    // NPSWebView.createOrShow(context.extensionUri);
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 
@@ -78,6 +83,10 @@ export function activate(context: vscode.ExtensionContext): void {
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
                                 await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
+                                console.log("data-->"+vscode.workspace);
+                                // eslint-disable-next-line no-debugger
+                                debugger;
+                              
                             });
                         }
                             break;
@@ -101,7 +110,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onWillSaveTextDocument((e) => {
             const fileName = e.document.fileName;
-            if (vscode.window.activeTextEditor === undefined) {
+            if (vscode.workspace === undefined) {
                 return;
             } else if (
                 isActiveDocument(fileName)
