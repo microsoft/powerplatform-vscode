@@ -78,9 +78,6 @@ export function activate(context: vscode.ExtensionContext): void {
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
                                 await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
-                                console.log("data-->"+vscode.workspace);
-                                // eslint-disable-next-line no-debugger
-                                debugger;
                               
                             });
                         }
