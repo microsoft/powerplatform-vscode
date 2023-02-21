@@ -56,3 +56,7 @@ export enum TableFolder {
 }
 
 export const pageTemplate = 'Page Template';
+export const webTemplate = 'Web Template';
+export const contentSnippet = 'Content Snippet';
+export const webFile = 'Web File';
+export const webpage = 'Web Page';

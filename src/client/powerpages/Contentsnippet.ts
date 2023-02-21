@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as nls from "vscode-nls";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -11,79 +12,94 @@ nls.config({
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import {
+    createFileWatcher,
+    createRecord,
     formatFileName,
     formatFolderName,
     isNullOrEmpty,
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
-import { exec } from "child_process";
 import path from "path";
 import { statSync } from "fs";
+import { contentSnippet, YoSubGenerator } from "./constants";
 
 export const createContentSnippet = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoPath: string | null
-) => {
-    if (!selectedWorkspaceFolder) {
-        throw new Error("Root directory not found");
-    }
-    const { contentSnippetName, contentSnippetType } =
-        await getContentSnippetInputs(selectedWorkspaceFolder);
+    yoCommandPath: string | null
+): Promise<void> => {
+    try {
+        if (selectedWorkspaceFolder) {
+            const { contentSnippetName, contentSnippetType } =
+                await getContentSnippetInputs(selectedWorkspaceFolder);
 
-    if (!isNullOrEmpty(contentSnippetName)) {
-        const folder = formatFolderName(contentSnippetName);
-        const file = formatFileName(contentSnippetName);
+            if (!isNullOrEmpty(contentSnippetName)) {
+                const folder = formatFolderName(contentSnippetName);
+                const file = formatFileName(contentSnippetName);
 
-        const watcher = vscode.workspace.createFileSystemWatcher(
-            new vscode.RelativePattern(
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                selectedWorkspaceFolder!,
-                path.join(
+                const watcherPattern = path.join(
                     "content-snippets",
                     folder,
                     `${file}.*.contentsnippet.yml`
-                )
-            ),
-            false,
-            true,
-            true
-        );
-
-        context.subscriptions.push(watcher);
-        const portalDir = selectedWorkspaceFolder;
-        const yoContentSnippetGenerator = "@microsoft/powerpages:contentsnippet";
-        const command = `"${yoPath}" ${yoContentSnippetGenerator} "${contentSnippetName}" "${contentSnippetType}"`;
-
-        vscode.window
-            .withProgress(
-                {
-                    location: vscode.ProgressLocation.Notification,
-                    title: "Creating Content Snippet...",
-                },
-                () => {
-                    return new Promise((resolve, reject) => {
-                        exec(command, { cwd: portalDir }, (error, stderr) => {
-                            if (error) {
-                                vscode.window.showErrorMessage(error.message);
-                                reject(error);
-                            } else {
-                                resolve(stderr);
-                            }
-                        });
-                    });
-                }
-            )
-            .then(() => {
-                vscode.window.showInformationMessage(
-                    "Content Snippet Created!"
                 );
-            });
+                const watcher = createFileWatcher(
+                    context,
+                    selectedWorkspaceFolder,
+                    watcherPattern
+                );
+                // const watcher = vscode.workspace.createFileSystemWatcher(
+                //     new vscode.RelativePattern(
+                //         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                //         selectedWorkspaceFolder!,
+                //         path.join(
+                //             "content-snippets",
+                //             folder,
+                //             `${file}.*.contentsnippet.yml`
+                //         )
+                //     ),
+                //     false,
+                //     true,
+                //     true
+                // );
 
-        watcher.onDidCreate(async (uri) => {
-            await vscode.window.showTextDocument(uri);
-        });
+                const portalDir = selectedWorkspaceFolder;
+                // const yoContentSnippetGenerator = "@microsoft/powerpages:contentsnippet";
+                const command = `"${yoCommandPath}" ${YoSubGenerator.CONTENT_SNIPPET} "${contentSnippetName}" "${contentSnippetType}"`;
+                await createRecord(contentSnippet, command, portalDir, watcher);
+            }
+
+            // vscode.window
+            //     .withProgress(
+            //         {
+            //             location: vscode.ProgressLocation.Notification,
+            //             title: "Creating Content Snippet...",
+            //         },
+            //         () => {
+            //             return new Promise((resolve, reject) => {
+            //                 exec(command, { cwd: portalDir }, (error, stderr) => {
+            //                     if (error) {
+            //                         vscode.window.showErrorMessage(error.message);
+            //                         reject(error);
+            //                     } else {
+            //                         resolve(stderr);
+            //                     }
+            //                 });
+            //             });
+            //         }
+            //     )
+            //     .then(() => {
+            //         vscode.window.showInformationMessage(
+            //             "Content Snippet Created!"
+            //         );
+            //     });
+
+            // watcher.onDidCreate(async (uri) => {
+            //     await vscode.window.showTextDocument(uri);
+            // });
+        }
+    } catch (error: any) {
+        throw new Error(error);
     }
 };
 

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Context } from "@microsoft/generator-powerpages/generators/context/Context";
+import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { exec } from "child_process";
 import { existsSync, stat } from "fs";
 import path from "path";
@@ -63,7 +63,6 @@ export function getPageTemplate(context: Context): PageTemplates {
 export function getParentPagePaths(portalContext: Context): ParentPagePaths {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pages: Map<string, any> = new Map();
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     portalContext.webpageMap.forEach((page: any) => {
         pages.set(page.id, page.content);

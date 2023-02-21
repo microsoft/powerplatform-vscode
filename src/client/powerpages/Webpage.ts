@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as nls from "vscode-nls";
 nls.config({
     messageFormat: nls.MessageFormat.bundle,
@@ -11,119 +12,125 @@ nls.config({
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import {
+    createFileWatcher,
+    createRecord,
     formatFileName,
     formatFolderName,
     getPageTemplate,
     getParentPagePaths,
+    getPortalContext,
     isNullOrEmpty,
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 
-import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { MultiStepInput } from "./utils/MultiStepInput";
-import { Tables } from "./constants";
-import DesktopFS from "./utils/DesktopFS";
+import { Tables, webpage, YoSubGenerator } from "./constants";
 import path from "path";
-import { exec } from "child_process";
 
 export const createWebpage = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoPath: string | null
+    yoGenPath: string | null
 ) => {
-    // Get the root directory of the workspace
-    const rootDir = selectedWorkspaceFolder
-    if (!rootDir) {
-        throw new Error("Root directory not found");
-    }
-
-    // Get the web templates & webpages from the data directory
-    const portalDir = `${selectedWorkspaceFolder}`;
-    const fs: DesktopFS = new DesktopFS();
-    const ctx = Context.getInstance(portalDir, fs);
     try {
-        await ctx?.init([Tables.WEBPAGE, Tables.PAGETEMPLATE]);
-    } catch (error) {
-        vscode.window.showErrorMessage("Error while loading data: " + error);
-        return;
-    }
+        const portalDir = `${selectedWorkspaceFolder}`;
+        const portalContext = getPortalContext(portalDir);
+         // Get the page templates & webpages from the portal directory
+        await portalContext.init([Tables.WEBPAGE, Tables.PAGETEMPLATE]);
 
-    const { pageTemplateNames, pageTemplateMap } = getPageTemplate(ctx);
+        const { pageTemplateNames, pageTemplateMap } =
+            getPageTemplate(portalContext);
 
-    if (pageTemplateNames.length === 0) {
-        vscode.window.showErrorMessage("No page templates found");
-        return;
-    }
+        if (pageTemplateNames.length === 0) {
+            vscode.window.showErrorMessage("No page templates found");
+            return;
+        }
 
-    const { paths, pathsMap, webpageNames } = getParentPagePaths(ctx);
+        const { paths, pathsMap, webpageNames } = getParentPagePaths(portalContext);
 
-    if (paths.length === 0) {
-        vscode.window.showErrorMessage("No webpages found");
-        return;
-    }
+        if (paths.length === 0) {
+            vscode.window.showErrorMessage("No webpages found");
+            return;
+        }
 
-    // Show a quick pick
-    const webpageInputs = await getWebpageInputs(
-        pageTemplateNames,
-        paths,
-        webpageNames
-    );
+        // Show a quick pick
+        const webpageInputs = await getWebpageInputs(
+            pageTemplateNames,
+            paths,
+            webpageNames
+        );
 
-    const pageTemplateId = pageTemplateMap.get(webpageInputs.pageTemplate);
+        const pageTemplateId = pageTemplateMap.get(webpageInputs.pageTemplate);
 
-    const webpageName = webpageInputs.name;
+        const webpageName = webpageInputs.name;
 
-    const parentPageId = pathsMap.get(webpageInputs.parentPage);
+        const parentPageId = pathsMap.get(webpageInputs.parentPage);
 
-    // Create the webpage using the yo command
-    if (!isNullOrEmpty(webpageName) && selectedWorkspaceFolder) {
-        const file = formatFileName(webpageName);
-        const folder = formatFolderName(webpageName);
+        // Create the webpage using the yo command
+        if (!isNullOrEmpty(webpageName) && selectedWorkspaceFolder) {
+            const file = formatFileName(webpageName);
+            const folder = formatFolderName(webpageName);
 
-        const watcher: vscode.FileSystemWatcher =
-            vscode.workspace.createFileSystemWatcher(
-                new vscode.RelativePattern(
-                    selectedWorkspaceFolder,
-                    path.join("web-pages", folder, "content-pages", `${file}.*.webpage.copy.html`) // TODO: Use default language
-                ),
-                false,
-                true,
-                true
+            // const watcher: vscode.FileSystemWatcher =
+            //     vscode.workspace.createFileSystemWatcher(
+            //         new vscode.RelativePattern(
+            //             selectedWorkspaceFolder,
+            //             path.join("web-pages", folder, "content-pages", `${file}.*.webpage.copy.html`) // TODO: Use default language
+            //         ),
+            //         false,
+            //         true,
+            //         true
+            //     );
+
+            const watcherPattern = path.join(
+                "web-pages",
+                folder,
+                "content-pages",
+                `${file}.*.webpage.copy.html`
             );
-        context.subscriptions.push(watcher);
-        const portalDir = selectedWorkspaceFolder;
-        const yoWebpageGenerator = "@microsoft/powerpages:webpage";
-        const command = `"${yoPath}" ${yoWebpageGenerator} "${webpageName}" "${parentPageId}" "${pageTemplateId}"`;
+            const watcher = createFileWatcher(
+                context,
+                selectedWorkspaceFolder,
+                watcherPattern
+            );
+            // const yoWebpageGenerator = "@microsoft/powerpages:webpage";
+            const command = `"${yoGenPath}" ${YoSubGenerator.WEBPAGE} "${webpageName}" "${parentPageId}" "${pageTemplateId}"`;
+            await createRecord(webpage, command, portalDir, watcher);
+            // vscode.window
+            //     .withProgress(
+            //         {
+            //             location: vscode.ProgressLocation.Notification,
+            //             title: "Creating Webpage...",
+            //         },
+            //         () => {
+            //             return new Promise((resolve, reject) => {
+            //                 exec(command, { cwd: portalDir }, (error, stderr) => {
+            //                     if (error) {
+            //                         vscode.window.showErrorMessage(error.message);
+            //                         reject(error);
+            //                     } else {
+            //                         resolve(stderr);
+            //                     }
+            //                 });
+            //             });
+            //         }
+            //     )
+            //     .then(() => {
+            //         vscode.window.showInformationMessage(
+            //             "Webpage Created!"
+            //         );
+            //     });
 
-        vscode.window
-            .withProgress(
-                {
-                    location: vscode.ProgressLocation.Notification,
-                    title: "Creating Webpage...",
-                },
-                () => {
-                    return new Promise((resolve, reject) => {
-                        exec(command, { cwd: portalDir }, (error, stderr) => {
-                            if (error) {
-                                vscode.window.showErrorMessage(error.message);
-                                reject(error);
-                            } else {
-                                resolve(stderr);
-                            }
-                        });
-                    });
-                }
-            )
-            .then(() => {
-                vscode.window.showInformationMessage(
-                    "Webpage Created!"
-                );
-            });
-
-        watcher.onDidCreate(async (uri) => {
-            await vscode.window.showTextDocument(uri);
-        });
+            // watcher.onDidCreate(async (uri) => {
+            //     await vscode.window.showTextDocument(uri);
+            // });
+        }
+    } catch (error: any) {
+        vscode.window.showErrorMessage(error.message);
+        return;
     }
+
+
 };
 async function getWebpageInputs(
     pageTemplateName: string[],
@@ -158,7 +165,10 @@ async function getWebpageInputs(
         "New Webpage"
     );
 
-    async function inputWebpageName(input: MultiStepInput, state: Partial<State>) {
+    async function inputWebpageName(
+        input: MultiStepInput,
+        state: Partial<State>
+    ) {
         state.name = await input.showInputBox({
             title,
             step: 1,

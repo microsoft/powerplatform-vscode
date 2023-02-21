@@ -18,53 +18,61 @@ import {
     formatFileName,
     getPortalContext,
     getWebTemplates,
-    isNullOrEmpty,
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
-import { pageTemplate, TableFolder, yoPath } from "./constants";
+import { pageTemplate, TableFolder } from "./constants";
 import { YoSubGenerator } from "../powerpages/constants";
+import { statSync } from "fs";
 
 export const createPageTemplate = async (
     context: vscode.ExtensionContext,
-    selectedWorkspaceFolder: string
+    selectedWorkspaceFolder: string | undefined,
+    yoGenPath: string | null
 ): Promise<void> => {
     try {
-        const portalDir = selectedWorkspaceFolder;
-        const portalContext = getPortalContext(portalDir);
+        if (selectedWorkspaceFolder) {
+            const portalDir = selectedWorkspaceFolder;
+            const portalContext = getPortalContext(portalDir);
 
-        const { webTemplateNames, webTemplateMap } = await getWebTemplates(
-            portalContext
-        );
+            const { webTemplateNames, webTemplateMap } = await getWebTemplates(
+                portalContext
+            );
 
-        const pageTemplateInputs = await getPageTemplateInputs(
-            webTemplateNames
-        );
-        const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
-        const pageTemplateName = pageTemplateInputs.name;
+            const pageTemplateInputs = await getPageTemplateInputs(
+                webTemplateNames,
+                selectedWorkspaceFolder
+            );
+            const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
+            const pageTemplateName = pageTemplateInputs.name;
 
-        if (!pageTemplateName) {
-            throw new Error("Page Template name cannot be empty.");
+            if (!pageTemplateName) {
+                throw new Error("Page Template name cannot be empty.");
+            }
+
+            const file = formatFileName(pageTemplateName);
+            const watcherPattern = path.join(
+                TableFolder.PAGETEMPLATE_FOLDER,
+                `${file}.pagetemplate.yml`
+            );
+            const watcher = createFileWatcher(
+                context,
+                selectedWorkspaceFolder,
+                watcherPattern
+            );
+
+            //command to run, to create the page template
+            const command = `${yoGenPath} ${YoSubGenerator.PAGETEMPLATE} "${pageTemplateName}" "${webtemplateId}"`;
+            await createRecord(pageTemplate, command, portalDir, watcher);
+            watcher.onDidCreate(async (uri) => {
+                await vscode.window.showTextDocument(uri);
+            });
+            // watcher.dispose();
         }
-
-        const file = formatFileName(pageTemplateName);
-        const watcherPattern = path.join(
-            TableFolder.PAGETEMPLATE_FOLDER,
-            `${file}.pagetemplate.yml`
-        );
-        const watcher = createFileWatcher(
-            context,
-            selectedWorkspaceFolder,
-            watcherPattern
-        );
-
-        //command to run, to create the page template
-        const command = `${yoPath} ${YoSubGenerator.PAGETEMPLATE} "${pageTemplateName}" "${webtemplateId}"`;
-        await createRecord(pageTemplate, command, portalDir, watcher);
-
     } catch (error: any) {
-        throw new Error(error);
+        vscode.window.showErrorMessage(error.message);
+        return;
     }
 };
 
@@ -73,7 +81,10 @@ export const createPageTemplate = async (
  * @param webTemplateNames - list of web template names
  * @returns - page template name and web template id
  */
-async function getPageTemplateInputs(webTemplateNames: string[]) {
+async function getPageTemplateInputs(
+    webTemplateNames: string[],
+    selectedWorkspaceFolder: string
+) {
     const webTemplates: QuickPickItem[] = webTemplateNames.map((label) => ({
         label,
     }));
@@ -130,21 +141,26 @@ async function getPageTemplateInputs(webTemplateNames: string[]) {
         state.type = pick.label;
     }
 
-    async function validateNameIsUnique(name: string): Promise<string | undefined> {
-        const file = formatFileName(name)
-        const filePath = path.join(selectedWorkspaceFolder, "page-templates", `${file}.pagetemplate.yml`);
+    async function validateNameIsUnique(
+        name: string
+    ): Promise<string | undefined> {
+        const file = formatFileName(name);
+        const filePath = path.join(
+            selectedWorkspaceFolder,
+            "page-templates",
+            `${file}.pagetemplate.yml`
+        );
         try {
             const stat = statSync(filePath);
-            if(stat){
+            if (stat) {
                 return "A page template with the same name already exists. Please enter a different name.";
             }
-          } catch (error: any) {
-            if (error.code === 'ENOENT') {
-                return undefined
+        } catch (error: any) {
+            if (error.code === "ENOENT") {
+                return undefined;
             }
-          }
+        }
     }
-
 
     const state = await collectInputs();
     return state;

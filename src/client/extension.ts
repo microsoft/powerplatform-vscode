@@ -152,7 +152,7 @@ export async function activate(
                 async (uri) => {
                     selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
 
-                    createPageTemplate(_context, selectedWorkspaceFolder!, yoCommandPath!);
+                    createPageTemplate(_context, selectedWorkspaceFolder, yoCommandPath);
 
                 }
             )
