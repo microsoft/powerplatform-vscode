@@ -25,6 +25,7 @@ export class NPSWebView  {
         const geo = WebExtensionContext.urlParametersMap?.get(queryParameters.GEO);
         const culture = vscode.env.language;
         const productVersion = process?.env?.BUILD_NAME;
+        // TODO : we need the Window object
       //  const urlReferrer = window?.location?.href;
         const deviceType = getDeviceType();
         return `<!DOCTYPE html>

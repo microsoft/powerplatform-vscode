@@ -10,8 +10,6 @@ function renderSurvey(TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,
     // eslint-disable-next-line no-undef
     const se = new window['SurveyEmbed']("v4j5cvGGr0GRqy180BHbRytFqxSnvs1AqKx-mFT6qLBUOE5POUVGTVRDUDI1SEVaOFVaV1RGM0k4VyQlQCN0PWcu",
     "https://customervoice.microsoft.com/","https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit","true");
-    const el = document.querySelector("#npsContext");
-    console.log("dsjhdjshd"+el.dataset.tid);
     const context = {
       TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,DeviceType,UrlReferrer
     };

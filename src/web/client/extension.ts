@@ -14,7 +14,6 @@ import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 import { convertStringtoBase64 } from './utilities/commonUtil';
 import {NPSService} from './services/NPSService'
 import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
-import { NPSWebView } from './webViews/NPSWebView';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -60,8 +59,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     const options = { detail: siteMessage, modal: true };
                     await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title", "You are editing a live, public site "), options, edit);
                 }
-                NPSWebView.createOrShow(context.extensionUri);
-
+               
                 if (appName) {
                     switch (appName) {
                         case 'portal': {
