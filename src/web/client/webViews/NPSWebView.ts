@@ -35,14 +35,13 @@ export class NPSWebView  {
             <head>
                 <meta charset="UTF-8">
                 <title>Test CES Survey</title>
-                <script data-main="scripts/app" src="scripts/require.js"></script>
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src https://customervoice.microsoft.com/ ; img-src https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/cross.svg ; style-src  https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css 'nonce-${nonce}';script-src https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src https://customervoice.microsoft.com/ ; img-src * 'self' data: https:; style-src  https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css 'nonce-${nonce}';script-src https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js 'nonce-${nonce}';">
             </head>
             <body>
                 <div id="surveyDiv"></div>
                 <script src="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js" type="text/javascript"></script>
                 <link rel="stylesheet" type="text/css" href="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css" />
-                <script id="npsContext" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
+                <script id="npsContext" data-img="./src/web/client/assets/cancel.svg" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
             </body>
             </html>`;
     }
