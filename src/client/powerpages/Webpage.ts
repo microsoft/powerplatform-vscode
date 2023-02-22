@@ -71,17 +71,6 @@ export const createWebpage = async (
             const file = formatFileName(webpageName);
             const folder = formatFolderName(webpageName);
 
-            // const watcher: vscode.FileSystemWatcher =
-            //     vscode.workspace.createFileSystemWatcher(
-            //         new vscode.RelativePattern(
-            //             selectedWorkspaceFolder,
-            //             path.join("web-pages", folder, "content-pages", `${file}.*.webpage.copy.html`) // TODO: Use default language
-            //         ),
-            //         false,
-            //         true,
-            //         true
-            //     );
-
             const watcherPattern = path.join(
                 "web-pages",
                 folder,
@@ -93,37 +82,10 @@ export const createWebpage = async (
                 selectedWorkspaceFolder,
                 watcherPattern
             );
-            // const yoWebpageGenerator = "@microsoft/powerpages:webpage";
+
             const command = `"${yoGenPath}" ${YoSubGenerator.WEBPAGE} "${webpageName}" "${parentPageId}" "${pageTemplateId}"`;
             await createRecord(webpage, command, portalDir, watcher);
-            // vscode.window
-            //     .withProgress(
-            //         {
-            //             location: vscode.ProgressLocation.Notification,
-            //             title: "Creating Webpage...",
-            //         },
-            //         () => {
-            //             return new Promise((resolve, reject) => {
-            //                 exec(command, { cwd: portalDir }, (error, stderr) => {
-            //                     if (error) {
-            //                         vscode.window.showErrorMessage(error.message);
-            //                         reject(error);
-            //                     } else {
-            //                         resolve(stderr);
-            //                     }
-            //                 });
-            //             });
-            //         }
-            //     )
-            //     .then(() => {
-            //         vscode.window.showInformationMessage(
-            //             "Webpage Created!"
-            //         );
-            //     });
 
-            // watcher.onDidCreate(async (uri) => {
-            //     await vscode.window.showTextDocument(uri);
-            // });
         }
     } catch (error: any) {
         vscode.window.showErrorMessage(error.message);

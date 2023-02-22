@@ -65,10 +65,6 @@ export const createPageTemplate = async (
             //command to run, to create the page template
             const command = `${yoGenPath} ${YoSubGenerator.PAGETEMPLATE} "${pageTemplateName}" "${webtemplateId}"`;
             await createRecord(pageTemplate, command, portalDir, watcher);
-            watcher.onDidCreate(async (uri) => {
-                await vscode.window.showTextDocument(uri);
-            });
-            // watcher.dispose();
         }
     } catch (error: any) {
         vscode.window.showErrorMessage(error.message);

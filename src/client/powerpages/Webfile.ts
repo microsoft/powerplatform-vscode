@@ -50,7 +50,6 @@ export const createWebfile = async (
                     openDialogOptions
                 );
 
-                // const yoWebfileSubGenerator = "@microsoft/powerpages:webfile";
                 const webfileCount = selectedFiles?.length;
 
                 if (selectedFiles) {

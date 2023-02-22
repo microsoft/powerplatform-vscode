@@ -8,9 +8,15 @@ import { exec } from "child_process";
 import { existsSync, stat } from "fs";
 import path from "path";
 import * as vscode from "vscode";
-import { NOT_A_PORTAL_DIRECTORY, PageTemplates, ParentPagePaths, Tables, Template, WebTemplates } from "../constants";
+import {
+    NOT_A_PORTAL_DIRECTORY,
+    PageTemplates,
+    ParentPagePaths,
+    Tables,
+    Template,
+    WebTemplates,
+} from "../constants";
 import DesktopFS from "./DesktopFS";
-
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
     return !str || str.trim().length === 0;
@@ -34,8 +40,6 @@ export const formatFileName = (name: string) => {
     // Uppercase the first letter of each word and join the words back together
     return words.map((word) => word[0].toUpperCase() + word.slice(1)).join("-");
 };
-
-
 
 // Function to get the names and values of page templates from a provided context
 export function getPageTemplate(context: Context): PageTemplates {
@@ -114,7 +118,7 @@ export function getParentPagePaths(portalContext: Context): ParentPagePaths {
 }
 
 export async function getWebTemplates(
-  portalContext: Context
+    portalContext: Context
 ): Promise<WebTemplates> {
     await portalContext.init([Tables.WEBTEMPLATE]);
     const webTemplates: Template[] = portalContext.getWebTemplates();
@@ -139,8 +143,8 @@ export function createFileWatcher(
             true,
             true
         );
-    context.subscriptions.push(watcher);
 
+    context.subscriptions.push(watcher);
     return watcher;
 }
 
@@ -150,47 +154,50 @@ export async function createRecord(
     portalDirectory: string,
     watcher: vscode.FileSystemWatcher
 ) {
-    return vscode.window
-        .withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                title: `Creating ${entityType}...`,
-                cancellable: false,
-            },
-            () => {
-                return new Promise((resolve, reject) => {
-                    exec(
-                        execCommand,
-                        { cwd: portalDirectory },
-                        (error, stderr) => {
-                            if (error) {
-                                vscode.window.showErrorMessage(error.message);
-                                reject(error);
-                            } else {
-                                resolve(stderr);
-                            }
-                        }
-                    );
+    await vscode.window.withProgress(
+        {
+            location: vscode.ProgressLocation.Notification,
+            title: `Creating ${entityType}...`,
+            cancellable: false,
+        },
+        async (progress) => {
+            return new Promise<void>((resolve, reject) => {
+                watcher.onDidCreate(async (uri) => {
+                    // Stop watching the directory to avoid duplicate events
+                    watcher.dispose();
+                    try {
+                        await vscode.window.showTextDocument(uri);
+                        vscode.window.showInformationMessage(
+                            `${entityType} created!`
+                        );
+                        resolve();
+                    } catch (error) {
+                        reject(error);
+                    }
                 });
-            }
-        )
-        .then(() => {
-            vscode.window.showInformationMessage(`${entityType} created!`);
-            watcher.onDidCreate(async (uri) => {
-                await vscode.window.showTextDocument(uri);
+                exec(execCommand, { cwd: portalDirectory }, (error) => {
+                    if (error) {
+                        vscode.window.showErrorMessage(error.message);
+                        reject(error);
+                    } else {
+                        progress.report({ increment: 100 });
+                    }
+                });
             });
-        });
+        }
+    );
 }
 
-
-export function getPortalContext(portalDir:string): Context {
+export function getPortalContext(portalDir: string): Context {
     const fs: DesktopFS = new DesktopFS();
     const portalContext = Context.getInstance(portalDir, fs);
     return portalContext;
 }
 
-
-export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: vscode.TextEditor | undefined) {
+export async function getSelectedWorkspaceFolder(
+    uri: vscode.Uri,
+    activeEditor: vscode.TextEditor | undefined
+) {
     let selectedWorkspaceFolder: string | undefined;
     let filePath: string;
 
@@ -207,14 +214,18 @@ export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: 
             filePath = uri.fsPath;
             selectedWorkspaceFolder = checkForWebsiteYML(filePath);
             break;
-        case Boolean(workspaceFolder && vscode.workspace.workspaceFolders.length === 1):
+        case Boolean(
+            workspaceFolder && vscode.workspace.workspaceFolders.length === 1
+        ):
             selectedWorkspaceFolder = workspaceFolder?.uri?.fsPath;
             break;
         case vscode.workspace.workspaceFolders.length > 1:
             return vscode.window
                 .showWorkspaceFolderPick()
                 .then(async (folder) => {
-                    const isPortalDirectory = await checkForPortalDir(folder?.uri.fsPath);
+                    const isPortalDirectory = await checkForPortalDir(
+                        folder?.uri.fsPath
+                    );
                     if (isPortalDirectory) {
                         return folder?.uri.fsPath;
                     } else {
@@ -222,7 +233,8 @@ export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: 
                     }
                 });
         default:
-            selectedWorkspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+            selectedWorkspaceFolder =
+                vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
             break;
     }
 
@@ -234,9 +246,9 @@ export async function getSelectedWorkspaceFolder(uri: vscode.Uri, activeEditor: 
     }
 }
 
-
-
-export function checkForPortalDir(selectedFolder: string | undefined): Promise<boolean> {
+export function checkForPortalDir(
+    selectedFolder: string | undefined
+): Promise<boolean> {
     return new Promise((resolve, reject) => {
         if (selectedFolder) {
             stat(path.join(selectedFolder, "website.yml"), (err) => {
@@ -252,16 +264,15 @@ export function checkForPortalDir(selectedFolder: string | undefined): Promise<b
     });
 }
 
-
 export function checkForWebsiteYML(filePath: string): string {
     let directory = filePath;
     while (directory !== path.parse(directory).root) {
-        const websiteYMLPath = path.join(directory, 'website.yml');
+        const websiteYMLPath = path.join(directory, "website.yml");
         if (existsSync(websiteYMLPath)) {
             return directory;
         }
         directory = path.dirname(directory);
     }
-    vscode.window.showErrorMessage(NOT_A_PORTAL_DIRECTORY)
+    vscode.window.showErrorMessage(NOT_A_PORTAL_DIRECTORY);
     throw new Error("");
 }

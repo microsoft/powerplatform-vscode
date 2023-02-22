@@ -79,23 +79,6 @@ export const createWebTemplate = (
                             watcherPattern
                         );
 
-                        // const watcher: vscode.FileSystemWatcher =
-                        //     vscode.workspace.createFileSystemWatcher(
-                        //         new vscode.RelativePattern(
-                        //             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        //             selectedWorkspaceFolder!,
-                        //             path.join(
-                        //                 "web-templates",
-                        //                 webTemplateFolder,
-                        //                 `${webTemplateFile}.webtemplate.source.html`
-                        //             )
-                        //         ),
-                        //         false,
-                        //         true,
-                        //         true
-                        //     );
-                        // const yoWebTemplateGenerator =
-                        //     "@microsoft/powerpages:webtemplate";
                         const command = `"${yoPath}" ${YoSubGenerator.WEBTEMPLATE} "${value}"`;
                         await createRecord(
                             webTemplate,
@@ -103,40 +86,6 @@ export const createWebTemplate = (
                             portalDir,
                             watcher
                         );
-                        // vscode.window
-                        //     .withProgress(
-                        //         {
-                        //             location: vscode.ProgressLocation.Notification,
-                        //             title: "Creating web template...",
-                        //         },
-                        //         () => {
-                        //             return new Promise((resolve, reject) => {
-                        //                 exec(
-                        //                     command,
-                        //                     { cwd: portalDir },
-                        //                     (error, stderr) => {
-                        //                         if (error) {
-                        //                             vscode.window.showErrorMessage(
-                        //                                 error.message
-                        //                             );
-                        //                             reject(error);
-                        //                         } else {
-                        //                             resolve(stderr);
-                        //                         }
-                        //                     }
-                        //                 );
-                        //             });
-                        //         }
-                        //     )
-                        //     .then(() => {
-                        //         vscode.window.showInformationMessage(
-                        //             "Web template Created!"
-                        //         );
-                        //     });
-
-                        // watcher.onDidCreate(async (uri) => {
-                        //     await vscode.window.showTextDocument(uri);
-                        // });
                     }
                 });
         }

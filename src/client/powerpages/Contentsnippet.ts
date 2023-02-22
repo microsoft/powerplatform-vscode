@@ -48,55 +48,13 @@ export const createContentSnippet = async (
                     selectedWorkspaceFolder,
                     watcherPattern
                 );
-                // const watcher = vscode.workspace.createFileSystemWatcher(
-                //     new vscode.RelativePattern(
-                //         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                //         selectedWorkspaceFolder!,
-                //         path.join(
-                //             "content-snippets",
-                //             folder,
-                //             `${file}.*.contentsnippet.yml`
-                //         )
-                //     ),
-                //     false,
-                //     true,
-                //     true
-                // );
 
                 const portalDir = selectedWorkspaceFolder;
-                // const yoContentSnippetGenerator = "@microsoft/powerpages:contentsnippet";
+
                 const command = `"${yoCommandPath}" ${YoSubGenerator.CONTENT_SNIPPET} "${contentSnippetName}" "${contentSnippetType}"`;
                 await createRecord(contentSnippet, command, portalDir, watcher);
             }
 
-            // vscode.window
-            //     .withProgress(
-            //         {
-            //             location: vscode.ProgressLocation.Notification,
-            //             title: "Creating Content Snippet...",
-            //         },
-            //         () => {
-            //             return new Promise((resolve, reject) => {
-            //                 exec(command, { cwd: portalDir }, (error, stderr) => {
-            //                     if (error) {
-            //                         vscode.window.showErrorMessage(error.message);
-            //                         reject(error);
-            //                     } else {
-            //                         resolve(stderr);
-            //                     }
-            //                 });
-            //             });
-            //         }
-            //     )
-            //     .then(() => {
-            //         vscode.window.showInformationMessage(
-            //             "Content Snippet Created!"
-            //         );
-            //     });
-
-            // watcher.onDidCreate(async (uri) => {
-            //     await vscode.window.showTextDocument(uri);
-            // });
         }
     } catch (error: any) {
         throw new Error(error);
