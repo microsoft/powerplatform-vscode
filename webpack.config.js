@@ -103,6 +103,12 @@ const webConfig = {
             use: [{
                 loader: 'ts-loader'
             }]
+        },
+        {
+            test: /\.svg$/,
+            use: [{
+                loader: 'svg-url-loader'
+            }]
         }]
     },
     plugins: [

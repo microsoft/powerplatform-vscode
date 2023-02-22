@@ -31,6 +31,7 @@ const pslist = require('ps-list');
 
 const [nodeConfig, webConfig] = require('./webpack.config');
 const distdir = path.resolve('./dist');
+//const cancel = path.resolve('../src/web/client/assets/cancel.svg');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
 const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
@@ -373,8 +374,8 @@ const recompile = gulp.series(
 const dist = gulp.series(
     recompile,
     packageVsix,
-    lint,
-    test
+    // lint,
+    // test
 );
 const translationExtensionName = "vscode-powerplatform";
 

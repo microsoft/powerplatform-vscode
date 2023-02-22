@@ -14,6 +14,7 @@ import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 import { convertStringtoBase64 } from './utilities/commonUtil';
 import {NPSService} from './services/NPSService'
 import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
+import { NPSWebView } from './webViews/NPSWebView';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -27,6 +28,7 @@ export function activate(context: vscode.ExtensionContext): void {
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
     // TODO Bidisha: As of now kept here for testing. In subsequent PR will be fixed
     NPSService.getEligibility();
+    NPSWebView.createOrShow(context.extensionUri);
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 

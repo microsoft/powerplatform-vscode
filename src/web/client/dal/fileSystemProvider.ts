@@ -239,10 +239,10 @@ export class PortalsFS implements vscode.FileSystemProvider {
         if (this._fireSoonHandle) {
             clearTimeout(this._fireSoonHandle);
         }
-        this._fireSoonHandle = setTimeout(() => {
-            this._emitter.fire(this._bufferedEvents);
-            this._bufferedEvents.length = 0;
-        }, 5);
+        // this._fireSoonHandle = setTimeout(() => {
+        //     this._emitter.fire(this._bufferedEvents);
+        //     this._bufferedEvents.length = 0;
+        // }, 5);
     }
 
     // --- VFS calls
