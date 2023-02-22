@@ -34,7 +34,6 @@ import {
 import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
 import { createContentSnippet } from "./power-pages/create/Contentsnippet";
-import { createWebTemplate } from "./power-pages/create/WebTemplate";
 import { getSelectedWorkspaceFolder } from "./power-pages/create/utils/CommonUtils";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 
@@ -182,22 +181,6 @@ export async function activate(
             )
         );
 
-        _context.subscriptions.push(
-            vscode.commands.registerCommand(
-                "microsoft-powerapps-portals.webtemplate",
-                async (uri) => {
-                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
-                        uri,
-                        activeEditor
-                    );
-                    createWebTemplate(
-                        _context,
-                        selectedWorkspaceFolder,
-                        yoCommandPath
-                    );
-                }
-            )
-        );
     }
 
     if (shouldEnableDebugger()) {
@@ -276,7 +259,7 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
     } else if (document.languageId === "html" && !htmlServerRunning) {
         // The server is implemented in node
         const serverModule = _context.asAbsolutePath(
-            path.join("dist", "HtmlServer.js")
+            path.join("dist", "htmlServer.js")
         );
         // If the extension is launched in debug mode then the debug server options are used
         // Otherwise the run options are used
