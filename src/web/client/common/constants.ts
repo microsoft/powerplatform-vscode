@@ -46,7 +46,8 @@ export enum queryParameters {
 
 export enum httpMethod {
     PATCH = 'PATCH',
-    GET = 'GET'
+    GET = 'GET',
+    POST = 'POST'
 }
 
 export enum CESSurvey {

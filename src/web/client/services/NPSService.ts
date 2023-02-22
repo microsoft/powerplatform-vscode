@@ -31,7 +31,7 @@ export class NPSService{
                 WebExtensionContext.setUserId(parsedToken?.oid)
                 const apiEndpoint = `${baseApiUrl}/${CESSurvey.TEAM_NAME}/Eligibilities/${CESSurvey.SURVEY_NAME}?userId=${parsedToken?.oid}&eventName=${CESSurvey.EVENT_NAME}&tenantId=${parsedToken.tid}`;
                 const requestInitPost: RequestInit = {
-                    method: 'POST',
+                    method: httpMethod.POST,
                     body:'{}',
                     headers:NPSService.getCesHeader(accessToken)
                 };
@@ -39,7 +39,7 @@ export class NPSService{
                 const response = await fetch(apiEndpoint, requestInitPost);
                 const result = await response?.json();
                 if( result?.eligibility){
-                    powerPlatformExtensionContext.telemetry.sendAPISuccessTelemetry(telemetryEventNames.NPS_USER_ELIGIBLE, "NPS Api",httpMethod.GET,new Date().getTime() - requestSentAtTime);
+                    powerPlatformExtensionContext.telemetry.sendAPISuccessTelemetry(telemetryEventNames.NPS_USER_ELIGIBLE, "NPS Api",httpMethod.POST,new Date().getTime() - requestSentAtTime);
                     WebExtensionContext.setNPSEligibility(true);
                 }
         }catch(error){
