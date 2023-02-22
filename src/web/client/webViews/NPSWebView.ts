@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import WebExtensionContext from '../WebExtensionContext';
 import { queryParameters } from "../common/constants";
 import { getDeviceType } from '../utilities/deviceType';
+import { telemetryEventNames } from '../telemetry/constants';
 
 export class NPSWebView  {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -28,6 +29,7 @@ export class NPSWebView  {
         // TODO : we need the Window object
       //  const urlReferrer = window?.location?.href;
         const deviceType = getDeviceType();
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.RENDER_NPS);
         return `<!DOCTYPE html>
             <html lang="en">
             <head>
@@ -52,7 +54,7 @@ export class NPSWebView  {
     public static createOrShow(extensionUri: vscode.Uri): NPSWebView {
         const webview = vscode.window.createWebviewPanel(
             'testCESSurvey',
-            "Test CES Survey",
+            "Test CES Survey", // Localization pending
             {viewColumn:vscode.ViewColumn.One,
                 preserveFocus:false
             },
