@@ -4,6 +4,9 @@
  */
 
 import * as vscode from 'vscode';
+import WebExtensionContext from '../WebExtensionContext';
+import { queryParameters } from "../common/constants";
+import { getDeviceType } from '../utilities/deviceType';
 
 export class NPSWebView  {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -14,8 +17,16 @@ export class NPSWebView  {
     }
 
     private _getHtml() {
-		const nonce = getNonce();
+        const nonce = getNonce();
         const mainJs = this.extensionResourceUrl('media','main.js');
+        const tid = WebExtensionContext.urlParametersMap?.get(queryParameters.TENANT_ID);
+        const uid = WebExtensionContext.userId;
+        const envId = WebExtensionContext.urlParametersMap?.get(queryParameters.ENV_ID);
+        const geo = WebExtensionContext.urlParametersMap?.get(queryParameters.GEO);
+        const culture = vscode.env.language;
+        const productVersion = process?.env?.BUILD_NAME;
+      //  const urlReferrer = window?.location?.href;
+        const deviceType = getDeviceType();
         return `<!DOCTYPE html>
             <html lang="en">
             <head>
@@ -28,7 +39,7 @@ export class NPSWebView  {
                 <div id="surveyDiv"></div>
                 <script src="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js" type="text/javascript"></script>
                 <link rel="stylesheet" type="text/css" href="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css" />
-                <script nonce="${nonce}" type="module" src="${mainJs}"></script>
+                <script id="npsContext" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
             </body>
             </html>`;
     }

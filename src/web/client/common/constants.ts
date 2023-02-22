@@ -38,7 +38,10 @@ export enum queryParameters {
     REFERRER = 'referrer',
     SITE_VISIBILITY = 'sitevisibility',
     WEBSITE_NAME = 'websitename',
-    ORG_URL = 'orgurl'
+    ORG_URL = 'orgurl',
+    REGION = 'region',
+    ENV_ID = 'envId',
+    GEO = 'geo'
 }
 
 export enum httpMethod {

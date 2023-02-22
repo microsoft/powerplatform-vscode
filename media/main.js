@@ -3,24 +3,17 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-// "use strict";
-// const path = require('path');
-// const cancel = path.resolve('../src/web/client/assets/cancel.svg');
+/* eslint-disable no-undef */
 
-function renderSurvey(parentElementId,FirstName, LastName, locale, environmentId, geo, UserId, TenantId, prompted)
+function renderSurvey(TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,DeviceType,UrlReferrer)
 {
     // eslint-disable-next-line no-undef
     const se = new window['SurveyEmbed']("v4j5cvGGr0GRqy180BHbRytFqxSnvs1AqKx-mFT6qLBUOE5POUVGTVRDUDI1SEVaOFVaV1RGM0k4VyQlQCN0PWcu",
     "https://customervoice.microsoft.com/","https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit","true");
+    const el = document.querySelector("#npsContext");
+    console.log("dsjhdjshd"+el.dataset.tid);
     const context = {
-        "First Name": FirstName,
-        "Last Name": LastName,
-        "locale": locale,
-        "environmentId": environmentId,
-        "geo": geo,
-        "UserId": UserId,
-        "TenantId": TenantId,
-        "prompted": prompted,
+      TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,DeviceType,UrlReferrer
     };
     se.renderPopup(context);
 }
@@ -108,8 +101,16 @@ function applyCustomStyles() {
   }
   
   function loadSurvey(){
-    // TODO: Replace by actual value
-    renderSurvey("surveyDiv", "Bert", "Hair", "en-US", "123", "IND", "bert.hair@contoso.com", "12345", "Product Overview");
+    const el = document.querySelector("#npsContext");
+    const tenantId = el.dataset.tid;
+    const userId = el.dataset.uid;
+    const envId = el.dataset.envId;
+    const geo = el.dataset.geo;
+    const culture = el.dataset.culture;
+    const productVersion =  el.dataset.productVersion;
+    const urlReferrer =  el.dataset.urlReferrer;
+    const deviceType = el.dataset.deviceType;
+    renderSurvey(tenantId,userId,envId,geo,productVersion,culture,deviceType,urlReferrer);
     resizeSurvey();
     applyCustomStyles();
   }
