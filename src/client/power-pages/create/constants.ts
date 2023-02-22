@@ -4,8 +4,6 @@
  */
 
 
-import path from "path";
-
 export enum Tables {
     WEBPAGE = "Webpage",
     PAGETEMPLATE = "PageTemplate",
@@ -13,15 +11,17 @@ export enum Tables {
     WEBSITELANGUAGES = "WebsiteLanguages",
     WEBLINKS = "Weblinks",
     WEBTEMPLATE = "WebTemplate",
+    CONTENT_SNIPPET = "ContentSnippet"
+
 }
 
-export const yoPath = path.join("node_modules", ".bin", "yo");
 export interface Template {
     name: string;
     value: string;
 }
 
 export const NOT_A_PORTAL_DIRECTORY = 'No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.';
+export const WEBSITE_YML = 'website.yml';
 
 export interface ParentPagePaths {
     paths: Array<string>;
@@ -54,9 +54,3 @@ export enum TableFolder {
     CONTENT_SNIPPET_FOLDER = "content-snippets",
     WEBFILE_FOLDER = "web-files",
 }
-
-export const pageTemplate = 'Page Template';
-export const webTemplate = 'Web Template';
-export const contentSnippet = 'Content Snippet';
-export const webFile = 'Web File';
-export const webpage = 'Web Page';

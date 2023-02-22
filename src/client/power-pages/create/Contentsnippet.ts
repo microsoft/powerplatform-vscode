@@ -9,7 +9,7 @@ nls.config({
     messageFormat: nls.MessageFormat.bundle,
     bundleFormat: nls.BundleFormat.standalone,
 })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+// const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import {
     createFileWatcher,
@@ -22,12 +22,12 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
 import { statSync } from "fs";
-import { contentSnippet, YoSubGenerator } from "./constants";
+import { Tables, YoSubGenerator } from "./constants";
 
 export const createContentSnippet = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoCommandPath: string | null
+    yoGenPath: string | null
 ): Promise<void> => {
     try {
         if (selectedWorkspaceFolder) {
@@ -39,7 +39,7 @@ export const createContentSnippet = async (
                 const file = formatFileName(contentSnippetName);
 
                 const watcherPattern = path.join(
-                    "content-snippets",
+                    Tables.CONTENT_SNIPPET,
                     folder,
                     `${file}.*.contentsnippet.yml`
                 );
@@ -51,10 +51,14 @@ export const createContentSnippet = async (
 
                 const portalDir = selectedWorkspaceFolder;
 
-                const command = `"${yoCommandPath}" ${YoSubGenerator.CONTENT_SNIPPET} "${contentSnippetName}" "${contentSnippetType}"`;
-                await createRecord(contentSnippet, command, portalDir, watcher);
+                const command = `"${yoGenPath}" ${YoSubGenerator.CONTENT_SNIPPET} "${contentSnippetName}" "${contentSnippetType}"`;
+                await createRecord(
+                    Tables.CONTENT_SNIPPET,
+                    command,
+                    portalDir,
+                    watcher
+                );
             }
-
         }
     } catch (error: any) {
         throw new Error(error);
@@ -80,10 +84,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
         return state as State;
     }
 
-    const title = localize(
-        "microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.title",
-        "New Content Snippet"
-    );
+    const title = "New Content Snippet";
 
     async function inputName(input: MultiStepInput, state: Partial<State>) {
         state.contentSnippetName = await input.showInputBox({
@@ -91,10 +92,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             step: 1,
             totalSteps: 2,
             value: state.contentSnippetName || "",
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.name.placeholder",
-                "Add content snippet name (name should be unique)"
-            ),
+            placeholder: "Add content snippet name (name should be unique)",
             validate: validateNameIsUnique,
         });
         return (input: MultiStepInput) => pickType(input, state);
@@ -105,10 +103,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             title,
             step: 2,
             totalSteps: 2,
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.type.placeholder",
-                "Select Type"
-            ),
+            placeholder: "Select Type",
             items: contentSnippetTypes,
             activeItem:
                 typeof state.contentSnippetType !== "string"

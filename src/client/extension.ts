@@ -7,40 +7,43 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import * as path from "path";
 import * as vscode from "vscode";
 import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
-import { vscodeExtAppInsightsResourceProvider } from '../common/telemetry-generated/telemetryConfiguration';
+import { vscodeExtAppInsightsResourceProvider } from "../common/telemetry-generated/telemetryConfiguration";
 import { ITelemetryData } from "../common/TelemetryData";
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
-import { PortalWebView } from './PortalWebView';
-import { ITelemetry } from './telemetry/ITelemetry';
+import { PortalWebView } from "./PortalWebView";
+import { ITelemetry } from "./telemetry/ITelemetry";
 
 import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
     TransportKind,
-    WorkspaceFolder
+    WorkspaceFolder,
 } from "vscode-languageclient/node";
 import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
-import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
-import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "./constants";
+import {
+    activateDebugger,
+    deactivateDebugger,
+    shouldEnableDebugger,
+} from "../debugger";
+import {
+    PORTAL_CRUD_OPERATION_SETTING_NAME,
+    SETTINGS_EXPERIMENTAL_STORE_NAME,
+} from "./constants";
 import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
-import { createContentSnippet } from "./powerpages/Contentsnippet";
-import { createPageTemplate } from "./powerpages/PageTemplate";
-import { createWebfile } from "./powerpages/Webfile";
-import { createWebpage } from "./powerpages/Webpage";
-import { createWebTemplate } from "./powerpages/WebTemplate";
-import { getSelectedWorkspaceFolder } from "./powerpages/utils/CommonUtils";
+import { createContentSnippet } from "./power-pages/create/Contentsnippet";
+import { createWebTemplate } from "./power-pages/create/WebTemplate";
+import { getSelectedWorkspaceFolder } from "./power-pages/create/utils/CommonUtils";
 import { readUserSettings } from "./telemetry/localfileusersettings";
-
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
 let htmlServerRunning = false;
 let yamlServerRunning = false;
 let _telemetry: TelemetryReporter;
-let selectedWorkspaceFolder: string|undefined;
+let selectedWorkspaceFolder: string | undefined;
 const activeEditor = vscode.window.activeTextEditor;
 
 export async function activate(
@@ -49,11 +52,21 @@ export async function activate(
     _context = context;
 
     // setup telemetry
-    const telemetryEnv = AppTelemetryConfigUtility.createGlobalTelemetryEnvironment();
-    const appInsightsResource = vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(telemetryEnv.dataBoundary);
-    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, appInsightsResource.instrumentationKey);
+    const telemetryEnv =
+        AppTelemetryConfigUtility.createGlobalTelemetryEnvironment();
+    const appInsightsResource =
+        vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
+            telemetryEnv.dataBoundary
+        );
+    _telemetry = new TelemetryReporter(
+        context.extension.id,
+        context.extension.packageJSON.version,
+        appInsightsResource.instrumentationKey
+    );
     context.subscriptions.push(_telemetry);
-    _telemetry.sendTelemetryEvent("Start", { 'pac.userId': readUserSettings().uniqueId });
+    _telemetry.sendTelemetryEvent("Start", {
+        "pac.userId": readUserSettings().uniqueId,
+    });
 
     // Setup context switches
     if (
@@ -90,8 +103,6 @@ export async function activate(
         )
     );
 
-
-
     _context.subscriptions.push(
         vscode.workspace.onDidOpenTextDocument(() => {
             if (vscode.window.activeTextEditor === undefined) {
@@ -101,7 +112,9 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'NewPage' });
+                    _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
+                        page: "NewPage",
+                    });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -129,75 +142,62 @@ export async function activate(
             },
         });
     }
-    const areCRUDoperationEnabled = vscode.workspace.getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME).get(PORTAL_CRUD_OPERATION_SETTING_NAME);
+    const areCRUDoperationEnabled = vscode.workspace
+        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
+        .get(PORTAL_CRUD_OPERATION_SETTING_NAME);
     if (areCRUDoperationEnabled) {
         // Add CRUD related callback subscription here
         await handleFileSystemCallbacks(_context);
     }
 
-    const cliContext = new CliAcquisitionContext(_context, _telemetry)
+    const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
-    const workspaceFolders = vscode.workspace.workspaceFolders?.map(fl => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)) || []
+    const workspaceFolders =
+        vscode.workspace.workspaceFolders?.map(
+            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+        ) || [];
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-        const generator = new GeneratorAcquisition(cliContext)
+        const generator = new GeneratorAcquisition(cliContext);
         await generator.ensureInstalled();
         _context.subscriptions.push(generator);
         const yoCommandPath = generator.yoCommandPath;
-        _context.subscriptions.push(
-            vscode.commands.registerCommand(
-                "microsoft-powerapps-portals.pagetemplate",
-                async (uri) => {
-                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-
-                    createPageTemplate(_context, selectedWorkspaceFolder, yoCommandPath);
-
-                }
-            )
-        )
-
-
-        _context.subscriptions.push(
-            vscode.commands.registerCommand(
-                "microsoft-powerapps-portals.webpage",
-                async (uri) => {
-                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                    createWebpage(_context,selectedWorkspaceFolder, yoCommandPath);
-                }
-            )
-        )
 
         _context.subscriptions.push(
             vscode.commands.registerCommand(
                 "microsoft-powerapps-portals.contentsnippet",
                 async (uri) => {
-                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                    createContentSnippet(_context, selectedWorkspaceFolder, yoCommandPath);
+                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
+                        uri,
+                        activeEditor
+                    );
+                    createContentSnippet(
+                        _context,
+                        selectedWorkspaceFolder,
+                        yoCommandPath
+                    );
                 }
             )
-        )
-
-        _context.subscriptions.push(
-            vscode.commands.registerCommand(
-                "microsoft-powerapps-portals.webfile",
-                async (uri) => {
-                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                   createWebfile(selectedWorkspaceFolder, yoCommandPath);
-                }
-            )
-        )
+        );
 
         _context.subscriptions.push(
             vscode.commands.registerCommand(
                 "microsoft-powerapps-portals.webtemplate",
                 async (uri) => {
-                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(uri, activeEditor);
-                    createWebTemplate(_context, selectedWorkspaceFolder, yoCommandPath);
+                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
+                        uri,
+                        activeEditor
+                    );
+                    createWebTemplate(
+                        _context,
+                        selectedWorkspaceFolder,
+                        yoCommandPath
+                    );
                 }
             )
-        )
+        );
     }
 
     if (shouldEnableDebugger()) {
@@ -325,14 +325,19 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
         client.onNotification("telemetry/event", (payload: string) => {
             const serverTelemetry = JSON.parse(payload) as ITelemetryData;
             if (!!serverTelemetry && !!serverTelemetry.eventName) {
-                _telemetry.sendTelemetryEvent(serverTelemetry.eventName, serverTelemetry.properties, serverTelemetry.measurements);
+                _telemetry.sendTelemetryEvent(
+                    serverTelemetry.eventName,
+                    serverTelemetry.properties,
+                    serverTelemetry.measurements
+                );
             }
         });
     });
 }
 
 function isCurrentDocumentEdited(): boolean {
-    const workspaceFolderExists = vscode.workspace.workspaceFolders !== undefined;
+    const workspaceFolderExists =
+        vscode.workspace.workspaceFolders !== undefined;
     let currentPanelExists = false;
     if (PortalWebView?.currentPanel) {
         currentPanelExists = true;

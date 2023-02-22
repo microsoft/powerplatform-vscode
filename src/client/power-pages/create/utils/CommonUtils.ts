@@ -3,20 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { Context } from "@microsoft/generator-powerpages/generators/context";
 import { exec } from "child_process";
 import { existsSync, stat } from "fs";
 import path from "path";
 import * as vscode from "vscode";
-import {
-    NOT_A_PORTAL_DIRECTORY,
-    PageTemplates,
-    ParentPagePaths,
-    Tables,
-    Template,
-    WebTemplates,
-} from "../constants";
-import DesktopFS from "./DesktopFS";
+import { NOT_A_PORTAL_DIRECTORY, WEBSITE_YML } from "../constants";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
     return !str || str.trim().length === 0;
@@ -40,96 +31,6 @@ export const formatFileName = (name: string) => {
     // Uppercase the first letter of each word and join the words back together
     return words.map((word) => word[0].toUpperCase() + word.slice(1)).join("-");
 };
-
-// Function to get the names and values of page templates from a provided context
-export function getPageTemplate(context: Context): PageTemplates {
-    // Get the page templates from the provided context
-    const pageTemplates: Template[] = context.getPageTemplates();
-
-    // Check if pageTemplates is not empty
-    if (!pageTemplates.length) {
-        return { pageTemplateNames: [], pageTemplateMap: new Map() };
-    }
-
-    // Extract the names of the page templates
-    const pageTemplateNames = pageTemplates.map((template) => template.name);
-
-    // Create a map of page template names to their corresponding values
-    const pageTemplateMap = new Map<string, string>();
-    pageTemplates.forEach((template) => {
-        pageTemplateMap.set(template.name, template.value);
-    });
-
-    // Return the extracted page template names and map
-    return { pageTemplateNames, pageTemplateMap };
-}
-
-export function getParentPagePaths(portalContext: Context): ParentPagePaths {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pages: Map<string, any> = new Map();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    portalContext.webpageMap.forEach((page: any) => {
-        pages.set(page.id, page.content);
-    });
-
-    if (pages.size === 0) {
-        return { paths: [], pathsMap: new Map(), webpageNames: [] };
-    }
-    const paths: Array<string> = [];
-    const pathsMap: Map<string, string> = new Map();
-    const webpageNames: Array<string> = [];
-    // eslint-disable-next-line prefer-const
-    for (let [webpageid, page] of pages) {
-        if (!page.adx_name || !webpageid) {
-            continue;
-        }
-        let path = page.adx_name;
-        webpageNames.push(path);
-
-        // If the page is a home page, add it to the paths array
-        if (!page.adx_parentpageid && page.adx_partialurl === "/") {
-            paths.push(path);
-            pathsMap.set(path, webpageid);
-            continue;
-        }
-        let prevPage = null;
-        if (pages.has(page.adx_parentpageid)) {
-            while (page.adx_parentpageid) {
-                if (!pages.has(page.adx_parentpageid)) {
-                    break;
-                }
-                // to check for circular reference
-                if (prevPage === page) {
-                    break;
-                }
-                prevPage = page;
-                page = pages.get(page.adx_parentpageid);
-                path = `${page.adx_name}/${path}`;
-            }
-            // to check for duplicates
-            if (paths.indexOf(path) === -1) {
-                paths.push(path);
-                pathsMap.set(path, webpageid);
-            }
-        }
-    }
-    paths.sort();
-    return { paths, pathsMap, webpageNames };
-}
-
-export async function getWebTemplates(
-    portalContext: Context
-): Promise<WebTemplates> {
-    await portalContext.init([Tables.WEBTEMPLATE]);
-    const webTemplates: Template[] = portalContext.getWebTemplates();
-
-    const webTemplateNames = webTemplates.map((template) => template.name);
-    const webTemplateMap = new Map<string, string>();
-    webTemplates.forEach((template) => {
-        webTemplateMap.set(template.name, template.value);
-    });
-    return { webTemplateNames, webTemplateMap };
-}
 
 export function createFileWatcher(
     context: vscode.ExtensionContext,
@@ -186,12 +87,6 @@ export async function createRecord(
             });
         }
     );
-}
-
-export function getPortalContext(portalDir: string): Context {
-    const fs: DesktopFS = new DesktopFS();
-    const portalContext = Context.getInstance(portalDir, fs);
-    return portalContext;
 }
 
 export async function getSelectedWorkspaceFolder(
@@ -251,7 +146,7 @@ export function checkForPortalDir(
 ): Promise<boolean> {
     return new Promise((resolve, reject) => {
         if (selectedFolder) {
-            stat(path.join(selectedFolder, "website.yml"), (err) => {
+            stat(path.join(selectedFolder, WEBSITE_YML), (err) => {
                 if (err) {
                     resolve(false);
                 } else {
@@ -267,7 +162,7 @@ export function checkForPortalDir(
 export function checkForWebsiteYML(filePath: string): string {
     let directory = filePath;
     while (directory !== path.parse(directory).root) {
-        const websiteYMLPath = path.join(directory, "website.yml");
+        const websiteYMLPath = path.join(directory, WEBSITE_YML);
         if (existsSync(websiteYMLPath)) {
             return directory;
         }
