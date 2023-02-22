@@ -58,8 +58,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc", "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
                     const options = { detail: siteMessage, modal: true };
                     await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title", "You are editing a live, public site "), options, edit);
-                }
-               
+                }               
                 if (appName) {
                     switch (appName) {
                         case 'portal': {
