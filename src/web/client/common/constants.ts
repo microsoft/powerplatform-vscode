@@ -45,3 +45,10 @@ export enum httpMethod {
     PATCH = 'PATCH',
     GET = 'GET'
 }
+
+export enum CESSurvey {
+    TEAM_NAME = 'PowerPages',
+    SURVEY_NAME = 'PowerPages-NPS',
+    EVENT_NAME = 'vsCodeWeb',
+    AUTHORIZATION_ENDPOINT = 'https://microsoft.onmicrosoft.com/cessurvey/user'
+}

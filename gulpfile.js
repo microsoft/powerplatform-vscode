@@ -228,6 +228,17 @@ const testWebIntegration = gulp.series(compileIntegrationTests, async () => {
 // tests that require vscode-electron (which requires a display or xvfb)
 const testWebInt = gulp.series(testWebIntegration);
 
+/**
+ * Tests the power-pages integration tests after transpiling the source files to /out
+ */
+const testDesktopIntegration = gulp.series(compileIntegrationTests, async () => {
+    const testRunner = require("./out/client/test/runTest");
+    await testRunner.main();
+});
+
+// tests that require vscode-electron (which requires a display or xvfb)
+const testDesktopInt = gulp.series(testDesktopIntegration);
+
 async function packageVsix() {
     const standardHeader = '# Power Platform Extension';
     const previewHeader = '# Power Platform Tools [PREVIEW]\n\n## This extension is used for internal testing against targets such as vscode.dev which require Marketplace published extensions, and is not supported.';
@@ -453,6 +464,7 @@ exports.testWeb = testWeb;
 exports.compileIntegrationTests = compileIntegrationTests;
 exports.testInt = testInt;
 exports.testWebInt = testWebInt;
+exports.testDesktopInt = testDesktopInt;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;

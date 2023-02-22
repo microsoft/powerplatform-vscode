@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import fetch,{RequestInit} from 'node-fetch'
 import * as vscode from 'vscode';
 import { getHeader } from '../common/authenticationProvider';
 import { BAD_REQUEST, MIMETYPE } from '../common/constants';
@@ -140,7 +141,7 @@ async function getLatestContent(
             fileExtensionType);
 
         const response = await fetch(requestUrl, requestInit);
-
+        
         if (response.ok) {
             const result = await response.json();
             if (result[attributePath.source] && entityColumnContent != result[attributePath.source]) {
