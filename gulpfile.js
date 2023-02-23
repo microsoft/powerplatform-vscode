@@ -388,6 +388,7 @@ async function translationsExport() {
         "--outFile", "./loc/translations-export/vscode-powerplatform.xlf"]);
     return gulp.src('./loc/translations-export/vscode-powerplatform.xlf')
         .pipe(replace("&apos;", "'"))
+        .pipe(replace("&#10;", "\\n"))
         .pipe(gulp.dest('./loc/translations-export/'));
 }
 
@@ -415,11 +416,13 @@ async function translationsImport() {
     // `@vscode/l10n-dev import-xlf` places both the package.nls.*.json and bundle.l10n.*.json files in the
     // same directory, but the package.nls.*.json need to reside at the repo root next to package.json
     gulp.src('./l10n/package.nls.*.json')
+        .pipe(replace("\\\\n", "\\n"))
         .pipe(gulp.dest('./'));
 
     // Fix up changes from the XLF Export / Import process that cause lookup misses
     return gulp.src('./l10n/bundle.l10n.*.json')
         .pipe(replace("\\r\\n", "\\n"))
+        .pipe(replace("\\\\n", "\\n"))
         .pipe(replace("&apos;", "'"))
         .pipe(gulp.dest('./l10n'));
 }
