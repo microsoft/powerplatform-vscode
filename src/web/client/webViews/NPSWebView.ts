@@ -28,7 +28,7 @@ export class NPSWebView  {
         const geo = WebExtensionContext.urlParametersMap?.get(queryParameters.GEO);
         const culture = vscode.env.language;
         const productVersion = process?.env?.BUILD_NAME;
-        const urlReferrer = window?.location?.href;
+        // const urlReferrer = window?.location?.href;
         const deviceType = getDeviceType();
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.RENDER_NPS);
         return `<!DOCTYPE html>
@@ -42,7 +42,7 @@ export class NPSWebView  {
                 <div id="surveyDiv"></div>
                 <script src="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js" type="text/javascript"></script>
                 <link rel="stylesheet" type="text/css" href="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css" />
-                <script id="npsContext" data-urlReferrer = "${urlReferrer}" data-img="./src/web/client/assets/cancel.svg" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
+                <script id="npsContext" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
             </body>
             </html>`;
     }
