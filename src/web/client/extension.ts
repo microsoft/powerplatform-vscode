@@ -9,10 +9,10 @@ import * as vscode from "vscode";
 import WebExtensionContext from "./WebExtensionContext";
 import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
-import { checkMandatoryParameters, removeEncodingFromParameters } from "./common/errorHandler";
+import { checkMandatoryParameters, removeEncodingFromParameters, showErrorDialog } from "./common/errorHandler";
 import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 import { convertStringtoBase64 } from './utilities/commonUtil';
-import {NPSService} from './services/NPSService'
+import { NPSService } from './services/NPSService'
 import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
@@ -53,12 +53,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
 
-                if (queryParamsMap.get(queryParameters.SITE_VISIBILITY) === PUBLIC) {
-                    const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit", "Edit the site") };
-                    const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc", "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
-                    const options = { detail: siteMessage, modal: true };
-                    await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title", "You are editing a live, public site "), options, edit);
-                }
+                await showSiteVisibilityDialog();
 
                 if (appName) {
                     switch (appName) {
@@ -82,10 +77,12 @@ export function activate(context: vscode.ExtensionContext): void {
                         }
                             break;
                         default:
-                            vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+                            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.file", "There was a problem opening the workspace"),
+                                localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
                     }
                 } else {
-                    vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+                    showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.file", "There was a problem opening the workspace"),
+                        localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
                     return;
                 }
             }
@@ -121,6 +118,16 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
             }
         })
     );
+}
+
+export async function showSiteVisibilityDialog() {
+    if (WebExtensionContext.urlParametersMap.get(queryParameters.SITE_VISIBILITY) === PUBLIC) {
+        const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit", "Edit the site") };
+        const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc",
+            "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
+        const options = { detail: siteMessage, modal: true };
+        await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title", "You are editing a live, public site "), options, edit);
+    }
 }
 
 export function showWalkthrough(context: vscode.ExtensionContext, telemetry: WebExtensionTelemetry) {
