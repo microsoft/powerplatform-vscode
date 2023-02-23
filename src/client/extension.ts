@@ -27,6 +27,7 @@ import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } 
 import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
+import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -150,6 +151,7 @@ export async function deactivate(): Promise<void> {
         await client.stop();
     }
 
+    disposeDiagnostics();
     deactivateDebugger();
 
 }

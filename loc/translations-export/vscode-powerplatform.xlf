@@ -337,6 +337,11 @@ The {2} represents Solution's Version number</note>
       <source xml:lang="en">Try again</source>
     </trans-unit>
   </body></file>
+  <file original="./web/client/webViews/NPSWebView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="microsoft-powerapps-portals.webExtension.npsSurvey.desc">
+      <source xml:lang="en">Microsoft wants your feeback</source>
+    </trans-unit>
+  </body></file>
   <file original="./web/client/test/integration/errorHandler.test" source-language="en" datatype="plaintext"><body>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
       <source xml:lang="en">Unable to find that app</source>
