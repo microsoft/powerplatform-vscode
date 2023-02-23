@@ -16,5 +16,8 @@ npm-debug.log*
 # don't check in generated folders
 telemetry-generated
 
-#
-l10n/package.nls.fr.json
+# vscode-l10n-dev drops both the Package and Bundle files in the same
+# directory, but we need the package.nls.*json files elsewhere. The gulp
+# tasks copy them to the correct location, but leave the originals where
+# we do not want them checked in
+l10n/package.nls.*.json
