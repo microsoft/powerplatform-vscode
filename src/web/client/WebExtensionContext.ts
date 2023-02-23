@@ -63,6 +63,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _currentSchemaVersion: string;
     private _telemetry: WebExtensionTelemetry;
     private _npsEligibility: boolean;
+    private _userId: string;
 
     public get schemaDataSourcePropertiesMap() { return this._schemaDataSourcePropertiesMap; }
     public get schemaEntitiesMap() { return this._schemaEntitiesMap; }
@@ -82,6 +83,7 @@ class WebExtensionContext implements IWebExtensionContext {
     public get currentSchemaVersion() { return this._currentSchemaVersion; }
     public get telemetry() { return this._telemetry; }
     public get npsEligibility() { return this._npsEligibility; }
+    public get userId() { return this._userId; }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -102,6 +104,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._currentSchemaVersion = "";
         this._telemetry = new WebExtensionTelemetry();
         this._npsEligibility = false;
+        this._userId =  "";
     }
 
     public setWebExtensionContext(entityName: string, entityId: string, queryParamsMap: Map<string, string>) {
@@ -268,6 +271,9 @@ class WebExtensionContext implements IWebExtensionContext {
 
     public setNPSEligibility(eligibility: boolean) {
         this._npsEligibility = eligibility;
+    } 
+    public setUserId(uid: string) {
+        this._userId = uid;
     } 
 }
 
