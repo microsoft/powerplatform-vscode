@@ -5,7 +5,7 @@
 
 import jwt_decode from 'jwt-decode';
 import { npsAuthentication } from "../common/authenticationProvider";
-import {CESSurvey, httpMethod, queryParameters} from '../common/constants';
+import {SurveyConstants, httpMethod, queryParameters} from '../common/constants';
 import fetch,{RequestInit} from 'node-fetch'
 import WebExtensionContext from '../WebExtensionContext';
 import powerPlatformExtensionContext from '../WebExtensionContext';
@@ -25,11 +25,11 @@ export class NPSService{
         const baseApiUrl = region === 'test' ? "https://ces-int.microsoftcloud.com/api/v1": "https://ces.microsoftcloud.com/api/v1";
         
         try{
-                const accessToken: string = await npsAuthentication(CESSurvey.AUTHORIZATION_ENDPOINT);
+                const accessToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const parsedToken = jwt_decode(accessToken) as any;
                 WebExtensionContext.setUserId(parsedToken?.oid)
-                const apiEndpoint = `${baseApiUrl}/${CESSurvey.TEAM_NAME}/Eligibilities/${CESSurvey.SURVEY_NAME}?userId=${parsedToken?.oid}&eventName=${CESSurvey.EVENT_NAME}&tenantId=${parsedToken.tid}`;
+                const apiEndpoint = `${baseApiUrl}/${SurveyConstants.TEAM_NAME}/Eligibilities/${SurveyConstants.SURVEY_NAME}?userId=${parsedToken?.oid}&eventName=${SurveyConstants.EVENT_NAME}&tenantId=${parsedToken.tid}`;
                 const requestInitPost: RequestInit = {
                     method: httpMethod.POST,
                     body:'{}',

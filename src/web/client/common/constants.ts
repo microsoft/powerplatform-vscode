@@ -50,7 +50,7 @@ export enum httpMethod {
     POST = 'POST'
 }
 
-export enum CESSurvey {
+export enum SurveyConstants {
     TEAM_NAME = 'PowerPages',
     SURVEY_NAME = 'PowerPages-NPS',
     EVENT_NAME = 'vsCodeWeb',
