@@ -111,7 +111,6 @@ function applyCustomStyles() {
     const geo = el.dataset.geo;
     const culture = el.dataset.culture;
     const productVersion =  el.dataset.productVersion;
-    //const urlReferrer =  el.dataset.urlReferrer;
     const deviceType = el.dataset.deviceType;
     renderSurvey(tenantId,userId,envId,geo,productVersion,culture,deviceType);
     resizeSurvey();

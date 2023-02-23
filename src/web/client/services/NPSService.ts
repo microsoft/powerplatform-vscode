@@ -38,7 +38,6 @@ export class NPSService{
                 const response = await fetch(apiEndpoint, requestInitPost);
                 const result = await response?.json();
                 if( result?.eligibility){
-                    console.log("djshdjshdjshdjhsjdhjshdjhsjh")
                     WebExtensionContext.telemetry.sendAPISuccessTelemetry(telemetryEventNames.NPS_USER_ELIGIBLE, "NPS Api",httpMethod.POST,new Date().getTime() - requestSentAtTime);
                     WebExtensionContext.setNPSEligibility(true);
                 }
