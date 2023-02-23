@@ -33,5 +33,5 @@ export enum telemetryEventNames {
     NPS_AUTHENTICATION_FAILED = 'WebExtensionNPSAuthenticationFailed',
     NPS_USER_ELIGIBLE = "WebExtensionUserIsEligible",
     NPS_API_FAILED = "WebExtensionNPSApiFailed",
-    RENDER_NPS = 'Render NPS Webview'
+    RENDER_NPS = 'WebExtensionNPSRenderSurveyForm'
 }
