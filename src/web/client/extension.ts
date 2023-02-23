@@ -69,16 +69,16 @@ export function activate(context: vscode.ExtensionContext): void {
                                 context.globalState.update(IS_FIRST_RUN_EXPERIENCE, false);
                                 WebExtensionContext.telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted' });
                             }
-                            await NPSService.setEligibility();
-                            if(WebExtensionContext.npsEligibility){
-                                NPSWebView.createOrShow(context.extensionUri);
-                            }
                             await vscode.window.withProgress({
                                 location: vscode.ProgressLocation.Notification,
                                 cancellable: true,
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
                                 await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
+                                await NPSService.setEligibility();
+                                if(WebExtensionContext.npsEligibility){
+                                    NPSWebView.createOrShow(context.extensionUri);
+                                }
                             });
                         }
                             break;
