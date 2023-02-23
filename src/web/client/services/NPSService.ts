@@ -8,7 +8,6 @@ import { npsAuthentication } from "../common/authenticationProvider";
 import {SurveyConstants, httpMethod, queryParameters} from '../common/constants';
 import fetch,{RequestInit} from 'node-fetch'
 import WebExtensionContext from '../WebExtensionContext';
-import powerPlatformExtensionContext from '../WebExtensionContext';
 import { telemetryEventNames } from '../telemetry/constants';
 
 export class NPSService{
@@ -39,11 +38,11 @@ export class NPSService{
                 const response = await fetch(apiEndpoint, requestInitPost);
                 const result = await response?.json();
                 if( result?.eligibility){
-                    powerPlatformExtensionContext.telemetry.sendAPISuccessTelemetry(telemetryEventNames.NPS_USER_ELIGIBLE, "NPS Api",httpMethod.POST,new Date().getTime() - requestSentAtTime);
+                    WebExtensionContext.telemetry.sendAPISuccessTelemetry(telemetryEventNames.NPS_USER_ELIGIBLE, "NPS Api",httpMethod.POST,new Date().getTime() - requestSentAtTime);
                     WebExtensionContext.setNPSEligibility(true);
                 }
         }catch(error){
-            powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.NPS_API_FAILED, (error as Error)?.message);
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.NPS_API_FAILED, (error as Error)?.message);
         }
     }
 }

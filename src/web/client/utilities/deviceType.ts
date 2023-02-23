@@ -22,28 +22,6 @@ export function getDeviceType(): string {
   
     return mobileRE.test(navigator.userAgent);
   }
-  
-  /**
-   * Get a flag indicating whether or not the current OS is an iOS
-   */
-  export function isIOS(): boolean {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent);
-  }
-  
-  /**
-   * Get a flag indicating whether or not the current platform is a microsoft mobile OS
-   */
-  export function isWinPhone(): boolean {
-    return /iemobile/i.test(navigator.userAgent);
-  }
-  
-  /**
-   * Get a flag indicating whether or not the current platform is an iPad
-   */
-  export function isIPad(): boolean {
-    return navigator.platform.indexOf('iPad') !== -1;
-  }
-  
   /**
    * Get a flag indicating whether or not the user's device is a tablet device
    *
