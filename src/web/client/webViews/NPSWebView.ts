@@ -28,7 +28,6 @@ export class NPSWebView  {
         const geo = WebExtensionContext.urlParametersMap?.get(queryParameters.GEO);
         const culture = vscode.env.language;
         const productVersion = process?.env?.BUILD_NAME;
-        // const urlReferrer = window?.location?.href;
         const deviceType = getDeviceType();
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.RENDER_NPS);
         return `<!DOCTYPE html>
