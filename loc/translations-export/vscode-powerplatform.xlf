@@ -67,6 +67,9 @@ The {2} represents Solution's Version number</note>
     <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
       <source xml:lang="en">Maximum 30 characters allowed</source>
     </trans-unit>
+    <trans-unit id="++CODE++7fcd8b1c5225f7d9a771a4a02ca3e4795c3c9202cf2b3c3c879c625abb8b43e4">
+      <source xml:lang="en">Microsoft wants your feeback</source>
+    </trans-unit>
     <trans-unit id="++CODE++9ecf722faa0944de54826f72fe9d734c59300a093bcce9cc47b507460ac80710">
       <source xml:lang="en">Name/Rename Auth Profile</source>
     </trans-unit>

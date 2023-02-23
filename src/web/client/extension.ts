@@ -3,8 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as nls from 'vscode-nls';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 import * as vscode from "vscode";
 import WebExtensionContext from "./WebExtensionContext";
 import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } from "./common/constants";
@@ -14,7 +12,6 @@ import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 import { convertStringtoBase64 } from './utilities/commonUtil';
 import { NPSService } from './services/NPSService'
 import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -70,19 +67,19 @@ export function activate(context: vscode.ExtensionContext): void {
                             await vscode.window.withProgress({
                                 location: vscode.ProgressLocation.Notification,
                                 cancellable: true,
-                                title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
+                                title: vscode.l10n.t("Fetching your file ...")
                             }, async () => {
                                 await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
                             });
                         }
                             break;
                         default:
-                            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.file", "There was a problem opening the workspace"),
-                                localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+                            showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"),
+                                vscode.l10n.t("Unable to find that app"));
                     }
                 } else {
-                    showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.file", "There was a problem opening the workspace"),
-                        localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+                    showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"),
+                        vscode.l10n.t("Unable to find that app"));
                     return;
                 }
             }
@@ -122,11 +119,11 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 
 export async function showSiteVisibilityDialog() {
     if (WebExtensionContext.urlParametersMap.get(queryParameters.SITE_VISIBILITY) === PUBLIC) {
-        const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit", "Edit the site") };
-        const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc",
+        const edit: vscode.MessageItem = { isCloseAffordance: true, title: vscode.l10n.t("Edit the site") };
+        const siteMessage = vscode.l10n.t(
             "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
         const options = { detail: siteMessage, modal: true };
-        await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title", "You are editing a live, public site "), options, edit);
+        await vscode.window.showWarningMessage(vscode.l10n.t("You are editing a live, public site "), options, edit);
     }
 }
 
