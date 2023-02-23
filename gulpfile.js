@@ -410,8 +410,12 @@ async function translationsExport() {
 // ];
 
 async function translationsImport() {
-    // TODO: Move package.nls.*.json files to root instead of l10n
     await npx(["@vscode/l10n-dev", "import-xlf", "./loc/translations-import/*.xlf", "--outDir", "./l10n"]);
+
+    // `@vscode/l10n-dev import-xlf` places both the package.nls.*.json and bundle.l10n.*.json files in the
+    // same directory, but the package.nls.*.json need to reside at the repo root next to package.json
+    gulp.src('./l10n/package.nls.*.json')
+        .pipe(gulp.dest('./'));
 
     // Fix up changes from the XLF Export / Import process that cause lookup misses
     return gulp.src('./l10n/bundle.l10n.*.json')

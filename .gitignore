@@ -15,3 +15,6 @@ npm-debug.log*
 
 # don't check in generated folders
 telemetry-generated
+
+#
+l10n/package.nls.fr.json
