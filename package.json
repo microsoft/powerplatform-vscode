@@ -785,7 +785,6 @@
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
     "vsce": "^2.7.0",
-    "vscode-nls-dev": "^4.0.0-next.1",
     "webpack": "^5.61.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
@@ -805,7 +804,6 @@
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
-    "vscode-nls": "^5.0.0",
     "yaml": "^1.10.2"
   },
   "__metadata": {
