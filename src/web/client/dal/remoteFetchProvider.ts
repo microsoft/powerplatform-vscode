@@ -48,14 +48,14 @@ export async function fetchDataFromDataverseAndUpdateVFS(
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime, JSON.stringify(response));
             throw new Error(response.statusText);
         }
-       
+
         WebExtensionContext.telemetry.sendAPISuccessTelemetry(requestUrl, entityName, Constants.httpMethod.GET, new Date().getTime() - requestSentAtTime);
 
         const result = await response.json();
         const data = result.value;
-        
+
         if (!data) {
-            vscode.window.showErrorMessage("microsoft-powerapps-portals.webExtension.fetch.nocontent.error", "There was no response.");
+            vscode.window.showErrorMessage("microsoft-powerapps-portals.webExtension.fetch.nocontent.error", "Response data is empty");
             throw new Error(ERRORS.EMPTY_RESPONSE);
         }
 
@@ -111,7 +111,7 @@ async function createContentFiles(
 
         const fetchedFileName = entityDetails?.get(schemaEntityKey.FILE_NAME_FIELD);
         const fileName = fetchedFileName ? result[fetchedFileName] : Constants.EMPTY_FILE_NAME;
-      
+
         if (fileName === Constants.EMPTY_FILE_NAME) {
             throw new Error(ERRORS.FILE_NAME_EMPTY);
         }
