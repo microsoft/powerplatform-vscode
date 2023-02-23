@@ -3,24 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-// "use strict";
-// const path = require('path');
-// const cancel = path.resolve('../src/web/client/assets/cancel.svg');
+/* eslint-disable no-undef */
 
-function renderSurvey(parentElementId,FirstName, LastName, locale, environmentId, geo, UserId, TenantId, prompted)
+function renderSurvey(TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,DeviceType,UrlReferrer)
 {
     // eslint-disable-next-line no-undef
     const se = new window['SurveyEmbed']("v4j5cvGGr0GRqy180BHbRytFqxSnvs1AqKx-mFT6qLBUOE5POUVGTVRDUDI1SEVaOFVaV1RGM0k4VyQlQCN0PWcu",
     "https://customervoice.microsoft.com/","https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit","true");
     const context = {
-        "First Name": FirstName,
-        "Last Name": LastName,
-        "locale": locale,
-        "environmentId": environmentId,
-        "geo": geo,
-        "UserId": UserId,
-        "TenantId": TenantId,
-        "prompted": prompted,
+      TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,DeviceType,UrlReferrer
     };
     se.renderPopup(context);
 }
@@ -61,14 +52,19 @@ function applyCustomStyles() {
     // eslint-disable-next-line no-undef
     const crossButtonDiv = document.getElementById('MfpEmbed_CrossButton');
     if (crossButtonDiv) {
-      // TODO: need to render cancel button
-     // crossButtonDiv.setAttribute('src',cancel.toString());
-      crossButtonDiv.style.width = '14px';
-      crossButtonDiv.style.height = '14px';
-      crossButtonDiv.style.boxSizing = 'unset';
-      crossButtonDiv.style.cursor = 'pointer';
+      crossButtonDiv.remove();
+      const cancelSvgDiv = document.createElement("div");
+      cancelSvgDiv.innerHTML = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14.1016 1.60156L8.20312 7.5L14.1016 13.3984L13.3984 14.1016L7.5 8.20312L1.60156 14.1016L0.898438 13.3984L6.79688 7.5L0.898438 1.60156L1.60156 0.898438L7.5 6.79688L13.3984 0.898438L14.1016 1.60156Z" fill="#323130"/>
+      </svg>`;
+      cancelSvgDiv.style.width = '14px';
+      cancelSvgDiv.style.height = '14px';
+      cancelSvgDiv.style.boxSizing = 'unset';
+      cancelSvgDiv.style.cursor = 'pointer';
+      iconDiv.appendChild(cancelSvgDiv)
     }
   
+
     // eslint-disable-next-line no-undef
     const iFrame = document.getElementById('MfpEmbed_Popup_Iframe');
     if (iFrame) {
@@ -108,8 +104,16 @@ function applyCustomStyles() {
   }
   
   function loadSurvey(){
-    // TODO: Replace by actual value
-    renderSurvey("surveyDiv", "Bert", "Hair", "en-US", "123", "IND", "bert.hair@contoso.com", "12345", "Product Overview");
+    const el = document.querySelector("#npsContext");
+    const tenantId = el.dataset.tid;
+    const userId = el.dataset.uid;
+    const envId = el.dataset.envId;
+    const geo = el.dataset.geo;
+    const culture = el.dataset.culture;
+    const productVersion =  el.dataset.productVersion;
+    const urlReferrer =  el.dataset.urlReferrer;
+    const deviceType = el.dataset.deviceType;
+    renderSurvey(tenantId,userId,envId,geo,productVersion,culture,deviceType,urlReferrer);
     resizeSurvey();
     applyCustomStyles();
   }
