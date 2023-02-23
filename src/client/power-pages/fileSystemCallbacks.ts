@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import { getCurrentWorkspaceURI, getDeletePathUris, getFileProperties, getPowerPageEntityType } from "./commonUtility";
 import { PowerPagesEntityType } from "./constants";
 import { fileRenameValidation, updateEntityPathNames } from "./fileSystemUpdatesUtility";
-import { validateTextDocument } from "./validationDiagnostics";
+import { showDiagnosticMessage, validateTextDocument } from "./validationDiagnostics";
 //const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export async function handleFileSystemCallbacks(context: vscode.ExtensionContext) {
@@ -20,11 +20,6 @@ export async function handleFileSystemCallbacks(context: vscode.ExtensionContext
 async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onDidDeleteFiles(async (e) => {
-            // localize("powerPages.deleteFileConfirmation", `Are you sure you want to delete these files?`)
-            let deleteInfoMessage = ``;
-            const edit: vscode.MessageItem = {
-                title: "Delete"
-            };
             let currentWorkspaceURI: vscode.Uri | undefined;
 
             if (e.files.length > 0) {
@@ -32,48 +27,38 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
                 let fileProperties = getFileProperties(singleFileUriPath);
 
                 currentWorkspaceURI = getCurrentWorkspaceURI(singleFileUriPath);
-                // localize("powerPages.deleteFileConfirmation", `Are you sure you want to delete {0}?`, `"${fileProperties.fileName}")
-                deleteInfoMessage = fileProperties.fileName ? `Are you sure you want to delete "${fileProperties.fileName}"?` :
-                    `Are you sure you want to delete these files?`;
 
-                await vscode.window.showInformationMessage(deleteInfoMessage,
-                    {
-                        //localize("powerPages.deleteFileWarningMessage", `Places where this file has been used might be affected.`)
-                        detail: `Places where this file has been used might be affected.`,
-                        modal: true
-                    }, edit)
-                    .then(async selection => {
-                        if (selection) {
-                            try {
-                                let patterns: RegExp[] = [];
-                                patterns = await Promise.all(e.files.map(async f => {
-                                    const fileEntityType = getPowerPageEntityType(f.path)
-                                    if (fileEntityType !== PowerPagesEntityType.UNKNOWN) {
-                                        fileProperties = getFileProperties(f.path);
+                try {
+                    let patterns: RegExp[] = [];
+                    patterns = await Promise.all(e.files.map(async f => {
+                        const fileEntityType = getPowerPageEntityType(f.path)
+                        if (fileEntityType !== PowerPagesEntityType.UNKNOWN) {
+                            fileProperties = getFileProperties(f.path);
 
-                                        if (fileProperties.fileCompleteName) {
-                                            const pathUris = getDeletePathUris(f.path, fileEntityType, fileProperties);
-                                            pathUris.forEach(async pathUri => {
-                                                await vscode.workspace.fs.delete(pathUri, { recursive: true, useTrash: true });
-                                            });
+                            if (fileProperties.fileCompleteName) {
+                                const pathUris = getDeletePathUris(f.path, fileEntityType, fileProperties);
+                                pathUris.forEach(async pathUri => {
+                                    await vscode.workspace.fs.delete(pathUri, { recursive: true, useTrash: true });
+                                });
 
-                                            // TODO - Add search validation for entity guid
-                                            return RegExp(`${fileProperties.fileName}`, "g");
-                                        }
-                                    }
-                                })) as RegExp[];
-
-                                if (currentWorkspaceURI && patterns.length > 0) {
-                                    const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, `**/*.{png,jpg,jpeg,gif,mp4}`, 1000);
-                                    allDocumentsUriInWorkspace.forEach(async uri =>
-                                        await validateTextDocument(uri, patterns, true));
-
-                                }
-                            } catch (error) {
-                                // Log telemetry
+                                // TODO - Add search validation for entity guid
+                                return RegExp(`${fileProperties.fileName}`, "g");
                             }
                         }
-                    });
+                    })) as RegExp[];
+
+                    if (currentWorkspaceURI && patterns.length > 0) {
+                        const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, `**/*.{png,jpg,jpeg,gif,mp4,portalconfig**}`, 1000);
+                        allDocumentsUriInWorkspace.forEach(async uri =>
+                            await validateTextDocument(uri, patterns, true)
+                        );
+
+                        // Show notification to check for diagnostics
+                        showDiagnosticMessage();
+                    }
+                } catch (error) {
+                    // Log telemetry
+                }
             }
         })
     );
@@ -98,17 +83,19 @@ async function processOnDidRenameFiles(context: vscode.ExtensionContext) {
                                     await updateEntityPathNames(f.oldUri, f.newUri, fileProperties, fileEntityType);
                                 }
 
-                                // TODO - Add search validation for entity guid
                                 return RegExp(`${fileProperties.fileName}`, "g");
                             }
                         }
                     })) as RegExp[];
 
                     if (currentWorkspaceURI && patterns.length > 0) {
-                        const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, `**/*.{png,jpg,jpeg,gif,mp4}`, 1000);
+                        const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, `**/*.{png,jpg,jpeg,gif,mp4,portalconfig**}`, 1000);
                         allDocumentsUriInWorkspace.forEach(async uri =>
                             await validateTextDocument(uri, patterns, true)
                         );
+
+                        // Show notification to check for diagnostics
+                        showDiagnosticMessage();
                     }
                 } catch (error) {
                     // Log telemetry

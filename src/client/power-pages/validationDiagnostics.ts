@@ -25,7 +25,7 @@ export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], 
                     severity: vscode.DiagnosticSeverity.Warning,
                     range: new vscode.Range(textDocument.positionAt(m.index), textDocument.positionAt(m.index + m[0].length)),
                     // localize("powerPages.searchByNameReferenceMessage", `Deleted file might be referenced by name here.`)
-                    message: `${m[0]}: ` + (searchByName ? `File might be referenced by name here.` : ""),
+                    message: `PowerPages: ` + (searchByName ? `File might be referenced by name "${m[0]}" here.` : ""),
                     source: 'ex',
                     // relatedInformation: [
                     //     new vscode.DiagnosticRelatedInformation(new vscode.Location(textDocument.uri, new vscode.Range(new vscode.Position(1, 8), new vscode.Position(1, 9))), 'first assignment to `x`')
@@ -36,10 +36,20 @@ export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], 
         });
 
         // Send the computed diagnostics to VSCode.
-        connection.set(uri, diagnostics);
+        connection.set(uri, diagnostics.concat(vscode.languages.getDiagnostics(uri)));
     }
     catch {
         // DO nothing
         // TODO - Log telemetry for info only
     }
+}
+
+export function showDiagnosticMessage() {
+    const terminal = vscode.window.activeTerminal ? vscode.window.activeTerminal : vscode.window.createTerminal("Power Apps Portal");
+    terminal.show(true);
+    vscode.window.showWarningMessage(`Some references might be broken. Please check diagnostics for more details.`);
+}
+
+export function disposeDiagnostics() {
+    connection.dispose();
 }
