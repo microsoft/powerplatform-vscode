@@ -70,11 +70,11 @@ export function activate(context: vscode.ExtensionContext): void {
                                 title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
                             }, async () => {
                                 await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
-                                await NPSService.setEligibility();
-                                if(WebExtensionContext.npsEligibility){
-                                    NPSWebView.createOrShow(context.extensionUri);
-                                }
                             });
+                            await NPSService.setEligibility();
+                            if(WebExtensionContext.npsEligibility){
+                                NPSWebView.createOrShow(context.extensionUri);
+                            }
                         }
                             break;
                         default:
