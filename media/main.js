@@ -5,13 +5,13 @@
 
 /* eslint-disable no-undef */
 
-function renderSurvey(TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,DeviceType,UrlReferrer)
+function renderSurvey(TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,DeviceType)
 {
     // eslint-disable-next-line no-undef
     const se = new window['SurveyEmbed']("v4j5cvGGr0GRqy180BHbRytFqxSnvs1AqKx-mFT6qLBUOE5POUVGTVRDUDI1SEVaOFVaV1RGM0k4VyQlQCN0PWcu",
     "https://customervoice.microsoft.com/","https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit","true");
     const context = {
-      TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,DeviceType,UrlReferrer
+      TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,DeviceType
     };
     se.renderPopup(context);
 }
@@ -111,9 +111,8 @@ function applyCustomStyles() {
     const geo = el.dataset.geo;
     const culture = el.dataset.culture;
     const productVersion =  el.dataset.productVersion;
-    const urlReferrer =  el.dataset.urlReferrer;
     const deviceType = el.dataset.deviceType;
-    renderSurvey(tenantId,userId,envId,geo,productVersion,culture,deviceType,urlReferrer);
+    renderSurvey(tenantId,userId,envId,geo,productVersion,culture,deviceType);
     resizeSurvey();
     applyCustomStyles();
   }

@@ -19,7 +19,7 @@ export class NPSService{
         };
     }
 
-    public static async getEligibility()  {
+    public static async setEligibility()  {
         const region = WebExtensionContext.urlParametersMap?.get(queryParameters.REGION)
         const baseApiUrl = region === 'test' ? "https://ces-int.microsoftcloud.com/api/v1": "https://ces.microsoftcloud.com/api/v1";
         
@@ -37,7 +37,7 @@ export class NPSService{
                 const requestSentAtTime = new Date().getTime();
                 const response = await fetch(apiEndpoint, requestInitPost);
                 const result = await response?.json();
-                if( result?.eligibility){
+                if( result?.Eligibility){
                     WebExtensionContext.telemetry.sendAPISuccessTelemetry(telemetryEventNames.NPS_USER_ELIGIBLE, "NPS Api",httpMethod.POST,new Date().getTime() - requestSentAtTime);
                     WebExtensionContext.setNPSEligibility(true);
                 }
