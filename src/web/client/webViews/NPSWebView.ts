@@ -24,7 +24,7 @@ export class NPSWebView  {
         const mainJs = this.extensionResourceUrl('media','main.js');
         const tid = WebExtensionContext.urlParametersMap?.get(queryParameters.TENANT_ID);
         const uid = WebExtensionContext.userId;
-        const envId = WebExtensionContext.urlParametersMap?.get(queryParameters.ENV_ID);
+        const envId = WebExtensionContext.urlParametersMap?.get(queryParameters.ENV_ID)?.split("/")[4];
         const geo = WebExtensionContext.urlParametersMap?.get(queryParameters.GEO);
         const culture = vscode.env.language;
         const productVersion = process?.env?.BUILD_NAME;
