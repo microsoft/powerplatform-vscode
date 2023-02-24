@@ -14,6 +14,7 @@ import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 import { convertStringtoBase64 } from './utilities/commonUtil';
 import { NPSService } from './services/NPSService'
 import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
+import { NPSWebView } from './webViews/NPSWebView';
 const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -25,8 +26,6 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(WebExtensionContext.telemetry.getTelemetryReporter());
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
-    // TODO Bidisha: As of now kept here for testing. In subsequent PR will be fixed
-    NPSService.getEligibility();
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 
@@ -50,7 +49,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
                 removeEncodingFromParameters(queryParamsMap);
                 WebExtensionContext.setWebExtensionContext(entity, entityId, queryParamsMap);
-
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
 
                 await showSiteVisibilityDialog();
@@ -66,7 +64,6 @@ export function activate(context: vscode.ExtensionContext): void {
                                 context.globalState.update(IS_FIRST_RUN_EXPERIENCE, false);
                                 WebExtensionContext.telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted' });
                             }
-
                             await vscode.window.withProgress({
                                 location: vscode.ProgressLocation.Notification,
                                 cancellable: true,
@@ -74,6 +71,10 @@ export function activate(context: vscode.ExtensionContext): void {
                             }, async () => {
                                 await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
                             });
+                            await NPSService.setEligibility();
+                            if(WebExtensionContext.npsEligibility){
+                                NPSWebView.createOrShow(context.extensionUri);
+                            }
                         }
                             break;
                         default:
