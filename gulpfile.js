@@ -388,7 +388,7 @@ async function translationsExport() {
         "--outFile", "./loc/translations-export/vscode-powerplatform.xlf"]);
     return gulp.src('./loc/translations-export/vscode-powerplatform.xlf')
         .pipe(replace("&apos;", "'"))
-        .pipe(replace("&#10;", "\\n"))
+        .pipe(replace("&#10;", "\n"))
         .pipe(gulp.dest('./loc/translations-export/'));
 }
 
