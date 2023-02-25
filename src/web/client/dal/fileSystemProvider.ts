@@ -11,10 +11,8 @@ import { FileData } from '../context/fileData';
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from './remoteFetchProvider';
 import { saveData } from './remoteSaveProvider';
-import * as nls from 'vscode-nls';
 import { ERRORS } from '../common/errorHandler';
 import { telemetryEventNames } from '../telemetry/constants';
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export class File implements vscode.FileStat {
 
@@ -135,7 +133,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 cancellable: true,
-                title: localize("microsoft-powerapps-portals.webExtension.save.file.message", "Saving your file ...")
+                title: vscode.l10n.t("Saving your file ...")
             }, async () => {
                 WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED);
                 await this._saveFileToDataverseFromVFS(uri);

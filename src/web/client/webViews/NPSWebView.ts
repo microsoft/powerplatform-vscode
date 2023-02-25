@@ -8,8 +8,6 @@ import WebExtensionContext from '../WebExtensionContext';
 import { queryParameters } from "../common/constants";
 import { getDeviceType } from '../utilities/deviceType';
 import { telemetryEventNames } from '../telemetry/constants';
-import * as nls from 'vscode-nls';
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export class NPSWebView  {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -53,7 +51,7 @@ export class NPSWebView  {
     public static createOrShow(extensionUri: vscode.Uri): NPSWebView {
         const webview = vscode.window.createWebviewPanel(
             'testCESSurvey',
-            localize("microsoft-powerapps-portals.webExtension.npsSurvey.desc", "Microsoft wants your feeback"),
+            vscode.l10n.t("Microsoft wants your feeback"),
             {viewColumn:vscode.ViewColumn.One,
                 preserveFocus:false
             },

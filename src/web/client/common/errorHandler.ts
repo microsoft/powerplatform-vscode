@@ -5,11 +5,9 @@
 
 
 import * as vscode from "vscode";
-import * as nls from 'vscode-nls';
 import powerPlatformExtensionContext from "../WebExtensionContext";
 import { schemaKey } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import { PORTALS_FOLDER_NAME_DEFAULT, queryParameters } from "./constants";
 
 export const ERRORS = {
@@ -76,12 +74,12 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
                 return true;
             } else {
                 powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.init.workspace.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.init.workspace.error.desc", "Check the URL and verify the parameters are correct"));
+                showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"), vscode.l10n.t("Check the URL and verify the parameters are correct"));
                 return false;
             }
         default:
-            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.file", "There was a problem opening the workspace"),
-                localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+            showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"),
+                vscode.l10n.t("Unable to find that app"));
             return false;
     }
 }
@@ -97,13 +95,13 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
                 return true;
             } else {
                 powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.parameter.error", "There was a problem opening the workspace"), localize("microsoft-powerapps-portals.webExtension.parameter.desc", "Check the URL and verify the parameters are correct"));
+                showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"), vscode.l10n.t("Check the URL and verify the parameters are correct"));
                 return false;
             }
         }
         default:
-            showErrorDialog(localize("microsoft-powerapps-portals.webExtension.fetch.file", "There was a problem opening the workspace"),
-                localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+            showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"),
+                vscode.l10n.t("Unable to find that app"));
             return false;
     }
 }
