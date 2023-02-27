@@ -21,15 +21,14 @@ export class NPSService{
     }
 
     public static getNpsSurveyEndpoint(): string{
-        const region = WebExtensionContext.urlParametersMap?.get(queryParameters.REGION)
-        const geo = WebExtensionContext.urlParametersMap?.get(queryParameters.GEO)
+        const region = WebExtensionContext.urlParametersMap?.get(queryParameters.REGION)?.toLowerCase();
         const dataBoundary = getCurrentDataBoundary();
         let npsSurveyEndpoint = '';
         switch (region) {
           case 'tie':
           case 'test':
           case 'preprod':
-            switch (geo) {
+            switch (dataBoundary) {
               case 'eu':
                 npsSurveyEndpoint = 'https://europe.tip1.ces.microsoftcloud.com';
                 break;

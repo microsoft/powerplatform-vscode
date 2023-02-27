@@ -40,7 +40,7 @@ export enum queryParameters {
     WEBSITE_NAME = 'websitename',
     ORG_URL = 'orgurl',
     REGION = 'region',
-    ENV_ID = 'envId',
+    ENV_ID = 'envid',
     GEO = 'geo'
 }
 
