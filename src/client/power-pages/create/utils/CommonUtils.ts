@@ -7,7 +7,10 @@ import { exec } from "child_process";
 import { existsSync, stat } from "fs";
 import path from "path";
 import * as vscode from "vscode";
-import { NOT_A_PORTAL_DIRECTORY, WEBSITE_YML } from "../constants";
+import {
+    NOT_A_PORTAL_DIRECTORY,
+    WEBSITE_YML,
+} from "../CreateOperationConstants";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
     return !str || str.trim().length === 0;
@@ -107,7 +110,7 @@ export async function getSelectedWorkspaceFolder(
     switch (true) {
         case Boolean(uri):
             filePath = uri.fsPath;
-            selectedWorkspaceFolder = checkForWebsiteYML(filePath);
+            selectedWorkspaceFolder = isWebsiteYML(filePath);
             break;
         case Boolean(
             workspaceFolder && vscode.workspace.workspaceFolders.length === 1
@@ -118,7 +121,7 @@ export async function getSelectedWorkspaceFolder(
             return vscode.window
                 .showWorkspaceFolderPick()
                 .then(async (folder) => {
-                    const isPortalDirectory = await checkForPortalDir(
+                    const isPortalDirectory = await isPortalDir(
                         folder?.uri.fsPath
                     );
                     if (isPortalDirectory) {
@@ -133,7 +136,7 @@ export async function getSelectedWorkspaceFolder(
             break;
     }
 
-    const isPortalDirectory = await checkForPortalDir(selectedWorkspaceFolder);
+    const isPortalDirectory = await isPortalDir(selectedWorkspaceFolder);
     if (isPortalDirectory) {
         return selectedWorkspaceFolder;
     } else {
@@ -141,17 +144,13 @@ export async function getSelectedWorkspaceFolder(
     }
 }
 
-export function checkForPortalDir(
+export function isPortalDir(
     selectedFolder: string | undefined
 ): Promise<boolean> {
     return new Promise((resolve, reject) => {
         if (selectedFolder) {
             stat(path.join(selectedFolder, WEBSITE_YML), (err) => {
-                if (err) {
-                    resolve(false);
-                } else {
-                    resolve(true);
-                }
+                err ? resolve(false) : resolve(true);
             });
         } else {
             reject(new Error("No selected folder"));
@@ -159,8 +158,7 @@ export function checkForPortalDir(
     });
 }
 
-export function checkForWebsiteYML(filePath: string): string {
-    let directory = filePath;
+export function isWebsiteYML(directory: string): string {
     while (directory !== path.parse(directory).root) {
         const websiteYMLPath = path.join(directory, WEBSITE_YML);
         if (existsSync(websiteYMLPath)) {

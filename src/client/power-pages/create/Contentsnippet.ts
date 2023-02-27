@@ -22,7 +22,16 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
 import { statSync } from "fs";
-import { Tables, YoSubGenerator } from "./constants";
+import { TableFolder, Tables, YoSubGenerator } from "./CreateConstants";
+
+interface State {
+    title: string;
+    step: number;
+    totalSteps: number;
+    contentSnippetType: QuickPickItem | string;
+    contentSnippetName: string;
+}
+
 
 export const createContentSnippet = async (
     context: vscode.ExtensionContext,
@@ -70,21 +79,13 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
         (label) => ({ label })
     );
 
-    interface State {
-        title: string;
-        step: number;
-        totalSteps: number;
-        contentSnippetType: QuickPickItem | string;
-        contentSnippetName: string;
-    }
+    const title = "New Content Snippet";
 
     async function collectInputs() {
         const state = {} as Partial<State>;
         await MultiStepInput.run((input) => inputName(input, state));
         return state as State;
     }
-
-    const title = "New Content Snippet";
 
     async function inputName(input: MultiStepInput, state: Partial<State>) {
         state.contentSnippetName = await input.showInputBox({
@@ -114,13 +115,11 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
         state.contentSnippetType = pick.label;
     }
 
-    async function validateNameIsUnique(
-        name: string
-    ): Promise<string | undefined> {
+    async function validateNameIsUnique(name: string) {
         const folder = formatFolderName(name);
         const filePath = path.join(
             selectedWorkspaceFolder,
-            "content-snippets",
+            TableFolder.CONTENT_SNIPPET_FOLDER,
             folder
         );
         try {
@@ -130,7 +129,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             }
         } catch (error: any) {
             if (error.code === "ENOENT") {
-                return undefined;
+                return;
             }
         }
     }
@@ -138,3 +137,4 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
     const state = await collectInputs();
     return state;
 }
+
