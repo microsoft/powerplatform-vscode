@@ -8,8 +8,6 @@ import WebExtensionContext from '../WebExtensionContext';
 import { queryParameters } from "../common/constants";
 import { getDeviceType } from '../utilities/deviceType';
 import { telemetryEventNames } from '../telemetry/constants';
-import * as nls from 'vscode-nls';
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export class NPSWebView  {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -20,15 +18,15 @@ export class NPSWebView  {
     }
 
     private _getHtml() {
+        try{
         const nonce = getNonce();
         const mainJs = this.extensionResourceUrl('media','main.js');
         const tid = WebExtensionContext.urlParametersMap?.get(queryParameters.TENANT_ID);
         const uid = WebExtensionContext.userId;
-        const envId = WebExtensionContext.urlParametersMap?.get(queryParameters.ENV_ID);
+        const envId = WebExtensionContext.urlParametersMap?.get(queryParameters.ENV_ID)?.split("/")[4];
         const geo = WebExtensionContext.urlParametersMap?.get(queryParameters.GEO);
         const culture = vscode.env.language;
         const productVersion = process?.env?.BUILD_NAME;
-        const urlReferrer = window?.location?.href;
         const deviceType = getDeviceType();
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.RENDER_NPS);
         return `<!DOCTYPE html>
@@ -42,9 +40,13 @@ export class NPSWebView  {
                 <div id="surveyDiv"></div>
                 <script src="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js" type="text/javascript"></script>
                 <link rel="stylesheet" type="text/css" href="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css" />
-                <script id="npsContext" data-urlReferrer = "${urlReferrer}" data-img="./src/web/client/assets/cancel.svg" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
+                <script id="npsContext" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
             </body>
             </html>`;
+        }catch(error){
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.RENDER_NPS_FAILED, (error as Error)?.message);
+            return '';
+        }
     }
 
     private extensionResourceUrl(...parts: string[]): vscode.Uri {
@@ -54,7 +56,7 @@ export class NPSWebView  {
     public static createOrShow(extensionUri: vscode.Uri): NPSWebView {
         const webview = vscode.window.createWebviewPanel(
             'testCESSurvey',
-            localize("microsoft-powerapps-portals.webExtension.npsSurvey.desc", "Microsoft wants your feeback"),
+            vscode.l10n.t("Microsoft wants your feeback"),
             {viewColumn:vscode.ViewColumn.One,
                 preserveFocus:false
             },

@@ -3,10 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as nls from 'vscode-nls';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-
 import * as vscode from 'vscode';
 import { AuthProfileListing, OrgListOutput, PacOutputWithResultList, PacOrgListOutput, PacSolutionListOutput, SolutionListing } from '../pac/PacTypes';
 
@@ -66,37 +62,32 @@ export class AuthProfileTreeItem extends vscode.TreeItem {
     }
     private static createTooltip(profile: AuthProfileListing): string {
         const tooltip = [
-            localize({
-                key: "pacCLI.AuthProfileTreeItem.toolTipParts.profileKind",
-                comment: ["The {0} represents the profile type (Admin vs Dataverse)"]},
-                "Profile Kind: {0}",
-                profile.Kind)
+            vscode.l10n.t({
+                message: "Profile Kind: {0}",
+                args: [profile.Kind],
+                comment: ["The {0} represents the profile type (Admin vs Dataverse)"]})
         ];
         if (profile.Name) {
-            tooltip.push(localize({
-                key: "pacCLI.AuthProfileTreeItem.toolTipParts.profileName",
-                comment: ["The {0} represents the optional name the user provided for the profile)"]},
-                "Name: {0}",
-                profile.Name));
+            tooltip.push(vscode.l10n.t({
+                message: "Name: {0}",
+                args: [profile.Name],
+                comment: ["The {0} represents the optional name the user provided for the profile)"]}));
         }
         if ((profile.Kind === "DATAVERSE" || profile.Kind === "UNIVERSAL") && profile.Resource) {
-            tooltip.push(localize({
-                key: "pacCLI.AuthProfileTreeItem.toolTipParts.resource",
-                comment: ["The {0} represents profile's resource/environment URL"]},
-                "Resource: {0}",
-                profile.Resource));
+            tooltip.push(vscode.l10n.t({
+                message: "Resource: {0}",
+                args: [profile.Resource],
+                comment: ["The {0} represents profile's resource/environment URL"]}));
         }
-        tooltip.push(localize({
-            key: "pacCLI.AuthProfileTreeItem.toolTipParts.user",
-            comment: ["The {0} represents auth profile's user name (email address))"]},
-            "User: {0}",
-            profile.User));
+        tooltip.push(vscode.l10n.t({
+            message: "User: {0}",
+            args: [profile.User],
+            comment: ["The {0} represents auth profile's user name (email address))"]}));
         if (profile.CloudInstance) {
-            tooltip.push(localize({
-                key: "pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance",
-                comment: ["The {0} represents profile's Azure Cloud Instances"]},
-                "Cloud Instance: {0}",
-                profile.CloudInstance));
+            tooltip.push(vscode.l10n.t({
+                message: "Cloud Instance: {0}",
+                args: [profile.CloudInstance],
+                comment: ["The {0} represents profile's Azure Cloud Instances"]}));
         }
         return tooltip.join('\n');
     }
@@ -107,26 +98,24 @@ export class EnvOrSolutionTreeItem extends vscode.TreeItem {
         super(EnvOrSolutionTreeItem.createLabel(model), EnvOrSolutionTreeItem.setCollapsibleState(model));
         if ("SolutionUniqueName" in model) {
             this.contextValue = "SOLUTION";
-            this.tooltip = localize(
+            this.tooltip = vscode.l10n.t(
                 {
-                    key: "pacCLI.EnvOrSolutionTreeItem.toolTip",
+                    message: "Display Name: {0}\nUnique Name: {1}\nVersion: {2}",
+                    args: [model.FriendlyName, model.SolutionUniqueName, model.VersionNumber],
                     comment: [
                         "This is a multi-line tooltip",
                         "The {0} represents Solution's Friendly / Display name",
                         "The {1} represents Solution's unique name",
                         "The {2} represents Solution's Version number"
                     ]
-                },
-                "Display Name: {0}\nUnique Name: {1}\nVersion: {2}",
-                model.FriendlyName,
-                model.SolutionUniqueName,
-                model.VersionNumber
+                }
             );
         } else {
             this.contextValue = "ENVIRONMENT";
-            this.tooltip = localize(
+            this.tooltip = vscode.l10n.t(
                 {
-                    key: "pacCLI.EnvOrSolutionTreeItem.toolTip",
+                    message: "Name: {0}\nURL: {1}\nEnvironment ID: {2}\nOrganization ID: {3}",
+                    args: [model.FriendlyName, model.EnvironmentUrl, model.EnvironmentId, model.OrganizationId],
                     comment: [
                         "This is a multi-line tooltip",
                         "The {0} represents Dataverse Environment's Friendly / Display name",
@@ -134,12 +123,7 @@ export class EnvOrSolutionTreeItem extends vscode.TreeItem {
                         "The {2} represents Dataverse Environment's Environment ID (GUID)",
                         "The {3} represents Dataverse Environment's Organization ID (GUID)"
                     ]
-                },
-                "Name: {0}\nURL: {1}\nEnvironment ID: {2}\nOrganization ID: {3}",
-                model.FriendlyName,
-                model.EnvironmentUrl,
-                model.EnvironmentId,
-                model.OrganizationId
+                }
             );
         }
     }

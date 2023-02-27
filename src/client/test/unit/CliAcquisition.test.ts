@@ -43,6 +43,18 @@ class MockContext implements ICliAcquisitionContext {
     public showErrorMessage(message: string, ...items: string[]): void {
         this._errorMessages.push(JSON.stringify({ message: message, items: items }));
     }
+
+    public showCliPreparingMessage(version: string): void {
+        this._infoMessages.push(`Preparing pac CLI (v${version})...`);
+    }
+
+    public showCliReadyMessage(): void {
+        this._infoMessages.push('The pac CLI is ready for use in your VS Code terminal!');
+    }
+
+    public showCliInstallFailedError(err: string): void {
+        this._errorMessages.push(`Cannot install pac CLI: ${err}`)
+    }
 }
 
 describe('CliAcquisition', () => {
