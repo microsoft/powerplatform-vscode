@@ -18,6 +18,7 @@ export class NPSWebView  {
     }
 
     private _getHtml() {
+        try{
         const nonce = getNonce();
         const mainJs = this.extensionResourceUrl('media','main.js');
         const tid = WebExtensionContext.urlParametersMap?.get(queryParameters.TENANT_ID);
@@ -42,6 +43,10 @@ export class NPSWebView  {
                 <script id="npsContext" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
             </body>
             </html>`;
+        }catch(error){
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.RENDER_NPS_FAILED, (error as Error)?.message);
+            return '';
+        }
     }
 
     private extensionResourceUrl(...parts: string[]): vscode.Uri {
