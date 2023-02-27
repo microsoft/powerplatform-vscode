@@ -11,6 +11,7 @@ import { PowerPagesEntityType } from "../../power-pages/constants";
 import proxyquire from "proxyquire";
 import {
     fileRenameValidation,
+    updateEntityNameInYml,
     updateEntityPathNames,
 } from "../../power-pages/fileSystemUpdatesUtility";
 import { expect } from "chai";
@@ -20,8 +21,8 @@ describe("fileSystemUpdatesUtility", () => {
         Sinon.restore();
     });
 
-    it("updateEntityPathNames_whenfileNameisNotNull_shouldCallReadFileContents1", async () => {
-        //Act
+    it("updateEntityPathNames_whenfileNameisNotNullAndIsUpDatedTrue_shouldReadFileContents", async () => {
+        // Act
         const readFileSyncStub = proxyquire.load(
             "../../power-pages/fileSystemUpdatesUtility",
             {
@@ -38,7 +39,10 @@ describe("fileSystemUpdatesUtility", () => {
             { fsPath: "fakePath\\testPath.txt", path: "powerPages.com" } as Uri,
         ];
         const newUri = { fsPath: "testPath" } as vscode.Uri;
-        const oldUri = { path: "oldTestPath" } as vscode.Uri;
+        const oldUri = {
+            path: "oldTestPath",
+            fsPath: "testFasPath",
+        } as vscode.Uri;
         const oldFileProperties = {
             fileName: "testFileName",
             fileFolderPath: "fileFolderPath",
@@ -70,10 +74,6 @@ describe("fileSystemUpdatesUtility", () => {
             commonUtility,
             "getFieldsToUpdate"
         ).returns(["adx_partialurl"]);
-        const getUpdatedFolderPath = stub(
-            commonUtility,
-            "getUpdatedFolderPath"
-        ).returns(uri[0]);
         const getFileNameProperties = stub(
             commonUtility,
             "getFileNameProperties"
@@ -97,31 +97,251 @@ describe("fileSystemUpdatesUtility", () => {
 
         //Assert
 
-        assert.calledOnceWithExactly(getEntityFolderName, "oldTestPath");
-        const isValidRenamedFileArgs = isValidRenamedFile.getCalls();
-
-        expect(isValidRenamedFileArgs[0].args[0]).eq("oldTestPath");
-        expect(isValidRenamedFileArgs[0].args[1]).eq("webPages");
-        expect(isValidRenamedFileArgs[0].args[2]).eq("testFileName");
-        expect(isValidRenamedFileArgs[0].args[3]).eq(0);
-        assert.calledOnce(isValidRenamedFile);
+        assert.calledOnceWithExactly(getEntityFolderName, oldUri.path);
+        assert.calledOnceWithExactly(
+            isValidRenamedFile,
+            oldUri.path,
+            "webPages",
+            "testFileName",
+            fileEntityType
+        );
         assert.calledTwice(getFileProperties);
-        assert.calledOnce(getEntityFolderPathIndex);
-        assert.calledOnce(isSingleFileEntity);
-        assert.calledOnce(getFieldsToUpdate);
-        assert.notCalled(getUpdatedFolderPath);
-        assert.calledOnce(getFileNameProperties);
+        assert.calledOnceWithExactly(
+            getEntityFolderPathIndex,
+            newUri.path,
+            "testFileName",
+            fileEntityType,
+            "webPages"
+        );
+        assert.calledOnceWithExactly(isSingleFileEntity, fileEntityType);
+        assert.calledOnceWithExactly(getFieldsToUpdate, fileEntityType);
+        assert.calledOnceWithExactly(
+            getFileNameProperties,
+            "powerPages.com",
+            fileEntityType
+        );
         assert.calledTwice(findFiles);
-        assert.calledOnce(isValidUri);
+        const getCallsForFindFiles = findFiles.getCalls();
+        expect(getCallsForFindFiles[0].args[0]).eq(
+            "**/webPages/testfilename/**/*"
+        );
+        expect(getCallsForFindFiles[1].args[0]).eq(
+            "**/webPages/fileName.*.yml"
+        );
+        assert.calledOnceWithExactly(isValidUri, "oldTestPath");
     });
 
-    it("updateEntityPathNames_whenfileNameisNotNull_shouldCallReadFileContents2", async () => {
+    it("updateEntityPathNames_whenfileNameisNotNullAndIsUpDatedFalse_shouldReadFileContents", async () => {
+        // Act
+        const readFileSyncStub = proxyquire.load(
+            "../../power-pages/fileSystemUpdatesUtility",
+            {
+                fs: {
+                    writeFileSync: stub().returns(""),
+                    readFileSync: stub().returns(
+                        "{'adx_partialurl':'adx_partialurl'}"
+                    ),
+                },
+            }
+        );
+
+        const uri = [
+            { fsPath: "fakePath\\testPath.txt", path: "powerPages.com" } as Uri,
+        ];
+        const newUri = { fsPath: "testPath" } as vscode.Uri;
+        const oldUri = {
+            path: "oldTestPath",
+            fsPath: "testFasPath",
+        } as vscode.Uri;
+        const oldFileProperties = {
+            fileName: "testFileName",
+            fileFolderPath: "fileFolderPath",
+        } as IFileProperties;
+        const fileEntityType = PowerPagesEntityType.WEBPAGES;
+        const isValidUri = stub(commonUtility, "isValidUri").returns(true);
+        const getEntityFolderName = stub(
+            commonUtility,
+            "getEntityFolderName"
+        ).returns("webPages");
+        const isValidRenamedFile = stub(
+            commonUtility,
+            "isValidRenamedFile"
+        ).returns(true);
+        const getFileProperties = stub(
+            commonUtility,
+            "getFileProperties"
+        ).returns({ fileName: "fileName" } as IFileProperties);
+        const getEntityFolderPathIndex = stub(
+            commonUtility,
+            "getEntityFolderPathIndex"
+        ).returns(1);
+
+        const isSingleFileEntity = stub(
+            commonUtility,
+            "isSingleFileEntity"
+        ).returns(false);
+        const getFieldsToUpdate = stub(
+            commonUtility,
+            "getFieldsToUpdate"
+        ).returns(["adx_partialurl"]);
+        const getFileNameProperties = stub(
+            commonUtility,
+            "getFileNameProperties"
+        ).returns({
+            fileCompleteName: "test.txt",
+            fileName: "adx_partialurl",
+        } as IFileProperties);
+        const findFiles = stub(vscode.workspace, "findFiles").returns(
+            new Promise((resolve) => {
+                return resolve(uri);
+            })
+        );
+
+        //Action
+        await readFileSyncStub.updateEntityPathNames(
+            oldUri,
+            newUri,
+            oldFileProperties,
+            fileEntityType
+        );
+
+        //Assert
+
+        assert.calledOnceWithExactly(getEntityFolderName, oldUri.path);
+        assert.calledOnceWithExactly(
+            isValidRenamedFile,
+            oldUri.path,
+            "webPages",
+            "testFileName",
+            fileEntityType
+        );
+        assert.calledTwice(getFileProperties);
+        assert.calledOnceWithExactly(
+            getEntityFolderPathIndex,
+            newUri.path,
+            "testFileName",
+            fileEntityType,
+            "webPages"
+        );
+        assert.calledOnceWithExactly(isSingleFileEntity, fileEntityType);
+        assert.calledOnceWithExactly(getFieldsToUpdate, fileEntityType);
+        assert.calledOnceWithExactly(
+            getFileNameProperties,
+            "powerPages.com",
+            fileEntityType
+        );
+        assert.calledTwice(findFiles);
+        const getCallsForFindFiles = findFiles.getCalls();
+        expect(getCallsForFindFiles[0].args[0]).eq(
+            "**/webPages/testfilename/**/*"
+        );
+        expect(getCallsForFindFiles[1].args[0]).eq(
+            "**/webPages/testfilename/**/*.yml"
+        );
+        assert.calledOnceWithExactly(isValidUri, "oldTestPath");
+    });
+
+    it("updateEntityPathNames_whenIsValidReturnFalse_shouldCallGetEntityFolderNameOnly", async () => {
+        //Act
+        const newUri = { fsPath: "testPath" } as vscode.Uri;
+        const oldUri = { path: "oldTestPath" } as vscode.Uri;
+        const oldFileProperties = {
+            fileName: "adx_webpage",
+            fileExtension: "html",
+        } as IFileProperties;
+        const fileEntityType = PowerPagesEntityType.WEBPAGES;
+
+        const isValidUri = stub(commonUtility, "isValidUri").returns(false);
+        const getEntityFolderName = stub(
+            commonUtility,
+            "getEntityFolderName"
+        ).returns("webPages");
+        //Action
+        await updateEntityPathNames(
+            oldUri,
+            newUri,
+            oldFileProperties,
+            fileEntityType
+        );
+
+        //Assert
+        assert.calledOnceWithExactly(getEntityFolderName, "oldTestPath");
+        assert.calledOnceWithExactly(isValidUri, "oldTestPath");
+    });
+
+    it("updateEntityPathNames_whenoldFilePropertiesDoesNotHaveFileName_shouldCallGetEntityFolderNameOnly", async () => {
+        //Act
+        const newUri = { fsPath: "testPath" } as vscode.Uri;
+        const oldUri = { path: "oldTestPath" } as vscode.Uri;
+        const oldFileProperties = {
+            fileExtension: "html",
+        } as IFileProperties;
+        const fileEntityType = PowerPagesEntityType.WEBPAGES;
+
+        const isValidUri = stub(commonUtility, "isValidUri").returns(true);
+        const getEntityFolderName = stub(
+            commonUtility,
+            "getEntityFolderName"
+        ).returns("webPages");
+        //Action
+        await updateEntityPathNames(
+            oldUri,
+            newUri,
+            oldFileProperties,
+            fileEntityType
+        );
+
+        //Assert
+        assert.calledOnceWithExactly(getEntityFolderName, "oldTestPath");
+        assert.calledOnceWithExactly(isValidUri, "oldTestPath");
+    });
+
+    it("updateEntityPathNames_whenIsValidRenamedFileReturnsFalse_shouldCallGetEntityFolderNameOnly", async () => {
+        //Act
+        const newUri = { fsPath: "testPath" } as vscode.Uri;
+        const oldUri = { path: "oldTestPath" } as vscode.Uri;
+        const oldFileProperties = {
+            fileExtension: "html",
+            fileName: "adx_webpage",
+        } as IFileProperties;
+        const fileEntityType = PowerPagesEntityType.WEBPAGES;
+
+        const isValidUri = stub(commonUtility, "isValidUri").returns(true);
+        const isValidRenamedFile = stub(
+            commonUtility,
+            "isValidRenamedFile"
+        ).returns(false);
+        const getEntityFolderName = stub(
+            commonUtility,
+            "getEntityFolderName"
+        ).returns("webPages");
+        //Action
+        await updateEntityPathNames(
+            oldUri,
+            newUri,
+            oldFileProperties,
+            fileEntityType
+        );
+
+        //Assert
+        assert.calledOnceWithExactly(getEntityFolderName, "oldTestPath");
+        assert.calledOnceWithExactly(isValidUri, "oldTestPath");
+        assert.calledOnceWithExactly(
+            isValidRenamedFile,
+            "oldTestPath",
+            "webPages",
+            "adx_webpage",
+            fileEntityType
+        );
+    });
+
+    it("updateEntityPathNames_whenfileNameIsBalnk_shouldNotCallAllFunctions", async () => {
         //Act
         const uri = [
             { fsPath: "fakePath\\testPath.txt", path: "powerPages.com" } as Uri,
         ];
         const newUri = { fsPath: "testPath" } as vscode.Uri;
-        const oldUri = { fsPath: "oldTestPath" } as vscode.Uri;
+        const oldUri = { path: "oldTestPath" } as vscode.Uri;
         const oldFileProperties = {
             fileName: "testFileName",
             fileFolderPath: "fileFolderPath",
@@ -144,25 +364,6 @@ describe("fileSystemUpdatesUtility", () => {
             commonUtility,
             "getEntityFolderPathIndex"
         ).returns(1);
-        const isSingleFileEntity = stub(
-            commonUtility,
-            "isSingleFileEntity"
-        ).returns(true);
-        const getFieldsToUpdate = stub(
-            commonUtility,
-            "getFieldsToUpdate"
-        ).returns(["adx_partialurl"]);
-        const getUpdatedFolderPath = stub(
-            commonUtility,
-            "getUpdatedFolderPath"
-        ).returns(uri[0]);
-        const getFileNameProperties = stub(
-            commonUtility,
-            "getFileNameProperties"
-        ).returns({
-            fileCompleteName: "test.txt",
-            fileName: "adx_partialurl",
-        } as IFileProperties);
         const findFiles = stub(vscode.workspace, "findFiles").returns(
             new Promise((resolve) => {
                 return resolve(uri);
@@ -178,58 +379,42 @@ describe("fileSystemUpdatesUtility", () => {
         );
 
         //Assert
+        assert.calledOnceWithExactly(getEntityFolderName, "oldTestPath");
         assert.calledOnce(getEntityFolderName);
-        assert.calledOnce(getEntityFolderName);
-        assert.calledOnce(isValidRenamedFile);
-        assert.calledOnce(getFileProperties);
-        assert.calledOnce(getEntityFolderPathIndex);
-        assert.notCalled(isSingleFileEntity);
-        assert.notCalled(getFieldsToUpdate);
-        assert.notCalled(getUpdatedFolderPath);
-        assert.notCalled(getFileNameProperties);
-        assert.calledOnce(isValidUri);
-        assert.calledOnce(findFiles);
+        assert.calledOnceWithExactly(
+            isValidRenamedFile,
+            oldUri.path,
+            "webPages",
+            "testFileName",
+            fileEntityType
+        );
+        assert.calledOnceWithExactly(getFileProperties, newUri.path);
+        assert.calledOnceWithExactly(
+            getEntityFolderPathIndex,
+            newUri.path,
+            "testFileName",
+            fileEntityType,
+            "webPages"
+        );
+        assert.calledOnceWithExactly(isValidUri, oldUri.path);
+        assert.calledOnceWithExactly(
+            findFiles,
+            "**/webPages/testfilename/**/*"
+        );
     });
 
-    it("updateEntityPathNames_whenfileNameisNotNull_shouldCallReadFileContents", async () => {
+    it("updateEntityPathNames_whenFileEntityTypeIsNotWEBPAGESAndFileNameIsBlank_shouldNotCallAllFunctions", async () => {
         //Act
         const uri = [
             { fsPath: "fakePath\\testPath.txt", path: "powerPages.com" } as Uri,
         ];
-        const readFileSyncStub = proxyquire.load(
-            "../../power-pages/fileSystemUpdatesUtility",
-            {
-                fs: {
-                    writeFileSync: stub().returns(""),
-                    readFileSync: stub().returns(
-                        "{'adx_partialurl':'adx_partialurl'}"
-                    ),
-                },
-                vscode: {
-                    workspace: {
-                        fs: {
-                            // eslint-disable-next-line @typescript-eslint/no-empty-function
-                            rename: () => {},
-                        },
-
-                        findFiles: stub().returns(
-                            new Promise((resolve) => {
-                                return resolve(uri);
-                            })
-                        ),
-                    },
-                },
-            }
-        );
-
         const newUri = { path: "testPath" } as vscode.Uri;
-        const oldUri = { fsPath: "oldTestPath" } as vscode.Uri;
+        const oldUri = { path: "oldTestPath" } as vscode.Uri;
         const oldFileProperties = {
-            fileName: "testFileName",
+            fileName: "TestFileName",
             fileFolderPath: "fileFolderPath",
         } as IFileProperties;
-        const fileEntityType = PowerPagesEntityType.WEBPAGES;
-        stub(vscode.Uri, "file").returns(uri[0]);
+        const fileEntityType = PowerPagesEntityType.ADVANCED_FORMS;
         const isValidUri = stub(commonUtility, "isValidUri").returns(true);
         const getEntityFolderName = stub(
             commonUtility,
@@ -239,34 +424,22 @@ describe("fileSystemUpdatesUtility", () => {
             commonUtility,
             "isValidRenamedFile"
         ).returns(true);
-        const getFileProperties = stub(commonUtility, "getFileProperties");
+        const getFileProperties = stub(
+            commonUtility,
+            "getFileProperties"
+        ).returns({ fileName: "" } as IFileProperties);
         const getEntityFolderPathIndex = stub(
             commonUtility,
             "getEntityFolderPathIndex"
         ).returns(1);
-
-        const isSingleFileEntity = stub(
-            commonUtility,
-            "isSingleFileEntity"
-        ).returns(false);
-        const getFieldsToUpdate = stub(
-            commonUtility,
-            "getFieldsToUpdate"
-        ).returns(["adx_partialurl"]);
-        const getUpdatedFolderPath = stub(
-            commonUtility,
-            "getUpdatedFolderPath"
-        ).returns(uri[0]);
-        const getFileNameProperties = stub(
-            commonUtility,
-            "getFileNameProperties"
-        ).returns({
-            fileCompleteName: "test.txt",
-            fileName: "adx_partialurl",
-        } as IFileProperties);
+        const findFiles = stub(vscode.workspace, "findFiles").returns(
+            new Promise((resolve) => {
+                return resolve(uri);
+            })
+        );
 
         //Action
-        await readFileSyncStub.updateEntityPathNames(
+        await updateEntityPathNames(
             oldUri,
             newUri,
             oldFileProperties,
@@ -274,31 +447,28 @@ describe("fileSystemUpdatesUtility", () => {
         );
 
         //Assert
+        assert.calledOnceWithExactly(getEntityFolderName, "oldTestPath");
         assert.calledOnce(getEntityFolderName);
-        assert.calledOnce(isValidUri);
-        assert.calledOnce(isValidRenamedFile);
-        assert.calledOnce(getFileProperties);
-        const getFilePropertiesCalls = getFileProperties.getCalls();
-        expect(getFilePropertiesCalls[0].args[0]).eq("testPath");
-        assert.calledOnce(getEntityFolderPathIndex);
-        const getEntityFolderPathIndexArgs =
-            getEntityFolderPathIndex.getCalls()[0];
-
-        expect(getEntityFolderPathIndexArgs.args[0]).eq("testPath");
-        expect(getEntityFolderPathIndexArgs.args[1]).eq("testFileName");
-        expect(getEntityFolderPathIndexArgs.args[2]).eq(0);
-        expect(getEntityFolderPathIndexArgs.args[3]).eq("webPages");
-        assert.calledOnce(isSingleFileEntity);
-        assert.calledOnceWithExactly(getFieldsToUpdate, 0);
-        const getUpdatedFolderPathArgs = getUpdatedFolderPath.getCalls()[0];
-        expect(getUpdatedFolderPathArgs.args[0]).eq("f");
-        expect(getUpdatedFolderPathArgs.args[1]).eq("testFileName");
-        expect(getUpdatedFolderPathArgs.args[2]).eq("testPath");
-
-        const getFileNamePropertiesArgs = getFileNameProperties.getCalls()[0];
-        expect(getFileNamePropertiesArgs.args[1]).eq(0);
-        assert.calledOnce(getUpdatedFolderPath);
-        assert.calledOnce(getFileNameProperties);
+        assert.calledOnceWithExactly(
+            isValidRenamedFile,
+            oldUri.path,
+            "webPages",
+            "TestFileName",
+            fileEntityType
+        );
+        assert.calledOnceWithExactly(getFileProperties, newUri.path);
+        assert.calledOnceWithExactly(
+            getEntityFolderPathIndex,
+            newUri.path,
+            "TestFileName",
+            fileEntityType,
+            "webPages"
+        );
+        assert.calledOnceWithExactly(isValidUri, oldUri.path);
+        assert.calledOnceWithExactly(
+            findFiles,
+            "**/webPages/testfilename/**/*"
+        );
     });
 
     it("fileRenameValidation_whenisValidUriIsTrue_shouldReturnTrue", async () => {
@@ -347,8 +517,15 @@ describe("fileSystemUpdatesUtility", () => {
         //Assert
 
         expect(result).true;
-        assert.calledOnce(getFileProperties);
-        assert.calledOnce(isValidUri);
+        assert.calledOnceWithExactly(getFileProperties, newUri.path);
+        assert.calledOnceWithExactly(isValidUri, oldUri.path);
+
+        expect(getValidatedEntityPath.args[0]).deep.eq([
+            "ddrive",
+            "testFile",
+            "html",
+        ]);
+
         assert.calledOnce(getValidatedEntityPath);
     });
 
@@ -362,20 +539,6 @@ describe("fileSystemUpdatesUtility", () => {
         } as IFileProperties;
 
         const isValidUri = stub(commonUtility, "isValidUri").returns(false);
-        const getFileProperties = stub(
-            commonUtility,
-            "getFileProperties"
-        ).returns({
-            fileExtension: "pdf",
-            fileFolderPath: "ddrive",
-            fileName: "testFile",
-        } as IFileProperties);
-
-        const getValidatedEntityPath = stub(
-            commonUtility,
-            "getValidatedEntityPath"
-        ).returns(newUri);
-
         //Action
         const result = await fileRenameValidation(
             oldUri,
@@ -385,9 +548,7 @@ describe("fileSystemUpdatesUtility", () => {
 
         //Assert
         expect(result).true;
-        assert.notCalled(getFileProperties);
-        assert.notCalled(getValidatedEntityPath);
-        assert.calledOnce(isValidUri);
+        assert.calledOnceWithExactly(isValidUri, oldUri.path);
     });
 
     it("fileRenameValidation_whenOldFilePropertiesDontHaveFileName_shouldReturnTrue", async () => {
@@ -446,11 +607,6 @@ describe("fileSystemUpdatesUtility", () => {
             fileName: "testFile",
         } as IFileProperties);
 
-        const getValidatedEntityPath = stub(
-            commonUtility,
-            "getValidatedEntityPath"
-        ).returns(newUri);
-
         //Action
         const result = await fileRenameValidation(
             oldUri,
@@ -460,9 +616,8 @@ describe("fileSystemUpdatesUtility", () => {
 
         //Assert
         expect(result).true;
-        assert.calledOnce(getFileProperties);
-        assert.notCalled(getValidatedEntityPath);
-        assert.calledOnce(isValidUri);
+        assert.calledOnceWithExactly(getFileProperties, newUri.path);
+        assert.calledOnceWithExactly(isValidUri, oldUri.path);
     });
 
     it("fileRenameValidation_whenNewFilePropertiesDoesNotHaveFileName_shouldReturnTrue", async () => {
@@ -483,11 +638,6 @@ describe("fileSystemUpdatesUtility", () => {
             fileFolderPath: "ddrive",
         } as IFileProperties);
 
-        const getValidatedEntityPath = stub(
-            commonUtility,
-            "getValidatedEntityPath"
-        ).returns(newUri);
-
         //Action
         const result = await fileRenameValidation(
             oldUri,
@@ -497,9 +647,8 @@ describe("fileSystemUpdatesUtility", () => {
 
         //Assert
         expect(result).true;
-        assert.calledOnce(getFileProperties);
-        assert.notCalled(getValidatedEntityPath);
-        assert.calledOnce(isValidUri);
+        assert.calledOnceWithExactly(getFileProperties, newUri.path);
+        assert.calledOnceWithExactly(isValidUri, oldUri.path);
     });
 
     it("fileRenameValidation_whenisFileExtensionIsBlank_shouldReturnFalse", async () => {
@@ -534,10 +683,6 @@ describe("fileSystemUpdatesUtility", () => {
             fileName: "testFile",
         } as IFileProperties);
 
-        const getValidatedEntityPath = stub(
-            commonUtility,
-            "getValidatedEntityPath"
-        ).returns(newUri);
         //Action
         const result = await readFileSyncStub.fileRenameValidation(
             oldUri,
@@ -548,9 +693,8 @@ describe("fileSystemUpdatesUtility", () => {
         //Assert
 
         expect(result).false;
-        assert.calledOnce(getFileProperties);
-        assert.calledOnce(isValidUri);
-        assert.notCalled(getValidatedEntityPath);
+        assert.calledOnceWithExactly(getFileProperties, newUri.path);
+        assert.calledOnceWithExactly(isValidUri, oldUri.path);
     });
 
     it("updateEntityNameInYml_whenFieldIsAdxPartialurl_shouldCallGetFieldsToUpdateAndGetFileNameProperties", () => {
@@ -584,12 +728,16 @@ describe("fileSystemUpdatesUtility", () => {
         ).returns(["adx_partialurl"]);
         //Action
 
-        readFileSyncStub.updateEntityNameInYml("", fileEntityType);
+        readFileSyncStub.updateEntityNameInYml("uriPath", fileEntityType);
 
         //Assert
 
-        assert.calledOnce(getFieldsToUpdate);
-        assert.calledOnce(getFileNameProperties);
+        assert.calledOnceWithExactly(getFieldsToUpdate, fileEntityType);
+        assert.calledOnceWithExactly(
+            getFileNameProperties,
+            "uriPath",
+            fileEntityType
+        );
     });
 
     it("updateEntityNameInYml_whenFieldIsNotAdx_partialurl_shouldCallGetFieldsToUpdateAndGetFileNameProperties", () => {
@@ -623,11 +771,29 @@ describe("fileSystemUpdatesUtility", () => {
         ).returns(["adx_partialurl"]);
         //Action
 
-        readFileSyncStub.updateEntityNameInYml("", fileEntityType);
+        readFileSyncStub.updateEntityNameInYml("uriPath", fileEntityType);
 
         //Assert
 
-        assert.calledOnce(getFieldsToUpdate);
-        assert.calledOnce(getFileNameProperties);
+        assert.calledOnceWithExactly(getFieldsToUpdate,fileEntityType);
+        assert.calledOnceWithExactly(getFileNameProperties,"uriPath", fileEntityType);
+    });
+
+    it("updateEntityNameInYml_whenGetFileNamePropertiesThrownException_shouldNotCallGetFieldsToUpdateAndGetFileNameProperties", () => {
+        //Act
+
+        const fileEntityType = PowerPagesEntityType.WEBPAGES;
+        const getFileNameProperties = stub(
+            commonUtility,
+            "getFileNameProperties"
+        ).throws();
+
+        //Action
+
+        updateEntityNameInYml("uriPath", fileEntityType);
+
+        //Assert
+        assert.calledOnceWithExactly(getFileNameProperties,"uriPath", fileEntityType);
+        assert.threw(getFileNameProperties);
     });
 });
