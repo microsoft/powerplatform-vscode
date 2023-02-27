@@ -115,7 +115,7 @@ export async function activate(
     const areCRUDoperationEnabled = vscode.workspace.getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME).get(PORTAL_CRUD_OPERATION_SETTING_NAME);
     if (areCRUDoperationEnabled) {
         // Add CRUD related callback subscription here
-        await handleFileSystemCallbacks(_context);
+        await handleFileSystemCallbacks(_context, _telemetry);
     }
 
     const cliContext = new CliAcquisitionContext(_context, _telemetry)

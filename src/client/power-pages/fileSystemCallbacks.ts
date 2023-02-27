@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import { ITelemetry } from "../telemetry/ITelemetry";
 //import * as nls from 'vscode-nls';
 import { getCurrentWorkspaceURI, getDeletePathUris, getFileProperties, getPowerPageEntityType } from "./commonUtility";
 import { PowerPagesEntityType } from "./constants";
@@ -11,13 +12,19 @@ import { fileRenameValidation, updateEntityPathNames } from "./fileSystemUpdates
 import { showDiagnosticMessage, validateTextDocument } from "./validationDiagnostics";
 //const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
-export async function handleFileSystemCallbacks(context: vscode.ExtensionContext) {
+export async function handleFileSystemCallbacks(
+    context: vscode.ExtensionContext,
+    telemetry: ITelemetry
+) {
     // Add file system callback flows here - for rename and delete file actions
-    await processOnDidDeleteFiles(context);
-    await processOnDidRenameFiles(context);
+    await processOnDidDeleteFiles(context, telemetry);
+    await processOnDidRenameFiles(context, telemetry);
 }
 
-async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
+async function processOnDidDeleteFiles(
+    context: vscode.ExtensionContext,
+    telemetry: ITelemetry
+) {
     context.subscriptions.push(
         vscode.workspace.onDidDeleteFiles(async (e) => {
             let currentWorkspaceURI: vscode.Uri | undefined;
@@ -57,14 +64,19 @@ async function processOnDidDeleteFiles(context: vscode.ExtensionContext) {
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    // Log telemetry
+                    const errorMsg = (error as Error)?.message;
+                    telemetry.sendTelemetryErrorEvent("onDidDeleteFiles", {}, {}, [errorMsg]);
+                    telemetry.sendTelemetryException(error as Error);
                 }
             }
         })
     );
 }
 
-async function processOnDidRenameFiles(context: vscode.ExtensionContext) {
+async function processOnDidRenameFiles(
+    context: vscode.ExtensionContext,
+    telemetry: ITelemetry
+) {
     context.subscriptions.push(
         vscode.workspace.onDidRenameFiles(async (e) => {
             if (e.files.length > 0) {
@@ -98,7 +110,9 @@ async function processOnDidRenameFiles(context: vscode.ExtensionContext) {
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    // Log telemetry
+                    const errorMsg = (error as Error)?.message;
+                    telemetry.sendTelemetryErrorEvent("onDidDeleteFiles", {}, {}, [errorMsg]);
+                    telemetry.sendTelemetryException(error as Error);
                 }
             }
         })
