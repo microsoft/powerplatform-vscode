@@ -8,8 +8,6 @@ import WebExtensionContext from '../WebExtensionContext';
 import { queryParameters } from "../common/constants";
 import { getDeviceType } from '../utilities/deviceType';
 import { telemetryEventNames } from '../telemetry/constants';
-import * as nls from 'vscode-nls';
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 
 export class NPSWebView  {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -20,6 +18,7 @@ export class NPSWebView  {
     }
 
     private _getHtml() {
+        try{
         const nonce = getNonce();
         const mainJs = this.extensionResourceUrl('media','main.js');
         const tid = WebExtensionContext.urlParametersMap?.get(queryParameters.TENANT_ID);
@@ -44,6 +43,10 @@ export class NPSWebView  {
                 <script id="npsContext" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
             </body>
             </html>`;
+        }catch(error){
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.RENDER_NPS_FAILED, (error as Error)?.message);
+            return '';
+        }
     }
 
     private extensionResourceUrl(...parts: string[]): vscode.Uri {
@@ -53,7 +56,7 @@ export class NPSWebView  {
     public static createOrShow(extensionUri: vscode.Uri): NPSWebView {
         const webview = vscode.window.createWebviewPanel(
             'testCESSurvey',
-            localize("microsoft-powerapps-portals.webExtension.npsSurvey.desc", "Microsoft wants your feeback"),
+            vscode.l10n.t("Microsoft wants your feeback"),
             {viewColumn:vscode.ViewColumn.One,
                 preserveFocus:false
             },
