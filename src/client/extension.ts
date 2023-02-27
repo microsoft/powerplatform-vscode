@@ -280,6 +280,7 @@ function isCurrentDocumentEdited(): boolean {
     return (workspaceFolderExists && currentPanelExists && PortalWebView.currentDocument === vscode?.window?.activeTextEditor?.document?.fileName);
 }
 
+// allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
 class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(
         private readonly _context: vscode.ExtensionContext,
@@ -293,7 +294,40 @@ class CliAcquisitionContext implements ICliAcquisitionContext {
     showInformationMessage(message: string, ...items: string[]): void {
         vscode.window.showInformationMessage(message, ...items);
     }
+
     showErrorMessage(message: string, ...items: string[]): void {
         vscode.window.showErrorMessage(message, ...items);
+    }
+
+    showCliPreparingMessage(version: string): void {
+        vscode.window.showInformationMessage(
+            vscode.l10n.t({
+                message: "Preparing pac CLI (v{0})...",
+                args: [version],
+                comment: ["{0} represents the version number"]}
+        ));
+    }
+
+    showCliReadyMessage(): void {
+        vscode.window.showInformationMessage(
+            vscode.l10n.t('The pac CLI is ready for use in your VS Code terminal!'));
+    }
+
+    showCliInstallFailedError(err: string): void {
+        vscode.window.showErrorMessage(
+            vscode.l10n.t({
+                message: "Cannot install pac CLI: {0}",
+                args: [err],
+                comment: ["{0} represents the error message returned from the exception"]})
+        );
+    }
+
+    showGeneratorInstallingMessage(version: string): void {
+        vscode.window.showInformationMessage(
+            vscode.l10n.t({
+                message: "Installing Power Pages generator(v{0})...",
+                args: [version],
+                comment: ["{0} represents the version number"]
+            }))
     }
 }
