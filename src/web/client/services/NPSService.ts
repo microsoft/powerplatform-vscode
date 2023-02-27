@@ -69,7 +69,7 @@ export class NPSService{
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const parsedToken = jwt_decode(accessToken) as any;
                 WebExtensionContext.setUserId(parsedToken?.oid)
-                const apiEndpoint = `${baseApiUrl}/${SurveyConstants.TEAM_NAME}/Eligibilities/${SurveyConstants.SURVEY_NAME}?userId=${parsedToken?.oid}&eventName=${SurveyConstants.EVENT_NAME}&tenantId=${parsedToken.tid}`;
+                const apiEndpoint = `${baseApiUrl}/api/v1/${SurveyConstants.TEAM_NAME}/Eligibilities/${SurveyConstants.SURVEY_NAME}?userId=${parsedToken?.oid}&eventName=${SurveyConstants.EVENT_NAME}&tenantId=${parsedToken.tid}`;
                 const requestInitPost: RequestInit = {
                     method: httpMethod.POST,
                     body:'{}',
