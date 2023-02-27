@@ -53,6 +53,6 @@ export enum httpMethod {
 export enum SurveyConstants {
     TEAM_NAME = 'PowerPages',
     SURVEY_NAME = 'PowerPages-NPS',
-    EVENT_NAME = 'vsCodeWeb',
+    EVENT_NAME = 'VscodeWeb',
     AUTHORIZATION_ENDPOINT = 'https://microsoft.onmicrosoft.com/cessurvey/user'
 }
