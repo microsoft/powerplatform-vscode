@@ -19,7 +19,6 @@ export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], 
 
         const diagnostics: vscode.Diagnostic[] = [];
         patterns.forEach(pattern => {
-            m = pattern.exec(text);
             while ((m = pattern.exec(text))) {
                 const diagnostic: vscode.Diagnostic = {
                     severity: vscode.DiagnosticSeverity.Warning,
