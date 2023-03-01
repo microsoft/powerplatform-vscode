@@ -38,17 +38,21 @@ export enum queryParameters {
     REFERRER = 'referrer',
     SITE_VISIBILITY = 'sitevisibility',
     WEBSITE_NAME = 'websitename',
-    ORG_URL = 'orgurl'
+    ORG_URL = 'orgurl',
+    REGION = 'region',
+    ENV_ID = 'envid',
+    GEO = 'geo'
 }
 
 export enum httpMethod {
     PATCH = 'PATCH',
-    GET = 'GET'
+    GET = 'GET',
+    POST = 'POST'
 }
 
-export enum CESSurvey {
+export enum SurveyConstants {
     TEAM_NAME = 'PowerPages',
     SURVEY_NAME = 'PowerPages-NPS',
-    EVENT_NAME = 'vsCodeWeb',
+    EVENT_NAME = 'VscodeWeb',
     AUTHORIZATION_ENDPOINT = 'https://microsoft.onmicrosoft.com/cessurvey/user'
 }

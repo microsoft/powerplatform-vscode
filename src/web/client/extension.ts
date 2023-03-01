@@ -3,18 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as nls from 'vscode-nls';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
 import * as vscode from "vscode";
 import WebExtensionContext from "./WebExtensionContext";
 import { PORTALS_URI_SCHEME, PUBLIC, IS_FIRST_RUN_EXPERIENCE, queryParameters } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
-import { checkMandatoryParameters, removeEncodingFromParameters } from "./common/errorHandler";
+import { checkMandatoryParameters, removeEncodingFromParameters, showErrorDialog } from "./common/errorHandler";
 import { WebExtensionTelemetry } from './telemetry/webExtensionTelemetry';
 import { convertStringtoBase64 } from './utilities/commonUtil';
-import {NPSService} from './services/NPSService'
+import { NPSService } from './services/NPSService'
 import { vscodeExtAppInsightsResourceProvider } from '../../common/telemetry-generated/telemetryConfiguration';
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+import { NPSWebView } from './webViews/NPSWebView';
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -25,8 +23,6 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(WebExtensionContext.telemetry.getTelemetryReporter());
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
-    // TODO Bidisha: As of now kept here for testing. In subsequent PR will be fixed
-    NPSService.getEligibility();
     const portalsFS = new PortalsFS();
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 
@@ -50,15 +46,9 @@ export function activate(context: vscode.ExtensionContext): void {
 
                 removeEncodingFromParameters(queryParamsMap);
                 WebExtensionContext.setWebExtensionContext(entity, entityId, queryParamsMap);
-
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(appName, entity, entityId);
 
-                if (queryParamsMap.get(queryParameters.SITE_VISIBILITY) === PUBLIC) {
-                    const edit: vscode.MessageItem = { isCloseAffordance: true, title: localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit", "Edit the site") };
-                    const siteMessage = localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc", "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
-                    const options = { detail: siteMessage, modal: true };
-                    await vscode.window.showWarningMessage(localize("microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title", "You are editing a live, public site "), options, edit);
-                }
+                await showSiteVisibilityDialog();
 
                 if (appName) {
                     switch (appName) {
@@ -71,21 +61,26 @@ export function activate(context: vscode.ExtensionContext): void {
                                 context.globalState.update(IS_FIRST_RUN_EXPERIENCE, false);
                                 WebExtensionContext.telemetry.sendInfoTelemetry("StartCommand", { 'commandId': 'workbench.action.openWalkthrough', 'walkthroughId': 'microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted' });
                             }
-
                             await vscode.window.withProgress({
                                 location: vscode.ProgressLocation.Notification,
                                 cancellable: true,
-                                title: localize("microsoft-powerapps-portals.webExtension.fetch.file.message", "Fetching your file ...")
+                                title: vscode.l10n.t("Fetching your file ...")
                             }, async () => {
                                 await vscode.workspace.fs.readDirectory(WebExtensionContext.rootDirectory);
                             });
+                            await NPSService.setEligibility();
+                            if(WebExtensionContext.npsEligibility){
+                                NPSWebView.createOrShow(context.extensionUri);
+                            }
                         }
                             break;
                         default:
-                            vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+                            showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"),
+                                vscode.l10n.t("Unable to find that app"));
                     }
                 } else {
-                    vscode.window.showErrorMessage(localize("microsoft-powerapps-portals.webExtension.init.app-not-found", "Unable to find that app"));
+                    showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"),
+                        vscode.l10n.t("Unable to find that app"));
                     return;
                 }
             }
@@ -121,6 +116,16 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
             }
         })
     );
+}
+
+export async function showSiteVisibilityDialog() {
+    if (WebExtensionContext.urlParametersMap.get(queryParameters.SITE_VISIBILITY) === PUBLIC) {
+        const edit: vscode.MessageItem = { isCloseAffordance: true, title: vscode.l10n.t("Edit the site") };
+        const siteMessage = vscode.l10n.t(
+            "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.");
+        const options = { detail: siteMessage, modal: true };
+        await vscode.window.showWarningMessage(vscode.l10n.t("You are editing a live, public site "), options, edit);
+    }
 }
 
 export function showWalkthrough(context: vscode.ExtensionContext, telemetry: WebExtensionTelemetry) {

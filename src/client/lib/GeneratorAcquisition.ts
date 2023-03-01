@@ -5,10 +5,7 @@
 
 // https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel
 
-import * as nls from 'vscode-nls';
-nls.config({ messageFormat: nls.MessageFormat.bundle, bundleFormat: nls.BundleFormat.standalone })();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-
+import * as vscode from 'vscode';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as os from 'os';
@@ -80,11 +77,11 @@ export class GeneratorAcquisition implements IDisposable {
 
         if (this.yoCommandPath === null || this.getInstalledVersion() !== this.generatorVersion) {
             this._context.showInformationMessage(
-                localize({
-                    key: "generatorAcquisition.preparingMessage",
+                vscode.l10n.t({
+                    message: "Installing Power Pages generator(v{0})...",
+                    args: [this.generatorVersion],
                     comment: ["{0} represents the version number"]
-                },
-                    "Installing Power Pages generator(v{0})...", this.generatorVersion));
+                }));
 
             const packageJson = {
                 name: "PowerPages VSCODE",
@@ -100,14 +97,14 @@ export class GeneratorAcquisition implements IDisposable {
             const child = this.npm(['install']);
             if (child.error) {
                 this._context.telemetry.sendTelemetryErrorEvent('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion }, {}, [String(child.error)]);
-                this._context.showErrorMessage(localize({
-                    key: "generatorAcquisition.installationErrorMessage",
+                this._context.showErrorMessage(vscode.l10n.t({
+                    message: "Cannot install Power Pages generator: {0}",
+                    args: [String(child.error)],
                     comment: ["{0} represents the error message returned from the exception"]
-                },
-                    "Cannot install Power Pages generator: {0}", String(child.error)));
+                }));
             } else {
                 this._context.telemetry.sendTelemetryEvent('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion });
-                this._context.showInformationMessage(localize("generatorAcquisition.successMessage", 'The Power Pages generator is ready for use in your VS Code extension!'));
+                this._context.showInformationMessage(vscode.l10n.t('The Power Pages generator is ready for use in your VS Code extension!'));
             }
         }
         return this.yoCommandPath
