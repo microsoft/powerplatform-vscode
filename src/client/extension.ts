@@ -32,18 +32,15 @@ import {
     SETTINGS_EXPERIMENTAL_STORE_NAME,
 } from "./constants";
 import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
-import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
-import { createContentSnippet } from "./power-pages/create/Contentsnippet";
-import { getSelectedWorkspaceFolder } from "./power-pages/create/utils/CommonUtils";
 import { readUserSettings } from "./telemetry/localfileusersettings";
+import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
 let htmlServerRunning = false;
 let yamlServerRunning = false;
 let _telemetry: TelemetryReporter;
-let selectedWorkspaceFolder: string | undefined;
-const activeEditor = vscode.window.activeTextEditor;
+
 
 export async function activate(
     context: vscode.ExtensionContext
@@ -159,28 +156,7 @@ export async function activate(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-        const generator = new GeneratorAcquisition(cliContext);
-        await generator.ensureInstalled();
-        _context.subscriptions.push(generator);
-        const yoCommandPath = generator.yoCommandPath;
-
-        _context.subscriptions.push(
-            vscode.commands.registerCommand(
-                "microsoft-powerapps-portals.contentsnippet",
-                async (uri) => {
-                    selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
-                        uri,
-                        activeEditor
-                    );
-                    createContentSnippet(
-                        _context,
-                        selectedWorkspaceFolder,
-                        yoCommandPath
-                    );
-                }
-            )
-        );
-
+        initializeGenerator(_context, cliContext)
     }
 
     if (shouldEnableDebugger()) {
