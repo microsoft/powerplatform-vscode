@@ -4,6 +4,7 @@
  */
 
 import path from 'path';
+import * as os from 'os';
 import * as vscode from 'vscode';
 import { OrgListOutput, SolutionListing } from '../pac/PacTypes';
 import { PacWrapper } from '../pac/PacWrapper';
@@ -12,15 +13,11 @@ import { AuthProfileTreeItem, EnvAndSolutionTreeView, EnvOrSolutionTreeItem, Pac
 export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
     const registrations: vscode.Disposable[] = [];
 
-    const authProfilePath = process.env.LOCALAPPDATA
-        ? new vscode.RelativePattern(path.join(process.env.LOCALAPPDATA, "Microsoft", "PowerAppsCli"), "authprofiles*.json")
-        : undefined;
-
     const authPanel = new PacFlatDataView(
         () => pacWrapper.authList(),
         item => new AuthProfileTreeItem(item),
         item => item.Kind !== "ADMIN",
-        authProfilePath);
+        GetAuthProfileWatchPattern());
     registrations.push(
         vscode.window.registerTreeDataProvider("pacCLI.authPanel", authPanel),
         vscode.commands.registerCommand("pacCLI.authPanel.refresh", () => authPanel.refresh()),
@@ -107,4 +104,19 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         }));
 
     return registrations;
+}
+
+function GetAuthProfileWatchPattern(): vscode.RelativePattern | undefined {
+    if (os.platform() === 'win32') {
+        return process.env.LOCALAPPDATA
+            ? new vscode.RelativePattern(path.join(process.env.LOCALAPPDATA, "Microsoft", "PowerAppsCli"), "authprofiles*.json")
+            : undefined;
+    }
+    else if (os.platform() === 'linux' || os.platform() === 'darwin') {
+        return process.env.HOME
+            ? new vscode.RelativePattern(path.join(process.env.HOME, ".local", "share", "Microsoft", "PowerAppsCli"), "authprofiles*.json")
+            : undefined
+    }
+
+    return undefined;    
 }
