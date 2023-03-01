@@ -22,7 +22,11 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
 import { statSync } from "fs";
-import { TableFolder, Tables, YoSubGenerator } from "./CreateConstants";
+import {
+    TableFolder,
+    Tables,
+    YoSubGenerator,
+} from "./CreateOperationConstants";
 
 interface State {
     title: string;
@@ -32,42 +36,40 @@ interface State {
     contentSnippetName: string;
 }
 
-
 export const createContentSnippet = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
     yoGenPath: string | null
 ): Promise<void> => {
     try {
-        if (selectedWorkspaceFolder) {
-            const { contentSnippetName, contentSnippetType } =
-                await getContentSnippetInputs(selectedWorkspaceFolder);
+        if (!selectedWorkspaceFolder) {
+            return;
+        }
+        const { contentSnippetName, contentSnippetType } =
+            await getContentSnippetInputs(selectedWorkspaceFolder);
 
-            if (!isNullOrEmpty(contentSnippetName)) {
-                const folder = formatFolderName(contentSnippetName);
-                const file = formatFileName(contentSnippetName);
+        if (!isNullOrEmpty(contentSnippetName)) {
+            const folder = formatFolderName(contentSnippetName);
+            const file = formatFileName(contentSnippetName);
 
-                const watcherPattern = path.join(
-                    Tables.CONTENT_SNIPPET,
-                    folder,
-                    `${file}.*.contentsnippet.yml`
-                );
-                const watcher = createFileWatcher(
-                    context,
-                    selectedWorkspaceFolder,
-                    watcherPattern
-                );
+            const watcherPattern = path.join(
+                TableFolder.CONTENT_SNIPPET_FOLDER,
+                folder,
+                `${file}.*.contentsnippet.yml`
+            );
+            const watcher = createFileWatcher(
+                context,
+                selectedWorkspaceFolder,
+                watcherPattern
+            );
 
-                const portalDir = selectedWorkspaceFolder;
-
-                const command = `"${yoGenPath}" ${YoSubGenerator.CONTENT_SNIPPET} "${contentSnippetName}" "${contentSnippetType}"`;
-                await createRecord(
-                    Tables.CONTENT_SNIPPET,
-                    command,
-                    portalDir,
-                    watcher
-                );
-            }
+            const command = `"${yoGenPath}" ${YoSubGenerator.CONTENT_SNIPPET} "${contentSnippetName}" "${contentSnippetType}"`;
+            await createRecord(
+                Tables.CONTENT_SNIPPET,
+                command,
+                selectedWorkspaceFolder,
+                watcher
+            );
         }
     } catch (error: any) {
         throw new Error(error);
