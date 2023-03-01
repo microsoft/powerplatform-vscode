@@ -13,7 +13,15 @@ export class PacFlatDataView<PacResultType, TreeType extends vscode.TreeItem> im
     constructor(
         public readonly dataSource: () => Promise<PacOutputWithResultList<PacResultType>>,
         private readonly mapToTreeItem: (item: PacResultType) => TreeType,
-        private readonly itemFilter?: (item:PacResultType) => boolean) {
+        private readonly itemFilter?: (item:PacResultType) => boolean,
+        private readonly watchPath?: vscode.RelativePattern) {
+
+        if (this.watchPath) {
+            const watcher = vscode.workspace.createFileSystemWatcher(this.watchPath);
+            watcher.onDidChange(() => this.refresh());
+            watcher.onDidCreate(() => this.refresh());
+            watcher.onDidDelete(() => this.refresh());
+        }
     }
 
     refresh(): void {
