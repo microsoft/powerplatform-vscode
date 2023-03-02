@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import path from 'path';
+import * as os from 'os';
 import * as vscode from 'vscode';
 import { OrgListOutput, SolutionListing } from '../pac/PacTypes';
 import { PacWrapper } from '../pac/PacWrapper';
@@ -14,7 +16,8 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
     const authPanel = new PacFlatDataView(
         () => pacWrapper.authList(),
         item => new AuthProfileTreeItem(item),
-        item => item.Kind !== "ADMIN");
+        item => item.Kind !== "ADMIN",
+        GetAuthProfileWatchPattern());
     registrations.push(
         vscode.window.registerTreeDataProvider("pacCLI.authPanel", authPanel),
         vscode.commands.registerCommand("pacCLI.authPanel.refresh", () => authPanel.refresh()),
@@ -101,4 +104,19 @@ export function RegisterPanels(pacWrapper: PacWrapper): vscode.Disposable[] {
         }));
 
     return registrations;
+}
+
+function GetAuthProfileWatchPattern(): vscode.RelativePattern | undefined {
+    if (os.platform() === 'win32') {
+        return process.env.LOCALAPPDATA
+            ? new vscode.RelativePattern(path.join(process.env.LOCALAPPDATA, "Microsoft", "PowerAppsCli"), "authprofiles*.json")
+            : undefined;
+    }
+    else if (os.platform() === 'linux' || os.platform() === 'darwin') {
+        return process.env.HOME
+            ? new vscode.RelativePattern(path.join(process.env.HOME, ".local", "share", "Microsoft", "PowerAppsCli"), "authprofiles*.json")
+            : undefined
+    }
+
+    return undefined;    
 }
