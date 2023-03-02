@@ -4,12 +4,6 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as nls from "vscode-nls";
-nls.config({
-    messageFormat: nls.MessageFormat.bundle,
-    bundleFormat: nls.BundleFormat.standalone,
-})();
-// const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import {
     createFileWatcher,
