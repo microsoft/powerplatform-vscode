@@ -177,3 +177,23 @@ export function getFieldsToUpdate(fileEntityType: Constants.PowerPagesEntityType
 
     return fieldsToUpdate;
 }
+
+export function getExcludedFileGlobPattern(fileNameArray: string[]): vscode.GlobPattern {
+    let pattern = `**/{*.png,*.jpg,*.jpeg,*.gif,*.mp4,.portalconfig**}`;
+
+    if (fileNameArray.length > 0) {
+        fileNameArray.forEach((name, index) => fileNameArray[index] = name.concat('.*'));
+        pattern = `**/{*.png,*.jpg,*.jpeg,*.gif,*.mp4,.portalconfig**,${fileNameArray.join(',')}}`;
+    }
+    return pattern;
+}
+
+export function getRegExPattern(fileNameArray: string[]): RegExp[] {
+    const patterns: RegExp[] = [];
+
+    if (fileNameArray.length > 0) {
+        fileNameArray.forEach(name => patterns.push(RegExp(`${name}`, "ig")));
+    }
+
+    return patterns;
+}

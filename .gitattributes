@@ -10,7 +10,7 @@
 
 # Localization files
 # vscode-nls-dev regenerates these, writing lf endings; checking them out as lf prevents unnecessary diffs on Windows clients
-*.i18n.json text eol=lf
+*.l10n.*.json text eol=lf
 *.nls.*.json text eol=lf
 vscode-powerplatform.xlf text eol=lf
 

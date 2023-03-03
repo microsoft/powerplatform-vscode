@@ -17,15 +17,42 @@ import {
     isSingleFileEntity,
     isValidRenamedFile,
     isValidUri,
-    getEntityFolderPathIndex
+    getEntityFolderPathIndex,
+    getDeletePathUris
 } from "./commonUtility";
 import { DataverseFieldAdxPartialUrl, PowerPagesEntityType } from "./constants";
 import { removeTrailingSlash } from "../../debugger/utils";
+import { ITelemetry } from "../telemetry/ITelemetry";
+import { CleanupRelatedFilesEvent, FileRenameValidationEvent, sendTelemetryEvent, UpdateEntityNameInYmlEvent, UpdateEntityPathNamesEvent } from "./telemetry";
+
+export async function fileRenameValidation(oldUri: vscode.Uri,
+    newUri: vscode.Uri,
+    oldFileProperties: IFileProperties,
+    telemetry: ITelemetry
+) {
+    let success = true;
+    try {
+        if (isValidUri(oldUri.path) && oldFileProperties.fileName) {
+            const newFileProperties = getFileProperties(newUri.path);
+
+            if (oldFileProperties.fileExtension !== newFileProperties.fileExtension && newFileProperties.fileName && oldFileProperties.fileExtension) {
+                await vscode.workspace.fs.rename(newUri, getValidatedEntityPath(newFileProperties.fileFolderPath, newFileProperties.fileName, oldFileProperties.fileExtension), { overwrite: true });
+            } else if (oldFileProperties.fileExtension === '') { // revert name changes - entity folder re-naming is not a valid scenario
+                await vscode.workspace.fs.rename(newUri, oldUri, { overwrite: true });
+                success = false;
+            }
+        }
+    } catch (e) {
+        sendTelemetryEvent(telemetry, { eventName: FileRenameValidationEvent, exception: e as Error });
+    }
+    return success;
+}
 
 export async function updateEntityPathNames(oldUri: vscode.Uri,
     newUri: vscode.Uri,
     oldFileProperties: IFileProperties,
-    fileEntityType: PowerPagesEntityType
+    fileEntityType: PowerPagesEntityType,
+    telemetry: ITelemetry
 ) {
     try {
         const entityFolderName = getEntityFolderName(oldUri.path);
@@ -57,7 +84,7 @@ export async function updateEntityPathNames(oldUri: vscode.Uri,
                 const ymlFileInFolder = await vscode.workspace.findFiles(isUpdateNeeded ?
                     `**/${entityFolderName}/${newFileProperties.fileName}.*.yml` : `**/${entityFolderName}/${oldFileProperties.fileName.toLowerCase()}/**/*.yml`);
                 ymlFileInFolder.forEach(file => {
-                    updateEntityNameInYml(file.path, fileEntityType);
+                    updateEntityNameInYml(file.path, fileEntityType, telemetry);
                 });
 
                 // FolderName update
@@ -69,29 +96,29 @@ export async function updateEntityPathNames(oldUri: vscode.Uri,
             }
         }
     } catch (e) {
-        // Log telemetry
+        sendTelemetryEvent(telemetry, { eventName: UpdateEntityPathNamesEvent, exception: e as Error });
     }
 }
 
-export async function fileRenameValidation(oldUri: vscode.Uri,
-    newUri: vscode.Uri,
-    oldFileProperties: IFileProperties
+export async function cleanupRelatedFiles(uriPath: string,
+    fileEntityType: PowerPagesEntityType,
+    fileProperties: IFileProperties,
+    telemetry: ITelemetry
 ) {
-    let success = true;
-    if (isValidUri(oldUri.path) && oldFileProperties.fileName) {
-        const newFileProperties = getFileProperties(newUri.path);
-
-        if (oldFileProperties.fileExtension !== newFileProperties.fileExtension && newFileProperties.fileName && oldFileProperties.fileExtension) {
-            await vscode.workspace.fs.rename(newUri, getValidatedEntityPath(newFileProperties.fileFolderPath, newFileProperties.fileName, oldFileProperties.fileExtension), { overwrite: true });
-        } else if (oldFileProperties.fileExtension === '') { // revert name changes - entity folder re-naming is not a valid scenario
-            await vscode.workspace.fs.rename(newUri, oldUri, { overwrite: true });
-            success = false;
-        }
+    try {
+        const pathUris = getDeletePathUris(uriPath, fileEntityType, fileProperties);
+        pathUris.forEach(async pathUri => {
+            await vscode.workspace.fs.delete(pathUri, { recursive: true, useTrash: true });
+        });
+    } catch (e) {
+        sendTelemetryEvent(telemetry, { eventName: CleanupRelatedFilesEvent, exception: e as Error });
     }
-    return success;
 }
 
-export function updateEntityNameInYml(uriPath: string, fileEntityType: PowerPagesEntityType) {
+function updateEntityNameInYml(uriPath: string,
+    fileEntityType: PowerPagesEntityType,
+    telemetry: ITelemetry
+) {
     try {
         const uri = vscode.Uri.file(uriPath);
         const fileNameProperties = getFileNameProperties(uriPath, fileEntityType);
@@ -111,6 +138,6 @@ export function updateEntityNameInYml(uriPath: string, fileEntityType: PowerPage
         const newFileContents = YAML.stringify(parsedFileContents);
         fs.writeFileSync(uri.fsPath, newFileContents);
     } catch (e) {
-        // Log telemetry
+        sendTelemetryEvent(telemetry, { eventName: UpdateEntityNameInYmlEvent, exception: e as Error });
     }
 }

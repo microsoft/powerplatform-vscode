@@ -62,6 +62,10 @@ The {2} represents Solution's Version number</note>
     <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
       <source xml:lang="en">Fetching your file ...</source>
     </trans-unit>
+    <trans-unit id="++CODE++7b351789f09522eb21ab2637f1b063ff2a41451a7130138b41f142a6fe5d249e">
+      <source xml:lang="en">File might be referenced by name {0} here.</source>
+      <note>{0} represents the name of the file</note>
+    </trans-unit>
     <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
       <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
       <note>{0} represents the version number</note>
