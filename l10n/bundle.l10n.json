@@ -90,6 +90,12 @@
       "The {3} represents Dataverse Environment's Organization ID (GUID)"
     ]
   },
+  "File might be referenced by name {0} here./{0} represents the name of the file": {
+    "message": "File might be referenced by name {0} here.",
+    "comment": [
+      "{0} represents the name of the file"
+    ]
+  },
   "Authorization Failed. Please run again to authorize it": "Authorization Failed. Please run again to authorize it",
   "There was a permissions problem with the server": "There was a permissions problem with the server",
   "There was a problem opening the workspace": "There was a problem opening the workspace",

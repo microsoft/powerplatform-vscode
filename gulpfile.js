@@ -416,6 +416,7 @@ async function translationsImport() {
     // `@vscode/l10n-dev import-xlf` places both the package.nls.*.json and bundle.l10n.*.json files in the
     // same directory, but the package.nls.*.json need to reside at the repo root next to package.json
     gulp.src('./l10n/package.nls.*.json')
+        .pipe(replace("\\r\\n", "\\n"))
         .pipe(replace("\\\\n", "\\n"))
         .pipe(gulp.dest('./'));
 
