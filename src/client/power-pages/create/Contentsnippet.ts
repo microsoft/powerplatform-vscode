@@ -75,7 +75,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
         (label) => ({ label })
     );
 
-    const title = "New Content Snippet";
+    const title = vscode.l10n.t("New Content Snippet");
 
     async function collectInputs() {
         const state = {} as Partial<State>;
@@ -89,7 +89,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             step: 1,
             totalSteps: 2,
             value: state.contentSnippetName || "",
-            placeholder: "Add content snippet name (name should be unique)",
+            placeholder: vscode.l10n.t("Add content snippet name (name should be unique)"),
             validate: validateNameIsUnique,
         });
         return (input: MultiStepInput) => pickType(input, state);
@@ -100,7 +100,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             title,
             step: 2,
             totalSteps: 2,
-            placeholder: "Select Type",
+            placeholder: vscode.l10n.t("Select Type"),
             items: contentSnippetTypes,
             activeItem:
                 typeof state.contentSnippetType !== "string"
@@ -121,7 +121,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
         try {
             const stat = statSync(filePath);
             if (stat) {
-                return "A content snippet with the same name already exists. Please enter a different name.";
+                return vscode.l10n.t("A content snippet with the same name already exists. Please enter a different name.");
             }
         } catch (error: any) {
             if (error.code === "ENOENT") {

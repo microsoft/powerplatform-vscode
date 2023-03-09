@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as vscode from "vscode";
 export enum Tables {
     WEBPAGE = "Webpage",
     PAGETEMPLATE = "PageTemplate",
@@ -14,7 +15,7 @@ export enum Tables {
 }
 
 export const NOT_A_PORTAL_DIRECTORY =
-    "No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.";
+    vscode.l10n.t("No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.");
 export const WEBSITE_YML = "website.yml";
 
 export enum YoSubGenerator {
