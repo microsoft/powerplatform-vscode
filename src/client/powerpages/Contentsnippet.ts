@@ -3,12 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as nls from "vscode-nls";
-nls.config({
-    messageFormat: nls.MessageFormat.bundle,
-    bundleFormat: nls.BundleFormat.standalone,
-})();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 import * as vscode from "vscode";
 import {
     formatFileName,
@@ -106,10 +101,9 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
         return state as State;
     }
 
-    const title = localize(
-        "microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.title",
+    const title =
         "New Content Snippet"
-    );
+    ;
 
     async function inputName(input: MultiStepInput, state: Partial<State>) {
         state.contentSnippetName = await input.showInputBox({
@@ -117,10 +111,9 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             step: 1,
             totalSteps: 2,
             value: state.contentSnippetName || "",
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.name.placeholder",
+            placeholder:
                 "Add content snippet name (name should be unique)"
-            ),
+            ,
             validate: validateNameIsUnique,
         });
         return (input: MultiStepInput) => pickType(input, state);
@@ -131,10 +124,9 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             title,
             step: 2,
             totalSteps: 2,
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.contentsnippet.quickpick.type.placeholder",
+            placeholder:
                 "Select Type"
-            ),
+            ,
             items: contentSnippetTypes,
             activeItem:
                 typeof state.contentSnippetType !== "string"
@@ -159,6 +151,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             if (stat) {
                 return "A content snippet with the same name already exists. Please enter a different name.";
             }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             if (error.code === "ENOENT") {
                 return undefined;

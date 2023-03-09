@@ -3,12 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as nls from "vscode-nls";
-nls.config({
-    messageFormat: nls.MessageFormat.bundle,
-    bundleFormat: nls.BundleFormat.standalone,
-})();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 import * as vscode from "vscode";
 import {
     formatFileName,
@@ -153,10 +148,9 @@ async function getWebpageInputs(
         return state as State;
     }
 
-    const title = localize(
-        "microsoft-powerapps-portals.webExtension.webpage.quickpick.title",
+    const title =
         "New Webpage"
-    );
+    ;
 
     async function inputWebpageName(input: MultiStepInput, state: Partial<State>) {
         state.name = await input.showInputBox({
@@ -164,10 +158,9 @@ async function getWebpageInputs(
             step: 1,
             totalSteps: 3,
             value: state.name || "",
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.webpage.quickpick.name.placeholder",
+            placeholder:
                 "Enter name"
-            ),
+            ,
             validate: validateNameIsUnique,
         });
         return (input: MultiStepInput) => pickPageTemplate(input, state);
@@ -181,10 +174,9 @@ async function getWebpageInputs(
             title,
             step: 2,
             totalSteps: 3,
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.webpage.quickpick.pagetemplate.placeholder",
+            placeholder:
                 "Choose page template"
-            ),
+            ,
             items: pageTemplates,
             activeItem:
                 typeof state.pageTemplate !== "string"
@@ -203,10 +195,9 @@ async function getWebpageInputs(
             title,
             step: 3,
             totalSteps: 3,
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.webpage.quickpick.parentpage.placeholder",
+            placeholder: 
                 "Choose parent page"
-            ),
+            ,
             items: parentPages,
             activeItem:
                 typeof state.parentPage !== "string"

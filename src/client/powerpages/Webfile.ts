@@ -5,12 +5,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import * as nls from "vscode-nls";
-nls.config({
-    messageFormat: nls.MessageFormat.bundle,
-    bundleFormat: nls.BundleFormat.standalone,
-})();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import { getParentPagePaths, isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
@@ -113,10 +107,9 @@ async function getWebfileInputs(parentPage: string[]) {
         return state as State;
     }
 
-    const title = localize(
-        "microsoft-powerapps-portals.desktopExt.webfile.quickpick.title",
+    const title =
         "Web files"
-    );
+    ;
 
     async function pickParentPage(
         input: MultiStepInput,
@@ -126,10 +119,9 @@ async function getWebfileInputs(parentPage: string[]) {
             title,
             step: 1,
             totalSteps: 1,
-            placeholder: localize(
-                "microsoft-powerapps-portals.desktopExt.webfile.quickpick.parentpage.placeholder",
+            placeholder: 
                 "Choose parent page"
-            ),
+            ,
             items: parentPages,
             activeItem: typeof state.id !== "string" ? state.id : undefined,
         });

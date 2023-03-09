@@ -9,15 +9,11 @@ import {
     formatFolderName,
     isNullOrEmpty,
 } from "./utils/CommonUtils";
-import * as nls from "vscode-nls";
+
 import { exec } from "child_process";
 import path from "path";
 import { statSync } from "fs";
-nls.config({
-    messageFormat: nls.MessageFormat.bundle,
-    bundleFormat: nls.BundleFormat.standalone,
-})();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 
 export const createWebTemplate = (
     context: vscode.ExtensionContext,
@@ -26,10 +22,9 @@ export const createWebTemplate = (
 ) => {
     vscode.window
         .showInputBox({
-            placeHolder: localize(
-                "microsoft-powerapps-portals.webExtension.webtemplate.name",
+            placeHolder: 
                 "Enter the name of the web template"
-            ),
+            ,
             validateInput: (name) => {
                 const file = formatFileName(name);
                 const folder = formatFolderName(name);

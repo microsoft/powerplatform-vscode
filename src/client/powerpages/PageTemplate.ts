@@ -5,12 +5,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import * as nls from "vscode-nls";
-nls.config({
-    messageFormat: nls.MessageFormat.bundle,
-    bundleFormat: nls.BundleFormat.standalone,
-})();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import {  formatFileName, getWebTemplates, isNullOrEmpty } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
@@ -67,10 +61,9 @@ export const createPageTemplate = async (context: vscode.ExtensionContext, selec
         vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
-                title: localize(
-                    "microsoft-powerapps-portals.webExtension.pagetemplate.progress.notification",
+                title:
                     "Creating page template..."
-                ),
+                ,
                 cancellable: false,
             },
             () => {
@@ -122,10 +115,9 @@ async function getPageTemplateInputs(webTemplateNames: string[], selectedWorkspa
         return state as State;
     }
 
-    const title = localize(
-        "microsoft-powerapps-portals.webExtension.pagetemplate.quickpick.title",
+    const title =
         "New Page Template"
-    );
+    ;
 
     async function inputName(input: MultiStepInput, state: Partial<State>) {
         state.name = await input.showInputBox({
@@ -133,10 +125,9 @@ async function getPageTemplateInputs(webTemplateNames: string[], selectedWorkspa
             step: 1,
             totalSteps: 2,
             value: state.name || "",
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.pagetemplate.quickpick.name.placeholder",
+            placeholder:
                 "Enter name"
-            ),
+            ,
             validate: validateNameIsUnique,
         });
         return (input: MultiStepInput) => pickWebtemplate(input, state);
@@ -147,10 +138,9 @@ async function getPageTemplateInputs(webTemplateNames: string[], selectedWorkspa
             title,
             step: 2,
             totalSteps: 2,
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.pagetemplate.quickpick.webtemplate.placeholder",
+            placeholder:
                 "Choose web template"
-            ),
+            ,
             items: webTemplates,
             activeItem: typeof state.type !== "string" ? state.type : undefined,
         });

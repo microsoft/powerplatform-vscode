@@ -40,6 +40,7 @@ import { createWebpage } from "./powerpages/Webpage";
 import { createWebTemplate } from "./powerpages/WebTemplate";
 import { getSelectedWorkspaceFolder } from "./powerpages/utils/CommonUtils";
 import { readUserSettings } from "./telemetry/localfileusersettings";
+import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 
 
 let client: LanguageClient;
