@@ -21,6 +21,8 @@ import {
     Tables,
     YoSubGenerator,
 } from "./CreateOperationConstants";
+import { ITelemetry } from "../../telemetry/ITelemetry";
+import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
 
 interface State {
     title: string;
@@ -33,7 +35,8 @@ interface State {
 export const createContentSnippet = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoGenPath: string | null
+    yoGenPath: string | null,
+    telemetry: ITelemetry
 ): Promise<void> => {
     try {
         if (!selectedWorkspaceFolder) {
@@ -62,10 +65,12 @@ export const createContentSnippet = async (
                 Tables.CONTENT_SNIPPET,
                 command,
                 selectedWorkspaceFolder,
-                watcher
+                watcher,
+                telemetry
             );
         }
     } catch (error: any) {
+        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:Tables.CONTENT_SNIPPET, exception: error as Error })
         throw new Error(error);
     }
 };

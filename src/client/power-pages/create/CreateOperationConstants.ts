@@ -17,6 +17,10 @@ export enum Tables {
 export const NOT_A_PORTAL_DIRECTORY =
     vscode.l10n.t("No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.");
 export const WEBSITE_YML = "website.yml";
+export enum TriggerPoint {
+    CONTEXT_MENU = "context-menu",
+    COMMAND_PALETTE = "command-palette",
+}
 
 export enum YoSubGenerator {
     PAGETEMPLATE = "@microsoft/powerpages:pagetemplate",
