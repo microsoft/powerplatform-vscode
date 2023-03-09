@@ -7,23 +7,30 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import * as path from "path";
 import * as vscode from "vscode";
 import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
-import { vscodeExtAppInsightsResourceProvider } from '../common/telemetry-generated/telemetryConfiguration';
+import { vscodeExtAppInsightsResourceProvider } from "../common/telemetry-generated/telemetryConfiguration";
 import { ITelemetryData } from "../common/TelemetryData";
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
-import { PortalWebView } from './PortalWebView';
-import { ITelemetry } from './telemetry/ITelemetry';
+import { PortalWebView } from "./PortalWebView";
+import { ITelemetry } from "./telemetry/ITelemetry";
 
 import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
     TransportKind,
-    WorkspaceFolder
+    WorkspaceFolder,
 } from "vscode-languageclient/node";
 import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
-import { activateDebugger, deactivateDebugger, shouldEnableDebugger } from "../debugger";
-import { PORTAL_CRUD_OPERATION_SETTING_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "./constants";
+import {
+    activateDebugger,
+    deactivateDebugger,
+    shouldEnableDebugger,
+} from "../debugger";
+import {
+    PORTAL_CRUD_OPERATION_SETTING_NAME,
+    SETTINGS_EXPERIMENTAL_STORE_NAME,
+} from "./constants";
 import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { GeneratorAcquisition } from "./lib/GeneratorAcquisition";
 import { createContentSnippet } from "./powerpages/Contentsnippet";
@@ -49,20 +56,39 @@ export async function activate(
     _context = context;
 
     // setup telemetry
-    const telemetryEnv = AppTelemetryConfigUtility.createGlobalTelemetryEnvironment();
-    const appInsightsResource = vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(telemetryEnv.dataBoundary);
-    _telemetry = new TelemetryReporter(context.extension.id, context.extension.packageJSON.version, appInsightsResource.instrumentationKey);
+    const telemetryEnv =
+        AppTelemetryConfigUtility.createGlobalTelemetryEnvironment();
+    const appInsightsResource =
+        vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
+            telemetryEnv.dataBoundary
+        );
+    _telemetry = new TelemetryReporter(
+        context.extension.id,
+        context.extension.packageJSON.version,
+        appInsightsResource.instrumentationKey
+    );
     context.subscriptions.push(_telemetry);
-    _telemetry.sendTelemetryEvent("Start", { 'pac.userId': readUserSettings().uniqueId });
+    _telemetry.sendTelemetryEvent("Start", {
+        "pac.userId": readUserSettings().uniqueId,
+    });
 
     // Setup context switches
-    if (vscode.env.remoteName === undefined || vscode.env.remoteName === "wsl") {
+    if (
+        vscode.env.remoteName === undefined ||
+        vscode.env.remoteName === "wsl"
+    ) {
         // PAC Interactive Login works when we are the UI is running on the same machine
         // as the extension (i.e. NOT remote), or the remote is WSL
-        vscode.commands.executeCommand('setContext', 'pacCLI.authPanel.interactiveLoginSupported', true);
-    }
-    else {
-        _context.environmentVariableCollection.replace('PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE', 'true');
+        vscode.commands.executeCommand(
+            "setContext",
+            "pacCLI.authPanel.interactiveLoginSupported",
+            true
+        );
+    } else {
+        _context.environmentVariableCollection.replace(
+            "PAC_CLI_INTERACTIVE_AUTH_NOT_AVAILABLE",
+            "true"
+        );
     }
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
@@ -73,7 +99,9 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent('StartCommand', { 'commandId': 'microsoft-powerapps-portals.preview-show' });
+                _telemetry.sendTelemetryEvent("StartCommand", {
+                    commandId: "microsoft-powerapps-portals.preview-show",
+                });
                 PortalWebView.createOrShow();
             }
         )
@@ -90,7 +118,9 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent('PortalWebPagePreview', { page: 'NewPage' });
+                    _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
+                        page: "NewPage",
+                    });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -118,20 +148,23 @@ export async function activate(
             },
         });
     }
-
-    const areCRUDoperationEnabled = vscode.workspace.getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME).get(PORTAL_CRUD_OPERATION_SETTING_NAME);
+    const areCRUDoperationEnabled = vscode.workspace
+        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
+        .get(PORTAL_CRUD_OPERATION_SETTING_NAME);
     if (areCRUDoperationEnabled) {
         // Add CRUD related callback subscription here
-        await handleFileSystemCallbacks(_context);
+        await handleFileSystemCallbacks(_context, _telemetry);
     }
 
-    const cliContext = new CliAcquisitionContext(_context, _telemetry)
+    const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
     _context.subscriptions.push(cli);
     _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
-
-    const workspaceFolders = vscode.workspace.workspaceFolders?.map(fl => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)) || []
+    const workspaceFolders =
+        vscode.workspace.workspaceFolders?.map(
+            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+        ) || [];
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
         const generator = new GeneratorAcquisition(cliContext)
         await generator.ensureInstalled();
@@ -210,6 +243,7 @@ export async function deactivate(): Promise<void> {
         await client.stop();
     }
 
+    disposeDiagnostics();
     deactivateDebugger();
 }
 
@@ -266,7 +300,7 @@ function didOpenTextDocument(document: vscode.TextDocument): void {
     } else if (document.languageId === "html" && !htmlServerRunning) {
         // The server is implemented in node
         const serverModule = _context.asAbsolutePath(
-            path.join("dist", "HtmlServer.js")
+            path.join("dist", "htmlServer.js")
         );
         // If the extension is launched in debug mode then the debug server options are used
         // Otherwise the run options are used
@@ -315,14 +349,19 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
         client.onNotification("telemetry/event", (payload: string) => {
             const serverTelemetry = JSON.parse(payload) as ITelemetryData;
             if (!!serverTelemetry && !!serverTelemetry.eventName) {
-                _telemetry.sendTelemetryEvent(serverTelemetry.eventName, serverTelemetry.properties, serverTelemetry.measurements);
+                _telemetry.sendTelemetryEvent(
+                    serverTelemetry.eventName,
+                    serverTelemetry.properties,
+                    serverTelemetry.measurements
+                );
             }
         });
     });
 }
 
 function isCurrentDocumentEdited(): boolean {
-    const workspaceFolderExists = vscode.workspace.workspaceFolders !== undefined;
+    const workspaceFolderExists =
+        vscode.workspace.workspaceFolders !== undefined;
     let currentPanelExists = false;
     if (PortalWebView?.currentPanel) {
         currentPanelExists = true;
@@ -335,6 +374,7 @@ function isCurrentDocumentEdited(): boolean {
     );
 }
 
+// allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
 class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(
         private readonly _context: vscode.ExtensionContext,
@@ -354,7 +394,40 @@ class CliAcquisitionContext implements ICliAcquisitionContext {
     showInformationMessage(message: string, ...items: string[]): void {
         vscode.window.showInformationMessage(message, ...items);
     }
+
     showErrorMessage(message: string, ...items: string[]): void {
         vscode.window.showErrorMessage(message, ...items);
+    }
+
+    showCliPreparingMessage(version: string): void {
+        vscode.window.showInformationMessage(
+            vscode.l10n.t({
+                message: "Preparing pac CLI (v{0})...",
+                args: [version],
+                comment: ["{0} represents the version number"]}
+        ));
+    }
+
+    showCliReadyMessage(): void {
+        vscode.window.showInformationMessage(
+            vscode.l10n.t('The pac CLI is ready for use in your VS Code terminal!'));
+    }
+
+    showCliInstallFailedError(err: string): void {
+        vscode.window.showErrorMessage(
+            vscode.l10n.t({
+                message: "Cannot install pac CLI: {0}",
+                args: [err],
+                comment: ["{0} represents the error message returned from the exception"]})
+        );
+    }
+
+    showGeneratorInstallingMessage(version: string): void {
+        vscode.window.showInformationMessage(
+            vscode.l10n.t({
+                message: "Installing Power Pages generator(v{0})...",
+                args: [version],
+                comment: ["{0} represents the version number"]
+            }))
     }
 }

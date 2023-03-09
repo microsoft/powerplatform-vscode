@@ -4,6 +4,10 @@
  */
 
 import * as vscode from 'vscode';
+import WebExtensionContext from '../WebExtensionContext';
+import { queryParameters } from "../common/constants";
+import { getDeviceType } from '../utilities/deviceType';
+import { telemetryEventNames } from '../telemetry/constants';
 
 export class NPSWebView  {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -14,23 +18,35 @@ export class NPSWebView  {
     }
 
     private _getHtml() {
-		const nonce = getNonce();
+        try{
+        const nonce = getNonce();
         const mainJs = this.extensionResourceUrl('media','main.js');
+        const tid = WebExtensionContext.urlParametersMap?.get(queryParameters.TENANT_ID);
+        const uid = WebExtensionContext.userId;
+        const envId = WebExtensionContext.urlParametersMap?.get(queryParameters.ENV_ID)?.split("/")[4];
+        const geo = WebExtensionContext.urlParametersMap?.get(queryParameters.GEO);
+        const culture = vscode.env.language;
+        const productVersion = process?.env?.BUILD_NAME;
+        const deviceType = getDeviceType();
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.RENDER_NPS);
         return `<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
                 <title>Test CES Survey</title>
-                <script data-main="scripts/app" src="scripts/require.js"></script>
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src https://customervoice.microsoft.com/ ; img-src https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/cross.svg ; style-src  https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css 'nonce-${nonce}';script-src https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src https://customervoice.microsoft.com/ ; img-src * 'self' data: https:; style-src  https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css 'nonce-${nonce}';script-src https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js 'nonce-${nonce}';">
             </head>
             <body>
                 <div id="surveyDiv"></div>
                 <script src="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js" type="text/javascript"></script>
                 <link rel="stylesheet" type="text/css" href="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css" />
-                <script nonce="${nonce}" type="module" src="${mainJs}"></script>
+                <script id="npsContext" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
             </body>
             </html>`;
+        }catch(error){
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.RENDER_NPS_FAILED, (error as Error)?.message);
+            return '';
+        }
     }
 
     private extensionResourceUrl(...parts: string[]): vscode.Uri {
@@ -40,7 +56,7 @@ export class NPSWebView  {
     public static createOrShow(extensionUri: vscode.Uri): NPSWebView {
         const webview = vscode.window.createWebviewPanel(
             'testCESSurvey',
-            "Test CES Survey",
+            vscode.l10n.t("Microsoft wants your feeback"),
             {viewColumn:vscode.ViewColumn.One,
                 preserveFocus:false
             },
