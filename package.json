@@ -374,11 +374,6 @@
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Dev version",
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Canary version"
           ]
-        },
-        "powerPlatform.experimental.portalCRUDoperations": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Enable create, delete and rename operation in desktop extension"
         }
       }
     },
