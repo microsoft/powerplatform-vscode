@@ -3,23 +3,23 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export interface Template {
+export interface ITemplate {
     name: string;
     value: string;
 }
 
-export interface ParentPagePaths {
+export interface IParentPagePaths {
     paths: Array<string>;
     pathsMap: Map<string, string>;
     webpageNames: Array<string>;
 }
 
-export interface PageTemplates {
+export interface IPageTemplates {
     pageTemplateNames: string[];
     pageTemplateMap: Map<string, string>;
 }
 
-export interface WebTemplates {
+export interface IWebTemplates {
     webTemplateNames: string[];
     webTemplateMap: Map<string, string>;
 }
