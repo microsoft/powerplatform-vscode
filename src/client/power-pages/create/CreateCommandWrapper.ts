@@ -6,9 +6,10 @@
 import * as vscode from "vscode";
 import { GeneratorAcquisition } from "../../lib/GeneratorAcquisition";
 import { ITelemetry } from "../../telemetry/ITelemetry";
+import { sendTelemetryEventWithTriggerPoint } from "../telemetry";
 import { createContentSnippet } from "./Contentsnippet";
 import { Tables} from "./CreateOperationConstants";
-import { getSelectedWorkspaceFolder, sendTelemetryEventWithEntityType } from "./utils/CommonUtils";
+import { getSelectedWorkspaceFolder} from "./utils/CommonUtils";
 const activeEditor = vscode.window.activeTextEditor;
 
 export function initializeGenerator(
@@ -34,7 +35,7 @@ function registerCreateCommands(
     vscode.commands.registerCommand(
         "microsoft-powerapps-portals.contentsnippet",
         async (uri) => {
-            sendTelemetryEventWithEntityType(Tables.CONTENT_SNIPPET, uri, telemetry);
+            sendTelemetryEventWithTriggerPoint(Tables.CONTENT_SNIPPET, uri, telemetry);
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,

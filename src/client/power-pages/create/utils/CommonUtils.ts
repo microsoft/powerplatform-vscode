@@ -8,11 +8,9 @@ import { existsSync, stat } from "fs";
 import path from "path";
 import * as vscode from "vscode";
 import { ITelemetry } from "../../../telemetry/ITelemetry";
-import { FileCreateEvent, sendTelemetryEvent, UserFileCreateEvent } from "../../telemetry";
+import { FileCreateEvent, sendTelemetryEvent} from "../../telemetry";
 import {
     NOT_A_PORTAL_DIRECTORY,
-    Tables,
-    TriggerPoint,
     WEBSITE_YML,
 } from "../CreateOperationConstants";
 
@@ -190,10 +188,4 @@ export function isWebsiteYML(directory: string): string {
     throw new Error("");
 }
 
-export function sendTelemetryEventWithEntityType(entityType: Tables, uri:vscode.Uri, telemetry:ITelemetry): void {
-    if (uri) {
-        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: entityType, triggerPoint: TriggerPoint.CONTEXT_MENU });
-    } else {
-        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: entityType });
-    }
-}
+
