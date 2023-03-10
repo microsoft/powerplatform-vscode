@@ -21,6 +21,8 @@ import {
     Tables,
     YoSubGenerator,
 } from "./CreateOperationConstants";
+import { ITelemetry } from "../../telemetry/ITelemetry";
+import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
 
 interface State {
     title: string;
@@ -33,7 +35,8 @@ interface State {
 export const createContentSnippet = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoGenPath: string | null
+    yoGenPath: string | null,
+    telemetry: ITelemetry
 ): Promise<void> => {
     try {
         if (!selectedWorkspaceFolder) {
@@ -62,10 +65,12 @@ export const createContentSnippet = async (
                 Tables.CONTENT_SNIPPET,
                 command,
                 selectedWorkspaceFolder,
-                watcher
+                watcher,
+                telemetry
             );
         }
     } catch (error: any) {
+        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:Tables.CONTENT_SNIPPET, exception: error as Error })
         throw new Error(error);
     }
 };
@@ -75,7 +80,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
         (label) => ({ label })
     );
 
-    const title = "New Content Snippet";
+    const title = vscode.l10n.t("New Content Snippet");
 
     async function collectInputs() {
         const state = {} as Partial<State>;
@@ -89,7 +94,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             step: 1,
             totalSteps: 2,
             value: state.contentSnippetName || "",
-            placeholder: "Add content snippet name (name should be unique)",
+            placeholder: vscode.l10n.t("Add content snippet name (name should be unique)"),
             validate: validateNameIsUnique,
         });
         return (input: MultiStepInput) => pickType(input, state);
@@ -100,7 +105,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
             title,
             step: 2,
             totalSteps: 2,
-            placeholder: "Select Type",
+            placeholder: vscode.l10n.t("Select Type"),
             items: contentSnippetTypes,
             activeItem:
                 typeof state.contentSnippetType !== "string"
@@ -121,7 +126,7 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
         try {
             const stat = statSync(filePath);
             if (stat) {
-                return "A content snippet with the same name already exists. Please enter a different name.";
+                return vscode.l10n.t("A content snippet with the same name already exists. Please enter a different name.");
             }
         } catch (error: any) {
             if (error.code === "ENOENT") {

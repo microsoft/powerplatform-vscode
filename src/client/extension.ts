@@ -27,10 +27,6 @@ import {
     deactivateDebugger,
     shouldEnableDebugger,
 } from "../debugger";
-import {
-    PORTAL_CRUD_OPERATION_SETTING_NAME,
-    SETTINGS_EXPERIMENTAL_STORE_NAME,
-} from "./constants";
 import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
@@ -139,13 +135,9 @@ export async function activate(
             },
         });
     }
-    const areCRUDoperationEnabled = vscode.workspace
-        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
-        .get(PORTAL_CRUD_OPERATION_SETTING_NAME);
-    if (areCRUDoperationEnabled) {
-        // Add CRUD related callback subscription here
-        await handleFileSystemCallbacks(_context, _telemetry);
-    }
+
+    // Add CRUD related callback subscription here
+    await handleFileSystemCallbacks(_context, _telemetry);
 
     const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);
@@ -157,7 +149,7 @@ export async function activate(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-        initializeGenerator(_context, cliContext)
+        initializeGenerator(_context, cliContext, _telemetry);
     }
 
     if (shouldEnableDebugger()) {
@@ -307,7 +299,7 @@ function isCurrentDocumentEdited(): boolean {
         workspaceFolderExists &&
         currentPanelExists &&
         PortalWebView.currentDocument ===
-            vscode?.window?.activeTextEditor?.document?.fileName
+        vscode?.window?.activeTextEditor?.document?.fileName
     );
 }
 
@@ -316,7 +308,7 @@ class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(
         private readonly _context: vscode.ExtensionContext,
         private readonly _telemetry: ITelemetry
-    ) {}
+    ) { }
 
     public get extensionPath(): string {
         return this._context.extensionPath;
@@ -341,8 +333,9 @@ class CliAcquisitionContext implements ICliAcquisitionContext {
             vscode.l10n.t({
                 message: "Preparing pac CLI (v{0})...",
                 args: [version],
-                comment: ["{0} represents the version number"]}
-        ));
+                comment: ["{0} represents the version number"]
+            })
+        );
     }
 
     showCliReadyMessage(): void {
@@ -355,7 +348,8 @@ class CliAcquisitionContext implements ICliAcquisitionContext {
             vscode.l10n.t({
                 message: "Cannot install pac CLI: {0}",
                 args: [err],
-                comment: ["{0} represents the error message returned from the exception"]})
+                comment: ["{0} represents the error message returned from the exception"]
+            })
         );
     }
 
