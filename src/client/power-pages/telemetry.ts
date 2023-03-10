@@ -4,6 +4,8 @@
  */
 
 import { ITelemetry } from "../telemetry/ITelemetry";
+import { Tables } from "./create/CreateOperationConstants";
+import * as vscode from "vscode";
 
 // Telemetry Event Names
 export const FileDeleteEvent = 'FileDeleteEvent';
@@ -15,13 +17,21 @@ export const FileRenameValidationEvent = 'FileRenameValidationEvent';
 export const UpdateEntityPathNamesEvent = 'UpdateEntityPathNamesEvent';
 export const CleanupRelatedFilesEvent = 'CleanupRelatedFilesEvent';
 export const UpdateEntityNameInYmlEvent = 'UpdateEntityNameInYmlEvent';
+export const UserFileCreateEvent = 'UserFileCreateEvent';
+export const FileCreateEvent = 'FileCreateEvent';
 
 interface IPowerPagesTelemetryData {
     eventName: string,
     numberOfFiles?: string,
     fileEntityType?: string,
     durationInMills?: number,
-    exception?: Error
+    exception?: Error,
+    triggerPoint?: string
+}
+
+export enum TriggerPoint {
+    CONTEXT_MENU = "context-menu",
+    COMMAND_PALETTE = "command-palette",
 }
 
 export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerPagesTelemetryData): void {
@@ -44,5 +54,13 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerP
         telemetry.sendTelemetryException(telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
     } else {
         telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
+    }
+}
+
+export function sendTelemetryEventWithTriggerPoint(entityType: Tables, uri:vscode.Uri, telemetry:ITelemetry): void {
+    if (uri) {
+        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: entityType, triggerPoint: TriggerPoint.CONTEXT_MENU });
+    } else {
+        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: entityType });
     }
 }

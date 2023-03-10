@@ -7,6 +7,8 @@ import { exec } from "child_process";
 import { existsSync, stat } from "fs";
 import path from "path";
 import * as vscode from "vscode";
+import { ITelemetry } from "../../../telemetry/ITelemetry";
+import { FileCreateEvent, sendTelemetryEvent} from "../../telemetry";
 import {
     NOT_A_PORTAL_DIRECTORY,
     WEBSITE_YML,
@@ -56,12 +58,18 @@ export async function createRecord(
     entityType: string,
     execCommand: string,
     portalDirectory: string,
-    watcher: vscode.FileSystemWatcher
+    watcher: vscode.FileSystemWatcher,
+    telemetry: ITelemetry
 ) {
+    const startTime = performance.now();
     await vscode.window.withProgress(
         {
             location: vscode.ProgressLocation.Notification,
-            title: `Creating ${entityType}...`,
+            title: vscode.l10n.t({
+                message: "Creating {0}...",
+                args: [entityType],
+                comment: ["{0} will be replaced by the entity type."],
+            }),
             cancellable: false,
         },
         async (progress) => {
@@ -72,7 +80,11 @@ export async function createRecord(
                     try {
                         await vscode.window.showTextDocument(uri);
                         vscode.window.showInformationMessage(
-                            `${entityType} created!`
+                            vscode.l10n.t({
+                                message: "{0} created!",
+                                args: [entityType],
+                                comment: ["{0} will be replaced by the entity type."]
+                            })
                         );
                         resolve();
                     } catch (error) {
@@ -81,9 +93,15 @@ export async function createRecord(
                 });
                 exec(execCommand, { cwd: portalDirectory }, (error) => {
                     if (error) {
-                        vscode.window.showErrorMessage(error.message);
+                        vscode.window.showErrorMessage(vscode.l10n.t({
+                            message: "Failed to create: {0}.",
+                            args: [error.message],
+                            comment: ["{0} will be replaced by the error message."]
+                        }));
+                        sendTelemetryEvent(telemetry, { eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime), exception: error as Error })
                         reject(error);
                     } else {
+                        sendTelemetryEvent(telemetry, { eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime) })
                         progress.report({ increment: 100 });
                     }
                 });
@@ -94,7 +112,7 @@ export async function createRecord(
 
 export async function getSelectedWorkspaceFolder(
     uri: vscode.Uri,
-    activeEditor: vscode.TextEditor | undefined
+    activeEditor: vscode.TextEditor | undefined,
 ) {
     let selectedWorkspaceFolder: string | undefined;
     let filePath: string;
@@ -169,3 +187,5 @@ export function isWebsiteYML(directory: string): string {
     vscode.window.showErrorMessage(NOT_A_PORTAL_DIRECTORY);
     throw new Error("");
 }
+
+

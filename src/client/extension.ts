@@ -149,7 +149,7 @@ export async function activate(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-        initializeGenerator(_context, cliContext)
+        initializeGenerator(_context, cliContext, _telemetry);
     }
 
     if (shouldEnableDebugger()) {
