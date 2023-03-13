@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { GeneratorAcquisition } from "../../lib/GeneratorAcquisition";
 import { ITelemetry } from "../../telemetry/ITelemetry";
-import { sendTelemetryEventWithTriggerPoint } from "../telemetry";
+import { sendTelemetryEvent, TriggerPoint, UserFileCreateEvent } from "../telemetry";
 import { createContentSnippet } from "./Contentsnippet";
 import { Tables} from "./CreateOperationConstants";
 import { getSelectedWorkspaceFolder} from "./utils/CommonUtils";
@@ -36,7 +36,8 @@ function registerCreateCommands(
     vscode.commands.registerCommand(
         "microsoft-powerapps-portals.contentsnippet",
         async (uri) => {
-            sendTelemetryEventWithTriggerPoint(Tables.CONTENT_SNIPPET, uri, telemetry);
+            const triggerPoint = uri?TriggerPoint.CONTEXT_MENU:TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.CONTENT_SNIPPET, triggerPoint: triggerPoint});
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,
@@ -53,7 +54,8 @@ function registerCreateCommands(
     vscode.commands.registerCommand(
         "microsoft-powerapps-portals.webtemplate",
         async (uri) => {
-            sendTelemetryEventWithTriggerPoint(Tables.WEBTEMPLATE, uri, telemetry);
+            const triggerPoint = uri?TriggerPoint.CONTEXT_MENU:TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.WEBTEMPLATE, triggerPoint: triggerPoint});
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,
