@@ -8,8 +8,8 @@ import { GeneratorAcquisition } from "../../lib/GeneratorAcquisition";
 import { ITelemetry } from "../../telemetry/ITelemetry";
 import { sendTelemetryEvent, TriggerPoint, UserFileCreateEvent } from "../telemetry";
 import { createContentSnippet } from "./Contentsnippet";
-import { Tables} from "./CreateOperationConstants";
-import { getSelectedWorkspaceFolder} from "./utils/CommonUtils";
+import { Tables } from "./CreateOperationConstants";
+import { getSelectedWorkspaceFolder } from "./utils/CommonUtils";
 import { createWebTemplate } from "./WebTemplate";
 const activeEditor = vscode.window.activeTextEditor;
 
@@ -36,8 +36,8 @@ function registerCreateCommands(
     vscode.commands.registerCommand(
         "microsoft-powerapps-portals.contentsnippet",
         async (uri) => {
-            const triggerPoint = uri?TriggerPoint.CONTEXT_MENU:TriggerPoint.COMMAND_PALETTE;
-            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.CONTENT_SNIPPET, triggerPoint: triggerPoint});
+            const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.CONTENT_SNIPPET, triggerPoint: triggerPoint });
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,
@@ -54,8 +54,8 @@ function registerCreateCommands(
     vscode.commands.registerCommand(
         "microsoft-powerapps-portals.webtemplate",
         async (uri) => {
-            const triggerPoint = uri?TriggerPoint.CONTEXT_MENU:TriggerPoint.COMMAND_PALETTE;
-            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.WEBTEMPLATE, triggerPoint: triggerPoint});
+            const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.WEBTEMPLATE, triggerPoint: triggerPoint });
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,
