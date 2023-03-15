@@ -18,9 +18,10 @@ import {
 import { QuickPickItem } from "vscode";
 
 import { MultiStepInput } from "./utils/MultiStepInput";
-import { Tables, YoSubGenerator } from "./CreateOperationConstants";
+import { TableFolder, Tables, YoSubGenerator } from "./CreateOperationConstants";
 import path from "path";
 import { ITelemetry } from "../../telemetry/ITelemetry";
+import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
 
 interface IWebpageInputState {
     title: string;
@@ -47,7 +48,7 @@ export const createWebpage = async (
             getPageTemplate(portalContext);
 
         if (pageTemplateNames.length === 0) {
-            vscode.window.showErrorMessage("No page templates found");
+            vscode.window.showErrorMessage(vscode.l10n.t("No page templates found"));
             return;
         }
 
@@ -55,7 +56,7 @@ export const createWebpage = async (
             getParentPagePaths(portalContext);
 
         if (paths.length === 0) {
-            vscode.window.showErrorMessage("No webpages found");
+            vscode.window.showErrorMessage(vscode.l10n.t("No webpages found"));
             return;
         }
 
@@ -78,7 +79,7 @@ export const createWebpage = async (
             const folder = formatFolderName(webpageName);
 
             const watcherPattern = path.join(
-                "web-pages",
+                TableFolder.WEBPAGE_FOLDER,
                 folder,
                 "content-pages",
                 `${file}.*.webpage.copy.html`
@@ -99,10 +100,11 @@ export const createWebpage = async (
             );
         }
     } catch (error: any) {
-        vscode.window.showErrorMessage(error.message);
-        return;
+        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:Tables.WEBPAGE, exception: error as Error })
+        throw new Error(error);
     }
 };
+
 async function getWebpageInputs(
     pageTemplateName: string[],
     parentPage: string[],
@@ -116,13 +118,14 @@ async function getWebpageInputs(
         label,
     }));
 
+    const title = vscode.l10n.t("New Webpage");
+
     async function collectInputs() {
         const state = {} as Partial<IWebpageInputState>;
         await MultiStepInput.run((input) => inputWebpageName(input, state));
         return state as IWebpageInputState;
     }
 
-    const title = vscode.l10n.t("New Webpage");
 
     async function inputWebpageName(
         input: MultiStepInput,
@@ -177,7 +180,6 @@ async function getWebpageInputs(
     }
 
     async function validateNameIsUnique(name: string) {
-        // ...validate...
         if (
             webpageNames
                 .map((n) => n.toLowerCase())

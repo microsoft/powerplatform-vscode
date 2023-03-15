@@ -8,7 +8,7 @@ import { GeneratorAcquisition } from "../../lib/GeneratorAcquisition";
 import { ITelemetry } from "../../telemetry/ITelemetry";
 import { sendTelemetryEvent, TriggerPoint, UserFileCreateEvent } from "../telemetry";
 import { createContentSnippet } from "./Contentsnippet";
-import { Tables } from "./CreateOperationConstants";
+import { CONTENT_SNIPPET, Tables } from "./CreateOperationConstants";
 import { getSelectedWorkspaceFolder } from "./utils/CommonUtils";
 import { createWebpage } from "./Webpage";
 import { createWebTemplate } from "./WebTemplate";
@@ -38,7 +38,7 @@ function registerCreateCommands(
         "microsoft-powerapps-portals.contentsnippet",
         async (uri) => {
             const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
-            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.CONTENT_SNIPPET, triggerPoint: triggerPoint });
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: CONTENT_SNIPPET, triggerPoint: triggerPoint });
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,

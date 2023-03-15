@@ -11,6 +11,7 @@ import { ITelemetry } from "../../../telemetry/ITelemetry";
 import { FileCreateEvent, sendTelemetryEvent} from "../../telemetry";
 import {
     NOT_A_PORTAL_DIRECTORY,
+    NO_WORKSPACEFOLDER_FOUND,
     WEBSITE_YML,
 } from "../CreateOperationConstants";
 import { Context } from "@microsoft/generator-powerpages/generators/context";
@@ -204,7 +205,7 @@ export async function getSelectedWorkspaceFolder(
     let filePath: string;
 
     if (!vscode.workspace.workspaceFolders) {
-        throw new Error("No workspace folder found");
+        throw new Error(NO_WORKSPACEFOLDER_FOUND);
     }
 
     const workspaceFolder = activeEditor

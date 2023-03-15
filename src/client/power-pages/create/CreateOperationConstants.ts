@@ -11,12 +11,13 @@ export enum Tables {
     WEBSITELANGUAGES = "WebsiteLanguages",
     WEBLINKS = "Weblinks",
     WEBTEMPLATE = "WebTemplate",
-    CONTENT_SNIPPET = "ContentSnippet",
 }
 
 export const NOT_A_PORTAL_DIRECTORY =
     vscode.l10n.t("No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.");
 export const WEBSITE_YML = "website.yml";
+export const NO_WORKSPACEFOLDER_FOUND = vscode.l10n.t("No workspace folder found")
+export const CONTENT_SNIPPET = "ContentSnippet"
 
 export enum YoSubGenerator {
     PAGETEMPLATE = "@microsoft/powerpages:pagetemplate",
