@@ -28,6 +28,7 @@ export class NPSWebView  {
         const culture = vscode.env.language;
         const productVersion = process?.env?.BUILD_NAME;
         const deviceType = getDeviceType();
+        const formsProEligibilityId = WebExtensionContext.formsProEligibilityId;
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.RENDER_NPS);
         return `<!DOCTYPE html>
             <html lang="en">
@@ -40,7 +41,7 @@ export class NPSWebView  {
                 <div id="surveyDiv"></div>
                 <script src="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js" type="text/javascript"></script>
                 <link rel="stylesheet" type="text/css" href="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css" />
-                <script id="npsContext" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" nonce="${nonce}" type="module" src="${mainJs}"></script>
+                <script id="npsContext" data-tid="${tid}" data-uid="${uid}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" data-formsProEligibilityId ="${formsProEligibilityId}" nonce="${nonce}" type="module" src="${mainJs}"></script>
             </body>
             </html>`;
         }catch(error){
