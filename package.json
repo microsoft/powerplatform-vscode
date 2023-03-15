@@ -11,7 +11,6 @@
     "dist": "node node_modules/gulp/bin/gulp.js dist",
     "translations-export": "node node_modules/gulp/bin/gulp.js translationsExport",
     "translations-import": "node node_modules/gulp/bin/gulp.js translationsImport",
-    "translations-generate": "node node_modules/gulp/bin/gulp.js translationsGenerate",
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
     "increment-version-npm": "npm --no-git-tag-version version %VSIX_VERSION%",
     "compile-web": "webpack",
@@ -52,13 +51,14 @@
     "email": "PPTools@microsoft.com"
   },
   "engines": {
-    "vscode": "^1.72.0"
+    "vscode": "^1.73.0"
   },
   "extensionKind": [
     "workspace"
   ],
   "publisher": "microsoft-IsvExpTools",
   "main": "./dist/extension",
+  "l10n": "./l10n",
   "browser": "./dist/web/extension.js",
   "categories": [
     "Snippets",
@@ -279,6 +279,31 @@
       {
         "command": "microsoft-powerapps-portals.webExtension.init",
         "title": "%microsoft-powerapps-portals.webExtension.init.title%"
+      },
+      {
+        "command": "microsoft-powerapps-portals.webpage",
+        "category": "Powerpages",
+        "title": "New Webpage"
+      },
+      {
+        "command": "microsoft-powerapps-portals.webfile",
+        "category": "Powerpages",
+        "title": "New Assets (Web files)"
+      },
+      {
+        "command": "microsoft-powerapps-portals.webtemplate",
+        "category": "Powerpages",
+        "title": "New Web Template"
+      },
+      {
+        "command": "microsoft-powerapps-portals.contentsnippet",
+        "category": "Powerpages",
+        "title": "New Content Snippet"
+      },
+      {
+        "command": "microsoft-powerapps-portals.pagetemplate",
+        "category": "Powerpages",
+        "title": "New Page Template"
       }
     ],
     "configuration": {
@@ -349,11 +374,6 @@
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Dev version",
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Canary version"
           ]
-        },
-        "powerPlatform.experimental.portalCRUDoperations": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Enable create, delete and rename operation in desktop extension"
         }
       }
     },
@@ -470,6 +490,34 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "submenu": "microsoft-powerapps-portals.powerpages",
+          "group": "1_powerpages"
+        }
+      ],
+      "microsoft-powerapps-portals.powerpages": [
+        {
+          "command": "microsoft-powerapps-portals.webpage",
+          "group": "1_powerpages@1"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webfile",
+          "group": "1_powerpages@5"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webtemplate",
+          "group": "1_powerpages@3"
+        },
+        {
+          "command": "microsoft-powerapps-portals.contentsnippet",
+          "group": "1_powerpages@4"
+        },
+        {
+          "command": "microsoft-powerapps-portals.pagetemplate",
+          "group": "1_powerpages@2"
+        }
+      ],
       "editor/title": [
         {
           "when": "resourceLangId == html && !virtualWorkspace",
@@ -666,6 +714,12 @@
         }
       ]
     },
+    "submenus": [
+      {
+        "id": "microsoft-powerapps-portals.powerpages",
+        "label": "Power Pages"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -743,15 +797,18 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.14.6",
+    "@types/node-fetch": "^2.6.2",
     "@types/puppeteer-core": "^5.4.0",
+    "@types/recursive-readdir": "^2.2.1",
     "@types/sinon": "^10.0.12",
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
-    "@types/vscode": "^1.72.0",
+    "@types/vscode": "^1.73.0",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.17.0",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
+    "@vscode/l10n-dev": "^0.0.23",
     "@vscode/test-electron": "^2.1.5",
     "@vscode/test-web": "^0.0.24",
     "assert": "^2.0.0",
@@ -784,7 +841,6 @@
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
     "vsce": "^2.7.0",
-    "vscode-nls-dev": "^4.0.0-next.1",
     "webpack": "^5.61.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
@@ -804,7 +860,6 @@
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
-    "vscode-nls": "^5.0.0",
     "yaml": "^1.10.2"
   },
   "__metadata": {

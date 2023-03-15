@@ -4,13 +4,17 @@
  */
 
 import * as vscode from "vscode";
-//import * as nls from 'vscode-nls';
-//const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+import { ITelemetry } from "../telemetry/ITelemetry";
+import { sendTelemetryEvent, ValidateTextDocumentEvent } from "./telemetry";
 
 // Create a diagnostics connection to output warning/error messages to "Problems" tab
 const connection = vscode.languages.createDiagnosticCollection("FileDeleteEvent");
 
-export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], searchByName: boolean): Promise<void> {
+export async function validateTextDocument(uri: vscode.Uri,
+    patterns: RegExp[],
+    searchByName: boolean,
+    telemetry: ITelemetry
+): Promise<void> {
     try {
         const textDocument = await vscode.workspace.openTextDocument(uri);
         const text = textDocument.getText();
@@ -24,8 +28,11 @@ export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], 
                 const diagnostic: vscode.Diagnostic = {
                     severity: vscode.DiagnosticSeverity.Warning,
                     range: new vscode.Range(textDocument.positionAt(m.index), textDocument.positionAt(m.index + m[0].length)),
-                    // localize("powerPages.searchByNameReferenceMessage", `Deleted file might be referenced by name here.`)
-                    message: `PowerPages: ` + (searchByName ? `File might be referenced by name "${m[0]}" here.` : ""),
+                    message: `PowerPages: ` + (searchByName ? vscode.l10n.t({
+                        message: "File might be referenced by name {0} here.",
+                        args: [m[0]],
+                        comment: ["{0} represents the name of the file"]
+                    }) : ""),
                     source: 'ex',
                     // relatedInformation: [
                     //     new vscode.DiagnosticRelatedInformation(new vscode.Location(textDocument.uri, new vscode.Range(new vscode.Position(1, 8), new vscode.Position(1, 9))), 'first assignment to `x`')
@@ -38,16 +45,15 @@ export async function validateTextDocument(uri: vscode.Uri, patterns: RegExp[], 
         // Send the computed diagnostics to VSCode.
         connection.set(uri, diagnostics.concat(vscode.languages.getDiagnostics(uri)));
     }
-    catch {
-        // DO nothing
-        // TODO - Log telemetry for info only
+    catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: ValidateTextDocumentEvent, exception: error as Error });
     }
 }
 
 export function showDiagnosticMessage() {
     const terminal = vscode.window.activeTerminal ? vscode.window.activeTerminal : vscode.window.createTerminal("Power Apps Portal");
     terminal.show(true);
-    vscode.window.showWarningMessage(`Some references might be broken. Please check diagnostics for more details.`);
+    vscode.window.showWarningMessage(vscode.l10n.t(`Some references might be broken. Please check diagnostics for details.`));
 }
 
 export function disposeDiagnostics() {
