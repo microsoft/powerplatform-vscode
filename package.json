@@ -847,6 +847,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@microsoft/generator-powerpages": "file:dist/powerpages/microsoft-generator-powerpages-1.0.0.tgz",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
@@ -855,6 +856,7 @@
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
+    "recursive-readdir": "^2.2.3",
     "unzip-stream": "^0.3.1",
     "uuid": "^8.3.2",
     "vscode-languageclient": "^7.0.0",
