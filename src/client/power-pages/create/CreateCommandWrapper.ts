@@ -10,6 +10,7 @@ import { sendTelemetryEvent, TriggerPoint, UserFileCreateEvent } from "../teleme
 import { createContentSnippet } from "./Contentsnippet";
 import { Tables } from "./CreateOperationConstants";
 import { getSelectedWorkspaceFolder } from "./utils/CommonUtils";
+import { createWebpage } from "./Webpage";
 import { createWebTemplate } from "./WebTemplate";
 const activeEditor = vscode.window.activeTextEditor;
 
@@ -61,6 +62,24 @@ function registerCreateCommands(
                 activeEditor,
             );
             createWebTemplate(
+                context,
+                selectedWorkspaceFolder,
+                yoCommandPath,
+                telemetry
+            );
+        }
+    );
+
+    vscode.commands.registerCommand(
+        "microsoft-powerapps-portals.webpage",
+        async (uri) => {
+            const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.WEBPAGE, triggerPoint: triggerPoint });
+            const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
+                uri,
+                activeEditor,
+            );
+            createWebpage(
                 context,
                 selectedWorkspaceFolder,
                 yoCommandPath,

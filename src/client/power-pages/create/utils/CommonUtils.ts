@@ -13,6 +13,9 @@ import {
     NOT_A_PORTAL_DIRECTORY,
     WEBSITE_YML,
 } from "../CreateOperationConstants";
+import { Context } from "@microsoft/generator-powerpages/generators/context";
+import { IPageTemplates, IParentPagePaths, ITemplate } from "../CreateTypes";
+import DesktopFS from "./DesktopFS";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
     return !str || str.trim().length === 0;
@@ -36,6 +39,89 @@ export const formatFileName = (name: string) => {
     // Uppercase the first letter of each word and join the words back together
     return words.map((word) => word[0].toUpperCase() + word.slice(1)).join("-");
 };
+
+// Function to get the names and values of page templates from a provided context
+export function getPageTemplate(context: Context): IPageTemplates {
+
+    const pageTemplates: ITemplate[] = context.getPageTemplates();
+
+    // Check if pageTemplates is not empty
+    if (!pageTemplates.length) {
+        return { pageTemplateNames: [], pageTemplateMap: new Map() };
+    }
+
+    const pageTemplateNames = pageTemplates.map((template) => template.name);
+
+    // Create a map of page template names to their corresponding values
+    const pageTemplateMap = new Map<string, string>();
+    pageTemplates.forEach((template) => {
+        pageTemplateMap.set(template.name, template.value);
+    });
+
+    // Return the extracted page template names and map
+    return { pageTemplateNames, pageTemplateMap };
+}
+
+export function getParentPagePaths(portalContext: Context): IParentPagePaths {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pages: Map<string, any> = new Map();
+    const paths: Array<string> = [];
+    const pathsMap: Map<string, string> = new Map();
+    const webpageNames: Array<string> = [];
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    portalContext.webpageMap.forEach((page: any) => {
+        pages.set(page.id, page.content);
+    });
+
+    if (pages.size === 0) {
+        return { paths: [], pathsMap: new Map(), webpageNames: [] };
+    }
+
+    // eslint-disable-next-line prefer-const
+    for (let [webpageid, page] of pages) {
+        if (!page.adx_name || !webpageid) {
+            continue;
+        }
+        let path = page.adx_name;
+        webpageNames.push(path);
+
+        // If the page is a home page, add it to the paths array
+        if (!page.adx_parentpageid && page.adx_partialurl === "/") {
+            paths.push(path);
+            pathsMap.set(path, webpageid);
+            continue;
+        }
+        let prevPage = null;
+        if (pages.has(page.adx_parentpageid)) {
+            while (page.adx_parentpageid) {
+                if (!pages.has(page.adx_parentpageid)) {
+                    break;
+                }
+                // to check for circular reference
+                if (prevPage === page) {
+                    break;
+                }
+                prevPage = page;
+                page = pages.get(page.adx_parentpageid);
+                path = `${page.adx_name}/${path}`;
+            }
+            // to check for duplicates
+            if (paths.indexOf(path) === -1) {
+                paths.push(path);
+                pathsMap.set(path, webpageid);
+            }
+        }
+    }
+    paths.sort();
+    return { paths, pathsMap, webpageNames };
+}
+
+export function getPortalContext(portalDir: string): Context {
+    const fs: DesktopFS = new DesktopFS();
+    const portalContext = Context.getInstance(portalDir, fs);
+    return portalContext;
+}
 
 export function createFileWatcher(
     context: vscode.ExtensionContext,
