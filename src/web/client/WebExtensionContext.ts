@@ -64,6 +64,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _telemetry: WebExtensionTelemetry;
     private _npsEligibility: boolean;
     private _userId: string;
+    private _formsProEligibilityId: string;
 
     public get schemaDataSourcePropertiesMap() { return this._schemaDataSourcePropertiesMap; }
     public get schemaEntitiesMap() { return this._schemaEntitiesMap; }
@@ -84,6 +85,7 @@ class WebExtensionContext implements IWebExtensionContext {
     public get telemetry() { return this._telemetry; }
     public get npsEligibility() { return this._npsEligibility; }
     public get userId() { return this._userId; }
+    public get formsProEligibilityId() {return this._formsProEligibilityId;}
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -103,8 +105,9 @@ class WebExtensionContext implements IWebExtensionContext {
         this._isContextSet = false;
         this._currentSchemaVersion = "";
         this._telemetry = new WebExtensionTelemetry();
-        this._npsEligibility = false;
+        this._npsEligibility = true;
         this._userId =  "";
+        this._formsProEligibilityId = '';
     }
 
     public setWebExtensionContext(entityName: string, entityId: string, queryParamsMap: Map<string, string>) {
@@ -274,6 +277,9 @@ class WebExtensionContext implements IWebExtensionContext {
     } 
     public setUserId(uid: string) {
         this._userId = uid;
+    } 
+    public setFormsProEligibilityId(formsProEligibilityId: string) {
+        this._formsProEligibilityId = formsProEligibilityId;
     } 
 }
 
