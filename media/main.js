@@ -18,7 +18,6 @@ function renderSurvey(TenantId,UserId, EnvironmentId,Geo,ProductVersion,Culture,
     } else {
       context.UserId = UserId;
     }
-    debugger;
     se.renderPopup(context);
 }
 

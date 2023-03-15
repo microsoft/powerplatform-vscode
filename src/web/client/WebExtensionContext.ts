@@ -105,7 +105,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._isContextSet = false;
         this._currentSchemaVersion = "";
         this._telemetry = new WebExtensionTelemetry();
-        this._npsEligibility = true;
+        this._npsEligibility = false;
         this._userId =  "";
         this._formsProEligibilityId = '';
     }
