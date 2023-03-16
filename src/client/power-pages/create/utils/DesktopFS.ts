@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IAbstractFS } from "@microsoft/generator-powerpages/generators/context";
+import { IAbstractFS } from "@microsoft/generator-powerpages/context";
 import * as fs from "fs";
 import recursive from "recursive-readdir";
 

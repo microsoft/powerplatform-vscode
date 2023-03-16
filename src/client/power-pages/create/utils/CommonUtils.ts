@@ -14,7 +14,7 @@ import {
     NO_WORKSPACEFOLDER_FOUND,
     WEBSITE_YML,
 } from "../CreateOperationConstants";
-import { Context } from "@microsoft/generator-powerpages/generators/context";
+import { Context } from "@microsoft/generator-powerpages/context";
 import { IPageTemplates, IParentPagePaths, ITemplate } from "../CreateTypes";
 import DesktopFS from "./DesktopFS";
 
