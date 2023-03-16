@@ -18,6 +18,7 @@ export const NOT_A_PORTAL_DIRECTORY =
 export const WEBSITE_YML = "website.yml";
 export const NO_WORKSPACEFOLDER_FOUND = vscode.l10n.t("No workspace folder found")
 export const CONTENT_SNIPPET = "ContentSnippet"
+export const WEBFILE = "Webfile"
 
 export enum YoSubGenerator {
     PAGETEMPLATE = "@microsoft/powerpages:pagetemplate",

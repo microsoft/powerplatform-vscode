@@ -8,7 +8,7 @@ import { GeneratorAcquisition } from "../../lib/GeneratorAcquisition";
 import { ITelemetry } from "../../telemetry/ITelemetry";
 import { sendTelemetryEvent, TriggerPoint, UserFileCreateEvent } from "../telemetry";
 import { createContentSnippet } from "./Contentsnippet";
-import { CONTENT_SNIPPET, Tables } from "./CreateOperationConstants";
+import { CONTENT_SNIPPET, Tables, WEBFILE } from "./CreateOperationConstants";
 import { createPageTemplate } from "./PageTemplate";
 import { getSelectedWorkspaceFolder } from "./utils/CommonUtils";
 import { createWebpage } from "./Webpage";
@@ -102,6 +102,24 @@ function registerCreateCommands(
                 activeEditor,
             );
             createPageTemplate(
+                context,
+                selectedWorkspaceFolder,
+                yoCommandPath,
+                telemetry
+            );
+        }
+    );
+
+    vscode.commands.registerCommand(
+        "microsoft-powerapps-portals.webfile",
+        async (uri) => {
+            const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: WEBFILE, triggerPoint: triggerPoint });
+            const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
+                uri,
+                activeEditor,
+            );
+            createWebpage(
                 context,
                 selectedWorkspaceFolder,
                 yoCommandPath,
