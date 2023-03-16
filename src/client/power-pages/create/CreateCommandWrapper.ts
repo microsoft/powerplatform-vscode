@@ -11,6 +11,7 @@ import { createContentSnippet } from "./Contentsnippet";
 import { CONTENT_SNIPPET, Tables, WEBFILE } from "./CreateOperationConstants";
 import { createPageTemplate } from "./PageTemplate";
 import { getSelectedWorkspaceFolder } from "./utils/CommonUtils";
+import { createWebfile } from "./Webfile";
 import { createWebpage } from "./Webpage";
 import { createWebTemplate } from "./WebTemplate";
 const activeEditor = vscode.window.activeTextEditor;
@@ -119,8 +120,7 @@ function registerCreateCommands(
                 uri,
                 activeEditor,
             );
-            createWebpage(
-                context,
+            createWebfile(
                 selectedWorkspaceFolder,
                 yoCommandPath,
                 telemetry
