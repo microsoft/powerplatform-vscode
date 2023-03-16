@@ -26,6 +26,9 @@ export function initializeGenerator(
     const yoCommandPath = generator.yoCommandPath;
     if (yoCommandPath) {
         registerCreateCommands(context, yoCommandPath, telemetry);
+        vscode.workspace
+            .getConfiguration("powerPlatform")
+            .update("generatorInstalled", true, true);
     }
 }
 

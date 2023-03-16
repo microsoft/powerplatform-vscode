@@ -309,6 +309,11 @@
     "configuration": {
       "tile": "Power Platform",
       "properties": {
+        "powerPlatform.generatorInstalled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Whether the generator installation is complete."
+        },
         "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
           "default": false,
@@ -493,7 +498,8 @@
       "explorer/context": [
         {
           "submenu": "microsoft-powerapps-portals.powerpages",
-          "group": "1_powerpages"
+          "group": "1_powerpages",
+          "when": "config.powerPlatform.generatorInstalled"
         }
       ],
       "microsoft-powerapps-portals.powerpages": [
@@ -634,6 +640,26 @@
         {
           "command": "pacCLI.authPanel.clearAuthProfile",
           "when": "!virtualWorkspace"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webpage",
+          "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webfile",
+          "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webtemplate",
+          "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "microsoft-powerapps-portals.contentsnippet",
+          "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "microsoft-powerapps-portals.pagetemplate",
+          "when": "config.powerPlatform.generatorInstalled"
         }
       ],
       "view/title": [
