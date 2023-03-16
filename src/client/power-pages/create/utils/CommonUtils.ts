@@ -12,10 +12,11 @@ import { FileCreateEvent, sendTelemetryEvent} from "../../telemetry";
 import {
     NOT_A_PORTAL_DIRECTORY,
     NO_WORKSPACEFOLDER_FOUND,
+    Tables,
     WEBSITE_YML,
 } from "../CreateOperationConstants";
 import { Context } from "@microsoft/generator-powerpages/context";
-import { IPageTemplates, IParentPagePaths, ITemplate } from "../CreateTypes";
+import { IPageTemplates, IParentPagePaths, ITemplate, IWebTemplates } from "../CreateTypes";
 import DesktopFS from "./DesktopFS";
 
 export const isNullOrEmpty = (str: string | undefined): boolean => {
@@ -117,6 +118,21 @@ export function getParentPagePaths(portalContext: Context): IParentPagePaths {
     paths.sort();
     return { paths, pathsMap, webpageNames };
 }
+
+export async function getWebTemplates(
+    portalContext: Context
+): Promise<IWebTemplates> {
+    await portalContext.init([Tables.WEBTEMPLATE]);
+    const webTemplates: ITemplate[] = portalContext.getWebTemplates();
+
+    const webTemplateNames = webTemplates.map((template) => template.name);
+    const webTemplateMap = new Map<string, string>();
+    webTemplates.forEach((template) => {
+        webTemplateMap.set(template.name, template.value);
+    });
+    return { webTemplateNames, webTemplateMap };
+}
+
 
 export function getPortalContext(portalDir: string): Context {
     const fs: DesktopFS = new DesktopFS();

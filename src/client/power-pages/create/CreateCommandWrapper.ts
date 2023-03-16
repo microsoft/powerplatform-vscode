@@ -9,6 +9,7 @@ import { ITelemetry } from "../../telemetry/ITelemetry";
 import { sendTelemetryEvent, TriggerPoint, UserFileCreateEvent } from "../telemetry";
 import { createContentSnippet } from "./Contentsnippet";
 import { CONTENT_SNIPPET, Tables } from "./CreateOperationConstants";
+import { createPageTemplate } from "./PageTemplate";
 import { getSelectedWorkspaceFolder } from "./utils/CommonUtils";
 import { createWebpage } from "./Webpage";
 import { createWebTemplate } from "./WebTemplate";
@@ -83,6 +84,24 @@ function registerCreateCommands(
                 activeEditor,
             );
             createWebpage(
+                context,
+                selectedWorkspaceFolder,
+                yoCommandPath,
+                telemetry
+            );
+        }
+    );
+
+    vscode.commands.registerCommand(
+        "microsoft-powerapps-portals.pagetemplate",
+        async (uri) => {
+            const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.PAGETEMPLATE, triggerPoint: triggerPoint });
+            const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
+                uri,
+                activeEditor,
+            );
+            createPageTemplate(
                 context,
                 selectedWorkspaceFolder,
                 yoCommandPath,
