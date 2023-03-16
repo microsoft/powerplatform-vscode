@@ -40,55 +40,56 @@ export const createPageTemplate = async (
     telemetry: ITelemetry
 ): Promise<void> => {
     try {
-        if (selectedWorkspaceFolder) {
-            const portalDir = selectedWorkspaceFolder;
-            const portalContext = getPortalContext(portalDir);
+        if (!selectedWorkspaceFolder) {
+            return
+        }
+        const portalDir = selectedWorkspaceFolder;
+        const portalContext = getPortalContext(portalDir);
 
-            const { webTemplateNames, webTemplateMap } = await getWebTemplates(
-                portalContext
-            );
+        const { webTemplateNames, webTemplateMap } = await getWebTemplates(
+            portalContext
+        );
 
-            const pageTemplateInputs = await getPageTemplateInputs(
-                webTemplateNames,
-                selectedWorkspaceFolder
-            );
-            const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
-            const pageTemplateName = pageTemplateInputs.name;
+        const pageTemplateInputs = await getPageTemplateInputs(
+            webTemplateNames,
+            selectedWorkspaceFolder
+        );
+        const webtemplateId = webTemplateMap.get(pageTemplateInputs.type);
+        const pageTemplateName = pageTemplateInputs.name;
 
-            if (!pageTemplateName) {
-                throw new Error(
-                    vscode.l10n.t("Page Template name cannot be empty.")
-                );
-            }
-
-            const file = formatFileName(pageTemplateName);
-            const watcherPattern = path.join(
-                TableFolder.PAGETEMPLATE_FOLDER,
-                `${file}.pagetemplate.yml`
-            );
-            const watcher = createFileWatcher(
-                context,
-                selectedWorkspaceFolder,
-                watcherPattern
-            );
-
-            const command = `${yoGenPath} ${YoSubGenerator.PAGETEMPLATE} "${pageTemplateName}" "${webtemplateId}"`;
-            await createRecord(
-                Tables.PAGETEMPLATE,
-                command,
-                portalDir,
-                watcher,
-                telemetry
+        if (!pageTemplateName) {
+            throw new Error(
+                vscode.l10n.t("Page Template name cannot be empty.")
             );
         }
+
+        const file = formatFileName(pageTemplateName);
+        const watcherPattern = path.join(
+            TableFolder.PAGETEMPLATE_FOLDER,
+            `${file}.pagetemplate.yml`
+        );
+        const watcher = createFileWatcher(
+            context,
+            selectedWorkspaceFolder,
+            watcherPattern
+        );
+
+        const command = `${yoGenPath} ${YoSubGenerator.PAGETEMPLATE} "${pageTemplateName}" "${webtemplateId}"`;
+        await createRecord(
+            Tables.PAGETEMPLATE,
+            command,
+            portalDir,
+            watcher,
+            telemetry
+        );
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, {
-            eventName: UserFileCreateEvent,
-            fileEntityType: Tables.PAGETEMPLATE,
-            exception: error as Error,
-        });
-        throw new Error(error);
-    }
+    sendTelemetryEvent(telemetry, {
+        eventName: UserFileCreateEvent,
+        fileEntityType: Tables.PAGETEMPLATE,
+        exception: error as Error,
+    });
+    throw new Error(error);
+}
 };
 
 /*

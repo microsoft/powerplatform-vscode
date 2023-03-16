@@ -39,8 +39,10 @@ export const createWebpage = async (
     telemetry: ITelemetry
 ) => {
     try {
-        const portalDir = `${selectedWorkspaceFolder}`;
-        const portalContext = getPortalContext(portalDir);
+        if(!selectedWorkspaceFolder) {
+            return
+        }
+        const portalContext = getPortalContext(selectedWorkspaceFolder);
         // Get the page templates & webpages from the portal directory
         await portalContext.init([Tables.PAGETEMPLATE, Tables.WEBPAGE]);
 
@@ -94,7 +96,7 @@ export const createWebpage = async (
             await createRecord(
                 Tables.WEBPAGE,
                 command,
-                portalDir,
+                selectedWorkspaceFolder,
                 watcher,
                 telemetry
             );
