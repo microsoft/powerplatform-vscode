@@ -40,7 +40,7 @@ export const createWebfile = async (
 
             if (paths.length === 0) {
                 vscode.window.showErrorMessage(
-                    vscode.l10n.t("No parent pages found")
+                    vscode.l10n.t("No parent pages found for adding webfile")
                 );
                 return;
             }
