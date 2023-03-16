@@ -81,6 +81,7 @@ export class NPSService{
                 if( result?.Eligibility){
                     WebExtensionContext.telemetry.sendAPISuccessTelemetry(telemetryEventNames.NPS_USER_ELIGIBLE, "NPS Api",httpMethod.POST,new Date().getTime() - requestSentAtTime);
                     WebExtensionContext.setNPSEligibility(true);
+                    WebExtensionContext.setFormsProEligibilityId(result?.FormsProEligibilityId);
                 }
         }catch(error){
             WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.NPS_API_FAILED, (error as Error)?.message);
