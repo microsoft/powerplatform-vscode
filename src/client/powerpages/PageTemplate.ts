@@ -5,12 +5,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import * as nls from "vscode-nls";
-nls.config({
-    messageFormat: nls.MessageFormat.bundle,
-    bundleFormat: nls.BundleFormat.standalone,
-})();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import {
     createFileWatcher,
@@ -25,6 +19,14 @@ import path from "path";
 import { pageTemplate, TableFolder } from "./constants";
 import { YoSubGenerator } from "../powerpages/constants";
 import { statSync } from "fs";
+
+interface IPagetemplateInputState {
+    title: string;
+    step: number;
+    totalSteps: number;
+    type: string;
+    name: string;
+}
 
 export const createPageTemplate = async (
     context: vscode.ExtensionContext,
@@ -48,7 +50,7 @@ export const createPageTemplate = async (
             const pageTemplateName = pageTemplateInputs.name;
 
             if (!pageTemplateName) {
-                throw new Error("Page Template name cannot be empty.");
+                throw new Error(vscode.l10n.t("Page Template name cannot be empty."));
             }
 
             const file = formatFileName(pageTemplateName);
@@ -62,7 +64,6 @@ export const createPageTemplate = async (
                 watcherPattern
             );
 
-            //command to run, to create the page template
             const command = `${yoGenPath} ${YoSubGenerator.PAGETEMPLATE} "${pageTemplateName}" "${webtemplateId}"`;
             await createRecord(pageTemplate, command, portalDir, watcher);
         }
@@ -85,35 +86,24 @@ async function getPageTemplateInputs(
         label,
     }));
 
-    interface State {
-        title: string;
-        step: number;
-        totalSteps: number;
-        type: string;
-        name: string;
-    }
+    const title = vscode.l10n.t("New Page Template");
 
     async function collectInputs() {
-        const state = {} as Partial<State>;
+        const state = {} as Partial<IPagetemplateInputState>;
         await MultiStepInput.run((input) => inputName(input, state));
-        return state as State;
+        return state as IPagetemplateInputState;
     }
 
-    const title = localize(
-        "microsoft-powerapps-portals.webExtension.pagetemplate.quickpick.title",
-        "New Page Template"
-    );
-
-    async function inputName(input: MultiStepInput, state: Partial<State>) {
+    async function inputName(
+        input: MultiStepInput,
+        state: Partial<IPagetemplateInputState>
+    ) {
         state.name = await input.showInputBox({
             title,
             step: 1,
             totalSteps: 2,
             value: state.name || "",
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.pagetemplate.quickpick.name.placeholder",
-                "Enter name"
-            ),
+            placeholder: vscode.l10n.t("Enter name"),
             validate: validateNameIsUnique,
         });
         return (input: MultiStepInput) => pickWebtemplate(input, state);
@@ -121,16 +111,13 @@ async function getPageTemplateInputs(
 
     async function pickWebtemplate(
         input: MultiStepInput,
-        state: Partial<State>
+        state: Partial<IPagetemplateInputState>
     ) {
         const pick = await input.showQuickPick({
             title,
             step: 2,
             totalSteps: 2,
-            placeholder: localize(
-                "microsoft-powerapps-portals.webExtension.pagetemplate.quickpick.webtemplate.placeholder",
-                "Choose web template"
-            ),
+            placeholder: vscode.l10n.t("Choose web template"),
             items: webTemplates,
             activeItem: typeof state.type !== "string" ? state.type : undefined,
         });
@@ -149,7 +136,9 @@ async function getPageTemplateInputs(
         try {
             const stat = statSync(filePath);
             if (stat) {
-                return "A page template with the same name already exists. Please enter a different name.";
+                return vscode.l10n.t(
+                    "A page template with the same name already exists. Please enter a different name."
+                );
             }
         } catch (error: any) {
             if (error.code === "ENOENT") {

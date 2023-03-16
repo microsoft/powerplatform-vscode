@@ -5,12 +5,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import * as nls from "vscode-nls";
-nls.config({
-    messageFormat: nls.MessageFormat.bundle,
-    bundleFormat: nls.BundleFormat.standalone,
-})();
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
 import * as vscode from "vscode";
 import {
     getParentPagePaths,
@@ -21,6 +15,13 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import { Tables, YoSubGenerator } from "./constants";
 import { exec } from "child_process";
+
+interface IWebfileInputState {
+    title: string;
+    step: number;
+    totalSteps: number;
+    id: string;
+}
 
 export const createWebfile = async (
     selectedWorkspaceFolder: string | undefined,
@@ -107,36 +108,23 @@ async function getWebfileInputs(parentPage: string[]) {
         label,
     }));
 
-    interface State {
-        title: string;
-        step: number;
-        totalSteps: number;
-        id: string;
-    }
+    const title = vscode.l10n.t("Web files");
 
     async function collectInputs() {
-        const state = {} as Partial<State>;
+        const state = {} as Partial<IWebfileInputState>;
         await MultiStepInput.run((input) => pickParentPage(input, state));
-        return state as State;
+        return state as IWebfileInputState;
     }
-
-    const title = localize(
-        "microsoft-powerapps-portals.desktopExt.webfile.quickpick.title",
-        "Web files"
-    );
 
     async function pickParentPage(
         input: MultiStepInput,
-        state: Partial<State>
+        state: Partial<IWebfileInputState>
     ) {
         const pick = await input.showQuickPick({
             title,
             step: 1,
             totalSteps: 1,
-            placeholder: localize(
-                "microsoft-powerapps-portals.desktopExt.webfile.quickpick.parentpage.placeholder",
-                "Choose parent page"
-            ),
+            placeholder: vscode.l10n.t("Choose parent page"),
             items: parentPages,
             activeItem: typeof state.id !== "string" ? state.id : undefined,
         });
