@@ -309,6 +309,11 @@
     "configuration": {
       "tile": "Power Platform",
       "properties": {
+        "powerPlatform.generatorInstalled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Whether the generator installation is complete."
+        },
         "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
           "default": false,
@@ -493,7 +498,8 @@
       "explorer/context": [
         {
           "submenu": "microsoft-powerapps-portals.powerpages",
-          "group": "1_powerpages"
+          "group": "1_powerpages",
+          "when": "config.powerPlatform.generatorInstalled"
         }
       ],
       "microsoft-powerapps-portals.powerpages": [
@@ -634,6 +640,26 @@
         {
           "command": "pacCLI.authPanel.clearAuthProfile",
           "when": "!virtualWorkspace"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webpage",
+          "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webfile",
+          "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "microsoft-powerapps-portals.webtemplate",
+          "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "microsoft-powerapps-portals.contentsnippet",
+          "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "microsoft-powerapps-portals.pagetemplate",
+          "when": "config.powerPlatform.generatorInstalled"
         }
       ],
       "view/title": [
@@ -841,12 +867,13 @@
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
     "vsce": "^2.7.0",
-    "webpack": "^5.61.0",
+    "webpack": "^5.76.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@microsoft/generator-powerpages": "1.21.16",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
@@ -855,6 +882,7 @@
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
+    "recursive-readdir": "^2.2.3",
     "unzip-stream": "^0.3.1",
     "uuid": "^8.3.2",
     "vscode-languageclient": "^7.0.0",

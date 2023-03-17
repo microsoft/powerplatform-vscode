@@ -8,8 +8,11 @@ import { GeneratorAcquisition } from "../../lib/GeneratorAcquisition";
 import { ITelemetry } from "../../telemetry/ITelemetry";
 import { sendTelemetryEvent, TriggerPoint, UserFileCreateEvent } from "../telemetry";
 import { createContentSnippet } from "./Contentsnippet";
-import { Tables } from "./CreateOperationConstants";
+import { CONTENT_SNIPPET, Tables, WEBFILE } from "./CreateOperationConstants";
+import { createPageTemplate } from "./PageTemplate";
 import { getSelectedWorkspaceFolder } from "./utils/CommonUtils";
+import { createWebfile } from "./Webfile";
+import { createWebpage } from "./Webpage";
 import { createWebTemplate } from "./WebTemplate";
 const activeEditor = vscode.window.activeTextEditor;
 
@@ -25,6 +28,9 @@ export function initializeGenerator(
     const yoCommandPath = generator.yoCommandPath;
     if (yoCommandPath) {
         registerCreateCommands(context, yoCommandPath, telemetry);
+        vscode.workspace
+            .getConfiguration("powerPlatform")
+            .update("generatorInstalled", true, true);
     }
 }
 
@@ -37,7 +43,7 @@ function registerCreateCommands(
         "microsoft-powerapps-portals.contentsnippet",
         async (uri) => {
             const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
-            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.CONTENT_SNIPPET, triggerPoint: triggerPoint });
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: CONTENT_SNIPPET, triggerPoint: triggerPoint });
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,
@@ -62,6 +68,59 @@ function registerCreateCommands(
             );
             createWebTemplate(
                 context,
+                selectedWorkspaceFolder,
+                yoCommandPath,
+                telemetry
+            );
+        }
+    );
+
+    vscode.commands.registerCommand(
+        "microsoft-powerapps-portals.webpage",
+        async (uri) => {
+            const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.WEBPAGE, triggerPoint: triggerPoint });
+            const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
+                uri,
+                activeEditor,
+            );
+            createWebpage(
+                context,
+                selectedWorkspaceFolder,
+                yoCommandPath,
+                telemetry
+            );
+        }
+    );
+
+    vscode.commands.registerCommand(
+        "microsoft-powerapps-portals.pagetemplate",
+        async (uri) => {
+            const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.PAGETEMPLATE, triggerPoint: triggerPoint });
+            const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
+                uri,
+                activeEditor,
+            );
+            createPageTemplate(
+                context,
+                selectedWorkspaceFolder,
+                yoCommandPath,
+                telemetry
+            );
+        }
+    );
+
+    vscode.commands.registerCommand(
+        "microsoft-powerapps-portals.webfile",
+        async (uri) => {
+            const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: WEBFILE, triggerPoint: triggerPoint });
+            const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
+                uri,
+                activeEditor,
+            );
+            createWebfile(
                 selectedWorkspaceFolder,
                 yoCommandPath,
                 telemetry
