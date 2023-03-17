@@ -11,6 +11,11 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+1.1.19:
+ - pac CLI 1.21.13 (Feb refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - Desktop extension now supports create, delete and rename for power pages site entities like webpage, webfile, templates and content-snippets
+ - Enhanced intellisense support - Auto-complete for Dataverse entity tags, template tags, filters, portal-specific liquid objects & their attributes
+
 1.1.14:
  - pac CLI 1.21.4 (Nov refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
  - support for new data model for Power Pages in Studio web extension
