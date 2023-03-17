@@ -17,8 +17,8 @@ import { MultiStepInput } from "./utils/MultiStepInput";
 import path from "path";
 import { statSync } from "fs";
 import {
+    CONTENT_SNIPPET,
     TableFolder,
-    Tables,
     YoSubGenerator,
 } from "./CreateOperationConstants";
 import { ITelemetry } from "../../telemetry/ITelemetry";
@@ -62,7 +62,7 @@ export const createContentSnippet = async (
 
             const command = `"${yoGenPath}" ${YoSubGenerator.CONTENT_SNIPPET} "${contentSnippetName}" "${contentSnippetType}"`;
             await createRecord(
-                Tables.CONTENT_SNIPPET,
+                CONTENT_SNIPPET,
                 command,
                 selectedWorkspaceFolder,
                 watcher,
@@ -70,7 +70,7 @@ export const createContentSnippet = async (
             );
         }
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:Tables.CONTENT_SNIPPET, exception: error as Error })
+        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:CONTENT_SNIPPET, exception: error as Error })
         throw new Error(error);
     }
 };
