@@ -5,7 +5,7 @@
 
 
 import * as vscode from "vscode";
-import powerPlatformExtensionContext from "../WebExtensionContext";
+import WebExtensionContext from "../WebExtensionContext";
 import { schemaKey } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 import { PORTALS_FOLDER_NAME_DEFAULT, queryParameters } from "./constants";
@@ -73,7 +73,7 @@ export function checkMandatoryPathParameters(appName: string, entity: string, en
             if (entity && entityId) { // this will change when we start supporting multi-entity edits
                 return true;
             } else {
-                powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
+                WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING);
                 showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"), vscode.l10n.t("Check the URL and verify the parameters are correct"));
                 return false;
             }
@@ -94,7 +94,7 @@ export function checkMandatoryQueryParameters(appName: string, queryParamsMap: M
             if (orgURL && dataSource && schemaName && websiteId) {
                 return true;
             } else {
-                powerPlatformExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
+                WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING);
                 showErrorDialog(vscode.l10n.t("There was a problem opening the workspace"), vscode.l10n.t("Check the URL and verify the parameters are correct"));
                 return false;
             }

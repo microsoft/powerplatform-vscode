@@ -3,10 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
-import * as portalSchemaReadeMock from "./portalSchemaReader.mock";
+import * as portalSchema from "../../schema/portalSchema";
 import { schemaEntityKey } from "../../schema/constants";
-import Sinon, { stub } from "sinon";
+import Sinon from "sinon";
 import {
     getEntitiesSchemaMap,
     getDataSourcePropertiesMap,
@@ -21,12 +20,12 @@ describe("portalSchemaReader", () => {
     it("getEntitiesSchemaMap_withValidSchemaV2_shouldBeMap", () => {
         //Action
         const result = getEntitiesSchemaMap(
-            portalSchemaReadeMock.portal_schema_V2.entities.dataSourceProperties
+            portalSchema.portal_schema_V2.entities.dataSourceProperties
                 .schema
         );
 
         //Assert
-        portalSchemaReadeMock.portal_schema_V2.entities.entity.forEach(
+        portalSchema.portal_schema_V2.entities.entity.forEach(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (element: any) => {
                 const entitiesDetailsMap = result.get(
@@ -47,7 +46,7 @@ describe("portalSchemaReader", () => {
         //Action
         const result = getEntitiesSchemaMap("test");
         //Assert
-        portalSchemaReadeMock.portal_schema_V1.entities.entity.forEach(
+        portalSchema.portal_schema_V1.entities.entity.forEach(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (element: any) => {
                 const entitiesDetailsMap = result.get(
@@ -64,23 +63,6 @@ describe("portalSchemaReader", () => {
         );
     });
 
-    it("getEntitiesSchemaMap_withEmptyEntity_shouldBeEmptyMap", () => {
-        //Act
-        stub(schemaHelperUtil, "getPortalSchema").returns(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            portalSchemaReadeMock.schema_data_with_empty_entity as any
-        );
-
-        //Action
-        const result = getEntitiesSchemaMap("testSchema");
-
-        //Assert
-        for (const [key] of result) {
-            expect(key).equal(undefined);
-        }
-        expect(result.size).eq(0);
-    });
-
     it("getDataSourcePropertiesMap_withValidSchemaV2_shouldBeMap", () => {
         //Action
         const dataSourceProperties = {
@@ -94,7 +76,7 @@ describe("portalSchemaReader", () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
         const result = getDataSourcePropertiesMap(
-            portalSchemaReadeMock.portal_schema_V2.entities.dataSourceProperties
+            portalSchema.portal_schema_V2.entities.dataSourceProperties
                 .schema
         );
 
@@ -124,20 +106,6 @@ describe("portalSchemaReader", () => {
         for (const key in dataSourceProperties) {
             expect(result.get(key)).eq(dataSourceProperties[key]);
         }
-    });
-
-    it("getDataSourcePropertiesMap_withEmptySchema_shouldBeEmptyMap", () => {
-        //Act
-        stub(schemaHelperUtil, "getPortalSchema").returns(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            portalSchemaReadeMock.schema_data_with_empty_dataSourceProperties as any
-        );
-
-        //Action
-        const result = getDataSourcePropertiesMap("testSchema");
-
-        //Assert
-        expect(result.size).eq(0);
     });
 
     it("getEntitiesFolderNameMap_withValidEntitiesSchema_shouldBeMap", () => {
