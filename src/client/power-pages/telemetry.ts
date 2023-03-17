@@ -4,8 +4,6 @@
  */
 
 import { ITelemetry } from "../telemetry/ITelemetry";
-import { Tables } from "./create/CreateOperationConstants";
-import * as vscode from "vscode";
 
 // Telemetry Event Names
 export const FileDeleteEvent = 'FileDeleteEvent';
@@ -50,6 +48,10 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerP
         telemetryDataMeasurements.durationInMills = telemetryData.durationInMills;
     }
 
+    if(telemetryData.triggerPoint) {
+        telemetryDataProperties.triggerPoint = telemetryData.triggerPoint;
+    }
+
     if (telemetryData.exception) {
         telemetry.sendTelemetryException(telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
     } else {
@@ -57,10 +59,3 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerP
     }
 }
 
-export function sendTelemetryEventWithTriggerPoint(entityType: Tables, uri:vscode.Uri, telemetry:ITelemetry): void {
-    if (uri) {
-        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: entityType, triggerPoint: TriggerPoint.CONTEXT_MENU });
-    } else {
-        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: entityType });
-    }
-}
