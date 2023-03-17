@@ -90,6 +90,52 @@
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",
   "PAC Telemetry disabled": "PAC Telemetry disabled",
   "Failed to disable PAC telemetry.": "Failed to disable PAC telemetry.",
+  "New Content Snippet": "New Content Snippet",
+  "Add content snippet name (name should be unique)": "Add content snippet name (name should be unique)",
+  "Select Type": "Select Type",
+  "A content snippet with the same name already exists. Please enter a different name.": "A content snippet with the same name already exists. Please enter a different name.",
+  "No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.": "No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.",
+  "No workspace folder found": "No workspace folder found",
+  "Page Template name cannot be empty.": "Page Template name cannot be empty.",
+  "New Page Template": "New Page Template",
+  "Enter name": "Enter name",
+  "Choose web template": "Choose web template",
+  "A page template with the same name already exists. Please enter a different name.": "A page template with the same name already exists. Please enter a different name.",
+  "Creating {0}.../{0} will be replaced by the entity type.": {
+    "message": "Creating {0}...",
+    "comment": [
+      "{0} will be replaced by the entity type."
+    ]
+  },
+  "{0} created!/{0} will be replaced by the entity type.": {
+    "message": "{0} created!",
+    "comment": [
+      "{0} will be replaced by the entity type."
+    ]
+  },
+  "Failed to create: {0}./{0} will be replaced by the error message.": {
+    "message": "Failed to create: {0}.",
+    "comment": [
+      "{0} will be replaced by the error message."
+    ]
+  },
+  "No parent pages found for adding webfile": "No parent pages found for adding webfile",
+  "Failed to add webfile: {0}./{0} will be replaced by the error message.": {
+    "message": "Failed to add webfile: {0}.",
+    "comment": [
+      "{0} will be replaced by the error message."
+    ]
+  },
+  "Webfiles Added!": "Webfiles Added!",
+  "Web files": "Web files",
+  "Choose parent page": "Choose parent page",
+  "No page templates found": "No page templates found",
+  "No webpages found": "No webpages found",
+  "New Webpage": "New Webpage",
+  "Choose page template": "Choose page template",
+  "A webpage with the same name already exists. Please enter a different name.": "A webpage with the same name already exists. Please enter a different name.",
+  "Enter the name of the web template": "Enter the name of the web template",
+  "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
