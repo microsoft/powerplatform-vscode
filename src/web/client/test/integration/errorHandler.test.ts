@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import Sinon, { stub, assert, spy } from "sinon";
 import { expect } from "chai";
-import powerPlatformExtensionContext from "../../../client/WebExtensionContext";
+import WebExtensionContext from "../../../client/WebExtensionContext";
 import { schemaKey } from "../../schema/constants";
 import { telemetryEventNames } from "../../telemetry/constants";
 
@@ -214,9 +214,10 @@ describe("errorHandler", () => {
             queryParamsMap
         );
         //Assert
-        const detailMessage = vscode.l10n.t("Unable to find that app");
+        const detailMessage = { detail: vscode.l10n.t("Unable to find that app"), modal: true };
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         expect(result).false;
-        assert.calledWith(_mockShowErrorMessage, detailMessage);
+        assert.calledWith(_mockShowErrorMessage, errorString, detailMessage);
         assert.calledOnce(_mockShowErrorMessage);
     });
 
@@ -338,7 +339,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorDialog = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -365,7 +366,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorDialog = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -397,9 +398,10 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryPathParameters(appName, entity, entityId);
         //Assert
-        const detailMessage = vscode.l10n.t("Unable to find that app");
+        const detailMessage = { detail: vscode.l10n.t("Unable to find that app"), modal: true };
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         expect(result).false;
-        assert.calledWith(_mockShowErrorMessage, detailMessage);
+        assert.calledWith(_mockShowErrorMessage, errorString, detailMessage);
         assert.calledOnce(_mockShowErrorMessage);
     });
 
@@ -425,7 +427,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
 
@@ -463,7 +465,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -500,7 +502,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -537,7 +539,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -578,13 +580,16 @@ describe("errorHandler", () => {
             [queryParameters.WEBSITE_ID, "12345"],
         ]);
         //Action
+        const detailMessage = { detail: vscode.l10n.t("Unable to find that app"), modal: true };
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         const result = checkMandatoryQueryParameters(appName, queryParamsMap);
         //Assert
         expect(result).false;
         assert.calledOnce(_mockShowErrorMessage);
         assert.calledWith(
             _mockShowErrorMessage,
-            vscode.l10n.t("Unable to find that app")
+            errorString,
+            detailMessage
         );
     });
 });
