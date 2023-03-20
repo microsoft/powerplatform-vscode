@@ -90,7 +90,6 @@ describe("validationDiagnostics", () => {
         expect(connection[0][0].scheme).eq("file");
         expect(connection[0][0].path).eq("/\\" + filePath);
 
-        console.log("33",connection[0][1][0].message)
         expect(connection[0][1][0].message).eq(
             'PowerPages: File might be referenced by name keyword here.'
         );
