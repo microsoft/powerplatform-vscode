@@ -29,27 +29,27 @@ async function processOnDidDeleteFiles(
             let currentWorkspaceURI: vscode.Uri | undefined;
 
             if (e.files.length > 0) {
-                sendTelemetryEvent(telemetry, { eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString() });
 
                 const startTime = performance.now();
                 try {
                     const allFileNames: string[] = [];
                     currentWorkspaceURI = getCurrentWorkspaceURI(e.files[0].path);
                     await Promise.all(e.files.map(async f => {
-                        const fileEntityType = getPowerPageEntityType(f.path)
+                        const fileEntityType = getPowerPageEntityType(f.path);
+                        
+                        // Usage of FileDeleteEvent per file
+                        sendTelemetryEvent(telemetry, { eventName: FileDeleteEvent, fileEntityType: PowerPagesEntityType[fileEntityType] });
 
-                        if (fileEntityType !== PowerPagesEntityType.UNKNOWN) {
-                            // Usage of FileDeleteEvent per file
-                            sendTelemetryEvent(telemetry, { eventName: FileDeleteEvent, fileEntityType: fileEntityType.toString() });
+                        if (fileEntityType === PowerPagesEntityType.UNKNOWN) {
+                            return;                            
+                        }
 
-                            const fileProperties = getFileProperties(f.path);
+                        const fileProperties = getFileProperties(f.path);
+                        if (fileProperties.fileName && fileProperties.fileCompleteName) {
+                            await cleanupRelatedFiles(f.path, fileEntityType, fileProperties, telemetry);
 
-                            if (fileProperties.fileName && fileProperties.fileCompleteName) {
-                                await cleanupRelatedFiles(f.path, fileEntityType, fileProperties, telemetry);
-
-                                // TODO - Add search validation for entity guid
-                                allFileNames.push(fileProperties.fileName);
-                            }
+                            // TODO - Add search validation for entity guid
+                            allFileNames.push(fileProperties.fileName);
                         }
                     }));
 
@@ -64,11 +64,11 @@ async function processOnDidDeleteFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { eventName: UserFileDeleteEvent, durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, { eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileDeleteEvent
-                sendTelemetryEvent(telemetry, { eventName: UserFileDeleteEvent, durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent(telemetry, { eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
             }
         })
     );
@@ -81,7 +81,6 @@ async function processOnDidRenameFiles(
     context.subscriptions.push(
         vscode.workspace.onDidRenameFiles(async (e) => {
             if (e.files.length > 0) {
-                sendTelemetryEvent(telemetry, { eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString() });
 
                 const startTime = performance.now();
                 try {
@@ -89,22 +88,24 @@ async function processOnDidRenameFiles(
                     const currentWorkspaceURI = getCurrentWorkspaceURI(e.files[0].oldUri.fsPath);
 
                     await Promise.all(e.files.map(async f => {
-                        const fileEntityType = getPowerPageEntityType(f.oldUri.path);
+                        const fileEntityType = getPowerPageEntityType(f.oldUri.path);                        
 
-                        if (fileEntityType !== PowerPagesEntityType.UNKNOWN) {
-                            // Usage of FileRenameEvent per file
-                            sendTelemetryEvent(telemetry, { eventName: FileRenameEvent, fileEntityType: fileEntityType.toString() });
+                        // Usage of FileRenameEvent per file
+                        sendTelemetryEvent(telemetry, { eventName: FileRenameEvent, fileEntityType: PowerPagesEntityType[fileEntityType] });
 
-                            const fileProperties = getFileProperties(f.oldUri.path);
+                        if (fileEntityType === PowerPagesEntityType.UNKNOWN) {
+                            return;                            
+                        }
 
-                            if (fileProperties.fileName && fileProperties.fileCompleteName) {
-                                const isValidationSuccess = await fileRenameValidation(f.oldUri, f.newUri, fileProperties, telemetry);
-                                if (isValidationSuccess) {
-                                    await updateEntityPathNames(f.oldUri, f.newUri, fileProperties, fileEntityType, telemetry);
-                                }
+                        const fileProperties = getFileProperties(f.oldUri.path);
 
-                                allFileNames.push(fileProperties.fileName);
+                        if (fileProperties.fileName && fileProperties.fileCompleteName) {
+                            const isValidationSuccess = await fileRenameValidation(f.oldUri, f.newUri, fileProperties, telemetry);
+                            if (isValidationSuccess) {
+                                await updateEntityPathNames(f.oldUri, f.newUri, fileProperties, fileEntityType, telemetry);
                             }
+
+                            allFileNames.push(fileProperties.fileName);
                         }
                     }));
 
@@ -119,11 +120,11 @@ async function processOnDidRenameFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { eventName: UserFileRenameEvent, durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, { eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileRenameEvent
-                sendTelemetryEvent(telemetry, { eventName: UserFileRenameEvent, durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent(telemetry, { eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
             }
         })
     );
