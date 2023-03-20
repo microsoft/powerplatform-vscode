@@ -4,11 +4,9 @@
  */
 
 import * as vscode from "vscode";
-import * as nls from "vscode-nls";
 import Sinon, { stub, assert, spy } from "sinon";
 import { expect } from "chai";
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
-import powerPlatformExtensionContext from "../../../client/WebExtensionContext";
+import WebExtensionContext from "../../../client/WebExtensionContext";
 import { schemaKey } from "../../schema/constants";
 import { telemetryEventNames } from "../../telemetry/constants";
 
@@ -216,12 +214,10 @@ describe("errorHandler", () => {
             queryParamsMap
         );
         //Assert
-        const detailMessage = localize(
-            "microsoft-powerapps-portals.webExtension.init.app-not-found",
-            "Unable to find that app"
-        );
+        const detailMessage = { detail: vscode.l10n.t("Unable to find that app"), modal: true };
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         expect(result).false;
-        assert.calledWith(_mockShowErrorMessage, detailMessage);
+        assert.calledWith(_mockShowErrorMessage, errorString, detailMessage);
         assert.calledOnce(_mockShowErrorMessage);
     });
 
@@ -343,7 +339,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorDialog = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -352,18 +348,12 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryPathParameters(appName, entity, entityId);
         //Assert
-        const detailMessage = localize(
-            "microsoft-powerapps-portals.webExtension.init.workspace.error.desc",
-            "Check the URL and verify the parameters are correct"
-        );
+        const detailMessage = vscode.l10n.t("Check the URL and verify the parameters are correct");
         const options = { detail: detailMessage, modal: true };
         expect(result).false;
         assert.calledOnceWithExactly(
             _mockShowErrorDialog,
-            localize(
-                "microsoft-powerapps-portals.webExtension.init.workspace.error",
-                "There was a problem opening the workspace"
-            ),
+            vscode.l10n.t("There was a problem opening the workspace"),
             options
         );
         assert.calledOnceWithExactly(
@@ -376,7 +366,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorDialog = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -385,18 +375,12 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryPathParameters(appName, entity, entityId);
         //Assert
-        const detailMessage = localize(
-            "microsoft-powerapps-portals.webExtension.init.workspace.error.desc",
-            "Check the URL and verify the parameters are correct"
-        );
+        const detailMessage = vscode.l10n.t("Check the URL and verify the parameters are correct");
         const options = { detail: detailMessage, modal: true };
         expect(result).false;
         assert.calledOnceWithExactly(
             _mockShowErrorDialog,
-            localize(
-                "microsoft-powerapps-portals.webExtension.init.workspace.error",
-                "There was a problem opening the workspace"
-            ),
+            vscode.l10n.t("There was a problem opening the workspace"),
             options
         );
         assert.calledOnceWithExactly(
@@ -414,12 +398,10 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryPathParameters(appName, entity, entityId);
         //Assert
-        const detailMessage = localize(
-            "microsoft-powerapps-portals.webExtension.init.app-not-found",
-            "Unable to find that app"
-        );
+        const detailMessage = { detail: vscode.l10n.t("Unable to find that app"), modal: true };
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         expect(result).false;
-        assert.calledWith(_mockShowErrorMessage, detailMessage);
+        assert.calledWith(_mockShowErrorMessage, errorString, detailMessage);
         assert.calledOnce(_mockShowErrorMessage);
     });
 
@@ -445,7 +427,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
 
@@ -463,15 +445,9 @@ describe("errorHandler", () => {
         const result = checkMandatoryQueryParameters(appName, queryParamsMap);
         //Assert
         expect(result).false;
-        const detailMessage = localize(
-            "microsoft-powerapps-portals.webExtension.parameter.desc",
-            "Check the URL and verify the parameters are correct"
-        );
+        const detailMessage = vscode.l10n.t("Check the URL and verify the parameters are correct");
 
-        const errorString = localize(
-            "microsoft-powerapps-portals.webExtension.parameter.error",
-            "There was a problem opening the workspace"
-        );
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         const options = { detail: detailMessage, modal: true };
 
         assert.calledOnceWithExactly(
@@ -489,7 +465,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -506,15 +482,9 @@ describe("errorHandler", () => {
         const result = checkMandatoryQueryParameters(appName, queryParamsMap);
         //Assert
         expect(result).false;
-        const detailMessage = localize(
-            "microsoft-powerapps-portals.webExtension.parameter.desc",
-            "Check the URL and verify the parameters are correct"
-        );
+        const detailMessage = vscode.l10n.t("Check the URL and verify the parameters are correct");
 
-        const errorString = localize(
-            "microsoft-powerapps-portals.webExtension.parameter.error",
-            "There was a problem opening the workspace"
-        );
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         const options = { detail: detailMessage, modal: true };
 
         assert.calledOnceWithExactly(
@@ -532,7 +502,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -549,15 +519,9 @@ describe("errorHandler", () => {
         const result = checkMandatoryQueryParameters(appName, queryParamsMap);
         //Assert
         expect(result).false;
-        const detailMessage = localize(
-            "microsoft-powerapps-portals.webExtension.parameter.desc",
-            "Check the URL and verify the parameters are correct"
-        );
+        const detailMessage = vscode.l10n.t("Check the URL and verify the parameters are correct");
 
-        const errorString = localize(
-            "microsoft-powerapps-portals.webExtension.parameter.error",
-            "There was a problem opening the workspace"
-        );
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         const options = { detail: detailMessage, modal: true };
 
         assert.calledOnceWithExactly(
@@ -575,7 +539,7 @@ describe("errorHandler", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
-            powerPlatformExtensionContext.telemetry,
+            WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
         const appName = "portal";
@@ -589,15 +553,9 @@ describe("errorHandler", () => {
         const result = checkMandatoryQueryParameters(appName, queryParamsMap);
         //Assert
         expect(result).false;
-        const detailMessage = localize(
-            "microsoft-powerapps-portals.webExtension.parameter.desc",
-            "Check the URL and verify the parameters are correct"
-        );
+        const detailMessage = vscode.l10n.t("Check the URL and verify the parameters are correct");
 
-        const errorString = localize(
-            "microsoft-powerapps-portals.webExtension.parameter.error",
-            "There was a problem opening the workspace"
-        );
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         const options = { detail: detailMessage, modal: true };
 
         assert.calledOnceWithExactly(
@@ -622,16 +580,16 @@ describe("errorHandler", () => {
             [queryParameters.WEBSITE_ID, "12345"],
         ]);
         //Action
+        const detailMessage = { detail: vscode.l10n.t("Unable to find that app"), modal: true };
+        const errorString = vscode.l10n.t("There was a problem opening the workspace");
         const result = checkMandatoryQueryParameters(appName, queryParamsMap);
         //Assert
         expect(result).false;
         assert.calledOnce(_mockShowErrorMessage);
         assert.calledWith(
             _mockShowErrorMessage,
-            localize(
-                "microsoft-powerapps-portals.webExtension.init.app-not-found",
-                "Unable to find that app"
-            )
+            errorString,
+            detailMessage
         );
     });
 });

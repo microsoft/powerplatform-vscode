@@ -26,7 +26,7 @@ import {
 import {
     portal_schema_V1,
     portal_schema_V2,
-} from "../integration/portalSchemaReader.mock";
+}  from "../../schema/portalSchema";
 import WebExtensionContext from "../../WebExtensionContext";
 import * as Constants from "../../common/constants";
 

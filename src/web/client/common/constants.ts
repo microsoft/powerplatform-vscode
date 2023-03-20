@@ -40,7 +40,7 @@ export enum queryParameters {
     WEBSITE_NAME = 'websitename',
     ORG_URL = 'orgurl',
     REGION = 'region',
-    ENV_ID = 'envId',
+    ENV_ID = 'envid',
     GEO = 'geo'
 }
 
@@ -53,6 +53,6 @@ export enum httpMethod {
 export enum SurveyConstants {
     TEAM_NAME = 'PowerPages',
     SURVEY_NAME = 'PowerPages-NPS',
-    EVENT_NAME = 'vsCodeWeb',
+    EVENT_NAME = 'VscodeWeb',
     AUTHORIZATION_ENDPOINT = 'https://microsoft.onmicrosoft.com/cessurvey/user'
 }
