@@ -11,6 +11,7 @@ import {
 import { expect } from "chai";
 import path from "path";
 import sinon from "sinon";
+import { ITelemetry } from "../../telemetry/ITelemetry";
 
 describe("validationDiagnostics", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -33,8 +34,9 @@ describe("validationDiagnostics", () => {
         const uri = vscode.Uri.parse(path.join("file:///", filePath));
         const patterns = [/z/g];
         const searchByName = true;
+        const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName);
+        await validateTextDocument(uri, patterns, searchByName,telemetry);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
@@ -56,8 +58,9 @@ describe("validationDiagnostics", () => {
         const uri = vscode.Uri.parse(path.join("file:///", filePath));
         const patterns: RegExp[] = [];
         const searchByName = true;
+        const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName);
+        await validateTextDocument(uri, patterns, searchByName,telemetry);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
@@ -79,17 +82,20 @@ describe("validationDiagnostics", () => {
         const uri = vscode.Uri.parse(path.join("file:///", filePath));
         const patterns = [/keyword/g, /contains/g];
         const searchByName = true;
+        const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName);
+        await validateTextDocument(uri, patterns, searchByName,telemetry);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
         expect(connection[0][0].path).eq("/\\" + filePath);
+
+        console.log("33",connection[0][1][0].message)
         expect(connection[0][1][0].message).eq(
-            'PowerPages: File might be referenced by name "keyword" here.'
+            'PowerPages: File might be referenced by name keyword here.'
         );
         expect(connection[0][1][1].message).eq(
-            'PowerPages: File might be referenced by name "contains" here.'
+            'PowerPages: File might be referenced by name contains here.'
         );
 
         expect(connection[0][1][0].source).eq("ex");
@@ -120,8 +126,9 @@ describe("validationDiagnostics", () => {
         const uri = vscode.Uri.parse(path.join("file:///", filePath));
         const patterns = [/keyword/g, /contains/g];
         const searchByName = false;
+        const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName);
+        await validateTextDocument(uri, patterns, searchByName,telemetry);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
@@ -158,7 +165,7 @@ describe("validationDiagnostics", () => {
         //Assert
         const showWarningMessageArgs = showWarningMessageSpy.getCalls()[0].args;
         expect(showWarningMessageArgs[0]).eq(
-            "Some references might be broken. Please check diagnostics for more details."
+            "Some references might be broken. Please check diagnostics for details."
         );
         expect(showWarningMessageArgs[1]).eq(undefined);
 
