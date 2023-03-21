@@ -752,6 +752,11 @@
           "id": "power-platform-activitybar",
           "title": "%power-platform-activitybar.title%",
           "icon": "resources/powerplatform-activitybar-icon.svg"
+        },
+        {
+          "id": "vscode-chatgpt-view-container",
+          "title": "Power Pages",
+          "icon": "resources/openai-logo.svg"
         }
       ]
     },
@@ -766,6 +771,13 @@
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
+        }
+      ],
+      "vscode-chatgpt-view-container": [
+        {
+          "type": "webview",
+          "id": "powerpages.copilot",
+          "name": "Co-Pilot"
         }
       ]
     },
@@ -877,6 +889,7 @@
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
+    "dotenv": "^16.0.3",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
     "liquidjs": "^10.2.0",

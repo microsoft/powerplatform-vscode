@@ -31,6 +31,7 @@ import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
+import { OpenAiViewProvider } from "./open-ai/OpenAiViewProvider";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -82,6 +83,11 @@ export async function activate(
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
     vscode.workspace.textDocuments.forEach(didOpenTextDocument);
+
+    const provider = new OpenAiViewProvider(context.extensionUri);
+
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(OpenAiViewProvider.viewType, provider));
 
     // portal web view panel
     _context.subscriptions.push(
