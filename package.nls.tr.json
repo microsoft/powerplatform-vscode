@@ -1,9 +1,7 @@
 {
   "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Önizlemeyi göster",
-  "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Web için Visual Studio Code, web sitenizde web sayfalarının düzenlenmesini ve yayınlanmasını sağlar.\n \n Komut satırı arabirimi ve daha gelişmiş özellikler için Masaüstü için VS Code Marketinde bulunan VS Code için Power Platform Uzantısını yükleyin. \n \n Masaüstü ve web için Visual Studio Code arasındaki fark hakkında [daha fazla bilgi edinin](command:powerplatform-walkthrough.advancedCapabilities-learn-more).\n \n[Kodlamaya başlayın](command:powerplatform-walkthrough.advancedCapabilities-start-coding)",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Gelişmiş özellikler",
   "microsoft-powerapps-portals.walkthrough.description": "VS Code içinden eksiksiz ve modern web siteleri oluşturmayı keşfedin",
-  "microsoft-powerapps-portals.walkthrough.fileSystem.description": "Dosyalarınız, site adınızın altındaki iç içe klasörlerde depolanır. \n \n Tek tek sayfa dosyaları, site adınızın altındaki web sayfaları klasöründe bulunabilir. \n \n Tüm sayfalarınız, ilgili sayfa adıyla klasör içinde HTML, CSS ve JS dosyaları halinde düzenlenir. \n \n Web için VS Code'da Power Pages dosya sistemi hakkında daha fazla bilgi edinmek için [belgeler](command:powerplatform-walkthrough.fileSystem-documentation) bölümümüzü ziyaret edin. \n[Site klasörünü aç](command:powerplatform-walkthrough.fileSystem-open-folder)",
   "microsoft-powerapps-portals.walkthrough.fileSystem.title": "Dosya sistemi",
   "microsoft-powerapps-portals.walkthrough.overview.description": "Power Pages uzantısı, Power Pages stüdyosunun proje yapısıyla eşleştirilen özelleştirilmiş bir dosya sistemini etkinleştirir.\n[Daha Fazla Bilgi](command:powerplatform-walkthrough.overview-learn-more)",
   "microsoft-powerapps-portals.walkthrough.overview.title": "Genel bakış",
