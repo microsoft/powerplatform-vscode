@@ -183,13 +183,15 @@ export function activate(context: vscode.ExtensionContext): void {
 
 export function processWillSaveDocument(context: vscode.ExtensionContext) {
     context.subscriptions.push(
-        vscode.workspace.onWillSaveTextDocument((e) => {
-            const fileName = e.document.fileName;
+        vscode.workspace.onWillSaveTextDocument(async (e) => {
+            const fileFsPath = e.document.fileName;
+
             if (vscode.window.activeTextEditor === undefined) {
                 return;
-            } else if (isActiveDocument(fileName)) {
+            } else if (isActiveDocument(fileFsPath)) {
                 const fileData =
-                    WebExtensionContext.fileDataMap.getFileMap.get(fileName);
+                    WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath);
+
                 // Update the latest content in context
                 if (fileData?.entityId && fileData.attributePath) {
                     let fileContent = e.document.getText();
@@ -202,7 +204,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
                         fileContent
                     );
                     WebExtensionContext.fileDataMap.updateDirtyChanges(
-                        fileName,
+                        fileFsPath,
                         true
                     );
                 }
@@ -323,10 +325,10 @@ export async function deactivate(): Promise<void> {
     }
 }
 
-function isActiveDocument(fileName: string): boolean {
+function isActiveDocument(fileFsPath: string): boolean {
     return (
         vscode.workspace.workspaceFolders !== undefined &&
         WebExtensionContext.isContextSet &&
-        WebExtensionContext.fileDataMap.getFileMap.has(fileName)
+        WebExtensionContext.fileDataMap.getFileMap.has(fileFsPath)
     );
 }

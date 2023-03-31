@@ -13,6 +13,7 @@ import { expect } from "chai";
 import { IAttributePath } from "../../utilities/schemaHelperUtil";
 import * as errorHandler from "../../common/errorHandler";
 import { BAD_REQUEST, httpMethod } from "../../common/constants";
+import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 
 describe("remoteSaveProvider", () => {
     afterEach(() => {
@@ -52,6 +53,16 @@ describe("remoteSaveProvider", () => {
             true,
             "pdf"
         );
+        WebExtensionContext.entityDataMap.setEntity(
+            "",
+            "",
+            "",
+            {
+                relativePath: "relative",
+                source: "dDrive",
+            } as IAttributePath,
+            ""
+        );
 
         const sendAPITelemetry = stub(
             WebExtensionContext.telemetry,
@@ -62,30 +73,17 @@ describe("remoteSaveProvider", () => {
             "sendAPISuccessTelemetry"
         );
 
-        const accessToken = "token";
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
+        stub(urlBuilderUtil, "getRequestURL").returns(requestUrl);
 
         //Action
-        await saveData(accessToken, requestUrl, fileUri);
+        await saveData(fileUri);
 
         //Assert
-        const requestInit = {
-            method: "GET",
-            headers: {
-                authorization: "Bearer token",
-                "content-type": "application/json; charset=utf-8",
-                accept: "application/json",
-                "OData-MaxVersion": "4.0",
-                "OData-Version": "4.0",
-            },
-        };
         const fetchCalls = _mockFetch.getCalls();
-        assert.calledTwice(_mockFetch);
+        assert.calledOnce(_mockFetch);
         expect(fetchCalls[0].args[0]).eq(requestUrl);
-        expect(fetchCalls[0].args[1]).deep.eq(requestInit);
-
-        expect(fetchCalls[1].args[0]).eq(requestUrl);
-        expect(fetchCalls[1].args[1]).deep.eq({
+        expect(fetchCalls[0].args[1]).deep.eq({
             method: "PATCH",
             body: '{"dDrive":"","mimetype":"pdf"}',
             headers: {
@@ -112,7 +110,7 @@ describe("remoteSaveProvider", () => {
         assert.calledOnce(vscodeParse);
     });
 
-    it("saveData_whenFetchRetrnsOKAndAttributePath2IsNull_shouldCallShowErrorDialog", async () => {
+    it("saveData_whenFetchReturnsOKAndAttributePath2IsNull_shouldCallShowErrorDialog", async () => {
         //Act
         const fileUri: vscode.Uri = { fsPath: "testurii" } as vscode.Uri;
 
@@ -132,8 +130,9 @@ describe("remoteSaveProvider", () => {
             true,
             "pdf"
         );
-        const accessToken = "token";
+
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
+        stub(urlBuilderUtil, "getRequestURL").returns(requestUrl);
         const sendAPIFailureTelemetry = stub(
             WebExtensionContext.telemetry,
             "sendAPIFailureTelemetry"
@@ -141,7 +140,7 @@ describe("remoteSaveProvider", () => {
 
         const showErrorDialog = stub(errorHandler, "showErrorDialog");
         //Action
-        await saveData(accessToken, requestUrl, fileUri);
+        await saveData(fileUri);
 
         //Assert
         const y = showErrorDialog.getCalls();
@@ -161,7 +160,7 @@ describe("remoteSaveProvider", () => {
         assert.calledOnce(vscodeParse);
     });
 
-    it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchRetrnsNotOKAndIsWebFileV2IsFalse", async () => {
+    it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchReturnsNotOKAndIsWebFileV2IsFalse", async () => {
         //Act
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const _mockFetch = stub(fetch, "default").resolves({
@@ -198,16 +197,17 @@ describe("remoteSaveProvider", () => {
             "pdf"
         );
 
-        const accessToken = "token";
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
+        stub(urlBuilderUtil, "getRequestURL").returns(requestUrl);
 
         //Action
         try {
-            await saveData(accessToken, requestUrl, fileUri);
+            await saveData(fileUri);
         } catch {
             //Assert
             const requestInit = {
-                method: "GET",
+                method: "PATCH",
+                body: '{"dDrive":"","mimetype":"pdf"}',
                 headers: {
                     authorization: "Bearer token",
                     "content-type": "application/json; charset=utf-8",
@@ -217,14 +217,14 @@ describe("remoteSaveProvider", () => {
                 },
             };
             const fetchCalls = _mockFetch.getCalls();
-            assert.calledTwice(_mockFetch);
+            assert.calledOnce(_mockFetch);
             expect(fetchCalls[0].args[0]).eq(requestUrl);
             expect(fetchCalls[0].args[1]).deep.eq(requestInit);
             assert.callCount(sendAPITelemetry, 5);
         }
     });
 
-    it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchRetrnsNotOKAndStatusCodeIs304AndIsWebFileV2IsFalse", async () => {
+    it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchReturnsNotOKAndStatusCodeIs304AndIsWebFileV2IsFalse", async () => {
         //Act
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const _mockFetch = stub(fetch, "default").resolves({
@@ -275,36 +275,23 @@ describe("remoteSaveProvider", () => {
         );
 
         const showErrorDialog = stub(errorHandler, "showErrorDialog");
-        const accessToken = "token";
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
+        stub(urlBuilderUtil, "getRequestURL").returns(requestUrl);
 
         //Action
         try {
-            await saveData(accessToken, requestUrl, fileUri);
+            await saveData(fileUri);
         } catch {
             //Assert
-            const requestInit = {
-                method: "GET",
-                headers: {
-                    authorization: "Bearer token",
-                    "content-type": "application/json; charset=utf-8",
-                    accept: "application/json",
-                    "OData-MaxVersion": "4.0",
-                    "OData-Version": "4.0",
-                },
-            };
-
             const fetchCalls = _mockFetch.getCalls();
-            assert.calledTwice(_mockFetch);
+            assert.calledOnce(_mockFetch);
             expect(fetchCalls[0].args[0]).eq(requestUrl);
-            expect(fetchCalls[0].args[1]).deep.eq(requestInit);
-
-            expect(fetchCalls[1].args[0]).eq(requestUrl);
-            expect(fetchCalls[1].args[1]).deep.eq({
+            expect(fetchCalls[0].args[1]).deep.eq({
                 method: "PATCH",
                 body: '{"dDrive":"","mimetype":"pdf"}',
                 headers: {
-                    authorization: "Bearer token",
+                    authorization:
+                        "Bearer ae3308da-d75b-4666-bcb8-8f33a3dd8a8d",
                     "content-type": "application/json; charset=utf-8",
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
@@ -326,7 +313,7 @@ describe("remoteSaveProvider", () => {
         }
     });
 
-    it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchRetrnsOKAndIsWebFileV2IsTrue", async () => {
+    it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchReturnsOKAndIsWebFileV2IsTrue", async () => {
         //Act
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const _mockFetch = stub(fetch, "default").resolves({
@@ -359,6 +346,17 @@ describe("remoteSaveProvider", () => {
             "pdf"
         );
 
+        WebExtensionContext.entityDataMap.setEntity(
+            "",
+            "",
+            "",
+            {
+                relativePath: "relative",
+                source: "dDrive",
+            } as IAttributePath,
+            ""
+        );
+
         const sendAPITelemetry = stub(
             WebExtensionContext.telemetry,
             "sendAPITelemetry"
@@ -368,11 +366,11 @@ describe("remoteSaveProvider", () => {
             "sendAPISuccessTelemetry"
         );
 
-        const accessToken = "token";
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
+        stub(urlBuilderUtil, "getRequestURL").returns(requestUrl);
 
         //Action
-        await saveData(accessToken, requestUrl, fileUri);
+        await saveData(fileUri);
 
         //Assert
         assert.calledOnceWithExactly(
