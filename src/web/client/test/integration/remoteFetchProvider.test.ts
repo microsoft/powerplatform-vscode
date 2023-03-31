@@ -11,22 +11,19 @@ import { PortalsFS } from "../../dal/fileSystemProvider";
 import WebExtensionContext from "../../WebExtensionContext";
 import * as Constants from "../../common/constants";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
-import {
-    schemaEntityKey,
-    schemaKey,
-} from "../../schema/constants";
+import { schemaEntityKey, schemaKey } from "../../schema/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
-import {  expect } from "chai";
+import { expect } from "chai";
 import * as errorHandler from "../../common/errorHandler";
+import * as authenticationProvider from "../../common/authenticationProvider";
 
 describe("remoteFetchProvider", () => {
     afterEach(() => {
         sinon.restore();
     });
-    it("fetchDataFromDataverseAndUpdateVFS_whenResposeSuccess_shouldCallAllSuccessFunction", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccess_shouldCallAllSuccessFunction", async () => {
         //Act
-        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
@@ -39,17 +36,38 @@ describe("remoteFetchProvider", () => {
             [schemaKey.SCHEMA_VERSION, "portalschemav2"],
         ]);
 
-        WebExtensionContext.setWebExtensionContext(
-            "webPage",
-            "",
-            queryParamsMap
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
+        const websiteIdToLanguage = new Map<string, string>([
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
         );
 
-        const languageIdCodeMap = new Map<string, string>([["En", "english"]]);
-        const portalFs = new PortalsFS();
-        const websiteIdToLanguage = new Map<string, string>([
-            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "En"],
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
         ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            accessToken
+        );
 
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
@@ -59,10 +77,14 @@ describe("remoteFetchProvider", () => {
                     return resolve({
                         value: [
                             {
-                                value: '{"ddrive":"testFile","value":"value"}',
+                                value: '{ "ddrive": "testname", "value": "value" }',
                             },
-                            { name: "test Name" },
-                            { _languagefield: "languagefield" },
+                            {
+                                _powerpagesitelanguageid_value:
+                                    "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                            },
+                            { name: "testname" },
+                            { powerpagecomponentid: entityId },
                         ],
                     });
                 });
@@ -92,6 +114,9 @@ describe("remoteFetchProvider", () => {
         const getRequestURL = stub(urlBuilderUtil, "getRequestURL").returns(
             requestURL
         );
+
+        stub(urlBuilderUtil, "getCustomRequestURL").returns(requestURL);
+
         stub(schemaHelperUtil, "isBase64Encoded").returns(true);
         stub(commonUtil, "GetFileNameWithExtension").returns("test.txt");
         stub(schemaHelperUtil, "getAttributePath").returns({
@@ -102,55 +127,52 @@ describe("remoteFetchProvider", () => {
             WebExtensionContext,
             "updateSingleFileUrisInContext"
         );
-        const fileUri: vscode.Uri = { path: "testuri" } as vscode.Uri;
+        const fileUri: vscode.Uri = {
+            path: "powerplatform-vfs:/testWebSite/web-pages/testname/",
+        } as vscode.Uri;
         const parse = stub(vscode.Uri, "parse").returns(fileUri);
         const executeCommand = stub(vscode.commands, "executeCommand");
+
+        const portalFs = new PortalsFS();
         const createDirectory = stub(portalFs, "createDirectory");
         const writeFile = stub(portalFs, "writeFile");
-
-        //Action
-        await fetchDataFromDataverseAndUpdateVFS(
-            accessToken,
+        WebExtensionContext.setWebExtensionContext(
             entityName,
             entityId,
-            queryParamsMap,
-            languageIdCodeMap,
-            portalFs,
-            websiteIdToLanguage
+            queryParamsMap
         );
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
+        //Action
+        await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(_mockFetch);
+        assert.callCount(_mockFetch, 4);
 
-        assert.calledOnceWithExactly(
+        assert.calledWith(
             sendAPITelemetry,
             requestURL,
             entityName,
             Constants.httpMethod.GET
         );
+
         assert.calledOnce(getRequestURL);
-        assert.callCount(parse, 16);
-        assert.callCount(createDirectory, 6);
+        assert.callCount(parse, 7);
+        assert.callCount(createDirectory, 1);
         const createDirectoryCalls = createDirectory.getCalls();
-        expect(createDirectoryCalls[0].args[0]).deep.eq({ path: "testuri" });
-        expect(createDirectoryCalls[1].args[0]).deep.eq({ path: "testuri" });
-        expect(createDirectoryCalls[2].args[0]).deep.eq({ path: "testuri" });
-        expect(createDirectoryCalls[3].args[0]).deep.eq({ path: "testuri" });
-        expect(createDirectoryCalls[4].args[0]).deep.eq({ path: "testuri" });
-        expect(createDirectoryCalls[5].args[0]).deep.eq({ path: "testuri" });
+        expect(createDirectoryCalls[0].args[0]).deep.eq({
+            path: "powerplatform-vfs:/testWebSite/web-pages/testname/",
+        });
 
         const updateFileDetailsInContextCalls =
             updateFileDetailsInContext.getCalls();
 
-        assert.callCount(updateFileDetailsInContext, 6);
+        assert.callCount(updateFileDetailsInContext, 3);
         expect(
             updateFileDetailsInContextCalls[0].args[0],
-            "powerplatform-vfs:/testWebSite/web-pages/test Name/test.txt"
+            "powerplatform-vfs:/testWebSite/web-pages/testname/test.txt"
         );
-        expect(
-            updateFileDetailsInContextCalls[0].args[1],
-            "aa563be7-9a38-4a89-9216-47f9fc6a3f14"
-        );
+        expect(updateFileDetailsInContextCalls[0].args[1], entityId);
         expect(updateFileDetailsInContextCalls[0].args[2], "webpages");
         expect(updateFileDetailsInContextCalls[0].args[3], "test.txt");
         expect(updateFileDetailsInContextCalls[0].args[4], undefined);
@@ -165,10 +187,7 @@ describe("remoteFetchProvider", () => {
             updateFileDetailsInContextCalls[1].args[0],
             "powerplatform-vfs:/testWebSite/web-pages/test Name/test.txt"
         );
-        expect(
-            updateFileDetailsInContextCalls[1].args[1],
-            "aa563be7-9a38-4a89-9216-47f9fc6a3f14"
-        );
+        expect(updateFileDetailsInContextCalls[1].args[1], entityId);
         expect(updateFileDetailsInContextCalls[1].args[2], "webpages");
         expect(updateFileDetailsInContextCalls[1].args[3], "test.txt");
         expect(updateFileDetailsInContextCalls[1].args[4], undefined);
@@ -183,10 +202,7 @@ describe("remoteFetchProvider", () => {
             updateFileDetailsInContextCalls[2].args[0],
             "powerplatform-vfs:/testWebSite/web-pages/test Name/test.txt"
         );
-        expect(
-            updateFileDetailsInContextCalls[2].args[1],
-            "aa563be7-9a38-4a89-9216-47f9fc6a3f14"
-        );
+        expect(updateFileDetailsInContextCalls[2].args[1], entityId);
         expect(updateFileDetailsInContextCalls[2].args[2], "webpages");
         expect(updateFileDetailsInContextCalls[2].args[3], "test.txt");
         expect(updateFileDetailsInContextCalls[2].args[4], undefined);
@@ -197,16 +213,15 @@ describe("remoteFetchProvider", () => {
         );
         expect(updateFileDetailsInContextCalls[1].args[7], "false");
 
-        assert.callCount(writeFile, 6);
-        assert.calledTwice(updateSingleFileUrisInContext);
-        assert.callCount(sendInfoTelemetry, 8);
-        assert.calledTwice(executeCommand);
-        assert.calledOnce(sendAPISuccessTelemetry);
+        assert.callCount(writeFile, 3);
+        assert.calledOnce(updateSingleFileUrisInContext);
+        assert.callCount(sendInfoTelemetry, 6);
+        assert.calledOnce(executeCommand);
+        assert.callCount(sendAPISuccessTelemetry, 4);
     });
 
-    it("fetchDataFromDataverseAndUpdateVFS_whenResposeSuccessButDataIsNull_shouldCallShowErrorMessage", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessButDataIsNull_shouldCallShowErrorMessage", async () => {
         //Act
-        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
@@ -220,16 +235,46 @@ describe("remoteFetchProvider", () => {
         ]);
 
         WebExtensionContext.setWebExtensionContext(
-            "webPage",
-            "",
+            entityName,
+            entityId,
             queryParamsMap
         );
 
-        const languageIdCodeMap = new Map<string, string>([["En", "english"]]);
-        const portalFs = new PortalsFS();
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
         const websiteIdToLanguage = new Map<string, string>([
-            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "En"],
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
         ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
+        );
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
+        ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            accessToken
+        );
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
@@ -252,15 +297,7 @@ describe("remoteFetchProvider", () => {
         const showErrorDialog = stub(errorHandler, "showErrorDialog");
 
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(
-            accessToken,
-            entityName,
-            entityId,
-            queryParamsMap,
-            languageIdCodeMap,
-            portalFs,
-            websiteIdToLanguage
-        );
+        await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
 
@@ -277,9 +314,8 @@ describe("remoteFetchProvider", () => {
         assert.calledOnce(_mockFetch);
     });
 
-    it("fetchDataFromDataverseAndUpdateVFS_whenResposeNotSuccess_shouldCallShowErrorMessage", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseNotSuccess_shouldCallShowErrorMessage", async () => {
         //Act
-        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
@@ -294,16 +330,46 @@ describe("remoteFetchProvider", () => {
 
         const showErrorMessage = stub(vscode.window, "showErrorMessage");
         WebExtensionContext.setWebExtensionContext(
-            "webPage",
-            "",
+            entityName,
+            entityId,
             queryParamsMap
         );
 
-        const languageIdCodeMap = new Map<string, string>([["En", "english"]]);
-        const portalFs = new PortalsFS();
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
         const websiteIdToLanguage = new Map<string, string>([
-            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "En"],
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
         ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
+        );
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
+        ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            accessToken
+        );
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
@@ -326,15 +392,7 @@ describe("remoteFetchProvider", () => {
         const showErrorDialog = stub(errorHandler, "showErrorDialog");
 
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(
-            accessToken,
-            entityName,
-            entityId,
-            queryParamsMap,
-            languageIdCodeMap,
-            portalFs,
-            websiteIdToLanguage
-        );
+        await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
         assert.calledOnce(showErrorDialog);
@@ -355,9 +413,8 @@ describe("remoteFetchProvider", () => {
         );
     });
 
-    it("fetchDataFromDataverseAndUpdateVFS_whenResposeSuccessAndSubUriIsBlank_shouldThrowError", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndSubUriIsBlank_shouldThrowError", async () => {
         //Act
-        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
@@ -371,16 +428,46 @@ describe("remoteFetchProvider", () => {
         ]);
 
         WebExtensionContext.setWebExtensionContext(
-            "webPage",
-            "",
+            entityName,
+            entityId,
             queryParamsMap
         );
 
-        const languageIdCodeMap = new Map<string, string>([["En", "english"]]);
-        const portalFs = new PortalsFS();
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
         const websiteIdToLanguage = new Map<string, string>([
-            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "En"],
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
         ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
+        );
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
+        ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            accessToken
+        );
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
@@ -390,10 +477,11 @@ describe("remoteFetchProvider", () => {
                     return resolve({
                         value: [
                             {
-                                value: '{"ddrive":"testFile","value":"value"}',
+                                name: "testname",
+                                _powerpagesitelanguageid_value:
+                                    "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                                powerpagecomponentid: entityId,
                             },
-                            { name: "test Name" },
-                            { _languagefield: "languagefield" },
                         ],
                     });
                 });
@@ -418,27 +506,18 @@ describe("remoteFetchProvider", () => {
             "sendAPITelemetry"
         );
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(
-            accessToken,
-            entityName,
-            entityId,
-            queryParamsMap,
-            languageIdCodeMap,
-            portalFs,
-            websiteIdToLanguage
-        );
+        await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
         assert.calledOnce(_mockFetch);
         assert.calledTwice(sendAPITelemetry);
-        assert.calledThrice(sendErrorTelemetry);
-        assert.calledThrice(showErrorMessage);
-        assert.callCount(getEntity, 5);
+        assert.calledOnce(sendErrorTelemetry);
+        assert.calledOnce(showErrorMessage);
+        assert.callCount(getEntity, 3);
     });
 
-    it("fetchDataFromDataverseAndUpdateVFS_whenResposeSuccessAndAttributesIsBlank_shouldThrowError", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributesIsBlank_shouldThrowError", async () => {
         //Act
-        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
@@ -452,16 +531,46 @@ describe("remoteFetchProvider", () => {
         ]);
 
         WebExtensionContext.setWebExtensionContext(
-            "webPage",
-            "",
+            entityName,
+            entityId,
             queryParamsMap
         );
 
-        const languageIdCodeMap = new Map<string, string>([["En", "english"]]);
-        const portalFs = new PortalsFS();
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
         const websiteIdToLanguage = new Map<string, string>([
-            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "En"],
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
         ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
+        );
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
+        ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            accessToken
+        );
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
@@ -471,10 +580,11 @@ describe("remoteFetchProvider", () => {
                     return resolve({
                         value: [
                             {
-                                value: '{"ddrive":"testFile","value":"value"}',
+                                name: "testname",
+                                _powerpagesitelanguageid_value:
+                                    "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                                powerpagecomponentid: entityId,
                             },
-                            { name: "test Name" },
-                            { _languagefield: "languagefield" },
                         ],
                     });
                 });
@@ -499,29 +609,20 @@ describe("remoteFetchProvider", () => {
             WebExtensionContext.telemetry,
             "sendAPITelemetry"
         );
-        
+
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(
-            accessToken,
-            entityName,
-            entityId,
-            queryParamsMap,
-            languageIdCodeMap,
-            portalFs,
-            websiteIdToLanguage
-        );
+        await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
         assert.calledOnce(_mockFetch);
         assert.calledTwice(sendAPITelemetry);
-        assert.calledThrice(sendErrorTelemetry);
-        assert.calledThrice(showErrorMessage);
-        assert.callCount(getEntity, 5);
+        assert.calledOnce(sendErrorTelemetry);
+        assert.calledOnce(showErrorMessage);
+        assert.callCount(getEntity, 3);
     });
 
-    it("fetchDataFromDataverseAndUpdateVFS_whenResposeSuccessAndAttributeExtensionIsBlank_shouldThrowError", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributeExtensionIsBlank_shouldThrowError", async () => {
         //Act
-        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
@@ -535,16 +636,46 @@ describe("remoteFetchProvider", () => {
         ]);
 
         WebExtensionContext.setWebExtensionContext(
-            "webPage",
-            "",
+            entityName,
+            entityId,
             queryParamsMap
         );
 
-        const languageIdCodeMap = new Map<string, string>([["En", "english"]]);
-        const portalFs = new PortalsFS();
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
         const websiteIdToLanguage = new Map<string, string>([
-            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "En"],
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
         ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
+        );
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
+        ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            accessToken
+        );
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
@@ -554,10 +685,11 @@ describe("remoteFetchProvider", () => {
                     return resolve({
                         value: [
                             {
-                                value: '{"ddrive":"testFile","value":"value"}',
+                                name: "testname",
+                                _powerpagesitelanguageid_value:
+                                    "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                                powerpagecomponentid: entityId,
                             },
-                            { name: "test Name" },
-                            { _languagefield: "languagefield" },
                         ],
                     });
                 });
@@ -585,27 +717,18 @@ describe("remoteFetchProvider", () => {
         );
 
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(
-            accessToken,
-            entityName,
-            entityId,
-            queryParamsMap,
-            languageIdCodeMap,
-            portalFs,
-            websiteIdToLanguage
-        );
+        await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
         assert.calledOnce(_mockFetch);
         assert.calledTwice(sendAPITelemetry);
-        assert.calledThrice(sendErrorTelemetry);
-        assert.calledThrice(showErrorMessage);
-        assert.callCount(getEntity, 5);
+        assert.calledOnce(sendErrorTelemetry);
+        assert.calledOnce(showErrorMessage);
+        assert.callCount(getEntity, 3);
     });
 
-    it("fetchDataFromDataverseAndUpdateVFS_whenResposeSuccessAndFileNameIsDefaultfilename_shouldThrowError", async () => {
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndFileNameIsDefaultFilename_shouldThrowError", async () => {
         //Act
-        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
         const queryParamsMap = new Map<string, string>([
@@ -619,16 +742,46 @@ describe("remoteFetchProvider", () => {
         ]);
 
         WebExtensionContext.setWebExtensionContext(
-            "webPage",
-            "",
+            entityName,
+            entityId,
             queryParamsMap
         );
 
-        const languageIdCodeMap = new Map<string, string>([["En", "english"]]);
-        const portalFs = new PortalsFS();
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
         const websiteIdToLanguage = new Map<string, string>([
-            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "En"],
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
         ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
+        );
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
+        ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            accessToken
+        );
+
+        const portalFs = new PortalsFS();
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         const _mockFetch = stub(fetch, "default").resolves({
             ok: true,
@@ -638,10 +791,11 @@ describe("remoteFetchProvider", () => {
                     return resolve({
                         value: [
                             {
-                                value: '{"ddrive":"testFile","value":"value"}',
+                                name: "testname",
+                                _powerpagesitelanguageid_value:
+                                    "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                                powerpagecomponentid: entityId,
                             },
-                            { name: "test Name" },
-                            { _languagefield: "languagefield" },
                         ],
                     });
                 });
@@ -670,21 +824,13 @@ describe("remoteFetchProvider", () => {
         );
 
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(
-            accessToken,
-            entityName,
-            entityId,
-            queryParamsMap,
-            languageIdCodeMap,
-            portalFs,
-            websiteIdToLanguage
-        );
+        await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
         assert.calledOnce(_mockFetch);
         assert.calledTwice(sendAPITelemetry);
-        assert.calledThrice(sendErrorTelemetry);
-        assert.calledThrice(showErrorMessage);
-        assert.callCount(getEntity, 5);
+        assert.calledOnce(sendErrorTelemetry);
+        assert.calledOnce(showErrorMessage);
+        assert.callCount(getEntity, 3);
     });
 });
