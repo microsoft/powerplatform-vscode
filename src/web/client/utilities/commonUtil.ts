@@ -40,9 +40,10 @@ export function GetFileContent(result: any, attributePath: IAttributePath) {
     let fileContent = result[attributePath.source] ?? NO_CONTENT;
 
     if (result[attributePath.source] && attributePath.relativePath.length) {
-        fileContent = JSON.parse(result[attributePath.source])[
-            attributePath.relativePath
-        ];
+        fileContent =
+            JSON.parse(result[attributePath.source])[
+                attributePath.relativePath
+            ] ?? NO_CONTENT;
     }
 
     return fileContent;

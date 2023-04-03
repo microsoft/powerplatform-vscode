@@ -68,16 +68,16 @@ export class EntityDataMap {
         const existingColumnContent = this.getColumnContent(
             entityId,
             columnName.source
-        );
+        ) as string;
         console.log("Existing column content", existingColumnContent);
 
-        if (existingColumnContent && columnName.relativePath.length) {
+        if (columnName.relativePath.length) {
             const jsonFromOriginalContent = JSON.parse(existingColumnContent);
 
             console.log("Json from original content", jsonFromOriginalContent);
 
             return jsonFromOriginalContent[columnName.relativePath];
-        } else if (existingColumnContent && columnName.source.length) {
+        } else if (columnName.source.length) {
             console.log("Returning existing column content");
             return existingColumnContent;
         }
@@ -94,9 +94,9 @@ export class EntityDataMap {
         if (existingEntity) {
             const existingColumnContent = existingEntity.entityColumn.get(
                 columnName.source
-            );
+            ) as string;
 
-            if (existingColumnContent && columnName.relativePath.length) {
+            if (columnName.relativePath.length) {
                 const jsonFromOriginalContent = JSON.parse(
                     existingColumnContent
                 );
@@ -109,7 +109,7 @@ export class EntityDataMap {
                 );
                 this.entityMap.set(entityId, existingEntity);
                 return;
-            } else if (existingColumnContent && columnName.source.length) {
+            } else if (columnName.source.length) {
                 this.updateEntityContent(
                     entityId,
                     columnName.source,

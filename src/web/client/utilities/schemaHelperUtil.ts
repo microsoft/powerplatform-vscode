@@ -217,8 +217,8 @@ export function getWebsiteLanguageIdToPortalLanguageIdMap(
                     counter++
                 ) {
                     const powerpagesitelanguageid = result.value[counter]
-                        ._powerpagesitelanguageid_value
-                        ? result.value[counter]._powerpagesitelanguageid_value
+                        .powerpagesitelanguageid
+                        ? result.value[counter].powerpagesitelanguageid
                         : null;
                     websiteLanguageIdToPortalLanguageMap.set(
                         powerpagesitelanguageid,
