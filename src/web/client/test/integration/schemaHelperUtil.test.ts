@@ -539,10 +539,10 @@ describe("schemaHelperUtil", () => {
         const result = {
             value: [
                 {
-                    _powerpagesitelanguageid_value: "1",
+                    powerpagesitelanguageid: "1",
                 },
                 {
-                    _powerpagesitelanguageid_value: "2",
+                    powerpagesitelanguageid: "2",
                 },
                 { abc: "french" },
             ],
