@@ -13,7 +13,6 @@ import WebExtensionContext from "../WebExtensionContext";
 
 export class EtagHandlerService {
     public static async updateFileEtag(fileFsPath: string) {
-        console.log("Updating file etag");
         const entityName = WebExtensionContext.fileDataMap.getFileMap.get(
             fileFsPath
         )?.entityName as string;
@@ -72,14 +71,7 @@ export class EtagHandlerService {
             const response = await fetch(requestUrl, requestInit);
 
             if (response.ok) {
-                console.log("Updating file etag", response.ok);
                 const result = await response.json();
-                console.log("Updating file etag", result);
-                console.log(
-                    "Updating file etag",
-                    result[ODATA_ETAG],
-                    GetFileContent(result, attributePath)
-                );
                 WebExtensionContext.entityDataMap.updateEtagValue(
                     entityId,
                     result[ODATA_ETAG]
@@ -93,13 +85,11 @@ export class EtagHandlerService {
                     fileFsPath,
                     false
                 ); // Reset dirty changes - diff view will be triggered
-                console.log("Updating file etag", "done");
 
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_CHANGED
                 );
             } else if (response.status === 304) {
-                console.log("Updating file etag", response.status);
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
                 );

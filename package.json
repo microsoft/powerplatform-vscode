@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
-  "version": "19.0.13-dev",
+  "version": "1.0.1-dev",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
@@ -379,6 +379,11 @@
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Dev version",
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Canary version"
           ]
+        },
+        "powerPlatform.experimental.enableVersionControl": {
+          "type": "boolean",
+          "markdownDescription": "Set this value to true to enable Dataverse Etag based version control for portal files in Web extension only.",
+          "default": false
         }
       }
     },

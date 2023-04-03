@@ -64,21 +64,16 @@ export class EntityDataMap {
         entityId: string,
         columnName: IAttributePath
     ) {
-        console.log("Getting entity column content");
         const existingColumnContent = this.getColumnContent(
             entityId,
             columnName.source
         ) as string;
-        console.log("Existing column content", existingColumnContent);
 
         if (columnName.relativePath.length) {
             const jsonFromOriginalContent = JSON.parse(existingColumnContent);
 
-            console.log("Json from original content", jsonFromOriginalContent);
-
             return jsonFromOriginalContent[columnName.relativePath];
         } else if (columnName.source.length) {
-            console.log("Returning existing column content");
             return existingColumnContent;
         }
         throw Error("Entity does not exist in the map"); // TODO - Revisit errors and dialog experience here

@@ -6,7 +6,11 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import { pathHasEntityFolderName } from "../utilities/urlBuilderUtil";
-import { PORTALS_URI_SCHEME, queryParameters } from "../common/constants";
+import {
+    PORTALS_URI_SCHEME,
+    queryParameters,
+    VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
+} from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
 import { saveData } from "./remoteSaveProvider";
@@ -15,6 +19,7 @@ import { telemetryEventNames } from "../telemetry/constants";
 import { getEntity, IAttributePath } from "../utilities/schemaHelperUtil";
 import { folderExportType, schemaEntityKey } from "../schema/constants";
 import { EtagHandlerService } from "../services/etagHandlerService";
+import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -62,7 +67,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
     // --- manage file metadata
 
     async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
+        const isVersionControlEnabled = vscode.workspace
+            .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
+            .get(VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME);
+
         if (
+            isVersionControlEnabled &&
             WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
                 ?.hasDirtyChanges
         ) {
@@ -83,22 +93,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     uri.fsPath,
                     entityEtagValue
                 );
-                console.log("File has dirty changes with diff view");
-            } else {
-                console.log("File has dirty changes without diff view");
             }
-        } else {
-            console.log(
-                "File stat did not hit dirty changes",
-                WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
-                    ?.hasDirtyChanges,
-                WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
-                    ?.entityEtag,
-                WebExtensionContext.entityDataMap.getEntityMap.get(
-                    WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
-                        ?.entityId as string
-                )?.entityEtag
-            );
         }
         return await this._lookup(uri, false);
     }
@@ -151,7 +146,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                         WebExtensionContext.telemetry.sendInfoTelemetry(
                             telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED
                         );
-                        await this._loadFromDataverseToVFS();
+                        await this._loadFromDataverseToVFS(); // TODO - make single file load
                         const data = await this._lookupAsFile(uri, false);
                         return data.data;
                     }
@@ -199,25 +194,14 @@ export class PortalsFS implements vscode.FileSystemProvider {
                         telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED
                     );
                     await this._saveFileToDataverseFromVFS(uri);
-                    console.log("writefile: Inside dataverse call");
                     if (entry?.mtime) {
                         mtime = entry?.mtime - 1000;
-                        console.log(
-                            "writefile: Inside dataverse call - updated mtime"
-                        );
                     }
                 }
             );
         }
 
         entry.mtime = mtime;
-        console.log(
-            "writefile mtime value",
-            entry.mtime,
-            options.create,
-            options.overwrite,
-            new TextDecoder().decode(content)
-        );
         entry.size = content.byteLength;
         entry.data = content;
 
@@ -264,8 +248,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
             throw vscode.FileSystemError.FileIsADirectory(uri);
         }
 
-        console.log("old mtime", entry.mtime, entry.size);
-
         const content =
             WebExtensionContext.entityDataMap.getEntityColumnContent(
                 WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
@@ -274,23 +256,9 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     ?.attributePath as IAttributePath
             );
 
-        console.log(
-            "Existing mtime",
-            entry.mtime,
-            entry.size,
-            new TextDecoder().decode(entry.data)
-        );
-
         entry.mtime = entry.mtime + 2000;
         entry.data = new TextEncoder().encode(content);
         entry.size = entry.data.byteLength;
-
-        console.log(
-            "New mtime updated",
-            entry.mtime,
-            entry.size,
-            new TextDecoder().decode(entry.data)
-        );
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
     }
 
@@ -460,5 +428,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
         // Update fileDataMap with the latest changes
         WebExtensionContext.fileDataMap.updateDirtyChanges(uri.fsPath, false);
+
+        // TODO - Update the etag of the file after saving - this is used to check if the file has been modified in Dataverse
+        // Co-related with the TODO in readFile
     }
 }
