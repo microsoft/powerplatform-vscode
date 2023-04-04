@@ -18,7 +18,7 @@ const mocha = require('gulp-mocha');
 const moment = require('moment');
 const gulpWebpack = require('webpack-stream');
 const webpack = require('webpack');
-const vsce = require('vsce');
+const vsce = require('@vscode/vsce');
 const argv = require('yargs').argv;
 
 const fetch = require('node-fetch');
