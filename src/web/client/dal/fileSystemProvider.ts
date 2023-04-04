@@ -16,7 +16,7 @@ import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
 import { saveData } from "./remoteSaveProvider";
 import { ERRORS } from "../common/errorHandler";
 import { telemetryEventNames } from "../telemetry/constants";
-import { getEntity, IAttributePath } from "../utilities/schemaHelperUtil";
+import { getEntity } from "../utilities/schemaHelperUtil";
 import { folderExportType, schemaEntityKey } from "../schema/constants";
 import { EtagHandlerService } from "../services/etagHandlerService";
 import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
@@ -76,7 +76,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
             WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
                 ?.hasDirtyChanges
         ) {
-            await EtagHandlerService.updateFileEtag(uri.fsPath);
+            const latestContent =
+                await EtagHandlerService.getLatestAndUpdateMetadata(uri.fsPath);
             const entityEtagValue =
                 WebExtensionContext.entityDataMap.getEntityMap.get(
                     WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
@@ -85,16 +86,18 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
             // Triggers diff view logic in web extension using file system provider in-built flows
             if (
+                latestContent.length > 0 &&
                 WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
                     ?.entityEtag !== entityEtagValue
             ) {
-                await this.updateMtime(uri);
+                await this.updateMtime(uri, latestContent);
                 WebExtensionContext.fileDataMap.updateEtagValue(
                     uri.fsPath,
                     entityEtagValue
                 );
             }
         }
+
         return await this._lookup(uri, false);
     }
 
@@ -161,7 +164,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
         content: Uint8Array,
         options: { create: boolean; overwrite: boolean }
     ): Promise<void> {
-        let mtime = Date.now();
         const basename = path.posix.basename(uri.path);
         const parent = await this._lookupParentDirectory(uri);
         let entry = parent.entries.get(basename);
@@ -194,14 +196,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
                         telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED
                     );
                     await this._saveFileToDataverseFromVFS(uri);
-                    if (entry?.mtime) {
-                        mtime = entry?.mtime - 1000;
-                    }
                 }
             );
         }
 
-        entry.mtime = mtime;
+        entry.mtime = Date.now();
         entry.size = content.byteLength;
         entry.data = content;
 
@@ -236,7 +235,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         throw new Error("Method not implemented.");
     }
 
-    async updateMtime(uri: vscode.Uri): Promise<void> {
+    async updateMtime(uri: vscode.Uri, latestContent: string): Promise<void> {
         const basename = path.posix.basename(uri.path);
         const parent = await this._lookupParentDirectory(uri);
         const entry = parent.entries.get(basename);
@@ -248,17 +247,9 @@ export class PortalsFS implements vscode.FileSystemProvider {
             throw vscode.FileSystemError.FileIsADirectory(uri);
         }
 
-        const content =
-            WebExtensionContext.entityDataMap.getEntityColumnContent(
-                WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
-                    ?.entityId as string,
-                WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
-                    ?.attributePath as IAttributePath
-            );
-
-        entry.mtime = entry.mtime + 2000;
-        entry.data = new TextEncoder().encode(content);
-        entry.size = entry.data.byteLength;
+        entry.mtime = entry.mtime + 1;
+        entry.data = new TextEncoder().encode(latestContent);
+        entry.size = entry.size + 1;
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
     }
 

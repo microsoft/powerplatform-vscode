@@ -12,7 +12,9 @@ import { getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
 
 export class EtagHandlerService {
-    public static async updateFileEtag(fileFsPath: string) {
+    public static async getLatestAndUpdateMetadata(
+        fileFsPath: string
+    ): Promise<string> {
         const entityName = WebExtensionContext.fileDataMap.getFileMap.get(
             fileFsPath
         )?.entityName as string;
@@ -76,25 +78,21 @@ export class EtagHandlerService {
                     entityId,
                     result[ODATA_ETAG]
                 );
-                WebExtensionContext.entityDataMap.updateEntityColumnContent(
-                    entityId,
-                    attributePath,
-                    GetFileContent(result, attributePath)
-                );
-                WebExtensionContext.fileDataMap.updateDirtyChanges(
-                    fileFsPath,
-                    false
-                ); // Reset dirty changes - diff view will be triggered
 
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_CHANGED
                 );
+
+                return GetFileContent(result, attributePath);
             } else if (response.status === 304) {
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
                 );
             } else {
-                throw new Error(response.statusText);
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
+                    response.statusText
+                );
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -115,5 +113,7 @@ export class EtagHandlerService {
                 fileExtensionType
             );
         }
+
+        return "";
     }
 }
