@@ -18,10 +18,14 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { convertStringtoBase64 } from "./utilities/commonUtil";
+import { convertStringtoBase64 as convertStringToBase64 } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
+import {
+    updateFileDirtyChanges,
+    updateEntityColumnContent,
+} from "./utilities/fileAndEntityUtil";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -196,17 +200,14 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
                 if (fileData?.entityId && fileData.attributePath) {
                     let fileContent = e.document.getText();
                     if (fileData.encodeAsBase64 as boolean) {
-                        fileContent = convertStringtoBase64(fileContent);
+                        fileContent = convertStringToBase64(fileContent);
                     }
-                    WebExtensionContext.entityDataMap.updateEntityColumnContent(
+                    updateEntityColumnContent(
                         fileData?.entityId,
                         fileData.attributePath,
                         fileContent
                     );
-                    WebExtensionContext.fileDataMap.updateDirtyChanges(
-                        fileFsPath,
-                        true
-                    );
+                    updateFileDirtyChanges(fileFsPath, true);
                 }
             }
         })

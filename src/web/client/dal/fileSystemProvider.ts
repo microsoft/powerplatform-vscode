@@ -20,6 +20,14 @@ import { getEntity } from "../utilities/schemaHelperUtil";
 import { folderExportType, schemaEntityKey } from "../schema/constants";
 import { EtagHandlerService } from "../services/etagHandlerService";
 import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
+import {
+    fileHasDirtyChanges,
+    getEntityEtag,
+    getFileEntityEtag,
+    getFileEntityId,
+    updateEntityEtag,
+    updateFileDirtyChanges,
+} from "../utilities/fileAndEntityUtil";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -71,30 +79,18 @@ export class PortalsFS implements vscode.FileSystemProvider {
             .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
             .get(VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME);
 
-        if (
-            isVersionControlEnabled &&
-            WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
-                ?.hasDirtyChanges
-        ) {
+        if (isVersionControlEnabled && fileHasDirtyChanges(uri.fsPath)) {
             const latestContent =
                 await EtagHandlerService.getLatestAndUpdateMetadata(uri.fsPath);
-            const entityEtagValue =
-                WebExtensionContext.entityDataMap.getEntityMap.get(
-                    WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
-                        ?.entityId as string
-                )?.entityEtag as string;
+            const entityEtagValue = getEntityEtag(getFileEntityId(uri.fsPath));
 
             // Triggers diff view logic in web extension using file system provider in-built flows
             if (
                 latestContent.length > 0 &&
-                WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
-                    ?.entityEtag !== entityEtagValue
+                getFileEntityEtag(uri.fsPath) !== entityEtagValue
             ) {
                 await this.updateMtime(uri, latestContent);
-                WebExtensionContext.fileDataMap.updateEtagValue(
-                    uri.fsPath,
-                    entityEtagValue
-                );
+                updateEntityEtag(uri.fsPath, entityEtagValue);
             }
         }
 
@@ -418,7 +414,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         await saveData(uri);
 
         // Update fileDataMap with the latest changes
-        WebExtensionContext.fileDataMap.updateDirtyChanges(uri.fsPath, false);
+        updateFileDirtyChanges(uri.fsPath, false);
 
         // TODO - Update the etag of the file after saving - this is used to check if the file has been modified in Dataverse
         // Co-related with the TODO in readFile

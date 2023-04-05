@@ -7,6 +7,10 @@ import { getHeader } from "../common/authenticationProvider";
 import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 import { GetFileContent } from "../utilities/commonUtil";
+import {
+    getFileEntityId,
+    getFileEntityName,
+} from "../utilities/fileAndEntityUtil";
 import { IAttributePath } from "../utilities/schemaHelperUtil";
 import { getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
@@ -15,18 +19,10 @@ export class EtagHandlerService {
     public static async getLatestAndUpdateMetadata(
         fileFsPath: string
     ): Promise<string> {
-        const entityName = WebExtensionContext.fileDataMap.getFileMap.get(
-            fileFsPath
-        )?.entityName as string;
-        const entityId = WebExtensionContext.fileDataMap.getFileMap.get(
-            fileFsPath
-        )?.entityId as string;
+        const entityName = getFileEntityName(fileFsPath);
+        const entityId = getFileEntityId(fileFsPath);
 
         const requestSentAtTime = new Date().getTime();
-        const fileExtensionType =
-            WebExtensionContext.fileDataMap.getFileMap.get(
-                fileFsPath
-            )?.entityFileExtensionType;
 
         const entityEtag =
             WebExtensionContext.fileDataMap.getFileMap.get(
@@ -41,7 +37,7 @@ export class EtagHandlerService {
             dataverseOrgUrl,
             entityName,
             entityId,
-            httpMethod.PATCH,
+            httpMethod.GET,
             true
         );
 
@@ -65,8 +61,7 @@ export class EtagHandlerService {
             WebExtensionContext.telemetry.sendAPITelemetry(
                 requestUrl,
                 entityName,
-                httpMethod.GET,
-                fileExtensionType
+                httpMethod.GET
             );
 
             await WebExtensionContext.reAuthenticate();
@@ -99,8 +94,7 @@ export class EtagHandlerService {
                 requestUrl,
                 entityName,
                 httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                fileExtensionType
+                new Date().getTime() - requestSentAtTime
             );
         } catch (error) {
             const authError = (error as Error)?.message;
@@ -109,8 +103,7 @@ export class EtagHandlerService {
                 entityName,
                 httpMethod.GET,
                 new Date().getTime() - requestSentAtTime,
-                authError,
-                fileExtensionType
+                authError
             );
         }
 
