@@ -53,6 +53,7 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerP
     }
 
     if (telemetryData.exception) {
+        telemetryDataProperties.eventName = telemetryData.eventName;
         telemetry.sendTelemetryException(telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
     } else {
         telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
