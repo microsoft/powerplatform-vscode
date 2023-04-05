@@ -3,14 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 import { IAttributePath } from "../utilities/schemaHelperUtil";
 import { FileData } from "./fileData";
 
 export class FileDataMap {
-    private fileMap: Map<string, FileData> = new Map<string, FileData>;
+    private fileMap: Map<string, FileData> = new Map<string, FileData>();
 
-    public get getFileMap(): Map<string, FileData> { return this.fileMap; }
+    public get getFileMap(): Map<string, FileData> {
+        return this.fileMap;
+    }
 
     public setEntity(
         fileUri: string,
@@ -23,14 +25,16 @@ export class FileDataMap {
         isBase64Encoded: boolean,
         mimeType?: string
     ) {
-        const fileData = new FileData(entityId,
+        const fileData = new FileData(
+            entityId,
             entityName,
             fileName,
             odataEtag,
             fileExtension,
             attributePath,
             isBase64Encoded,
-            mimeType);
+            mimeType
+        );
         this.fileMap.set(vscode.Uri.parse(fileUri).fsPath, fileData);
     }
 
