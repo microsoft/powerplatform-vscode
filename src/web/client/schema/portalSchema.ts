@@ -202,10 +202,10 @@ export const portal_schema_V2 = {
                 _primarynamefield: "name",
                 _disableplugins: "false",
                 _exporttype: "SubFolders",
-                _languagefield: "_powerpagesitelanguageid_value",
+                _languagefield: "powerpagesitelanguageid",
                 _foldername: "web-pages",
                 _fetchQueryParameters:
-                    "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content,_powerpagesitelanguageid_value",
+                    "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content,powerpagesitelanguageid",
                 _attributes:
                     "content.customcss,content.customjavascript,content.copy",
                 _attributesExtension: new Map([
