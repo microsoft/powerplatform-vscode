@@ -7,7 +7,7 @@ import { IAttributePath } from "../utilities/schemaHelperUtil";
 import { EntityData } from "./entityData";
 
 export class EntityDataMap {
-    private entityMap: Map<string, EntityData> = new Map<string, EntityData>;
+    private entityMap: Map<string, EntityData> = new Map<string, EntityData>();
 
     public setEntity(
         entityId: string,
@@ -24,7 +24,12 @@ export class EntityDataMap {
         }
         entityColumnMap.set(attributePath.source, attributeContent);
 
-        const entityData = new EntityData(entityId, entityName, odataEtag, entityColumnMap);
+        const entityData = new EntityData(
+            entityId,
+            entityName,
+            odataEtag,
+            entityColumnMap
+        );
         this.entityMap.set(entityId, entityData);
     }
 
@@ -32,32 +37,52 @@ export class EntityDataMap {
         return this.entityMap.get(entityId)?.entityColumn.get(columnName) ?? "";
     }
 
-    public updateEntityContent(entityId: string, columnName: string, columnContent: string) {
+    public updateEntityContent(
+        entityId: string,
+        columnName: string,
+        columnContent: string
+    ) {
         const existingEntity = this.entityMap.get(entityId);
 
         if (existingEntity) {
-            existingEntity.entityColumn.set(columnName, columnContent)
+            existingEntity.entityColumn.set(columnName, columnContent);
             this.entityMap.set(entityId, existingEntity);
             return;
         }
         throw Error("Entity does not exist in the map"); // TODO - Revisit errors and dialog experience here
     }
 
-    public updateEntityColumnContent(entityId: string, columnName: IAttributePath, columnAttributeContent: string) {
+    public updateEntityColumnContent(
+        entityId: string,
+        columnName: IAttributePath,
+        columnAttributeContent: string
+    ) {
         const existingEntity = this.entityMap.get(entityId);
 
         if (existingEntity) {
-            const existingColumnContent = existingEntity.entityColumn.get(columnName.source);
+            const existingColumnContent = existingEntity.entityColumn.get(
+                columnName.source
+            ) as string;
 
-            if (existingColumnContent && columnName.relativePath.length) {
-                const jsonFromOriginalContent = JSON.parse(existingColumnContent);
+            if (columnName.relativePath.length) {
+                const jsonFromOriginalContent = JSON.parse(
+                    existingColumnContent
+                );
 
-                jsonFromOriginalContent[columnName.relativePath] = columnAttributeContent;
-                existingEntity.entityColumn.set(columnName.source, JSON.stringify(jsonFromOriginalContent));
+                jsonFromOriginalContent[columnName.relativePath] =
+                    columnAttributeContent;
+                existingEntity.entityColumn.set(
+                    columnName.source,
+                    JSON.stringify(jsonFromOriginalContent)
+                );
                 this.entityMap.set(entityId, existingEntity);
                 return;
-            } else if (existingColumnContent && columnName.source.length) {
-                this.updateEntityContent(entityId, columnName.source, columnAttributeContent);
+            } else if (columnName.source.length) {
+                this.updateEntityContent(
+                    entityId,
+                    columnName.source,
+                    columnAttributeContent
+                );
                 return;
             }
         }
