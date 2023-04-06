@@ -173,7 +173,7 @@ describe("URLBuilder", () => {
     });
 
     it("getRequestURL_with_get_http_method", () => {
-        const powerPlatformExtensionContext: IWebExtensionContext = {
+        const webExtensionContext: IWebExtensionContext = {
             schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.API, "schemaKey.API"],
                 [
@@ -203,7 +203,7 @@ describe("URLBuilder", () => {
 
         sinon
             .stub(WebExtensionContext, "schemaDataSourcePropertiesMap")
-            .returns(powerPlatformExtensionContext);
+            .returns(webExtensionContext);
 
         const dataverseOrgUrl = "dataverseOrgUrl";
         const entity = "WEBPAGES";
@@ -240,7 +240,7 @@ describe("URLBuilder", () => {
             .returns(new Map());
         WebExtensionContext.setWebExtensionContext("", "", new Map());
 
-        const powerPlatformExtensionContext: IWebExtensionContext = {
+        const webExtensionContext: IWebExtensionContext = {
             schemaDataSourcePropertiesMap: new Map<string, string>([
                 [schemaKey.API, "schemaKey.API"],
                 [
@@ -256,7 +256,7 @@ describe("URLBuilder", () => {
         } as IWebExtensionContext;
         sinon
             .stub(WebExtensionContext, "schemaDataSourcePropertiesMap")
-            .returns(powerPlatformExtensionContext);
+            .returns(webExtensionContext);
 
         sinon.stub(schemaHelper, "getEntity").returns(
             new Map<string, string>([

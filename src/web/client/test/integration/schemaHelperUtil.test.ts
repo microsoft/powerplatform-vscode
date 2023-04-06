@@ -18,15 +18,12 @@ import {
     isBase64Encoded,
     encodeAsBase64,
     isWebFileV2,
-    getLanguageIdCodeMap,
-    getWebsiteIdToLanguageMap,
-    getwebsiteLanguageIdToPortalLanguageMap,
+    getLcidCodeMap,
+    getWebsiteIdToLcidMap,
+    getWebsiteLanguageIdToPortalLanguageIdMap,
     useOctetStreamContentType,
 } from "../../utilities/schemaHelperUtil";
-import {
-    portal_schema_V1,
-    portal_schema_V2,
-} from "../integration/portalSchemaReader.mock";
+import { portal_schema_V1, portal_schema_V2 } from "../../schema/portalSchema";
 import WebExtensionContext from "../../WebExtensionContext";
 import * as Constants from "../../common/constants";
 
@@ -303,7 +300,7 @@ describe("schemaHelperUtil", () => {
         expect(result).false;
     });
 
-    it("getLanguageIdCodeMap_whenResultIsProvided_shouldReturnlanguageIdCodeMapWithCorrectMapping", () => {
+    it("getLcidCodeMap_whenResultIsProvided_shouldReturnlanguageIdCodeMapWithCorrectMapping", () => {
         //Act
         const result = {
             value: [
@@ -320,12 +317,12 @@ describe("schemaHelperUtil", () => {
         ]);
         const schema = "portalschemav2";
         //Action
-        const resultData = getLanguageIdCodeMap(result, schema);
+        const resultData = getLcidCodeMap(result, schema);
         //Assert
         expect(resultData).deep.equals(expectedResult);
     });
 
-    it("getLanguageIdCodeMap_whenSchemaIsNotPortalschemav2_shouldReturnlanguageIdCodeMapWithCorrectMapping", () => {
+    it("getLcidCodeMap_whenSchemaIsNotPortalschemav2_shouldReturnlanguageIdCodeMapWithCorrectMapping", () => {
         //Act
         const result = {
             value: [
@@ -342,78 +339,78 @@ describe("schemaHelperUtil", () => {
         ]);
         const schema = "portalschemav1";
         //Action
-        const resultData = getLanguageIdCodeMap(result, schema);
+        const resultData = getLcidCodeMap(result, schema);
         //Assert
         expect(resultData).deep.equals(expectedResult);
     });
 
-    it("getLanguageIdCodeMap_withNullResult_shouldReturnEmpty", () => {
+    it("getLcidCodeMap_withNullResult_shouldReturnEmpty", () => {
         //Act
         const result = null;
         const schema = "portalschemav1";
         //Action
-        const resultData = getLanguageIdCodeMap(result, schema);
+        const resultData = getLcidCodeMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getLanguageIdCodeMap_whenResultIsUndefined_shouldReturnEmpty", () => {
+    it("getLcidCodeMap_whenResultIsUndefined_shouldReturnEmpty", () => {
         //Act
         const result = undefined;
         const schema = "portalschemav1";
         //Action
-        const resultData = getLanguageIdCodeMap(result, schema);
+        const resultData = getLcidCodeMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getLanguageIdCodeMap_whenValueDoesNotExists_shouldReturnEmpty", () => {
+    it("getLcidCodeMap_whenValueDoesNotExists_shouldReturnEmpty", () => {
         //Act
         const result = {};
         const schema = "portalschemav1";
         //Action
-        const resultData = getLanguageIdCodeMap(result, schema);
+        const resultData = getLcidCodeMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getLanguageIdCodeMap_whenValueLengthIsZeroDoesNotExists_shouldReturnEmpty", () => {
+    it("getLcidCodeMap_whenValueLengthIsZeroDoesNotExists_shouldReturnEmpty", () => {
         //Act
         const result = {
             value: [],
         };
         const schema = "portalschemav1";
         //Action
-        const resultData = getLanguageIdCodeMap(result, schema);
+        const resultData = getLcidCodeMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getLanguageIdCodeMap_whenValueIsNull_shouldReturnEmpty", () => {
+    it("getLcidCodeMap_whenValueIsNull_shouldReturnEmpty", () => {
         //Act
         const result = {
             value: null,
         };
         const schema = "portalschemav1";
         //Action
-        const resultData = getLanguageIdCodeMap(result, schema);
+        const resultData = getLcidCodeMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getLanguageIdCodeMap_whenValueIsUndefined_shouldReturnEmpty", () => {
+    it("getLcidCodeMap_whenValueIsUndefined_shouldReturnEmpty", () => {
         //Act
         const result = {
             value: undefined,
         };
         const schema = "portalschemav1";
         //Action
-        const resultData = getLanguageIdCodeMap(result, schema);
+        const resultData = getLcidCodeMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getWebsiteIdToLanguageMap_whenResultIsPassed_shouldReturnWebsiteIdToLanguageMapWithCorrectMapping", () => {
+    it("getWebsiteIdToLcidMap_whenResultIsPassed_shouldReturnWebsiteIdToLanguageMapWithCorrectMapping", () => {
         //Act
         const result = {
             value: [
@@ -436,12 +433,12 @@ describe("schemaHelperUtil", () => {
         ]);
         const schema = "portalschemav2";
         //Action
-        const resultData = getWebsiteIdToLanguageMap(result, schema);
+        const resultData = getWebsiteIdToLcidMap(result, schema);
         //Assert
         expect(resultData).deep.equals(expectedResult);
     });
 
-    it("getWebsiteIdToLanguageMap_whenSchemaIsNotPortalschemav2_shouldReturnWebsiteIdToLanguageMapWithCorrectMapping", () => {
+    it("getWebsiteIdToLcidMap_whenSchemaIsNotPortalschemav2_shouldReturnWebsiteIdToLanguageMapWithCorrectMapping", () => {
         //Act
         const result = {
             value: [
@@ -464,80 +461,80 @@ describe("schemaHelperUtil", () => {
         ]);
         const schema = "portalschemav1";
         //Action
-        const resultData = getWebsiteIdToLanguageMap(result, schema);
+        const resultData = getWebsiteIdToLcidMap(result, schema);
         //Assert
         expect(resultData).deep.equals(expectedResult);
     });
 
-    it("getWebsiteIdToLanguageMap_whenResultIsNull_shouldReturnEmpty", () => {
+    it("getWebsiteIdToLcidMap_whenResultIsNull_shouldReturnEmpty", () => {
         //Act
         const result = null;
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getWebsiteIdToLanguageMap(result, schema);
+        const resultData = getWebsiteIdToLcidMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getWebsiteIdToLanguageMap_whenResultIsUndefined_shouldReturnEmpty", () => {
+    it("getWebsiteIdToLcidMap_whenResultIsUndefined_shouldReturnEmpty", () => {
         //Act
         const result = undefined;
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getWebsiteIdToLanguageMap(result, schema);
+        const resultData = getWebsiteIdToLcidMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getWebsiteIdToLanguageMap_whenValueDoesNotExists_shouldReturnEmpty", () => {
+    it("getWebsiteIdToLcidMap_whenValueDoesNotExists_shouldReturnEmpty", () => {
         //Act
         const result = {};
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getWebsiteIdToLanguageMap(result, schema);
+        const resultData = getWebsiteIdToLcidMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getWebsiteIdToLanguageMap_whenValueIsUndefined_shouldReturnEmpty", () => {
+    it("getWebsiteIdToLcidMap_whenValueIsUndefined_shouldReturnEmpty", () => {
         //Act
         const result = { value: undefined };
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getWebsiteIdToLanguageMap(result, schema);
+        const resultData = getWebsiteIdToLcidMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getWebsiteIdToLanguageMap_whenValueIsNull_shouldReturnEmpty", () => {
+    it("getWebsiteIdToLcidMap_whenValueIsNull_shouldReturnEmpty", () => {
         //Act
         const result = { value: null };
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getWebsiteIdToLanguageMap(result, schema);
+        const resultData = getWebsiteIdToLcidMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    it("getWebsiteIdToLanguageMap_whenValueEmptyArray_shouldReturnEmpty", () => {
+    it("getWebsiteIdToLcidMap_whenValueEmptyArray_shouldReturnEmpty", () => {
         //Act
         const result = { value: null };
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getWebsiteIdToLanguageMap(result, schema);
+        const resultData = getWebsiteIdToLcidMap(result, schema);
         //Assert
         expect(resultData).empty;
     });
 
-    //getwebsiteLanguageIdToPortalLanguageMap
+    //getWebsiteLanguageIdToPortalLanguageIdMap
 
-    it("getwebsiteLanguageIdToPortalLanguageMap_whenSchemaIsPortalschemav2_shouldReturnwebsiteLanguageIdToPortalLanguageMapMapWithCorrectMapping", () => {
+    it("getWebsiteLanguageIdToPortalLanguageIdMap_whenSchemaIsPortalschemav2_shouldReturnwebsiteLanguageIdToPortalLanguageMapMapWithCorrectMapping", () => {
         //Act
         const result = {
             value: [
@@ -558,7 +555,7 @@ describe("schemaHelperUtil", () => {
         ]);
         const schema = "portalschemav2";
         //Action
-        const resultData = getwebsiteLanguageIdToPortalLanguageMap(
+        const resultData = getWebsiteLanguageIdToPortalLanguageIdMap(
             result,
             schema
         );
@@ -566,30 +563,30 @@ describe("schemaHelperUtil", () => {
         expect(resultData).deep.equals(expectedResult);
     });
 
-    it("getwebsiteLanguageIdToPortalLanguageMap_whenSchemaIsNotPortalschemav2_shouldReturnwebsiteLanguageIdToPortalLanguageMapMapWithCorrectMapping", () => {
+    it("getWebsiteLanguageIdToPortalLanguageIdMap_whenSchemaIsNotPortalschemav2_shouldReturnwebsiteLanguageIdToPortalLanguageMapMapWithCorrectMapping", () => {
         //Act
         const result = {
             value: [
                 {
-                    adx_portallanguageid_value: "1",
+                    _adx_portallanguageid_value: "1",
                     adx_websitelanguageid: "english",
                 },
                 {
-                    adx_portallanguageid_value: "2",
+                    _adx_portallanguageid_value: "2",
                     adx_websitelanguageid: "hindi",
                 },
                 { adx_websitelanguageid: "french" },
             ],
         };
 
-        const expectedResult = new Map<string | null, string>([
+        const expectedResult = new Map<string, string>([
             ["english", "1"],
             ["hindi", "2"],
             ["french", Constants.PORTAL_LANGUAGE_DEFAULT],
         ]);
         const schema = "portalschemav1";
         //Action
-        const resultData = getwebsiteLanguageIdToPortalLanguageMap(
+        const resultData = getWebsiteLanguageIdToPortalLanguageIdMap(
             result,
             schema
         );
@@ -597,13 +594,13 @@ describe("schemaHelperUtil", () => {
         expect(resultData).deep.equals(expectedResult);
     });
 
-    it("getwebsiteLanguageIdToPortalLanguageMap_whenValueEmptyArray_shouldReturnEmpty", () => {
+    it("getWebsiteLanguageIdToPortalLanguageIdMap_whenValueEmptyArray_shouldReturnEmpty", () => {
         //Act
         const result = { value: null };
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getwebsiteLanguageIdToPortalLanguageMap(
+        const resultData = getWebsiteLanguageIdToPortalLanguageIdMap(
             result,
             schema
         );
@@ -611,13 +608,13 @@ describe("schemaHelperUtil", () => {
         expect(resultData).empty;
     });
 
-    it("getwebsiteLanguageIdToPortalLanguageMap_whenValueUndefined_shouldReturnEmpty", () => {
+    it("getWebsiteLanguageIdToPortalLanguageIdMap_whenValueUndefined_shouldReturnEmpty", () => {
         //Act
         const result = { value: undefined };
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getwebsiteLanguageIdToPortalLanguageMap(
+        const resultData = getWebsiteLanguageIdToPortalLanguageIdMap(
             result,
             schema
         );
@@ -625,13 +622,13 @@ describe("schemaHelperUtil", () => {
         expect(resultData).empty;
     });
 
-    it("getwebsiteLanguageIdToPortalLanguageMap_whenValueHavingEmptyArray_shouldReturnEmpty", () => {
+    it("getWebsiteLanguageIdToPortalLanguageIdMap_whenValueHavingEmptyArray_shouldReturnEmpty", () => {
         //Act
         const result = { value: [] };
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getwebsiteLanguageIdToPortalLanguageMap(
+        const resultData = getWebsiteLanguageIdToPortalLanguageIdMap(
             result,
             schema
         );
@@ -639,13 +636,13 @@ describe("schemaHelperUtil", () => {
         expect(resultData).empty;
     });
 
-    it("getwebsiteLanguageIdToPortalLanguageMap_whenResultIsNull_shouldReturnEmpty", () => {
+    it("getWebsiteLanguageIdToPortalLanguageIdMap_whenResultIsNull_shouldReturnEmpty", () => {
         //Act
         const result = null;
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getwebsiteLanguageIdToPortalLanguageMap(
+        const resultData = getWebsiteLanguageIdToPortalLanguageIdMap(
             result,
             schema
         );
@@ -653,13 +650,13 @@ describe("schemaHelperUtil", () => {
         expect(resultData).empty;
     });
 
-    it("getwebsiteLanguageIdToPortalLanguageMap_whenResultIsUndefined_shouldReturnEmpty", () => {
+    it("getWebsiteLanguageIdToPortalLanguageIdMap_whenResultIsUndefined_shouldReturnEmpty", () => {
         //Act
         const result = undefined;
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getwebsiteLanguageIdToPortalLanguageMap(
+        const resultData = getWebsiteLanguageIdToPortalLanguageIdMap(
             result,
             schema
         );
@@ -667,13 +664,13 @@ describe("schemaHelperUtil", () => {
         expect(resultData).empty;
     });
 
-    it("getwebsiteLanguageIdToPortalLanguageMap_whenResultIsUndefined_shouldReturnEmpty", () => {
+    it("getWebsiteLanguageIdToPortalLanguageIdMap_whenResultIsUndefined_shouldReturnEmpty", () => {
         //Act
         const result = undefined;
 
         const schema = "portalschemav1";
         //Action
-        const resultData = getwebsiteLanguageIdToPortalLanguageMap(
+        const resultData = getWebsiteLanguageIdToPortalLanguageIdMap(
             result,
             schema
         );

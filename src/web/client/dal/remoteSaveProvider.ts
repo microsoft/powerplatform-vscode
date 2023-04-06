@@ -3,18 +3,18 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import fetch,{RequestInit} from 'node-fetch'
 import * as vscode from 'vscode';
 import { getHeader } from '../common/authenticationProvider';
 import { BAD_REQUEST, MIMETYPE } from '../common/constants';
 import { showErrorDialog } from '../common/errorHandler';
 import { FileData } from '../context/fileData';
 import { httpMethod } from '../common/constants';
-import * as nls from 'vscode-nls';
 import { IAttributePath, isWebFileV2, useOctetStreamContentType } from '../utilities/schemaHelperUtil';
 import { getPatchRequestUrl } from '../utilities/urlBuilderUtil';
 import { telemetryEventNames } from '../telemetry/constants';
 import WebExtensionContext from "../WebExtensionContext";
-const localize: nls.LocalizeFunc = nls.loadMessageBundle();
+
 
 interface ISaveCallParameters {
     requestInit: RequestInit,
@@ -71,8 +71,8 @@ async function getSaveParameters(
         saveCallParameters.requestUrl = getPatchRequestUrl(entityName, attributePath.source, requestUrl);
     } else {
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(requestUrl, entityName, httpMethod.PATCH, 0, BAD_REQUEST); // no API request is made in this case since we do not know in which column should we save the value
-        showErrorDialog(localize("microsoft-powerapps-portals.webExtension.save.file.error", "Unable to complete the request"),
-            localize("microsoft-powerapps-portals.webExtension.save.file.error.desc", "One or more attribute names have been changed or removed. Contact your admin."));
+        showErrorDialog(vscode.l10n.t( "Unable to complete the request"),
+            vscode.l10n.t("One or more attribute names have been changed or removed. Contact your admin."));
     }
 
     return saveCallParameters;
@@ -210,12 +210,12 @@ async function saveDataToDataverse(
             const authError = (error as Error)?.message;
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(saveCallParameters.requestUrl, entityName, httpMethod.PATCH, new Date().getTime() - requestSentAtTime, authError, fileExtensionType);
             if (typeof error === "string" && error.includes("Unauthorized")) {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.unauthorized.error", "Authorization Failed. Please run again to authorize it"),
-                    localize("microsoft-powerapps-portals.webExtension.unauthorized.desc", "There was a permissions problem with the server"));
+                showErrorDialog(vscode.l10n.t("Authorization Failed. Please run again to authorize it"),
+                    vscode.l10n.t("There was a permissions problem with the server"));
             }
             else {
-                showErrorDialog(localize("microsoft-powerapps-portals.webExtension.backend.error", "There’s a problem on the back end"),
-                    localize("microsoft-powerapps-portals.webExtension.retry.desc", "Try again"));
+                showErrorDialog(vscode.l10n.t("There’s a problem on the back end"),
+                    vscode.l10n.t("Try again"));
             }
             throw error;
         }

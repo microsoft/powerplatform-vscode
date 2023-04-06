@@ -8,11 +8,9 @@
 
 "use strict";
 const util = require('util');
-const nls = require('vscode-nls-dev');
 const exec = util.promisify(require('child_process').exec);
 const gulp = require('gulp');
 const rename = require('gulp-rename');
-const filter = require('gulp-filter');
 const eslint = require('gulp-eslint');
 const gulpTs = require("gulp-typescript");
 const replace = require('gulp-replace');
@@ -20,7 +18,7 @@ const mocha = require('gulp-mocha');
 const moment = require('moment');
 const gulpWebpack = require('webpack-stream');
 const webpack = require('webpack');
-const vsce = require('vsce');
+const vsce = require('@vscode/vsce');
 const argv = require('yargs').argv;
 
 const fetch = require('node-fetch');
@@ -228,6 +226,17 @@ const testWebIntegration = gulp.series(compileIntegrationTests, async () => {
 // tests that require vscode-electron (which requires a display or xvfb)
 const testWebInt = gulp.series(testWebIntegration);
 
+/**
+ * Tests the power-pages integration tests after transpiling the source files to /out
+ */
+const testDesktopIntegration = gulp.series(compileIntegrationTests, async () => {
+    const testRunner = require("./out/client/test/runTest");
+    await testRunner.main();
+});
+
+// tests that require vscode-electron (which requires a display or xvfb)
+const testDesktopInt = gulp.series(testDesktopIntegration);
+
 async function packageVsix() {
     const standardHeader = '# Power Platform Extension';
     const previewHeader = '# Power Platform Tools [PREVIEW]\n\n## This extension is used for internal testing against targets such as vscode.dev which require Marketplace published extensions, and is not supported.';
@@ -277,6 +286,12 @@ async function git(args) {
 
 async function npm(args) {
     args.unshift('npm');
+    const {stdout, stderr } = await exec(args.join(' '));
+    return {stdout: stdout, stderr: stderr};
+}
+
+async function npx(args) {
+    args.unshift('npx');
     const {stdout, stderr } = await exec(args.join(' '));
     return {stdout: stdout, stderr: stderr};
 }
@@ -344,7 +359,7 @@ async function snapshot() {
 }
 
 const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.21.8';
+const cliVersion = '1.21.13';
 
 const recompile = gulp.series(
     clean,
@@ -353,7 +368,6 @@ const recompile = gulp.series(
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
     translationsImport,
-    translationsGenerate,
     setTelemetryTarget,
     compile,
     compileWeb
@@ -365,81 +379,53 @@ const dist = gulp.series(
     lint,
     test
 );
-const translationExtensionName = "vscode-powerplatform";
-
 // Extract all the localizable strings from TS and package.nls.json, and package into
 // an XLF for the localization team
 async function translationsExport() {
-    return gulp
-        .src('src/**/*.ts')
-        .pipe(nls.createMetaDataFiles())
-        .pipe(filter(['**/*.nls.json', '**/*.nls.metadata.json']))
-        .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', '.'))
-        .pipe(filter(['**/nls.metadata.header.json', '**/nls.metadata.json']))
-        .pipe(gulp.src(["package.nls.json"]))
-        .pipe(nls.createXlfFiles("translations-export", translationExtensionName))
-        .pipe(gulp.dest(path.join("loc")));
+    await npx(["@vscode/l10n-dev", "export", "--outDir", "./l10n", "./src"]);
+    await npx(["@vscode/l10n-dev", "generate-xlf",
+        "./package.nls.json", "./l10n/bundle.l10n.json",
+        "--outFile", "./loc/translations-export/vscode-powerplatform.xlf"]);
+    return gulp.src('./loc/translations-export/vscode-powerplatform.xlf')
+        .pipe(replace("&apos;", "'"))
+        .pipe(replace("&#10;", "\n"))
+        .pipe(gulp.dest('./loc/translations-export/'));
 }
 
-const languages = [
-    //{ id: "bg", folderName: "bul" },
-    //{ id: "hu", folderName: "hun" },
-    //{ id: "pl", folderName: "plk" },
-    { id: "cs", folderName: "csy" },
-    { id: "de", folderName: "deu" },
-    { id: "es", folderName: "esn" },
-    { id: "fr", folderName: "fra" },
-    { id: "it", folderName: "ita" },
-    { id: "ja", folderName: "jpn" },
-    { id: "ko", folderName: "kor" },
-    { id: "pt-BR", folderName: "ptb" },
-    { id: "ru", folderName: "rus" },
-    { id: "tr", folderName: "trk" },
-    { id: "zh-CN", folderName: "chs" },
-    { id: "zh-TW", folderName: "cht" },
-];
+// const languages = [
+//     //{ id: "bg", folderName: "bul" },
+//     //{ id: "hu", folderName: "hun" },
+//     //{ id: "pl", folderName: "plk" },
+//     { id: "cs", folderName: "csy" },
+//     { id: "de", folderName: "deu" },
+//     { id: "es", folderName: "esn" },
+//     { id: "fr", folderName: "fra" },
+//     { id: "it", folderName: "ita" },
+//     { id: "ja", folderName: "jpn" },
+//     { id: "ko", folderName: "kor" },
+//     { id: "pt-BR", folderName: "ptb" },
+//     { id: "ru", folderName: "rus" },
+//     { id: "tr", folderName: "trk" },
+//     { id: "zh-CN", folderName: "chs" },
+//     { id: "zh-TW", folderName: "cht" },
+// ];
 
-async function translationsImport(done) {
-    const tasks = languages.map((language) => {
-        const importTask = async () => gulp.src(path.join("loc", "translations-import", `vscode-powerplatform.${language.id}.xlf`))
-            .pipe(nls.prepareJsonFiles())
-            .pipe(replace("\\r\\n", "\\n"))
-            .pipe(gulp.dest(path.join("./i18n", language.folderName)));
-        importTask.displayName = `Importing localization - ${language.id}`;
-        return importTask;
-    });
+async function translationsImport() {
+    await npx(["@vscode/l10n-dev", "import-xlf", "./loc/translations-import/*.xlf", "--outDir", "./l10n"]);
 
-    return gulp.parallel(...tasks, (seriesDone) => {
-        seriesDone();
-        done();
-    })();
-}
+    // `@vscode/l10n-dev import-xlf` places both the package.nls.*.json and bundle.l10n.*.json files in the
+    // same directory, but the package.nls.*.json need to reside at the repo root next to package.json
+    gulp.src('./l10n/package.nls.*.json')
+        .pipe(replace("\\r\\n", "\\n"))
+        .pipe(replace("\\\\n", "\\n"))
+        .pipe(gulp.dest('./'));
 
-function translationsGeneratePackage() {
-    return gulp.src(['package.nls.json'])
-        .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
-        .pipe(gulp.dest('.'));
-}
-function translationsGenerate(done) {
-    return gulp.series(
-        async () => translationsGeneratePackage(),
-        async () => translationsGenerateSrcLocBundles(),
-        (seriesDone) => {
-            seriesDone();
-            done();
-        }
-    )();
-}
-
-function translationsGenerateSrcLocBundles() {
-    return gulp.src('src/**/*.ts')
-        .pipe(nls.createMetaDataFiles())
-        .pipe(nls.createAdditionalLanguageFiles(languages, "i18n"))
-        .pipe(nls.bundleMetaDataFiles('ms-vscode.powerplatform', path.join('dist', 'src')))
-        .pipe(nls.bundleLanguageFiles())
-        .pipe(filter(['**/nls.bundle.*.json', '**/nls.metadata.header.json', '**/nls.metadata.json']))
-        .pipe(filter(['**/nls.*.json']))
-        .pipe(gulp.dest(path.join('dist', 'src')));
+    // Fix up changes from the XLF Export / Import process that cause lookup misses
+    return gulp.src('./l10n/bundle.l10n.*.json')
+        .pipe(replace("\\r\\n", "\\n"))
+        .pipe(replace("\\\\n", "\\n"))
+        .pipe(replace("&apos;", "'"))
+        .pipe(gulp.dest('./l10n'));
 }
 
 exports.clean = clean;
@@ -453,11 +439,11 @@ exports.testWeb = testWeb;
 exports.compileIntegrationTests = compileIntegrationTests;
 exports.testInt = testInt;
 exports.testWebInt = testWebInt;
+exports.testDesktopInt = testDesktopInt;
 exports.package = packageVsix;
 exports.ci = dist;
 exports.dist = dist;
 exports.translationsExport = translationsExport;
 exports.translationsImport = translationsImport;
-exports.translationsGenerate = translationsGenerate;
 exports.setGitAuthN = setGitAuthN;
 exports.default = compile;

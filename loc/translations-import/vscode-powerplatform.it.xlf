@@ -1,109 +1,332 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="bundle" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="++CODE++32e135c21be9286cda2fda96fbe713f9af60f5f933e4e58468f256dd54b95575">
+        <source xml:lang="en">A content snippet with the same name already exists. Please enter a different name.</source>
+        <target state="translated">Esiste già un frammento di contenuto con lo stesso nome. Immetti un nome diverso.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++89b1afe5a595fc2b3015febb4d844886c952f32da56ac80a51c7090a8b2772fc">
+        <source xml:lang="en">A page template with the same name already exists. Please enter a different name.</source>
+        <target state="translated">Esiste già un modello di pagina con lo stesso nome. Immetti un nome diverso.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++86e9c0f40f903702e413d58d415c89efa53e0ffb9446a23d81d1d9491c6a2d2d">
+        <source xml:lang="en">A webpage with the same name already exists. Please enter a different name.</source>
+        <target state="translated">Esiste già una pagina Web con lo stesso nome. Immetti un nome diverso.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++22a97bc8f9b1cf66fa77f878b5a2cc57c52ad534e6ca38fbd6e5dd3b9854602c">
+        <source xml:lang="en">A webtemplate with the same name already exists. Please enter a different name.</source>
+        <target state="translated">Esiste già un webtemplate con lo stesso nome. Immetti un nome diverso.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b544cb198e99ff113ac41467fc99191f11916287ccdb1ae619dba61dd6bbeff6">
+        <source xml:lang="en">Add content snippet name (name should be unique)</source>
+        <target state="translated">Aggiungi nome frammento di contenuto (il nome deve essere univoco)</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3f82badfcbab5f7d6e5a4886a6df032cc28cdf5fe200a85bafd86101efe126c9">
+        <source xml:lang="en">Are you sure you want to clear all the Auth Profiles?</source>
+        <target state="translated">Cancellare tutti i profili di autenticazione?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b30fa58bd8e7489da154905f0c0d711e956f3841cf86157ca1cdd80d2b5d5499">
+        <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
+        <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
+        <target state="translated">Eliminare il profilo di autenticazione {0}-{1}?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
+        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
+        <target state="translated">Autorizzazione non riuscita. Esegui di nuovo per autorizzarla</target>
+      </trans-unit>
+      <trans-unit id="++CODE++bf27ec2e917b9f2578f8e6372f8656370d24cffe2c5a7b900d0b3280f8ec69fb">
+        <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
+        <target state="translated">Presta attenzione quando apporti le modifiche. Chiunque può vedere le modifiche che hai apportato immediatamente. Scegli Modifica il sito per apportare modifiche o chiudi la scheda dell'editor per annullare senza modificare.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annulla</target>
+      </trans-unit>
+      <trans-unit id="++CODE++403c4e10526afca006129953a8e31ef13e0205d0a7305427d17838e73396ce48">
+        <source xml:lang="en">Cannot install Power Pages generator: {0}</source>
+        <note>{0} represents the error message returned from the exception</note>
+        <target state="translated">Impossibile installare il generatore di Power Pages: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++290dca74b227930960346b4717bc1e072495aaec5ed63a9e293e2ec812fc5332">
+        <source xml:lang="en">Cannot install pac CLI: {0}</source>
+        <note>{0} represents the error message returned from the exception</note>
+        <target state="translated">Impossibile installare pac CLI: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
+        <source xml:lang="en">Check the URL and verify the parameters are correct</source>
+        <target state="translated">Controlla l'URL e verifica che i parametri siano corretti</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e1c3ec6d279ce7c1a208abce1314435297d8369739967d8a9db962ab572c617f">
+        <source xml:lang="en">Choose page template</source>
+        <target state="translated">Scegli modello di pagina</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2e26d2dfb9cee802cfa45d319a651b63ff4c20c05089a3d340a03aef7210002c">
+        <source xml:lang="en">Choose parent page</source>
+        <target state="translated">Scegli pagina padre</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2c8d1f9ca282591926b952dc5949d44df6204f1f0a3f5183bcd5ef7ae5864bad">
+        <source xml:lang="en">Choose web template</source>
+        <target state="translated">Scegli modello Web</target>
+      </trans-unit>
+      <trans-unit id="++CODE++eef726ad55117038c05eaa478148144884ab56cadc5a46785e8221040ff7a6ec">
+        <source xml:lang="en">Cloud Instance: {0}</source>
+        <note>The {0} represents profile's Azure Cloud Instances</note>
+        <target state="translated">Istanza cloud: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
+        <source xml:lang="en">Confirm</source>
+        <target state="translated">Conferma</target>
+      </trans-unit>
+      <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
+        <source xml:lang="en">Creating {0}...</source>
+        <note>{0} will be replaced by the entity type.</note>
+        <target state="translated">Creazione di {0} in corso...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++315cb81be825c1f87db8249e03180f9561436c9b79693c5cdfba05edb619c793">
+        <source xml:lang="en">Display Name: {0}
+Unique Name: {1}
+Version: {2}</source>
+        <note>This is a multi-line tooltip
+The {0} represents Solution's Friendly / Display name
+The {1} represents Solution's unique name
+The {2} represents Solution's Version number</note>
+        <target state="translated">Nome visualizzato: {0}
+Nome univoco: {1}
+Versione: {2}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
+        <source xml:lang="en">Edit the site</source>
+        <target state="translated">Modifica il sito</target>
+      </trans-unit>
+      <trans-unit id="++CODE++80ccd89cd4c287f3ca9f3693982e8034544fefeba563c974f93482158e8f0737">
+        <source xml:lang="en">Enter name</source>
+        <target state="translated">Immetti nome</target>
+      </trans-unit>
+      <trans-unit id="++CODE++048d1e764983197603f13e79d28f59bbfa358c0c11e1184c27fc687512589778">
+        <source xml:lang="en">Enter the name of the web template</source>
+        <target state="translated">Immetti il nome del modello Web</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2bdf43797e6a92223e344f968f1da74e5f83ea6abf62be502d851ea9fcc1eca6">
+        <source xml:lang="en">Failed to add webfile: {0}.</source>
+        <note>{0} will be replaced by the error message.</note>
+        <target state="translated">Impossibile aggiungere file Web: {0}.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
+        <source xml:lang="en">Failed to create: {0}.</source>
+        <note>{0} will be replaced by the error message.</note>
+        <target state="translated">Impossibile creare: {0}.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++d41633e985dc5f5045a42992788b803ca24b0b8d8f42d8db8f0ff08807d7299a">
+        <source xml:lang="en">Failed to disable PAC telemetry.</source>
+        <target state="translated">Impossibile disabilitare telemetria PAC.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
+        <source xml:lang="en">Failed to enable PAC telemetry.</source>
+        <target state="translated">Impossibile abilitare telemetria PAC.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c8fe15ab6371ebd955e8123fd897da623cad8dc11564548e7b4cf9b7e991120c">
+        <source xml:lang="en">Failed to fetch file content.</source>
+        <target state="translated">Impossibile recuperare il contenuto del file.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e1a694d8ed0093d17fa58ee8b44cc76f74583667ffc3511e5d8f77df7b156c41">
+        <source xml:lang="en">Failed to get file ready for edit.</source>
+        <target state="translated">Impossibile preparare il file per la modifica.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
+        <source xml:lang="en">Fetching your file ...</source>
+        <target state="translated">Recupero del file in corso...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7b351789f09522eb21ab2637f1b063ff2a41451a7130138b41f142a6fe5d249e">
+        <source xml:lang="en">File might be referenced by name {0} here.</source>
+        <note>{0} represents the name of the file</note>
+        <target state="translated">È possibile che qui si faccia riferimento al file con il nome {0}.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
+        <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
+        <note>{0} represents the version number</note>
+        <target state="translated">Installazione del generatore di Power Pages in corso(v{0})...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
+        <source xml:lang="en">Maximum 30 characters allowed</source>
+        <target state="translated">È consentito un massimo di 30 caratteri</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7fcd8b1c5225f7d9a771a4a02ca3e4795c3c9202cf2b3c3c879c625abb8b43e4">
+        <source xml:lang="en">Microsoft wants your feeback</source>
+        <target state="translated">Microsoft desidera ricevere il tuo feedback</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9ecf722faa0944de54826f72fe9d734c59300a093bcce9cc47b507460ac80710">
+        <source xml:lang="en">Name/Rename Auth Profile</source>
+        <target state="translated">Assegna un nome/rinomina profilo di autorizzazione</target>
+      </trans-unit>
+      <trans-unit id="++CODE++85cd510d84e10bc2da6411770b3b666877ea27e365a962c37376fcf61e367da5">
+        <source xml:lang="en">Name: {0}</source>
+        <note>The {0} represents the optional name the user provided for the profile)</note>
+        <target state="translated">Nome: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ebff96df55032b8c41dd4e275bc8df4d2c16c8fc18f36bd4c79cfa8a5de2d335">
+        <source xml:lang="en">Name: {0}
+URL: {1}
+Environment ID: {2}
+Organization ID: {3}</source>
+        <note>This is a multi-line tooltip
+The {0} represents Dataverse Environment's Friendly / Display name
+The {1} represents Dataverse Environment's URL
+The {2} represents Dataverse Environment's Environment ID (GUID)
+The {3} represents Dataverse Environment's Organization ID (GUID)</note>
+        <target state="translated">Name: {0}
+URL: {1}
+ID ambiente: {2}
+ID organizzazione: {3}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7fa38a7ea7b5c48e91e41749348fc297c2b724457f31492a605ce91f9448cb2a">
+        <source xml:lang="en">New Content Snippet</source>
+        <target state="translated">Nuovo frammento di contenuto</target>
+      </trans-unit>
+      <trans-unit id="++CODE++085499ab73e121206b1a9475879315bcdbc3035662ae44cbd6b82e6e6898e40e">
+        <source xml:lang="en">New Page Template</source>
+        <target state="translated">Nuovo modello di pagina</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1f21e0f117783158a85e92b5659dc5d9cf3b2daeba2ae3df809322c997f369b4">
+        <source xml:lang="en">New Webpage</source>
+        <target state="translated">Nuova pagina Web</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b1061a7adf836619e40617bbbbe42d04a9c167b5756a2b4926c02d88e780a7f9">
+        <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
+        <target state="translated">Nessun dato sul sito Web trovato nella directory corrente. Per continuare, passa a una directory che contiene i dati del sito Web scaricati.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e0d2b29e6060c3d50691e6961835418fe6a24723c227dacf93250b94e21ed1bb">
+        <source xml:lang="en">No page templates found</source>
+        <target state="translated">Non sono stati trovati modelli di pagina</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6bf857113b9224708e98b1bacf5b0711a8eefd9c9c3ff1217557ce00d8e00cc7">
+        <source xml:lang="en">No parent pages found for adding webfile</source>
+        <target state="translated">Nessuna pagina padre trovata per l'aggiunta di un file Web</target>
+      </trans-unit>
+      <trans-unit id="++CODE++abb85d7bb3ea846c90ad6348fd3a1154436cdde8f06db3d86711dd6e23cf1e21">
+        <source xml:lang="en">No webpages found</source>
+        <target state="translated">Nessuna pagina Web trovata</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6da29e062697a9f26659ef14ebda075afe939756af5d8e1d3451eb7d6d6e1a8a">
+        <source xml:lang="en">No workspace folder found</source>
+        <target state="translated">Nessuna cartella dell'area di lavoro trovata</target>
+      </trans-unit>
+      <trans-unit id="++CODE++bda6bda1e902d120a7f4515ceac8546c3112e3cb9351df1d8b9713b8f86e0370">
+        <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
+        <target state="translated">Uno o più nomi di attributo sono stati modificati o rimossi. Contatta l'amministratore.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
+        <source xml:lang="en">PAC Telemetry disabled</source>
+        <target state="translated">Telemetria PAC disabilitata</target>
+      </trans-unit>
+      <trans-unit id="++CODE++aba96e0c43da62e6c721a35c5d5eb5ffecaf8316ddea5379049172acfe6c7152">
+        <source xml:lang="en">PAC Telemetry enabled</source>
+        <target state="translated">Telemetria PAC abilitata</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1514b12ec249ca33bc0568c872840126e82cc964aaa7f028393674c17d554444">
+        <source xml:lang="en">Page Template name cannot be empty.</source>
+        <target state="translated">Il nome del modello di pagina non può essere vuoto.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
+        <source xml:lang="en">Preparing pac CLI (v{0})...</source>
+        <note>{0} represents the version number</note>
+        <target state="translated">Preparazione di pac CLI: in corso (v{0})...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
+        <source xml:lang="en">Profile Kind: {0}</source>
+        <note>The {0} represents the profile type (Admin vs Dataverse)</note>
+        <target state="translated">Tipo di profilo: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0906cdfd1c60099397a97c4da29453b3f0cef126c408d6ba317e2d5e2d5e9e78">
+        <source xml:lang="en">Resource: {0}</source>
+        <note>The {0} represents profile's resource/environment URL</note>
+        <target state="translated">Risorsa: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
+        <source xml:lang="en">Saving your file ...</source>
+        <target state="translated">Salvataggio del file in corso...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
+        <source xml:lang="en">Select Type</source>
+        <target state="translated">Seleziona tipo</target>
+      </trans-unit>
+      <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
+        <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
+        <target state="translated">Il generatore Power Pages è pronto per l'utilizzo nell'estensione VS Code.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e4a2396fd7a366292a40abc87b18a2329458c258f4d0e0e593e6189dff19a117">
+        <source xml:lang="en">The name you want to give to this authentication profile</source>
+        <target state="translated">Il nome che vuoi assegnare a questo profilo di autenticazione</target>
+      </trans-unit>
+      <trans-unit id="++CODE++5eccedc8c04d2137a9eb74edf18ea469b4b63e7315de4b8fe49c48bb8d0780e9">
+        <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
+        <target state="translated">pac CLI è pronto per l'utilizzo nel terminale VS Code.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
+        <source xml:lang="en">There was a permissions problem with the server</source>
+        <target state="translated">Si è verificato un problema di autorizzazione con il server</target>
+      </trans-unit>
+      <trans-unit id="++CODE++51cb4178967d50f62f3e41976c0063aa5f9ab3d1be4cef3a820e59e4baa7a069">
+        <source xml:lang="en">There was a problem opening the workspace</source>
+        <target state="translated">Si è verificato un problema durante l'apertura dell'area di lavoro</target>
+      </trans-unit>
+      <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
+        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
+        <target state="translated">C'è™un problema nel back-end</target>
+      </trans-unit>
+      <trans-unit id="++CODE++d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f">
+        <source xml:lang="en">Try again</source>
+        <target state="translated">Riprova</target>
+      </trans-unit>
+      <trans-unit id="++CODE++bd7b156375b48ce5797a3421150e6f5c3b71d3a30f823e957241589aea6236ca">
+        <source xml:lang="en">Unable to complete the request</source>
+        <target state="translated">Impossibile completare la richiesta</target>
+      </trans-unit>
+      <trans-unit id="++CODE++bab36b47fe2dd4f2f7e8eb486f2e3546e27dc047e69f5b24307bc71e5be2a7cf">
+        <source xml:lang="en">Unable to find that app</source>
+        <target state="translated">Impossibile trovare tale app</target>
+      </trans-unit>
+      <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
+        <source xml:lang="en">User: {0}</source>
+        <note>The {0} represents auth profile's user name (email address))</note>
+        <target state="translated">Utente: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++91357f5ee585bec70c13f9f0807c5a047f35066e4fc63b571f5a957a657d0262">
+        <source xml:lang="en">We encountered an error preparing the file for edit.</source>
+        <target state="translated">Si è verificato un errore durante la preparazione del file per la modifica.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ff174a54d200db312e20f9f72e805df5d0221070730c1d789d642185b1a3b3e5">
+        <source xml:lang="en">Web files</source>
+        <target state="translated">File Web</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b1d7342e4a284cb6206f33d895d122305e58ca4d1d7e1d8c6be075f794e5cfff">
+        <source xml:lang="en">Webfiles Added!</source>
+        <target state="translated">File Web aggiunti.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
+        <source xml:lang="en">You are editing a live, public site </source>
+        <target state="translated">Stai modificando un sito pubblico live </target>
+      </trans-unit>
+      <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
+        <source xml:lang="en">{0} created!</source>
+        <note>{0} will be replaced by the entity type.</note>
+        <target state="translated">{0} creato.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="package" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="pacCLI.openDocumentation.title">
-        <source xml:lang="en">Documentation</source>
-        <target state="translated">Documentazione</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.openPacLab.title">
-        <source xml:lang="en">Open PAC Lab</source>
-        <target state="translated">Apri esercitazione PAC</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.pacHelp.title">
-        <source xml:lang="en">Show PAC Help</source>
-        <target state="translated">Mostra Guida PAC</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.pacAuthHelp.title">
-        <source xml:lang="en">Show PAC Authentication Help</source>
-        <target state="translated">Mostra la Guida per l'autenticazione PAC</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.pacPackageHelp.title">
-        <source xml:lang="en">Show PAC Package Help</source>
-        <target state="translated">Mostra la Guida del pacchetto PAC</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.pacPcfHelp.title">
-        <source xml:lang="en">Show PAC PCF Help</source>
-        <target state="translated">Mostra Guida PAC PCF</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.pacSolutionHelp.title">
-        <source xml:lang="en">Show PAC Solution Help</source>
-        <target state="translated">Mostra la Guida per la soluzione PAC</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.disableTelemetry.title">
-        <source xml:lang="en">Disable PAC Telemetry</source>
-        <target state="translated">Disabilita telemetria PAC</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.enableTelemetry.title">
-        <source xml:lang="en">Enable PAC telemetry</source>
-        <target state="translated">Abilita telemetria PAC</target>
-      </trans-unit>
-      <trans-unit id="power-platform-activitybar.title">
-        <source xml:lang="en">Power Platform</source>
-        <target state="translated">Power Platform</target>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
+        <source xml:lang="en">Advanced capabilities</source>
+        <target state="translated">Funzionalità avanzate</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.title">
         <source xml:lang="en">Auth Profiles</source>
         <target state="translated">Profili di autenticazione</target>
       </trans-unit>
-      <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
-        <source xml:lang="en">No auth profiles found on this computer.
-[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
-        <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Nessun profilo di autenticazione trovato in questo computer.
-[Aggiungi il profilo di autenticazione](command:pacCLI.authPanel.newAuthProfile)</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
-        <source xml:lang="en">No auth profiles found on this computer.
-Interactive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
-[View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
-        <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should not translate the argument `--deviceCode`
-The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Nessun profilo di autenticazione trovato in questo computer.
-L'autenticazione interattiva non è disponibile per scenari remoti. I profili di autenticazione devono essere creati dalla riga di comando. Il flusso "--deviceCode" deve essere utilizzato per gli utenti con requisiti di autenticazione a più fattori o i cui tenant utilizzano AD FS.
-[Visualizza la Guida del profilo di autorizzazione](command:pacCLI.pacAuthHelp)</target>
-      </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
         <target state="translated">Cancella profili di autenticazione</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.refresh.title">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">Aggiorna</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
-        <source xml:lang="en">New Auth Profile</source>
-        <target state="translated">Nuovo profilo di autenticazione</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
-        <source xml:lang="en">Select Auth Profile</source>
-        <target state="translated">Seleziona profilo autenticazione</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.deleteAuthProfile.title">
-        <source xml:lang="en">Delete Auth Profile</source>
-        <target state="translated">Elimina profilo di autenticazione</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
-        <source xml:lang="en">Name/Rename Auth Profile</source>
-        <target state="translated">Assegna un nome/rinomina profilo di autorizzazione</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.navigateToResource.title">
-        <source xml:lang="en">Navigate to Resource</source>
-        <target state="translated">Passa a risorsa</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.copyUser.title">
-        <source xml:lang="en">Copy User</source>
-        <target state="translated">Copia utente</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.envAndSolutionsPanel.title">
-        <source xml:lang="en">Environments &amp; Solutions</source>
-        <target state="translated">Ambienti e soluzioni</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.envAndSolutionsPanel.refresh.title">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">Aggiorna</target>
       </trans-unit>
       <trans-unit id="pacCLI.envAndSolutionsPanel.copyDisplayName.title">
         <source xml:lang="en">Copy Display Name</source>
@@ -117,45 +340,104 @@ L'autenticazione interattiva non è disponibile per scenari remoti. I profili di
         <source xml:lang="en">Copy Environment Url</source>
         <target state="translated">Copia URL ambiente</target>
       </trans-unit>
-      <trans-unit id="pacCLI.envAndSolutionsPanel.copyOrganizationId.title">
-        <source xml:lang="en">Copy Organization Id</source>
-        <target state="translated">Copia ID organizzazione</target>
-      </trans-unit>
       <trans-unit id="pacCLI.envAndSolutionsPanel.copyFriendlyName.title">
         <source xml:lang="en">Copy Friendly Name</source>
         <target state="translated">Copia nome descrittivo</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.envAndSolutionsPanel.copyOrganizationId.title">
+        <source xml:lang="en">Copy Organization Id</source>
+        <target state="translated">Copia ID organizzazione</target>
       </trans-unit>
       <trans-unit id="pacCLI.envAndSolutionsPanel.copyUniqueName.title">
         <source xml:lang="en">Copy Unique Name</source>
         <target state="translated">Copia nome univoco</target>
       </trans-unit>
+      <trans-unit id="pacCLI.authPanel.copyUser.title">
+        <source xml:lang="en">Copy User</source>
+        <target state="translated">Copia utente</target>
+      </trans-unit>
       <trans-unit id="pacCLI.envAndSolutionsPanel.copyVersionNumber.title">
         <source xml:lang="en">Copy Version Number</source>
         <target state="translated">Copia numero versione</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.preview-show.title">
-        <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
-        <target state="translated">Portale PowerApps -&gt; Mostra anteprima</target>
+      <trans-unit id="pacCLI.authPanel.deleteAuthProfile.title">
+        <source xml:lang="en">Delete Auth Profile</source>
+        <target state="translated">Elimina profilo di autenticazione</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
-        <source xml:lang="en">Initialize Web Extension</source>
-        <target state="translated">Inizializza estensione Web</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
-        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
-        <target state="translated">PAC CLI non è supportata in VS Code per il Web</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
-        <source xml:lang="en">Edit Power Pages code</source>
-        <target state="translated">Modifica codice Power Pages</target>
+      <trans-unit id="pacCLI.disableTelemetry.title">
+        <source xml:lang="en">Disable PAC Telemetry</source>
+        <target state="translated">Disabilita telemetria PAC</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
         <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
         <target state="translated">Scopri come puoi creare siti Web completi e moderni direttamente in VS Code</target>
       </trans-unit>
+      <trans-unit id="pacCLI.openDocumentation.title">
+        <source xml:lang="en">Documentation</source>
+        <target state="translated">Documentazione</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
+        <source xml:lang="en">Edit Power Pages code</source>
+        <target state="translated">Modifica codice Power Pages</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.enableTelemetry.title">
+        <source xml:lang="en">Enable PAC telemetry</source>
+        <target state="translated">Abilita telemetria PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.envAndSolutionsPanel.title">
+        <source xml:lang="en">Environments &amp; Solutions</source>
+        <target state="translated">Ambienti e soluzioni</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
+        <source xml:lang="en">File system</source>
+        <target state="translated">File system</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
+        <source xml:lang="en">Initialize Web Extension</source>
+        <target state="translated">Inizializza estensione Web</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
+        <source xml:lang="en">Name/Rename Auth Profile</source>
+        <target state="translated">Assegna un nome/rinomina profilo di autorizzazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.navigateToResource.title">
+        <source xml:lang="en">Navigate to Resource</source>
+        <target state="translated">Passa a risorsa</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.newDataverseAuthProfile.title">
+        <source xml:lang="en">New Auth Profile</source>
+        <target state="translated">Nuovo profilo di autenticazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveNotSupported">
+        <source xml:lang="en">No auth profiles found on this computer.
+Interactive Authentication is not availalbe for remote scenarios; auth profiles must be created by the command line.  The `--deviceCode` flow must be used for users with MFA requirements, or whose tenants use ADFS.
+[View Auth Profile Help](command:pacCLI.pacAuthHelp)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should not translate the argument `--deviceCode`
+The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Nessun profilo di autenticazione trovato in questo computer.
+L'autenticazione interattiva non è disponibile per scenari remoti. I profili di autenticazione devono essere creati dalla riga di comando. Il flusso "--deviceCode" deve essere utilizzato per gli utenti con requisiti di autenticazione a più fattori o i cui tenant utilizzano AD FS.
+[Visualizza la Guida del profilo di autorizzazione](command:pacCLI.pacAuthHelp)</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.welcome.whenInteractiveSupported">
+        <source xml:lang="en">No auth profiles found on this computer.
+[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Nessun profilo di autenticazione trovato in questo computer.
+[Aggiungi il profilo di autenticazione](command:pacCLI.authPanel.newAuthProfile)</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.openPacLab.title">
+        <source xml:lang="en">Open PAC Lab</source>
+        <target state="translated">Apri esercitazione PAC</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
         <target state="translated">Panoramica</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
+        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
+        <target state="translated">PAC CLI non è supportata in VS Code per il Web</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
         <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
@@ -165,34 +447,45 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
         <target state="translated">L'estensione Power Pages abilita un file system personalizzato che viene sincronizzato con la struttura di progetto dello studio di Power Pages.
 [Altre informazioni](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
-        <source xml:lang="en">File system</source>
-        <target state="translated">File system</target>
+      <trans-unit id="power-platform-activitybar.title">
+        <source xml:lang="en">Power Platform</source>
+        <target state="translated">Power Platform</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
-        <source xml:lang="en">Your files are stored in nested folders under your site name. 
- 
- The individual page files can be found in the web-pages folder under your site name. 
- 
- All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. 
- 
- To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
-[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
-        <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
-The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">I file vengono archiviati in cartelle annidate sotto il nome del sito. 
- 
- I singoli file di pagine sono disponibili nella cartella delle pagine Web sotto il nome del sito. 
- 
- Tutte le pagine sono organizzate in file HTML, CSS e JS all'interno della cartella con il rispettivo nome di pagina. 
- 
- Per altre informazioni sul file system Power Pages in VS Code per il Web, visita la nostra [documentazione](command:powerplatform-walkthrough.fileSystem-documentation). 
- [Apri cartella del sito](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
+      <trans-unit id="microsoft-powerapps-portals.preview-show.title">
+        <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
+        <target state="translated">Portale PowerApps -&gt; Mostra anteprima</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
-        <source xml:lang="en">Advanced capabilities</source>
-        <target state="translated">Funzionalità avanzate</target>
+      <trans-unit id="pacCLI.envAndSolutionsPanel.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Aggiorna</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Aggiorna</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
+        <source xml:lang="en">Select Auth Profile</source>
+        <target state="translated">Seleziona profilo autenticazione</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacAuthHelp.title">
+        <source xml:lang="en">Show PAC Authentication Help</source>
+        <target state="translated">Mostra la Guida per l'autenticazione PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacHelp.title">
+        <source xml:lang="en">Show PAC Help</source>
+        <target state="translated">Mostra Guida PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacPcfHelp.title">
+        <source xml:lang="en">Show PAC PCF Help</source>
+        <target state="translated">Mostra Guida PAC PCF</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacPackageHelp.title">
+        <source xml:lang="en">Show PAC Package Help</source>
+        <target state="translated">Mostra la Guida del pacchetto PAC</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.pacSolutionHelp.title">
+        <source xml:lang="en">Show PAC Solution Help</source>
+        <target state="translated">Mostra la Guida per la soluzione PAC</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
         <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
@@ -209,253 +502,30 @@ The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough
  
  Per un'interfaccia della riga di comando e funzionalità più avanzate, installa l'estensione Power Platform per VS Code, disponibile in VS Code Marketplace per desktop. 
  
- [Altre informazioni](command:powerplatform-walkthrough.advancedCapabilities-learn-more) sulla differenza tra Visual Studio sulla Code per desktop e per il Web.
+ [Altre informazioni](command:powerplatform-walkthrough.advancedCapabilities-learn-more) sulla differenza tra Visual Studio sulla Code per desktop e per il Web. 
  
 [Codifica iniziale](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="./client/lib/CliAcquisition" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="cliAquisition.preparingMessage">
-        <source xml:lang="en">Preparing pac CLI (v{0})...</source>
-        <note>{0} represents the version number</note>
-        <target state="translated">Preparazione di pac CLI: in corso (v{0})...</target>
-      </trans-unit>
-      <trans-unit id="cliAquisition.successMessage">
-        <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
-        <target state="translated">pac CLI è pronto per l'utilizzo nel terminale VS Code.</target>
-      </trans-unit>
-      <trans-unit id="cliAquisition.installationErrorMessage">
-        <source xml:lang="en">Cannot install pac CLI: {0}</source>
-        <note>{0} represents the error message returned from the exception</note>
-        <target state="translated">Impossibile installare pac CLI: {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="./client/lib/PacActivityBarUI" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="pacCLI.authPanel.clearAuthProfile.confirm">
-        <source xml:lang="en">Confirm</source>
-        <target state="translated">Conferma</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.clearAuthProfile.prompt">
-        <source xml:lang="en">Are you sure you want to clear all the Auth Profiles?</source>
-        <target state="translated">Cancellare tutti i profili di autenticazione?</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.clearAuthProfile.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Annulla</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.deleteAuthProfile.confirm">
-        <source xml:lang="en">Confirm</source>
-        <target state="translated">Conferma</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.deleteAuthProfile.prompt">
-        <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
-        <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
-        <target state="translated">Eliminare il profilo di autenticazione {0}-{1}?</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.deleteAuthProfile.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Annulla</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
-        <source xml:lang="en">Name/Rename Auth Profile</source>
-        <target state="translated">Assegna un nome/rinomina profilo di autorizzazione</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.nameAuthProfile.prompt">
-        <source xml:lang="en">The name you want to give to this authentication profile</source>
-        <target state="translated">Il nome che vuoi assegnare a questo profilo di autenticazione</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.authPanel.nameAuthProfile.validation">
-        <source xml:lang="en">Maximum 30 characters allowed</source>
-        <target state="translated">È consentito un massimo di 30 caratteri</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="./client/lib/PacTerminal" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="pacCLI.enableTelemetry.successMessage">
-        <source xml:lang="en">PAC Telemetry enabled</source>
-        <target state="translated">Telemetria PAC abilitata</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.enableTelemetry.failureMessage">
-        <source xml:lang="en">Failed to enable PAC telemetry.</source>
-        <target state="translated">Impossibile abilitare telemetria PAC.</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.disableTelemetry.successMessage">
-        <source xml:lang="en">PAC Telemetry disabled</source>
-        <target state="translated">Telemetria PAC disabilitata</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.disableTelemetry.failureMessage">
-        <source xml:lang="en">Failed to disable PAC telemetry.</source>
-        <target state="translated">Impossibile disabilitare telemetria PAC.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="./client/lib/PanelComponents" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.profileKind">
-        <source xml:lang="en">Profile Kind: {0}</source>
-        <note>The {0} represents the profile type (Admin vs Dataverse)</note>
-        <target state="translated">Tipo di profilo: {0}</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.profileName">
-        <source xml:lang="en">Name: {0}</source>
-        <note>The {0} represents the optional name the user provided for the profile)</note>
-        <target state="translated">Nome: {0}</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.resource">
-        <source xml:lang="en">Resource: {0}</source>
-        <note>The {0} represents profile's resource/environment URL</note>
-        <target state="translated">Risorsa: {0}</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.user">
-        <source xml:lang="en">User: {0}</source>
-        <note>The {0} represents auth profile's user name (email address))</note>
-        <target state="translated">Utente: {0}</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.AuthProfileTreeItem.toolTipParts.cloudInstance">
-        <source xml:lang="en">Cloud Instance: {0}</source>
-        <note>The {0} represents profile's Azure Cloud Instances</note>
-        <target state="translated">Istanza cloud: {0}</target>
-      </trans-unit>
-      <trans-unit id="pacCLI.EnvOrSolutionTreeItem.toolTip">
-        <source xml:lang="en">Display Name: {0}
-Unique Name: {1}
-Version: {2}</source>
-        <note>This is a multi-line tooltip
-The {0} represents Solution's Friendly / Display name
-The {1} represents Solution's unique name
-The {2} represents Solution's Version number</note>
-        <target state="translated">Nome visualizzato: {0}
-Nome univoco: {1}
-Versione: {2}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="./web/client/extension" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit">
-        <source xml:lang="en">Edit the site</source>
-        <target state="translated">Modifica il sito</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.desc">
-        <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
-        <target state="translated">Presta attenzione quando apporti le modifiche. Chiunque può vedere le modifiche che hai apportato immediatamente. Scegli Modifica il sito per apportare modifiche o chiudi la scheda dell'editor per annullare senza modificare.</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.sitevisibility.edit.title">
-        <source xml:lang="en">You are editing a live, public site </source>
-        <target state="translated">Stai modificando un sito pubblico live </target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.file.message">
-        <source xml:lang="en">Fetching your file ...</source>
-        <target state="translated">Recupero del file in corso...</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.app-not-found">
-        <source xml:lang="en">Unable to find that app</source>
-        <target state="translated">Impossibile trovare tale app</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="./web/client/common/errorHandler" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error">
-        <source xml:lang="en">There was a problem opening the workspace</source>
-        <target state="translated">Si è verificato un problema durante l'apertura dell'area di lavoro</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.init.workspace.error.desc">
-        <source xml:lang="en">Check the URL and verify the parameters are correct</source>
-        <target state="translated">Controlla l'URL e verifica che i parametri siano corretti</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
-        <source xml:lang="en">There was a problem opening the workspace</source>
-        <target state="translated">Si è verificato un problema durante l'apertura dell'area di lavoro</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
-        <source xml:lang="en">Check the URL and verify the parameters are correct</source>
-        <target state="translated">Controlla l'URL e verifica che i parametri siano corretti</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="./web/client/dal/fileSystemProvider" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.message">
-        <source xml:lang="en">Saving your file ...</source>
-        <target state="translated">Salvataggio del file in corso...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="./web/client/dal/remoteFetchProvider" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.error">
-        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">Autorizzazione non riuscita. Esegui di nuovo per autorizzarla</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.fetch.authorization.desc">
-        <source xml:lang="en">Try again</source>
-        <target state="translated">Riprova</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
-        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">Autorizzazione non riuscita. Esegui di nuovo per autorizzarla</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
-        <source xml:lang="en">There was a permissions problem with the server</source>
-        <target state="translated">Si è verificato un problema di autorizzazione con il server</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
-        <source xml:lang="en">One or more commands are invalid or malformed</source>
-        <target state="translated">Uno o più comandi non sono validi o hanno un formato non valido</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
-        <source xml:lang="en">Check the parameters and try again</source>
-        <target state="translated">Controlla i parametri e riprova</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.error">
-        <source xml:lang="en">That file is not available</source>
-        <target state="translated">File non disponibile</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.file-not-found.desc">
-        <source xml:lang="en">The metadata may have changed on the Dataverse side. Contact your admin.</source>
-        <target state="translated">I metadati potrebbero essere stati modificati sul lato Dataverse. Contatta l'amministratore.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="./web/client/dal/remoteSaveProvider" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error">
-        <source xml:lang="en">Unable to complete the request</source>
-        <target state="translated">Impossibile completare la richiesta</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.save.file.error.desc">
-        <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
-        <target state="translated">Uno o più nomi di attributo sono stati modificati o rimossi. Contatta l'amministratore.</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.backend.error">
-        <source xml:lang="en">Thereâ€™s a problem on the back end</source>
-        <target state="translated">C'è™un problema nel back-end</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.retry.desc">
-        <source xml:lang="en">Try again</source>
-        <target state="translated">Riprova</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.error">
-        <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
-        <target state="translated">Autorizzazione non riuscita. Esegui di nuovo per autorizzarla</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.unauthorized.desc">
-        <source xml:lang="en">There was a permissions problem with the server</source>
-        <target state="translated">Si è verificato un problema di autorizzazione con il server</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.error">
-        <source xml:lang="en">One or more commands are invalid or malformed</source>
-        <target state="translated">Uno o più comandi non sono validi o hanno un formato non valido</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.parameter.desc">
-        <source xml:lang="en">Check the parameters and try again</source>
-        <target state="translated">Controlla i parametri e riprova</target>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
+        <source xml:lang="en">Your files are stored in nested folders under your site name. 
+ 
+ The individual page files can be found in the web-pages folder under your site name. 
+ 
+ All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. 
+ 
+ To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
+[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
+The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">I file vengono archiviati in cartelle annidate sotto il nome del sito. 
+ 
+ I singoli file di pagine sono disponibili nella cartella delle pagine Web sotto il tuo nome di sito. 
+ 
+ Tutte le pagine sono disposte in file HTML, CSS e JS all'interno della cartella con il rispettivo nome di pagina. 
+ 
+ Per altre informazioni sul file system di Power Pages in VS Code per Il Web, visita la [documentazione ](command:powerplatform-walkthrough.fileSystem-documentation). 
+[Apri cartella del sito](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
     </body>
   </file>
