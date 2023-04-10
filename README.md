@@ -113,9 +113,10 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Requirements
 
-- VSCode >= 1.5x
-- .NET Windows 4.x
-- macOS/Linux/WSL: dotnetCore SDK 5.x or 6.x
+- VSCode >= 1.73.0
+- Windows: .NET 4.8
+- macOS/Linux/WSL: [.NET 6.0+ SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+  - Apple Silicon arm64 machines (M1/M2) require BOTH the x64 and arm64 versions of .NET 6.0
 
 ## Getting Started
 
