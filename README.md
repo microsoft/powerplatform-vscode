@@ -16,6 +16,9 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
  - Desktop extension now supports create, delete and rename for power pages site entities like webpage, webfile, templates and content-snippets
  - Enhanced intellisense support - Auto-complete for Dataverse entity tags, template tags, filters, portal-specific liquid objects & their attributes
 
+1.1.16:
+ - pac CLI 1.21.8 (Dec refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
 1.1.14:
  - pac CLI 1.21.4 (Nov refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
  - support for new data model for Power Pages in Studio web extension
