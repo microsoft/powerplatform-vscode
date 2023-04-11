@@ -24,89 +24,86 @@ import {
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from "../telemetry/constants";
 import { folderExportType, schemaEntityKey } from "../schema/constants";
+import { getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 
 export async function fetchDataFromDataverseAndUpdateVFS(portalFs: PortalsFS) {
-    let requestUrl = "";
-    let requestSentAtTime = new Date().getTime();
-    try {
-        const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
-            Constants.queryParameters.ORG_URL
-        ) as string;
+    const requestURLs = getRequestUrlForEntities();
 
-        requestUrl = getRequestURL(
-            dataverseOrgUrl,
-            WebExtensionContext.defaultEntityType,
-            WebExtensionContext.defaultEntityId,
-            Constants.httpMethod.GET,
-            false
-        );
-        WebExtensionContext.telemetry.sendAPITelemetry(
-            requestUrl,
-            WebExtensionContext.defaultEntityType,
-            Constants.httpMethod.GET
-        );
+    requestURLs.forEach(async (entityRequestUrl) => {
+        let requestSentAtTime = new Date().getTime();
+        try {
+            const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
+                Constants.queryParameters.ORG_URL
+            ) as string;
 
-        requestSentAtTime = new Date().getTime();
-        const response = await fetch(requestUrl, {
-            headers: getHeader(WebExtensionContext.dataverseAccessToken),
-        });
+            WebExtensionContext.telemetry.sendAPITelemetry(
+                entityRequestUrl.requestUrl,
+                entityRequestUrl.entityName,
+                Constants.httpMethod.GET
+            );
 
-        if (!response.ok) {
-            vscode.window.showErrorMessage(
-                vscode.l10n.t("Failed to fetch file content.")
+            requestSentAtTime = new Date().getTime();
+            const response = await fetch(entityRequestUrl.requestUrl, {
+                headers: getHeader(WebExtensionContext.dataverseAccessToken),
+            });
+
+            if (!response.ok) {
+                vscode.window.showErrorMessage(
+                    vscode.l10n.t("Failed to fetch file content.")
+                );
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                    entityRequestUrl.requestUrl,
+                    entityRequestUrl.entityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    JSON.stringify(response)
+                );
+                throw new Error(response.statusText);
+            }
+
+            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
+                entityRequestUrl.requestUrl,
+                entityRequestUrl.entityName,
+                Constants.httpMethod.GET,
+                new Date().getTime() - requestSentAtTime
+            );
+
+            const result = await response.json();
+            const data = result.value;
+
+            if (!data) {
+                vscode.window.showErrorMessage(
+                    "microsoft-powerapps-portals.webExtension.fetch.nocontent.error",
+                    "Response data is empty"
+                );
+                throw new Error(ERRORS.EMPTY_RESPONSE);
+            }
+
+            for (let counter = 0; counter < data.length; counter++) {
+                await createContentFiles(
+                    data[counter],
+                    entityRequestUrl.entityName,
+                    portalFs,
+                    dataverseOrgUrl
+                );
+            }
+        } catch (error) {
+            const errorMsg = (error as Error)?.message;
+            showErrorDialog(
+                vscode.l10n.t("There was a problem opening the workspace"),
+                vscode.l10n.t(
+                    "We encountered an error preparing the file for edit."
+                )
             );
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                WebExtensionContext.defaultEntityType,
+                entityRequestUrl.requestUrl,
+                entityRequestUrl.entityName,
                 Constants.httpMethod.GET,
                 new Date().getTime() - requestSentAtTime,
-                JSON.stringify(response)
-            );
-            throw new Error(response.statusText);
-        }
-
-        WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-            requestUrl,
-            WebExtensionContext.defaultEntityType,
-            Constants.httpMethod.GET,
-            new Date().getTime() - requestSentAtTime
-        );
-
-        const result = await response.json();
-        const data = result.value;
-
-        if (!data) {
-            vscode.window.showErrorMessage(
-                "microsoft-powerapps-portals.webExtension.fetch.nocontent.error",
-                "Response data is empty"
-            );
-            throw new Error(ERRORS.EMPTY_RESPONSE);
-        }
-
-        for (let counter = 0; counter < data.length; counter++) {
-            await createContentFiles(
-                data[counter],
-                WebExtensionContext.defaultEntityType,
-                portalFs,
-                dataverseOrgUrl
+                errorMsg
             );
         }
-    } catch (error) {
-        const errorMsg = (error as Error)?.message;
-        showErrorDialog(
-            vscode.l10n.t("There was a problem opening the workspace"),
-            vscode.l10n.t(
-                "We encountered an error preparing the file for edit."
-            )
-        );
-        WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-            requestUrl,
-            WebExtensionContext.defaultEntityType,
-            Constants.httpMethod.GET,
-            new Date().getTime() - requestSentAtTime,
-            errorMsg
-        );
-    }
+    });
 }
 
 async function createContentFiles(

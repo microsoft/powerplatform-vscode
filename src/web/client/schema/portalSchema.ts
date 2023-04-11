@@ -53,7 +53,7 @@ export const portal_schema_V1 = {
                 _primarynamefield: "adx_name",
                 _disableplugins: "true",
                 _downloadThroughChild: "true",
-                _foldername: ".portalconfig",
+                _foldername: "",
                 _propextension: "portallanguage",
                 _exporttype: "SingleFile",
                 _fetchQueryParameters: "?$select=adx_lcid,adx_languagecode",
@@ -74,6 +74,8 @@ export const portal_schema_V1 = {
                 _languagegroupby: "adx_rootwebpageid",
                 _fetchQueryParameters:
                     "?$filter=adx_webpageid%20eq%20{entityId}&$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl,_adx_webpagelanguageid_value",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_adx_websiteid_value%20eq%20{websiteId}&$select=adx_webpageid,_adx_webpagelanguageid_value,adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
                 _attributes: "adx_customcss,adx_customjavascript,adx_copy",
                 _attributesExtension: new Map([
                     ["adx_customcss", "customcss.css"],
@@ -95,6 +97,7 @@ export const portal_schema_V1 = {
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters:
                     "?$filter=_objectid_value%20eq%20{entityId}%20&$select=mimetype,documentbody,filename,annotationid,_objectid_value",
+                _multiFileFetchQueryParameters: "",
                 _attributes: "documentbody",
                 _attributesExtension: new Map([["documentbody", "css"]]),
                 _mappingEntityId: "annotationid", // Webfile in old schema are maintained with two dataverse entity adx_webfile and annotations. This Id acts as foreign key for that mapping
@@ -115,6 +118,8 @@ export const portal_schema_V1 = {
                 _languagegroupby: "adx_name",
                 _fetchQueryParameters:
                     "?$filter=adx_contentsnippetid%20eq%20{entityId}&$select=adx_name,adx_value,_adx_contentsnippetlanguageid_value,_adx_contentsnippetlanguageid_value",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_adx_websiteid_value%20eq%20{websiteId}&$select=adx_name,adx_value,_adx_contentsnippetlanguageid_value,_adx_contentsnippetlanguageid_value",
                 _attributes: "adx_value",
                 _attributesExtension: new Map([["adx_value", "html"]]),
             },
@@ -132,8 +137,61 @@ export const portal_schema_V1 = {
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters:
                     "?$filter=adx_webtemplateid%20eq%20{entityId}&$select=adx_name,adx_source",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_adx_websiteid_value%20eq%20{websiteId}&$select=adx_name,adx_source",
                 _attributes: "adx_source",
                 _attributesExtension: new Map([["adx_source", "html"]]),
+            },
+            {
+                relationships: "",
+                _vscodeentityname: "lists",
+                _dataverseenityname: "adx_entitylists",
+                _displayname: "Lists",
+                _etc: "10060",
+                _primaryidfield: "",
+                _primarynamefield: "",
+                _disableplugins: "true",
+                _foldername: "lists",
+                _propextension: "",
+                _exporttype: "SubFolders",
+                _fetchQueryParameters: "",
+                _multiFileFetchQueryParameters: "",
+                _attributes: "",
+                _attributesExtension: new Map([["", ""]]),
+            },
+            {
+                relationships: "",
+                _vscodeentityname: "basicforms",
+                _dataverseenityname: "adx_entityforms",
+                _displayname: "Basic Forms",
+                _etc: "10060",
+                _primaryidfield: "",
+                _primarynamefield: "",
+                _disableplugins: "true",
+                _foldername: "basic-forms",
+                _propextension: "",
+                _exporttype: "SubFolders",
+                _fetchQueryParameters: "",
+                _multiFileFetchQueryParameters: "",
+                _attributes: "",
+                _attributesExtension: new Map([["", ""]]),
+            },
+            {
+                relationships: "",
+                _vscodeentityname: "advancedforms",
+                _dataverseenityname: "adx_webforms",
+                _displayname: "Advanced Forms",
+                _etc: "10060",
+                _primaryidfield: "",
+                _primarynamefield: "",
+                _disableplugins: "true",
+                _foldername: "advanced-forms",
+                _propextension: "",
+                _exporttype: "SubFolders",
+                _fetchQueryParameters: "",
+                _multiFileFetchQueryParameters: "",
+                _attributes: "",
+                _attributesExtension: new Map([["", ""]]),
             },
         ],
         "_xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
@@ -206,6 +264,8 @@ export const portal_schema_V2 = {
                 _foldername: "web-pages",
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content,powerpagesitelanguageid",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_powerpagesiteid_value%20eq%20{websiteId}%20and%20powerpagecomponenttype%20eq%202%20and%20_powerpagesitelanguageid_value%20ne%20null&$select=name,content,_powerpagesitelanguageid_value",
                 _attributes:
                     "content.customcss,content.customjavascript,content.copy",
                 _attributesExtension: new Map([

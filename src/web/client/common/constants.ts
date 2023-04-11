@@ -26,6 +26,9 @@ export enum initializationEntityName {
     PORTALLANGUAGE = "portallanguages",
 }
 
+// Multi-file feature constants
+export const ENABLE_MULTI_FILE_FEATURE = true;
+
 // Query parameters passed in url to vscode extension
 export enum queryParameters {
     ORG_ID = "organizationid",
