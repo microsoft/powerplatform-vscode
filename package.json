@@ -152,6 +152,10 @@
     ],
     "commands": [
       {
+        "command": "extension.createChatView",
+        "title": "Create Chat View"
+      },
+      {
         "command": "pacCLI.openDocumentation",
         "category": "Power Platform CLI",
         "title": "%pacCLI.openDocumentation.title%"

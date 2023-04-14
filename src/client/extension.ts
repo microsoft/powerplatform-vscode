@@ -157,7 +157,107 @@ export async function activate(
     }
 
     _telemetry.sendTelemetryEvent("activated");
+
+    _context.subscriptions.push(vscode.commands.registerCommand('extension.createChatView', () => {
+        createChatView();
+    }));
 }
+
+function createChatView() {
+    const panel = vscode.window.createWebviewPanel(
+        'chatView',
+        'Chat View',
+        vscode.ViewColumn.One,
+        {
+            enableScripts: true,
+        }
+    );
+
+    panel.webview.html = getEnhancedChatViewHtml();
+}
+
+function getEnhancedChatViewHtml() {
+    return `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    margin: 0;
+                }
+                .chat-container {
+                    display: flex;
+                    flex-direction: column;
+                    height: 100vh;
+                }
+                .chat-messages {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 10px;
+                }
+                .chat-input {
+                    display: flex;
+                    border-top: 1px solid #ccc;
+                }
+                .chat-input input {
+                    flex: 1;
+                    border: none;
+                    padding: 10px;
+                }
+                .chat-input button {
+                    background-color: #007acc;
+                    color: white;
+                    border: none;
+                    padding: 10px;
+                    cursor: pointer;
+                }
+            </style>
+            <title>Chat View</title>
+        </head>
+        <body>
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input">
+                    <input type="text" id="chat-input" placeholder="Type your message..." />
+                    <button id="send-button">Send</button>
+                </div>
+            </div>
+            <script>
+                const chatMessages = document.getElementById('chat-messages');
+                const chatInput = document.getElementById('chat-input');
+                const sendButton = document.getElementById('send-button');
+
+                function addMessage(message) {
+                    const messageElement = document.createElement('div');
+                    messageElement.textContent = message;
+                    chatMessages.appendChild(messageElement);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                sendButton.addEventListener('click', () => {
+                    if (chatInput.value.trim()) {
+                        addMessage(chatInput.value);
+                        chatInput.value = '';
+                        chatInput.focus();
+                    }
+                });
+
+                chatInput.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' && chatInput.value.trim()) {
+                        addMessage(chatInput.value);
+                        chatInput.value = '';
+                    }
+                });
+            </script>
+        </body>
+        </html>`;
+}
+
+
+
 
 export async function deactivate(): Promise<void> {
     if (_telemetry) {
