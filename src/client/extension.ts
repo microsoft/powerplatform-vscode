@@ -226,32 +226,56 @@ function getEnhancedChatViewHtml() {
                 </div>
             </div>
             <script>
-                const chatMessages = document.getElementById('chat-messages');
-                const chatInput = document.getElementById('chat-input');
-                const sendButton = document.getElementById('send-button');
+            const chatMessages = document.getElementById('chat-messages');
+            const chatInput = document.getElementById('chat-input');
+            const sendButton = document.getElementById('send-button');
 
-                function addMessage(message) {
-                    const messageElement = document.createElement('div');
-                    messageElement.textContent = message;
-                    chatMessages.appendChild(messageElement);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+            function addMessage(message, className) {
+                const messageElement = document.createElement('div');
+                messageElement.textContent = message;
+                if (className) {
+                    messageElement.classList.add(className);
                 }
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
 
-                sendButton.addEventListener('click', () => {
-                    if (chatInput.value.trim()) {
-                        addMessage(chatInput.value);
-                        chatInput.value = '';
-                        chatInput.focus();
-                    }
-                });
+            async function sendMessageToApi(message) {
+                // const response = await fetch('https://openAI-endpoint', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify({ message })
+                // });
 
-                chatInput.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter' && chatInput.value.trim()) {
-                        addMessage(chatInput.value);
-                        chatInput.value = '';
-                    }
-                });
-            </script>
+                // if (response.ok) {
+                //     const jsonResponse = await response.json();
+                //     // Assuming the API response contains a 'responseMessage' field
+                //     addMessage(jsonResponse.responseMessage, 'api-response');
+                // } else {
+                //     // Handle the API error, e.g., display an error message
+                // }
+                addMessage('This is a dummy response to your message = ' + message, 'api-response');
+            }
+
+            sendButton.addEventListener('click', () => {
+                if (chatInput.value.trim()) {
+                    addMessage(chatInput.value, 'user-message');
+                    sendMessageToApi(chatInput.value);
+                    chatInput.value = '';
+                    chatInput.focus();
+                }
+            });
+
+            chatInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' && chatInput.value.trim()) {
+                    addMessage(chatInput.value, 'user-message');
+                    sendMessageToApi(chatInput.value);
+                    chatInput.value = '';
+                }
+            });
+        </script>
         </body>
         </html>`;
 }
