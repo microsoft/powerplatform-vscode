@@ -214,6 +214,20 @@ function getEnhancedChatViewHtml() {
                     padding: 10px;
                     cursor: pointer;
                 }
+                .user-message {
+                    background-color: #252526;
+                    color: white;
+                    margin-bottom: 5px;
+                    border-bottom: 1px solid grey;
+                    padding: 10px;
+                }
+                .api-response {
+                    background-color: #1E1E1E;
+                    color: white;
+                    margin-bottom: 5px;
+                    border-bottom: 1px solid grey;
+                    padding: 10px;
+                }
             </style>
             <title>Chat View</title>
         </head>
