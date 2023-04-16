@@ -28,15 +28,22 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        // webviewView.webview.onDidReceiveMessage(data => {
-        // 	switch (data.type) {
-        // 		case 'colorSelected':
-        // 			{
-        // 				vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`#${data.value}`));
-        // 				break;
-        // 			}
-        // 	}
-        // });
+        webviewView.webview.onDidReceiveMessage(data => {
+        	switch (data.type) {
+        		case 'insertCode':
+        			{
+                        console.log('code ready to be inserted' + data.value);
+        				vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`${data.value}`));
+        				break;
+        			}
+                case 'copyCodeToClipboard':
+                    {
+                        console.log('code ready to be copied to clipboard' + data.value);
+                        vscode.env.clipboard.writeText(data.value);
+                        break;
+                    }
+        	}
+        });
     }
 
 
@@ -187,6 +194,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 </div>
             </div>
             <script>
+            const vscode = acquireVsCodeApi();
             const chatMessages = document.getElementById('chat-messages');
             const chatInput = document.getElementById('chat-input');
             const sendButton = document.getElementById('send-button');
@@ -223,7 +231,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     CopyButton.textContent = 'Copy';
                     CopyButton.classList.add('action-button');
                     CopyButton.addEventListener('click', () => {
-                        console.log('Copy clicked');
+                        copyCodeToClipboard(message);
                     });
                     actionWrapper.appendChild(CopyButton);
 
@@ -231,7 +239,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     InsertButton.textContent = 'Insert';
                     InsertButton.classList.add('action-button');
                     InsertButton.addEventListener('click', () => {
-                        console.log('Insert clicked');
+                        insertCode(message);
                     });
                     actionWrapper.appendChild(InsertButton);
 
@@ -305,6 +313,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 //     // Handle the API error, e.g., display an error message
                 // }
                 addMessage('This is a dummy response to your message : ' + message, 'api-response');
+            }
+
+            function insertCode(code) {
+                vscode.postMessage({ type: 'insertCode', value: code });
+            }
+
+            function copyCodeToClipboard(code) {
+                vscode.postMessage({ type: 'copyCodeToClipboard', value: code });
             }
 
             sendButton.addEventListener('click', () => {
