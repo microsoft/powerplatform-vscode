@@ -228,6 +228,21 @@ function getEnhancedChatViewHtml() {
                     border-bottom: 1px solid grey;
                     padding: 10px;
                 }
+                .message-wrapper {
+                    position: relative;
+                }
+                .reaction-wrapper {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    display: flex;
+                }
+                .reaction-button {
+                    background-color: transparent;
+                    border: none;
+                    margin-left: 5px;
+                    cursor: pointer;
+                }
             </style>
             <title>Chat View</title>
         </head>
@@ -245,12 +260,33 @@ function getEnhancedChatViewHtml() {
             const sendButton = document.getElementById('send-button');
 
             function addMessage(message, className) {
+                const messageWrapper = document.createElement('div');
+                messageWrapper.classList.add('message-wrapper');
+
                 const messageElement = document.createElement('div');
                 messageElement.textContent = message;
-                if (className) {
-                    messageElement.classList.add(className);
+                messageElement.classList.add('message', className);
+
+                messageWrapper.appendChild(messageElement);
+
+                if (className === 'api-response') {
+                    const reactionWrapper = document.createElement('div');
+                    reactionWrapper.classList.add('reaction-wrapper');
+
+                    const thumbsUpButton = document.createElement('button');
+                    thumbsUpButton.textContent = '👍';
+                    thumbsUpButton.classList.add('reaction-button');
+                    reactionWrapper.appendChild(thumbsUpButton);
+
+                    const thumbsDownButton = document.createElement('button');
+                    thumbsDownButton.textContent = '👎';
+                    thumbsDownButton.classList.add('reaction-button');
+                    reactionWrapper.appendChild(thumbsDownButton);
+
+                    messageWrapper.appendChild(reactionWrapper);
                 }
-                chatMessages.appendChild(messageElement);
+
+                chatMessages.appendChild(messageWrapper);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
@@ -270,7 +306,7 @@ function getEnhancedChatViewHtml() {
                 // } else {
                 //     // Handle the API error, e.g., display an error message
                 // }
-                addMessage('This is a dummy response to your message = ' + message, 'api-response');
+                addMessage('This is a dummy response to your message : ' + message, 'api-response');
             }
 
             sendButton.addEventListener('click', () => {
