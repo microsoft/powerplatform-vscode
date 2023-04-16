@@ -770,6 +770,11 @@
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
+        },
+        {
+          "type": "webview",
+          "id": "powerpages.copilot",
+          "name": "Power Pages Copilot"
         }
       ]
     },
