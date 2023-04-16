@@ -98,17 +98,71 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 .message-wrapper {
                     position: relative;
                 }
-                .reaction-wrapper {
+                .action-wrapper {
                     position: absolute;
                     top: 0;
                     right: 0;
                     display: flex;
                 }
-                .reaction-button {
-                    background-color: transparent;
+                .action-button {
+                    background-color: #007acc;
+                    color: white;
                     border: none;
-                    margin-left: 5px;
+                    padding: 5px;
+                    margin: 5px;
                     cursor: pointer;
+                }
+
+                .accordion {
+                    background-color: #007acc;
+                    color: white;
+                    cursor: pointer;
+                    padding: 18px;
+                    width: 100%;
+                    border: none;
+                    text-align: left;
+                    outline: none;
+                    font-size: 15px;
+                    transition: 0.4s;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .active, .accordion:hover {
+                    background-color: #0066cc;
+                }
+
+                .accordion:after {
+                    content: '\\002B';
+                    color: white;
+                    font-weight: bold;
+                    float: right;
+                    margin-left: 5px;
+                }
+
+                .active:after {
+                    content: "\\2212";
+                }
+
+                .accordion-content {
+                    max-height: 0;
+                    overflow: hidden;
+                    transition: max-height 0.2s ease-out;
+                    background-color: #f1f1f1;
+                    padding: 0 18px;
+                }
+
+                .accordion-content a {
+                    display: block;
+                    padding: 12px 0;
+                    color: #333;
+                    text-decoration: none;
+                    transition: 0.3s;
+                }
+
+                .accordion-content a:hover {
+                    background-color: #ddd;
                 }
             </style>
             <title>Chat View</title>
@@ -151,26 +205,63 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 messageWrapper.appendChild(messageElement);
 
                 if (className === 'api-response') {
-                    const reactionWrapper = document.createElement('div');
-                    reactionWrapper.classList.add('reaction-wrapper');
+                    const actionWrapper = document.createElement('div');
+                    actionWrapper.classList.add('action-wrapper');
 
-                    const thumbsUpButton = document.createElement('button');
-                    thumbsUpButton.textContent = '👍';
-                    thumbsUpButton.classList.add('reaction-button');
-                    thumbsUpButton.addEventListener('click', () => {
-                        console.log('Thumbs up clicked');
+                    const CopyButton = document.createElement('button');
+                    CopyButton.textContent = 'Copy';
+                    CopyButton.classList.add('action-button');
+                    CopyButton.addEventListener('click', () => {
+                        console.log('Copy clicked');
                     });
-                    reactionWrapper.appendChild(thumbsUpButton);
+                    actionWrapper.appendChild(CopyButton);
 
-                    const thumbsDownButton = document.createElement('button');
-                    thumbsDownButton.textContent = '👎';
-                    thumbsDownButton.classList.add('reaction-button');
-                    thumbsDownButton.addEventListener('click', () => {
-                        console.log('Thumbs down clicked');
+                    const InsertButton = document.createElement('button');
+                    InsertButton.textContent = 'Insert';
+                    InsertButton.classList.add('action-button');
+                    InsertButton.addEventListener('click', () => {
+                        console.log('Insert clicked');
                     });
-                    reactionWrapper.appendChild(thumbsDownButton);
+                    actionWrapper.appendChild(InsertButton);
 
-                    messageWrapper.appendChild(reactionWrapper);
+                    const CreateButton = document.createElement('button');
+                    CreateButton.textContent = 'Create';
+                    CreateButton.classList.add('accordion');
+
+                    const accordionContent = document.createElement('div');
+                    accordionContent.classList.add('accordion-content');
+
+                    const option1 = document.createElement('a');
+                    option1.href = '#';
+                    option1.dataset.value = 'webpage';
+                    option1.textContent = 'Create Webpage';
+                    accordionContent.appendChild(option1);
+
+                    const option2 = document.createElement('a');
+                    option2.href = '#';
+                    option2.dataset.value = 'webfile';
+                    option2.textContent = 'Create WebFile';
+                    accordionContent.appendChild(option2);
+
+                    const option3 = document.createElement('a');
+                    option3.href = '#';
+                    option3.dataset.value = 'tablepermission';
+                    option3.textContent = 'Create TablePermission';
+                    accordionContent.appendChild(option3);
+
+                    CreateButton.addEventListener('click', () => {
+                        CreateButton.classList.toggle('active');
+                        if (accordionContent.style.maxHeight) {
+                            accordionContent.style.maxHeight = null;
+                        } else {
+                            accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
+                        }
+                    });
+
+                    CreateButton.appendChild(accordionContent);
+                    actionWrapper.appendChild(CreateButton);
+
+                    messageWrapper.appendChild(actionWrapper);
                 }
 
                 chatMessages.appendChild(messageWrapper);
