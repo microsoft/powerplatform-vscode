@@ -41,6 +41,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
 
     private _getHtmlForWebview(webview: vscode.Webview) {
+
+        const webpageIconPath = vscode.Uri.joinPath(this._extensionUri,'src', 'client', 'portal_fileicons', 'icons', 'dark', 'adx_web_pages.svg');
+        const webpageIconUri = webview.asWebviewUri(webpageIconPath);
+
+        const webfileIconPath = vscode.Uri.joinPath(this._extensionUri,'src', 'client', 'portal_fileicons', 'icons', 'dark', 'adx_web_files.svg');
+        const webfileIconUri = webview.asWebviewUri(webfileIconPath);
+
+        const tabelPermissonsIconPath = vscode.Uri.joinPath(this._extensionUri,'src', 'client', 'portal_fileicons', 'icons', 'dark', 'table_permissions.svg');
+        const tabelPermissonsIconUri = webview.asWebviewUri(tabelPermissonsIconPath);
+
         return `
         <!DOCTYPE html>
         <html lang="en">
@@ -118,7 +128,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     color: white;
                     cursor: pointer;
                     padding: 18px;
-                    width: 100%;
+                    width: fit-content;
                     border: none;
                     text-align: left;
                     outline: none;
@@ -164,6 +174,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 .accordion-content a:hover {
                     background-color: #ddd;
                 }
+
             </style>
             <title>Chat View</title>
         </head>
@@ -231,22 +242,31 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     const accordionContent = document.createElement('div');
                     accordionContent.classList.add('accordion-content');
 
-                    const option1 = document.createElement('a');
-                    option1.href = '#';
-                    option1.dataset.value = 'webpage';
-                    option1.textContent = 'Create Webpage';
+                    const option1 = document.createElement('button');
+                    const webpageicon = document.createElement('img');
+                    webpageicon.src = '${webpageIconUri}';
+                    option1.appendChild(webpageicon);
+                    option1.addEventListener('click', () => {
+                        console.log('Create Webpage clicked');
+                    });
                     accordionContent.appendChild(option1);
 
-                    const option2 = document.createElement('a');
-                    option2.href = '#';
-                    option2.dataset.value = 'webfile';
-                    option2.textContent = 'Create WebFile';
+                    const option2 = document.createElement('button');
+                    const webfileicon = document.createElement('img');
+                    webfileicon.src = '${webfileIconUri}';
+                    option2.appendChild(webfileicon);
+                    option2.addEventListener('click', () => {
+                        console.log('Create WebFile clicked');
+                    });
                     accordionContent.appendChild(option2);
 
-                    const option3 = document.createElement('a');
-                    option3.href = '#';
-                    option3.dataset.value = 'tablepermission';
-                    option3.textContent = 'Create TablePermission';
+                    const option3 = document.createElement('button');
+                    const tablepermissionicon = document.createElement('img');
+                    tablepermissionicon.src = '${tabelPermissonsIconUri}';
+                    option3.appendChild(tablepermissionicon);
+                    option3.addEventListener('click', () => {
+                        console.log('Create Table Permission clicked');
+                    });
                     accordionContent.appendChild(option3);
 
                     CreateButton.addEventListener('click', () => {
