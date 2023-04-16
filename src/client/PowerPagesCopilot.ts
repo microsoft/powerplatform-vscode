@@ -32,14 +32,29 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         	switch (data.type) {
         		case 'insertCode':
         			{
-                        console.log('code ready to be inserted' + data.value);
+                        console.log('code ready to be inserted ' + data.value);
         				vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`${data.value}`));
         				break;
         			}
                 case 'copyCodeToClipboard':
                     {
-                        console.log('code ready to be copied to clipboard' + data.value);
+                        console.log('code ready to be copied to clipboard ' + data.value);
                         vscode.env.clipboard.writeText(data.value);
+                        break;
+                    }
+                case 'createWebpage':
+                    {
+                        console.log('create webpage with code = ' + data.value);
+                        break;
+                    }
+                case 'createWebfile':
+                    {
+                        console.log('create webfile with image = ' + data.value);
+                        break;
+                    }
+                case 'createTablePermission':
+                    {
+                        console.log('create table permission with code = ' + data.value);
                         break;
                     }
         	}
@@ -194,10 +209,25 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 </div>
             </div>
             <script>
+            const dequeue = [];
             const vscode = acquireVsCodeApi();
             const chatMessages = document.getElementById('chat-messages');
             const chatInput = document.getElementById('chat-input');
             const sendButton = document.getElementById('send-button');
+
+            function addToDequeue(element) {
+                if (dequeue.length >= 5) {
+                  dequeue.shift(); // Remove the first element from the dequeue
+                }
+                dequeue.push(element); // Add the new element to the end of the dequeue
+            }
+              
+            function removeFromDequeue() {
+                if (dequeue.length === 0) {
+                    return null; // Return null if the dequeue is empty
+                }
+                return dequeue.shift(); // Remove and return the first element from the dequeue
+            }
 
             function addMessage(message, className) {
                 const messageWrapper = document.createElement('div');
@@ -205,6 +235,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                 const messageElement = document.createElement('div');
                 if (className === 'user-message') {
+                    addToDequeue(message);
                     const makerElement = document.createElement('div');
                     makerElement.textContent = 'Maker:';
                     messageElement.appendChild(makerElement);
@@ -255,7 +286,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     webpageicon.src = '${webpageIconUri}';
                     option1.appendChild(webpageicon);
                     option1.addEventListener('click', () => {
-                        console.log('Create Webpage clicked');
+                        createWebpage(message);
                     });
                     accordionContent.appendChild(option1);
 
@@ -264,7 +295,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     webfileicon.src = '${webfileIconUri}';
                     option2.appendChild(webfileicon);
                     option2.addEventListener('click', () => {
-                        console.log('Create WebFile clicked');
+                        createWebfile(message);
                     });
                     accordionContent.appendChild(option2);
 
@@ -273,7 +304,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     tablepermissionicon.src = '${tabelPermissonsIconUri}';
                     option3.appendChild(tablepermissionicon);
                     option3.addEventListener('click', () => {
-                        console.log('Create Table Permission clicked');
+                        createTablePermission(message);
                     });
                     accordionContent.appendChild(option3);
 
@@ -297,12 +328,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             }
 
             async function sendMessageToApi(message) {
+                const engineeredPrompt = generateEngineeredPrompt(message);
                 // const response = await fetch('https://openAI-endpoint', {
                 //     method: 'POST',
                 //     headers: {
                 //         'Content-Type': 'application/json'
                 //     },
-                //     body: JSON.stringify({ message })
+                //     body: JSON.stringify({ engineeredPrompt })
                 // });
 
                 // if (response.ok) {
@@ -312,7 +344,19 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 // } else {
                 //     // Handle the API error, e.g., display an error message
                 // }
+                console.log('engineeredPrompt : ' + engineeredPrompt);
                 addMessage('This is a dummy response to your message : ' + message, 'api-response');
+            }
+
+            function generateEngineeredPrompt(userPrompt) {
+                let prompts = '';
+                for (let i = 0; i < dequeue.length; i++) {
+                    const element = dequeue[i];
+                    prompts += (i+1) + '.' + element + ' '; // fix this to the required format for chat
+                }
+
+                console.log(prompts);
+                return prompts;
             }
 
             function insertCode(code) {
@@ -321,6 +365,18 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
             function copyCodeToClipboard(code) {
                 vscode.postMessage({ type: 'copyCodeToClipboard', value: code });
+            }
+
+            function createWebpage(code) {
+                vscode.postMessage({ type: 'createWebpage', value: code });
+            }
+
+            function createWebfile(code) {  
+                vscode.postMessage({ type: 'createWebfile', value: code });
+            }
+
+            function createTablePermission(code) {
+                vscode.postMessage({ type: 'createTablePermission', value: code });
             }
 
             sendButton.addEventListener('click', () => {
