@@ -101,7 +101,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     margin-bottom: 5px;
                     border-bottom: 1px solid grey;
                     padding-left: 10px;
-                    padding-top: 20px;
+                    padding-top: 50px;
                     padding-bottom: 10px;
                     padding-right: 10px;
                 }
@@ -127,7 +127,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     background-color: #007acc;
                     color: white;
                     cursor: pointer;
-                    padding: 18px;
+                    padding: 5px;
                     width: fit-content;
                     border: none;
                     text-align: left;
@@ -159,7 +159,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     max-height: 0;
                     overflow: hidden;
                     transition: max-height 0.2s ease-out;
-                    background-color: #f1f1f1;
+                    background-color: transparent;
                     padding: 0 18px;
                 }
 
