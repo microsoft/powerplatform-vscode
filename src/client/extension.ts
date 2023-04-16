@@ -276,11 +276,17 @@ function getEnhancedChatViewHtml() {
                     const thumbsUpButton = document.createElement('button');
                     thumbsUpButton.textContent = '👍';
                     thumbsUpButton.classList.add('reaction-button');
+                    thumbsUpButton.addEventListener('click', () => {
+                        console.log('Thumbs up clicked');
+                    });
                     reactionWrapper.appendChild(thumbsUpButton);
 
                     const thumbsDownButton = document.createElement('button');
                     thumbsDownButton.textContent = '👎';
                     thumbsDownButton.classList.add('reaction-button');
+                    thumbsDownButton.addEventListener('click', () => {
+                        console.log('Thumbs down clicked');
+                    });
                     reactionWrapper.appendChild(thumbsDownButton);
 
                     messageWrapper.appendChild(reactionWrapper);
