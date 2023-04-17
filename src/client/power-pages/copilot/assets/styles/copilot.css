@@ -1,0 +1,116 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+}
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+.chat-input {
+    display: flex;
+    border-top: 1px solid #ccc;
+}
+.chat-input input {
+    flex: 1;
+    border: none;
+    padding: 10px;
+}
+.chat-input button {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+.user-message {
+    background-color: #252526;
+    color: white;
+    margin-bottom: 5px;
+    border-bottom: 1px solid grey;
+    padding: 10px;
+}
+.api-response {
+    background-color: #1E1E1E;
+    color: white;
+    margin-bottom: 5px;
+    border-bottom: 1px solid grey;
+    padding-left: 10px;
+    padding-top: 50px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+}
+.message-wrapper {
+    position: relative;
+}
+.action-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+}
+.action-button {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 5px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.accordion {
+    background-color: #007acc;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    width: fit-content;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+    transition: 0.4s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.active, .accordion:hover {
+    background-color: #0066cc;
+}
+
+.accordion:after {
+    content: '+';
+    color: white;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.active:after {
+    content: "-";
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: transparent;
+    padding: 0 18px;
+}
+
+.accordion-content a {
+    display: block;
+    padding: 12px 0;
+    color: #333;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.accordion-content a:hover {
+    background-color: #ddd;
+}
