@@ -31,7 +31,7 @@ import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
-import { PowerPagesCopilot } from "./PowerPagesCopilot";
+import { PowerPagesCopilot } from "./power-pages/copilot/PowerPagesCopilot";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
