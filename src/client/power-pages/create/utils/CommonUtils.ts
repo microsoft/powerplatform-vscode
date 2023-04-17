@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { exec } from "child_process";
 import { existsSync, stat } from "fs";
 import path from "path";
@@ -162,7 +164,7 @@ export async function createRecord(
     execCommand: string,
     portalDirectory: string,
     watcher: vscode.FileSystemWatcher,
-    telemetry: ITelemetry
+    //telemetry: ITelemetry
 ) {
     const startTime = performance.now();
     await vscode.window.withProgress(
@@ -201,10 +203,10 @@ export async function createRecord(
                             args: [error.message],
                             comment: ["{0} will be replaced by the error message."]
                         }));
-                        sendTelemetryEvent(telemetry, { eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime), exception: error as Error })
+                        //sendTelemetryEvent(telemetry, { eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime), exception: error as Error })
                         reject(error);
                     } else {
-                        sendTelemetryEvent(telemetry, { eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime) })
+                       // sendTelemetryEvent(telemetry, { eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime) })
                         progress.report({ increment: 100 });
                     }
                 });

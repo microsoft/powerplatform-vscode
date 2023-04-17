@@ -20,8 +20,9 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
 import { TableFolder, Tables, YoSubGenerator } from "./CreateOperationConstants";
 import path from "path";
-import { ITelemetry } from "../../telemetry/ITelemetry";
-import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
+//import { generatePageCopyWithProgress} from "../../open-ai/WebpageCreationUtility";
+// import { ITelemetry } from "../../telemetry/ITelemetry";
+// import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
 
 interface IWebpageInputState {
     title: string;
@@ -36,7 +37,8 @@ export const createWebpage = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
     yoGenPath: string | null,
-    telemetry: ITelemetry
+    response: string
+    //telemetry: ITelemetry
 ) => {
     try {
         if(!selectedWorkspaceFolder) {
@@ -75,6 +77,9 @@ export const createWebpage = async (
 
         const parentPageId = pathsMap.get(webpageInputs.parentPage);
 
+        // const pageCopyString = await generatePageCopyWithProgress(prompt);
+        const pageCopyString = response;
+
         // Create the webpage using the yo command
         if (!isNullOrEmpty(webpageName) && selectedWorkspaceFolder) {
             const file = formatFileName(webpageName);
@@ -92,17 +97,17 @@ export const createWebpage = async (
                 watcherPattern
             );
 
-            const command = `"${yoGenPath}" ${YoSubGenerator.WEBPAGE} "${webpageName}" "${parentPageId}" "${pageTemplateId}"`;
+            const command = `"${yoGenPath}" ${YoSubGenerator.WEBPAGE} "${webpageName}" "${parentPageId}" "${pageTemplateId}" "${pageCopyString}"`;
             await createRecord(
                 Tables.WEBPAGE,
                 command,
                 selectedWorkspaceFolder,
                 watcher,
-                telemetry
+                //telemetry
             );
         }
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:Tables.WEBPAGE, exception: error as Error })
+        //sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:Tables.WEBPAGE, exception: error as Error })
         throw new Error(error);
     }
 };

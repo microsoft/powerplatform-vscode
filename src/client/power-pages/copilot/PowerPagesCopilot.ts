@@ -1,4 +1,10 @@
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
 import * as vscode from "vscode";
+import { createAiWebpage } from "./Utils";
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
@@ -12,8 +18,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
-        context: vscode.WebviewViewResolveContext,
-        _token: vscode.CancellationToken,
+        //_context: vscode.WebviewViewResolveContext,
+        //_token: vscode.CancellationToken,
     ) {
         this._view = webviewView;
 
@@ -29,13 +35,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(data => {
-        	switch (data.type) {
-        		case 'insertCode':
-        			{
+            switch (data.type) {
+                case 'insertCode':
+                    {
                         console.log('code ready to be inserted ' + data.value);
-        				vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`${data.value}`));
-        				break;
-        			}
+                        vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`${data.value}`));
+                        break;
+                    }
                 case 'copyCodeToClipboard':
                     {
                         console.log('code ready to be copied to clipboard ' + data.value);
@@ -45,6 +51,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 case 'createWebpage':
                     {
                         console.log('create webpage with code = ' + data.value);
+                        createAiWebpage(data.value)
                         break;
                     }
                 case 'createWebfile':
@@ -57,7 +64,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         console.log('create table permission with code = ' + data.value);
                         break;
                     }
-        	}
+            }
         });
     }
 
@@ -94,7 +101,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         };
 
         webview.postMessage(message_tablepermission);
-        
+
         const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'scripts', 'copilot.js');
         const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
 

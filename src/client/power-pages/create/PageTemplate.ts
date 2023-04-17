@@ -80,7 +80,7 @@ export const createPageTemplate = async (
             command,
             portalDir,
             watcher,
-            telemetry
+            //telemetry
         );
     } catch (error: any) {
     sendTelemetryEvent(telemetry, {
