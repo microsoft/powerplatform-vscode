@@ -1,4 +1,24 @@
 (function () {
+
+    let webpageIconUri;
+    let webfileIconUri;
+    let tabelPermissonsIconUri;
+
+    // check these also see if this is the correct pattern
+    window.addEventListener('message', event => {
+        const message = event.data;
+        if (message.type === 'webpageIconUri') {
+            console.log('windowEvent: webpageIconUri = '+ message.value);
+            webpageIconUri = message.value;
+        } else if (message.type === 'webfileIconUri') {
+            console.log('windowEvent: webfileIconUri = '+ message.value);
+            webfileIconUri = message.value;
+        } else if (message.type === 'tabelPermissonsIconUri') {
+            console.log('windowEvent: tabelPermissonsIconUri = '+ message.value);
+            tabelPermissonsIconUri = message.value;
+        }
+    });
+
     const vscode = acquireVsCodeApi();
     const dequeue = [];
     const chatMessages = document.getElementById('chat-messages');
@@ -7,7 +27,7 @@
 
     function addToDequeue(element) {
         if (dequeue.length >= 5) {
-          dequeue.shift(); // Remove the first element from the dequeue
+            dequeue.shift(); // Remove the first element from the dequeue
         }
         dequeue.push(element); // Add the new element to the end of the dequeue
     }
@@ -66,7 +86,7 @@
 
             const option1 = document.createElement('button');
             const webpageicon = document.createElement('img');
-            webpageicon.src = '${webpageIconUri}';
+            webpageicon.src = webpageIconUri;
             option1.appendChild(webpageicon);
             option1.addEventListener('click', () => {
                 createWebpage(message);
@@ -75,7 +95,7 @@
 
             const option2 = document.createElement('button');
             const webfileicon = document.createElement('img');
-            webfileicon.src = '${webfileIconUri}';
+            webfileicon.src = webfileIconUri;
             option2.appendChild(webfileicon);
             option2.addEventListener('click', () => {
                 createWebfile(message);
@@ -84,7 +104,7 @@
 
             const option3 = document.createElement('button');
             const tablepermissionicon = document.createElement('img');
-            tablepermissionicon.src = '${tabelPermissonsIconUri}';
+            tablepermissionicon.src = tabelPermissonsIconUri;
             option3.appendChild(tablepermissionicon);
             option3.addEventListener('click', () => {
                 createTablePermission(message);
@@ -135,7 +155,7 @@
         let prompts = '';
         for (let i = 0; i < dequeue.length; i++) {
             const element = dequeue[i];
-            prompts += (i+1) + '.' + element + ' '; // fix this to the required format for chat
+            prompts += (i + 1) + '.' + element + ' '; // fix this to the required format for chat
         }
 
         console.log(prompts);
@@ -154,7 +174,7 @@
         vscode.postMessage({ type: 'createWebpage', value: code });
     }
 
-    function createWebfile(code) {  
+    function createWebfile(code) {
         vscode.postMessage({ type: 'createWebfile', value: code });
     }
 

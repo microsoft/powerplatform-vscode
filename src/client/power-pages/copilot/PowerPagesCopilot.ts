@@ -73,6 +73,28 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         const tabelPermissonsIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'table_permissions.svg');
         const tabelPermissonsIconUri = webview.asWebviewUri(tabelPermissonsIconPath);
 
+        // check these also see if this is the correct pattern
+        const message_webpage = {
+            type: 'webpageIconUri',
+            value: webpageIconUri
+        };
+
+        webview.postMessage(message_webpage);
+
+        const message_webfile = {
+            type: 'webpageIconUri',
+            value: webfileIconUri
+        };
+
+        webview.postMessage(message_webfile);
+
+        const message_tablepermission = {
+            type: 'webpageIconUri',
+            value: tabelPermissonsIconUri
+        };
+
+        webview.postMessage(message_tablepermission);
+        
         const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'scripts', 'copilot.js');
         const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
 
