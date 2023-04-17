@@ -155,7 +155,7 @@ export function createFileWatcher(
             true
         );
 
-    context.subscriptions.push(watcher);
+    // context.subscriptions.push(watcher);
     return watcher;
 }
 
