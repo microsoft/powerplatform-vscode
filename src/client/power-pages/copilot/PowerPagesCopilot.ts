@@ -114,7 +114,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             <div class="chat-container">
                 <div class="chat-messages" id="chat-messages"></div>
                 <div class="chat-input">
-                    <input type="text" id="chat-input" placeholder="Type your message..." />
+                    <input type="text" id="chat-input" placeholder="Ask Copilot a question or type '/' for selecting a table" />
                     <button id="send-button">Send</button>
                 </div>
             </div>
