@@ -14,11 +14,12 @@ body {
 }
 .chat-input {
     display: flex;
-    border-top: 1px solid #ccc;
+    margin-bottom: 10px;
 }
 .chat-input input {
     flex: 1;
     border: none;
+    color: white; /* added for testing */
     padding: 10px;
 }
 .chat-input button {
@@ -36,8 +37,8 @@ body {
     padding: 10px;
 }
 .api-response {
-    background-color: #1E1E1E;
-    color: white;
+    /* background-color: #1E1E1E;
+    color: white; */
     margin-bottom: 5px;
     border-bottom: 1px solid grey;
     padding-left: 10px;
@@ -52,9 +53,9 @@ body {
     position: absolute;
     top: 0;
     right: 0;
-    display: flex;
+    /* display: flex; */
 }
-.action-button {
+/* .action-button {
     background-color: #007acc;
     color: white;
     border: none;
@@ -113,4 +114,4 @@ body {
 
 .accordion-content a:hover {
     background-color: #ddd;
-}
+} */
