@@ -1,8 +1,4 @@
 {
-    "cSpell.words": [
-      "nupkg",
-      "powerapps",
-      "powerplatform"
-    ],
-    "sarif-viewer.connectToGithubCodeScanning": "off"
+  "cSpell.words": ["nupkg", "powerapps", "powerplatform", "Tinylicious"],
+  "sarif-viewer.connectToGithubCodeScanning": "off"
 }

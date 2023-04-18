@@ -22,8 +22,11 @@ import { convertStringtoBase64 } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
+//import { MyWebview } from "./webViews/MyWebView";
+import { loadContainer } from "./utilities/copresenceUtil";
 
 export function activate(context: vscode.ExtensionContext): void {
+    console.log("vscode extension activate function start");
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
     const dataBoundary = undefined;
@@ -175,10 +178,51 @@ export function activate(context: vscode.ExtensionContext): void {
             }
         )
     );
+    console.log("vscode extension activate registerCommand success");
 
     processWillSaveDocument(context);
+    console.log("vscode extension activate processWillSaveDocument success");
+
+    // Create a webview panel
+    // const view = new MyWebview(context.extensionUri);
+    // view.show();
+
+    processOpenActiveTextEditor(context);
+    console.log(
+        "vscode extension activate processOpenActiveTextEditor success"
+    );
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+    console.log("vscode extension activate function end");
+}
+
+export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
+    console.log("Inside processOpenActiveTextEditor");
+    try {
+        context.subscriptions.push(
+            vscode.window.onDidChangeTextEditorSelection(async (event) => {
+                const selection = event.selections[0];
+                const line = selection.active.line;
+                const column = selection.active.character;
+                console.log("Inside onDidChangeTextEditorSelection");
+
+                const activeEditor = vscode.window.activeTextEditor;
+                if (activeEditor) {
+                    const entityId =
+                        WebExtensionContext.fileDataMap.getFileMap.get(
+                            activeEditor.document.uri.fsPath
+                        )?.entityId as string;
+                    if (entityId) {
+                        await loadContainer(entityId, line, column);
+                        console.log(`Line: ${line}`);
+                        console.log(`Column: ${column}`);
+                    }
+                }
+            })
+        );
+    } catch (error) {
+        console.log("caught error in processOpenActiveTextEditor", error);
+    }
 }
 
 export function processWillSaveDocument(context: vscode.ExtensionContext) {

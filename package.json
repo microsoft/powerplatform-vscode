@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
-  "version": "1.0.1-dev",
+  "version": "11.11.29-dev",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
@@ -817,6 +817,7 @@
     ]
   },
   "devDependencies": {
+    "@fluidframework/tinylicious-client": "^1.3.6",
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@types/chai": "^4.2.14",
     "@types/fs-extra": "^9.0.11",
@@ -844,6 +845,7 @@
     "eslint": "^8.11.0",
     "eslint-plugin-header": "^3.1.1",
     "fancy-log": "^1.3.3",
+    "fluid-framework": "^1.3.6",
     "fs-extra": "^9.0.1",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
@@ -873,6 +875,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@fluidframework/build-common": "^1.0.0",
     "@microsoft/generator-powerpages": "1.21.19",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
@@ -882,7 +885,9 @@
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
+    "readline-sync": "^1.4.10",
     "recursive-readdir": "^2.2.3",
+    "tinylicious": "^0.4.0",
     "unzip-stream": "^0.3.1",
     "uuid": "^8.3.2",
     "vscode-languageclient": "^7.0.0",
