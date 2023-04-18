@@ -4,9 +4,16 @@
  */
 
 (function () {
-    let webpageIconUri ;
-    let webfileIconUri ;
-    let tabelPermissonsIconUri ;
+    let webpageIconUri;
+    let webfileIconUri;
+    let tabelPermissonsIconUri;
+
+    let conversation = [
+        {
+           "role": "system",
+           "content": "You are a web developer well versed with css, html and javascript who is using the power pages platform which was formerly known as power portals. It mostly uses css, html, javascript & yaml for development.",
+        }
+    ];
 
     // check these also see if this is the correct pattern
     window.addEventListener("message", (event) => {
@@ -137,31 +144,34 @@
     }
 
     async function sendMessageToApi(message) {
-        const apiKey = '';
-        const endpointUrl = 'https://api.openai.com/v1/completions';
+        const apiKey = "YOUR_API_KEY";
+        const endpointUrl = "https://api.openai.com/v1/chat/completions";
         const engineeredPrompt = generateEngineeredPrompt(message);
         const requestBody = {
-            prompt: message,
-            max_tokens: 50,
-            model: "text-davinci-003",
-            temperature: 0.5
-          };
+            model: "gpt-3.5-turbo",
+            messages: conversation,
+            max_tokens: 500,
+            temperature: 0.5,
+        };
         const response = await fetch(endpointUrl, {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${apiKey}`,
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(requestBody),
         });
 
         if (response.ok) {
             console.log("API call successful");
             const jsonResponse = await response.json();
-            const responseMessage = jsonResponse.choices[0].text.trim();
-            responseMessage.replace(/(\r\n|\n|\r)/gm,"");
-            addMessage(responseMessage, 'api-response');
+            const responseMessage =
+                jsonResponse.choices[0].message.content.trim();
+            responseMessage.replace(/(\r\n|\n|\r)/gm, "");
+            conversation.push({ "role": "assistant", "content": `${responseMessage}` });
+            addMessage(responseMessage, "api-response");
         } else {
+            console.log("API call failed");
             // Handle the API error, e.g., display an error message
         }
 
@@ -208,6 +218,7 @@
 
     sendButton.addEventListener("click", () => {
         if (chatInput.value.trim()) {
+            conversation.push({ "role": "user", "content": `${chatInput.value}` });
             addMessage(chatInput.value, "user-message");
             sendMessageToApi(chatInput.value);
             chatInput.value = "";
@@ -217,6 +228,7 @@
 
     chatInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter" && chatInput.value.trim()) {
+            conversation.push({ "role": "user", "content": `${chatInput.value}` });
             addMessage(chatInput.value, "user-message");
             sendMessageToApi(chatInput.value);
             chatInput.value = "";
