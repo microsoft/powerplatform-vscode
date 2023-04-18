@@ -104,6 +104,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 const dequeue = [];
                 const chatMessages = document.getElementById('chat-messages');
                 const chatInput = document.getElementById('chat-input');
+
+                const autocompletePanel = document.createElement('div');
+                autocompletePanel.classList.add('autocomplete-panel');
+                chatInput.parentNode?.appendChild(autocompletePanel);
+
                 chatInput.addEventListener('focus', () => {
                     chatInput.style.border = '1px solid blue';
                 });
@@ -297,6 +302,42 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         chatInput.value = '';
                     }
                 });
+
+                chatInput.addEventListener('input', () => {
+                    if (chatInput.value === '/') {
+                        showAutocompletePanel();
+                    } else {
+                        hideAutocompletePanel();
+                    }
+                });
+
+                document.addEventListener('click', (event) => {
+                    if (!chatInput.contains(event.target)) {
+                        hideAutocompletePanel();
+                    }
+                });
+
+                function showAutocompletePanel() {
+                    autocompletePanel.innerHTML = \`<ul><li><a href="#">/webpage</a></li><li><a href="#">/webfile</a></li><li><a href="#">/tablepermission</a></li></ul>\`;
+                    autocompletePanel.style.display = 'block';
+                    autocompletePanel.style.position = 'absolute';
+                    autocompletePanel.style.top = chatInput.offsetTop - autocompletePanel.offsetHeight + 'px';
+                    autocompletePanel.style.left = chatInput.offsetLeft + 'px';
+            
+                    const listItems = autocompletePanel.querySelectorAll('li');
+                    listItems.forEach((item) => {
+                        item.addEventListener('click', () => {
+                            const selectedItem = item.querySelector('a').textContent;
+                            chatInput.value = selectedItem + ' ';
+                            hideAutocompletePanel();
+                        });
+                    });
+                }
+
+                function hideAutocompletePanel() {
+                    autocompletePanel.style.display = 'none';
+                }
+                
             </script>
         </body>
         </html>`;
