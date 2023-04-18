@@ -67,20 +67,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         const copyIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_copy.svg');
         const copyIconUri = webview.asWebviewUri(copyIconPath);
 
-        const insertIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'insert.svg');
+        const insertIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'row_insert.svg');
         const insertIconUri = webview.asWebviewUri(insertIconPath);
 
-        const createIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'create.svg');
+        const createIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_add.svg');
         const createIconUri = webview.asWebviewUri(createIconPath);
 
-        const webpageIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'web_pages.svg');
-        const webpageIconUri = webview.asWebviewUri(webpageIconPath);
-
-        const webfileIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'web_files.svg');
-        const webfileIconUri = webview.asWebviewUri(webfileIconPath);
-
-        const tabelPermissonsIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'table_permissions.svg');
-        const tabelPermissonsIconUri = webview.asWebviewUri(tabelPermissonsIconPath);
+        const sendIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'send.svg');
+        const sendIconUri = webview.asWebviewUri(sendIconPath);
         
         const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'scripts', 'copilot.js');
         const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
@@ -101,8 +95,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             <div class="chat-container">
                 <div class="chat-messages" id="chat-messages"></div>
                 <div class="chat-input">
-                    <input type="text" id="chat-input" placeholder="Ask Copilot a question or type '/' for selecting a table" />
-                    <button id="send-button">Send</button>
+                    <input type="text" id="chat-input" placeholder="Ask Copilot a question or type '/' for tables" />
+                    <button id="send-button"></button>
                 </div>
             </div>
             <script>         
@@ -110,7 +104,21 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 const dequeue = [];
                 const chatMessages = document.getElementById('chat-messages');
                 const chatInput = document.getElementById('chat-input');
-                const sendButton = document.getElementById('send-button');
+                chatInput.addEventListener('focus', () => {
+                    chatInput.style.border = '1px solid blue';
+                });
+                chatInput.addEventListener('blur', () => {
+                    chatInput.style.border = 'none';
+                });
+
+                chatInput.style.background = 'rgb(60, 60, 60)';
+
+                const SendButton = document.getElementById('send-button');
+                SendButton.title = 'Send';
+                const SendIcon = document.createElement('img');
+                SendIcon.src = "${sendIconUri}";
+                SendIcon.alt = 'Send';
+                SendButton.appendChild(SendIcon);
             
                 function addToDequeue(element) {
                     if (dequeue.length >= 5) {
@@ -150,13 +158,24 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             
                         const CopyButton = document.createElement('button');
                         const CopyIcon = document.createElement('img');
-                        CopyIcon.src = "${insertIconUri}";
+                        CopyIcon.src = "${copyIconUri}";
                         CopyIcon.alt = 'Copy';
                         CopyButton.appendChild(CopyIcon);
                         CopyButton.addEventListener('click', () => {
                             copyCodeToClipboard(message);
                         });
                         CopyButton.title = 'Copy to clipboard';
+                        CopyButton.style.margin = '0';
+                        CopyButton.style.padding = '5px';
+                        CopyButton.style.border = '0';
+                        CopyButton.style.background = 'none';
+                        CopyButton.style.color = 'inherit';
+                        CopyButton.addEventListener('mouseenter', () => {
+                            CopyButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
+                        });
+                        CopyButton.addEventListener('mouseleave', () => {
+                            CopyButton.style.boxShadow = 'none';
+                        });
                         actionWrapper.appendChild(CopyButton);
             
                         const InsertButton = document.createElement('button');
@@ -168,17 +187,39 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                             insertCode(message);
                         });
                         InsertButton.title = 'Insert code into editor';
+                        InsertButton.style.margin = '0';
+                        InsertButton.style.padding = '5px';
+                        InsertButton.style.border = '0';
+                        InsertButton.style.background = 'none';
+                        InsertButton.style.color = 'inherit';
+                        InsertButton.addEventListener('mouseenter', () => {
+                            InsertButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
+                        });
+                        InsertButton.addEventListener('mouseleave', () => {
+                            InsertButton.style.boxShadow = 'none';
+                        });
                         actionWrapper.appendChild(InsertButton);
             
                         const CreateButton = document.createElement('button');
                         const CreateIcon = document.createElement('img');
-                        CreateIcon.src = "${insertIconUri}";
+                        CreateIcon.src = "${createIconUri}";
                         CreateIcon.alt = 'Create';
                         CreateButton.appendChild(CreateIcon);
                         CreateButton.addEventListener('click', () => {
                             console.log('Create Button Clicked');
                         });
                         CreateButton.title = 'Create a new record';
+                        CreateButton.style.margin = '0';
+                        CreateButton.style.padding = '5px';
+                        CreateButton.style.border = '0';
+                        CreateButton.style.background = 'none';
+                        CreateButton.style.color = 'inherit';
+                        CreateButton.addEventListener('mouseenter', () => {
+                            CreateButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
+                        });
+                        CreateButton.addEventListener('mouseleave', () => {
+                            CreateButton.style.boxShadow = 'none';
+                        });
                         actionWrapper.appendChild(CreateButton);
             
                         messageWrapper.appendChild(actionWrapper);
@@ -240,7 +281,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     vscode.postMessage({ type: 'createTablePermission', value: code });
                 }
             
-                sendButton.addEventListener('click', () => {
+                SendButton.addEventListener('click', () => {
                     if (chatInput.value.trim()) {
                         addMessage(chatInput.value, 'user-message');
                         sendMessageToApi(chatInput.value);
