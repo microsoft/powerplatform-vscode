@@ -7,6 +7,12 @@
     let webpageIconUri;
     let webfileIconUri;
     let tabelPermissonsIconUri;
+    let conversation = [
+        {
+           "role": "system",
+           "content": "You are a web developer well versed with css, html and javascript who is using the power pages platform which was formerly known as power portals. It mostly uses css, html, javascript & yaml for development.",
+        }
+    ];
 
     const vscode = acquireVsCodeApi();
     const dequeue = [];
