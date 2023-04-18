@@ -4,21 +4,6 @@
     let webfileIconUri;
     let tabelPermissonsIconUri;
 
-    // check these also see if this is the correct pattern
-    window.addEventListener('message', event => {
-        const message = event.data;
-        if (message.type === 'webpageIconUri') {
-            console.log('windowEvent: webpageIconUri = '+ message.value);
-            webpageIconUri = message.value;
-        } else if (message.type === 'webfileIconUri') {
-            console.log('windowEvent: webfileIconUri = '+ message.value);
-            webfileIconUri = message.value;
-        } else if (message.type === 'tabelPermissonsIconUri') {
-            console.log('windowEvent: tabelPermissonsIconUri = '+ message.value);
-            tabelPermissonsIconUri = message.value;
-        }
-    });
-
     const vscode = acquireVsCodeApi();
     const dequeue = [];
     const chatMessages = document.getElementById('chat-messages');

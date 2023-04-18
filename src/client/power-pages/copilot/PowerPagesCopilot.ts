@@ -64,6 +64,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     private _getHtmlForWebview(webview: vscode.Webview) {
 
+        const copyIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_copy.svg');
+        const copyIconUri = webview.asWebviewUri(copyIconPath);
+
+        const insertIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'insert.svg');
+        const insertIconUri = webview.asWebviewUri(insertIconPath);
+
+        const createIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'create.svg');
+        const createIconUri = webview.asWebviewUri(createIconPath);
+
         const webpageIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'web_pages.svg');
         const webpageIconUri = webview.asWebviewUri(webpageIconPath);
 
@@ -72,28 +81,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         const tabelPermissonsIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'table_permissions.svg');
         const tabelPermissonsIconUri = webview.asWebviewUri(tabelPermissonsIconPath);
-
-        // check these also see if this is the correct pattern
-        const message_webpage = {
-            type: 'webpageIconUri',
-            value: webpageIconUri
-        };
-
-        webview.postMessage(message_webpage);
-
-        const message_webfile = {
-            type: 'webpageIconUri',
-            value: webfileIconUri
-        };
-
-        webview.postMessage(message_webfile);
-
-        const message_tablepermission = {
-            type: 'webpageIconUri',
-            value: tabelPermissonsIconUri
-        };
-
-        webview.postMessage(message_tablepermission);
         
         const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'scripts', 'copilot.js');
         const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
@@ -118,7 +105,158 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     <button id="send-button">Send</button>
                 </div>
             </div>
-            <script src = "${copilotScriptUri}"> </script>
+            <script>         
+                const vscode = acquireVsCodeApi();
+                const dequeue = [];
+                const chatMessages = document.getElementById('chat-messages');
+                const chatInput = document.getElementById('chat-input');
+                const sendButton = document.getElementById('send-button');
+            
+                function addToDequeue(element) {
+                    if (dequeue.length >= 5) {
+                        dequeue.shift(); // Remove the first element from the dequeue
+                    }
+                    dequeue.push(element); // Add the new element to the end of the dequeue
+                }
+            
+                function addMessage(message, className) {
+                    const messageWrapper = document.createElement('div');
+                    messageWrapper.classList.add('message-wrapper');
+            
+                    const messageElement = document.createElement('div');
+                    if (className === 'user-message') {
+                        addToDequeue(message);
+                        const makerElement = document.createElement('div');
+                        makerElement.textContent = 'Maker:';
+                        messageElement.appendChild(makerElement);
+                        makerElement.appendChild(document.createElement('br'));
+                    }
+                    else if (className === 'api-response') {
+                        const makerElement = document.createElement('div');
+                        makerElement.textContent = 'PowerPages Copilot:';
+                        messageElement.appendChild(makerElement);
+                        makerElement.appendChild(document.createElement('br'));
+                    }
+                    const messageText = document.createElement('div');
+                    messageText.textContent = message;
+                    messageElement.appendChild(messageText);
+                    messageElement.classList.add('message', className);
+            
+                    messageWrapper.appendChild(messageElement);
+            
+                    if (className === 'api-response') {
+                        const actionWrapper = document.createElement('div');
+                        actionWrapper.classList.add('action-wrapper');
+            
+                        const CopyButton = document.createElement('button');
+                        const CopyIcon = document.createElement('img');
+                        CopyIcon.src = "${insertIconUri}";
+                        CopyIcon.alt = 'Copy';
+                        CopyButton.appendChild(CopyIcon);
+                        CopyButton.addEventListener('click', () => {
+                            copyCodeToClipboard(message);
+                        });
+                        CopyButton.title = 'Copy to clipboard';
+                        actionWrapper.appendChild(CopyButton);
+            
+                        const InsertButton = document.createElement('button');
+                        const InsertIcon = document.createElement('img');
+                        InsertIcon.src = "${insertIconUri}";
+                        InsertIcon.alt = 'Insert';
+                        InsertButton.appendChild(InsertIcon);
+                        InsertButton.addEventListener('click', () => {
+                            insertCode(message);
+                        });
+                        InsertButton.title = 'Insert code into editor';
+                        actionWrapper.appendChild(InsertButton);
+            
+                        const CreateButton = document.createElement('button');
+                        const CreateIcon = document.createElement('img');
+                        CreateIcon.src = "${insertIconUri}";
+                        CreateIcon.alt = 'Create';
+                        CreateButton.appendChild(CreateIcon);
+                        CreateButton.addEventListener('click', () => {
+                            console.log('Create Button Clicked');
+                        });
+                        CreateButton.title = 'Create a new record';
+                        actionWrapper.appendChild(CreateButton);
+            
+                        messageWrapper.appendChild(actionWrapper);
+                    }
+            
+                    chatMessages.appendChild(messageWrapper);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            
+                async function sendMessageToApi(message) {
+                    const engineeredPrompt = generateEngineeredPrompt(message);
+                    // const response = await fetch('https://openAI-endpoint', {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json'
+                    //     },
+                    //     body: JSON.stringify({ engineeredPrompt })
+                    // });
+            
+                    // if (response.ok) {
+                    //     const jsonResponse = await response.json();
+                    //     // Assuming the API response contains a 'responseMessage' field
+                    //     addMessage(jsonResponse.responseMessage, 'api-response');
+                    // } else {
+                    //     // Handle the API error, e.g., display an error message
+                    // }
+                    console.log('engineeredPrompt : ' + engineeredPrompt);
+                    addMessage('This is a dummy response to your message : ' + message, 'api-response');
+                }
+            
+                function generateEngineeredPrompt(userPrompt) {
+                    let prompts = '';
+                    for (let i = 0; i < dequeue.length; i++) {
+                        const element = dequeue[i];
+                        prompts += (i + 1) + '.' + element + ' '; // fix this to the required format for chat
+                    }
+            
+                    console.log(prompts);
+                    return prompts;
+                }
+            
+                function insertCode(code) {
+                    vscode.postMessage({ type: 'insertCode', value: code });
+                }
+            
+                function copyCodeToClipboard(code) {
+                    vscode.postMessage({ type: 'copyCodeToClipboard', value: code });
+                }
+            
+                function createWebpage(code) {
+                    vscode.postMessage({ type: 'createWebpage', value: code });
+                }
+            
+                function createWebfile(code) {
+                    vscode.postMessage({ type: 'createWebfile', value: code });
+                }
+            
+                function createTablePermission(code) {
+                    vscode.postMessage({ type: 'createTablePermission', value: code });
+                }
+            
+                sendButton.addEventListener('click', () => {
+                    if (chatInput.value.trim()) {
+                        addMessage(chatInput.value, 'user-message');
+                        sendMessageToApi(chatInput.value);
+                        chatInput.value = '';
+                        chatInput.focus();
+                    }
+                });
+            
+                chatInput.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' && chatInput.value.trim()) {
+                        addMessage(chatInput.value, 'user-message');
+                        sendMessageToApi(chatInput.value);
+                        chatInput.value = '';
+                    }
+                });
+            </script>
         </body>
         </html>`;
     }
