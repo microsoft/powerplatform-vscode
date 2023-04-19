@@ -9,17 +9,18 @@ export class MyWebview {
     private _panel!: vscode.WebviewPanel;
     private _extensionUri: vscode.Uri;
 
-    constructor(extensionUri: vscode.Uri) {
-        this._extensionUri = extensionUri;
+    constructor() {
+        this._extensionUri = { path: "" } as vscode.Uri;
     }
 
     public get panel() {
         return this._panel;
     }
 
-    public async show() {
-        if (this.panel) {
-            this.panel.reveal(vscode.ViewColumn.One);
+    public setMyWebViews(extensionUri: vscode.Uri) {
+        this._extensionUri = extensionUri;
+        if (this._panel) {
+            this._panel.reveal(vscode.ViewColumn.One);
         } else {
             this._panel = vscode.window.createWebviewPanel(
                 "myWebview",

@@ -27,7 +27,7 @@ import { loadContainer } from "./utilities/copresenceUtil.ts";
         console.log("Sending message back");
 
         // Send a message to the extension
-        vscode.postMessage({
+        await vscode.postMessage({
             containerId: message.containerId,
             lineNumber: message.lineNumber,
             columnNumber: message.lineNumber,

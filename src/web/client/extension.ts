@@ -22,7 +22,6 @@ import { convertStringtoBase64 } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
-import { MyWebview } from "./webViews/MyWebView";
 import { IContainerData } from "./utilities/copresenceUtil";
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -52,6 +51,7 @@ export function activate(context: vscode.ExtensionContext): void {
             { isCaseSensitive: true }
         )
     );
+    WebExtensionContext.myWebView.setMyWebViews(context.extensionUri);
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -183,23 +183,22 @@ export function activate(context: vscode.ExtensionContext): void {
     processWillSaveDocument(context);
     console.log("vscode extension activate processWillSaveDocument success");
 
-    // Create a webview panel
-    const view = new MyWebview(context.extensionUri);
-    view.show();
-
-    processOpenActiveTextEditor(context, view.panel);
+    processOpenActiveTextEditor(context);
     console.log(
         "vscode extension activate processOpenActiveTextEditor success"
+    );
+
+    WebExtensionContext.myWebView.panel.webview.onDidReceiveMessage(
+        (message) => {
+            console.log(`Received hello from webview: ${message}`);
+        }
     );
 
     showWalkthrough(context, WebExtensionContext.telemetry);
     console.log("vscode extension activate function end");
 }
 
-export function processOpenActiveTextEditor(
-    context: vscode.ExtensionContext,
-    panel: vscode.WebviewPanel
-) {
+export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
     console.log("Inside processOpenActiveTextEditor");
     try {
         context.subscriptions.push(
@@ -216,25 +215,14 @@ export function processOpenActiveTextEditor(
                             activeEditor.document.uri.fsPath
                         )?.entityId as string;
                     if (entityId) {
-                        panel.webview.onDidReceiveMessage((message) => {
-                            if (message.type === "hello") {
-                                console.log(
-                                    `Received hello from webview: ${message.payload}`
-                                );
-                                // Send a greeting back to the webview
-                                panel.webview.postMessage({
-                                    type: "greeting",
-                                    payload: "Hello, webview!",
-                                });
-                            }
-                        });
-
                         // send data to webview
-                        panel.webview.postMessage({
-                            containerId: WebExtensionContext.containerId,
-                            lineNumber: line,
-                            columnNumber: column,
-                        } as IContainerData);
+                        await WebExtensionContext.myWebView.panel.webview.postMessage(
+                            {
+                                containerId: WebExtensionContext.containerId,
+                                lineNumber: line,
+                                columnNumber: column,
+                            } as IContainerData
+                        );
 
                         console.log(`Line: ${line}`);
                         console.log(`Column: ${column}`);

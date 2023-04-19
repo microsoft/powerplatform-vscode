@@ -28,6 +28,7 @@ import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
+import { MyWebview } from "./webViews/MyWebView";
 //import TinyliciousClient from "@fluidframework/tinylicious-client";
 
 export interface IWebExtensionContext {
@@ -62,7 +63,7 @@ export interface IWebExtensionContext {
     telemetry: WebExtensionTelemetry;
     npsEligibility: boolean;
     userId: string;
-    //tinyClient: TinyliciousClient;
+    myWebView: MyWebview;
     containerId: string;
 }
 
@@ -88,7 +89,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _npsEligibility: boolean;
     private _userId: string;
     private _formsProEligibilityId: string;
-    //private _tinyClient: TinyliciousClient;
+    private _myWebView: MyWebview;
     private _containerId: string;
 
     public get schemaDataSourcePropertiesMap() {
@@ -155,16 +156,20 @@ class WebExtensionContext implements IWebExtensionContext {
         return this._formsProEligibilityId;
     }
 
-    // public get tinyClient() {
-    //     return this._tinyClient;
-    // }
-
     public get containerId() {
         return this._containerId;
     }
 
     public set containerId(id: string) {
         this._containerId = id;
+    }
+
+    public get myWebView() {
+        return this._myWebView;
+    }
+
+    public set myWebView(webView: MyWebview) {
+        this._myWebView = webView;
     }
 
     constructor() {
@@ -189,7 +194,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._npsEligibility = false;
         this._userId = "";
         this._formsProEligibilityId = "";
-        //this._tinyClient = new TinyliciousClient();
+        this._myWebView = new MyWebview();
         this._containerId = "";
     }
 
