@@ -83,11 +83,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         const sendIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'send.svg');
         const sendIconUri = webview.asWebviewUri(sendIconPath);
         
-        const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'scripts', 'copilot.js');
-        const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
+        // const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'scripts', 'copilot.js');
+        // const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
 
         const copilotStylePath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'styles', 'copilot.css');
         const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
+
+        const apiKey = "YOUR_API_KEY";
 
         return `
         <!DOCTYPE html>
@@ -111,6 +113,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 const dequeue = [];
                 const chatMessages = document.getElementById('chat-messages');
                 const chatInput = document.getElementById('chat-input');
+                let conversation = [
+                    {
+                       "role": "system",
+                       "content": "You are a web developer well versed with css, html and javascript who is using the power pages platform which was formerly known as power portals. It mostly uses css, html, javascript & yaml for development.",
+                    }
+                ];
 
                 const autocompletePanel = document.createElement('div');
                 autocompletePanel.classList.add('autocomplete-panel');
@@ -240,26 +248,39 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     chatMessages.appendChild(messageWrapper);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
-            
                 async function sendMessageToApi(message) {
+                    
+                    const endpointUrl = "https://api.openai.com/v1/chat/completions";
                     const engineeredPrompt = generateEngineeredPrompt(message);
-                    // const response = await fetch('https://openAI-endpoint', {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json'
-                    //     },
-                    //     body: JSON.stringify({ engineeredPrompt })
-                    // });
+                    const requestBody = {
+                        model: "gpt-3.5-turbo",
+                        messages: conversation,
+                        max_tokens: 500,
+                        temperature: 0.5,
+                    };
+                    const response = await fetch(endpointUrl, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: "Bearer ${apiKey}",
+                        },
+                        body: JSON.stringify(requestBody),
+                    });
             
-                    // if (response.ok) {
-                    //     const jsonResponse = await response.json();
-                    //     // Assuming the API response contains a 'responseMessage' field
-                    //     addMessage(jsonResponse.responseMessage, 'api-response');
-                    // } else {
-                    //     // Handle the API error, e.g., display an error message
-                    // }
-                    console.log('engineeredPrompt : ' + engineeredPrompt);
-                    addMessage('This is a dummy response to your message : ' + message, 'api-response');
+                    if (response.ok) {
+                        console.log("API call successful");
+                        const jsonResponse = await response.json();
+                        const responseMessage =
+                            jsonResponse.choices[0].message.content.trim();
+                        responseMessage.replace(/(\r\n|\n|\r)/gm, "");
+                        conversation.push({ "role": "assistant", "content": responseMessage });
+                        addMessage(responseMessage, "api-response");
+                    } else {
+                        console.log("API call failed");
+                        // Handle the API error, e.g., display an error message
+                    }
+            
+                    console.log("engineeredPrompt : " + engineeredPrompt);
                 }
             
                 function generateEngineeredPrompt(userPrompt) {
@@ -295,6 +316,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             
                 SendButton.addEventListener('click', () => {
                     if (chatInput.value.trim()) {
+                        conversation.push({ "role": "user", "content": chatInput.value });
                         addMessage(chatInput.value, 'user-message');
                         sendMessageToApi(chatInput.value);
                         chatInput.value = '';
@@ -304,6 +326,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             
                 chatInput.addEventListener('keydown', (event) => {
                     if (event.key === 'Enter' && chatInput.value.trim()) {
+                        conversation.push({ "role": "user", "content": chatInput.value });
                         addMessage(chatInput.value, 'user-message');
                         sendMessageToApi(chatInput.value);
                         chatInput.value = '';
