@@ -70,6 +70,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         const insertIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'row_insert.svg');
         const insertIconUri = webview.asWebviewUri(insertIconPath);
 
+        const previewIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_eye_open.svg');
+        const previewIconUri = webview.asWebviewUri(previewIconPath);
+
+        const previewEndIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_eye_closed.svg');
+        const previewEndIconUri = webview.asWebviewUri(previewEndIconPath);
+
         const createIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_add.svg');
         const createIconUri = webview.asWebviewUri(createIconPath);
 
@@ -204,6 +210,34 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                             InsertButton.style.boxShadow = 'none';
                         });
                         actionWrapper.appendChild(InsertButton);
+                        const PreviewButton = document.createElement('button');
+                        const PreviewIcon = document.createElement('img');
+                        let isPreviewing = false;
+                        PreviewIcon.src = "${previewIconUri}";
+                        PreviewIcon.alt = 'Preview';
+                        PreviewButton.appendChild(PreviewIcon);
+                        PreviewButton.addEventListener('click', () => {
+                            isPreviewing = !isPreviewing;
+                            if (isPreviewing) {
+                                PreviewIcon.src = "${previewEndIconUri}";
+                            } else {
+                                PreviewIcon.src = "${previewIconUri}";
+                            }
+                            previewCode(message);
+                        });
+                        PreviewButton.title = 'Preview';
+                        PreviewButton.style.margin = '0';
+                        PreviewButton.style.padding = '5px';
+                        PreviewButton.style.border = '0';
+                        PreviewButton.style.background = 'none';
+                        PreviewButton.style.color = 'inherit';
+                        PreviewButton.addEventListener('mouseenter', () => {
+                            PreviewButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
+                        });
+                        PreviewButton.addEventListener('mouseleave', () => {
+                            PreviewButton.style.boxShadow = 'none';
+                        });
+                        actionWrapper.appendChild(PreviewButton);
             
                         const CreateButton = document.createElement('button');
                         const CreateIcon = document.createElement('img');
@@ -318,7 +352,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 });
 
                 function showAutocompletePanel() {
-                    autocompletePanel.innerHTML = \`<ul><li><a href="#">/webpage</a></li><li><a href="#">/webfile</a></li><li><a href="#">/tablepermission</a></li></ul>\`;
+                    autocompletePanel.innerHTML = \`<ul><li><a href="#">/webpage</a></li><li><a href="#">/webfile</a></li><li><a href="#">/tablepermission</a></li><li><a href="#">/webTemplate</a></li><li><a href="#">/pageTemplate</a></li><li><a href="#">/contentSnippet</a></li><li><a href="#">/liquid</a></li><li><a href="#">/security scan</a></li></ul>\`;
                     autocompletePanel.style.display = 'block';
                     autocompletePanel.style.position = 'absolute';
                     autocompletePanel.style.top = chatInput.offsetTop - autocompletePanel.offsetHeight + 'px';
