@@ -1,19 +1,23 @@
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
 import * as vscode from "vscode";
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
-
-    public static readonly viewType = 'powerpages.copilot';
+    public static readonly viewType = "powerpages.copilot";
 
     private _view?: vscode.WebviewView;
 
-    constructor(
-        private readonly _extensionUri: vscode.Uri,
-    ) { }
+    constructor(private readonly _extensionUri: vscode.Uri) {}
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         context: vscode.WebviewViewResolveContext,
-        _token: vscode.CancellationToken,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _token: vscode.CancellationToken
     ) {
         this._view = webviewView;
 
@@ -21,71 +25,140 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             // Allow scripts in the webview
             enableScripts: true,
 
-            localResourceRoots: [
-                this._extensionUri
-            ]
+            localResourceRoots: [this._extensionUri],
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage(data => {
-        	switch (data.type) {
-        		case 'insertCode':
-        			{
-                        console.log('code ready to be inserted ' + data.value);
-        				vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`${data.value}`));
-        				break;
-        			}
-                case 'copyCodeToClipboard':
-                    {
-                        console.log('code ready to be copied to clipboard ' + data.value);
-                        vscode.env.clipboard.writeText(data.value);
-                        break;
-                    }
-                case 'createWebpage':
-                    {
-                        console.log('create webpage with code = ' + data.value);
-                        break;
-                    }
-                case 'createWebfile':
-                    {
-                        console.log('create webfile with image = ' + data.value);
-                        break;
-                    }
-                case 'createTablePermission':
-                    {
-                        console.log('create table permission with code = ' + data.value);
-                        break;
-                    }
-        	}
+        webviewView.webview.onDidReceiveMessage((data) => {
+            switch (data.type) {
+                case "insertCode": {
+                    console.log("code ready to be inserted " + data.value);
+                    vscode.window.activeTextEditor?.insertSnippet(
+                        new vscode.SnippetString(`${data.value}`)
+                    );
+                    break;
+                }
+                case "copyCodeToClipboard": {
+                    console.log(
+                        "code ready to be copied to clipboard " + data.value
+                    );
+                    vscode.env.clipboard.writeText(data.value);
+                    break;
+                }
+                case "createWebpage": {
+                    console.log("create webpage with code = " + data.value);
+                    break;
+                }
+                case "createWebfile": {
+                    console.log("create webfile with image = " + data.value);
+                    break;
+                }
+                case "createTablePermission": {
+                    console.log(
+                        "create table permission with code = " + data.value
+                    );
+                    break;
+                }
+            }
         });
     }
 
-
     private _getHtmlForWebview(webview: vscode.Webview) {
-
-        const copyIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_copy.svg');
+        const copyIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "codicon_copy.svg"
+        );
         const copyIconUri = webview.asWebviewUri(copyIconPath);
 
-        const insertIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'row_insert.svg');
+        const insertIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "row_insert.svg"
+        );
         const insertIconUri = webview.asWebviewUri(insertIconPath);
 
-        const previewIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_eye_open.svg');
-        const previewIconUri = webview.asWebviewUri(previewIconPath);
+         const previewStartIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "codicon_eye_open.svg"
+         );
+         const previewStartIconUri = webview.asWebviewUri(previewStartIconPath);
 
-        const previewEndIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_eye_closed.svg');
-        const previewEndIconUri = webview.asWebviewUri(previewEndIconPath);
+         const previewEndIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "codicon_eye_closed.svg"
+         );
+         const previewEndIconUri = webview.asWebviewUri(previewEndIconPath); 
 
-        const createIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_add.svg');
+        const createIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "codicon_add.svg"
+        );
         const createIconUri = webview.asWebviewUri(createIconPath);
 
-        const sendIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'send.svg');
+        const sendIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "send.svg"
+        );
         const sendIconUri = webview.asWebviewUri(sendIconPath);
-        
-        const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'scripts', 'copilot.js');
-        const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
 
-        const copilotStylePath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'styles', 'copilot.css');
+        // const copilotScriptPath = vscode.Uri.joinPath(
+        //     this._extensionUri,
+        //     "src",
+        //     "client",
+        //     "power-pages",
+        //     "copilot",
+        //     "assets",
+        //     "scripts",
+        //     "copilot.js"
+        // );
+        //const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
+
+        const copilotStylePath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "styles",
+            "copilot.css"
+        );
         const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
 
         return `
@@ -213,7 +286,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         const PreviewButton = document.createElement('button');
                         const PreviewIcon = document.createElement('img');
                         let isPreviewing = false;
-                        PreviewIcon.src = "${previewIconUri}";
+                        PreviewIcon.src = "${previewStartIconUri}";
                         PreviewIcon.alt = 'Preview';
                         PreviewButton.appendChild(PreviewIcon);
                         PreviewButton.addEventListener('click', () => {
@@ -221,7 +294,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                             if (isPreviewing) {
                                 PreviewIcon.src = "${previewEndIconUri}";
                             } else {
-                                PreviewIcon.src = "${previewIconUri}";
+                                PreviewIcon.src = "${previewStartIconUri}";
                             }
                             previewCode(message);
                         });
