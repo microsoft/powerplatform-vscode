@@ -227,6 +227,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         CreateButton.appendChild(CreateIcon);
                         CreateButton.addEventListener('click', () => {
                             console.log('Create Button Clicked');
+                            createWebpage(message);
                         });
                         CreateButton.title = 'Create a new record';
                         CreateButton.style.margin = '0';
@@ -272,7 +273,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         const jsonResponse = await response.json();
                         const responseMessage =
                             jsonResponse.choices[0].message.content.trim();
-                        responseMessage.replace(/(\r\n|\n|\r)/gm, "");
+                        
                         conversation.push({ "role": "assistant", "content": responseMessage });
                         addMessage(responseMessage, "api-response");
                     } else {
