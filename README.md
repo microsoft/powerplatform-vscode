@@ -12,7 +12,8 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Release Notes
 1.1.22:
- - pac CLI 1.22.1 (Mar refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - pac CLI 1.22.2 (Mar refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - Improved Paportal manifest generation by maintaining a consistent order
 
 1.1.19:
  - pac CLI 1.21.13 (Feb refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
