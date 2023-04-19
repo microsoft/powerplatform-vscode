@@ -7,17 +7,14 @@ import * as vscode from "vscode";
 import { createAiWebpage } from "./Utils";
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
-
-    public static readonly viewType = 'powerpages.copilot';
+    public static readonly viewType = "powerpages.copilot";
 
     private _view?: vscode.WebviewView;
 
-    constructor(
-        private readonly _extensionUri: vscode.Uri,
-    ) { }
+    constructor(private readonly _extensionUri: vscode.Uri) {}
 
     public resolveWebviewView(
-        webviewView: vscode.WebviewView,
+        webviewView: vscode.WebviewView
         //_context: vscode.WebviewViewResolveContext,
         //_token: vscode.CancellationToken,
     ) {
@@ -27,66 +24,108 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             // Allow scripts in the webview
             enableScripts: true,
 
-            localResourceRoots: [
-                this._extensionUri
-            ]
+            localResourceRoots: [this._extensionUri],
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage(data => {
+        webviewView.webview.onDidReceiveMessage((data) => {
             switch (data.type) {
-                case 'insertCode':
-                    {
-                        console.log('code ready to be inserted ' + data.value);
-                        vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`${data.value}`));
-                        break;
-                    }
-                case 'copyCodeToClipboard':
-                    {
-                        console.log('code ready to be copied to clipboard ' + data.value);
-                        vscode.env.clipboard.writeText(data.value);
-                        break;
-                    }
-                case 'createWebpage':
-                    {
-                        console.log('create webpage with code = ' + data.value);
-                        createAiWebpage(data.value)
-                        break;
-                    }
-                case 'createWebfile':
-                    {
-                        console.log('create webfile with image = ' + data.value);
-                        break;
-                    }
-                case 'createTablePermission':
-                    {
-                        console.log('create table permission with code = ' + data.value);
-                        break;
-                    }
+                case "insertCode": {
+                    console.log("code ready to be inserted " + data.value);
+                    vscode.window.activeTextEditor?.insertSnippet(
+                        new vscode.SnippetString(`${data.value}`)
+                    );
+                    break;
+                }
+                case "copyCodeToClipboard": {
+                    console.log(
+                        "code ready to be copied to clipboard " + data.value
+                    );
+                    vscode.env.clipboard.writeText(data.value);
+                    break;
+                }
+                case "createWebpage": {
+                    console.log("create webpage with code = " + data.value);
+                    createAiWebpage(data.value);
+                    break;
+                }
+                case "createWebfile": {
+                    console.log("create webfile with image = " + data.value);
+                    break;
+                }
+                case "createTablePermission": {
+                    console.log(
+                        "create table permission with code = " + data.value
+                    );
+                    break;
+                }
             }
         });
     }
 
-
     private _getHtmlForWebview(webview: vscode.Webview) {
-
-        const copyIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_copy.svg');
+        const copyIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "codicon_copy.svg"
+        );
         const copyIconUri = webview.asWebviewUri(copyIconPath);
 
-        const insertIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'row_insert.svg');
+        const insertIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "row_insert.svg"
+        );
         const insertIconUri = webview.asWebviewUri(insertIconPath);
 
-        const createIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'codicon_add.svg');
+        const createIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "codicon_add.svg"
+        );
         const createIconUri = webview.asWebviewUri(createIconPath);
 
-        const sendIconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'icons', 'send.svg');
+        const sendIconPath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "icons",
+            "send.svg"
+        );
         const sendIconUri = webview.asWebviewUri(sendIconPath);
-        
+
         // const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'scripts', 'copilot.js');
         // const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
 
-        const copilotStylePath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'styles', 'copilot.css');
+        const copilotStylePath = vscode.Uri.joinPath(
+            this._extensionUri,
+            "src",
+            "client",
+            "power-pages",
+            "copilot",
+            "assets",
+            "styles",
+            "copilot.css"
+        );
         const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
 
         const apiKey = "YOUR_API_KEY";
@@ -113,7 +152,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 const dequeue = [];
                 const chatMessages = document.getElementById('chat-messages');
                 const chatInput = document.getElementById('chat-input');
-                let conversation = [
+                const conversation = [
                     {
                        "role": "system",
                        "content": "You are a web developer well versed with css, html and javascript who is using the power pages platform which was formerly known as power portals. It mostly uses css, html, javascript & yaml for development.",
@@ -248,8 +287,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     chatMessages.appendChild(messageWrapper);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
-                async function sendMessageToApi(message) {
-                    
+                
+                async function sendMessageToApi(message) {                    
                     const endpointUrl = "https://api.openai.com/v1/chat/completions";
                     const engineeredPrompt = generateEngineeredPrompt(message);
                     const requestBody = {
@@ -272,7 +311,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         const jsonResponse = await response.json();
                         const responseMessage =
                             jsonResponse.choices[0].message.content.trim();
-                        responseMessage.replace(/(\r\n|\n|\r)/gm, "");
                         conversation.push({ "role": "assistant", "content": responseMessage });
                         addMessage(responseMessage, "api-response");
                     } else {
@@ -281,6 +319,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     }
             
                     console.log("engineeredPrompt : " + engineeredPrompt);
+                    	
+                    addMessage('This is a dummy response to your message : ' + message, 'api-response');
                 }
             
                 function generateEngineeredPrompt(userPrompt) {
