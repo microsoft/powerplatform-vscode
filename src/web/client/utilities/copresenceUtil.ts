@@ -6,31 +6,22 @@
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 
-export const LINE_NUMBER_KEY = "line-number-key";
-export const COLUMN_NUMBER_KEY = "column-number-key";
+export const CONTAINER_ID = "containerId";
+export const LINE_NUMBER_KEY = "lineNumber";
+export const COLUMN_NUMBER_KEY = "columnNumber";
 
-// import {
-//     TinyliciousClient,
-//     TinyliciousConnectionConfig,
-// } from "@fluidframework/tinylicious-client";
-
-//import { SharedMap } from "fluid-framework";
+export interface IContainerData {
+    containerId: string;
+    lineNumber: number;
+    columnNumber: number;
+}
 
 export async function loadContainer(id: string, line: number, column: number) {
     console.log("Inside loadContainer with ", id);
     console.log(`Line: ${line}`);
     console.log(`Column: ${column}`);
+    console.log(`Column: ${column}`);
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { SharedMap } = require("fluid-framework");
-
-    const containerSchema = {
-        initialObjects: { position: SharedMap },
-    };
-
-    const { TinyliciousClient } =
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        require("@fluidframework/tinylicious-client");
     const config = {
         connection: { port: 7070, domain: "http://localhost" },
     };
@@ -39,7 +30,24 @@ export async function loadContainer(id: string, line: number, column: number) {
         connection: config,
     };
 
+    console.log("clientProps: ", clientProps);
+
+    const { TinyliciousClient } =
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require("@fluidframework/tinylicious-client");
+
     const tinyClient = new TinyliciousClient(clientProps);
+
+    console.log("tiny client created");
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { SharedMap } = require("fluid-framework");
+
+    const containerSchema = {
+        initialObjects: { position: SharedMap },
+    };
+
+    console.log("shared map loaded");
 
     try {
         const { container } = await tinyClient.getContainer(

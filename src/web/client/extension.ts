@@ -22,8 +22,8 @@ import { convertStringtoBase64 } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
-//import { MyWebview } from "./webViews/MyWebView";
-import { loadContainer } from "./utilities/copresenceUtil";
+import { MyWebview } from "./webViews/MyWebView";
+import { IContainerData } from "./utilities/copresenceUtil";
 
 export function activate(context: vscode.ExtensionContext): void {
     console.log("vscode extension activate function start");
@@ -184,10 +184,10 @@ export function activate(context: vscode.ExtensionContext): void {
     console.log("vscode extension activate processWillSaveDocument success");
 
     // Create a webview panel
-    // const view = new MyWebview(context.extensionUri);
-    // view.show();
+    const view = new MyWebview(context.extensionUri);
+    view.show();
 
-    processOpenActiveTextEditor(context);
+    processOpenActiveTextEditor(context, view.panel);
     console.log(
         "vscode extension activate processOpenActiveTextEditor success"
     );
@@ -196,7 +196,10 @@ export function activate(context: vscode.ExtensionContext): void {
     console.log("vscode extension activate function end");
 }
 
-export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
+export function processOpenActiveTextEditor(
+    context: vscode.ExtensionContext,
+    panel: vscode.WebviewPanel
+) {
     console.log("Inside processOpenActiveTextEditor");
     try {
         context.subscriptions.push(
@@ -213,7 +216,26 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                             activeEditor.document.uri.fsPath
                         )?.entityId as string;
                     if (entityId) {
-                        await loadContainer(entityId, line, column);
+                        panel.webview.onDidReceiveMessage((message) => {
+                            if (message.type === "hello") {
+                                console.log(
+                                    `Received hello from webview: ${message.payload}`
+                                );
+                                // Send a greeting back to the webview
+                                panel.webview.postMessage({
+                                    type: "greeting",
+                                    payload: "Hello, webview!",
+                                });
+                            }
+                        });
+
+                        // send data to webview
+                        panel.webview.postMessage({
+                            containerId: WebExtensionContext.containerId,
+                            lineNumber: line,
+                            columnNumber: column,
+                        } as IContainerData);
+
                         console.log(`Line: ${line}`);
                         console.log(`Column: ${column}`);
                     }
