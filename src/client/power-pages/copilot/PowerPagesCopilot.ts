@@ -3,11 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
 import * as vscode from "vscode";
+import { createAiWebpage } from "./Utils";
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     public static readonly viewType = "powerpages.copilot";
-
     private _view?: vscode.WebviewView;
 
     constructor(private readonly _extensionUri: vscode.Uri) {}
@@ -48,6 +53,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 }
                 case "createWebpage": {
                     console.log("create webpage with code = " + data.value);
+                    createAiWebpage(data.value);
                     break;
                 }
                 case "createWebfile": {
@@ -111,7 +117,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             "icons",
             "codicon_eye_closed.svg"
          );
-         const previewEndIconUri = webview.asWebviewUri(previewEndIconPath); 
+         const previewEndIconUri = webview.asWebviewUri(previewEndIconPath);
 
         const createIconPath = vscode.Uri.joinPath(
             this._extensionUri,
@@ -137,17 +143,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         );
         const sendIconUri = webview.asWebviewUri(sendIconPath);
 
-        // const copilotScriptPath = vscode.Uri.joinPath(
-        //     this._extensionUri,
-        //     "src",
-        //     "client",
-        //     "power-pages",
-        //     "copilot",
-        //     "assets",
-        //     "scripts",
-        //     "copilot.js"
-        // );
-        //const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
+        // const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'client', 'power-pages', 'copilot', 'assets', 'scripts', 'copilot.js');
+        // const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
 
         const copilotStylePath = vscode.Uri.joinPath(
             this._extensionUri,
@@ -160,6 +157,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             "copilot.css"
         );
         const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
+
+        const apiKey = "YOUR_API_KEY";
 
         return `
         <!DOCTYPE html>
@@ -178,11 +177,17 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     <button id="send-button"></button>
                 </div>
             </div>
-            <script>         
+            <script>
                 const vscode = acquireVsCodeApi();
                 const dequeue = [];
                 const chatMessages = document.getElementById('chat-messages');
                 const chatInput = document.getElementById('chat-input');
+                const conversation = [
+                    {
+                       "role": "system",
+                       "content": "You are a web developer well versed with css, html and javascript who is using the power pages platform which was formerly known as power portals. It mostly uses css, html, javascript & yaml for development.",
+                    }
+                ];
 
                 const autocompletePanel = document.createElement('div');
                 autocompletePanel.classList.add('autocomplete-panel');
@@ -203,18 +208,18 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 SendIcon.src = "${sendIconUri}";
                 SendIcon.alt = 'Send';
                 SendButton.appendChild(SendIcon);
-            
+
                 function addToDequeue(element) {
                     if (dequeue.length >= 5) {
                         dequeue.shift(); // Remove the first element from the dequeue
                     }
                     dequeue.push(element); // Add the new element to the end of the dequeue
                 }
-            
+
                 function addMessage(message, className) {
                     const messageWrapper = document.createElement('div');
                     messageWrapper.classList.add('message-wrapper');
-            
+
                     const messageElement = document.createElement('div');
                     if (className === 'user-message') {
                         addToDequeue(message);
@@ -233,13 +238,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     messageText.textContent = message;
                     messageElement.appendChild(messageText);
                     messageElement.classList.add('message', className);
-            
+
                     messageWrapper.appendChild(messageElement);
-            
+
                     if (className === 'api-response') {
                         const actionWrapper = document.createElement('div');
                         actionWrapper.classList.add('action-wrapper');
-            
+
                         const CopyButton = document.createElement('button');
                         const CopyIcon = document.createElement('img');
                         CopyIcon.src = "${copyIconUri}";
@@ -261,7 +266,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                             CopyButton.style.boxShadow = 'none';
                         });
                         actionWrapper.appendChild(CopyButton);
-            
+
                         const InsertButton = document.createElement('button');
                         const InsertIcon = document.createElement('img');
                         InsertIcon.src = "${insertIconUri}";
@@ -311,7 +316,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                             PreviewButton.style.boxShadow = 'none';
                         });
                         actionWrapper.appendChild(PreviewButton);
-            
+
                         const CreateButton = document.createElement('button');
                         const CreateIcon = document.createElement('img');
                         CreateIcon.src = "${createIconUri}";
@@ -319,6 +324,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         CreateButton.appendChild(CreateIcon);
                         CreateButton.addEventListener('click', () => {
                             console.log('Create Button Clicked');
+                            createWebpage(message);
                         });
                         CreateButton.title = 'Create a new record';
                         CreateButton.style.margin = '0';
@@ -333,77 +339,93 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                             CreateButton.style.boxShadow = 'none';
                         });
                         actionWrapper.appendChild(CreateButton);
-            
+
                         messageWrapper.appendChild(actionWrapper);
                     }
-            
+
                     chatMessages.appendChild(messageWrapper);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
-            
+
                 async function sendMessageToApi(message) {
+                    const endpointUrl = "https://api.openai.com/v1/chat/completions";
                     const engineeredPrompt = generateEngineeredPrompt(message);
-                    // const response = await fetch('https://openAI-endpoint', {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json'
-                    //     },
-                    //     body: JSON.stringify({ engineeredPrompt })
-                    // });
-            
-                    // if (response.ok) {
-                    //     const jsonResponse = await response.json();
-                    //     // Assuming the API response contains a 'responseMessage' field
-                    //     addMessage(jsonResponse.responseMessage, 'api-response');
-                    // } else {
-                    //     // Handle the API error, e.g., display an error message
-                    // }
-                    console.log('engineeredPrompt : ' + engineeredPrompt);
-                    addMessage('This is a dummy response to your message : ' + message, 'api-response');
+                    const requestBody = {
+                        model: "gpt-3.5-turbo",
+                        messages: conversation,
+                        max_tokens: 500,
+                        temperature: 0.5,
+                    };
+                    const response = await fetch(endpointUrl, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: "Bearer ${apiKey}",
+                        },
+                        body: JSON.stringify(requestBody),
+                    });
+
+                    if (response.ok) {
+                        console.log("API call successful");
+                        const jsonResponse = await response.json();
+                        const responseMessage =
+                            jsonResponse.choices[0].message.content.trim();
+                        conversation.push({ "role": "assistant", "content": responseMessage });
+                        addMessage(responseMessage, "api-response");
+                    } else {
+                        console.log("API call failed");
+                        // Handle the API error, e.g., display an error message
+                    }
+
+                    console.log("engineeredPrompt : " + engineeredPrompt);
+
+                    // addMessage('This is a dummy response to your message : ' + message, 'api-response');
                 }
-            
+
                 function generateEngineeredPrompt(userPrompt) {
                     let prompts = '';
                     for (let i = 0; i < dequeue.length; i++) {
                         const element = dequeue[i];
                         prompts += (i + 1) + '.' + element + ' '; // fix this to the required format for chat
                     }
-            
+
                     console.log(prompts);
                     return prompts;
                 }
-            
+
                 function insertCode(code) {
                     vscode.postMessage({ type: 'insertCode', value: code });
                 }
-            
+
                 function copyCodeToClipboard(code) {
                     vscode.postMessage({ type: 'copyCodeToClipboard', value: code });
                 }
-            
+
                 function createWebpage(code) {
                     vscode.postMessage({ type: 'createWebpage', value: code });
                 }
-            
+
                 function createWebfile(code) {
                     vscode.postMessage({ type: 'createWebfile', value: code });
                 }
-            
+
                 function createTablePermission(code) {
                     vscode.postMessage({ type: 'createTablePermission', value: code });
                 }
-            
+
                 SendButton.addEventListener('click', () => {
                     if (chatInput.value.trim()) {
+                        conversation.push({ "role": "user", "content": chatInput.value });
                         addMessage(chatInput.value, 'user-message');
                         sendMessageToApi(chatInput.value);
                         chatInput.value = '';
                         chatInput.focus();
                     }
                 });
-            
+
                 chatInput.addEventListener('keydown', (event) => {
                     if (event.key === 'Enter' && chatInput.value.trim()) {
+                        conversation.push({ "role": "user", "content": chatInput.value });
                         addMessage(chatInput.value, 'user-message');
                         sendMessageToApi(chatInput.value);
                         chatInput.value = '';
@@ -430,7 +452,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     autocompletePanel.style.position = 'absolute';
                     autocompletePanel.style.top = chatInput.offsetTop - autocompletePanel.offsetHeight + 'px';
                     autocompletePanel.style.left = chatInput.offsetLeft + 'px';
-            
+
                     const listItems = autocompletePanel.querySelectorAll('li');
                     listItems.forEach((item) => {
                         item.addEventListener('click', () => {
@@ -444,7 +466,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 function hideAutocompletePanel() {
                     autocompletePanel.style.display = 'none';
                 }
-                
+
             </script>
         </body>
         </html>`;
