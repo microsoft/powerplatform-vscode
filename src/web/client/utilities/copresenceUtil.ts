@@ -17,10 +17,9 @@ export interface IContainerData {
 }
 
 export async function loadContainer(id: string, line: number, column: number) {
-    console.log("Inside loadContainer with ", id);
-    console.log(`Line: ${line}`);
-    console.log(`Column: ${column}`);
-    console.log(`Column: ${column}`);
+    console.log("VSCODE WEBVIEW Inside loadContainer with ", id);
+    console.log(`VSCODE WEBVIEW Line: ${line}`);
+    console.log(`VSCODE WEBVIEW Column: ${column}`);
 
     const config = {
         connection: { port: 7070, domain: "http://localhost" },
@@ -30,7 +29,7 @@ export async function loadContainer(id: string, line: number, column: number) {
         connection: config,
     };
 
-    console.log("clientProps: ", clientProps);
+    console.log("VSCODE WEBVIEW clientProps: ", clientProps);
 
     const { TinyliciousClient } =
         // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -38,7 +37,7 @@ export async function loadContainer(id: string, line: number, column: number) {
 
     const tinyClient = new TinyliciousClient(clientProps);
 
-    console.log("tiny client created");
+    console.log("VSCODE WEBVIEW tiny client created");
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { SharedMap } = require("fluid-framework");
@@ -47,7 +46,7 @@ export async function loadContainer(id: string, line: number, column: number) {
         initialObjects: { position: SharedMap },
     };
 
-    console.log("shared map loaded");
+    console.log("VSCODE WEBVIEW shared map loaded");
 
     try {
         const { container } = await tinyClient.getContainer(
@@ -66,7 +65,7 @@ export async function loadContainer(id: string, line: number, column: number) {
             const newSelection = new vscode.Selection(newPosition, newPosition);
             activeEditor.selection = newSelection;
             console.log(
-                "New position updated to existing values",
+                "VSCODE WEBVIEW New position updated to existing values",
                 line,
                 column
             );
@@ -80,6 +79,11 @@ export async function loadContainer(id: string, line: number, column: number) {
         map.set(LINE_NUMBER_KEY, line);
         map.set(COLUMN_NUMBER_KEY, column);
         WebExtensionContext.containerId = await container.attach();
-        console.log("New position updated to new values", line, column);
+        map.set(CONTAINER_ID, WebExtensionContext.containerId);
+        console.log(
+            "VSCODE WEBVIEW New position updated to new values",
+            line,
+            column
+        );
     }
 }

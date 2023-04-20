@@ -39,7 +39,7 @@ export class MyWebview {
     }
 
     private getWebviewContent() {
-        console.log("extensionUri", this._extensionUri);
+        console.log("VSCODE WEBVIEW extensionUri", this._extensionUri);
         // Local path to main script run in the webview
         const scriptPathOnDisk = vscode.Uri.joinPath(
             this._extensionUri,
@@ -49,10 +49,12 @@ export class MyWebview {
             "webViews",
             "main.js"
         );
-        console.log("scriptPathOnDisk", scriptPathOnDisk);
+        console.log("VSCODE WEBVIEW scriptPathOnDisk", scriptPathOnDisk);
 
         // And the uri we use to load this script in the webview
-        const scriptUri = scriptPathOnDisk.with({ scheme: "vscode-resource" });
+        const scriptUri = this.panel.webview.asWebviewUri(scriptPathOnDisk);
+
+        console.log("VSCODE WEBVIEW scriptUri", scriptUri);
 
         // Use a nonce to only allow specific scripts to be run
         const nonce = this.getNonce();
@@ -65,9 +67,9 @@ export class MyWebview {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>My Webview</title>
         </head>
-        <body>
-        
-			<script nonce="${nonce}" src="${scriptUri}"></script>
+        <body>    
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>    
+			<script id="my-web-view" nonce="${nonce}" src="${scriptUri}"></script>
         </body>
       </html>
     `;

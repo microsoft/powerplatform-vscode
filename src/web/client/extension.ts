@@ -25,7 +25,7 @@ import { NPSWebView } from "./webViews/NPSWebView";
 import { IContainerData } from "./utilities/copresenceUtil";
 
 export function activate(context: vscode.ExtensionContext): void {
-    console.log("vscode extension activate function start");
+    console.log("VSCODE WEBVIEW vscode extension activate function start");
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
     const dataBoundary = undefined;
@@ -178,35 +178,46 @@ export function activate(context: vscode.ExtensionContext): void {
             }
         )
     );
-    console.log("vscode extension activate registerCommand success");
+    console.log(
+        "VSCODE WEBVIEW vscode extension activate registerCommand success"
+    );
 
     processWillSaveDocument(context);
-    console.log("vscode extension activate processWillSaveDocument success");
+    console.log(
+        "VSCODE WEBVIEW vscode extension activate processWillSaveDocument success"
+    );
 
     processOpenActiveTextEditor(context);
     console.log(
-        "vscode extension activate processOpenActiveTextEditor success"
+        "VSCODE WEBVIEW vscode extension activate processOpenActiveTextEditor success"
     );
 
     WebExtensionContext.myWebView.panel.webview.onDidReceiveMessage(
         (message) => {
-            console.log(`Received hello from webview: ${message}`);
+            console.log(
+                `VSCODE WEBVIEW Received hello from webview: ${JSON.stringify(
+                    message
+                )}`
+            );
+            WebExtensionContext.containerId = message.containerId;
         }
     );
 
     showWalkthrough(context, WebExtensionContext.telemetry);
-    console.log("vscode extension activate function end");
+    console.log("VSCODE WEBVIEW vscode extension activate function end");
 }
 
 export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
-    console.log("Inside processOpenActiveTextEditor");
+    console.log("VSCODE WEBVIEW Inside processOpenActiveTextEditor");
     try {
         context.subscriptions.push(
             vscode.window.onDidChangeTextEditorSelection(async (event) => {
                 const selection = event.selections[0];
                 const line = selection.active.line;
                 const column = selection.active.character;
-                console.log("Inside onDidChangeTextEditorSelection");
+                console.log(
+                    "VSCODE WEBVIEW Inside onDidChangeTextEditorSelection"
+                );
 
                 const activeEditor = vscode.window.activeTextEditor;
                 if (activeEditor) {
@@ -224,14 +235,17 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                             } as IContainerData
                         );
 
-                        console.log(`Line: ${line}`);
-                        console.log(`Column: ${column}`);
+                        console.log(`VSCODE WEBVIEW  Line: ${line}`);
+                        console.log(`VSCODE WEBVIEW  Column: ${column}`);
                     }
                 }
             })
         );
     } catch (error) {
-        console.log("caught error in processOpenActiveTextEditor", error);
+        console.log(
+            "VSCODE WEBVIEW caught error in processOpenActiveTextEditor",
+            error
+        );
     }
 }
 
