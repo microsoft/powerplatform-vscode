@@ -188,6 +188,103 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 autocompletePanel.classList.add('autocomplete-panel');
                 chatInput.parentNode?.appendChild(autocompletePanel);
 
+                const imageGallery = document.createElement('div');
+                imageGallery.classList.add('image-gallery');
+                
+                const image1Container = document.createElement('div');
+                image1Container.classList.add('image-container');
+                imageGallery.appendChild(image1Container);
+                
+                const image1 = document.createElement('img');
+                image1.src = "${copyIconUri}";
+                image1.width = 100;
+                image1.height = 100;
+                image1Container.appendChild(image1);
+
+                const checkbox1 = document.createElement('input');
+                checkbox1.type = 'checkbox';
+                checkbox1.value = 'image1.jpg';
+                checkbox1.addEventListener('change', (event) => {
+                    const selectedImage = event.target.value;
+                    console.log('Selected image:' + selectedImage);
+                });
+
+                const label1 = document.createElement('label');
+                label1.textContent = 'Image 1';
+                image1Container.appendChild(checkbox1);
+                image1Container.appendChild(label1);
+
+                const image2Container = document.createElement('div');
+                image2Container.classList.add('image-container');
+                imageGallery.appendChild(image2Container);
+
+                const image2 = document.createElement('img');
+                image2.src = "${copyIconUri}";
+                image2.width = 100;
+                image2.height = 100;
+                image2Container.appendChild(image2);
+
+                const checkbox2 = document.createElement('input');
+                checkbox2.type = 'checkbox';
+                checkbox2.value = 'image2.jpg';
+                checkbox2.addEventListener('change', (event) => {
+                const selectedImage = event.target.value;
+                console.log('Selected image:' + selectedImage);
+                });
+
+                const label2 = document.createElement('label');
+                label2.textContent = 'Image 2';
+                image2Container.appendChild(checkbox2);
+                image2Container.appendChild(label2);
+
+                const image3Container = document.createElement('div');
+                image3Container.classList.add('image-container');
+                imageGallery.appendChild(image3Container);
+
+                const image3 = document.createElement('img');
+                image3.src = "${copyIconUri}";
+                image3.width = 100;
+                image3.height = 100;
+                image3Container.appendChild(image3);
+
+                const checkbox3 = document.createElement('input');
+                checkbox3.type = 'checkbox';
+                checkbox3.value = 'image3.jpg';
+                checkbox3.addEventListener('change', (event) => {
+                const selectedImage = event.target.value;
+                console.log('Selected image:' + selectedImage);
+                });
+
+                const label3 = document.createElement('label');
+                label3.textContent = 'Image 3';
+                image3Container.appendChild(checkbox3);
+                image3Container.appendChild(label3);
+
+                const image4Container = document.createElement('div');
+                image4Container.classList.add('image-container');
+                imageGallery.appendChild(image4Container);
+
+                const image4 = document.createElement('img');
+                image4.src = "${copyIconUri}";
+                image4.width = 100;
+                image4.height = 100;
+                image4Container.appendChild(image4);
+
+                const checkbox4 = document.createElement('input');
+                checkbox4.type = 'checkbox';
+                checkbox4.value = 'image4.jpg';
+                checkbox4.addEventListener('change', (event) => {
+                const selectedImage = event.target.value;
+                console.log('Selected image:' + selectedImage);
+                });
+                
+                const label4 = document.createElement('label');
+                label4.textContent = 'Image 4';
+                image4Container.appendChild(checkbox4);
+                image4Container.appendChild(label4);
+                
+                chatMessages.appendChild(imageGallery);
+
                 chatInput.addEventListener('focus', () => {
                     chatInput.style.border = '1px solid blue';
                 });
