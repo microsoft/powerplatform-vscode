@@ -43,6 +43,6 @@ jobs:
         AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
 
     - name: Run integration tests
-      uses: GabrielBB/xvfb-action@v1.6
+      uses: coactions/setup-xvfb@v1
       with:
         run: npm run test-integration
