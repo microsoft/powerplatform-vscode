@@ -4,7 +4,7 @@
  */
 
 import { Tokenizer, TokenKind } from "liquidjs";
-import { OutputToken, TagToken } from "liquidjs/dist/tokens";
+import { OutputToken, TagToken } from "liquidjs/dist/src/tokens";
 import { performance } from "perf_hooks";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { CompletionItem, Connection, WorkspaceFolder } from "vscode-languageserver/node";

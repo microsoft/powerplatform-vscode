@@ -4,7 +4,7 @@
  */
 
 import { TagToken, Tokenizer, TokenKind } from "liquidjs";
-import { FilterToken, IdentifierToken, OutputToken, PropertyAccessToken } from "liquidjs/dist/tokens";
+import { FilterToken, IdentifierToken, OutputToken, PropertyAccessToken } from "liquidjs/dist/src/tokens";
 import { CompletionItem, CompletionItemKind } from "vscode-languageserver/node";
 import { AUTO_COMPLETE_PLACEHOLDER, EDITABLE_ATTRIBUTES, ENTITY_FORM_ATTRIBUTES, ENTITY_LIST_ATTRIBUTES, PAGE_ATTRIBUTES, PORTAL_FILTERS, PORTAL_OBJECTS, WEB_FORM_ATTRIBUTES, OBJECT_ATTRIBUTES_MAP } from "../constants/AutoComplete";
 import { PortalAttributeNames, PortalEntityNames, PortalObjects, PortalTags } from "../constants/PortalEnums";

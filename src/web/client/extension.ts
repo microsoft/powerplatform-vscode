@@ -22,7 +22,6 @@ import { convertStringtoBase64 } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
-import { PowerPagesCopilot } from "../../client/power-pages/copilot/PowerPagesCopilot";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -178,15 +177,6 @@ export function activate(context: vscode.ExtensionContext): void {
     );
 
     processWillSaveDocument(context);
-
-    const copilotProvider = new PowerPagesCopilot(context.extensionUri);
-
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(
-            "powerpages.copilot",
-            copilotProvider
-        )
-    );
 
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
