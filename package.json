@@ -835,7 +835,7 @@
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
     "@vscode/l10n-dev": "^0.0.23",
-    "@vscode/test-electron": "^2.1.5",
+    "@vscode/test-electron": "^2.3.0",
     "@vscode/test-web": "^0.0.24",
     "@vscode/vsce": "^2.18.0",
     "assert": "^2.0.0",
