@@ -11,6 +11,9 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+1.1.24:
+  - hotfix to pac CLI 1.22.3 for `pac solution unpack` placing AppModule files in invalid directory
+
 1.1.23:
  - pac CLI 1.22.2 (Mar refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
  - Improved Paportal manifest generation by maintaining a consistent order
