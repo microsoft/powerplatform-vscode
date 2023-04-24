@@ -216,6 +216,130 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     dequeue.push(element); // Add the new element to the end of the dequeue
                 }
 
+                function formatCodeBlocks(str) {
+                    let arr = str.split('\`\`\`');
+                    let result = document.createElement('div');
+                    for (let i = 0; i < arr.length; i++) {
+                        if (i % 2 === 0) {
+                            const textDiv = document.createElement('div');
+                            textDiv.innerText = arr[i];
+                            result.appendChild(textDiv);
+                        } else {
+                            const codeDiv = document.createElement('div');
+                            codeDiv.classList.add('code-division');
+                            codeDiv.appendChild(createActionWrapper(arr[i]));
+                            const preFormatted = document.createElement('pre');
+                            const codeSnip = document.createElement('code');
+                            codeSnip.innerText = arr[i];
+                            preFormatted.appendChild(codeSnip);
+                            codeDiv.appendChild(preFormatted);
+                            result.appendChild(codeDiv);
+                        }
+                    }
+                    return result;
+                }
+
+                function createActionWrapper(message) {
+                    const actionWrapper = document.createElement('div');
+                    actionWrapper.classList.add('action-wrapper');
+
+                    const CopyButton = document.createElement('button');
+                    const CopyIcon = document.createElement('img');
+                    CopyIcon.src = "${copyIconUri}";
+                    CopyIcon.alt = 'Copy';
+                    CopyButton.appendChild(CopyIcon);
+                    CopyButton.addEventListener('click', () => {
+                        copyCodeToClipboard(message);
+                    });
+                    CopyButton.title = 'Copy to clipboard';
+                    CopyButton.style.margin = '0';
+                    CopyButton.style.padding = '5px';
+                    CopyButton.style.border = '0';
+                    CopyButton.style.background = 'none';
+                    CopyButton.style.color = 'inherit';
+                    CopyButton.addEventListener('mouseenter', () => {
+                        CopyButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
+                    });
+                    CopyButton.addEventListener('mouseleave', () => {
+                        CopyButton.style.boxShadow = 'none';
+                    });
+                    actionWrapper.appendChild(CopyButton);
+
+                    const InsertButton = document.createElement('button');
+                    const InsertIcon = document.createElement('img');
+                    InsertIcon.src = "${insertIconUri}";
+                    InsertIcon.alt = 'Insert';
+                    InsertButton.appendChild(InsertIcon);
+                    InsertButton.addEventListener('click', () => {
+                        insertCode(message);
+                    });
+                    InsertButton.title = 'Insert code into editor';
+                    InsertButton.style.margin = '0';
+                    InsertButton.style.padding = '5px';
+                    InsertButton.style.border = '0';
+                    InsertButton.style.background = 'none';
+                    InsertButton.style.color = 'inherit';
+                    InsertButton.addEventListener('mouseenter', () => {
+                        InsertButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
+                    });
+                    InsertButton.addEventListener('mouseleave', () => {
+                        InsertButton.style.boxShadow = 'none';
+                    });
+                    actionWrapper.appendChild(InsertButton);
+                    const PreviewButton = document.createElement('button');
+                    const PreviewIcon = document.createElement('img');
+                    let isPreviewing = false;
+                    PreviewIcon.src = "${previewStartIconUri}";
+                    PreviewIcon.alt = 'Preview';
+                    PreviewButton.appendChild(PreviewIcon);
+                    PreviewButton.addEventListener('click', () => {
+                        isPreviewing = !isPreviewing;
+                        if (isPreviewing) {
+                            PreviewIcon.src = "${previewEndIconUri}";
+                        } else {
+                            PreviewIcon.src = "${previewStartIconUri}";
+                        }
+                        previewCode(message);
+                    });
+                    PreviewButton.title = 'Preview';
+                    PreviewButton.style.margin = '0';
+                    PreviewButton.style.padding = '5px';
+                    PreviewButton.style.border = '0';
+                    PreviewButton.style.background = 'none';
+                    PreviewButton.style.color = 'inherit';
+                    PreviewButton.addEventListener('mouseenter', () => {
+                        PreviewButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
+                    });
+                    PreviewButton.addEventListener('mouseleave', () => {
+                        PreviewButton.style.boxShadow = 'none';
+                    });
+                    actionWrapper.appendChild(PreviewButton);
+
+                    const CreateButton = document.createElement('button');
+                    const CreateIcon = document.createElement('img');
+                    CreateIcon.src = "${createIconUri}";
+                    CreateIcon.alt = 'Create';
+                    CreateButton.appendChild(CreateIcon);
+                    CreateButton.addEventListener('click', () => {
+                        console.log('Create Button Clicked');
+                        createWebpage(message);
+                    });
+                    CreateButton.title = 'Create a new record';
+                    CreateButton.style.margin = '0';
+                    CreateButton.style.padding = '5px';
+                    CreateButton.style.border = '0';
+                    CreateButton.style.background = 'none';
+                    CreateButton.style.color = 'inherit';
+                    CreateButton.addEventListener('mouseenter', () => {
+                        CreateButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
+                    });
+                    CreateButton.addEventListener('mouseleave', () => {
+                        CreateButton.style.boxShadow = 'none';
+                    });
+                    actionWrapper.appendChild(CreateButton);
+                    return actionWrapper;
+                }
+
                 function addMessage(message, className) {
                     const messageWrapper = document.createElement('div');
                     messageWrapper.classList.add('message-wrapper');
@@ -234,114 +358,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         messageElement.appendChild(makerElement);
                         makerElement.appendChild(document.createElement('br'));
                     }
-                    const messageText = document.createElement('div');
-                    messageText.textContent = message;
-                    messageElement.appendChild(messageText);
+                    messageElement.appendChild(formatCodeBlocks(message));
                     messageElement.classList.add('message', className);
 
                     messageWrapper.appendChild(messageElement);
 
-                    if (className === 'api-response') {
-                        const actionWrapper = document.createElement('div');
-                        actionWrapper.classList.add('action-wrapper');
-
-                        const CopyButton = document.createElement('button');
-                        const CopyIcon = document.createElement('img');
-                        CopyIcon.src = "${copyIconUri}";
-                        CopyIcon.alt = 'Copy';
-                        CopyButton.appendChild(CopyIcon);
-                        CopyButton.addEventListener('click', () => {
-                            copyCodeToClipboard(message);
-                        });
-                        CopyButton.title = 'Copy to clipboard';
-                        CopyButton.style.margin = '0';
-                        CopyButton.style.padding = '5px';
-                        CopyButton.style.border = '0';
-                        CopyButton.style.background = 'none';
-                        CopyButton.style.color = 'inherit';
-                        CopyButton.addEventListener('mouseenter', () => {
-                            CopyButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
-                        });
-                        CopyButton.addEventListener('mouseleave', () => {
-                            CopyButton.style.boxShadow = 'none';
-                        });
-                        actionWrapper.appendChild(CopyButton);
-
-                        const InsertButton = document.createElement('button');
-                        const InsertIcon = document.createElement('img');
-                        InsertIcon.src = "${insertIconUri}";
-                        InsertIcon.alt = 'Insert';
-                        InsertButton.appendChild(InsertIcon);
-                        InsertButton.addEventListener('click', () => {
-                            insertCode(message);
-                        });
-                        InsertButton.title = 'Insert code into editor';
-                        InsertButton.style.margin = '0';
-                        InsertButton.style.padding = '5px';
-                        InsertButton.style.border = '0';
-                        InsertButton.style.background = 'none';
-                        InsertButton.style.color = 'inherit';
-                        InsertButton.addEventListener('mouseenter', () => {
-                            InsertButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
-                        });
-                        InsertButton.addEventListener('mouseleave', () => {
-                            InsertButton.style.boxShadow = 'none';
-                        });
-                        actionWrapper.appendChild(InsertButton);
-                        const PreviewButton = document.createElement('button');
-                        const PreviewIcon = document.createElement('img');
-                        let isPreviewing = false;
-                        PreviewIcon.src = "${previewStartIconUri}";
-                        PreviewIcon.alt = 'Preview';
-                        PreviewButton.appendChild(PreviewIcon);
-                        PreviewButton.addEventListener('click', () => {
-                            isPreviewing = !isPreviewing;
-                            if (isPreviewing) {
-                                PreviewIcon.src = "${previewEndIconUri}";
-                            } else {
-                                PreviewIcon.src = "${previewStartIconUri}";
-                            }
-                            previewCode(message);
-                        });
-                        PreviewButton.title = 'Preview';
-                        PreviewButton.style.margin = '0';
-                        PreviewButton.style.padding = '5px';
-                        PreviewButton.style.border = '0';
-                        PreviewButton.style.background = 'none';
-                        PreviewButton.style.color = 'inherit';
-                        PreviewButton.addEventListener('mouseenter', () => {
-                            PreviewButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
-                        });
-                        PreviewButton.addEventListener('mouseleave', () => {
-                            PreviewButton.style.boxShadow = 'none';
-                        });
-                        actionWrapper.appendChild(PreviewButton);
-
-                        const CreateButton = document.createElement('button');
-                        const CreateIcon = document.createElement('img');
-                        CreateIcon.src = "${createIconUri}";
-                        CreateIcon.alt = 'Create';
-                        CreateButton.appendChild(CreateIcon);
-                        CreateButton.addEventListener('click', () => {
-                            console.log('Create Button Clicked');
-                            createWebpage(message);
-                        });
-                        CreateButton.title = 'Create a new record';
-                        CreateButton.style.margin = '0';
-                        CreateButton.style.padding = '5px';
-                        CreateButton.style.border = '0';
-                        CreateButton.style.background = 'none';
-                        CreateButton.style.color = 'inherit';
-                        CreateButton.addEventListener('mouseenter', () => {
-                            CreateButton.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.5)';
-                        });
-                        CreateButton.addEventListener('mouseleave', () => {
-                            CreateButton.style.boxShadow = 'none';
-                        });
-                        actionWrapper.appendChild(CreateButton);
-
-                        messageWrapper.appendChild(actionWrapper);
-                    }
+                    // if (className === 'api-response') {
+                    //     const actionWrapper = createActionWrapper();
+                    //     messageWrapper.appendChild(actionWrapper);
+                    // }
 
                     chatMessages.appendChild(messageWrapper);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
