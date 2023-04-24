@@ -24,9 +24,9 @@ function loadContainer(vscode, id, line, column) {
     require.config({
         paths: {
             "@fluidframework/tinylicious-client":
-                "http://localhost:5000//node_modules/tinylicious/dist/index",
+                "http://localhost:5000//node_modules/tinylicious/dist/index.js",
             "fluid-framework":
-                "http://localhost:5000//node_modules/fluid-framework/dist/index",
+                "http://localhost:5000//node_modules/fluid-framework/dist/index.js",
         },
     });
 
