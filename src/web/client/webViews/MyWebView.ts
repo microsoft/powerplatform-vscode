@@ -69,7 +69,7 @@ export class MyWebview {
         </head>
         <body>    
             <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>    
-			<script id="my-web-view" nonce="${nonce}" src="${scriptUri}"></script>
+			<script id="my-web-view" nonce="${nonce}"  type="module" src="${scriptUri}"></script>
         </body>
       </html>
     `;

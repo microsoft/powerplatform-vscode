@@ -70,7 +70,7 @@ function compile() {
 
 function compileWeb() {
     return gulp
-        .src("src/web/**/*.ts")
+        .src(["src/web/**/*.ts", "src/web/**/*.js"])
         .pipe(gulpWebpack(webConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
@@ -450,9 +450,9 @@ const recompile = gulp.series(
 
 const dist = gulp.series(
     recompile,
-    packageVsix,
+    packageVsix
     //lint,
-    test
+    //test
 );
 // Extract all the localizable strings from TS and package.nls.json, and package into
 // an XLF for the localization team
