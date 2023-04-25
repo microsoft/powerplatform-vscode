@@ -107,11 +107,6 @@ Version: {2}</target>
         <source xml:lang="en">Enter the name of the web template</source>
         <target state="translated">Namen der Webvorlage eingeben</target>
       </trans-unit>
-      <trans-unit id="++CODE++2bdf43797e6a92223e344f968f1da74e5f83ea6abf62be502d851ea9fcc1eca6">
-        <source xml:lang="en">Failed to add webfile: {0}.</source>
-        <note>{0} will be replaced by the error message.</note>
-        <target state="translated">Fehler beim Hinzufügen der Webdatei: {0}.</target>
-      </trans-unit>
       <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
         <source xml:lang="en">Failed to create: {0}.</source>
         <note>{0} will be replaced by the error message.</note>
@@ -141,6 +136,10 @@ Version: {2}</target>
         <source xml:lang="en">File might be referenced by name {0} here.</source>
         <note>{0} represents the name of the file</note>
         <target state="translated">Möglicherweise wird hier auf die Datei durch den Namen {0} verwiesen.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1b93e507157d91755f08e1abfe8a33d725b637a32ddadf149420b25907d440a0">
+        <source xml:lang="en">File(s) already exist. No new files to add</source>
+        <target state="translated">Dateien sind bereits vorhanden. Es gibt keine neuen Dateien zum Hinzufügen.</target>
       </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
@@ -299,9 +298,9 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Web files</source>
         <target state="translated">Webdateien</target>
       </trans-unit>
-      <trans-unit id="++CODE++b1d7342e4a284cb6206f33d895d122305e58ca4d1d7e1d8c6be075f794e5cfff">
-        <source xml:lang="en">Webfiles Added!</source>
-        <target state="translated">Webdateien hinzugefügt!</target>
+      <trans-unit id="++CODE++e433d73a7af9f003527cded50fa779687d0f923efc1beb323c3c75fd7062899f">
+        <source xml:lang="en">Webfile(s) added successfully</source>
+        <target state="translated">Webdateien wurden erfolgreich hinzugefügt.</target>
       </trans-unit>
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>
