@@ -22,7 +22,6 @@
   "Edit the site": "Upravit web",
   "Enter name": "Zadejte název.",
   "Enter the name of the web template": "Zadejte název šablony webu.",
-  "Failed to add webfile: {0}./{0} will be replaced by the error message.": "Nepodařilo se přidat webový soubor: {0}",
   "Failed to create: {0}./{0} will be replaced by the error message.": "Nepodařilo se vytvořit: {0}",
   "Failed to disable PAC telemetry.": "Telemetrii PAC se nepodařilo zakázat.",
   "Failed to enable PAC telemetry.": "Telemetrii PAC se nepodařilo povolit.",
@@ -30,6 +29,7 @@
   "Failed to get file ready for edit.": "Soubor se nepodařilo připravit k úpravám.",
   "Fetching your file ...": "Načítá se soubor...",
   "File might be referenced by name {0} here./{0} represents the name of the file": "Na soubor zde může být odkazováno názvem {0}.",
+  "File(s) already exist. No new files to add": "Soubory už existují. Nemáte žádné nové soubory k přidání.",
   "Installing Power Pages generator(v{0}).../{0} represents the version number": "Instaluje se generátor Power Pages (verze {0})...",
   "Maximum 30 characters allowed": "Je povoleno maximálně 30 znaků.",
   "Microsoft wants your feeback": "Microsoft chce znát váš názor",
@@ -65,7 +65,7 @@
   "User: {0}/The {0} represents auth profile's user name (email address))": "Uživatel: {0}",
   "We encountered an error preparing the file for edit.": "Při přípravě souboru k úpravám došlo k chybě.",
   "Web files": "Webové soubory",
-  "Webfiles Added!": "Webové soubory byly přidány.",
+  "Webfile(s) added successfully": "Webové soubory byly úspěšně přidány.",
   "You are editing a live, public site ": "Upravujete živý veřejný web ",
   "{0} created!/{0} will be replaced by the entity type.": "{0} bylo vytvořeno."
 }
