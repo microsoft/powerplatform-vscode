@@ -10,6 +10,7 @@
 
 import * as vscode from "vscode";
 import { createAiWebpage } from "./Utils";
+//import { templates } from "./templates";
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     public static readonly viewType = "powerpages.copilot";
@@ -159,6 +160,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
 
         const apiKey = "YOUR_API_KEY";
+
+        //const examples = templates;
 
         return `
         <!DOCTYPE html>
@@ -373,6 +376,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 }
 
                 async function sendMessageToApi(message) {
+                    message = promptEngine(message);
+                    console.log("Sending message to API: " + message);
                     const endpointUrl = "https://api.openai.com/v1/chat/completions";
                     const engineeredPrompt = generateEngineeredPrompt(message);
                     const requestBody = {
@@ -405,6 +410,27 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     console.log("engineeredPrompt : " + engineeredPrompt);
 
                     // addMessage('This is a dummy response to your message : ' + message, 'api-response');
+                }
+
+                function promptEngine(message) {
+                    const templates = {
+                        "base": "You are a web developer using power portal or power pages platform for development. Power Pages uses liquid as a templating language and Bootstrap v3.3.6.",
+                        "entityList": "value1",
+                        "entityForm": "value2",
+                        "webPage": "value3"
+                    };
+                    const type = message.split(' ')[0].slice(1);
+                    let template = templates[type];
+                    if (template === undefined) {
+                        template = '';
+                    }else{
+                        template = "Here is an example. " + template;
+                    }
+                    message = "      based on this information, respond to the prompt mentioned after hyphen -  "
+                    const basePrompt = templates["base"];
+                    const prompt = basePrompt + template + message;
+                    console.log('Generated prompt : ' + prompt);
+                    return prompt;
                 }
 
                 function generateEngineeredPrompt(userPrompt) {
