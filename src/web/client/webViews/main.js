@@ -7,7 +7,14 @@ const CONTAINER_ID = "containerId";
 const LINE_NUMBER_KEY = "lineNumber";
 const COLUMN_NUMBER_KEY = "columnNumber";
 
-async function loadContainer(vscode, tinylicious, fluid, id, line, column) {
+async function loadContainer(
+    vscode,
+    TinyliciousClient,
+    fluid,
+    id,
+    line,
+    column
+) {
     console.log("VSCODE WEBVIEW Inside loadContainer with ", id);
     console.log(`VSCODE WEBVIEW Line: ${line}`);
     console.log(`VSCODE WEBVIEW Column: ${column}`);
@@ -30,7 +37,7 @@ async function loadContainer(vscode, tinylicious, fluid, id, line, column) {
     //         console.log(
     //             "VSCODE WEBVIEW inside the then for promise all imports load"
     //         );
-    const { TinyliciousClient } = tinylicious;
+    //const { TinyliciousClient } = tinylicious;
 
     console.log("VSCODE WEBVIEW loaded the tiny client object");
     const tinyClient = new TinyliciousClient(clientProps);
@@ -91,12 +98,11 @@ async function loadContainer(vscode, tinylicious, fluid, id, line, column) {
 }
 
 function runFluidApp() {
+    console.log(`VSCODE WEBVIEW  Running script`);
+
     // eslint-disable-next-line no-undef
     const vscode = acquireVsCodeApi();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    var exports = {};
 
-    console.log(`VSCODE WEBVIEW  Running script`);
     // require.config({
     //     paths: {
     //         "@fluidframework/tinylicious-client":
@@ -106,61 +112,42 @@ function runFluidApp() {
     //     },
     // });
 
-    // require([
-    //     "@fluidframework/tinylicious-client",
-    //     "fluid-framework",
-    // ], async function (tinyliciousClient, fluidFramework) {
-    // console.log("VSCODE WEBVIEW init require module");
-    // const { TinyliciousClient } = tinyliciousClient;
+    require([
+        "@fluidframework/tinylicious-client",
+        "fluid-framework",
+    ], async function (tinyliciousClient, fluid) {
+        console.log("VSCODE WEBVIEW init require module");
 
-    // console.log("VSCODE WEBVIEW loaded the tiny client object");
+        // Listen for messages from the extension
+        // eslint-disable-next-line no-undef
+        window.addEventListener("message", async (event) => {
+            const message = event.data;
 
-    // const { SharedMap } = fluidFramework;
-
-    // console.log("VSCODE WEBVIEW shared map loaded");
-    Promise.all([
-        import("https://unpkg.com/@fluidframework/tinylicious-client@1.3.6"),
-        import("https://unpkg.com/fluid-framework@1.3.6"),
-    ])
-        .then(async ([tinylicious, fluid]) => {
             console.log(
-                "VSCODE WEBVIEW inside the then for promise all imports load"
+                `VSCODE WEBVIEW Received greeting from extension: ${JSON.stringify(
+                    message
+                )}`
             );
 
-            // Listen for messages from the extension
-            // eslint-disable-next-line no-undef
-            window.addEventListener("message", async (event) => {
-                const message = event.data;
+            await loadContainer(
+                vscode,
+                tinyliciousClient,
+                fluid,
+                message.containerId,
+                message.lineNumber,
+                message.columnNumber
+            );
 
-                console.log(
-                    `VSCODE WEBVIEW Received greeting from extension: ${JSON.stringify(
-                        message
-                    )}`
-                );
+            console.log("VSCODE WEBVIEW Sending message back");
 
-                await loadContainer(
-                    vscode,
-                    tinylicious,
-                    fluid,
-                    message.containerId,
-                    message.lineNumber,
-                    message.columnNumber
-                );
-
-                console.log("VSCODE WEBVIEW Sending message back");
-
-                // Send a message to the extension
-                await vscode.postMessage({
-                    containerId: message.containerId,
-                    lineNumber: message.lineNumber,
-                    columnNumber: message.lineNumber,
-                });
+            // Send a message to the extension
+            await vscode.postMessage({
+                containerId: message.containerId,
+                lineNumber: message.lineNumber,
+                columnNumber: message.lineNumber,
             });
-        })
-        .catch((error) => {
-            console.error(error);
         });
-    //});
+    });
 }
 
 runFluidApp();
