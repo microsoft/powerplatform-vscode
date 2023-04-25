@@ -96,7 +96,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         );
         const insertIconUri = webview.asWebviewUri(insertIconPath);
 
-         const previewStartIconPath = vscode.Uri.joinPath(
+        const previewStartIconPath = vscode.Uri.joinPath(
             this._extensionUri,
             "src",
             "client",
@@ -105,10 +105,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             "assets",
             "icons",
             "codicon_eye_open.svg"
-         );
-         const previewStartIconUri = webview.asWebviewUri(previewStartIconPath);
+        );
+        const previewStartIconUri = webview.asWebviewUri(previewStartIconPath);
 
-         const previewEndIconPath = vscode.Uri.joinPath(
+        const previewEndIconPath = vscode.Uri.joinPath(
             this._extensionUri,
             "src",
             "client",
@@ -117,8 +117,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             "assets",
             "icons",
             "codicon_eye_closed.svg"
-         );
-         const previewEndIconUri = webview.asWebviewUri(previewEndIconPath);
+        );
+        const previewEndIconUri = webview.asWebviewUri(previewEndIconPath);
 
         const createIconPath = vscode.Uri.joinPath(
             this._extensionUri,
@@ -498,7 +498,54 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 });
 
                 function showAutocompletePanel() {
-                    autocompletePanel.innerHTML = \`<ul><li><a href="#">/webpage</a></li><li><a href="#">/webfile</a></li><li><a href="#">/tablepermission</a></li><li><a href="#">/webTemplate</a></li><li><a href="#">/pageTemplate</a></li><li><a href="#">/contentSnippet</a></li><li><a href="#">/liquid</a></li><li><a href="#">/security scan</a></li></ul>\`;
+                    autocompletePanel.innerHTML = \`<style>
+    .list-container {
+        position: relative;
+        background-color: #FFFFFF;
+        border: 1px solid #ddd;
+        padding: 10px;
+        width: 400px;
+        color: #FFFFFF;
+    }
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    li {
+        font-size: 1.2em;
+        margin-bottom: 3px;
+        padding: 2px;
+        background-color: #fff;
+        transition: background-color 0.2s ease-in-out;
+    }
+    li:hover {
+        background-color: #ddd;
+    }
+    a {
+        text-decoration: none;
+        color: #333;
+    }
+    li:before {
+        content: "/";
+        color: blue;
+    }
+</style>
+
+<div class="list-container">
+    <ul>
+        <li><a href="#">webpage</a></li>
+        <li><a href="#">webfile</a></li>
+        <li><a href="#">tablepermission</a></li>
+        <li><a href="#">webTemplate</a></li>
+        <li><a href="#">pageTemplate</a></li>
+        <li><a href="#">contentSnippet</a></li>
+        <li><a href="#">liquid</a></li>
+        <li><a href="#">security scan</a></li>
+    </ul>
+</div>
+
+\`;
                     autocompletePanel.style.display = 'block';
                     autocompletePanel.style.position = 'absolute';
                     autocompletePanel.style.top = chatInput.offsetTop - autocompletePanel.offsetHeight + 'px';
@@ -508,7 +555,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     listItems.forEach((item) => {
                         item.addEventListener('click', () => {
                             const selectedItem = item.querySelector('a').textContent;
-                            chatInput.value = selectedItem + ' ';
+                            chatInput.value = '/'+selectedItem + ' ';
                             hideAutocompletePanel();
                         });
                     });
