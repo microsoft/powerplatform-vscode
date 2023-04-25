@@ -73,6 +73,9 @@ function validateTemplateName(
     name: string,
     selectedWorkspaceFolder: string | undefined
 ): string | undefined {
+    if (!name) {
+        return vscode.l10n.t("Please enter a name for the web template.");
+    }
     const file = formatFileName(name);
     const folder = formatFolderName(name);
     if (selectedWorkspaceFolder) {
