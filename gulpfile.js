@@ -267,6 +267,7 @@ async function packageVsix() {
 
     await setPackageInfo(isPreviewBuild ? previewPackageOptions : standardPackageOptions);
 
+    fs.ensureDirSync(packagedir);
     await vsce.createVSIX({
         packagePath: packagedir,
         preRelease: isPreviewBuild,
