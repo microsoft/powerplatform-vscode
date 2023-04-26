@@ -6,11 +6,15 @@
 const CONTAINER_ID = "containerId";
 const LINE_NUMBER_KEY = "lineNumber";
 const COLUMN_NUMBER_KEY = "columnNumber";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tinyliciousClient = require("@fluidframework/tinylicious-client");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fluid = require("fluid-framework");
 
 async function loadContainer(
     vscode,
-    TinyliciousClient,
-    fluid,
+    // tinyliciousClient,
+    // fluid,
     id,
     line,
     column
@@ -28,16 +32,7 @@ async function loadContainer(
     };
 
     console.log("VSCODE WEBVIEW clientProps: ", clientProps);
-
-    // await Promise.all([
-    //     import("https://unpkg.com/@fluidframework/tinylicious-client@1.3.6"),
-    //     import("https://unpkg.com/fluid-framework@1.3.6"),
-    // ])
-    //     .then(async ([tinylicious, fluid]) => {
-    //         console.log(
-    //             "VSCODE WEBVIEW inside the then for promise all imports load"
-    //         );
-    //const { TinyliciousClient } = tinylicious;
+    const { TinyliciousClient } = tinyliciousClient;
 
     console.log("VSCODE WEBVIEW loaded the tiny client object");
     const tinyClient = new TinyliciousClient(clientProps);
@@ -75,8 +70,8 @@ async function loadContainer(
             );
         }
     } catch (error) {
-        console.error(`Error retrieving container: ${error}`);
-        console.error(`Creating new container`);
+        console.log(`Error retrieving container: ${error}`);
+        console.log(`Creating new container`);
 
         const { container } = await tinyClient.createContainer(containerSchema);
         const map = container.initialObjects.position;
@@ -84,6 +79,14 @@ async function loadContainer(
         map.set(COLUMN_NUMBER_KEY, column);
         const containerId = await container.attach();
         map.set(CONTAINER_ID, containerId);
+        console.log("VSCODE WEBVIEW Sending message back");
+
+        // Send a message to the extension
+        await vscode.postMessage({
+            containerId: containerId,
+            lineNumber: line,
+            columnNumber: column,
+        });
         console.log(
             "VSCODE WEBVIEW New position updated to new values",
             containerId,
@@ -102,51 +105,25 @@ function runFluidApp() {
 
     // eslint-disable-next-line no-undef
     const vscode = acquireVsCodeApi();
+    console.log("VSCODE WEBVIEW init require module");
 
-    // require.config({
-    //     paths: {
-    //         "@fluidframework/tinylicious-client":
-    //             "https://unpkg.com/@fluidframework/tinylicious-client@1.3.6/dist/index",
-    //         "fluid-framework":
-    //             "https://unpkg.com/fluid-framework@1.3.6/dist/index",
-    //     },
-    // });
+    // Listen for messages from the extension
+    // eslint-disable-next-line no-undef
+    window.addEventListener("message", async (event) => {
+        const message = event.data;
 
-    require([
-        "@fluidframework/tinylicious-client",
-        "fluid-framework",
-    ], async function (tinyliciousClient, fluid) {
-        console.log("VSCODE WEBVIEW init require module");
+        console.log(
+            `VSCODE WEBVIEW Received greeting from extension: ${JSON.stringify(
+                message
+            )}`
+        );
 
-        // Listen for messages from the extension
-        // eslint-disable-next-line no-undef
-        window.addEventListener("message", async (event) => {
-            const message = event.data;
-
-            console.log(
-                `VSCODE WEBVIEW Received greeting from extension: ${JSON.stringify(
-                    message
-                )}`
-            );
-
-            await loadContainer(
-                vscode,
-                tinyliciousClient,
-                fluid,
-                message.containerId,
-                message.lineNumber,
-                message.columnNumber
-            );
-
-            console.log("VSCODE WEBVIEW Sending message back");
-
-            // Send a message to the extension
-            await vscode.postMessage({
-                containerId: message.containerId,
-                lineNumber: message.lineNumber,
-                columnNumber: message.lineNumber,
-            });
-        });
+        await loadContainer(
+            vscode,
+            message.containerId,
+            message.lineNumber,
+            message.columnNumber
+        );
     });
 }
 

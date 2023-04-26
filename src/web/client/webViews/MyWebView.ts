@@ -47,7 +47,7 @@ export class MyWebview {
             "web",
             "client",
             "webViews",
-            "main.js"
+            "bundle.js"
         );
         console.log("VSCODE WEBVIEW scriptPathOnDisk", scriptPathOnDisk);
 
@@ -67,9 +67,8 @@ export class MyWebview {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>My Webview</title>
         </head>
-        <body>    
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>    
-			<script id="my-web-view" nonce="${nonce}"  type="module" src="${scriptUri}"></script>
+        <body> 
+			<script id="my-web-view" nonce="${nonce}" src="${scriptUri}"></script>
         </body>
       </html>
     `;
