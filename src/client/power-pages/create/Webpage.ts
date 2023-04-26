@@ -78,8 +78,9 @@ export const createWebpage = async (
         const parentPageId = pathsMap.get(webpageInputs.parentPage);
 
         // const pageCopyString = await generatePageCopyWithProgress(prompt);
-        const pageCopyString = response;
-
+        let pageCopyString = response.replace(/\n/g, ""); // remove new lines
+        pageCopyString = pageCopyString.replace(/"/g, '\\"'); // escape double quotes
+        console.log(pageCopyString);
         // Create the webpage using the yo command
         if (!isNullOrEmpty(webpageName) && selectedWorkspaceFolder) {
             const file = formatFileName(webpageName);
@@ -98,6 +99,7 @@ export const createWebpage = async (
             );
 
             const command = `"${yoGenPath}" ${YoSubGenerator.WEBPAGE} "${webpageName}" "${parentPageId}" "${pageTemplateId}" "${pageCopyString}"`;
+            console.log("command "+ command);
             await createRecord(
                 Tables.WEBPAGE,
                 command,
