@@ -57,6 +57,7 @@ body {
 }
 .code-division {
     position: relative;
+    padding-top: 15px;
 }
 /* .action-button {
     background-color: #007acc;
