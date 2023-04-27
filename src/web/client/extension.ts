@@ -22,7 +22,12 @@ import { convertStringtoBase64 } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
-import { IContainerData } from "./utilities/copresenceUtil";
+
+export interface IContainerData {
+    containerId: string;
+    lineNumber: number;
+    columnNumber: number;
+}
 
 export function activate(context: vscode.ExtensionContext): void {
     console.log("VSCODE WEBVIEW vscode extension activate function start");
