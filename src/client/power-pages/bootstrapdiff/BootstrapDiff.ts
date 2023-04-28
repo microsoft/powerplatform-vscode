@@ -33,6 +33,7 @@ export async function bootstrapDiff()
 		if(!editor)
 		{
 			// Handle this to prompt the user to open a file and the run the command
+            vscode.window.showErrorMessage("Open a file before executing the command")
 			return;
 		}
 
@@ -47,14 +48,13 @@ export async function bootstrapDiff()
 		matchedClasses = JSON.parse(diffData);
 		hihglightReplacedClasses(editor);
 
-		const workspaceFolders = vscode.workspace?.workspaceFolders;
-		if(!workspaceFolders)
-		{
-			// Handle open the website folder in vscode
-			return;
-		}
+		const websiteFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri)?.name;
+        if(!websiteFolder)
+        {
+            vscode.window.showErrorMessage("Open Website folder in the wrokspace")
+            return;``
+        }
 
-		const websiteFolder = workspaceFolders[0].name;
 		const v3websiteFolder = websiteFolder.substring(0,websiteFolder.length - 2);
 		const v3FilePath = inputPath.replace(websiteFolder,v3websiteFolder);
 
