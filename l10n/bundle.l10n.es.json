@@ -22,7 +22,6 @@
   "Edit the site": "Editar el sitio",
   "Enter name": "Escribir nombre",
   "Enter the name of the web template": "Escriba el nombre de la plantilla web",
-  "Failed to add webfile: {0}./{0} will be replaced by the error message.": "No se pudo agregar el archivo web: {0}.",
   "Failed to create: {0}./{0} will be replaced by the error message.": "No se pudo crear: {0}.",
   "Failed to disable PAC telemetry.": "No se pudo deshabilitar la telemetría de PAC.",
   "Failed to enable PAC telemetry.": "No se pudo habilitar la telemetría de PAC.",
@@ -30,6 +29,7 @@
   "Failed to get file ready for edit.": "No se pudo preparar el archivo para su edición.",
   "Fetching your file ...": "Capturando su archivo...",
   "File might be referenced by name {0} here./{0} represents the name of the file": "Se puede hacer referencia al archivo por su nombre {0} aquí.",
+  "File(s) already exist. No new files to add": "Los archivos ya existen. No hay archivos nuevos que agregar",
   "Installing Power Pages generator(v{0}).../{0} represents the version number": "Instalando el generador de Power Pages (v{0})...",
   "Maximum 30 characters allowed": "Se permite un máximo de 30 caracteres",
   "Microsoft wants your feeback": "Microsoft quiere conocer sus comentarios",
@@ -65,7 +65,7 @@
   "User: {0}/The {0} represents auth profile's user name (email address))": "Usuario: {0}",
   "We encountered an error preparing the file for edit.": "Se detectó un error al preparar el archivo para su edición.",
   "Web files": "Archivos web",
-  "Webfiles Added!": "¡Archivos web agregados!",
+  "Webfile(s) added successfully": "Sitios web agregados correctamente",
   "You are editing a live, public site ": "Está editando un sitio público activo ",
   "{0} created!/{0} will be replaced by the entity type.": "Se ha creado {0}."
 }

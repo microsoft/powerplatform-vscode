@@ -22,7 +22,6 @@
   "Edit the site": "編輯網站",
   "Enter name": "輸入名稱",
   "Enter the name of the web template": "輸入 Web 範本的名稱",
-  "Failed to add webfile: {0}./{0} will be replaced by the error message.": "無法新增 Web 檔案: {0}。",
   "Failed to create: {0}./{0} will be replaced by the error message.": "無法建立: {0}。",
   "Failed to disable PAC telemetry.": "無法停用 PAC 遙測。",
   "Failed to enable PAC telemetry.": "無法啟用 PAC 遙測。",
@@ -30,6 +29,7 @@
   "Failed to get file ready for edit.": "無法準備好文件進行編輯。",
   "Fetching your file ...": "正在擷取您的檔案...",
   "File might be referenced by name {0} here./{0} represents the name of the file": "此處可能以名稱 {0} 參考檔案。",
+  "File(s) already exist. No new files to add": "檔案已經存在。沒有可新增的新檔案",
   "Installing Power Pages generator(v{0}).../{0} represents the version number": "正在安裝 Power Pages 產生器 (v{0})...",
   "Maximum 30 characters allowed": "最多允許 30 個字元",
   "Microsoft wants your feeback": "Microsoft 想知道您的意見反應",
@@ -65,7 +65,7 @@
   "User: {0}/The {0} represents auth profile's user name (email address))": "使用者: {0}",
   "We encountered an error preparing the file for edit.": "準備要編輯的檔案時發生錯誤。",
   "Web files": "Web 檔案",
-  "Webfiles Added!": "已新增 Web 檔案!",
+  "Webfile(s) added successfully": "已成功新增 Web 檔案",
   "You are editing a live, public site ": "您正在編輯已上線、公開的網站",
   "{0} created!/{0} will be replaced by the entity type.": "{0} 已建立!"
 }
