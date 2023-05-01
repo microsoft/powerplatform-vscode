@@ -186,7 +186,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 const conversation = [
                     {
                        "role": "system",
-                       "content": "You are a web developer well versed with css, html and javascript who is using the power pages platform which was formerly known as power portals. It mostly uses css, html, javascript & yaml for development.",
+                       "content": "You are a web developer well versed with css, html and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development.",
                     }
                 ];
 
@@ -380,7 +380,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     const requestBody = {
                         model: "gpt-3.5-turbo",
                         messages: conversation,
-                        max_tokens: 500,
+                        max_tokens: 1000,
                         temperature: 0.5,
                     };
                     const response = await fetch(endpointUrl, {
@@ -425,13 +425,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 function promptEngine(message) {
                     const type = message.split(' ')[0].slice(1);
                     const templates = getTemplates();
+                    let realPrompt = '';
                     let template = templates[type];
                     if (template === undefined) {
                         template = '';
                     }else{
                         template = "Here is an example. " + template;
+                        realPrompt = message.split(type).slice(1);
+                        console.log('realPrompt = ' + realPrompt);
                     }
-                    message = " based on this information, respond to the prompt mentioned after hyphen -  " + message;
+                    message = " based on this information, respond to the prompt mentioned after hyphen -  " + realPrompt;
                     const basePrompt = templates["base"];
                     const prompt = basePrompt + template + message;
                     console.log('Generated prompt : ' + prompt);
@@ -539,14 +542,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
 <div class="list-container">
     <ul>
-        <li><a href="#">webpage</a></li>
-        <li><a href="#">webfile</a></li>
-        <li><a href="#">tablepermission</a></li>
-        <li><a href="#">webTemplate</a></li>
-        <li><a href="#">pageTemplate</a></li>
-        <li><a href="#">contentSnippet</a></li>
-        <li><a href="#">liquid</a></li>
-        <li><a href="#">security scan</a></li>
+        <li><a href="#">webPage</a></li>
+        <li><a href="#">entityForm</a></li>
+        <li><a href="#">entityList</a></li>
     </ul>
 </div>
 
