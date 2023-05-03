@@ -1,8 +1,0 @@
-# VSCE sometimes chooses to create an empty file named "package" instead of putting the vsix package
-# into the directory of that same name.  The point of this .gitignore is to keep this directory
-# existent on all systems for VSCE to correctly create the output file in.
-
-# Ignore everything in this directory
-*
-# Except this file
-!.gitignore

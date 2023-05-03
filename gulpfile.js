@@ -267,6 +267,7 @@ async function packageVsix() {
 
     await setPackageInfo(isPreviewBuild ? previewPackageOptions : standardPackageOptions);
 
+    fs.ensureDirSync(packagedir);
     await vsce.createVSIX({
         packagePath: packagedir,
         preRelease: isPreviewBuild,
@@ -359,7 +360,7 @@ async function snapshot() {
 }
 
 const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.22.3';
+const cliVersion = '1.22.4';
 
 const recompile = gulp.series(
     clean,
