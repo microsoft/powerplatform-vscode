@@ -2,6 +2,7 @@ node_modules/
 out/
 dist/
 /coverage/
+/package
 /package/
 .vs/
 # Logs

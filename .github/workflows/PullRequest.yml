@@ -23,14 +23,14 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         lfs: true
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
-        node-version: 18.x
+        node-version: 18
 
     # - name: Install dependencies
     #   run: npm i -g npm
@@ -43,6 +43,6 @@ jobs:
         AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
 
     - name: Run integration tests
-      uses: GabrielBB/xvfb-action@v1.6
+      uses: coactions/setup-xvfb@v1
       with:
         run: npm run test-integration
