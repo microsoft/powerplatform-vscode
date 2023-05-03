@@ -31,6 +31,7 @@ import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
+import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -92,6 +93,17 @@ export async function activate(
                     commandId: "microsoft-powerapps-portals.preview-show",
                 });
                 PortalWebView.createOrShow();
+            }
+        )
+    );
+    
+    // registering bootstrapdiff command
+    _context.subscriptions.push(
+        vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async() => {
+                _telemetry.sendTelemetryEvent("StartCommand", {
+                    commandId: "microsoft-powerapps-portals.bootstrap-diff",
+                });
+                bootstrapDiff();
             }
         )
     );
