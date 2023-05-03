@@ -117,6 +117,9 @@ async function getContentSnippetInputs(selectedWorkspaceFolder: string) {
     }
 
     async function validateNameIsUnique(name: string) {
+        if (!name) {
+            return vscode.l10n.t("Please enter a name for the content snippet.");
+        }
         const folder = formatFolderName(name);
         const filePath = path.join(
             selectedWorkspaceFolder,

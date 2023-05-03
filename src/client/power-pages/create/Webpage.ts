@@ -182,6 +182,9 @@ async function getWebpageInputs(
     }
 
     async function validateNameIsUnique(name: string) {
+        if (!name) {
+            return vscode.l10n.t("Please enter a name for the webpage.");
+        }
         if (
             webpageNames
                 .map((n) => n.toLowerCase())
