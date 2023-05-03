@@ -37,4 +37,6 @@ export enum telemetryEventNames {
     RENDER_NPS = "WebExtensionNPSRenderSurveyForm",
     RENDER_NPS_FAILED = "WebExtensionNPSRenderSurveyFormFailed",
     WEB_EXTENSION_CREATE_ENTITY_FOLDER = "WebExtensionCreateEntityFolder",
+    WEB_EXTENSION_FILE_HAS_DIRTY_CHANGES = "WebExtensionFileHasDirtyChanges",
+    WEB_EXTENSION_DIFF_VIEW_TRIGGERED = "WebExtensionDiffViewTriggered",
 }

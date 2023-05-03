@@ -84,6 +84,10 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 await EtagHandlerService.getLatestAndUpdateMetadata(uri.fsPath);
             const entityEtagValue = getEntityEtag(getFileEntityId(uri.fsPath));
 
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FILE_HAS_DIRTY_CHANGES
+            );
+
             // Triggers diff view logic in web extension using file system provider in-built flows
             if (
                 latestContent.length > 0 &&
@@ -91,6 +95,9 @@ export class PortalsFS implements vscode.FileSystemProvider {
             ) {
                 await this.updateMtime(uri, latestContent);
                 updateEntityEtag(uri.fsPath, entityEtagValue);
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_TRIGGERED
+                );
             }
         }
 
