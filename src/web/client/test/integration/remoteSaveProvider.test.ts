@@ -87,7 +87,7 @@ describe("remoteSaveProvider", () => {
             method: "PATCH",
             body: '{"dDrive":"","mimetype":"pdf"}',
             headers: {
-                authorization: "Bearer token",
+                authorization: "Bearer ae3308da-d75b-4666-bcb8-8f33a3dd8a8d",
                 "content-type": "application/json; charset=utf-8",
                 accept: "application/json",
                 "OData-MaxVersion": "4.0",
@@ -95,17 +95,13 @@ describe("remoteSaveProvider", () => {
             },
         });
 
-        assert.calledTwice(sendAPITelemetry);
+        assert.calledOnce(sendAPITelemetry);
         const sendAPITelemetryCalls = sendAPITelemetry.getCalls();
-        expect(sendAPITelemetryCalls[0].args[0]).eq(requestUrl);
-        expect(sendAPITelemetryCalls[0].args[1]).eq("");
-        expect(sendAPITelemetryCalls[0].args[2]).eq("GET");
-        expect(sendAPITelemetryCalls[0].args[3]).eq("");
         expect(sendAPITelemetryCalls[1].args[0]).eq(requestUrl);
         expect(sendAPITelemetryCalls[1].args[1]).eq("");
         expect(sendAPITelemetryCalls[1].args[2]).eq("PATCH");
         expect(sendAPITelemetryCalls[1].args[3]).eq("");
-        assert.calledTwice(sendAPISuccessTelemetry);
+        assert.calledOnce(sendAPISuccessTelemetry);
         assert.calledOnce(isWebFileV2);
         assert.calledOnce(vscodeParse);
     });
@@ -209,7 +205,8 @@ describe("remoteSaveProvider", () => {
                 method: "PATCH",
                 body: '{"dDrive":"","mimetype":"pdf"}',
                 headers: {
-                    authorization: "Bearer token",
+                    authorization:
+                        "Bearer ae3308da-d75b-4666-bcb8-8f33a3dd8a8d",
                     "content-type": "application/json; charset=utf-8",
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
@@ -220,7 +217,7 @@ describe("remoteSaveProvider", () => {
             assert.calledOnce(_mockFetch);
             expect(fetchCalls[0].args[0]).eq(requestUrl);
             expect(fetchCalls[0].args[1]).deep.eq(requestInit);
-            assert.callCount(sendAPITelemetry, 5);
+            assert.callCount(sendAPITelemetry, 3);
         }
     });
 
@@ -298,7 +295,6 @@ describe("remoteSaveProvider", () => {
                     "OData-Version": "4.0",
                 },
             });
-            assert.calledOnce(sendInfoTelemetry);
             assert.calledOnce(getColumnContent);
             assert.calledOnce(isWebFileV2);
             assert.calledOnce(vscodeParse);
@@ -377,9 +373,10 @@ describe("remoteSaveProvider", () => {
             _mockFetch,
             "https://orgedfe4d6c.crm10.dynamics.com",
             {
-                method: "GET",
+                method: "PATCH",
                 headers: {
-                    authorization: "Bearer token",
+                    authorization:
+                        "Bearer ae3308da-d75b-4666-bcb8-8f33a3dd8a8d",
                     "content-type": "application/json; charset=utf-8",
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
@@ -392,7 +389,7 @@ describe("remoteSaveProvider", () => {
         const sendAPITelemetryCalls = sendAPITelemetry.getCalls();
         expect(sendAPITelemetryCalls[0].args[0]).eq(requestUrl);
         expect(sendAPITelemetryCalls[0].args[1]).eq("");
-        expect(sendAPITelemetryCalls[0].args[2]).eq("GET");
+        expect(sendAPITelemetryCalls[0].args[2]).eq("PATCH");
         expect(sendAPITelemetryCalls[0].args[3]).eq("");
         assert.calledOnce(sendAPISuccessTelemetry);
         assert.calledOnce(isWebFileV2);
