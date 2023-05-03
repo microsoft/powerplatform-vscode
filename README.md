@@ -11,10 +11,23 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
+1.1.25:
+  - pac CLI 1.22.4 (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
+1.1.24:
+  - hotfix to pac CLI 1.22.3 for `pac solution unpack` placing AppModule files in invalid directory
+
+1.1.23:
+ - pac CLI 1.22.2 (Mar refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+ - Improved Paportal manifest generation by maintaining a consistent order
+
 1.1.19:
  - pac CLI 1.21.13 (Feb refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
  - Desktop extension now supports create, delete and rename for power pages site entities like webpage, webfile, templates and content-snippets
  - Enhanced intellisense support - Auto-complete for Dataverse entity tags, template tags, filters, portal-specific liquid objects & their attributes
+
+1.1.16:
+ - pac CLI 1.21.8 (Dec refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 
 1.1.14:
  - pac CLI 1.21.4 (Nov refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
@@ -110,9 +123,10 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Requirements
 
-- VSCode >= 1.5x
-- .NET Windows 4.x
-- macOS/Linux/WSL: dotnetCore SDK 5.x or 6.x
+- VSCode >= 1.73.0
+- Windows: .NET 4.8
+- macOS/Linux/WSL: [.NET 6.0+ SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+  - Apple Silicon arm64 machines (M1/M2) require BOTH the x64 and arm64 versions of .NET 6.0
 
 ## Getting Started
 

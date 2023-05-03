@@ -10,8 +10,10 @@ import * as vscode from "vscode";
 import { ITelemetry } from "../../../telemetry/ITelemetry";
 import { FileCreateEvent, sendTelemetryEvent} from "../../telemetry";
 import {
+    ERROR_MESSAGE,
     NOT_A_PORTAL_DIRECTORY,
     NO_WORKSPACEFOLDER_FOUND,
+    SHOW_OUTPUT_PANEL,
     Tables,
     WEBSITE_YML,
 } from "../CreateOperationConstants";
@@ -292,3 +294,15 @@ export function isWebsiteYML(directory: string): string {
 }
 
 
+export function logErrorAndNotifyUser(errorMessage: string) {
+    const outputChannel = vscode.window.createOutputChannel("Powerplatfrom");
+    outputChannel.appendLine(`Error: ${errorMessage}`);
+    vscode.window.showErrorMessage(
+      ERROR_MESSAGE,
+      SHOW_OUTPUT_PANEL
+    ).then((selection) => {
+      if (selection === SHOW_OUTPUT_PANEL) {
+        outputChannel.show();
+      }
+    });
+  }

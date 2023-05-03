@@ -120,15 +120,10 @@
     ]
   },
   "No parent pages found for adding webfile": "No parent pages found for adding webfile",
-  "Failed to add webfile: {0}./{0} will be replaced by the error message.": {
-    "message": "Failed to add webfile: {0}.",
-    "comment": [
-      "{0} will be replaced by the error message."
-    ]
-  },
-  "Webfiles Added!": "Webfiles Added!",
+  "File(s) already exist. No new files to add": "File(s) already exist. No new files to add",
   "Web files": "Web files",
   "Choose parent page": "Choose parent page",
+  "Webfile(s) added successfully": "Webfile(s) added successfully",
   "No page templates found": "No page templates found",
   "No webpages found": "No webpages found",
   "New Webpage": "New Webpage",
