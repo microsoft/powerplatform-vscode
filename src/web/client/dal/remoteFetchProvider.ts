@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import fetch from "node-fetch";
 import {
     convertfromBase64ToString,
+    GetFileContent,
     GetFileNameWithExtension,
 } from "../utilities/commonUtil";
 import { getRequestURL, updateEntityId } from "../utilities/urlBuilderUtil";
@@ -225,17 +226,9 @@ async function createContentFiles(
             const attributePath: IAttributePath = getAttributePath(
                 attributeArray[counter]
             );
-            let fileContent =
-                result[attributePath.source] ?? Constants.NO_CONTENT;
 
-            if (
-                result[attributePath.source] &&
-                attributePath.relativePath.length
-            ) {
-                fileContent = JSON.parse(result[attributePath.source])[
-                    attributePath.relativePath
-                ];
-            } else if (mappingEntityFetchQuery) {
+            let fileContent = GetFileContent(result, attributePath);
+            if (mappingEntityFetchQuery) {
                 fileContent = await getMappingEntityContent(
                     mappingEntityFetchQuery,
                     attributeArray[counter],
