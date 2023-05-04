@@ -266,11 +266,6 @@ describe("remoteSaveProvider", () => {
             "sendAPIFailureTelemetry"
         );
 
-        const sendInfoTelemetry = stub(
-            WebExtensionContext.telemetry,
-            "sendInfoTelemetry"
-        );
-
         const showErrorDialog = stub(errorHandler, "showErrorDialog");
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
         stub(urlBuilderUtil, "getRequestURL").returns(requestUrl);
