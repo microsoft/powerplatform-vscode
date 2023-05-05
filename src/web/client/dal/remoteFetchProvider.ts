@@ -28,9 +28,9 @@ import { folderExportType, schemaEntityKey } from "../schema/constants";
 import { getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 
 export async function fetchDataFromDataverseAndUpdateVFS(portalFs: PortalsFS) {
-    const requestURLs = getRequestUrlForEntities();
+    const entityRequestURLs = getRequestUrlForEntities();
 
-    requestURLs.forEach(async (entityRequestUrl) => {
+    entityRequestURLs.forEach(async (entity) => {
         let requestSentAtTime = new Date().getTime();
         try {
             const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
@@ -38,13 +38,13 @@ export async function fetchDataFromDataverseAndUpdateVFS(portalFs: PortalsFS) {
             ) as string;
 
             WebExtensionContext.telemetry.sendAPITelemetry(
-                entityRequestUrl.requestUrl,
-                entityRequestUrl.entityName,
+                entity.requestUrl,
+                entity.entityName,
                 Constants.httpMethod.GET
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(entityRequestUrl.requestUrl, {
+            const response = await fetch(entity.requestUrl, {
                 headers: getHeader(WebExtensionContext.dataverseAccessToken),
             });
 
@@ -53,8 +53,8 @@ export async function fetchDataFromDataverseAndUpdateVFS(portalFs: PortalsFS) {
                     vscode.l10n.t("Failed to fetch file content.")
                 );
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                    entityRequestUrl.requestUrl,
-                    entityRequestUrl.entityName,
+                    entity.requestUrl,
+                    entity.entityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
                     JSON.stringify(response)
@@ -63,8 +63,8 @@ export async function fetchDataFromDataverseAndUpdateVFS(portalFs: PortalsFS) {
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-                entityRequestUrl.requestUrl,
-                entityRequestUrl.entityName,
+                entity.requestUrl,
+                entity.entityName,
                 Constants.httpMethod.GET,
                 new Date().getTime() - requestSentAtTime
             );
@@ -83,7 +83,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(portalFs: PortalsFS) {
             for (let counter = 0; counter < data.length; counter++) {
                 await createContentFiles(
                     data[counter],
-                    entityRequestUrl.entityName,
+                    entity.entityName,
                     portalFs,
                     dataverseOrgUrl
                 );
@@ -97,8 +97,8 @@ export async function fetchDataFromDataverseAndUpdateVFS(portalFs: PortalsFS) {
                 )
             );
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                entityRequestUrl.requestUrl,
-                entityRequestUrl.entityName,
+                entity.requestUrl,
+                entity.entityName,
                 Constants.httpMethod.GET,
                 new Date().getTime() - requestSentAtTime,
                 errorMsg

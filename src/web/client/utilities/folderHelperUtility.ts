@@ -39,7 +39,7 @@ export function getFolderSubUris(): string[] {
 }
 
 export function getRequestUrlForEntities(): IEntityRequestUrl[] {
-    const requestURLs: IEntityRequestUrl[] = [];
+    const entityRequestURLs: IEntityRequestUrl[] = [];
     const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
         queryParameters.ORG_URL
     ) as string;
@@ -76,7 +76,7 @@ export function getRequestUrlForEntities(): IEntityRequestUrl[] {
                     false
                 );
 
-                requestURLs.push({
+                entityRequestURLs.push({
                     requestUrl: requestURL,
                     entityName: entityName,
                 });
@@ -84,5 +84,5 @@ export function getRequestUrlForEntities(): IEntityRequestUrl[] {
         }
     );
 
-    return requestURLs;
+    return entityRequestURLs;
 }
