@@ -28,6 +28,7 @@ export enum telemetryEventNames {
     WEB_EXTENSION_CREATE_ROOT_FOLDER = "WebExtensionCreateRootFolder",
     WEB_EXTENSION_ENTITY_CONTENT_CHANGED = "WebExtensionEntityConentChanged",
     WEB_EXTENSION_ENTITY_CONTENT_SAME = "WebExtensionEntityContentSame",
+    WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE = "WebExtensionEntityContentUnexpectedResponse",
     NPS_AUTHENTICATION_STARTED = "WebExtensionNPSAuthenticationStarted",
     NPS_AUTHENTICATION_COMPLETED = "WebExtensionNPSAuthenticationCompleted",
     NPS_AUTHENTICATION_FAILED = "WebExtensionNPSAuthenticationFailed",
@@ -36,4 +37,6 @@ export enum telemetryEventNames {
     RENDER_NPS = "WebExtensionNPSRenderSurveyForm",
     RENDER_NPS_FAILED = "WebExtensionNPSRenderSurveyFormFailed",
     WEB_EXTENSION_CREATE_ENTITY_FOLDER = "WebExtensionCreateEntityFolder",
+    WEB_EXTENSION_FILE_HAS_DIRTY_CHANGES = "WebExtensionFileHasDirtyChanges",
+    WEB_EXTENSION_DIFF_VIEW_TRIGGERED = "WebExtensionDiffViewTriggered",
 }

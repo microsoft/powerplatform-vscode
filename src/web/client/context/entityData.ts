@@ -29,6 +29,11 @@ export class EntityData implements IEntityData {
         return this._entityColumn;
     }
 
+    // Setters
+    public set setEntityEtag(value: string) {
+        this._entityEtag = value;
+    }
+
     constructor(
         entityId: string,
         entityName: string,
