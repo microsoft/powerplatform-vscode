@@ -3,18 +3,18 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IAttributePath } from "../utilities/schemaHelperUtil";
+import { IAttributePath } from "../common/interfaces";
 
 export interface IFileData {
-    entityName: string,
-    fileName: string,
-    entityId: string,
-    entityEtag: string,
-    entityFileExtensionType: string,
-    attributePath: IAttributePath,
-    hasDirtyChanges: boolean,
-    encodeAsBase64: boolean | undefined,
-    mimeType: string | undefined
+    entityName: string;
+    fileName: string;
+    entityId: string;
+    entityEtag: string;
+    entityFileExtensionType: string;
+    attributePath: IAttributePath;
+    hasDirtyChanges: boolean;
+    encodeAsBase64: boolean | undefined;
+    mimeType: string | undefined;
 }
 
 export class FileData implements IFileData {
@@ -29,19 +29,41 @@ export class FileData implements IFileData {
     private _mimeType: string | undefined;
 
     // Getters
-    public get entityName(): string { return this._entityName; }
-    public get fileName(): string { return this._fileName; }
-    public get entityId(): string { return this._entityId; }
-    public get entityEtag(): string { return this._entityEtag; }
-    public get entityFileExtensionType(): string { return this._entityFileExtensionType; }
-    public get attributePath(): IAttributePath { return this._attributePath; }
-    public get encodeAsBase64(): boolean | undefined { return this._encodeAsBase64; }
-    public get mimeType(): string | undefined { return this._mimeType; }
-    public get hasDirtyChanges(): boolean { return this._hasDirtyChanges; }
+    public get entityName(): string {
+        return this._entityName;
+    }
+    public get fileName(): string {
+        return this._fileName;
+    }
+    public get entityId(): string {
+        return this._entityId;
+    }
+    public get entityEtag(): string {
+        return this._entityEtag;
+    }
+    public get entityFileExtensionType(): string {
+        return this._entityFileExtensionType;
+    }
+    public get attributePath(): IAttributePath {
+        return this._attributePath;
+    }
+    public get encodeAsBase64(): boolean | undefined {
+        return this._encodeAsBase64;
+    }
+    public get mimeType(): string | undefined {
+        return this._mimeType;
+    }
+    public get hasDirtyChanges(): boolean {
+        return this._hasDirtyChanges;
+    }
 
     // Setters
-    public set setHasDirtyChanges(value: boolean) { this._hasDirtyChanges = value; }
-    public set setEntityEtag(value: string) { this._entityEtag = value; }
+    public set setHasDirtyChanges(value: boolean) {
+        this._hasDirtyChanges = value;
+    }
+    public set setEntityEtag(value: string) {
+        this._entityEtag = value;
+    }
 
     constructor(
         entityId: string,

@@ -13,10 +13,10 @@ import * as portalSchemaReader from "../../schema/portalSchemaReader";
 import * as Constants from "../../common/constants";
 import * as authenticationProvider from "../../common/authenticationProvider";
 import { telemetryEventNames } from "../../telemetry/constants";
-import { IAttributePath } from "../../utilities/schemaHelperUtil";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import { getHeader } from "../../common/authenticationProvider";
+import { IAttributePath } from "../../common/interfaces";
 
 describe("WebExtensionContext", () => {
     afterEach(() => {

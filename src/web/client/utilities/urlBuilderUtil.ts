@@ -3,7 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { httpMethod } from "../common/constants";
+import {
+    ENABLE_MULTI_FILE_FEATURE,
+    httpMethod,
+    queryParameters,
+} from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import {
     entityAttributesWithBase64Encoding,
@@ -43,7 +47,9 @@ export function getRequestURL(
                     parameterizedUrlTemplate +
                     (attributeQueryParameters ??
                         getEntity(entity)?.get(
-                            schemaEntityKey.FETCH_QUERY_PARAMETERS
+                            ENABLE_MULTI_FILE_FEATURE
+                                ? schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS
+                                : schemaEntityKey.FETCH_QUERY_PARAMETERS
                         ));
                 break;
             default:
@@ -77,7 +83,20 @@ export function getRequestURL(
             WebExtensionContext.schemaDataSourcePropertiesMap.get(
                 schemaKey.DATAVERSE_API_VERSION
             ) as string
-        );
+        )
+        .replace(
+            "{websiteId}",
+            WebExtensionContext.urlParametersMap.get(
+                queryParameters.WEBSITE_ID
+            ) as string
+        )
+        .replace(
+            "{entity}",
+            getEntity(entity)?.get(
+                schemaEntityKey.DATAVERSE_ENTITY_NAME
+            ) as string
+        )
+        .replace("{entityId}", entityId);
 }
 
 export function getCustomRequestURL(

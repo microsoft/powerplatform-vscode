@@ -4,8 +4,8 @@
  */
 
 import { NO_CONTENT } from "../common/constants";
+import { IAttributePath } from "../common/interfaces";
 import { schemaEntityName } from "../schema/constants";
-import { IAttributePath } from "./schemaHelperUtil";
 
 // decodes base64 to text
 export function convertfromBase64ToString(data: string) {

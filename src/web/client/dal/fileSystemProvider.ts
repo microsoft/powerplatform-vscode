@@ -16,8 +16,7 @@ import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
 import { saveData } from "./remoteSaveProvider";
 import { ERRORS } from "../common/errorHandler";
 import { telemetryEventNames } from "../telemetry/constants";
-import { getEntity } from "../utilities/schemaHelperUtil";
-import { folderExportType, schemaEntityKey } from "../schema/constants";
+import { getFolderSubUris } from "../utilities/folderHelperUtility";
 import { EtagHandlerService } from "../services/etagHandlerService";
 import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
 import {
@@ -380,28 +379,27 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     private async createEntityFolder(portalFolderName: string) {
-        const entityDetails = getEntity(WebExtensionContext.defaultEntityType);
-        const exportType = entityDetails?.get(schemaEntityKey.EXPORT_TYPE);
-        const subUri = entityDetails?.get(schemaEntityKey.FILE_FOLDER_NAME);
+        const subUris = getFolderSubUris();
 
-        if (subUri?.length === 0) {
-            throw new Error(ERRORS.SUBURI_EMPTY);
-        }
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_CREATE_ENTITY_FOLDER
-        );
+        subUris.forEach(async (subUri) => {
+            try {
+                if (subUri?.length === 0) {
+                    throw new Error(ERRORS.SUBURI_EMPTY);
+                }
 
-        let filePathInPortalFS = "";
-        if (
-            exportType &&
-            (exportType === folderExportType.SubFolders ||
-                exportType === folderExportType.SingleFolder)
-        ) {
-            filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
-            await this.createDirectory(
-                vscode.Uri.parse(filePathInPortalFS, true)
-            );
-        }
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_CREATE_ENTITY_FOLDER,
+                    { entityFolderName: subUri }
+                );
+
+                const filePathInPortalFS = `${PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
+                await this.createDirectory(
+                    vscode.Uri.parse(filePathInPortalFS, true)
+                );
+            } catch {
+                // TODO - add telemetry
+            }
+        });
     }
 
     // --- Dataverse calls

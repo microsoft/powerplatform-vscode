@@ -4,8 +4,8 @@
  */
 
 import * as vscode from "vscode";
-import { IAttributePath } from "../utilities/schemaHelperUtil";
 import { FileData } from "./fileData";
+import { IAttributePath } from "../common/interfaces";
 
 export class FileDataMap {
     private fileMap: Map<string, FileData> = new Map<string, FileData>();

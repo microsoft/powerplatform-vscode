@@ -4,7 +4,7 @@
  */
 
 import WebExtensionContext from "../WebExtensionContext";
-import { IAttributePath } from "./schemaHelperUtil";
+import { IAttributePath } from "../common/interfaces";
 
 // File utility functions
 export function fileHasDirtyChanges(fileFsPath: string) {

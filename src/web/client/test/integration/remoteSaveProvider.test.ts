@@ -10,10 +10,10 @@ import { saveData } from "../../dal/remoteSaveProvider";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import WebExtensionContext from "../../../client/WebExtensionContext";
 import { expect } from "chai";
-import { IAttributePath } from "../../utilities/schemaHelperUtil";
 import * as errorHandler from "../../common/errorHandler";
 import { BAD_REQUEST, httpMethod } from "../../common/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
+import { IAttributePath } from "../../common/interfaces";
 
 describe("remoteSaveProvider", () => {
     afterEach(() => {
