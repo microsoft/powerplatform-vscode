@@ -47,6 +47,7 @@ export class MyWebview {
             "web",
             "client",
             "webViews",
+            "dist",
             "bundle.js"
         );
         console.log("VSCODE WEBVIEW scriptPathOnDisk", scriptPathOnDisk);

@@ -204,6 +204,28 @@ export function activate(context: vscode.ExtensionContext): void {
                     message
                 )}`
             );
+            if (message.type === "client-pos") {
+                const activeEditor = vscode.window.activeTextEditor;
+                const map = message.map;
+
+                if (activeEditor) {
+                    const newPosition = new vscode.Position(
+                        map.get("lineNumber"),
+                        map.get("columnNumber")
+                    ); // line 3, column 1
+                    const newSelection = new vscode.Selection(
+                        newPosition,
+                        newPosition
+                    );
+                    activeEditor.selection = newSelection;
+                    console.log(
+                        "VSCODE WEBVIEW New position updated to existing values",
+                        message.line,
+                        message.column
+                    );
+                }
+                vscode.window.showInformationMessage(message);
+            }
             WebExtensionContext.containerId = message.containerId;
         }
     );
@@ -232,6 +254,8 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                         )?.entityId as string;
                     if (entityId) {
                         // send data to webview
+                        // containerId:
+                        //     "be28ee28-c020-4d1a-8781-02ea3dfb3e93",
                         await WebExtensionContext.myWebView.panel.webview.postMessage(
                             {
                                 containerId: WebExtensionContext.containerId,
@@ -387,6 +411,9 @@ export function showWalkthrough(
             }
         )
     );
+    WebExtensionContext.myWebView.panel.onDidDispose(() => {
+        console.log("disposing webview");
+    });
 }
 
 export async function deactivate(): Promise<void> {

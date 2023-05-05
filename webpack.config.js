@@ -3,76 +3,82 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-'use strict';
+"use strict";
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const path = require('path');
-const webpack = require('webpack');
-const { dependencies } = require('./package.json');
-
+const path = require("path");
+const webpack = require("webpack");
+const { dependencies } = require("./package.json");
 
 /**@type {import('webpack').Configuration}*/
 const nodeConfig = {
-    target: 'node',
-    mode: 'development',
+    target: "node",
+    mode: "development",
 
     entry: {
-        extension: './src/client/extension.ts',
-        yamlServer: './src/server/YamlServer.ts',
-        htmlServer: './src/server/HtmlServer.ts'
+        extension: "./src/client/extension.ts",
+        yamlServer: "./src/server/YamlServer.ts",
+        htmlServer: "./src/server/HtmlServer.ts",
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: '[name].js',
+        path: path.resolve(__dirname, "dist"),
+        filename: "[name].js",
         libraryTarget: "commonjs2",
     },
-    devtool: 'source-map',
+    devtool: "source-map",
     externals: {
         vscode: "commonjs vscode",
 
         // These dependencies are ignored because we don't use them, and App Insights has try-catch protecting their loading if they don't exist
         // See: https://github.com/microsoft/vscode-extension-telemetry/issues/41#issuecomment-598852991
-        'applicationinsights-native-metrics': 'commonjs applicationinsights-native-metrics',
-        '@opentelemetry/tracing': "commonjs @opentelemetry/tracing"
+        "applicationinsights-native-metrics":
+            "commonjs applicationinsights-native-metrics",
+        "@opentelemetry/tracing": "commonjs @opentelemetry/tracing",
     },
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: [".ts", ".js"],
     },
     module: {
-        rules: [{
-            test: /\.ts$/,
-            exclude: /node_modules/,
-            use: [{
-                loader: 'ts-loader'
-            }
-            ]
-        }]
+        rules: [
+            {
+                test: /\.ts$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: "ts-loader",
+                    },
+                ],
+            },
+        ],
     },
-    plugins:[
+    plugins: [
         new webpack.DefinePlugin({
-            __GENERATOR_PACKAGE_VERSION__: JSON.stringify(dependencies["@microsoft/generator-powerpages"] || "1.0.0"), // get the currently used version of powerpages generator with fallback to ^1.0.0
+            __GENERATOR_PACKAGE_VERSION__: JSON.stringify(
+                dependencies["@microsoft/generator-powerpages"] || "1.0.0"
+            ), // get the currently used version of powerpages generator with fallback to ^1.0.0
         }),
-    ]
+    ],
 };
 const webConfig = {
-    mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
-    target: 'webworker', // extensions run in a webworker context
+    mode: "none", // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+    target: "webworker", // extensions run in a webworker context
     entry: {
-        'extension': './src/web/client/extension.ts',
-        'test/unit/extension': './src/web/client/test/unit/extension.test.ts',
-        'client/test/integration/index': './src/client/test/Integration/index.ts',
-        'test/integration/index': './src/web/client/test/integration/index.ts',
+        extension: "./src/web/client/extension.ts",
+        "test/unit/extension": "./src/web/client/test/unit/extension.test.ts",
+        "client/test/integration/index":
+            "./src/client/test/Integration/index.ts",
+        "test/integration/index": "./src/web/client/test/integration/index.ts",
     },
     output: {
-        filename: '[name].js',
-        path: path.join(__dirname, './dist/web'),
-        libraryTarget: 'commonjs',
-        devtoolModuleFilenameTemplate: '../../[resource-path]'
+        filename: "[name].js",
+        path: path.join(__dirname, "./dist/web"),
+        libraryTarget: "commonjs",
+        devtoolModuleFilenameTemplate: "../../[resource-path]",
     },
     resolve: {
-        mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
-        extensions: ['.ts', '.js'], // support ts-files and js-files
+        mainFields: ["browser", "module", "main"], // look for `browser` entry point in imported node modules
+        extensions: [".ts", ".js"], // support ts-files and js-files
         alias: {
             // provides alternate implementation for node module and source files
         },
@@ -80,39 +86,88 @@ const webConfig = {
             // Webpack 5 no longer polyfills Node.js core modules automatically.
             // see https://webpack.js.org/configuration/resolve/#resolvefallback
             // for the list of Node.js core module polyfills.
-            "constants": require.resolve("constants-browserify"),
-            'assert': require.resolve('assert'),
-            "os": require.resolve("os-browserify"),
-            "path": require.resolve("path-browserify"),
-            'stream': require.resolve("stream-browserify"),
-            'util': false
-        }
+            constants: require.resolve("constants-browserify"),
+            assert: require.resolve("assert"),
+            os: require.resolve("os-browserify"),
+            path: require.resolve("path-browserify"),
+            stream: require.resolve("stream-browserify"),
+            util: false,
+        },
     },
     module: {
-        rules: [{
-            test: /\.ts$/,
-            exclude: /node_modules/,
-            use: [{
-                loader: 'ts-loader'
-            }]
-        }]
+        rules: [
+            {
+                test: /\.ts$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: "ts-loader",
+                    },
+                ],
+            },
+        ],
     },
     plugins: [
         new webpack.ProvidePlugin({
-            process: 'process/browser', // provide a shim for the global `process` variable
+            process: "process/browser", // provide a shim for the global `process` variable
         }),
     ],
     externals: {
-        'vscode': 'commonjs vscode', // ignored because it doesn't exist
-        'fs': 'fs',
+        vscode: "commonjs vscode", // ignored because it doesn't exist
+        fs: "fs",
     },
     performance: {
-        hints: false
+        hints: false,
     },
-    devtool: 'nosources-source-map', // create a source map that points to the original source file
+    devtool: "nosources-source-map", // create a source map that points to the original source file
     infrastructureLogging: {
         level: "log", // enables logging required for problem matchers
     },
 };
+// const bundleConfig = {
+//     entry: "./src/web/client/webViews/main.js",
+//     output: {
+//         filename: "webpack.js",
+//         path: path.resolve(__dirname, "src", "web", "client", "webViews"),
+//     },
+//     externals: {
+//         vscode: "commonjs vscode",
+//     },
+// };
 
-module.exports = [nodeConfig, webConfig];
+const workerConfig = {
+    // mode: "development",
+    target: "webworker",
+    entry: ["./src/web/client/webViews/main.js"],
+
+    output: {
+        filename: "bundle.js",
+        path: path.join(__dirname, "src", "web", "client", "webViews", "dist"),
+        // globalObject: "this",
+    },
+    externals: {
+        vscode: "commonjs vscode",
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: { loader: "babel-loader" },
+            },
+            {
+                test: /\.worker\.js$/,
+                exclude: /node_modules/,
+                loader: "worker-loader",
+                options: { publicPath: "/", inline: "fallback" },
+            },
+        ],
+    },
+    plugins: [
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1,
+        }),
+    ],
+};
+
+module.exports = [nodeConfig, webConfig, workerConfig];
