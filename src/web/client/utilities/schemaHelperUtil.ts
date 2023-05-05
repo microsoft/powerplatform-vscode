@@ -10,11 +10,7 @@ import {
     entityAttributesWithBase64Encoding,
     schemaEntityName,
 } from "../schema/constants";
-
-export interface IAttributePath {
-    source: string;
-    relativePath: string;
-}
+import { IAttributePath } from "../common/interfaces";
 
 export function getPortalSchema(schema: string) {
     if (

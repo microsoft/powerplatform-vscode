@@ -9,14 +9,10 @@ import {
     httpMethod,
     queryParameters,
 } from "../common/constants";
+import { IEntityRequestUrl } from "../common/interfaces";
 import { schemaEntityKey } from "../schema/constants";
 import { getEntity } from "./schemaHelperUtil";
 import { getRequestURL } from "./urlBuilderUtil";
-
-export interface IEntityRequestUrl {
-    requestUrl: string;
-    entityName: string;
-}
 
 export function getFolderSubUris(): string[] {
     const subUris: string[] = [];

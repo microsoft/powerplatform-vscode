@@ -21,13 +21,13 @@ import {
     getPortalLanguageIdToLcidMap,
     getWebsiteIdToLcidMap,
     getWebsiteLanguageIdToPortalLanguageIdMap,
-    IAttributePath,
 } from "./utilities/schemaHelperUtil";
 import { getCustomRequestURL } from "./utilities/urlBuilderUtil";
 import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
+import { IAttributePath } from "./common/interfaces";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
