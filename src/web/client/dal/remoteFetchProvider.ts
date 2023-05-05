@@ -19,13 +19,13 @@ import {
     encodeAsBase64,
     getAttributePath,
     getEntity,
-    IAttributePath,
     isBase64Encoded,
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from "../telemetry/constants";
 import { folderExportType, schemaEntityKey } from "../schema/constants";
 import { getRequestUrlForEntities } from "../utilities/folderHelperUtility";
+import { IAttributePath } from "../common/interfaces";
 
 export async function fetchDataFromDataverseAndUpdateVFS(portalFs: PortalsFS) {
     const entityRequestURLs = getRequestUrlForEntities();

@@ -5,13 +5,13 @@
 
 import { getHeader } from "../common/authenticationProvider";
 import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
+import { IAttributePath } from "../common/interfaces";
 import { telemetryEventNames } from "../telemetry/constants";
 import { GetFileContent } from "../utilities/commonUtil";
 import {
     getFileEntityId,
     getFileEntityName,
 } from "../utilities/fileAndEntityUtil";
-import { IAttributePath } from "../utilities/schemaHelperUtil";
 import { getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
 

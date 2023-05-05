@@ -11,12 +11,12 @@ import { showErrorDialog } from "../common/errorHandler";
 import { FileData } from "../context/fileData";
 import { httpMethod } from "../common/constants";
 import {
-    IAttributePath,
     isWebFileV2,
     useOctetStreamContentType,
 } from "../utilities/schemaHelperUtil";
 import { getPatchRequestUrl, getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
+import { IAttributePath } from "../common/interfaces";
 
 interface ISaveCallParameters {
     requestInit: RequestInit;
