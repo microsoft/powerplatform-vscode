@@ -49,12 +49,7 @@ body {
 .message-wrapper {
     position: relative;
 }
-.action-wrapper {
-    position: absolute;
-    top: 0;
-    right: 0;
-    /* display: flex; */
-}
+
 .code-division {
     position: relative;
     padding-top: 15px;
@@ -119,3 +114,79 @@ body {
 .accordion-content a:hover {
     background-color: #ddd;
 } */
+
+.action-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+.action-button {
+    margin: 0;
+    padding: 5px;
+    border: 0;
+    background: none;
+    color: inherit;
+    box-shadow: none;
+    cursor: pointer;
+    width: 30px; /* adjust as needed */
+    height: 30px; /* adjust as needed */
+    flex-shrink: 0;
+  }
+
+.copy-button {
+    width: 18px; /* adjust as needed */
+    height: 18px;
+}
+
+.insert-button {
+  margin-left: 5px;
+}
+
+.preview-button {
+  margin-left: 5px;
+}
+
+.create-button {
+  margin-left: 5px;
+}
+
+.list-container {
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 400px;
+    color: #ffffff;
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    font-size: 1.2em;
+    margin-bottom: 3px;
+    padding: 2px;
+    background-color: #fff;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  li:hover {
+    background-color: #ddd;
+  }
+
+  a {
+    text-decoration: none;
+    color: #333;
+  }
+
+  li:before {
+    content: "/";
+    color: blue;
+  }
