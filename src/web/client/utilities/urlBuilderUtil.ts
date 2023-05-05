@@ -40,23 +40,32 @@ export function getRequestURL(
     let parameterizedUrlTemplate =
         getParameterizedRequestUrlTemplate(isSingleEntity);
 
-    switch (method) {
-        case httpMethod.GET:
-            parameterizedUrlTemplate =
-                parameterizedUrlTemplate +
-                (attributeQueryParameters ??
-                    getEntity(entity)?.get(
-                        ENABLE_MULTI_FILE_FEATURE
-                            ? schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS
-                            : schemaEntityKey.FETCH_QUERY_PARAMETERS
-                    ));
-            break;
-        default:
-            break;
+    if (!isSingleEntity) {
+        switch (method) {
+            case httpMethod.GET:
+                parameterizedUrlTemplate =
+                    parameterizedUrlTemplate +
+                    (attributeQueryParameters ??
+                        getEntity(entity)?.get(
+                            ENABLE_MULTI_FILE_FEATURE
+                                ? schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS
+                                : schemaEntityKey.FETCH_QUERY_PARAMETERS
+                        ));
+                break;
+            default:
+                break;
+        }
     }
 
     return parameterizedUrlTemplate
         .replace("{dataverseOrgUrl}", dataverseOrgUrl)
+        .replace(
+            "{entity}",
+            getEntity(entity)?.get(
+                schemaEntityKey.DATAVERSE_ENTITY_NAME
+            ) as string
+        )
+        .replace("{entityId}", entityId)
         .replace(
             "{api}",
             WebExtensionContext.schemaDataSourcePropertiesMap.get(

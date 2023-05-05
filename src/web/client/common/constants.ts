@@ -20,6 +20,10 @@ export const MIMETYPE = "mimetype";
 export const IS_FIRST_RUN_EXPERIENCE = "isFirstRunExperience";
 export const ODATA_ETAG = "@odata.etag";
 
+// Feature flag
+export const VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME =
+    "enableVersionControl";
+
 export enum initializationEntityName {
     WEBSITE = "websites",
     WEBSITELANGUAGE = "websitelanguages",
