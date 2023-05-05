@@ -153,7 +153,7 @@ export const portal_schema_V1 = {
                 _disableplugins: "true",
                 _foldername: "lists",
                 _propextension: "",
-                _exporttype: "SubFolders",
+                _exporttype: "SingleFolder",
                 _fetchQueryParameters: "",
                 _multiFileFetchQueryParameters: "",
                 _attributes: "",
@@ -170,7 +170,7 @@ export const portal_schema_V1 = {
                 _disableplugins: "true",
                 _foldername: "basic-forms",
                 _propextension: "",
-                _exporttype: "SubFolders",
+                _exporttype: "SingleFolder",
                 _fetchQueryParameters: "",
                 _multiFileFetchQueryParameters: "",
                 _attributes: "",
@@ -287,6 +287,8 @@ export const portal_schema_V2 = {
                 _foldername: "web-files",
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_powerpagesiteid_value%20eq%20{websiteId}%20and%20powerpagecomponenttype%20eq%203&$select=name,content,_powerpagesitelanguageid_value",
                 _attributes: "filecontent",
                 _attributesExtension: new Map([["filecontent", "css"]]),
                 _mappingAttributeFetchQuery: new Map([
@@ -306,6 +308,8 @@ export const portal_schema_V2 = {
                 _foldername: "content-snippets",
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_powerpagesiteid_value%20eq%20{websiteId}%20and%20powerpagecomponenttype%20eq%207%20and%20_powerpagesitelanguageid_value%20ne%20null&$select=name,content,_powerpagesitelanguageid_value",
                 _attributes: "content.value",
                 _attributesExtension: new Map([["content.value", "html"]]),
             },
@@ -322,8 +326,64 @@ export const portal_schema_V2 = {
                 _foldername: "web-templates",
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_powerpagesiteid_value%20eq%20{websiteId}%20and%20powerpagecomponenttype%20eq%208&$select=name,content,_powerpagesitelanguageid_value",
                 _attributes: "content.source",
                 _attributesExtension: new Map([["content.source", "html"]]),
+            },
+            {
+                relationships: "",
+                _vscodeentityname: "lists",
+                _dataverseenityname: "powerpagecomponents",
+                _displayname: "Lists",
+                _etc: "10271",
+                _primaryidfield: "powerpagecomponentid",
+                _primarynamefield: "name",
+                _disableplugins: "false",
+                _exporttype: "SingleFolder",
+                _foldername: "lists",
+                _fetchQueryParameters:
+                    "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_powerpagesiteid_value%20eq%20{websiteId}%20and%20powerpagecomponenttype%20eq%2017%20and%20_powerpagesitelanguageid_value%20ne%20null&$select=name,content,_powerpagesitelanguageid_value",
+                _attributes: "content.source",
+                _attributesExtension: new Map([["", ""]]),
+            },
+            {
+                relationships: "",
+                _vscodeentityname: "basicforms",
+                _dataverseenityname: "powerpagecomponents",
+                _displayname: "Basic Forms",
+                _etc: "10271",
+                _primaryidfield: "powerpagecomponentid",
+                _primarynamefield: "name",
+                _disableplugins: "false",
+                _exporttype: "SingleFolder",
+                _foldername: "basic-forms",
+                _fetchQueryParameters:
+                    "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_powerpagesiteid_value%20eq%20{websiteId}%20and%20powerpagecomponenttype%20eq%2015%20and%20_powerpagesitelanguageid_value%20ne%20null&$select=name,content,_powerpagesitelanguageid_value",
+                _attributes: "content.source",
+                _attributesExtension: new Map([["", ""]]),
+            },
+            {
+                relationships: "",
+                _vscodeentityname: "advancedforms",
+                _dataverseenityname: "powerpagecomponents",
+                _displayname: "Advanced Forms",
+                _etc: "10271",
+                _primaryidfield: "powerpagecomponentid",
+                _primarynamefield: "name",
+                _disableplugins: "false",
+                _exporttype: "SubFolders",
+                _foldername: "advanced-forms",
+                _fetchQueryParameters:
+                    "?$filter=powerpagecomponentid%20eq%20{entityId}&$select=name,content",
+                _multiFileFetchQueryParameters:
+                    "?$filter=_powerpagesiteid_value%20eq%20{websiteId}%20and%20powerpagecomponenttype%20eq%2019%20and%20_powerpagesitelanguageid_value%20ne%20null&$select=name,content,_powerpagesitelanguageid_value",
+                _attributes: "content.source",
+                _attributesExtension: new Map([["", ""]]),
             },
         ],
     },

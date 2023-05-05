@@ -20,18 +20,19 @@ export const MIMETYPE = "mimetype";
 export const IS_FIRST_RUN_EXPERIENCE = "isFirstRunExperience";
 export const ODATA_ETAG = "@odata.etag";
 
-// Feature flag
+// FEATURE FLAGS
+// Version control feature flag
 export const VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME =
     "enableVersionControl";
+
+// Multi-file feature constants
+export const ENABLE_MULTI_FILE_FEATURE = false;
 
 export enum initializationEntityName {
     WEBSITE = "websites",
     WEBSITELANGUAGE = "websitelanguages",
     PORTALLANGUAGE = "portallanguages",
 }
-
-// Multi-file feature constants
-export const ENABLE_MULTI_FILE_FEATURE = true;
 
 // Query parameters passed in url to vscode extension
 export enum queryParameters {
