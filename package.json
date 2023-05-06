@@ -152,6 +152,10 @@
     ],
     "commands": [
       {
+        "command": "extension.createChatView",
+        "title": "Create Chat View"
+      },
+      {
         "command": "pacCLI.openDocumentation",
         "category": "Power Platform CLI",
         "title": "%pacCLI.openDocumentation.title%"
@@ -304,11 +308,6 @@
         "command": "microsoft-powerapps-portals.pagetemplate",
         "category": "Powerpages",
         "title": "New Page Template"
-      },
-      {
-        "command": "microsoft-powerapps-portals.bootstrap-diff",
-        "category": "Powerpages",
-        "title": "Bootstrap Diff"
       }
     ],
     "configuration": {
@@ -384,11 +383,6 @@
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Dev version",
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Canary version"
           ]
-        },
-        "powerPlatform.experimental.enableVersionControl": {
-          "type": "boolean",
-          "markdownDescription": "Enable version control on file save (Web extension only)",
-          "default": true
         }
       }
     },
@@ -776,6 +770,11 @@
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
+        },
+        {
+          "type": "webview",
+          "id": "powerpages.copilot",
+          "name": "Power Pages Copilot"
         }
       ]
     },
@@ -844,10 +843,9 @@
     "@types/webpack-env": "^1.17.0",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
-    "@vscode/l10n-dev": "^0.0.24",
-    "@vscode/test-electron": "^2.3.0",
+    "@vscode/l10n-dev": "^0.0.23",
+    "@vscode/test-electron": "^2.1.5",
     "@vscode/test-web": "^0.0.24",
-    "@vscode/vsce": "^2.19.0",
     "assert": "^2.0.0",
     "chai": "^4.3.6",
     "constants-browserify": "^1.0.0",
@@ -877,13 +875,14 @@
     "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
+    "vsce": "^2.7.0",
     "webpack": "^5.76.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@microsoft/generator-powerpages": "1.21.19",
+    "@microsoft/generator-powerpages": "1.21.16",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
@@ -898,7 +897,7 @@
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
-    "yaml": "^2.2.2"
+    "yaml": "^1.10.2"
   },
   "__metadata": {
     "id": "b8680bb6-eaa9-481a-ae0b-83574fa58620",
