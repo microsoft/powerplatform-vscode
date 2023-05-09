@@ -6,11 +6,7 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import { pathHasEntityFolderName } from "../utilities/urlBuilderUtil";
-import {
-    PORTALS_URI_SCHEME,
-    queryParameters,
-    VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
-} from "../common/constants";
+import { PORTALS_URI_SCHEME, queryParameters } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
 import { saveData } from "./remoteSaveProvider";
@@ -18,7 +14,6 @@ import { ERRORS } from "../common/errorHandler";
 import { telemetryEventNames } from "../telemetry/constants";
 import { getFolderSubUris } from "../utilities/folderHelperUtility";
 import { EtagHandlerService } from "../services/etagHandlerService";
-import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
 import {
     fileHasDirtyChanges,
     getEntityEtag,
@@ -28,6 +23,7 @@ import {
     updateEntityEtag,
     updateFileDirtyChanges,
 } from "../utilities/fileAndEntityUtil";
+import { isVersionControlEnabled } from "../utilities/commonUtil";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -80,32 +76,26 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 telemetryEventNames.WEB_EXTENSION_FILE_HAS_DIRTY_CHANGES
             );
 
-            const isVersionControlEnabled = vscode.workspace
-                .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
-                .get(VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME);
-
-            if (!isVersionControlEnabled) {
-                WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
+            if (isVersionControlEnabled()) {
+                const latestContent =
+                    await EtagHandlerService.getLatestAndUpdateMetadata(
+                        uri.fsPath
+                    );
+                const entityEtagValue = getEntityEtag(
+                    getFileEntityId(uri.fsPath)
                 );
 
-                return await this._lookup(uri, false);
-            }
-
-            const latestContent =
-                await EtagHandlerService.getLatestAndUpdateMetadata(uri.fsPath);
-            const entityEtagValue = getEntityEtag(getFileEntityId(uri.fsPath));
-
-            // Triggers diff view logic in web extension using file system provider in-built flows
-            if (
-                latestContent.length > 0 &&
-                getFileEntityEtag(uri.fsPath) !== entityEtagValue
-            ) {
-                await this.updateMtime(uri, latestContent);
-                updateEntityEtag(uri.fsPath, entityEtagValue);
-                WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_TRIGGERED
-                );
+                // Triggers diff view logic in web extension using file system provider in-built flows
+                if (
+                    latestContent.length > 0 &&
+                    getFileEntityEtag(uri.fsPath) !== entityEtagValue
+                ) {
+                    await this.updateMtime(uri, latestContent);
+                    updateEntityEtag(uri.fsPath, entityEtagValue);
+                    WebExtensionContext.telemetry.sendInfoTelemetry(
+                        telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_TRIGGERED
+                    );
+                }
             }
         }
 

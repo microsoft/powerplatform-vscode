@@ -3,9 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NO_CONTENT } from "../common/constants";
+import * as vscode from "vscode";
+import {
+    NO_CONTENT,
+    VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
+} from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { schemaEntityName } from "../schema/constants";
+import { telemetryEventNames } from "../telemetry/constants";
+import WebExtensionContext from "../WebExtensionContext";
+import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
 
 // decodes base64 to text
 export function convertfromBase64ToString(data: string) {
@@ -47,4 +54,18 @@ export function GetFileContent(result: any, attributePath: IAttributePath) {
     }
 
     return fileContent;
+}
+
+export function isVersionControlEnabled() {
+    const isVersionControlEnabled = vscode.workspace
+        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
+        .get(VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME);
+
+    if (!isVersionControlEnabled) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
+        );
+    }
+
+    return isVersionControlEnabled;
 }
