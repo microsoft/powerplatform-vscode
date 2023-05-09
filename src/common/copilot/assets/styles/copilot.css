@@ -1,68 +1,74 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
 }
+
 .chat-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
+
 .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
 }
+
 .chat-input {
-    display: flex;
-    margin-bottom: 10px;
+  display: flex;
+  margin-bottom: 10px;
 }
+
 .chat-input input {
-    flex: 1;
-    border: none;
-    color: white; /* added for testing */
-    padding: 10px;
+  flex: 1;
+  border: none;
+  color: white;
+  /* added for testing */
+  padding: 10px;
 }
+
 .chat-input button {
-    background-color: #007acc;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
+  background-color: #007acc;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
 }
+
+.send-icon {
+  font-size: 20x;
+}
+
 .user-message {
-    background-color: #252526;
-    color: white;
-    margin-bottom: 5px;
-    border-bottom: 1px solid grey;
-    padding: 10px;
+  background-color: #252526;
+  color: white;
+  margin-bottom: 5px;
+  border-bottom: 1px solid grey;
+  padding: 10px;
 }
+
 .api-response {
-    /* background-color: #1E1E1E;
+  /* background-color: #1E1E1E;
     color: white; */
-    margin-bottom: 5px;
-    border-bottom: 1px solid grey;
-    padding-left: 10px;
-    padding-top: 50px;
-    padding-bottom: 10px;
-    padding-right: 10px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid grey;
+  padding-left: 10px;
+  padding-top: 50px;
+  padding-bottom: 10px;
+  padding-right: 10px;
 }
+
 .message-wrapper {
-    position: relative;
+  position: relative;
 }
 
 .code-division {
-    position: relative;
-    padding-top: 15px;
-}
-/* .action-button {
-    background-color: #007acc;
-    color: white;
-    border: none;
-    padding: 5px;
-    margin: 5px;
-    cursor: pointer;
+  position: relative;
+  padding-top: 15px;
 }
 
+/*
 .accordion {
     background-color: #007acc;
     color: white;
@@ -116,30 +122,33 @@ body {
 } */
 
 .action-wrapper {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .action-button {
-    margin: 0;
-    padding: 5px;
-    border: 0;
-    background: none;
-    color: inherit;
-    box-shadow: none;
-    cursor: pointer;
-    width: 30px; /* adjust as needed */
-    height: 30px; /* adjust as needed */
-    flex-shrink: 0;
-  }
+  margin: 0;
+  padding: 5px;
+  border: 0;
+  background: none;
+  color: inherit;
+  box-shadow: none;
+  cursor: pointer;
+  width: 30px;
+  /* adjust as needed */
+  height: 30px;
+  /* adjust as needed */
+  flex-shrink: 0;
+}
 
 .copy-button {
-    width: 18px; /* adjust as needed */
-    height: 18px;
+  width: 18px;
+  /* adjust as needed */
+  height: 18px;
 }
 
 .insert-button {
@@ -155,38 +164,38 @@ body {
 }
 
 .list-container {
-    position: relative;
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    padding: 10px;
-    width: 400px;
-    color: #ffffff;
-  }
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  width: 400px;
+  color: #ffffff;
+}
 
-  ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
 
-  li {
-    font-size: 1.2em;
-    margin-bottom: 3px;
-    padding: 2px;
-    background-color: #fff;
-    transition: background-color 0.2s ease-in-out;
-  }
+li {
+  font-size: 1.2em;
+  margin-bottom: 3px;
+  padding: 2px;
+  background-color: #fff;
+  transition: background-color 0.2s ease-in-out;
+}
 
-  li:hover {
-    background-color: #ddd;
-  }
+li:hover {
+  background-color: #ddd;
+}
 
-  a {
-    text-decoration: none;
-    color: #333;
-  }
+a {
+  text-decoration: none;
+  color: #333;
+}
 
-  li:before {
-    content: "/";
-    color: blue;
-  }
+li:before {
+  content: "/";
+  color: blue;
+}
