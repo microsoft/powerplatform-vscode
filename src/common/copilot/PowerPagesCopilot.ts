@@ -142,15 +142,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         );
         const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
 
+        // Use a nonce to only allow specific scripts to be run
+		const nonce = getNonce();
 
-
-        //const examples = templates;
 
         return `
         <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}'; connect-src https://api.openai.com;">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link href="${copilotStyleUri}" rel="stylesheet"></link>
             <title>Chat View</title>
@@ -163,10 +164,17 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     <button id="send-button"></button>
                 </div>
             </div>
-            <script src="${copilotScriptUri}"></script>
+            <script nonce="${nonce}" src="${copilotScriptUri}"></script>
         </body>
         </html>`;
     }
 }
 
-
+function getNonce() {
+	let text = '';
+	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	for (let i = 0; i < 32; i++) {
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	}
+	return text;
+}
