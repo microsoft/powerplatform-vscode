@@ -34,17 +34,27 @@ export function getFolderSubUris(): string[] {
     return subUris;
 }
 
-export function getRequestUrlForEntities(): IEntityRequestUrl[] {
+export function getRequestUrlForEntities(
+    entityId: string,
+    entityType: string
+): IEntityRequestUrl[] {
     const entityRequestURLs: IEntityRequestUrl[] = [];
     const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
         queryParameters.ORG_URL
     ) as string;
 
-    if (!ENABLE_MULTI_FILE_FEATURE) {
+    if (
+        !ENABLE_MULTI_FILE_FEATURE ||
+        (entityId.length > 0 && entityType.length > 0)
+    ) {
         const requestURL = getRequestURL(
             dataverseOrgUrl,
-            WebExtensionContext.defaultEntityType,
-            WebExtensionContext.defaultEntityId,
+            entityType.length > 0
+                ? entityType
+                : WebExtensionContext.defaultEntityType,
+            entityId.length > 0
+                ? entityId
+                : WebExtensionContext.defaultEntityId,
             httpMethod.GET,
             false
         );

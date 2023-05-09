@@ -46,7 +46,7 @@ export interface IWebExtensionContext {
 
     // VScode specific details
     rootDirectory: vscode.Uri;
-    fileDataMap: FileDataMap; // VFS file URI to file detail map - TODO - convert to class
+    fileDataMap: FileDataMap; // VFS file URI to file detail map
     defaultEntityId: string;
     defaultEntityType: string;
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario

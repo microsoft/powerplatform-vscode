@@ -10,7 +10,7 @@ import { telemetryEventNames } from "../telemetry/constants";
 import { GetFileContent } from "../utilities/commonUtil";
 import {
     getFileEntityId,
-    getFileEntityName,
+    getFileEntityType,
 } from "../utilities/fileAndEntityUtil";
 import { getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
@@ -19,7 +19,7 @@ export class EtagHandlerService {
     public static async getLatestAndUpdateMetadata(
         fileFsPath: string
     ): Promise<string> {
-        const entityName = getFileEntityName(fileFsPath);
+        const entityName = getFileEntityType(fileFsPath);
         const entityId = getFileEntityId(fileFsPath);
 
         const requestSentAtTime = new Date().getTime();
