@@ -194,6 +194,7 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async function sendMessageToApi(message) {
         console.log("Sending message to API: " + message);
         const endpointUrl = "https://api.openai.com/v1/chat/completions";
@@ -238,7 +239,8 @@
         switch (message.type) {
             case "enigneeredPrompt": {
                 conversation.push({ role: "user", content: message.value });
-                sendMessageToApi(message.value);
+                addMessageToChat(message.value, "api-response");
+                //sendMessageToApi(message.value);
                 break;
             }
             case "env": {
