@@ -27,7 +27,11 @@ const log = require("fancy-log");
 const path = require("path");
 const pslist = require("ps-list");
 
-const [nodeConfig, webConfig] = require("./webpack.config");
+const [
+    nodeConfig,
+    webConfig,
+    copresenceWorkerConfig,
+] = require("./webpack.config");
 const distdir = path.resolve("./dist");
 const outdir = path.resolve("./out");
 const packagedir = path.resolve("./package");
@@ -72,7 +76,13 @@ function compileWeb() {
     return gulp
         .src(["src/web/**/*.ts"])
         .pipe(gulpWebpack(webConfig, webpack))
-        .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
+        .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
+}
+
+function compileWorker() {
+    return gulp
+        .src(["src/web/**/*.ts"])
+        .pipe(gulpWebpack(copresenceWorkerConfig, webpack))
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
 
@@ -445,7 +455,8 @@ const recompile = gulp.series(
     //translationsImport,
     setTelemetryTarget,
     compile,
-    compileWeb
+    compileWeb,
+    compileWorker
 );
 
 const dist = gulp.series(
@@ -519,6 +530,7 @@ async function translationsImport() {
 exports.clean = clean;
 exports.compile = compile;
 exports.compileWeb = compileWeb;
+exports.compileWorker = compileWorker;
 exports.recompile = recompile;
 exports.snapshot = snapshot;
 exports.lint = lint;

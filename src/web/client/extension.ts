@@ -29,8 +29,10 @@ export interface IContainerData {
     columnNumber: number;
 }
 
+let copresenceWorker: Worker;
+
 export function activate(context: vscode.ExtensionContext): void {
-    console.log("VSCODE WEBVIEW vscode extension activate function start");
+    console.log("VSCODE WORKER vscode extension activate function start");
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
     const dataBoundary = undefined;
@@ -56,7 +58,7 @@ export function activate(context: vscode.ExtensionContext): void {
             { isCaseSensitive: true }
         )
     );
-    WebExtensionContext.myWebView.setMyWebViews(context.extensionUri);
+    //WebExtensionContext.myWebView.setMyWebViews(context.extensionUri);
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -184,12 +186,12 @@ export function activate(context: vscode.ExtensionContext): void {
         )
     );
     console.log(
-        "VSCODE WEBVIEW vscode extension activate registerCommand success"
+        "VSCODE WORKER vscode extension activate registerCommand success"
     );
 
     processWillSaveDocument(context);
     console.log(
-        "VSCODE WEBVIEW vscode extension activate processWillSaveDocument success"
+        "VSCODE WORKER vscode extension activate processWillSaveDocument success"
     );
 
     processOpenActiveTextEditor(context);
@@ -197,23 +199,56 @@ export function activate(context: vscode.ExtensionContext): void {
         "VSCODE WEBVIEW vscode extension activate processOpenActiveTextEditor success"
     );
 
-    WebExtensionContext.myWebView.panel.webview.onDidReceiveMessage(
-        (message) => {
-            console.log(
-                `VSCODE WEBVIEW Received hello from webview: ${JSON.stringify(
-                    message
-                )}`
-            );
-            WebExtensionContext.containerId = message.containerId;
-        }
-    );
+    // WebExtensionContext.myWebView.panel.webview.onDidReceiveMessage(
+    //     (message) => {
+    //         console.log(
+    //             `VSCODE WEBVIEW Received hello from webview: ${JSON.stringify(
+    //                 message
+    //             )}`
+    //         );
+    //         WebExtensionContext.containerId = message.containerId;
+    //     }
+    // );
+
+    createCopresenceWorkerInstance(context);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
-    console.log("VSCODE WEBVIEW vscode extension activate function end");
+    console.log("VSCODE WORKER vscode extension activate function end");
+}
+
+export function createCopresenceWorkerInstance(
+    context: vscode.ExtensionContext
+) {
+    // Create a worker. The worker main file implements the language server.
+    const copresenceMain = vscode.Uri.joinPath(
+        context.extensionUri,
+        "dist/web/copresenceWorker.worker.js"
+    );
+
+    const workerUrl = new URL(copresenceMain.toString());
+    fetch(workerUrl)
+        .then((response) => response.text())
+        .then((workerScript) => {
+            const workerBlob = new Blob([workerScript], {
+                type: "application/javascript",
+            });
+            const workerUrl = URL.createObjectURL(workerBlob);
+            const worker = new Worker(workerUrl);
+
+            worker.onmessage = (event) => {
+                console.log(
+                    `VSCODE WORKER Received hello from webview: ${JSON.stringify(
+                        event
+                    )}`
+                );
+                WebExtensionContext.containerId = event.data.containerId;
+            };
+        })
+        .catch((error) => console.error(error));
 }
 
 export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
-    console.log("VSCODE WEBVIEW Inside processOpenActiveTextEditor");
+    console.log("VSCODE WORKER Inside processOpenActiveTextEditor");
     try {
         context.subscriptions.push(
             vscode.window.onDidChangeTextEditorSelection(async (event) => {
@@ -221,8 +256,11 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                 const line = selection.active.line;
                 const column = selection.active.character;
                 console.log(
-                    "VSCODE WEBVIEW Inside onDidChangeTextEditorSelection"
+                    "VSCODE WORKER Inside onDidChangeTextEditorSelection"
                 );
+
+                console.log(`VSCODE WORKER  Line: ${line}`);
+                console.log(`VSCODE WORKER  Column: ${column}`);
 
                 const activeEditor = vscode.window.activeTextEditor;
                 if (activeEditor) {
@@ -232,23 +270,29 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                         )?.entityId as string;
                     if (entityId) {
                         // send data to webview
-                        await WebExtensionContext.myWebView.panel.webview.postMessage(
-                            {
-                                containerId: WebExtensionContext.containerId,
-                                lineNumber: line,
-                                columnNumber: column,
-                            } as IContainerData
-                        );
 
-                        console.log(`VSCODE WEBVIEW  Line: ${line}`);
-                        console.log(`VSCODE WEBVIEW  Column: ${column}`);
+                        console.log("VSCODE WORKER Sending message to worker");
+
+                        // await WebExtensionContext.myWebView.panel.webview.postMessage(
+                        //     {
+                        //         containerId: WebExtensionContext.containerId,
+                        //         lineNumber: line,
+                        //         columnNumber: column,
+                        //     } as IContainerData
+                        // );
+
+                        copresenceWorker.postMessage({
+                            containerId: WebExtensionContext.containerId,
+                            lineNumber: line,
+                            columnNumber: column,
+                        } as IContainerData);
                     }
                 }
             })
         );
     } catch (error) {
         console.log(
-            "VSCODE WEBVIEW caught error in processOpenActiveTextEditor",
+            "VSCODE WORKER caught error in processOpenActiveTextEditor",
             error
         );
     }
@@ -394,6 +438,8 @@ export async function deactivate(): Promise<void> {
     if (telemetry) {
         telemetry.sendInfoTelemetry("End");
     }
+
+    copresenceWorker.terminate();
 }
 
 function isActiveDocument(fileName: string): boolean {
