@@ -71,7 +71,7 @@ async function loadContainer(
         const map = container.initialObjects.position;
         map.set(LINE_NUMBER_KEY, line);
         map.set(COLUMN_NUMBER_KEY, column);
-        const containerId = await container.attach();
+        containerId = await container.attach();
         map.set(CONTAINER_ID, containerId);
     }
 

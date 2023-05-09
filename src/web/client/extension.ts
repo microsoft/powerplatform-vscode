@@ -233,15 +233,23 @@ export function createCopresenceWorkerInstance(
                 type: "application/javascript",
             });
             const workerUrl = URL.createObjectURL(workerBlob);
-            const worker = new Worker(workerUrl);
+            copresenceWorker = new Worker(workerUrl);
 
-            worker.onmessage = (event) => {
+            copresenceWorker.onmessage = (event) => {
                 console.log(
-                    `VSCODE WORKER Received hello from webview: ${JSON.stringify(
-                        event
-                    )}`
+                    `VSCODE WORKER Received hello from webview: ${
+                        (JSON.stringify(event),
+                        event.data,
+                        event.data.containerId)
+                    }`
                 );
                 WebExtensionContext.containerId = event.data.containerId;
+                vscode.window.showInformationMessage(
+                    "Server sent new position as " +
+                        event.data.lineNumber +
+                        " " +
+                        event.data.columnNumber
+                );
             };
         })
         .catch((error) => console.error(error));
