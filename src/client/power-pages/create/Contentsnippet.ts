@@ -66,7 +66,7 @@ export const createContentSnippet = async (
                 command,
                 selectedWorkspaceFolder,
                 watcher,
-                telemetry
+                //telemetry
             );
         }
     } catch (error: any) {

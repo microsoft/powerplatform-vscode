@@ -9,7 +9,7 @@ import * as vscode from "vscode";
 import {
     getParentPagePaths,
     getPortalContext,
-    logErrorAndNotifyUser,
+    //logErrorAndNotifyUser,
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "./utils/MultiStepInput";
@@ -186,7 +186,7 @@ const addWebfiles = async (
         }
       );
     } catch (error: any) {
-        logErrorAndNotifyUser(error);
+        //logErrorAndNotifyUser(error);
         sendTelemetryEvent(telemetry, {
           eventName: FileCreateEvent,
           fileEntityType: WEBFILE,
