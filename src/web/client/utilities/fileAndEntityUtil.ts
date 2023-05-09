@@ -17,7 +17,7 @@ export function getFileEntityId(fileFsPath: string) {
         ?.entityId as string;
 }
 
-export function getFileEntityName(fileFsPath: string) {
+export function getFileEntityType(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
         ?.entityName as string;
 }

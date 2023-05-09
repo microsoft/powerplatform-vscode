@@ -27,8 +27,12 @@ import { folderExportType, schemaEntityKey } from "../schema/constants";
 import { getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath } from "../common/interfaces";
 
-export async function fetchDataFromDataverseAndUpdateVFS(portalFs: PortalsFS) {
-    const entityRequestURLs = getRequestUrlForEntities();
+export async function fetchDataFromDataverseAndUpdateVFS(
+    portalFs: PortalsFS,
+    entityId = "",
+    entityType = ""
+) {
+    const entityRequestURLs = getRequestUrlForEntities(entityId, entityType);
 
     entityRequestURLs.forEach(async (entity) => {
         let requestSentAtTime = new Date().getTime();
