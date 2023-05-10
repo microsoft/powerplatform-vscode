@@ -3,27 +3,33 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import fetch from "node-fetch";
+import fetch, { RequestInit } from "node-fetch";
 
 const apiKey = "YOUR_API_KEY_HERE";
 
-export async function sendApiRequest (message: string)  {
+export async function sendApiRequest(message: string) {
     console.log("Sending message to API: " + message);
     const endpointUrl = "https://api.openai.com/v1/chat/completions";
-    const requestBody = {
-        model: "gpt-3.5-turbo",
-        messages: message,
-        max_tokens: 1000,
-        temperature: 0.5,
-    };
-    const response = await fetch(endpointUrl, {
+    // const requestBody: BodyInit = {
+    //     'model': "gpt-3.5-turbo",
+    //     messages: message,
+    //     max_tokens: 1000,
+    //     temperature: 0.5,
+    // };
+    const data: { [k: string]: string } = {};
+    data["model"] = "gpt-3.5-turbo";
+    data["messages"] = message;
+    data["max_tokens"] = "1000";
+    data["temperature"] = "0.5";
+    const requestInit: RequestInit = {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+            'Content-Type': "application/json",
             Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify(requestBody),
-    });
+        body: JSON.stringify(data),
+    }
+    const response = await fetch(endpointUrl, requestInit);
 
     if (response.ok) {
         console.log("API call successful");

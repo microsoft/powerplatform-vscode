@@ -121,6 +121,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
     }
 
+    // check how it will handled for WEB extension
+    public async readFileFromWorkspace(path: string) {
+        const fileUri = vscode.Uri.file(path);
+        const fileText = await vscode.workspace.openTextDocument(fileUri);
+        return fileText.getText();
+    }
+
     private getActiveEditorContent() {
         const activeEditor = vscode.window.activeTextEditor;
         if (activeEditor) {
