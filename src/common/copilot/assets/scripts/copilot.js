@@ -239,8 +239,7 @@
         switch (message.type) {
             case "enigneeredPrompt": {
                 conversation.push({ role: "user", content: message.value });
-                addMessageToChat(message.value, "api-response");
-                //sendMessageToApi(message.value);
+                sendMessageToApi(message.value);
                 break;
             }
             case "env": {
