@@ -108,6 +108,18 @@ export async function activate(
         )
     );
 
+    // registering bootstrapdiff command
+    _context.subscriptions.push(
+        vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async() => {
+                _telemetry.sendTelemetryEvent("StartCommand", {
+                    commandId: "microsoft-powerapps-portals.bootstrap-diff",
+                });
+                bootstrapDiff();
+            }
+        )
+    );
+
+
     _context.subscriptions.push(
         vscode.workspace.onDidOpenTextDocument(() => {
             if (vscode.window.activeTextEditor === undefined) {
