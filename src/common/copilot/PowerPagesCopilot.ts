@@ -41,7 +41,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        this.sendMessage({ type: 'env', value: this.isDesktop });
+        this.sendMessageToWebview({ type: 'env', value: this.isDesktop });
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
@@ -97,7 +97,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     public async promptEngine(message: string) {
         //const entityList=  `The list gets its data asynchronously, and when it's complete it will trigger an event 'loaded' that your custom JavaScript can listen for and do something with items in the grid. The following code is a sample javascript code: \`+"${"```"}" +\` $(document).ready(function () { $(".entitylist.entity-grid").on("loaded", function () { $(this).children(".view-grid").find("tr").each(function () { // do something with each row $(this).css("background-color", "yellow"); }); }); }); \`+"${"```"}" +\` Find a particular attribute field and get its value to possibly modify the rendering of the value. The following code gets each table cell that contains the value of the accountnumber attribute. Replace accountnumber with an attribute appropriate for your table and view. \`+"${"```"}" +\` $(document).ready(function (){ $(".entitylist.entity-grid").on("loaded", function () { $(this).children(".view-grid").find("td[data-attribute='accountnumber']").each(function (i, e){ var value = $(this).data(value); \`+"${"```"}" +\` // now that you have the value you can do something to the value }); }); });`
         vscode.window.showInformationMessage(message);
-        const activeEditorContent = this.getActiveEditorContent(); 
+        const activeEditorContent = this.getActiveEditorContent();
 
         const enigneeredPrompt = message + " " + activeEditorContent; // modify the user prompt here
         if (this._view) {
@@ -108,14 +108,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public sendMessage(message: any) {
-        if (this._view) {
-            this._view?.webview.postMessage(message);
-        } else {
-            console.log("No active webview");
-        }
-    }
 
     private getActiveEditorContent() {
         const activeEditor = vscode.window.activeTextEditor;
