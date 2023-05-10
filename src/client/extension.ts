@@ -96,7 +96,7 @@ export async function activate(
             }
         )
     );
-    
+
     // registering bootstrapdiff command
     _context.subscriptions.push(
         vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async() => {
@@ -372,5 +372,12 @@ class CliAcquisitionContext implements ICliAcquisitionContext {
                 args: [version],
                 comment: ["{0} represents the version number"]
             }))
+    }
+
+    locDotnetNotInstalledOrInsufficient(): string {
+        return vscode.l10n.t({
+            message: "dotnet sdk 6.0 or greater must be installed",
+            comment: ["Do not translate 'dotnet' or 'sdk'"]
+        });
     }
 }

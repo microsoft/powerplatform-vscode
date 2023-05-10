@@ -55,6 +55,10 @@ class MockContext implements ICliAcquisitionContext {
     public showCliInstallFailedError(err: string): void {
         this._errorMessages.push(`Cannot install pac CLI: ${err}`)
     }
+
+    public locDotnetNotInstalledOrInsufficient(): string {
+        return "dotnet sdk 6.0 or greater must be installed";
+    }
 }
 
 describe('CliAcquisition', () => {

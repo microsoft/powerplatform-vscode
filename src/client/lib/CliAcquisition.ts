@@ -13,6 +13,7 @@ import { Extract } from 'unzip-stream'
 import { ITelemetry } from '../telemetry/ITelemetry';
 import find from 'find-process';
 import { spawnSync } from 'child_process';
+import commandExists from 'command-exists';
 
 // allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
 export interface ICliAcquisitionContext {
@@ -24,6 +25,7 @@ export interface ICliAcquisitionContext {
     showCliPreparingMessage(version: string): void;
     showCliReadyMessage(): void;
     showCliInstallFailedError(err: string): void;
+    locDotnetNotInstalledOrInsufficient() : string;
 }
 
 export interface IDisposable {
@@ -84,14 +86,31 @@ export class CliAcquisition implements IDisposable {
         if (useDotnetTool) {
             // install pac via `dotnet tool install`
             return new Promise((resolve, reject) => {
+                // Check if dotnet is installed
+                if (!commandExists.sync('dotnet')) {
+                    const error = this._context.locDotnetNotInstalledOrInsufficient();
+                    this._context.showCliInstallFailedError(error);
+                    reject(error);
+                    return;
+                }
+
                 const install = spawnSync(
                     "dotnet",
                     ["tool", "install", "Microsoft.PowerApps.CLI.Tool", "--tool-path", this._cliPath, "--add-source", nupkgDirectory, "--version", this.cliVersion],
                     {encoding: "utf-8"});
 
                 if (install.status != 0) {
-                    this._context.showCliInstallFailedError(String(install.error));
-                    reject(install.error);
+                    this._context.telemetry.sendTelemetryErrorEvent("PacInstallError", { "stdout": install.stdout, "stderr": install.stderr });
+
+                    // NU1202 - dotnet is installed, but version is incommpatible with the tool
+                    const dotnetIncompatible = install.stdout.includes("NU1202") || install.stderr.includes("NU1202");
+
+                    const errorMessage =  dotnetIncompatible
+                        ? this._context.locDotnetNotInstalledOrInsufficient()
+                        : install.stderr;
+
+                    this._context.showCliInstallFailedError(errorMessage);
+                    reject(errorMessage);
                 } else {
                     this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                     this._context.showCliReadyMessage();
