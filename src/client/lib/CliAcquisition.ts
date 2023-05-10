@@ -62,34 +62,64 @@ export class CliAcquisition implements IDisposable {
 
     public async ensureInstalled(): Promise<string> {
         const basename = this.getNupkgBasename();
-        return this.installCli(path.join(this._context.extensionPath, 'dist', 'pac', `${basename}.${this.cliVersion}.nupkg`));
+        return this.installCli(path.join(this._context.extensionPath, 'dist', 'pac'), basename);
     }
 
-    async installCli(pathToNupkg: string): Promise<string> {
-        const pacToolsPath = path.join(this._cliPath, 'tools');
+    async installCli(nupkgDirectory: string, packageName: string): Promise<string> {
+        const platformName = os.platform();
+        const useDotnetTool = platformName !== "win32";
+        
+        const pacExeDirectory =  useDotnetTool
+            ? this._cliPath
+            : path.join(this._cliPath, 'tools');
+
         if (this.isCliExpectedVersion()) {
-            return Promise.resolve(pacToolsPath);
+            return Promise.resolve(pacExeDirectory);
         }
-        // nupkg has not been extracted yet:
+
+        // nupkg has not been installed yet:
         this._context.showCliPreparingMessage(this.cliVersion);
-        await this.killProcessesInUse(pacToolsPath);
+        await this.killProcessesInUse(this._cliPath);
         fs.emptyDirSync(this._cliPath);
-        return new Promise((resolve, reject) => {
-            fs.createReadStream(pathToNupkg)
-                .pipe(Extract({ path: this._cliPath }))
-                .on('close', () => {
+
+        if (useDotnetTool) {
+            // install pac via `dotnet tool install`
+            return new Promise((resolve, reject) => {
+                const install = spawnSync(
+                    "dotnet", 
+                    ["tool", "install", "Microsoft.PowerApps.CLI.Tool", "--tool-path", this._cliPath, "--add-source", nupkgDirectory, "--version", this.cliVersion], 
+                    {encoding: "utf-8"});
+
+                if (install.status != 0) {
+                    this._context.showCliInstallFailedError(String(install.error));
+                    reject(install.error);
+                } else {
                     this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                     this._context.showCliReadyMessage();
-                    if (os.platform() !== 'win32') {
-                        fs.chmodSync(this.cliExePath, 0o755);
-                    }
                     this.setInstalledVersion(this._cliVersion);
-                    resolve(pacToolsPath);
-                }).on('error', (err: unknown) => {
-                    this._context.showCliInstallFailedError(String(err));
-                    reject(err);
-                })
-        });
+                    resolve(pacExeDirectory);
+                }
+            });
+        } else {
+            // "install" pac via unzipping the nuget package
+            const pathToNupkg = path.join(nupkgDirectory, `${packageName}.${this.cliVersion}.nupkg`)
+            return new Promise((resolve, reject) => {
+                fs.createReadStream(pathToNupkg)
+                    .pipe(Extract({ path: this._cliPath }))
+                    .on('close', () => {
+                        this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
+                        this._context.showCliReadyMessage();
+                        if (os.platform() !== 'win32') {
+                            fs.chmodSync(this.cliExePath, 0o755);
+                        }
+                        this.setInstalledVersion(this._cliVersion);
+                        resolve(pacExeDirectory);
+                    }).on('error', (err: unknown) => {
+                        this._context.showCliInstallFailedError(String(err));
+                        reject(err);
+                    })
+            });
+        }
     }
 
     isCliExpectedVersion(): boolean {
@@ -156,9 +186,9 @@ export class CliAcquisition implements IDisposable {
             case 'win32':
                 return 'microsoft.powerapps.cli';
             case 'darwin':
-                return 'microsoft.powerapps.cli.core.osx-x64';
+                return 'microsoft.powerapps.cli.tool';
             case 'linux':
-                return 'microsoft.powerapps.cli.core.linux-x64';
+                return 'microsoft.powerapps.cli.tool';
             default:
                 throw new Error(`Unsupported OS platform for pac CLI: ${platformName}`);
         }
