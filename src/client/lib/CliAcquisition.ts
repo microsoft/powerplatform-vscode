@@ -66,9 +66,8 @@ export class CliAcquisition implements IDisposable {
     }
 
     async installCli(nupkgDirectory: string, packageName: string): Promise<string> {
-        const platformName = os.platform();
-        const useDotnetTool = platformName !== "win32";
-        
+        const useDotnetTool = packageName.endsWith('.tool');
+
         const pacExeDirectory =  useDotnetTool
             ? this._cliPath
             : path.join(this._cliPath, 'tools');
@@ -86,8 +85,8 @@ export class CliAcquisition implements IDisposable {
             // install pac via `dotnet tool install`
             return new Promise((resolve, reject) => {
                 const install = spawnSync(
-                    "dotnet", 
-                    ["tool", "install", "Microsoft.PowerApps.CLI.Tool", "--tool-path", this._cliPath, "--add-source", nupkgDirectory, "--version", this.cliVersion], 
+                    "dotnet",
+                    ["tool", "install", "Microsoft.PowerApps.CLI.Tool", "--tool-path", this._cliPath, "--add-source", nupkgDirectory, "--version", this.cliVersion],
                     {encoding: "utf-8"});
 
                 if (install.status != 0) {
