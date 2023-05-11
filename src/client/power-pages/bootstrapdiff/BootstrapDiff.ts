@@ -17,12 +17,12 @@ const inputDecorationType = vscode.window.createTextEditorDecorationType({
 
 // object for storing class range
 type ClassRange = {
-	start: number;
-	end : number;
-	offset : number;
-	matchedClass : string;
-	replacedClass: string;
-	message: string;
+	Start: number;
+	End : number;
+	Offset : number;
+	MatchedClass : string;
+	ReplacedClass: string;
+	Message: string;
 };
 
 let matchedClasses : ClassRange[][];
@@ -84,10 +84,10 @@ function hihglightReplacedClasses(editor: vscode.TextEditor)
 		offset = 0;
 		for(let i=0;i<matchedClasses[l].length;i++)
 		{
-			const start = new vscode.Position(l,matchedClasses[l][i].start+offset);
-			offset+=matchedClasses[l][i].offset;
-			const end = new vscode.Position(l,matchedClasses[l][i].end+offset);
-			hoverMessages.push({hoverMessage: matchedClasses[l][i].message, range: new vscode.Range(start,end)});
+			const start = new vscode.Position(l,matchedClasses[l][i].Start+offset);
+			offset+=matchedClasses[l][i].Offset;
+			const end = new vscode.Position(l,matchedClasses[l][i].End+offset);
+			hoverMessages.push({hoverMessage: matchedClasses[l][i].Message, range: new vscode.Range(start,end)});
 		}
 	}
 	editor.setDecorations(outputDecorationType,hoverMessages);
@@ -102,8 +102,8 @@ function hihglightMatchedClasses(editor: vscode.TextEditor)
 	{
 		for(let i=0;i<matchedClasses[l].length;i++)
 		{
-			const start = new vscode.Position(l,matchedClasses[l][i].start);
-			const end = new vscode.Position(l,matchedClasses[l][i].end);
+			const start = new vscode.Position(l,matchedClasses[l][i].Start);
+			const end = new vscode.Position(l,matchedClasses[l][i].End);
 			matchedClassPositionRanges.push(new vscode.Range(start,end));
 		}
 	}
