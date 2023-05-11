@@ -10,14 +10,6 @@
     const dequeue = [];
     const chatMessages = document.getElementById("chat-messages");
     const chatInput = document.getElementById("chat-input");
-    const conversation = [
-        {
-            role: "system",
-            content:
-                "You are a web developer well versed with css, html and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development.",
-        },
-    ];
-    const apiKey = "YOUR_API_KEY_HERE";
 
     let isDesktop = false;
 
@@ -70,6 +62,8 @@
     SendIcon.classList.add("send-icon");
     SendButton.title = "Send";
     SendButton.appendChild(SendIcon);
+
+    vscode.postMessage({ type: "webViewLoaded"});
 
     function addToDequeue(element) {
         if (dequeue.length >= 5) {
@@ -194,39 +188,6 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async function sendMessageToApi(message) {
-        console.log("Sending message to API: " + message);
-        const endpointUrl = "https://api.openai.com/v1/chat/completions";
-        console.log("conversations : " + conversation);
-        const requestBody = {
-            model: "gpt-3.5-turbo",
-            messages: conversation,
-            max_tokens: 1000,
-            temperature: 0.5,
-        };
-        const response = await fetch(endpointUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify(requestBody),
-        });
-
-        if (response.ok) {
-            console.log("API call successful");
-            const jsonResponse = await response.json();
-            const responseMessage =
-                jsonResponse.choices[0].message.content.trim();
-            conversation.push({ role: "assistant", content: responseMessage });
-            addMessageToChat(responseMessage, "api-response");
-        } else {
-            console.log("API call failed");
-            // Handle the API error, e.g., display an error message
-        }
-    }
-
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", (event) => {
         const message = event.data; // The JSON data our extension sent
@@ -237,9 +198,8 @@
             message.value
         );
         switch (message.type) {
-            case "enigneeredPrompt": {
-                conversation.push({ role: "user", content: message.value });
-                sendMessageToApi(message.value);
+            case "apiResponse": {
+                addMessageToChat(message.value, "api-response")
                 break;
             }
             case "env": {
@@ -249,7 +209,7 @@
         }
     });
 
-    function generateEngineeredPrompt(userPrompt) {
+    function getApiResponse(userPrompt) {
         vscode.postMessage({ type: "newUserPrompt", value: userPrompt });
     }
 
@@ -278,7 +238,7 @@
     SendButton?.addEventListener("click", () => {
         if (chatInput?.value.trim()) {
             addMessageToChat(chatInput.value, "user-message");
-            generateEngineeredPrompt(chatInput.value);
+            getApiResponse(chatInput.value);
             chatInput.value = "";
             chatInput.focus();
         }
@@ -287,7 +247,7 @@
     chatInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter" && chatInput.value.trim()) {
             addMessageToChat(chatInput.value, "user-message");
-            generateEngineeredPrompt(chatInput.value);
+            getApiResponse(chatInput.value);
             chatInput.value = "";
         }
     });
