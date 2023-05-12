@@ -13,6 +13,7 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ## Release Notes
 1.1.26:
   - pac CLI 1.23.1 (Apr refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+  - Conflict resolution support for co-edits in VS Code for web
 
 1.1.25:
   - pac CLI 1.22.4 (see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
