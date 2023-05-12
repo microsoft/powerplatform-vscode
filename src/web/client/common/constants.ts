@@ -13,6 +13,7 @@ export const EMPTY_FILE_NAME = "defaultfilename";
 export const CHARSET = "utf-8";
 export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION_DEFAULT = "//.default";
+export const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default";
 export const SCOPE_OPTION_OFFLINE_ACCESS = "offline_access";
 export const BAD_REQUEST = "BAD_REQUEST";
 export const PUBLIC = "public";
