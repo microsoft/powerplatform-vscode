@@ -3,9 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as vscode from "vscode";
 import { getHeader } from "../common/authenticationProvider";
 import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
+import { PortalsFS } from "../dal/fileSystemProvider";
 import { telemetryEventNames } from "../telemetry/constants";
 import { GetFileContent } from "../utilities/commonUtil";
 import {
@@ -17,7 +19,8 @@ import WebExtensionContext from "../WebExtensionContext";
 
 export class EtagHandlerService {
     public static async getLatestAndUpdateMetadata(
-        fileFsPath: string
+        fileFsPath: string,
+        portalFs: PortalsFS
     ): Promise<string> {
         const entityName = getFileEntityType(fileFsPath);
         const entityId = getFileEntityId(fileFsPath);
@@ -69,16 +72,27 @@ export class EtagHandlerService {
 
             if (response.ok) {
                 const result = await response.json();
-                WebExtensionContext.entityDataMap.updateEtagValue(
-                    entityId,
-                    result[ODATA_ETAG]
+                const currentContent = new TextDecoder().decode(
+                    await portalFs.readFile(vscode.Uri.parse(fileFsPath))
                 );
+                const latestContent = GetFileContent(result, attributePath);
+
+                if (currentContent !== latestContent) {
+                    WebExtensionContext.entityDataMap.updateEtagValue(
+                        entityId,
+                        result[ODATA_ETAG]
+                    );
+
+                    WebExtensionContext.telemetry.sendInfoTelemetry(
+                        telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_CHANGED
+                    );
+
+                    return latestContent;
+                }
 
                 WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_CHANGED
+                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
                 );
-
-                return GetFileContent(result, attributePath);
             } else if (response.status === 304) {
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
