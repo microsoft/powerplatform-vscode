@@ -3,38 +3,47 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import fetch from "node-fetch";
+import fetch, { RequestInit } from "node-fetch";
 
 const apiKey = "YOUR_API_KEY_HERE";
+const conversation = [
+    {
+        role: "system",
+        content:
+            "You are a web developer well versed with css, html and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development. You put code block in markdown syntax",
+    },
+];
 
-export async function sendApiRequest (message: string)  {
+export async function sendApiRequest(message: string) {
     console.log("Sending message to API: " + message);
+    conversation.push({ role: "user", content: message });
     const endpointUrl = "https://api.openai.com/v1/chat/completions";
     const requestBody = {
-        model: "gpt-3.5-turbo",
-        messages: message,
+        'model': "gpt-3.5-turbo",
+        messages: conversation,
         max_tokens: 1000,
         temperature: 0.5,
     };
-    const response = await fetch(endpointUrl, {
+
+    const requestInit: RequestInit = {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+            'Content-Type': "application/json",
             Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify(requestBody),
-    });
+    }
+    const response = await fetch(endpointUrl, requestInit);
 
     if (response.ok) {
         console.log("API call successful");
         const jsonResponse = await response.json();
         const responseMessage = jsonResponse.choices[0].message.content.trim();
-        // addMessage(responseMessage, "api-response");
+        conversation.push({ role: "assistant", content: responseMessage });
         return responseMessage;
     } else {
         console.log("API call failed");
-        // Handle the API error, e.g., display an error message
+        const errorResponse = await response.json();
+        console.log("Error message:", errorResponse.error.message);
     }
-
-    // addMessage('This is a dummy response to your message : ' + message, 'api-response');
 }

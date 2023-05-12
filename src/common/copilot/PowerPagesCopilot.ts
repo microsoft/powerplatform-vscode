@@ -3,14 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- */
 
 import * as vscode from "vscode";
 // import { createAiWebpage } from "./Utils";
-//import { templates } from "./templates";
+import { sendApiRequest } from "./IntelligenceApi";
 
 declare const IS_DESKTOP: boolean;
 
@@ -41,12 +37,18 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        this.sendMessageToWebview({ type: 'env', value: this.isDesktop });
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
+                case "webViewLoaded": {
+                    console.log("webview loaded");
+                    this.sendMessageToWebview({ type: 'env', value: this.isDesktop });
+                    break;
+                }
                 case "newUserPrompt": {
-                    this.promptEngine(data.value);
+                    const engineeredPrompt = this.promptEngine(data.value);
+                    const apiResponse = await sendApiRequest(engineeredPrompt);
+                    this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
                     break;
                 }
                 case "insertCode": {
@@ -94,18 +96,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         });
     }
 
-    public async promptEngine(message: string) {
+    public promptEngine(message: string) {
         //const entityList=  `The list gets its data asynchronously, and when it's complete it will trigger an event 'loaded' that your custom JavaScript can listen for and do something with items in the grid. The following code is a sample javascript code: \`+"${"```"}" +\` $(document).ready(function () { $(".entitylist.entity-grid").on("loaded", function () { $(this).children(".view-grid").find("tr").each(function () { // do something with each row $(this).css("background-color", "yellow"); }); }); }); \`+"${"```"}" +\` Find a particular attribute field and get its value to possibly modify the rendering of the value. The following code gets each table cell that contains the value of the accountnumber attribute. Replace accountnumber with an attribute appropriate for your table and view. \`+"${"```"}" +\` $(document).ready(function (){ $(".entitylist.entity-grid").on("loaded", function () { $(this).children(".view-grid").find("td[data-attribute='accountnumber']").each(function (i, e){ var value = $(this).data(value); \`+"${"```"}" +\` // now that you have the value you can do something to the value }); }); });`
         vscode.window.showInformationMessage(message);
         const activeEditorContent = this.getActiveEditorContent();
 
         const enigneeredPrompt = message + " " + activeEditorContent; // modify the user prompt here
-        if (this._view) {
-            this._view.webview.postMessage({
-                type: "enigneeredPrompt",
-                value: enigneeredPrompt,
-            });
-        }
+
+        return enigneeredPrompt;
     }
 
 
