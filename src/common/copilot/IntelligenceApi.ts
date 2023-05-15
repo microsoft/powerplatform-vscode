@@ -4,8 +4,13 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
+import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 
-const apiKey = "YOUR_API_KEY_HERE";
+let apiKey = "";
+intelligenceAPIAuthentication().then((token) => {
+    console.log('token: ' + token);
+    apiKey = token;
+});
 const conversation = [
     {
         role: "system",
@@ -17,12 +22,14 @@ const conversation = [
 export async function sendApiRequest(message: string) {
     console.log("Sending message to API: " + message);
     conversation.push({ role: "user", content: message });
-    const endpointUrl = "https://api.openai.com/v1/chat/completions";
+    //const endpointUrl = "https://api.openai.com/v1/chat/completions";
+    const AIBTestUrl = "https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a5/smart/model/463431f3-b8fc-44af-ae51-d8f83d4ca52f/complete";
+
+    console.log("messgae123", message);
     const requestBody = {
-        'model': "gpt-3.5-turbo",
-        messages: conversation,
-        max_tokens: 1000,
-        temperature: 0.5,
+        "prompt": message,
+        "source": "chatGpt",
+        "stop": "[###]"
     };
 
     const requestInit: RequestInit = {
@@ -33,12 +40,13 @@ export async function sendApiRequest(message: string) {
         },
         body: JSON.stringify(requestBody),
     }
-    const response = await fetch(endpointUrl, requestInit);
+    const response = await fetch(AIBTestUrl, requestInit);
 
     if (response.ok) {
         console.log("API call successful");
         const jsonResponse = await response.json();
-        const responseMessage = jsonResponse.choices[0].message.content.trim();
+        console.log("AIB Response:", jsonResponse);
+        const responseMessage = jsonResponse.choices[0].text.trim();
         conversation.push({ role: "assistant", content: responseMessage });
         return responseMessage;
     } else {
