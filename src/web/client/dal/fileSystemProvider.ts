@@ -79,7 +79,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
             if (isVersionControlEnabled()) {
                 const latestContent =
                     await EtagHandlerService.getLatestAndUpdateMetadata(
-                        uri.fsPath
+                        uri.fsPath,
+                        this
                     );
                 const entityEtagValue = getEntityEtag(
                     getFileEntityId(uri.fsPath)
