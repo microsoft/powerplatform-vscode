@@ -1,0 +1,106 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+      "name": "Launch VSCode Extension",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "sourceMaps": true,
+      "runtimeExecutable": "${execPath}",
+      "preLaunchTask": "gulp: compile",
+      "request": "launch",
+      "type": "pwa-extensionHost",
+      "trace": true
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Server",
+      "port": 6009,
+      "restart": true,
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha All Unit tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/mocha",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "--require",
+        "ts-node/register",
+        "-u",
+        "bdd",
+        "--timeout",
+        "999999",
+        "src/client/test/unit/**/*.ts"
+      ],
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Integration Tests",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--extensionTestsPath=${workspaceFolder}/out/debugger/test/unit/index"
+      ],
+      "outFiles": ["${workspaceFolder}/out/debugger/test/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha Current File",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/mocha",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "--require",
+        "ts-node/register",
+        "-u",
+        "bdd",
+        "--timeout",
+        "999999",
+        "${file}"
+      ],
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch current TypeScript src",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "preLaunchTask": "gulp: compile",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Gulp task",
+      "program": "${workspaceFolder}/node_modules/gulp/bin/gulp.js",
+      "cwd": "${workspaceFolder}",
+      "args": ["recompile"],
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Run Web Extension in VS Code",
+      "type": "pwa-extensionHost",
+      "debugWebWorkerHost": true,
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--extensionDevelopmentKind=web"
+      ],
+      "outFiles": ["${workspaceFolder}/dist/web/**/*.js"],
+      "preLaunchTask": "gulp: compileWeb"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Client + Server",
+      "configurations": ["Launch VSCode Extension", "Attach to Server"]
+    }
+  ]
+}
