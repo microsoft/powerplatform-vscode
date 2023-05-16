@@ -5,7 +5,7 @@
 
 import fetch, { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
-import { getHeader } from "../common/authenticationProvider";
+import { getCommonHeaders } from "../common/authenticationProvider";
 import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
 import { showErrorDialog } from "../common/errorHandler";
 import { FileData } from "../context/fileData";
@@ -35,7 +35,8 @@ export async function saveData(fileUri: vscode.Uri) {
         dataMap.get(fileUri.fsPath)?.entityName as string,
         dataMap.get(fileUri.fsPath)?.entityId as string,
         httpMethod.PATCH,
-        true
+        true,
+        false
     );
 
     const fileDataMap = WebExtensionContext.fileDataMap.getFileMap;
@@ -75,7 +76,7 @@ async function getSaveParameters(
             webFileV2
         );
 
-        saveCallParameters.requestInit.headers = getHeader(
+        saveCallParameters.requestInit.headers = getCommonHeaders(
             accessToken,
             useOctetStreamContentType(entityName, attributePath.source)
         );

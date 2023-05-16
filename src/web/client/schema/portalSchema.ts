@@ -73,9 +73,9 @@ export const portal_schema_V1 = {
                 _languagefield: "_adx_webpagelanguageid_value",
                 _languagegroupby: "adx_rootwebpageid",
                 _fetchQueryParameters:
-                    "?$filter=adx_webpageid eq {entityId}&$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl,_adx_webpagelanguageid_value",
+                    "?$filter=adx_webpageid eq {entityId}&$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl,_adx_webpagelanguageid_value&$count=true",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_adx_websiteid_value eq {websiteId}&$select=adx_webpageid,_adx_webpagelanguageid_value,adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl",
+                    "?$filter=_adx_websiteid_value eq {websiteId}&$select=adx_webpageid,_adx_webpagelanguageid_value,adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl&$count=true",
                 _attributes: "adx_customcss,adx_customjavascript,adx_copy",
                 _attributesExtension: new Map([
                     ["adx_customcss", "customcss.css"],
@@ -97,7 +97,7 @@ export const portal_schema_V1 = {
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters:
                     "?$filter=_objectid_value eq {entityId} &$select=mimetype,documentbody,filename,annotationid,_objectid_value",
-                _multiFileFetchQueryParameters: "",
+                _multiFileFetchQueryParameters: "?$count=true",
                 _attributes: "documentbody",
                 _attributesExtension: new Map([["documentbody", "css"]]),
                 _mappingEntityId: "annotationid", // Webfile in old schema are maintained with two dataverse entity adx_webfile and annotations. This Id acts as foreign key for that mapping
@@ -119,7 +119,7 @@ export const portal_schema_V1 = {
                 _fetchQueryParameters:
                     "?$filter=adx_contentsnippetid eq {entityId}&$select=adx_name,adx_value,_adx_contentsnippetlanguageid_value,_adx_contentsnippetlanguageid_value",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_adx_websiteid_value eq {websiteId}&$select=adx_name,adx_value,_adx_contentsnippetlanguageid_value,_adx_contentsnippetlanguageid_value",
+                    "?$filter=_adx_websiteid_value eq {websiteId}&$select=adx_name,adx_value,_adx_contentsnippetlanguageid_value,_adx_contentsnippetlanguageid_value&$count=true",
                 _attributes: "adx_value",
                 _attributesExtension: new Map([["adx_value", "html"]]),
             },
@@ -138,7 +138,7 @@ export const portal_schema_V1 = {
                 _fetchQueryParameters:
                     "?$filter=adx_webtemplateid eq {entityId}&$select=adx_name,adx_source",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_adx_websiteid_value eq {websiteId}&$select=adx_name,adx_source",
+                    "?$filter=_adx_websiteid_value eq {websiteId}&$select=adx_name,adx_source&$count=true",
                 _attributes: "adx_source",
                 _attributesExtension: new Map([["adx_source", "html"]]),
             },
@@ -155,7 +155,7 @@ export const portal_schema_V1 = {
                 _propextension: "",
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters: "",
-                _multiFileFetchQueryParameters: "",
+                _multiFileFetchQueryParameters: "?$count=true",
                 _attributes: "",
                 _attributesExtension: new Map([["", ""]]),
             },
@@ -172,7 +172,7 @@ export const portal_schema_V1 = {
                 _propextension: "",
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters: "",
-                _multiFileFetchQueryParameters: "",
+                _multiFileFetchQueryParameters: "?$count=true",
                 _attributes: "",
                 _attributesExtension: new Map([["", ""]]),
             },
@@ -189,7 +189,7 @@ export const portal_schema_V1 = {
                 _propextension: "",
                 _exporttype: "SubFolders",
                 _fetchQueryParameters: "",
-                _multiFileFetchQueryParameters: "",
+                _multiFileFetchQueryParameters: "?$count=true",
                 _attributes: "",
                 _attributesExtension: new Map([["", ""]]),
             },
@@ -265,7 +265,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content,powerpagesitelanguageid",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 2 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value",
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 2 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes:
                     "content.customcss,content.customjavascript,content.copy",
                 _attributesExtension: new Map([
@@ -288,7 +288,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 3&$select=name,content,_powerpagesitelanguageid_value",
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 3&$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "filecontent",
                 _attributesExtension: new Map([["filecontent", "css"]]),
                 _mappingAttributeFetchQuery: new Map([
@@ -309,7 +309,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 7 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value",
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 7 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "content.value",
                 _attributesExtension: new Map([["content.value", "html"]]),
             },
@@ -327,7 +327,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 8&$select=name,content,_powerpagesitelanguageid_value",
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 8&$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "content.source",
                 _attributesExtension: new Map([["content.source", "html"]]),
             },
@@ -345,7 +345,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 17 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value",
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 17 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "content.source",
                 _attributesExtension: new Map([["", ""]]),
             },
@@ -363,7 +363,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 15 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value",
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 15 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "content.source",
                 _attributesExtension: new Map([["", ""]]),
             },
@@ -381,7 +381,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 19 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value",
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 19 and _powerpagesitelanguageid_value ne null&$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "content.source",
                 _attributesExtension: new Map([["", ""]]),
             },

@@ -7,12 +7,12 @@ import sinon from "sinon";
 import { expect } from "chai";
 import {
     dataverseAuthentication,
-    getHeader,
+    getCommonHeaders,
 } from "../../common/authenticationProvider";
 import vscode from "vscode";
 import WebExtensionContext from "../../WebExtensionContext";
-import { telemetryEventNames } from '../../telemetry/constants';
-import * as errorHandler from '../../common/errorHandler';
+import { telemetryEventNames } from "../../telemetry/constants";
+import * as errorHandler from "../../common/errorHandler";
 
 describe("Authentication Provider", () => {
     afterEach(() => {
@@ -21,7 +21,7 @@ describe("Authentication Provider", () => {
     });
     it("getHeader", () => {
         const accessToken = "f068ee9f-a010-47b9-b1e1-7e6353730e7d";
-        const result = getHeader(accessToken);
+        const result = getCommonHeaders(accessToken);
         expect(result.authorization).eq("Bearer " + accessToken);
         expect(result["content-type"]).eq("application/json; charset=utf-8");
         expect(result.accept).eq("application/json");
@@ -60,11 +60,7 @@ describe("Authentication Provider", () => {
                 scopes: [],
             });
 
-
-        const showErrorDialog = sinon.spy(
-            errorHandler,
-            "showErrorDialog"
-        );
+        const showErrorDialog = sinon.spy(errorHandler, "showErrorDialog");
 
         const sendErrorTelemetry = sinon.spy(
             WebExtensionContext.telemetry,

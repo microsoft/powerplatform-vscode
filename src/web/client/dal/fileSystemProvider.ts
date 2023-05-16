@@ -6,7 +6,11 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import { pathHasEntityFolderName } from "../utilities/urlBuilderUtil";
-import { PORTALS_URI_SCHEME, queryParameters } from "../common/constants";
+import {
+    ENABLE_MULTI_FILE_FEATURE,
+    PORTALS_URI_SCHEME,
+    queryParameters,
+} from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
 import { saveData } from "./remoteSaveProvider";
@@ -413,7 +417,17 @@ export class PortalsFS implements vscode.FileSystemProvider {
             ) as string
         );
 
-        await fetchDataFromDataverseAndUpdateVFS(this);
+        // Load default file first
+        await fetchDataFromDataverseAndUpdateVFS(
+            this,
+            WebExtensionContext.defaultEntityId,
+            WebExtensionContext.defaultEntityType
+        );
+
+        if (ENABLE_MULTI_FILE_FEATURE) {
+            // load rest of the files
+            await fetchDataFromDataverseAndUpdateVFS(this);
+        }
     }
 
     private async _saveFileToDataverseFromVFS(uri: vscode.Uri) {

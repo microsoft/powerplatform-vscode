@@ -55,8 +55,7 @@ export function getRequestUrlForEntities(
             entityId.length > 0
                 ? entityId
                 : WebExtensionContext.defaultEntityId,
-            httpMethod.GET,
-            false
+            httpMethod.GET
         );
         return [
             {
@@ -78,8 +77,7 @@ export function getRequestUrlForEntities(
                         schemaEntityKey.VSCODE_ENTITY_NAME
                     ) as string,
                     "",
-                    httpMethod.GET,
-                    false
+                    httpMethod.GET
                 );
 
                 entityRequestURLs.push({

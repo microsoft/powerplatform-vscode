@@ -7,7 +7,7 @@ import fetch from "node-fetch";
 import * as vscode from "vscode";
 import {
     dataverseAuthentication,
-    getHeader,
+    getCommonHeaders,
 } from "./common/authenticationProvider";
 import * as Constants from "./common/constants";
 import {
@@ -346,7 +346,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
-                headers: getHeader(accessToken),
+                headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
                 this.telemetry.sendAPIFailureTelemetry(
@@ -404,7 +404,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
-                headers: getHeader(accessToken),
+                headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
                 this.telemetry.sendAPIFailureTelemetry(
@@ -458,7 +458,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
-                headers: getHeader(accessToken),
+                headers: getCommonHeaders(accessToken),
             });
 
             if (!response?.ok) {
