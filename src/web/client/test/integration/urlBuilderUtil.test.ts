@@ -218,7 +218,7 @@ describe("URLBuilder", () => {
             isSingleEntity
         );
 
-        const expResult = "singleEntityURLFETCH_QUERY_PARAMETERS";
+        const expResult = "singleEntityURL";
         expect(result).eq(expResult);
     });
 
