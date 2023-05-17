@@ -19,6 +19,8 @@ export const PUBLIC = "public";
 export const MIMETYPE = "mimetype";
 export const IS_FIRST_RUN_EXPERIENCE = "isFirstRunExperience";
 export const ODATA_ETAG = "@odata.etag";
+export const ODATA_NEXT_LINK = "@odata.nextLink";
+export const MAX_ENTITY_FETCH_COUNT = "3";
 
 // FEATURE FLAGS
 // Version control feature flag

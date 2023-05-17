@@ -215,7 +215,8 @@ describe("URLBuilder", () => {
             entity,
             entityId,
             method,
-            isSingleEntity
+            isSingleEntity,
+            false
         );
 
         const expResult = "singleEntityURL";
@@ -281,7 +282,8 @@ describe("URLBuilder", () => {
             entity,
             entityId,
             method,
-            isSingleEntity
+            isSingleEntity,
+            false
         );
 
         const expResult = `dataverseOrgUrl DATAVERSE_ENTITY_NAME id data api 1.0`;

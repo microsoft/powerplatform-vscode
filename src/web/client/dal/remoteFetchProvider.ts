@@ -11,7 +11,7 @@ import {
     GetFileNameWithExtension,
 } from "../utilities/commonUtil";
 import { getRequestURL, updateEntityId } from "../utilities/urlBuilderUtil";
-import { getHeader } from "../common/authenticationProvider";
+import { getCommonHeaders } from "../common/authenticationProvider";
 import * as Constants from "../common/constants";
 import { ERRORS, showErrorDialog } from "../common/errorHandler";
 import { PortalsFS } from "./fileSystemProvider";
@@ -33,64 +33,78 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     entityType = ""
 ) {
     const entityRequestURLs = getRequestUrlForEntities(entityId, entityType);
+    const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
+        Constants.queryParameters.ORG_URL
+    ) as string;
 
     entityRequestURLs.forEach(async (entity) => {
         let requestSentAtTime = new Date().getTime();
         try {
-            const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
-                Constants.queryParameters.ORG_URL
-            ) as string;
-
-            WebExtensionContext.telemetry.sendAPITelemetry(
-                entity.requestUrl,
-                entity.entityName,
-                Constants.httpMethod.GET
-            );
-
-            requestSentAtTime = new Date().getTime();
-            const response = await fetch(entity.requestUrl, {
-                headers: getHeader(WebExtensionContext.dataverseAccessToken),
-            });
-
-            if (!response.ok) {
-                vscode.window.showErrorMessage(
-                    vscode.l10n.t("Failed to fetch file content.")
+            let makeRequestCall = true;
+            while (makeRequestCall) {
+                WebExtensionContext.telemetry.sendAPITelemetry(
+                    entity.requestUrl,
+                    entity.entityName,
+                    Constants.httpMethod.GET
                 );
-                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+
+                requestSentAtTime = new Date().getTime();
+                const response = await fetch(entity.requestUrl, {
+                    headers: {
+                        ...getCommonHeaders(
+                            WebExtensionContext.dataverseAccessToken
+                        ),
+                        Prefer: `odata.maxpagesize=${Constants.MAX_ENTITY_FETCH_COUNT}, odata.include-annotations="Microsoft.Dynamics.CRM.*"`,
+                    },
+                });
+
+                if (!response.ok) {
+                    makeRequestCall = false;
+                    vscode.window.showErrorMessage(
+                        vscode.l10n.t("Failed to fetch file content.")
+                    );
+                    WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                        entity.requestUrl,
+                        entity.entityName,
+                        Constants.httpMethod.GET,
+                        new Date().getTime() - requestSentAtTime,
+                        JSON.stringify(response)
+                    );
+                    throw new Error(response.statusText);
+                }
+
+                WebExtensionContext.telemetry.sendAPISuccessTelemetry(
                     entity.requestUrl,
                     entity.entityName,
                     Constants.httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    JSON.stringify(response)
+                    new Date().getTime() - requestSentAtTime
                 );
-                throw new Error(response.statusText);
-            }
 
-            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-                entity.requestUrl,
-                entity.entityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
-            );
+                const result = await response.json();
+                const data = result.value;
+                if (result[Constants.ODATA_NEXT_LINK]) {
+                    makeRequestCall = true;
+                    entity.requestUrl = result[Constants.ODATA_NEXT_LINK];
+                } else {
+                    makeRequestCall = false;
+                }
 
-            const result = await response.json();
-            const data = result.value;
+                if (!data) {
+                    vscode.window.showErrorMessage(
+                        "microsoft-powerapps-portals.webExtension.fetch.nocontent.error",
+                        "Response data is empty"
+                    );
+                    throw new Error(ERRORS.EMPTY_RESPONSE);
+                }
 
-            if (!data) {
-                vscode.window.showErrorMessage(
-                    "microsoft-powerapps-portals.webExtension.fetch.nocontent.error",
-                    "Response data is empty"
-                );
-                throw new Error(ERRORS.EMPTY_RESPONSE);
-            }
-
-            for (let counter = 0; counter < data.length; counter++) {
-                await createContentFiles(
-                    data[counter],
-                    entity.entityName,
-                    portalFs,
-                    dataverseOrgUrl
-                );
+                for (let counter = 0; counter < data.length; counter++) {
+                    await createContentFiles(
+                        data[counter],
+                        entity.entityName,
+                        portalFs,
+                        dataverseOrgUrl
+                    );
+                }
             }
         } catch (error) {
             const errorMsg = (error as Error)?.message;
@@ -313,6 +327,7 @@ async function getMappingEntityContent(
         entityId,
         Constants.httpMethod.GET,
         false,
+        true,
         mappingEntityFetchQueryMap?.get(attributeKey) as string
     );
 
@@ -324,7 +339,7 @@ async function getMappingEntityContent(
     requestSentAtTime = new Date().getTime();
 
     const response = await fetch(requestUrl, {
-        headers: getHeader(accessToken),
+        headers: getCommonHeaders(accessToken),
     });
 
     if (!response.ok) {
