@@ -23,7 +23,7 @@ export class PacTerminal implements vscode.Disposable {
     public constructor(context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
         this._context = context;
         const pacContext = new PacWrapperContext(context, telemetry);
-        const interop = new PacInterop(pacContext);
+        const interop = new PacInterop(pacContext, cliPath);
         this._pacWrapper = new PacWrapper(pacContext, interop);
 
         // https://code.visualstudio.com/api/references/vscode-api#EnvironmentVariableCollection

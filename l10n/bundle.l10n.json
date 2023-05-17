@@ -36,6 +36,12 @@
       "{0} represents the version number"
     ]
   },
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": {
+    "message": "dotnet sdk 6.0 or greater must be installed",
+    "comment": [
+      "Do not translate 'dotnet' or 'sdk'"
+    ]
+  },
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
