@@ -31,11 +31,22 @@ export interface IContainerData {
 }
 
 let copresenceWorker: Worker;
+const cursorDecoration = vscode.window.createTextEditorDecorationType({
+    before: {
+        contentText: "Priyank",
+        color: "yellow",
+        fontWeight: "bold",
+        margin: "0 0 0 0",
+        width: "0",
+        border: `1px solid ${"yellow"}`,
+    },
+});
 
 export function activate(context: vscode.ExtensionContext): void {
     console.log("VSCODE WORKER vscode extension activate function start");
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
+
     const dataBoundary = undefined;
     const appInsightsResource =
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
@@ -187,6 +198,7 @@ export function activate(context: vscode.ExtensionContext): void {
             }
         )
     );
+
     console.log(
         "VSCODE WORKER vscode extension activate registerCommand success"
     );
@@ -246,6 +258,29 @@ export function createCopresenceWorkerInstance(
                     }`
                 );
                 WebExtensionContext.containerId = event.data.containerId;
+                const { data } = event;
+                const activeEditor = vscode.window.activeTextEditor;
+                if (activeEditor) {
+                    const startPos = new vscode.Position(
+                        data.lineNumber,
+                        data.columnNumber
+                    );
+                    const endPos = new vscode.Position(
+                        data.lineNumber,
+                        data.columnNumber + 10
+                    );
+
+                    // const position = activeEditor.selection.active.line; // Current line position
+                    const decoration = {
+                        range: new vscode.Range(startPos, endPos),
+                    };
+
+                    activeEditor.setDecorations(cursorDecoration, [decoration]);
+                    activeEditor.setDecorations(
+                        vscode.window.createTextEditorDecorationType({}),
+                        [decoration]
+                    );
+                }
 
                 vscode.window.showInformationMessage(
                     "Server sent new position as " +
@@ -311,12 +346,33 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                 );
 
                 if (activeEditor) {
+                    const startPos = activeEditor.selection.active;
+                    console.log("start Pos", startPos);
+                    const endPos = activeEditor.selection.active;
+
+                    // const position = activeEditor.selection.active.line; // Current line position
+                    const decoration = {
+                        range: new vscode.Range(startPos, endPos),
+                    };
+
+                    activeEditor.setDecorations(cursorDecoration, [decoration]);
+                    activeEditor.setDecorations(
+                        vscode.window.createTextEditorDecorationType({}),
+                        [decoration]
+                    );
+
                     const entityId =
                         WebExtensionContext.fileDataMap.getFileMap.get(
                             activeEditor.document.uri.fsPath
                         )?.entityId as string;
+                    const fileName =
+                        WebExtensionContext.fileDataMap.getFileMap.get(
+                            activeEditor.document.uri.fsPath
+                        )?.fileName;
+
                     if (entityId) {
                         // send data to webview
+                        console.log("entity id", entityId);
 
                         console.log("VSCODE WORKER Sending message to worker");
 
@@ -340,6 +396,10 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                                 swptenantId,
                                 discoveryendpoint,
                                 swpAccessToken,
+                            },
+                            file: {
+                                fileName: fileName,
+                                filePath: activeEditor.document.uri.fsPath,
                             },
                             containerId: WebExtensionContext.containerId,
 
