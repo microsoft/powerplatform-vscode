@@ -365,8 +365,7 @@ const cliVersion = '1.23.3';
 const recompile = gulp.series(
     clean,
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI', cliVersion, path.resolve(distdir, 'pac')),
-    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
-    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
+    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Tool', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
     translationsImport,
     setTelemetryTarget,
