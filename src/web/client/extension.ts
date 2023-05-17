@@ -24,7 +24,6 @@ import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-gen
 import { NPSWebView } from "./webViews/NPSWebView";
 import * as Constants from "./common/constants";
 import { getHeader } from "./common/authenticationProvider";
-
 export interface IContainerData {
     containerId: string;
     lineNumber: number;
@@ -240,13 +239,14 @@ export function createCopresenceWorkerInstance(
 
             copresenceWorker.onmessage = (event) => {
                 console.log(
-                    `VSCODE WORKER Received hello from webview: ${
+                    `VSCODE WORKER Received hello from webworker: ${
                         (JSON.stringify(event),
                         event.data,
                         event.data.containerId)
                     }`
                 );
                 WebExtensionContext.containerId = event.data.containerId;
+
                 vscode.window.showInformationMessage(
                     "Server sent new position as " +
                         event.data.lineNumber +
