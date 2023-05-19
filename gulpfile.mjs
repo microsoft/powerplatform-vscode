@@ -30,6 +30,9 @@ import path from 'node:path';
 import pslist from 'ps-list';
 import { fileURLToPath } from 'node:url';
 
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+
 import webpackConfig from './webpack.config.js';
 const [nodeConfig, webConfig] = webpackConfig;
 const distdir = path.resolve('./dist');
