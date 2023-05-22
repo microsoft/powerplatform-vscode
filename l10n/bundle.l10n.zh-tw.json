@@ -71,5 +71,6 @@
   "Web files": "Web 檔案",
   "Webfile(s) added successfully": "已成功新增 Web 檔案",
   "You are editing a live, public site ": "您正在編輯已上線、公開的網站",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "必須安裝 DotNet SDK 6.0 或更新版本",
   "{0} created!/{0} will be replaced by the entity type.": "{0} 已建立!"
 }

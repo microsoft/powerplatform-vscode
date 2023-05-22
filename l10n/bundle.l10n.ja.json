@@ -71,5 +71,6 @@
   "Web files": "Web ファイル",
   "Webfile(s) added successfully": "正常に追加された Web ファイルの数",
   "You are editing a live, public site ": "ライブのパブリック サイトを編集中です ",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "DotNet SDK 6.0 以上を必ずインストールしてください",
   "{0} created!/{0} will be replaced by the entity type.": "{0} が作成されました。"
 }

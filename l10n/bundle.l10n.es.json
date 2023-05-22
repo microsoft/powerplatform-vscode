@@ -71,5 +71,6 @@
   "Web files": "Archivos web",
   "Webfile(s) added successfully": "Sitios web agregados correctamente",
   "You are editing a live, public site ": "Está editando un sitio público activo ",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "debe estar instalado dotnet sdk 6.0 o una versión posterior",
   "{0} created!/{0} will be replaced by the entity type.": "Se ha creado {0}."
 }
