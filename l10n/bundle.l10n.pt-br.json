@@ -48,6 +48,10 @@
   "PAC Telemetry disabled": "Telemetria de PAC desabilitada",
   "PAC Telemetry enabled": "Telemetria de PAC habilitada",
   "Page Template name cannot be empty.": "O nome do Modelo de Página não pode ficar vazio.",
+  "Please enter a name for the content snippet.": "Insira um nome para o trecho de conteúdo.",
+  "Please enter a name for the page template.": "Insira um nome para o modelo de página.",
+  "Please enter a name for the web template.": "Insira um nome para o modelo da Web.",
+  "Please enter a name for the webpage.": "Insira um nome para a página da Web.",
   "Preparing pac CLI (v{0}).../{0} represents the version number": "Preparando a pac CLI (v{0})...",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Tipo de Perfil: {0}",
   "Resource: {0}/The {0} represents profile's resource/environment URL": "Recurso: {0}",
@@ -67,5 +71,6 @@
   "Web files": "Arquivos da Web",
   "Webfile(s) added successfully": "Arquivos da Web adicionados com êxito",
   "You are editing a live, public site ": "Você está editando um site público ativo ",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "O dotnet sdk 6.0 ou superior deve estar instalado",
   "{0} created!/{0} will be replaced by the entity type.": "{0} criado."
 }
