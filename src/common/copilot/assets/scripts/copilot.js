@@ -272,6 +272,7 @@
             { name: "entityForm", description: "Create a new entity form" },
             { name: "entityList", description: "Create a new entity list" },
             { name: "fetchXml", description: "Fetch data from table" },
+            { name: "clear", description: "Clear the chat window" },
         ];
 
         const listContainer = document.createElement("div");
@@ -293,6 +294,12 @@
             list.appendChild(listItem);
 
             listItem.addEventListener("click", () => {
+                if(item.name === "clear") {
+                    chatMessages.innerHTML = "";
+                    vscode.postMessage({ type: "clearChat" });
+                    hideAutocompletePanel();
+                    return;
+                }   
                 chatInput.value = `/${item.name} `;
                 hideAutocompletePanel();
             });

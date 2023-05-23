@@ -11,6 +11,15 @@ import { getTemplates } from "./Utils";
 
 declare const IS_DESKTOP: boolean;
 
+export let conversation = [
+    {
+        role: "system",
+        content:
+            "You are a web developer well versed with css, html, and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development. Uses liquid as a templating language and Bootstrap v3.3.6. You always put code block in markdown syntax",
+    },
+];
+
+
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     public static readonly viewType = "powerpages.copilot";
     private _view?: vscode.WebviewView;
@@ -89,8 +98,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     );
                     break;
                 }
-                case "createNewFile": {
-                    console.log("create new file with code = " + data.value);
+                case "clearChat": {
+                    console.log("clear chat ");
+                    conversation = [
+                        {
+                            role: "system",
+                            content:
+                                "You are a web developer well versed with css, html, and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development. Uses liquid as a templating language and Bootstrap v3.3.6. You always put code block in markdown syntax",
+                        },
+                    ];
+                    break;
                     //createNewFile(data.value);
                 }
             }

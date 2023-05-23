@@ -4,19 +4,14 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
+import { conversation } from "./PowerPagesCopilot";
 
 const apiKey = "YOUR_API_KEY_HERE";
-const conversation = [
-    {
-        role: "system",
-        content:
-            "You are a web developer well versed with css, html, and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development. Uses liquid as a templating language and Bootstrap v3.3.6. You always put code block in markdown syntax",
-    },
-];
 
 export async function sendApiRequest(message: string) {
     console.log("Sending message to API: " + message);
     conversation.push({ role: "user", content: message });
+    console.log("Conversation: ", conversation.length)
     const endpointUrl = "https://api.openai.com/v1/chat/completions";
     const requestBody = {
         'model': "gpt-3.5-turbo",
