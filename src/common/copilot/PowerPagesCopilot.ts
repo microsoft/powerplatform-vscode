@@ -104,6 +104,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         let template = templates[type];
         if (template === undefined) {
             template = "";
+            realPrompt = message;
         } else {
             // template = "Here is an example. " + template;
             realPrompt = message.split(type).slice(1).join("");

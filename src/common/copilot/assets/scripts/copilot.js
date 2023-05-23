@@ -271,6 +271,7 @@
             { name: "webPage", description: "Create a new webpage" },
             { name: "entityForm", description: "Create a new entity form" },
             { name: "entityList", description: "Create a new entity list" },
+            { name: "fetchXml", description: "Fetch data from table" },
         ];
 
         const listContainer = document.createElement("div");
