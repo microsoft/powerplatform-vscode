@@ -71,5 +71,6 @@
   "Web files": "Веб-файлы",
   "Webfile(s) added successfully": "Веб-файлы успешно добавлены",
   "You are editing a live, public site ": "Вы редактируете опубликованный открытый сайт ",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "Необходимо установить версию dotnet sdk 6.0 или более позднюю",
   "{0} created!/{0} will be replaced by the entity type.": "Создано: {0}."
 }
