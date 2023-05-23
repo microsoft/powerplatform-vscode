@@ -887,6 +887,7 @@
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
+    "@vscode/webview-ui-toolkit": "^1.2.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
     "liquidjs": "^10.2.0",

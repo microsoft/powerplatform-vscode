@@ -8,7 +8,10 @@ import * as vscode from "vscode";
 // import { createAiWebpage } from "./Utils";
 import { sendApiRequest } from "./IntelligenceApi";
 
+
 declare const IS_DESKTOP: boolean;
+
+
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     public static readonly viewType = "powerpages.copilot";
@@ -70,10 +73,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                     if (IS_DESKTOP) {
                         try {
-                          const { createAiWebpage } = await import("./Utils");
-                          createAiWebpage(data.value);
+                            const { createAiWebpage } = await import("./Utils");
+                            createAiWebpage(data.value);
                         } catch (e) {
-                          console.error(e);
+                            console.error(e);
                         }
                     }
                     break;
@@ -91,6 +94,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 case "createNewFile": {
                     console.log("create new file with code = " + data.value);
                     //createNewFile(data.value);
+                    break;
+                }
+                case "hello": {
+                    vscode.window.showInformationMessage(data.value)
+                    break;
                 }
             }
         });
@@ -125,9 +133,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     private _getHtmlForWebview(webview: vscode.Webview) {
 
-
+        
         const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'scripts', 'copilot.js');
         const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
+        const webviewUri = vscode.Uri.joinPath(this._extensionUri, "dist", "webview.js");
 
         const copilotStylePath = vscode.Uri.joinPath(
             this._extensionUri,
@@ -141,7 +150,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
 
         // Use a nonce to only allow specific scripts to be run
-		const nonce = getNonce();
+        const nonce = getNonce();
 
 
         return `
@@ -157,22 +166,24 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         <body>
             <div class="chat-container">
                 <div class="chat-messages" id="chat-messages"></div>
+                <vscode-button id="howdy">Howdy!</vscode-button>
                 <div class="chat-input">
                     <input type="text" id="chat-input" placeholder="Ask Copilot a question or type '/' for tables" />
                     <button id="send-button"></button>
                 </div>
             </div>
             <script nonce="${nonce}" src="${copilotScriptUri}"></script>
+            <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
         </body>
         </html>`;
     }
 }
 
 function getNonce() {
-	let text = '';
-	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	for (let i = 0; i < 32; i++) {
-		text += possible.charAt(Math.floor(Math.random() * possible.length));
-	}
-	return text;
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 32; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
 }

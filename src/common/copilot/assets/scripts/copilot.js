@@ -21,7 +21,7 @@
     <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z" fill="#F3F2F1"/>
     </svg>`;
 
-    const pencilSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" data-license="isc-gnc" stroke-width="2" stroke="currentColor" class="w-3 h-3"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>`;
+    // const pencilSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" data-license="isc-gnc" stroke-width="2" stroke="currentColor" class="w-3 h-3"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>`;
 
     const plusSvg = `<svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M13.0267 5.98667V7H7V12.9733H5.98667V7H0.0133333V5.98667H5.98667V0.0133333H7V5.98667H13.0267Z" fill="#F3F2F1"/>
@@ -125,22 +125,22 @@
         });
         actionWrapper.appendChild(insertButton);
 
-        const previewButton = document.createElement("button");
-        let isPreviewing = false;
-        previewButton.innerHTML = pencilSvg;
-        previewButton.classList.add("action-button");
-        previewButton.classList.add("preview-button");
-        previewButton.title = "Preview";
-        previewButton.addEventListener("click", () => {
-          isPreviewing = !isPreviewing;
-          if (isPreviewing) {
-            PreviewIcon.src = `${pencilSvg}`;
-          } else {
-            PreviewIcon.src = `${pencilSvg}`;
-          }
-          // previewCode(code);
-        });
-        actionWrapper.appendChild(previewButton);
+        // const previewButton = document.createElement("button");
+        // let isPreviewing = false;
+        // previewButton.innerHTML = pencilSvg;
+        // previewButton.classList.add("action-button");
+        // previewButton.classList.add("preview-button");
+        // previewButton.title = "Preview";
+        // previewButton.addEventListener("click", () => {
+        //   isPreviewing = !isPreviewing;
+        //   if (isPreviewing) {
+        //     PreviewIcon.src = `${pencilSvg}`;
+        //   } else {
+        //     PreviewIcon.src = `${pencilSvg}`;
+        //   }
+        //   // previewCode(code);
+        // });
+        // actionWrapper.appendChild(previewButton);
 
         if (isDesktop) {
           const createButton = document.createElement("button");

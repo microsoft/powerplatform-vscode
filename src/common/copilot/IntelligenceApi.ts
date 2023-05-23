@@ -5,13 +5,14 @@
 
 import https from 'https';
 import fetch, { RequestInit } from "node-fetch";
-// import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 
-// let apiKey = "";
-// intelligenceAPIAuthentication().then((token) => {
-//     console.log('token: ' + token);
-//     apiKey = token;
-// });
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+let apiKey = "";
+intelligenceAPIAuthentication().then((token) => {
+    console.log('token: ' + token);
+    apiKey = token;
+});
 const conversation = [
     {
         role: "system",
@@ -37,17 +38,17 @@ export async function sendApiRequest(message: string) {
         "question": message,
         "top": 1,
         "context": {
-            "sessionId": "2c4db921-be75-43fe-8fec-e4d65bd7546c",
-            "scenario": "NL2Page",
-            "subScenario": "GenerateNewPage",
+            "sessionId": "2c4db921-be75-43fe-8fec-e4d65bd7546d",
+            "scenario": "PowerPagesProDev",
+            "subScenario": "PowerPagesProDevList",
             "version": "V1",
             "information": {
-                "scope": "Page",
-                "title": "Woodland Bank",
-                "includeImages": true
+                "scope": "",
+                "activeFileName": "my_portal\\basic-forms\\c1-reschedule-appointment\\C1-Reschedule-Appointment.basicform.custom_javascript.js",
+                "activeFileContent": "",
+                "chatHistory": ""
             }
         }
-
     }
 
     // Create a custom agent with disabled SSL certificate validation
@@ -73,7 +74,7 @@ export async function sendApiRequest(message: string) {
         console.log("API call successful");
         const jsonResponse = await response.json();
         console.log("AIB Response:", jsonResponse);
-        const responseMessage = jsonResponse.additionalData[0].snippets[0].code;
+        const responseMessage = jsonResponse.answers[0];
         // conversation.push({ role: "assistant", content: responseMessage });
         return "```" + responseMessage + "```";
     } else {

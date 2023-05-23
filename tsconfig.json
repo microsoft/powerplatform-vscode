@@ -5,7 +5,7 @@
     "sourceMap": true,
     "outDir": "out",
     "rootDir": "src",
-    "lib": [ "es2019", "WebWorker", "DOM.Iterable" ],
+    "lib": [ "es2019", "WebWorker", "DOM.Iterable","DOM" ],
     "noImplicitAny": true,
     "strictPropertyInitialization": true,
 		"strict": true,
@@ -17,6 +17,7 @@
   ],
   "exclude": [
     "node_modules",
-    ".vscode-test-web"
+    ".vscode-test-web",
+    "src/common/copilot/assets"
   ]
 }
