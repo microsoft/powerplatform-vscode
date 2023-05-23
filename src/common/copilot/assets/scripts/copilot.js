@@ -273,6 +273,7 @@
             { name: "entityList", description: "Create a new entity list" },
             { name: "fetchXml", description: "Fetch data from table" },
             { name: "clear", description: "Clear the chat window" },
+            { name: "animate", description: "Add animations to your code" }
         ];
 
         const listContainer = document.createElement("div");
