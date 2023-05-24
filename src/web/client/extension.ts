@@ -24,6 +24,7 @@ import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-gen
 import { NPSWebView } from "./webViews/NPSWebView";
 import * as Constants from "./common/constants";
 import { getHeader } from "./common/authenticationProvider";
+import { DecorationManager } from "./webViews/DecorationCursor";
 export interface IContainerData {
     containerId: string;
     lineNumber: number;
@@ -31,17 +32,32 @@ export interface IContainerData {
 }
 
 let copresenceWorker: Worker;
-const cursorDecoration = vscode.window.createTextEditorDecorationType({
-    before: {
-        contentText: "Priyank",
-        color: "yellow",
-        fontWeight: "bold",
-        margin: "0 0 0 0",
-        width: "0",
-        border: `1px solid ${"yellow"}`,
-    },
-});
 
+// const otherUserCursor = (name: string) => {
+//     return vscode.window.createTextEditorDecorationType({
+//         before: {
+//             contentText: name,
+//             color: "pink",
+//             fontWeight: "bold",
+//             margin: "0 0 0 0",
+//             width: "0",
+//             border: `1px solid pink`,
+//         },
+//     });
+// };
+
+// const currentUserCursor = (name: string | undefined) => {
+//     return vscode.window.createTextEditorDecorationType({
+//         before: {
+//             contentText: name,
+//             color: "yellow",
+//             fontWeight: "bold",
+//             margin: "0 0 0 0",
+//             width: "0",
+//             border: `1px solid pink`,
+//         },
+//     });
+// };
 export function activate(context: vscode.ExtensionContext): void {
     console.log("VSCODE WORKER vscode extension activate function start");
     // setup telemetry
@@ -76,6 +92,16 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
+                const input = await vscode.window.showInputBox({
+                    prompt: "What is your name ",
+                });
+
+                // const answer = await vscode.window.showInformationMessage(
+                //     "Who are you ?",
+                //     "nidhi",
+                //     "amit"
+                // );
+                WebExtensionContext.setUsername(input);
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     "StartCommand",
                     {
@@ -250,6 +276,9 @@ export function createCopresenceWorkerInstance(
             copresenceWorker = new Worker(workerUrl);
 
             copresenceWorker.onmessage = (event) => {
+                const { data } = event;
+                console.log("recived data", data);
+
                 console.log(
                     `VSCODE WORKER Received hello from webworker: ${
                         (JSON.stringify(event),
@@ -258,7 +287,10 @@ export function createCopresenceWorkerInstance(
                     }`
                 );
                 WebExtensionContext.containerId = event.data.containerId;
-                const { data } = event;
+                const otherUsercursor = DecorationManager.getInstance(
+                    data.username
+                );
+
                 const activeEditor = vscode.window.activeTextEditor;
                 if (activeEditor) {
                     const startPos = new vscode.Position(
@@ -274,12 +306,13 @@ export function createCopresenceWorkerInstance(
                     const decoration = {
                         range: new vscode.Range(startPos, endPos),
                     };
+                    activeEditor.setDecorations(otherUsercursor, []);
 
-                    activeEditor.setDecorations(cursorDecoration, [decoration]);
-                    activeEditor.setDecorations(
-                        vscode.window.createTextEditorDecorationType({}),
-                        [decoration]
-                    );
+                    activeEditor.setDecorations(otherUsercursor, [decoration]);
+                    // activeEditor.setDecorations(
+                    //     vscode.window.createTextEditorDecorationType({}),
+                    //     [decoration]
+                    // );
                 }
 
                 vscode.window.showInformationMessage(
@@ -298,6 +331,7 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
     try {
         context.subscriptions.push(
             vscode.window.onDidChangeTextEditorSelection(async (event) => {
+                console.log("It ran again");
                 const selection = event.selections[0];
                 const line = selection.active.line;
                 const column = selection.active.character;
@@ -309,21 +343,6 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                 console.log(`VSCODE WORKER  Column: ${column}`);
 
                 const activeEditor = vscode.window.activeTextEditor;
-
-                const dataverseOrgUrl =
-                    WebExtensionContext.urlParametersMap.get(
-                        Constants.queryParameters.ORG_URL
-                    ) as string;
-                const websiteName = WebExtensionContext.urlParametersMap.get(
-                    Constants.queryParameters.WEBSITE_NAME
-                ) as string;
-                const websiteId = WebExtensionContext.urlParametersMap.get(
-                    Constants.queryParameters.WEBSITE_ID
-                ) as string;
-
-                const tenantId = WebExtensionContext.urlParametersMap.get(
-                    Constants.queryParameters.TENANT_ID
-                ) as string;
 
                 const swpId = WebExtensionContext.sharedWorkSpaceMap.get(
                     Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
@@ -341,25 +360,53 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                         Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
                     ) as string;
                 // console.log("website id", websiteId);
-                const headers = getHeader(
-                    WebExtensionContext.dataverseAccessToken
-                );
-
+                let currentUserCursor;
+                if (WebExtensionContext.username !== undefined)
+                    currentUserCursor = DecorationManager.getInstance(
+                        WebExtensionContext.username
+                    );
                 if (activeEditor) {
+                    // const cursorDecoration =
+                    //     vscode.window.createTextEditorDecorationType({
+                    //         before: {
+                    //             contentText: WebExtensionContext.username,
+                    //             color: "yellow",
+                    //             fontWeight: "bold",
+                    //             margin: "0 0 0 0",
+                    //             width: "0",
+                    //             border: `1px solid ${"yellow"}`,
+                    //         },
+                    //     });
+
+                    // const startPos = activeEditor.selection.active;
+
+                    // const endPos = activeEditor.selection.active;
                     const startPos = activeEditor.selection.active;
-                    console.log("start Pos", startPos);
                     const endPos = activeEditor.selection.active;
 
                     // const position = activeEditor.selection.active.line; // Current line position
                     const decoration = {
                         range: new vscode.Range(startPos, endPos),
                     };
+                    // activeEditor.setDecorations(newCursorDecoration, []);
 
-                    activeEditor.setDecorations(cursorDecoration, [decoration]);
-                    activeEditor.setDecorations(
-                        vscode.window.createTextEditorDecorationType({}),
-                        [decoration]
-                    );
+                    if (currentUserCursor !== undefined) {
+                        activeEditor.setDecorations(currentUserCursor, []);
+                        activeEditor.setDecorations(currentUserCursor, [
+                            decoration,
+                        ]);
+                    }
+
+                    // // const position = activeEditor.selection.active.line; // Current line position
+                    // const decoration = {
+                    //     range: new vscode.Range(startPos, endPos),
+                    // };
+
+                    // activeEditor.setDecorations(cursorDecoration, [decoration]);
+                    // activeEditor.setDecorations(
+                    //     vscode.window.createTextEditorDecorationType({}),
+                    //     [decoration]
+                    // );
 
                     const entityId =
                         WebExtensionContext.fileDataMap.getFileMap.get(
@@ -383,14 +430,11 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                         //         columnNumber: column,
                         //     } as IContainerData
                         // );
+
+                        const username = WebExtensionContext.username;
                         copresenceWorker.postMessage({
-                            odataConfig: {
-                                dataverseOrgUrl,
-                                websiteName,
-                                websiteId,
-                                headers,
-                                tenantId,
-                            },
+                            username,
+
                             afrConfig: {
                                 swpId,
                                 swptenantId,

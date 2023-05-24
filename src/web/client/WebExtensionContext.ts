@@ -95,6 +95,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _formsProEligibilityId: string;
     private _myWebView: MyWebview;
     private _containerId: string;
+    private _username: string | undefined;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -178,6 +179,13 @@ class WebExtensionContext implements IWebExtensionContext {
     public set myWebView(webView: MyWebview) {
         this._myWebView = webView;
     }
+    public get username() {
+        return this._username;
+    }
+
+    public set username(name: string | undefined) {
+        this._username = name;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -204,6 +212,11 @@ class WebExtensionContext implements IWebExtensionContext {
         this._formsProEligibilityId = "";
         this._myWebView = new MyWebview();
         this._containerId = "";
+        this._username = "";
+    }
+
+    public setUsername(name: string | undefined) {
+        this._username = name;
     }
 
     public setWebExtensionContext(
@@ -565,5 +578,3 @@ class WebExtensionContext implements IWebExtensionContext {
 }
 
 export default new WebExtensionContext();
-
-

@@ -11,6 +11,7 @@ const FILE_PATH = "filePath";
 const USER_ID = "userId";
 const USER_NAME = "userName";
 
+let eventCounter = 0;
 // eslint-disable-next-line no-undef
 self.window = self;
 const fluid = require("fluid-framework");
@@ -28,8 +29,9 @@ let azureClient;
 let myContainer;
 let map;
 let audience;
+// let initial = false;
 
-async function loadContainer(id, line, column, swpId, file) {
+async function loadContainer(username, id, line, column, swpId, file) {
     console.log("VSCODE WORKER Inside loadContainer with ", id);
     console.log(`VSCODE WORKER Line: ${line}`);
     console.log(`VSCODE WORKER Column: ${column}`);
@@ -47,6 +49,7 @@ async function loadContainer(id, line, column, swpId, file) {
             myContainer = container;
             audience = services.audience;
         }
+        console.log("container", myContainer);
 
         if (myContainer.connectionState !== ConnectionState.Connected) {
             await new Promise((resolve) => {
@@ -60,32 +63,54 @@ async function loadContainer(id, line, column, swpId, file) {
         }
         const myself = audience.getMyself();
 
-        map.set(LINE_NUMBER_KEY, line);
-        map.set(COLUMN_NUMBER_KEY, column);
-        map.set(CONTAINER_ID, swpId);
-        map.set(FILE_NAME, file.fileName);
-        map.set(FILE_PATH, file.filePath);
-        map.set(USER_ID, myself.userId);
-        map.set(USER_NAME, myself.userName);
+        const currentUser = {
+            lineNumber: line,
+            columnNumber: column,
+            containerId: id,
+            fileName: file.fileName,
+            filePath: file.filePath,
+            userName: myself.userName,
+        };
+
+        map.set(username, currentUser);
+
+        // if (!initial) {
+        //     map.forEach(async (value, key) => {
+        //         const otherUser = map.get(key);
+        //         await self.postMessage({
+        //             username: key,
+        //             containerId: swpId,
+        //             lineNumber: otherUser.lineNumber,
+        //             columnNumber: otherUser.columnNumber,
+        //         });
+        //     });
+        //     initial = true;
+        // }
+
         // map.set(USER, audience.getMyself());
 
         map.on("valueChanged", async (changed, local) => {
-            console.log("changes", changed);
-            let updatedLine = map.get(LINE_NUMBER_KEY);
-            let updatedCol = map.get(COLUMN_NUMBER_KEY);
+            eventCounter += 1;
+            console.log("event counter", eventCounter);
+            console.log("changes", local, changed);
 
             console.log(`CHANGED BY USER ${map.get(USER_ID)}`);
             console.log(
                 `IN ${map.get(FILE_NAME)} PATH ${map.get(
                     FILE_PATH
-                )} at postion ${updatedLine}, ${updatedCol}`
+                )} at postion ${map.get(LINE_NUMBER_KEY)}, ${map.get(
+                    COLUMN_NUMBER_KEY
+                )}`
             );
-            await self.postMessage({
-                containerId: swpId,
-                lineNumber: updatedLine,
-                columnNumber: updatedCol,
-                username: map.get(USER_NAME),
-            });
+            if (!local) {
+                const otherUser = map.get(changed.key);
+                await self.postMessage({
+                    username: changed.key,
+                    containerId: swpId,
+                    lineNumber: otherUser.lineNumber,
+                    columnNumber: otherUser.columnNumber,
+                });
+            }
         });
     } catch (error) {
         console.log(`Error retrieving container: ${error}`);
@@ -95,11 +120,11 @@ async function loadContainer(id, line, column, swpId, file) {
 
     // Send a message to the extension
     // eslint-disable-next-line no-undef
-    await self.postMessage({
-        containerId: swpId,
-        lineNumber: line,
-        columnNumber: column,
-    });
+    // await self.postMessage({
+    //     containerId: swpId,
+    //     lineNumber: line,
+    //     columnNumber: column,
+    // });
     console.log(
         "VSCODE WORKER New position updated to new values",
         swpId,
@@ -142,7 +167,7 @@ function runFluidApp() {
 
         await loadContainer(
             //vscode,
-
+            message.username,
             message.containerId,
             message.lineNumber,
             message.columnNumber,
