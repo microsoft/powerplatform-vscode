@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { getHeader } from "../common/authenticationProvider";
+import { getCommonHeaders } from "../common/authenticationProvider";
 import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { PortalsFS } from "../dal/fileSystemProvider";
@@ -41,7 +41,8 @@ export class EtagHandlerService {
             entityName,
             entityId,
             httpMethod.GET,
-            true
+            true,
+            false
         );
 
         const attributePath: IAttributePath =
@@ -51,7 +52,9 @@ export class EtagHandlerService {
         try {
             const requestInit: RequestInit = {
                 method: httpMethod.GET,
-                headers: getHeader(WebExtensionContext.dataverseAccessToken),
+                headers: getCommonHeaders(
+                    WebExtensionContext.dataverseAccessToken
+                ),
             };
 
             if (entityEtag) {

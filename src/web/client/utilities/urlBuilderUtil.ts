@@ -17,8 +17,10 @@ import {
 } from "../schema/constants";
 import { getEntity } from "./schemaHelperUtil";
 
-export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
-    if (isSingleEntity) {
+export const getParameterizedRequestUrlTemplate = (
+    useSingleEntityUrl: boolean
+) => {
+    if (useSingleEntityUrl) {
         return WebExtensionContext.schemaDataSourcePropertiesMap.get(
             schemaKey.SINGLE_ENTITY_URL
         ) as string;
@@ -34,13 +36,14 @@ export function getRequestURL(
     entity: string,
     entityId: string,
     method: string,
-    isSingleEntity: boolean,
+    useSingleEntityUrl = false,
+    applyFilter = true,
     attributeQueryParameters?: string
 ): string {
     let parameterizedUrlTemplate =
-        getParameterizedRequestUrlTemplate(isSingleEntity);
+        getParameterizedRequestUrlTemplate(useSingleEntityUrl);
 
-    if (!isSingleEntity) {
+    if (applyFilter) {
         switch (method) {
             case httpMethod.GET:
                 parameterizedUrlTemplate =

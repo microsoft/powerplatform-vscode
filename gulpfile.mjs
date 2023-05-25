@@ -7,27 +7,34 @@
 /* eslint-disable no-undef */
 
 "use strict";
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-const gulp = require('gulp');
-const rename = require('gulp-rename');
-const eslint = require('gulp-eslint');
-const gulpTs = require("gulp-typescript");
-const replace = require('gulp-replace');
-const mocha = require('gulp-mocha');
-const moment = require('moment');
-const gulpWebpack = require('webpack-stream');
-const webpack = require('webpack');
-const vsce = require('@vscode/vsce');
-const argv = require('yargs').argv;
+import { promisify } from 'node:util';
+import childProcess from 'node:child_process';
+const exec = promisify(childProcess.exec);
+import gulp from 'gulp';
+import rename from 'gulp-rename';
+import eslint from 'gulp-eslint';
+import gulpTs from "gulp-typescript";
+import replace from 'gulp-replace';
+import mocha from 'gulp-mocha';
+import moment from 'moment';
+import gulpWebpack from 'webpack-stream';
+import webpack from 'webpack';
+import vsce from '@vscode/vsce';
+import yargs from 'yargs';
+const argv = yargs(process.argv.slice(2)).argv; // skip 'node' and 'gulp.js' args
 
-const fetch = require('node-fetch');
-const fs = require('fs-extra');
-const log = require('fancy-log');
-const path = require('path');
-const pslist = require('ps-list');
+import fetch from 'node-fetch';
+import fs from 'fs-extra';
+import log from 'fancy-log';
+import path from 'node:path';
+import pslist from 'ps-list';
+import { fileURLToPath } from 'node:url';
 
-const [nodeConfig, webConfig] = require('./webpack.config');
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+
+import webpackConfig from './webpack.config.js';
+const [nodeConfig, webConfig] = webpackConfig;
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
@@ -143,6 +150,7 @@ async function nugetInstall(nugetSource, packageName, version, targetDir) {
 }
 
 function lint() {
+    const __filename = fileURLToPath(import.meta.url);
     return gulp
         .src(['src/**/*.ts', __filename])
         .pipe(eslint({
@@ -365,8 +373,7 @@ const cliVersion = '1.23.3';
 const recompile = gulp.series(
     clean,
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI', cliVersion, path.resolve(distdir, 'pac')),
-    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.osx-x64', cliVersion, path.resolve(distdir, 'pac')),
-    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Core.linux-x64', cliVersion, path.resolve(distdir, 'pac')),
+    async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Tool', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
     translationsImport,
     setTelemetryTarget,
@@ -429,22 +436,24 @@ async function translationsImport() {
         .pipe(gulp.dest('./l10n'));
 }
 
-exports.clean = clean;
-exports.compile = compile;
-exports.compileWeb = compileWeb;
-exports.recompile = recompile;
-exports.snapshot = snapshot;
-exports.lint = lint;
-exports.test = test;
-exports.testWeb = testWeb;
-exports.compileIntegrationTests = compileIntegrationTests;
-exports.testInt = testInt;
-exports.testWebInt = testWebInt;
-exports.testDesktopInt = testDesktopInt;
-exports.package = packageVsix;
-exports.ci = dist;
-exports.dist = dist;
-exports.translationsExport = translationsExport;
-exports.translationsImport = translationsImport;
-exports.setGitAuthN = setGitAuthN;
-exports.default = compile;
+export {
+    clean,
+    compile,
+    compileWeb,
+    recompile,
+    snapshot,
+    lint,
+    test,
+    testWeb,
+    compileIntegrationTests,
+    testInt,
+    testWebInt,
+    testDesktopInt,
+    packageVsix as package,
+    dist as ci,
+    dist,
+    translationsExport,
+    translationsImport,
+    setGitAuthN,
+    compile as default,
+}
