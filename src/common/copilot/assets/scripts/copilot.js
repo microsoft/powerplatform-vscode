@@ -86,11 +86,21 @@
                 // Handle code blocks
                 const codeDiv = document.createElement("div");
                 codeDiv.classList.add("code-division");
-                codeDiv.appendChild(createActionWrapper(blocks[i]));
+                let codeBlock = blocks[i]
+
+                console.log("codeblock "+ codeBlock)
+                if(codeBlock.startsWith("js")) {
+                    codeBlock = codeBlock.replace("js", "");
+                }
+                else if(codeBlock.startsWith("javascript")) {
+                    codeBlock = codeBlock.replace("javascript", "");
+                }
+                codeDiv.appendChild(createActionWrapper(codeBlock));
 
                 const preFormatted = document.createElement("pre");
                 const codeSnip = document.createElement("code");
-                codeSnip.innerText = blocks[i];
+
+                codeSnip.innerText = codeBlock;
                 preFormatted.appendChild(codeSnip);
 
                 codeDiv.appendChild(preFormatted);
@@ -300,7 +310,7 @@
                     vscode.postMessage({ type: "clearChat" });
                     hideAutocompletePanel();
                     return;
-                }   
+                }
                 chatInput.value = `/${item.name} `;
                 hideAutocompletePanel();
             });
