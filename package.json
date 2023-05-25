@@ -752,6 +752,11 @@
           "id": "power-platform-activitybar",
           "title": "%power-platform-activitybar.title%",
           "icon": "resources/powerplatform-activitybar-icon.svg"
+        },
+        {
+          "id": "power-platform-coPresence",
+          "title": "Co presence",
+          "icon": "resources/user-voice-svgrepo-com.svg"
         }
       ]
     },
@@ -763,14 +768,15 @@
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
         },
         {
-          "id": "pacCLI.copresence",
-          "name": "%pacCLI.copresence.title%",
-          "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
-        },
-        {
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
+        }
+      ],
+      "power-platform-coPresence": [
+        {
+          "id": "coPresenceView",
+          "name": "Co presence"
         }
       ]
     },

@@ -3,19 +3,20 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-const CONTAINER_ID = "containerId";
 const LINE_NUMBER_KEY = "lineNumber";
 const COLUMN_NUMBER_KEY = "columnNumber";
 const FILE_NAME = "fileName";
 const FILE_PATH = "filePath";
 const USER_ID = "userId";
-const USER_NAME = "userName";
 
 let eventCounter = 0;
 // eslint-disable-next-line no-undef
 self.window = self;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const fluid = require("fluid-framework");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { AzureClient } = require("@fluidframework/azure-client");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const DataverseTokenProvider = require("./DataverseTokenProvider");
 
 const { SharedMap, ConnectionState } = fluid;
@@ -104,6 +105,7 @@ async function loadContainer(username, id, line, column, swpId, file) {
             );
             if (!local) {
                 const otherUser = map.get(changed.key);
+                // eslint-disable-next-line no-undef
                 await self.postMessage({
                     username: changed.key,
                     containerId: swpId,

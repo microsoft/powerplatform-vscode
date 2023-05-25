@@ -25,6 +25,8 @@ import { NPSWebView } from "./webViews/NPSWebView";
 import * as Constants from "./common/constants";
 import { getHeader } from "./common/authenticationProvider";
 import { DecorationManager } from "./webViews/DecorationCursor";
+import { WorkspaceTreeViewProvider } from "./webViews/UsersTreeProvider";
+import { TestView } from "./webViews/testView";
 export interface IContainerData {
     containerId: string;
     lineNumber: number;
@@ -33,35 +35,69 @@ export interface IContainerData {
 
 let copresenceWorker: Worker;
 
-// const otherUserCursor = (name: string) => {
-//     return vscode.window.createTextEditorDecorationType({
-//         before: {
-//             contentText: name,
-//             color: "pink",
-//             fontWeight: "bold",
-//             margin: "0 0 0 0",
-//             width: "0",
-//             border: `1px solid pink`,
-//         },
-//     });
-// };
+class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
+    onDidChangeTreeData?: vscode.Event<TreeItem | null | undefined> | undefined;
 
-// const currentUserCursor = (name: string | undefined) => {
-//     return vscode.window.createTextEditorDecorationType({
-//         before: {
-//             contentText: name,
-//             color: "yellow",
-//             fontWeight: "bold",
-//             margin: "0 0 0 0",
-//             width: "0",
-//             border: `1px solid pink`,
-//         },
-//     });
-// };
+    data: TreeItem[];
+
+    constructor() {
+        this.data = [
+            new TreeItem("cars", [
+                new TreeItem("Ford", [
+                    new TreeItem("Fiesta"),
+                    new TreeItem("Focus"),
+                    new TreeItem("Mustang"),
+                ]),
+                new TreeItem("BMW", [
+                    new TreeItem("320"),
+                    new TreeItem("X3"),
+                    new TreeItem("X5"),
+                ]),
+            ]),
+        ];
+    }
+
+    getTreeItem(
+        element: TreeItem
+    ): vscode.TreeItem | Thenable<vscode.TreeItem> {
+        return element;
+    }
+
+    getChildren(
+        element?: TreeItem | undefined
+    ): vscode.ProviderResult<TreeItem[]> {
+        if (element === undefined) {
+            return this.data;
+        }
+        return element.children;
+    }
+}
+
+class TreeItem extends vscode.TreeItem {
+    children: TreeItem[] | undefined;
+
+    constructor(label: string, children?: TreeItem[]) {
+        super(
+            label,
+            children === undefined
+                ? vscode.TreeItemCollapsibleState.None
+                : vscode.TreeItemCollapsibleState.Expanded
+        );
+        this.children = children;
+    }
+}
+
 export function activate(context: vscode.ExtensionContext): void {
     console.log("VSCODE WORKER vscode extension activate function start");
+
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
+    const treeViewProvider = new WorkspaceTreeViewProvider();
+
+    vscode.window.registerTreeDataProvider("coPresenceView", treeViewProvider);
+    vscode.workspace.onDidChangeWorkspaceFolders(() => {
+        treeViewProvider.refresh();
+    });
 
     const dataBoundary = undefined;
     const appInsightsResource =
@@ -86,22 +122,44 @@ export function activate(context: vscode.ExtensionContext): void {
             { isCaseSensitive: true }
         )
     );
+    // if (vscode.workspace.workspaceFolders.length > 0)
+    //     console.log(
+    //         "rootapth",
+    //         vscode.workspace.workspaceFolders[0].uri.fsPath
+    //     );
+
     //WebExtensionContext.myWebView.setMyWebViews(context.extensionUri);
+    // const rootPath =
+    //     vscode.workspace.workspaceFolders &&
+    //     vscode.workspace.workspaceFolders.length > 0
+    //         ? vscode.workspace.workspaceFolders[0].uri.fsPath
+    //         : undefined;
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
-                const input = await vscode.window.showInputBox({
-                    prompt: "What is your name ",
-                });
+                // const input = await vscode.window.showInputBox({
+                //     prompt: "What is your name ",
+                // });
 
                 // const answer = await vscode.window.showInformationMessage(
                 //     "Who are you ?",
                 //     "nidhi",
                 //     "amit"
                 // );
-                WebExtensionContext.setUsername(input);
+                // const treeprovider = new MyTreeDataProvider();
+                // // vscode.window.registerTreeDataProvider(
+                // //     "coPresenceView",
+                // //     treeprovider
+                // // );
+                // vscode.window.createTreeView("testView", {
+                //     treeDataProvider: treeprovider,
+                //     // showCollapseAll: true,
+                // });
+                new TestView(context);
+
+                WebExtensionContext.setUsername("priyank");
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     "StartCommand",
                     {
@@ -228,6 +286,7 @@ export function activate(context: vscode.ExtensionContext): void {
     console.log(
         "VSCODE WORKER vscode extension activate registerCommand success"
     );
+    // showTreeView(context);
 
     processWillSaveDocument(context);
     console.log(

@@ -52,9 +52,7 @@ export class DecorationManager {
         // Private constructor to prevent external instantiation
     }
 
-    public static getInstance(
-        userName: string
-    ): vscode.TextEditorDecorationType {
+    public static getInstance(userName: string): any {
         if (!this.instanceMap.has(userName)) {
             const randomColor = this.getRandomColor();
             const decorationType = vscode.window.createTextEditorDecorationType(
