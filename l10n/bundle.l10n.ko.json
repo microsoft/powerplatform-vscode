@@ -71,5 +71,6 @@
   "Web files": "웹 파일",
   "Webfile(s) added successfully": "웹 파일 추가됨",
   "You are editing a live, public site ": "라이브 상태인 공개 사이트를 편집하고 있습니다. ",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "dotnet sdk 6.0 이상을 설치해야 합니다",
   "{0} created!/{0} will be replaced by the entity type.": "{0} 생성 완료!"
 }

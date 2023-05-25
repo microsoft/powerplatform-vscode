@@ -71,5 +71,6 @@
   "Web files": "Web dosyaları",
   "Webfile(s) added successfully": "Web dosyaları başarıyla eklendi",
   "You are editing a live, public site ": "Yayında olan, herkese açık bir siteyi düzenliyorsunuz ",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "dotnet sdk 6.0 veya üstü bir sürüm yüklenmelidir",
   "{0} created!/{0} will be replaced by the entity type.": "{0} oluşturuldu!"
 }
