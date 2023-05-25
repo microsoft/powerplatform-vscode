@@ -77,15 +77,11 @@ describe("remoteFetchProvider", () => {
                     return resolve({
                         value: [
                             {
-                                value: '{ "ddrive": "testname", "value": "value" }',
-                            },
-                            {
-                                _powerpagesitelanguageid_value:
-                                    "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
-                            },
-                            { name: "testname" },
-                            { powerpagecomponentid: entityId },
-                        ],
+                                name: "testname" ,
+                                powerpagecomponentid: entityId ,
+                                _powerpagesitelanguageid_value: "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",                                 
+                                value: '{ "ddrive": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==", "value": "value" }',
+                        } ]
                     });
                 });
             },
@@ -215,7 +211,7 @@ describe("remoteFetchProvider", () => {
 
         assert.callCount(writeFile, 3);
         assert.calledOnce(updateSingleFileUrisInContext);
-        assert.callCount(sendInfoTelemetry, 6);
+        assert.callCount(sendInfoTelemetry, 3);
         assert.calledOnce(executeCommand);
         assert.callCount(sendAPISuccessTelemetry, 4);
     });
@@ -513,7 +509,7 @@ describe("remoteFetchProvider", () => {
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnce(showErrorMessage);
-        assert.callCount(getEntity, 3);
+        assert.callCount(getEntity, 4);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributesIsBlank_shouldThrowError", async () => {
@@ -618,7 +614,7 @@ describe("remoteFetchProvider", () => {
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnce(showErrorMessage);
-        assert.callCount(getEntity, 3);
+        assert.callCount(getEntity, 4);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributeExtensionIsBlank_shouldThrowError", async () => {
@@ -724,7 +720,7 @@ describe("remoteFetchProvider", () => {
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnce(showErrorMessage);
-        assert.callCount(getEntity, 3);
+        assert.callCount(getEntity, 4);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndFileNameIsDefaultFilename_shouldThrowError", async () => {
@@ -817,7 +813,6 @@ describe("remoteFetchProvider", () => {
             "sendErrorTelemetry"
         );
         const showErrorMessage = stub(vscode.window, "showErrorMessage");
-        stub(WebExtensionContext, "updateEntityDetailsInContext");
         const sendAPITelemetry = stub(
             WebExtensionContext.telemetry,
             "sendAPITelemetry"
@@ -831,6 +826,6 @@ describe("remoteFetchProvider", () => {
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnce(showErrorMessage);
-        assert.callCount(getEntity, 3);
+        assert.callCount(getEntity, 4);
     });
 });

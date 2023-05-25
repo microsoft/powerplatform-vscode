@@ -37,7 +37,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         Constants.queryParameters.ORG_URL
     ) as string;
 
-    entityRequestURLs.forEach(async (entity) => {
+    await Promise.all(entityRequestURLs.map(async (entity) => {
         let requestSentAtTime = new Date().getTime();
         try {
             let makeRequestCall = true;
@@ -122,7 +122,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                 errorMsg
             );
         }
-    });
+    }));
 }
 
 async function createContentFiles(
