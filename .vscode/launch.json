@@ -49,6 +49,17 @@
       "outFiles": ["${workspaceFolder}/out/debugger/test/**/*.js"]
     },
     {
+      "name": "Web Integration Tests",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--extensionTestsPath=${workspaceFolder}/out/web/client/test/integration/index"
+      ],
+      "outFiles": ["${workspaceFolder}/out/web/client/test/**/*.js"]
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Mocha Current File",

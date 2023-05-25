@@ -325,6 +325,7 @@ URL: {1}
       <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
         <note>Do not translate 'dotnet' or 'sdk'</note>
+        <target state="translated">必须安装 DotNet SDK 6.0 或更高版本</target>
       </trans-unit>
       <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
         <source xml:lang="en">{0} created!</source>
