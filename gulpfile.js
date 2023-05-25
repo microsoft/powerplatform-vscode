@@ -27,7 +27,7 @@ const log = require('fancy-log');
 const path = require('path');
 const pslist = require('ps-list');
 
-const [nodeConfig, webConfig] = require('./webpack.config');
+const [nodeConfig, webConfig, webviewConfig] = require('./webpack.config');
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
@@ -72,6 +72,13 @@ function compileWeb() {
         .pipe(gulpWebpack(webConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
+}
+
+function compileWebView() {
+    return gulp
+        .src('src/common/copilot/assets/main.ts')
+        .pipe(gulpWebpack(webviewConfig, webpack))
+        .pipe(gulp.dest(path.resolve(`${distdir}`)));
 }
 
 async function nugetInstall(nugetSource, packageName, version, targetDir) {
@@ -371,7 +378,8 @@ const recompile = gulp.series(
     translationsImport,
     setTelemetryTarget,
     compile,
-    compileWeb
+    compileWeb,
+    compileWebView
 );
 
 const dist = gulp.series(
@@ -432,6 +440,7 @@ async function translationsImport() {
 exports.clean = clean;
 exports.compile = compile;
 exports.compileWeb = compileWeb;
+exports.compileWebView = compileWebView;
 exports.recompile = recompile;
 exports.snapshot = snapshot;
 exports.lint = lint;
