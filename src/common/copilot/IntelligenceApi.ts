@@ -17,7 +17,7 @@ export async function sendApiRequest(message: string) {
         'model': "gpt-3.5-turbo",
         messages: conversation,
         max_tokens: 2000,
-        temperature: 0.5,
+        temperature: 0.2,
     };
 
     const requestInit: RequestInit = {
