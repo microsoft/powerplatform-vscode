@@ -30,7 +30,8 @@ let azureClient;
 let myContainer;
 let map;
 let audience;
-// let initial = false;
+let initial = false;
+let noOfUsers = 0;
 
 async function loadContainer(username, id, line, column, swpId, file) {
     console.log("VSCODE WORKER Inside loadContainer with ", id);
@@ -74,19 +75,25 @@ async function loadContainer(username, id, line, column, swpId, file) {
         };
 
         map.set(username, currentUser);
+        // const allMembers = audience.getMembers();
+        // console.log("all memebers", allMembers);
+        audience.on("membersChanged", (e) => {
+            console.log("member change event", e);
+        });
 
-        // if (!initial) {
-        //     map.forEach(async (value, key) => {
-        //         const otherUser = map.get(key);
-        //         await self.postMessage({
-        //             username: key,
-        //             containerId: swpId,
-        //             lineNumber: otherUser.lineNumber,
-        //             columnNumber: otherUser.columnNumber,
-        //         });
-        //     });
-        //     initial = true;
-        // }
+        if (!initial) {
+            map.forEach(async (value, key) => {
+                const otherUser = map.get(key);
+                await self.postMessage({
+                    totalUsers: map.size,
+                    username: key,
+                    containerId: swpId,
+                    lineNumber: otherUser.lineNumber,
+                    columnNumber: otherUser.columnNumber,
+                });
+            });
+            initial = true;
+        }
 
         // map.set(USER, audience.getMyself());
 
@@ -107,6 +114,7 @@ async function loadContainer(username, id, line, column, swpId, file) {
                 const otherUser = map.get(changed.key);
                 // eslint-disable-next-line no-undef
                 await self.postMessage({
+                    totalUsers: map.size,
                     username: changed.key,
                     containerId: swpId,
                     lineNumber: otherUser.lineNumber,

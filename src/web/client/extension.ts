@@ -23,81 +23,79 @@ import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
 import * as Constants from "./common/constants";
-import { getHeader } from "./common/authenticationProvider";
 import { DecorationManager } from "./webViews/DecorationCursor";
-import { WorkspaceTreeViewProvider } from "./webViews/UsersTreeProvider";
-import { TestView } from "./webViews/testView";
+// import { WorkspaceTreeViewProvider } from "./webViews/UsersTreeProvider";
 export interface IContainerData {
     containerId: string;
     lineNumber: number;
     columnNumber: number;
 }
-
+let myStatusBarItem: vscode.StatusBarItem;
 let copresenceWorker: Worker;
 
-class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
-    onDidChangeTreeData?: vscode.Event<TreeItem | null | undefined> | undefined;
+// class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
+//     onDidChangeTreeData?: vscode.Event<TreeItem | null | undefined> | undefined;
 
-    data: TreeItem[];
+//     data: TreeItem[];
 
-    constructor() {
-        this.data = [
-            new TreeItem("cars", [
-                new TreeItem("Ford", [
-                    new TreeItem("Fiesta"),
-                    new TreeItem("Focus"),
-                    new TreeItem("Mustang"),
-                ]),
-                new TreeItem("BMW", [
-                    new TreeItem("320"),
-                    new TreeItem("X3"),
-                    new TreeItem("X5"),
-                ]),
-            ]),
-        ];
-    }
+//     constructor() {
+//         this.data = [
+//             new TreeItem("cars", [
+//                 new TreeItem("Ford", [
+//                     new TreeItem("Fiesta"),
+//                     new TreeItem("Focus"),
+//                     new TreeItem("Mustang"),
+//                 ]),
+//                 new TreeItem("BMW", [
+//                     new TreeItem("320"),
+//                     new TreeItem("X3"),
+//                     new TreeItem("X5"),
+//                 ]),
+//             ]),
+//         ];
+//     }
 
-    getTreeItem(
-        element: TreeItem
-    ): vscode.TreeItem | Thenable<vscode.TreeItem> {
-        return element;
-    }
+//     getTreeItem(
+//         element: TreeItem
+//     ): vscode.TreeItem | Thenable<vscode.TreeItem> {
+//         return element;
+//     }
 
-    getChildren(
-        element?: TreeItem | undefined
-    ): vscode.ProviderResult<TreeItem[]> {
-        if (element === undefined) {
-            return this.data;
-        }
-        return element.children;
-    }
-}
+//     getChildren(
+//         element?: TreeItem | undefined
+//     ): vscode.ProviderResult<TreeItem[]> {
+//         if (element === undefined) {
+//             return this.data;
+//         }
+//         return element.children;
+//     }
+// }
 
-class TreeItem extends vscode.TreeItem {
-    children: TreeItem[] | undefined;
+// class TreeItem extends vscode.TreeItem {
+//     children: TreeItem[] | undefined;
 
-    constructor(label: string, children?: TreeItem[]) {
-        super(
-            label,
-            children === undefined
-                ? vscode.TreeItemCollapsibleState.None
-                : vscode.TreeItemCollapsibleState.Expanded
-        );
-        this.children = children;
-    }
-}
+//     constructor(label: string, children?: TreeItem[]) {
+//         super(
+//             label,
+//             children === undefined
+//                 ? vscode.TreeItemCollapsibleState.None
+//                 : vscode.TreeItemCollapsibleState.Expanded
+//         );
+//         this.children = children;
+//     }
+// }
 
 export function activate(context: vscode.ExtensionContext): void {
     console.log("VSCODE WORKER vscode extension activate function start");
 
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
-    const treeViewProvider = new WorkspaceTreeViewProvider();
+    // const treeViewProvider = new WorkspaceTreeViewProvider();
 
-    vscode.window.registerTreeDataProvider("coPresenceView", treeViewProvider);
-    vscode.workspace.onDidChangeWorkspaceFolders(() => {
-        treeViewProvider.refresh();
-    });
+    // vscode.window.registerTreeDataProvider("coPresenceView", treeViewProvider);
+    // vscode.workspace.onDidChangeWorkspaceFolders(() => {
+    //     treeViewProvider.refresh();
+    // });
 
     const dataBoundary = undefined;
     const appInsightsResource =
@@ -139,9 +137,9 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
-                // const input = await vscode.window.showInputBox({
-                //     prompt: "What is your name ",
-                // });
+                const input = await vscode.window.showInputBox({
+                    prompt: "What is your name ",
+                });
 
                 // const answer = await vscode.window.showInformationMessage(
                 //     "Who are you ?",
@@ -157,9 +155,8 @@ export function activate(context: vscode.ExtensionContext): void {
                 //     treeDataProvider: treeprovider,
                 //     // showCollapseAll: true,
                 // });
-                new TestView(context);
 
-                WebExtensionContext.setUsername("priyank");
+                WebExtensionContext.setUsername(input);
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     "StartCommand",
                     {
@@ -310,6 +307,14 @@ export function activate(context: vscode.ExtensionContext): void {
     // );
 
     createCopresenceWorkerInstance(context);
+    const statusBarCmd = "sample.showSelectionCount";
+    myStatusBarItem = vscode.window.createStatusBarItem(
+        vscode.StatusBarAlignment.Left,
+        100
+    );
+    myStatusBarItem.command = statusBarCmd;
+
+    context.subscriptions.push(myStatusBarItem);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
     console.log("VSCODE WORKER vscode extension activate function end");
@@ -336,6 +341,11 @@ export function createCopresenceWorkerInstance(
 
             copresenceWorker.onmessage = (event) => {
                 const { data } = event;
+
+                if (data.totalUsers) {
+                    updateStatusBarItem(data.totalUsers);
+                }
+
                 console.log("recived data", data);
 
                 console.log(
@@ -671,4 +681,14 @@ function isActiveDocument(fileName: string): boolean {
         WebExtensionContext.isContextSet &&
         WebExtensionContext.fileDataMap.getFileMap.has(fileName)
     );
+}
+
+export function updateStatusBarItem(n: number): void {
+    console.log(n, "no of users connected");
+    if (n > 0) {
+        myStatusBarItem.text = `${n} users connected`;
+        myStatusBarItem.show();
+    } else {
+        myStatusBarItem.hide();
+    }
 }
