@@ -6,7 +6,7 @@
 /* eslint-disable no-undef */
 
 (function () {
-    const vscode = acquireVsCodeApi();
+    //const vscode = acquireVsCodeApi();
     const dequeue = [];
     const chatMessages = document.getElementById("chat-messages");
     const chatInput = document.getElementById("chat-input");

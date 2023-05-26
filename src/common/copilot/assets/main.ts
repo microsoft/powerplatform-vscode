@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { provideVSCodeDesignSystem, vsCodeButton, Button } from "@vscode/webview-ui-toolkit";
+import { provideVSCodeDesignSystem, Button,  allComponents } from "@vscode/webview-ui-toolkit";
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -23,7 +23,7 @@ import { provideVSCodeDesignSystem, vsCodeButton, Button } from "@vscode/webview
 //
 // provideVSCodeDesignSystem().register(allComponents);
 //
-provideVSCodeDesignSystem().register(vsCodeButton());
+provideVSCodeDesignSystem().register(allComponents);
 
 // Get access to the VS Code API from within the webview context
 const vscode = acquireVsCodeApi();

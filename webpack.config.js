@@ -168,7 +168,7 @@ const webviewConfig = {
         {
           test: /\.ts$/,
           exclude: /node_modules/,
-          use: "ts-loader",
+          use: [{ loader: "ts-loader" }],
         },
       ],
     },

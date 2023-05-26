@@ -136,7 +136,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         
         const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'scripts', 'copilot.js');
         const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
-        const webviewUri = vscode.Uri.joinPath(this._extensionUri, "dist", "webview.js");
+        const webviewPath = vscode.Uri.joinPath(this._extensionUri, "dist", "webview.js");
+        const webviewUri = webview.asWebviewUri(webviewPath);
+
 
         const copilotStylePath = vscode.Uri.joinPath(
             this._extensionUri,
@@ -149,6 +151,17 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         );
         const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
 
+        const codiconStylePath = vscode.Uri.joinPath(
+            this._extensionUri,
+            'src',
+            "common",
+            "copilot",
+            "assets",
+            "styles",
+            "codicon.css"
+        );
+        const codiconStyleUri = webview.asWebviewUri(codiconStylePath);
+
         // Use a nonce to only allow specific scripts to be run
         const nonce = getNonce();
 
@@ -158,15 +171,19 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}'; connect-src https://api.openai.com;">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link href="${copilotStyleUri}" rel="stylesheet"></link>
+            <link href="${codiconStyleUri}" rel="stylesheet"></link>
             <title>Chat View</title>
         </head>
         <body>
             <div class="chat-container">
                 <div class="chat-messages" id="chat-messages"></div>
-                <vscode-button id="howdy">Howdy!</vscode-button>
+                <vscode-link href="#">How to use fetchXML?</vscode-link>
+                <vscode-text-field>
+                <span slot="end" id="send-button chat-input" placeholder="Ask Copilot a question or type '/' for tables" class="codicon codicon-arrow-right"></span>
+                </vscode-text-field>
+                <br>
                 <div class="chat-input">
                     <input type="text" id="chat-input" placeholder="Ask Copilot a question or type '/' for tables" />
                     <button id="send-button"></button>
