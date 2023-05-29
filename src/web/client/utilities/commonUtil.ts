@@ -75,6 +75,7 @@ export function isVersionControlEnabled() {
  * @param object object to be validated
  * @returns true, if it's null or undefined object. Otherwise, it's false
  */
-export function isNullOrUndefined(object: {} | null | undefined): boolean {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export function isNullOrUndefined(object: any | null | undefined): boolean {
     return object === null || object === undefined;
   }
