@@ -123,15 +123,6 @@ function script () {
   autocompletePanel.classList.add("autocomplete-panel");
   chatInput.parentNode?.appendChild(autocompletePanel);
 
-  chatInput.addEventListener("focus", () => {
-      chatInput.style.border = "1px solid blue";
-  });
-  chatInput.addEventListener("blur", () => {
-      chatInput.style.border = "none";
-  });
-
-  chatInput.style.background = "rgb(60, 60, 60)";
-
   const SendButton = document.getElementById("send-button");
   // const SendIcon = document.createElement("div");
   // SendIcon.innerHTML = sendSvg;
@@ -343,52 +334,63 @@ function script () {
   // });
 
   function showAutocompletePanel() {
-      const listItems = [
-          { name: "webPage", description: "Create a new webpage" },
-          { name: "entityForm", description: "Create a new entity form" },
-          { name: "entityList", description: "Create a new entity list" },
-      ];
+    const listItems = [
+        { name: "webPage", description: "Create a new webpage" },
+        { name: "entityForm", description: "Create a new entity form" },
+        { name: "entityList", description: "Create a new entity list" },
+        { name: "fetchXml", description: "Fetch data from table" },
+        { name: "clear", description: "Clear the chat window" },
+        { name: "animate", description: "Add animations to your code" }
+    ];
 
-      const listContainer = document.createElement("div");
-      listContainer.classList.add("list-container");
+    const listContainer = document.createElement("div");
+    listContainer.classList.add("list-container");
 
-      const list = document.createElement("ul");
-      list.classList.add("list");
+    const list = document.createElement("ul");
+    list.classList.add("list");
 
-      listItems.forEach((item) => {
-          const listItem = document.createElement("li");
-          listItem.classList.add("list-item");
+    listItems.forEach((item) => {
+        const listItem = document.createElement("li");
+        listItem.classList.add("list-item");
 
-          const link = document.createElement("a");
-          link.href = "#";
-          link.textContent = item.name;
-          link.title = item.description;
+        const link = document.createElement("a");
+        link.href = "#";
+        link.textContent = item.name;
+        link.title = item.description;
 
-          listItem.appendChild(link);
-          list.appendChild(listItem);
+        listItem.appendChild(link);
+        list.appendChild(listItem);
 
-          listItem.addEventListener("click", () => {
-              if (chatInput) {
-                (chatInput as HTMLInputElement).value = `/${item.name} `;
-              }
-              hideAutocompletePanel();
-          });
-      });
+        listItem.addEventListener("click", () => {
+          if(item.name === "clear") {
+            if (chatMessages) {
+              chatMessages.innerHTML = "";
+            }
+            vscode.postMessage({ type: "clearChat" });
+            hideAutocompletePanel();
+            return;
+        }    
+        if (chatInput instanceof HTMLInputElement) {
+          chatInput.value = `/${item.name} `;
+        }
+            hideAutocompletePanel();
+        });
+    });
 
-      // Clear the contents of the autocomplete panel before adding the new list of items
-      autocompletePanel.innerHTML = "";
+    // Clear the contents of the autocomplete panel before adding the new list of items
+    autocompletePanel.innerHTML = "";
 
-      listContainer.appendChild(list);
-      autocompletePanel.appendChild(listContainer);
+    listContainer.appendChild(list);
+    autocompletePanel.appendChild(listContainer);
 
-      autocompletePanel.style.display = "block";
-      autocompletePanel.style.position = "absolute";
-      autocompletePanel.style.top =
+    autocompletePanel.style.display = "block";
+    autocompletePanel.style.position = "absolute";
+    autocompletePanel.style.top =
             chatInput?.offsetTop ? chatInput.offsetTop - autocompletePanel.offsetHeight + "px" : "0";
-      autocompletePanel.style.left = chatInput?.offsetLeft + "px";
-  }
+    autocompletePanel.style.left = chatInput?.offsetLeft + "px";
+}
 
-  function hideAutocompletePanel() {
-      autocompletePanel.style.display = "none";
-  }
+function hideAutocompletePanel() {
+    autocompletePanel.style.display = "none";
+}
 };

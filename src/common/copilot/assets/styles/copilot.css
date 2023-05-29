@@ -165,8 +165,8 @@ body {
 
 .list-container {
   position: relative;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
+  background-color: #1f1f1f ;
+  border: 1px solid #383434;
   padding: 10px;
   width: 400px;
   color: #ffffff;
@@ -182,20 +182,21 @@ li {
   font-size: 1.2em;
   margin-bottom: 3px;
   padding: 2px;
-  background-color: #fff;
+  /* background-color: #383636; */
+  background-color: #1f1f1f;
   transition: background-color 0.2s ease-in-out;
 }
 
 li:hover {
-  background-color: #ddd;
+  background-color: #3a3d41;
 }
 
 a {
   text-decoration: none;
-  color: #333;
+  color: #ffffff;
 }
 
 li:before {
   content: "/";
-  color: blue;
+  color: #007acc;
 }
