@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/* eslint-disable */
+
 import { provideVSCodeDesignSystem, Button,  allComponents } from "@vscode/webview-ui-toolkit";
 
 // In order to use the Webview UI Toolkit web components they
@@ -40,6 +42,8 @@ function main() {
   // to the element (i.e. the `as Button` syntax)
   const howdyButton = document.getElementById("howdy") as Button;
   howdyButton?.addEventListener("click", handleHowdyClick);
+
+  script();
 }
 
 // Callback function that is executed when the howdy button is clicked
@@ -81,17 +85,13 @@ function handleHowdyClick() {
   });
 }
 
-(function () {
+function script () {
   //const vscode = acquireVsCodeApi();
   const dequeue = [];
   const chatMessages = document.getElementById("chat-messages");
   const chatInput = document.getElementById("chat-input");
 
   let isDesktop = false;
-
-  const sendSvg = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M1.17683 1.1185C1.32953 0.989145 1.54464 0.963297 1.72363 1.05279L14.7236 7.55279C14.893 7.63748 15 7.81061 15 8C15 8.18939 14.893 8.36252 14.7236 8.44721L1.72363 14.9472C1.54464 15.0367 1.32953 15.0109 1.17683 14.8815C1.02414 14.7522 0.96328 14.5442 1.02213 14.353L2.97688 8L1.02213 1.64705C0.96328 1.45578 1.02414 1.24785 1.17683 1.1185ZM3.8693 8.5L2.32155 13.5302L13.382 8L2.32155 2.46979L3.8693 7.5H9.50001C9.77615 7.5 10 7.72386 10 8C10 8.27614 9.77615 8.5 9.50001 8.5H3.8693Z" fill="#F3F2F1"/>
-  </svg>`;
 
   const clipboardSvg = `<svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z" fill="#F3F2F1"/>
@@ -133,20 +133,20 @@ function handleHowdyClick() {
   chatInput.style.background = "rgb(60, 60, 60)";
 
   const SendButton = document.getElementById("send-button");
-  const SendIcon = document.createElement("div");
-  SendIcon.innerHTML = sendSvg;
-  SendIcon.classList.add("send-icon");
-  SendButton.title = "Send";
-  SendButton.appendChild(SendIcon);
+  // const SendIcon = document.createElement("div");
+  // SendIcon.innerHTML = sendSvg;
+  // SendIcon.classList.add("send-icon");
+  // SendButton.title = "Send";
+  // SendButton.appendChild(SendIcon);
 
   vscode.postMessage({ type: "webViewLoaded"});
 
-  function addToDequeue(element) {
-      if (dequeue.length >= 5) {
-          dequeue.shift(); // Remove the first element from the dequeue
-      }
-      dequeue.push(element); // Add the new element to the end of the dequeue
-  }
+  // function addToDequeue(element) {
+  //     if (dequeue.length >= 5) {
+  //         dequeue.shift(); // Remove the first element from the dequeue
+  //     }
+  //     dequeue.push(element); // Add the new element to the end of the dequeue
+  // }
 
   function formatCodeBlocks(responseText) {
       const blocks = responseText.split("```");
@@ -241,7 +241,7 @@ function handleHowdyClick() {
 
       const messageElement = document.createElement("div");
       if (className === "user-message") {
-          addToDequeue(message);
+          // addToDequeue(message);
           const makerElement = document.createElement("div");
           makerElement.textContent = "Maker:";
           messageElement.appendChild(makerElement);
@@ -251,96 +251,96 @@ function handleHowdyClick() {
           makerElement.textContent = "PowerPages Copilot:";
           messageElement.appendChild(makerElement);
           makerElement.appendChild(document.createElement("br"));
-      }
-      messageElement.appendChild(formatCodeBlocks(message));
-      messageElement.classList.add("message", className);
+          }
+          messageElement.appendChild(formatCodeBlocks(message));
+          messageElement.classList.add("message", className);
 
-      messageWrapper.appendChild(messageElement);
+          messageWrapper.appendChild(messageElement);
 
-      if (!chatMessages) {
-          return;
-      }
-      chatMessages.appendChild(messageWrapper);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
+          if (!chatMessages) {
+            return;
+          }
+          chatMessages.appendChild(messageWrapper);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
 
-  // Handle messages sent from the extension to the webview
-  window.addEventListener("message", (event) => {
-      const message = event.data; // The JSON data our extension sent
-      console.log(
-          "message received from extension : " +
-          message.type +
-          " " +
-          message.value
-      );
-      switch (message.type) {
-          case "apiResponse": {
+        // Handle messages sent from the extension to the webview
+        window.addEventListener("message", (event) => {
+          const message = event.data; // The JSON data our extension sent
+          console.log(
+            "message received from extension : " +
+            message.type +
+            " " +
+            message.value
+          );
+          switch (message.type) {
+            case "apiResponse": {
               addMessageToChat(message.value, "api-response")
               break;
-          }
-          case "env": {
+            }
+            case "env": {
               console.log("env received from extension : " + message.value);
               isDesktop = message.value;
+            }
           }
-      }
-  });
+        });
 
-  function getApiResponse(userPrompt) {
-      vscode.postMessage({ type: "newUserPrompt", value: userPrompt });
-  }
+        function getApiResponse(userPrompt: string) {
+          vscode.postMessage({ type: "newUserPrompt", value: userPrompt });
+        }
 
-  function insertCode(code) {
-      vscode.postMessage({ type: "insertCode", value: code });
-  }
+        function insertCode(code: string) {
+          vscode.postMessage({ type: "insertCode", value: code });
+        }
 
-  function copyCodeToClipboard(code) {
-      vscode.postMessage({ type: "copyCodeToClipboard", value: code });
-  }
+        function copyCodeToClipboard(code: string) {
+          vscode.postMessage({ type: "copyCodeToClipboard", value: code });
+        }
 
-  function createWebpage(code) {
-      vscode.postMessage({ type: "createWebpage", value: code });
-  }
+        function createWebpage(code: string) {
+          vscode.postMessage({ type: "createWebpage", value: code });
+        }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function createWebfile(code) {
-      vscode.postMessage({ type: "createWebfile", value: code });
-  }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        function createWebfile(code: string) {
+          vscode.postMessage({ type: "createWebfile", value: code });
+        }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function createTablePermission(code) {
-      vscode.postMessage({ type: "createTablePermission", value: code });
-  }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        function createTablePermission(code: string) {
+          vscode.postMessage({ type: "createTablePermission", value: code });
+        }
 
-  SendButton?.addEventListener("click", () => {
-      if (chatInput?.value.trim()) {
-          addMessageToChat(chatInput.value, "user-message");
-          getApiResponse(chatInput.value);
-          chatInput.value = "";
-          chatInput.focus();
-      }
-  });
+        SendButton?.addEventListener("click", () => {
+          if ((chatInput as HTMLInputElement).value.trim()) {
+            addMessageToChat((chatInput as HTMLInputElement).value, "user-message");
+            getApiResponse((chatInput as HTMLInputElement).value);
+            (chatInput as HTMLInputElement).value = "";
+            (chatInput as HTMLInputElement).focus();
+          }
+        });
 
-  chatInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && chatInput.value.trim()) {
-          addMessageToChat(chatInput.value, "user-message");
-          getApiResponse(chatInput.value);
-          chatInput.value = "";
-      }
+        chatInput.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" && (chatInput as HTMLInputElement).value.trim()) {
+            addMessageToChat((chatInput as HTMLInputElement).value, "user-message");
+            getApiResponse((chatInput as HTMLInputElement).value);
+            (chatInput as HTMLInputElement).value = "";
+          }
   });
 
   chatInput.addEventListener("input", () => {
-      if (chatInput.value === "/") {
+      if ((chatInput as HTMLInputElement).value === "/") {
           showAutocompletePanel();
       } else {
           hideAutocompletePanel();
       }
   });
 
-  document.addEventListener("click", (event) => {
-      if (!chatInput.contains(event.target)) {
-          hideAutocompletePanel();
-      }
-  });
+  // document.addEventListener("click", (event) => {
+  //     if (!chatInput.contains(event.target)) {
+  //         hideAutocompletePanel();
+  //     }
+  // });
 
   function showAutocompletePanel() {
       const listItems = [
@@ -368,7 +368,9 @@ function handleHowdyClick() {
           list.appendChild(listItem);
 
           listItem.addEventListener("click", () => {
-              chatInput.value = `/${item.name} `;
+              if (chatInput) {
+                (chatInput as HTMLInputElement).value = `/${item.name} `;
+              }
               hideAutocompletePanel();
           });
       });
@@ -382,11 +384,11 @@ function handleHowdyClick() {
       autocompletePanel.style.display = "block";
       autocompletePanel.style.position = "absolute";
       autocompletePanel.style.top =
-          chatInput?.offsetTop - autocompletePanel.offsetHeight + "px";
+            chatInput?.offsetTop ? chatInput.offsetTop - autocompletePanel.offsetHeight + "px" : "0";
       autocompletePanel.style.left = chatInput?.offsetLeft + "px";
   }
 
   function hideAutocompletePanel() {
       autocompletePanel.style.display = "none";
   }
-})();
+};

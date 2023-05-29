@@ -134,8 +134,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private _getHtmlForWebview(webview: vscode.Webview) {
 
         
-        const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'scripts', 'copilot.js');
-        const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
+        // const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'scripts', 'copilot.js');
+       // const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
         const webviewPath = vscode.Uri.joinPath(this._extensionUri, "dist", "webview.js");
         const webviewUri = webview.asWebviewUri(webviewPath);
 
@@ -183,7 +183,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         
             <!-- Note: Using Visual Studio Code Codicon Library -->
         
-            <vscode-text-field placeholder="Ask Copilot a question or type '/' for tables" >
+            <vscode-text-field placeholder="Ask Copilot a question or type '/' for tables" id="chat-input">
               <section slot="end" style="display:flex; align-items: center;">
                 <vscode-button appearance="icon" aria-label="Match Case" id="send-icon">
                   <span>
@@ -200,7 +200,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
               <button id="send-button"></button>
             </div>
           </div>
-          <script nonce="${nonce}" src="${copilotScriptUri}"></script>
+          
           <script type="module" nonce="${nonce}" src="${webviewUri}"></script>
         </body>
         </html>`;
