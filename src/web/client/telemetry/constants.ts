@@ -23,6 +23,8 @@ export enum telemetryEventNames {
     WEB_EXTENSION_EDIT_LANGUAGE_CODE = "WebExtensionEditLanguageCode",
     WEB_EXTENSION_VSCODE_START_COMMAND = "WebExtensionVscodeStartCommand",
     WEB_EXTENSION_SAVE_FILE_TRIGGERED = "WebExtensionSaveFileTriggered",
+    WEB_EXTENSION_SAVE_FILE_FAILED = "WebExtensionSaveFileFailed",
+    WEB_EXTENSION_SAVE_FILE_SUCCESS = "WebExtensionSaveFileSuccess",
     WEB_EXTENSION_FETCH_FILE_TRIGGERED = "WebExtensionFetchFileTriggered",
     WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED = "WebExtensionFetchDirectoryTriggered",
     WEB_EXTENSION_CREATE_ROOT_FOLDER = "WebExtensionCreateRootFolder",

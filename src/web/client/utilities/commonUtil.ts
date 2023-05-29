@@ -69,3 +69,12 @@ export function isVersionControlEnabled() {
 
     return isVersionControlEnabled;
 }
+
+/**
+ * Utility function. Check if it's Null Or Undefined
+ * @param object object to be validated
+ * @returns true, if it's null or undefined object. Otherwise, it's false
+ */
+export function isNullOrUndefined(object: {} | null | undefined): boolean {
+    return object === null || object === undefined;
+  }
