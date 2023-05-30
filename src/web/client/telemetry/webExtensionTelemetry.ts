@@ -112,7 +112,7 @@ export class WebExtensionTelemetry {
         entityFileExtensionType?: string, // TODO: Pass these as function properties parameters
         eventName?:string
     ) {
-        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, true, duration, undefined, !isNullOrUndefined(eventName)?eventName:telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, true, duration, undefined, !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
     }
 
     public sendAPIFailureTelemetry(
@@ -124,7 +124,7 @@ export class WebExtensionTelemetry {
         entityFileExtensionType?: string, // TODO: Pass these as function properties parameters
         eventName?:string
     ) {
-        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, false, duration, errorMessage, !isNullOrUndefined(eventName)?eventName:telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
+        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, false, duration, errorMessage, !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
     }
 
     public sendPerfTelemetry(eventName: string, duration: number) {
