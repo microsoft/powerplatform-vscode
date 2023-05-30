@@ -209,12 +209,9 @@ export class UserTreeViewProvider
         } else {
             const connectedUsersMap =
                 WebExtensionContext.connectedUsers.getUserMap;
-            console.log("connected users in tree", connectedUsersMap);
-
             const connectedUsers: UserNode[] = Array.from(
                 connectedUsersMap.entries()
             ).map(([key]) => {
-                console.log("in loop in tree", key);
                 return new UserNode(key, vscode.TreeItemCollapsibleState.None);
             });
 

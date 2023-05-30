@@ -3,10 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as vscode from "vscode";
-import { IAttributePath } from "../utilities/schemaHelperUtil";
-import { FileData } from "./fileData";
-
 export interface IUserData {
     lineNumber: number;
     columnNumber: number;

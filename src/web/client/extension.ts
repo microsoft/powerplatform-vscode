@@ -88,9 +88,9 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
             async (args) => {
-                const input = await vscode.window.showInputBox({
-                    prompt: "What is your name ",
-                });
+                // const input = await vscode.window.showInputBox({
+                //     prompt: "What is your name ",
+                // });
 
                 // const answer = await vscode.window.showInformationMessage(
                 //     "Who are you ?",
@@ -107,7 +107,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 //     // showCollapseAll: true,
                 // });
 
-                WebExtensionContext.setUsername(input);
+                // WebExtensionContext.setUsername(input);
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     "StartCommand",
                     {
@@ -397,6 +397,7 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                         WebExtensionContext.username
                     );
                 if (activeEditor) {
+                    console.log("active editor", activeEditor);
                     const startPos = activeEditor.selection.active;
                     const endPos = activeEditor.selection.active;
 
