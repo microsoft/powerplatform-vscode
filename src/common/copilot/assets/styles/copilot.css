@@ -3,7 +3,7 @@ body {
   margin: 0;
 }
 
-.chat-container {
+.copilot-window{
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -17,9 +17,19 @@ body {
 
 .chat-input {
   display: flex;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
+  height: 40px;
 }
 
+.input-field {
+  flex: 1;
+  height: 38px;
+  border-radius: 10px;
+}
+
+.disclaimer {
+  
+}
 .chat-input input {
   flex: 1;
   border: none;
@@ -41,8 +51,8 @@ body {
 }
 
 .user-message {
-  background-color: #252526;
-  color: white;
+  /* background-color: #252526;
+  color: white; */
   margin-bottom: 5px;
   border-bottom: 1px solid grey;
   padding: 10px;
@@ -57,6 +67,17 @@ body {
   padding-top: 50px;
   padding-bottom: 10px;
   padding-right: 10px;
+}
+
+.profile-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  background-color: aliceblue;
+  z-index: 1;
 }
 
 .message-wrapper {
@@ -165,11 +186,11 @@ body {
 
 .list-container {
   position: relative;
-  background-color: #1f1f1f ;
-  border: 1px solid #383434;
+  /* background-color: #1f1f1f ;
+  border: 1px solid #383434; */
   padding: 10px;
   width: 400px;
-  color: #ffffff;
+  /* color: #ffffff; */
 }
 
 ul {
@@ -180,23 +201,23 @@ ul {
 
 li {
   font-size: 1.2em;
-  margin-bottom: 3px;
-  padding: 2px;
+  margin-bottom: 3px; 
+  padding: 2px; 
   /* background-color: #383636; */
-  background-color: #1f1f1f;
+  /* background-color: #1f1f1f; */
   transition: background-color 0.2s ease-in-out;
 }
 
 li:hover {
-  background-color: #3a3d41;
+  /* background-color: #3a3d41; */
 }
 
 a {
   text-decoration: none;
-  color: #ffffff;
+  /* color: #ffffff; */
 }
 
 li:before {
   content: "/";
-  color: #007acc;
+  /* color: #007acc; */
 }
