@@ -198,6 +198,9 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     title: vscode.l10n.t("Saving your file ..."),
                 },
                 async () => {
+                    WebExtensionContext.telemetry.sendInfoTelemetry(
+                        telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED
+                    );
                     await this._saveFileToDataverseFromVFS(uri);
                 }
             );
