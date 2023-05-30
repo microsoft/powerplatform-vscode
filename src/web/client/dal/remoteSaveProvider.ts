@@ -158,11 +158,10 @@ async function saveDataToDataverse(
                 saveCallParameters.requestUrl,
                 entityName,
                 httpMethod.PATCH,
-                fileExtensionType,
-                undefined,
-                0,
-                undefined,
-                telemetryEventNames.WEB_EXTENSION_SAVE_FILE_TRIGGERED
+                fileExtensionType
+            );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_TRIGGERED
             );
             const response = await fetch(
                 saveCallParameters.requestUrl,
@@ -175,9 +174,10 @@ async function saveDataToDataverse(
                     entityName,
                     httpMethod.PATCH,
                     new Date().getTime() - requestSentAtTime,
-                    JSON.stringify(response),
-                    fileExtensionType,
-                    telemetryEventNames.WEB_EXTENSION_SAVE_FILE_FAILED
+                    JSON.stringify(response)
+                );
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
                 );
                 throw new Error(response.statusText);
             }
@@ -187,8 +187,10 @@ async function saveDataToDataverse(
                 entityName,
                 httpMethod.PATCH,
                 new Date().getTime() - requestSentAtTime,
-                fileExtensionType,
-                telemetryEventNames.WEB_EXTENSION_SAVE_FILE_SUCCESS
+                fileExtensionType
+            );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
             );
         } catch (error) {
             const authError = (error as Error)?.message;
@@ -198,8 +200,10 @@ async function saveDataToDataverse(
                 httpMethod.PATCH,
                 new Date().getTime() - requestSentAtTime,
                 authError,
-                fileExtensionType ,
-                telemetryEventNames.WEB_EXTENSION_SAVE_FILE_FAILED
+                fileExtensionType
+            );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
             );
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(
