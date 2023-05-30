@@ -24,7 +24,7 @@ import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-gen
 import { NPSWebView } from "./webViews/NPSWebView";
 import * as Constants from "./common/constants";
 import { DecorationManager } from "./webViews/DecorationCursor";
-// import { WorkspaceTreeViewProvider } from "./webViews/UsersTreeProvider";
+import { UserTreeViewProvider } from "./webViews/UsersTreeProvider";
 export interface IContainerData {
     containerId: string;
     lineNumber: number;
@@ -32,70 +32,26 @@ export interface IContainerData {
 }
 let myStatusBarItem: vscode.StatusBarItem;
 let copresenceWorker: Worker;
-
-// class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
-//     onDidChangeTreeData?: vscode.Event<TreeItem | null | undefined> | undefined;
-
-//     data: TreeItem[];
-
-//     constructor() {
-//         this.data = [
-//             new TreeItem("cars", [
-//                 new TreeItem("Ford", [
-//                     new TreeItem("Fiesta"),
-//                     new TreeItem("Focus"),
-//                     new TreeItem("Mustang"),
-//                 ]),
-//                 new TreeItem("BMW", [
-//                     new TreeItem("320"),
-//                     new TreeItem("X3"),
-//                     new TreeItem("X5"),
-//                 ]),
-//             ]),
-//         ];
-//     }
-
-//     getTreeItem(
-//         element: TreeItem
-//     ): vscode.TreeItem | Thenable<vscode.TreeItem> {
-//         return element;
-//     }
-
-//     getChildren(
-//         element?: TreeItem | undefined
-//     ): vscode.ProviderResult<TreeItem[]> {
-//         if (element === undefined) {
-//             return this.data;
-//         }
-//         return element.children;
-//     }
-// }
-
-// class TreeItem extends vscode.TreeItem {
-//     children: TreeItem[] | undefined;
-
-//     constructor(label: string, children?: TreeItem[]) {
-//         super(
-//             label,
-//             children === undefined
-//                 ? vscode.TreeItemCollapsibleState.None
-//                 : vscode.TreeItemCollapsibleState.Expanded
-//         );
-//         this.children = children;
-//     }
-// }
+let userViewProvider: UserTreeViewProvider;
 
 export function activate(context: vscode.ExtensionContext): void {
     console.log("VSCODE WORKER vscode extension activate function start");
 
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
+
     // const treeViewProvider = new WorkspaceTreeViewProvider();
 
-    // vscode.window.registerTreeDataProvider("coPresenceView", treeViewProvider);
     // vscode.workspace.onDidChangeWorkspaceFolders(() => {
     //     treeViewProvider.refresh();
     // });
+
+    const userIcon = vscode.Uri.joinPath(
+        context.extensionUri,
+        "resources/green-circle-svgrepo-com.svg"
+    );
+
+    userViewProvider = new UserTreeViewProvider(userIcon);
 
     const dataBoundary = undefined;
     const appInsightsResource =
@@ -120,11 +76,6 @@ export function activate(context: vscode.ExtensionContext): void {
             { isCaseSensitive: true }
         )
     );
-    // if (vscode.workspace.workspaceFolders.length > 0)
-    //     console.log(
-    //         "rootapth",
-    //         vscode.workspace.workspaceFolders[0].uri.fsPath
-    //     );
 
     //WebExtensionContext.myWebView.setMyWebViews(context.extensionUri);
     // const rootPath =
@@ -307,6 +258,7 @@ export function activate(context: vscode.ExtensionContext): void {
     // );
 
     createCopresenceWorkerInstance(context);
+    // bottom status bar config
     const statusBarCmd = "sample.showSelectionCount";
     myStatusBarItem = vscode.window.createStatusBarItem(
         vscode.StatusBarAlignment.Left,
@@ -359,6 +311,16 @@ export function createCopresenceWorkerInstance(
                 const otherUsercursor = DecorationManager.getInstance(
                     data.username
                 );
+
+                WebExtensionContext.updateConnectedUsersInContext(
+                    data.lineNumber,
+                    data.columnNumber,
+                    data.containerId,
+                    data.fileName,
+                    data.filePath,
+                    data.username
+                );
+                userViewProvider.refresh();
 
                 const activeEditor = vscode.window.activeTextEditor;
                 if (activeEditor) {
@@ -435,29 +397,12 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                         WebExtensionContext.username
                     );
                 if (activeEditor) {
-                    // const cursorDecoration =
-                    //     vscode.window.createTextEditorDecorationType({
-                    //         before: {
-                    //             contentText: WebExtensionContext.username,
-                    //             color: "yellow",
-                    //             fontWeight: "bold",
-                    //             margin: "0 0 0 0",
-                    //             width: "0",
-                    //             border: `1px solid ${"yellow"}`,
-                    //         },
-                    //     });
-
-                    // const startPos = activeEditor.selection.active;
-
-                    // const endPos = activeEditor.selection.active;
                     const startPos = activeEditor.selection.active;
                     const endPos = activeEditor.selection.active;
 
-                    // const position = activeEditor.selection.active.line; // Current line position
                     const decoration = {
                         range: new vscode.Range(startPos, endPos),
                     };
-                    // activeEditor.setDecorations(newCursorDecoration, []);
 
                     if (currentUserCursor !== undefined) {
                         activeEditor.setDecorations(currentUserCursor, []);
@@ -465,17 +410,6 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                             decoration,
                         ]);
                     }
-
-                    // // const position = activeEditor.selection.active.line; // Current line position
-                    // const decoration = {
-                    //     range: new vscode.Range(startPos, endPos),
-                    // };
-
-                    // activeEditor.setDecorations(cursorDecoration, [decoration]);
-                    // activeEditor.setDecorations(
-                    //     vscode.window.createTextEditorDecorationType({}),
-                    //     [decoration]
-                    // );
 
                     const entityId =
                         WebExtensionContext.fileDataMap.getFileMap.get(

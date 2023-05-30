@@ -31,6 +31,7 @@ import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
+import { UserDataMap } from "./context/userDataMap";
 import { MyWebview } from "./webViews/MyWebView";
 //import TinyliciousClient from "@fluidframework/tinylicious-client";
 
@@ -96,6 +97,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _myWebView: MyWebview;
     private _containerId: string;
     private _username: string | undefined;
+    private _connectedUsers: UserDataMap;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -186,6 +188,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public set username(name: string | undefined) {
         this._username = name;
     }
+    public get connectedUsers() {
+        return this._connectedUsers;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -213,6 +218,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._myWebView = new MyWebview();
         this._containerId = "";
         this._username = "";
+        this._connectedUsers = new UserDataMap();
     }
 
     public setUsername(name: string | undefined) {
@@ -354,6 +360,24 @@ class WebExtensionContext implements IWebExtensionContext {
             attributePath,
             encodeAsBase64,
             mimeType
+        );
+    }
+
+    public async updateConnectedUsersInContext(
+        lineNumber: number,
+        columnNumber: number,
+        containerId: string,
+        fileName: string,
+        filePath: string,
+        userName: string
+    ) {
+        this.connectedUsers.setUserData(
+            lineNumber,
+            columnNumber,
+            containerId,
+            fileName,
+            filePath,
+            userName
         );
     }
 

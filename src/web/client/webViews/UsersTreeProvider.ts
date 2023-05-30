@@ -3,9 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-
-
-// import * as vscode from "vscode";
+import * as vscode from "vscode";
+import WebExtensionContext from "../WebExtensionContext";
 
 // export class WorkspaceTreeViewProvider
 //     implements vscode.TreeDataProvider<TreeNode>, vscode.Disposable
@@ -77,7 +76,6 @@
 //             }
 //         } else {
 //             // Get the child folders and files of the current element
-//             console.log("element", element);
 //             const folderUri = element.folderUri;
 //             if (folderUri) {
 //                 return new Promise((resolve) => {
@@ -127,7 +125,7 @@
 
 //     private registerPanel(): vscode.Disposable[] {
 //         return [
-//             vscode.window.registerTreeDataProvider("exampleView", this),
+//             vscode.window.registerTreeDataProvider("filesView", this),
 //             // vscode.commands.registerCommand("pacCLI.authPanel.refresh", () =>
 //             //     this.refresh()
 //             // ),
@@ -168,3 +166,77 @@
 //     //   return `${customIcon} ${this.description || ""}`;
 //     // }
 // }
+
+export class UserTreeViewProvider
+    implements vscode.TreeDataProvider<UserNode>, vscode.Disposable
+{
+    private _onDidChangeTreeData: vscode.EventEmitter<
+        UserNode | undefined | null | void
+    > = new vscode.EventEmitter<UserNode | undefined | null | void>();
+    readonly onDidChangeTreeData: vscode.Event<
+        UserNode | undefined | null | void
+    > = this._onDidChangeTreeData.event;
+
+    private readonly _disposables: vscode.Disposable[] = [];
+    private _iconpath: vscode.Uri;
+
+    constructor(icon: vscode.Uri) {
+        this._iconpath = icon;
+        this._disposables.push(...this.registerPanel());
+    }
+
+    public dispose(): void {
+        this._disposables.forEach((d) => d.dispose());
+    }
+
+    public getTreeItem(
+        element: UserNode
+    ): vscode.TreeItem | Thenable<vscode.TreeItem> {
+        const user = new UserNode(
+            String(element.label),
+
+            element.collapsibleState
+        );
+        user.tooltip = String(element.label);
+
+        user.iconPath = this._iconpath;
+        return user;
+    }
+
+    getChildren(element?: UserNode): vscode.ProviderResult<UserNode[]> {
+        if (element) {
+            return [];
+        } else {
+            const connectedUsersMap =
+                WebExtensionContext.connectedUsers.getUserMap;
+            console.log("connected users in tree", connectedUsersMap);
+
+            const connectedUsers: UserNode[] = Array.from(
+                connectedUsersMap.entries()
+            ).map(([key]) => {
+                console.log("in loop in tree", key);
+                return new UserNode(key, vscode.TreeItemCollapsibleState.None);
+            });
+
+            return connectedUsers;
+        }
+    }
+
+    refresh(): void {
+        this._onDidChangeTreeData.fire();
+    }
+
+    private registerPanel(): vscode.Disposable[] {
+        return [vscode.window.registerTreeDataProvider("coPresenceView", this)];
+    }
+}
+
+class UserNode extends vscode.TreeItem {
+    constructor(
+        label: string | vscode.TreeItemLabel,
+        collapsibleState?: vscode.TreeItemCollapsibleState
+    ) {
+        super(label, collapsibleState);
+        this.tooltip = String(label);
+    }
+}

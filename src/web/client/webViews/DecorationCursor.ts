@@ -5,28 +5,6 @@
 
 import * as vscode from "vscode";
 
-const highlightColors = [
-    "#FFC107", // Amber
-    "#FF5722", // Deep Orange
-    "#4CAF50", // Green
-    "#2196F3", // Blue
-    "#9C27B0", // Purple
-    "#F44336", // Red
-    "#00BCD4", // Cyan
-    "#E91E63", // Pink
-    "#FFEB3B", // Yellow
-    "#00E676", // Light Green
-    "#3F51B5", // Indigo
-    "#8BC34A", // Lime Green
-    "#673AB7", // Deep Purple
-    "#03A9F4", // Light Blue
-    "#9E9E9E", // Grey
-];
-function getRandomColorIndex() {
-    const randomIndex = Math.floor(Math.random() * highlightColors.length);
-    return randomIndex;
-}
-
 export class DecorationManager {
     private static instanceMap: Map<string, vscode.TextEditorDecorationType> =
         new Map();

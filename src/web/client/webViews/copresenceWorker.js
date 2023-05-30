@@ -31,7 +31,6 @@ let myContainer;
 let map;
 let audience;
 let initial = false;
-let noOfUsers = 0;
 
 async function loadContainer(username, id, line, column, swpId, file) {
     console.log("VSCODE WORKER Inside loadContainer with ", id);
@@ -90,6 +89,8 @@ async function loadContainer(username, id, line, column, swpId, file) {
                     containerId: swpId,
                     lineNumber: otherUser.lineNumber,
                     columnNumber: otherUser.columnNumber,
+                    fileName: otherUser.fileName,
+                    filePath: otherUser.filePath,
                 });
             });
             initial = true;
@@ -119,6 +120,8 @@ async function loadContainer(username, id, line, column, swpId, file) {
                     containerId: swpId,
                     lineNumber: otherUser.lineNumber,
                     columnNumber: otherUser.columnNumber,
+                    fileName: otherUser.fileName,
+                    filePath: otherUser.filePath,
                 });
             }
         });

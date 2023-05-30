@@ -767,6 +767,12 @@
           "name": "%pacCLI.envAndSolutionsPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
         }
+      ],
+      "explorer": [
+        {
+          "id": "coPresenceView",
+          "name": "Co-Editors"
+        }
       ]
     },
     "walkthroughs": [
