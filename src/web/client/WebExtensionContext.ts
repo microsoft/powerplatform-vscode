@@ -369,7 +369,8 @@ class WebExtensionContext implements IWebExtensionContext {
         containerId: string,
         fileName: string,
         filePath: string,
-        userName: string
+        userName: string,
+        userId: string
     ) {
         this.connectedUsers.setUserData(
             lineNumber,
@@ -377,8 +378,13 @@ class WebExtensionContext implements IWebExtensionContext {
             containerId,
             fileName,
             filePath,
-            userName
+            userName,
+            userId
         );
+    }
+
+    public async removeConnectedUserInContext(userId: string) {
+        this.connectedUsers.removeUser(userId);
     }
 
     public async updateEntityDetailsInContext(

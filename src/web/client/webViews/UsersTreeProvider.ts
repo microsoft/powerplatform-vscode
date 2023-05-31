@@ -212,8 +212,9 @@ export class UserTreeViewProvider
             const connectedUsers: UserNode[] = Array.from(
                 connectedUsersMap.entries()
             ).map(([key, value]) => {
+                console.log("in children loop", key);
                 return new UserNode(
-                    key,
+                    value._userName,
                     value._fileName,
                     vscode.TreeItemCollapsibleState.None
                 );

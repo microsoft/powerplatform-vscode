@@ -312,6 +312,16 @@ export function createCopresenceWorkerInstance(
                     data.userId,
                     data.userName
                 );
+                console.log("other user cursor", otherUsercursor);
+                const activeEditor = vscode.window.activeTextEditor;
+                if (data.type === "member-removed") {
+                    WebExtensionContext.removeConnectedUserInContext(
+                        data.userId
+                    );
+                    userViewProvider.refresh();
+
+                    activeEditor?.setDecorations(otherUsercursor, []);
+                }
                 if (data.type === "client-data") {
                     WebExtensionContext.updateConnectedUsersInContext(
                         data.lineNumber,
@@ -319,10 +329,11 @@ export function createCopresenceWorkerInstance(
                         data.containerId,
                         data.fileName,
                         data.filePath,
-                        data.userName
+                        data.userName,
+                        data.userId
                     );
                     userViewProvider.refresh();
-                    const activeEditor = vscode.window.activeTextEditor;
+
                     if (activeEditor) {
                         const startPos = new vscode.Position(
                             data.lineNumber,

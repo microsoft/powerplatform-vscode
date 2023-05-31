@@ -8,6 +8,7 @@ import * as vscode from "vscode";
 export class DecorationManager {
     private static instanceMap: Map<string, vscode.TextEditorDecorationType> =
         new Map();
+
     private static highlightColors = [
         "#FFC107",
         "#FF5722",
@@ -50,9 +51,9 @@ export class DecorationManager {
                     },
                 }
             );
-            DecorationManager.instanceMap.set(userName, decorationType);
+            DecorationManager.instanceMap.set(userId, decorationType);
         }
-        return this.instanceMap.get(userName);
+        return this.instanceMap.get(userId);
     }
 
     public static getRandomColor() {

@@ -26,13 +26,67 @@ const containerSchema = {
     },
 };
 
-let azureClient;
-let myContainer;
-let map;
-let audience;
+// let azureClient;
+// let myContainer;
+// let map;
+// let audience;
 let initial = false;
 
-async function loadContainer(id, line, column, swpId, file) {
+class AzureFluidClient {
+    static _clientInstance;
+    static _container;
+    static _audience;
+    static _userSharedMap;
+
+    static getInstance(config) {
+        if (!this._clientInstance) {
+            const afrClientProps = {
+                connection: {
+                    type: "remote",
+                    tenantId: config.swptenantId,
+                    tokenProvider: new DataverseTokenProvider(
+                        config.swpAccessToken,
+                        () => this.fetchAccessToken()
+                    ),
+                    endpoint: config.discoveryendpoint,
+                },
+            };
+
+            AzureFluidClient._clientInstance = new AzureClient(afrClientProps);
+        }
+        return this._clientInstance;
+    }
+
+    static async fetchContainerAndService(config, id) {
+        if (
+            !this._container &&
+            this._container?.connectionState !== ConnectionState.Connected
+        ) {
+            const azureClient = this.getInstance(config);
+            const { container, services } = await azureClient.getContainer(
+                id,
+                containerSchema
+            );
+            if (container.connectionState !== ConnectionState.Connected) {
+                await new Promise((resolve) => {
+                    container.once("connected", () => {
+                        resolve();
+                    });
+                });
+            }
+            this._container = container;
+            this._audience = services.audience;
+            this._userSharedMap = container.initialObjects.sharedState;
+        }
+        return {
+            container: this._container,
+            audience: this._audience,
+            map: this._userSharedMap,
+        };
+    }
+}
+
+async function loadContainer(config, id, line, column, swpId, file) {
     console.log("VSCODE WORKER Inside loadContainer with ", id);
     console.log(`VSCODE WORKER Line: ${line}`);
     console.log(`VSCODE WORKER Column: ${column}`);
@@ -41,31 +95,37 @@ async function loadContainer(id, line, column, swpId, file) {
 
     try {
         console.log(`Retrieving container`);
+        const azureClient = AzureFluidClient.getInstance(config, swpId);
 
-        if (myContainer === undefined) {
-            const { container, services } = await azureClient.getContainer(
-                swpId,
-                containerSchema
-            );
-            myContainer = container;
-            audience = services.audience;
-        }
-        console.log("container", myContainer);
-        console.log("audienc", audience);
+        // if (myContainer === undefined) {
+        // const { container, services } = await azureClient.getContainer(
+        //     swpId,
+        //     containerSchema
+        // );
 
-        if (myContainer.connectionState !== ConnectionState.Connected) {
-            await new Promise((resolve) => {
-                myContainer.once("connected", () => {
-                    resolve();
-                });
-            });
-        }
-        if (map === undefined) {
-            map = myContainer.initialObjects.sharedState;
-        }
+        const { container, audience, map } =
+            await AzureFluidClient.fetchContainerAndService(config, swpId);
+        // const myContainer = container;
+        // const audience = services.audience;
+        // }
+        console.log("container", container);
+        console.log("audience", audience);
+        console.log("conrtainer status", container.connectionState);
+
+        // if (myContainer.connectionState !== ConnectionState.Connected) {
+        //     await new Promise((resolve) => {
+        //         myContainer.once("connected", () => {
+        //             resolve();
+        //         });
+        //     });
+        // }
+        // // if (map === undefined) {
+        // const map = myContainer.initialObjects.sharedState;
+        // // }
         const existingMembers = audience.getMembers();
-        console.log("active users", existingMembers);
+        // console.log("active users", existingMembers);
         const myself = audience.getMyself();
+        // console.log("myself", myself);
 
         const currentUser = {
             lineNumber: line,
@@ -85,14 +145,24 @@ async function loadContainer(id, line, column, swpId, file) {
                 totalUsers: existingMembers.size,
             });
         });
+        audience.on("memberAdded", (clientId, member) => {
+            console.log("NEW MEMBER JOINED", clientId, member);
+
+            // if (!existingMembers.get(member.userId)) {
+            //     self.postMessage({
+            //         type: "member-removed",
+            //         removedUserId: member.userId,
+            //     });
+            // }
+        });
 
         audience.on("memberRemoved", (clientId, member) => {
-            console.log("EXISTING MEMBER LEFT", clientId);
+            console.log("EXISTING MEMBER LEFT", clientId, member);
 
             if (!existingMembers.get(member.userId)) {
                 self.postMessage({
                     type: "member-removed",
-                    removedUserId: member.userId,
+                    userId: member.userId,
                 });
             }
         });
@@ -102,7 +172,7 @@ async function loadContainer(id, line, column, swpId, file) {
             existingMembers.forEach(async (value, key) => {
                 const otherUser = map.get(key);
                 console.log("in intial other user", otherUser);
-                await self.postMessage({
+                self.postMessage({
                     type: "client-data",
                     totalUsers: existingMembers.size,
                     userName: otherUser.userName,
@@ -185,24 +255,25 @@ function runFluidApp() {
         //         message
         //     )}`
         // );
-        if (azureClient === undefined) {
-            const afrClientProps = {
-                connection: {
-                    type: "remote",
-                    tenantId: message.afrConfig.swptenantId,
-                    tokenProvider: new DataverseTokenProvider(
-                        message.afrConfig.swpAccessToken,
-                        () => this.fetchAccessToken()
-                    ),
-                    endpoint: message.afrConfig.discoveryendpoint,
-                },
-            };
-            azureClient = new AzureClient(afrClientProps);
-        }
+        // if (azureClient === undefined) {
+        //     const afrClientProps = {
+        //         connection: {
+        //             type: "remote",
+        //             tenantId: message.afrConfig.swptenantId,
+        //             tokenProvider: new DataverseTokenProvider(
+        //                 message.afrConfig.swpAccessToken,
+        //                 () => this.fetchAccessToken()
+        //             ),
+        //             endpoint: message.afrConfig.discoveryendpoint,
+        //         },
+        //     };
+        //     azureClient = new AzureClient(afrClientProps);
+        // }
 
         await loadContainer(
             //vscode,
             // message.username,
+            message.afrConfig,
             message.containerId,
             message.lineNumber,
             message.columnNumber,

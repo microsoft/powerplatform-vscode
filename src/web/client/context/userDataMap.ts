@@ -10,6 +10,7 @@ export interface IUserData {
     fileName: string;
     filePath: string;
     userName: string;
+    userId: string;
 }
 
 export class UserData implements IUserData {
@@ -19,6 +20,7 @@ export class UserData implements IUserData {
     _fileName: string;
     _filePath: string;
     _userName: string;
+    _userId: string;
 
     // Getters
     public get lineNumber(): number {
@@ -39,6 +41,9 @@ export class UserData implements IUserData {
     public get userName(): string {
         return this._userName;
     }
+    public get userId(): string {
+        return this._userId;
+    }
 
     constructor(
         lineNumber: number,
@@ -46,7 +51,8 @@ export class UserData implements IUserData {
         containerId: string,
         fileName: string,
         filePath: string,
-        userName: string
+        userName: string,
+        userId: string
     ) {
         this._containerId = containerId;
         this._lineNumber = lineNumber;
@@ -54,6 +60,7 @@ export class UserData implements IUserData {
         this._columnNumber = columnNumber;
         this._filePath = filePath;
         this._userName = userName;
+        this._userId = userId;
     }
 }
 
@@ -70,7 +77,8 @@ export class UserDataMap {
         containerId: string,
         fileName: string,
         filePath: string,
-        userName: string
+        userName: string,
+        userId: string
     ) {
         const userData = new UserData(
             lineNumber,
@@ -78,10 +86,15 @@ export class UserDataMap {
             containerId,
             fileName,
             filePath,
-            userName
+            userName,
+            userId
         );
 
-        this.usersMap.set(userName, userData);
+        this.usersMap.set(userId, userData);
+    }
+
+    public removeUser(userId: string) {
+        this.usersMap.delete(userId);
     }
 
     // public updateDirtyChanges(fileFsPath: string, dirtyFlagValue: boolean) {
