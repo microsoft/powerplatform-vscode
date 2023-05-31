@@ -9,6 +9,7 @@ import { queryParameters } from "../common/constants";
 import { sanitizeURL } from "../utilities/urlBuilderUtil";
 import { telemetryEventNames } from "./constants";
 import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "./webExtensionTelemetryInterface";
+import { isNullOrUndefined } from '../utilities/commonUtil';
 
 export class WebExtensionTelemetry {
     private _telemetry: TelemetryReporter | undefined;
@@ -47,6 +48,7 @@ export class WebExtensionTelemetry {
                 referrerSessionId: queryParamsMap.get(queryParameters.REFERRER_SESSION_ID),
                 referrer: queryParamsMap.get(queryParameters.REFERRER),
                 siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
+                region: queryParamsMap.get(queryParameters.REGION)
             }
         }
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
@@ -108,8 +110,9 @@ export class WebExtensionTelemetry {
         httpMethod: string,
         duration: number,
         entityFileExtensionType?: string, // TODO: Pass these as function properties parameters
+        eventName?:string
     ) {
-        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, true, duration, undefined, telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, true, duration, undefined, !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
     }
 
     public sendAPIFailureTelemetry(
@@ -119,8 +122,9 @@ export class WebExtensionTelemetry {
         duration: number,
         errorMessage?: string,
         entityFileExtensionType?: string, // TODO: Pass these as function properties parameters
+        eventName?:string
     ) {
-        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, false, duration, errorMessage, telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
+        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, false, duration, errorMessage, !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
     }
 
     public sendPerfTelemetry(eventName: string, duration: number) {

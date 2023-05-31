@@ -17,6 +17,7 @@ import {
 import { getPatchRequestUrl, getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { IAttributePath } from "../common/interfaces";
+import { telemetryEventNames } from "../telemetry/constants";
 
 interface ISaveCallParameters {
     requestInit: RequestInit;
@@ -159,6 +160,9 @@ async function saveDataToDataverse(
                 httpMethod.PATCH,
                 fileExtensionType
             );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_TRIGGERED
+            );
             const response = await fetch(
                 saveCallParameters.requestUrl,
                 saveCallParameters.requestInit
@@ -172,6 +176,9 @@ async function saveDataToDataverse(
                     new Date().getTime() - requestSentAtTime,
                     JSON.stringify(response)
                 );
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
+                );
                 throw new Error(response.statusText);
             }
 
@@ -182,6 +189,9 @@ async function saveDataToDataverse(
                 new Date().getTime() - requestSentAtTime,
                 fileExtensionType
             );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
+            );
         } catch (error) {
             const authError = (error as Error)?.message;
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(
@@ -191,6 +201,9 @@ async function saveDataToDataverse(
                 new Date().getTime() - requestSentAtTime,
                 authError,
                 fileExtensionType
+            );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
             );
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(
