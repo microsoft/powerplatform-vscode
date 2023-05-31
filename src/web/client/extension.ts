@@ -294,7 +294,7 @@ export function createCopresenceWorkerInstance(
             copresenceWorker.onmessage = (event) => {
                 const { data } = event;
 
-                if (data.totalUsers) {
+                if (data.type === "members-changed") {
                     updateStatusBarItem(data.totalUsers);
                 }
 
@@ -309,49 +309,52 @@ export function createCopresenceWorkerInstance(
                 );
                 WebExtensionContext.containerId = event.data.containerId;
                 const otherUsercursor = DecorationManager.getInstance(
-                    data.username
+                    data.userId,
+                    data.userName
                 );
-
-                WebExtensionContext.updateConnectedUsersInContext(
-                    data.lineNumber,
-                    data.columnNumber,
-                    data.containerId,
-                    data.fileName,
-                    data.filePath,
-                    data.username
-                );
-                userViewProvider.refresh();
-
-                const activeEditor = vscode.window.activeTextEditor;
-                if (activeEditor) {
-                    const startPos = new vscode.Position(
+                if (data.type === "client-data") {
+                    WebExtensionContext.updateConnectedUsersInContext(
                         data.lineNumber,
-                        data.columnNumber
+                        data.columnNumber,
+                        data.containerId,
+                        data.fileName,
+                        data.filePath,
+                        data.userName
                     );
-                    const endPos = new vscode.Position(
-                        data.lineNumber,
-                        data.columnNumber + 10
+                    userViewProvider.refresh();
+                    const activeEditor = vscode.window.activeTextEditor;
+                    if (activeEditor) {
+                        const startPos = new vscode.Position(
+                            data.lineNumber,
+                            data.columnNumber
+                        );
+                        const endPos = new vscode.Position(
+                            data.lineNumber,
+                            data.columnNumber + 10
+                        );
+
+                        // const position = activeEditor.selection.active.line; // Current line position
+                        const decoration = {
+                            range: new vscode.Range(startPos, endPos),
+                        };
+                        activeEditor.setDecorations(otherUsercursor, []);
+
+                        activeEditor.setDecorations(otherUsercursor, [
+                            decoration,
+                        ]);
+                        // activeEditor.setDecorations(
+                        //     vscode.window.createTextEditorDecorationType({}),
+                        //     [decoration]
+                        // );
+                    }
+
+                    vscode.window.showInformationMessage(
+                        "Server sent new position as " +
+                            event.data.lineNumber +
+                            " " +
+                            event.data.columnNumber
                     );
-
-                    // const position = activeEditor.selection.active.line; // Current line position
-                    const decoration = {
-                        range: new vscode.Range(startPos, endPos),
-                    };
-                    activeEditor.setDecorations(otherUsercursor, []);
-
-                    activeEditor.setDecorations(otherUsercursor, [decoration]);
-                    // activeEditor.setDecorations(
-                    //     vscode.window.createTextEditorDecorationType({}),
-                    //     [decoration]
-                    // );
                 }
-
-                vscode.window.showInformationMessage(
-                    "Server sent new position as " +
-                        event.data.lineNumber +
-                        " " +
-                        event.data.columnNumber
-                );
             };
         })
         .catch((error) => console.error(error));
@@ -391,26 +394,26 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                         Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
                     ) as string;
                 // console.log("website id", websiteId);
-                let currentUserCursor;
-                if (WebExtensionContext.username !== undefined)
-                    currentUserCursor = DecorationManager.getInstance(
-                        WebExtensionContext.username
-                    );
+                // let currentUserCursor;
+                // if (WebExtensionContext.username !== undefined)
+                //     currentUserCursor = DecorationManager.getInstance(
+                //         WebExtensionContext.username
+                //     );
                 if (activeEditor) {
-                    console.log("active editor", activeEditor);
-                    const startPos = activeEditor.selection.active;
-                    const endPos = activeEditor.selection.active;
+                    // console.log("active editor", activeEditor);
+                    // const startPos = activeEditor.selection.active;
+                    // const endPos = activeEditor.selection.active;
 
-                    const decoration = {
-                        range: new vscode.Range(startPos, endPos),
-                    };
+                    // const decoration = {
+                    //     range: new vscode.Range(startPos, endPos),
+                    // };
 
-                    if (currentUserCursor !== undefined) {
-                        activeEditor.setDecorations(currentUserCursor, []);
-                        activeEditor.setDecorations(currentUserCursor, [
-                            decoration,
-                        ]);
-                    }
+                    // if (currentUserCursor !== undefined) {
+                    //     activeEditor.setDecorations(currentUserCursor, []);
+                    //     activeEditor.setDecorations(currentUserCursor, [
+                    //         decoration,
+                    //     ]);
+                    // }
 
                     const entityId =
                         WebExtensionContext.fileDataMap.getFileMap.get(
@@ -435,9 +438,9 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                         //     } as IContainerData
                         // );
 
-                        const username = WebExtensionContext.username;
+                        // const username = WebExtensionContext.username;
                         copresenceWorker.postMessage({
-                            username,
+                            // username,
 
                             afrConfig: {
                                 swpId,

@@ -32,7 +32,7 @@ let map;
 let audience;
 let initial = false;
 
-async function loadContainer(username, id, line, column, swpId, file) {
+async function loadContainer(id, line, column, swpId, file) {
     console.log("VSCODE WORKER Inside loadContainer with ", id);
     console.log(`VSCODE WORKER Line: ${line}`);
     console.log(`VSCODE WORKER Column: ${column}`);
@@ -51,6 +51,7 @@ async function loadContainer(username, id, line, column, swpId, file) {
             audience = services.audience;
         }
         console.log("container", myContainer);
+        console.log("audienc", audience);
 
         if (myContainer.connectionState !== ConnectionState.Connected) {
             await new Promise((resolve) => {
@@ -62,6 +63,8 @@ async function loadContainer(username, id, line, column, swpId, file) {
         if (map === undefined) {
             map = myContainer.initialObjects.sharedState;
         }
+        const existingMembers = audience.getMembers();
+        console.log("active users", existingMembers);
         const myself = audience.getMyself();
 
         const currentUser = {
@@ -73,19 +76,37 @@ async function loadContainer(username, id, line, column, swpId, file) {
             userName: myself.userName,
         };
 
-        map.set(username, currentUser);
+        map.set(myself.userId, currentUser);
         // const allMembers = audience.getMembers();
         // console.log("all memebers", allMembers);
         audience.on("membersChanged", (e) => {
-            console.log("member change event", e);
+            self.postMessage({
+                type: "members-changed",
+                totalUsers: existingMembers.size,
+            });
         });
 
+        audience.on("memberRemoved", (clientId, member) => {
+            console.log("EXISTING MEMBER LEFT", clientId);
+
+            if (!existingMembers.get(member.userId)) {
+                self.postMessage({
+                    type: "member-removed",
+                    removedUserId: member.userId,
+                });
+            }
+        });
+        console.log("audience members", audience.getMembers());
+
         if (!initial) {
-            map.forEach(async (value, key) => {
+            existingMembers.forEach(async (value, key) => {
                 const otherUser = map.get(key);
+                console.log("in intial other user", otherUser);
                 await self.postMessage({
-                    totalUsers: map.size,
-                    username: key,
+                    type: "client-data",
+                    totalUsers: existingMembers.size,
+                    userName: otherUser.userName,
+                    userId: key,
                     containerId: swpId,
                     lineNumber: otherUser.lineNumber,
                     columnNumber: otherUser.columnNumber,
@@ -115,8 +136,9 @@ async function loadContainer(username, id, line, column, swpId, file) {
                 const otherUser = map.get(changed.key);
                 // eslint-disable-next-line no-undef
                 await self.postMessage({
-                    totalUsers: map.size,
-                    username: changed.key,
+                    type: "client-data",
+                    userId: changed.key,
+                    userName: otherUser.userName,
                     containerId: swpId,
                     lineNumber: otherUser.lineNumber,
                     columnNumber: otherUser.columnNumber,
@@ -180,7 +202,7 @@ function runFluidApp() {
 
         await loadContainer(
             //vscode,
-            message.username,
+            // message.username,
             message.containerId,
             message.lineNumber,
             message.columnNumber,

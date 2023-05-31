@@ -194,7 +194,7 @@ export class UserTreeViewProvider
     ): vscode.TreeItem | Thenable<vscode.TreeItem> {
         const user = new UserNode(
             String(element.label),
-
+            String(element.description),
             element.collapsibleState
         );
         user.tooltip = String(element.label);
@@ -211,8 +211,12 @@ export class UserTreeViewProvider
                 WebExtensionContext.connectedUsers.getUserMap;
             const connectedUsers: UserNode[] = Array.from(
                 connectedUsersMap.entries()
-            ).map(([key]) => {
-                return new UserNode(key, vscode.TreeItemCollapsibleState.None);
+            ).map(([key, value]) => {
+                return new UserNode(
+                    key,
+                    value._fileName,
+                    vscode.TreeItemCollapsibleState.None
+                );
             });
 
             return connectedUsers;
@@ -231,9 +235,11 @@ export class UserTreeViewProvider
 class UserNode extends vscode.TreeItem {
     constructor(
         label: string | vscode.TreeItemLabel,
+        fileName: string,
         collapsibleState?: vscode.TreeItemCollapsibleState
     ) {
         super(label, collapsibleState);
-        this.tooltip = String(label);
+        this.tooltip = String(fileName);
+        this.description = fileName;
     }
 }

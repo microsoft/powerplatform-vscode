@@ -103,6 +103,7 @@ export async function npsAuthentication(
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
+        console.log(session?.account);
         const userName = session?.account.label.split(" ");
         if (userName !== undefined)
             WebExtensionContext.setUsername(userName[0]);
