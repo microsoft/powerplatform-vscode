@@ -16,6 +16,7 @@ export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWe
         'referrerSessionId'?: string;
         'referrer'?: string;
         'siteVisibility'?: string;
+        'region'?: string;
     }
 }
 
