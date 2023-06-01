@@ -28,14 +28,31 @@ export async function sendApiRequest(message: string) {
 
     const AIBTestUrl = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
 
-    console.log("messgae123", message);
+    console.log("Input message", message);
+
+    const hashMap: { [key: string]: string } = {
+        entityList: "PowerPagesProDevList",
+        entityForm: "PowerPagesProDevForm",
+        webAPI: "PowerPagesProDevWebAPI",
+      };
+
+    const defaultValue = "PowerPagesProDevGeneric";
+    const type = message.split(" ")[0].slice(1);
+    const scenario = hashMap[type] || defaultValue;
+    let realPrompt = message;
+    if (scenario !== defaultValue){
+        realPrompt = message.split(type).slice(1).join("");
+    }
+
+    console.log("Input message", realPrompt);
+
     const requestBody = {
-        "question": message,//"Add a div with 3 cards having nice animations purely using css",//,
+        "question": realPrompt,//"Add a div with 3 cards having nice animations purely using css",//,
         "top": 1,
         "context": {
           "sessionId": "2c4db921-be75-43fe-8fec-e4d65bd7546c",
           "scenario": "PowerPagesProDev",
-          "subScenario": "PowerPagesProDevGeneric",
+          "subScenario": scenario,
           "version": "V1",
           "information": {}
         }
