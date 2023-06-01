@@ -107,7 +107,14 @@ body {
 
 .code-division {
   position: relative;
-  padding-top: 15px;
+  padding: 20px 5px 1px 10px;
+  margin: 10px 0px;
+  border-radius: 4px;
+  background-color: var(--vscode-editor-background);
+  
+}
+
+.code-pre{
   overflow-x: auto;
 }
 
@@ -168,6 +175,7 @@ body {
   position: absolute;
   top: 0;
   right: 0;
+  padding: 5px;
   display: flex;
   align-items: center;
   justify-content: center;

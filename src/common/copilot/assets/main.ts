@@ -150,6 +150,42 @@ function script () {
   //     dequeue.push(element); // Add the new element to the end of the dequeue
   // }
 
+  function parseCodeBlocks(responseText) {
+    const resultDiv = document.createElement("div");
+    console.log("responseText "+ responseText);
+    for (let i = 0; i < responseText.length; i++) {
+        const textDiv = document.createElement("div");
+        textDiv.innerText = responseText[i].displayText;
+        resultDiv.appendChild(textDiv);
+
+        const codeDiv = document.createElement("div");
+        codeDiv.classList.add("code-division");
+        let codeBlock = responseText[i].Code;
+
+        // console.log("codeblock "+ codeBlock)
+        // if(codeBlock.startsWith("js")) {
+        //     codeBlock = codeBlock.replace("js", "");
+        // }
+        // else if(codeBlock.startsWith("javascript")) {
+        //     codeBlock = codeBlock.replace("javascript", "");
+        // }
+
+        codeDiv.appendChild(createActionWrapper(codeBlock));
+
+        const preFormatted = document.createElement("pre");
+        const codeSnip = document.createElement("code");
+        codeSnip.classList.add("code-snip");
+        preFormatted.classList.add("code-pre");
+
+        codeSnip.innerText = codeBlock;
+        preFormatted.appendChild(codeSnip);
+
+        codeDiv.appendChild(preFormatted);
+        resultDiv.appendChild(codeDiv);
+    }
+    return resultDiv;
+}
+
   function formatCodeBlocks(responseText) {
       const blocks = responseText.split("```");
       const resultDiv = document.createElement("div");
@@ -258,6 +294,7 @@ function script () {
           makerElement.appendChild(user);
           messageElement.appendChild(makerElement);
           makerElement.appendChild(document.createElement("br"));
+          messageElement.appendChild(formatCodeBlocks(message));
       } else if (className === "api-response") {
           const makerElement = document.createElement("div");
           const user = document.createElement("div");
@@ -272,8 +309,10 @@ function script () {
           makerElement.appendChild(user);
           messageElement.appendChild(makerElement);
           makerElement.appendChild(document.createElement("br"));
-          }
-          messageElement.appendChild(formatCodeBlocks(message));
+          messageElement.appendChild(parseCodeBlocks(message));
+        }
+          
+          
           messageElement.classList.add("message", className);
 
           messageWrapper.appendChild(messageElement);
