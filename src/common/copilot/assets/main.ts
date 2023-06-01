@@ -404,12 +404,12 @@ function script () {
 
   function showAutocompletePanel() {
     const listItems = [
-        { name: "webPage", description: "Create a new webpage" },
+       // { name: "webPage", description: "Create a new webpage" },
         { name: "entityForm", description: "Create a new entity form" },
         { name: "entityList", description: "Create a new entity list" },
-        { name: "fetchXml", description: "Fetch data from table" },
+       // { name: "fetchXml", description: "Fetch data from table" },
         { name: "clear", description: "Clear the chat window" },
-        { name: "animate", description: "Add animations to your code" }
+       // { name: "animate", description: "Add animations to your code" }
     ];
 
     const listContainer = document.createElement("div");
@@ -439,7 +439,7 @@ function script () {
             hideAutocompletePanel();
             return;
         }    
-        if (chatInput instanceof HTMLInputElement) {
+        if (chatInput instanceof TextField) {
           chatInput.value = `/${item.name} `;
         }
             hideAutocompletePanel();

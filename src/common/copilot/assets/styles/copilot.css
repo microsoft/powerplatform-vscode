@@ -233,7 +233,7 @@ ul {
 li {
   font-size: 1.2em;
   margin-bottom: 3px; 
-  padding: 2px; 
+  /* padding: 2px;  */
   /* background-color: #383636; */
   /* background-color: #1f1f1f; */
   background-color: var(--vscode-input-background);
@@ -242,7 +242,7 @@ li {
 
 li:hover {
   /* background-color: #3a3d41; */
-  background-color: var(--vscode-input-background);
+  background-color: var(--vscode-list-hoverBackground);
   transition: background-color 0.2s ease-in-out;
 }
 
