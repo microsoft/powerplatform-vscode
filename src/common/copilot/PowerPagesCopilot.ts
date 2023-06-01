@@ -208,9 +208,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         <div class="chat-messages" id="chat-messages">
  
         </div>
-        <vscode-divider></vscode-divider>
+
         <div class="chat-input">
-          <vscode-text-field placeholder="Ask Copilot a question or type '/' for tables" class="input-field" id="chat-input">
+          <vscode-text-field placeholder="Ask Copilot a question or type '/' for tables"  id="chat-input" class="input-field">
             <section slot="end" style="display:flex; align-items: center;">
               <vscode-button appearance="icon" aria-label="Match Case" id="send-button">
                 <span>
@@ -221,10 +221,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
               </vscode-button>
             </section>
           </vscode-text-field>
+          <p class="disclaimer">Make sure AI-generated content is accurate and appropriate before using. <vscode-link href="#">See terms</vscode-link></p>
         </div>
-        <div class="disclaimer">
-        <p>Make sure AI-generated content is accurate and appropriate before using. <vscode-link href="#">See terms</vscode-link></p>
-      </div>
       </div>
           
           <script type="module" nonce="${nonce}" src="${webviewUri}"></script>

@@ -6,14 +6,14 @@
 // import https from 'https';
 import fetch, { RequestInit } from "node-fetch";
 import { conversation } from "./PowerPagesCopilot";
-import { intelligenceAPIAuthentication } from '../../web/client/common/authenticationProvider';
+//import { intelligenceAPIAuthentication } from '../../web/client/common/authenticationProvider';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-let apiKey = "";
-intelligenceAPIAuthentication().then((token) => {
-    console.log('token: ' + token);
-    apiKey = token;
-});
+const apiKey = "";
+// intelligenceAPIAuthentication().then((token) => {
+//     console.log('token: ' + token);
+//     apiKey = token;
+// });
 
 
 export async function sendApiRequest(message: string) {

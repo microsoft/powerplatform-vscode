@@ -5,7 +5,7 @@
 
 /* eslint-disable */
 
-import { provideVSCodeDesignSystem, Button,  allComponents } from "@vscode/webview-ui-toolkit";
+import { provideVSCodeDesignSystem, Button,  allComponents,  TextField} from "@vscode/webview-ui-toolkit";
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -42,6 +42,17 @@ function main() {
   // to the element (i.e. the `as Button` syntax)
   const howdyButton = document.getElementById("howdy") as Button;
   howdyButton?.addEventListener("click", handleHowdyClick);
+
+  const chatInput = document.getElementById('chat-input') as TextField;
+  const sendButton = document.getElementById('send-button') as Button;
+
+  chatInput.addEventListener('input', function() {
+    if (chatInput.value.trim() !== '') {
+      sendButton.classList.add('active');
+    } else {
+      sendButton.classList.remove('active');
+    }
+  });
 
   script();
 }
@@ -235,24 +246,30 @@ function script () {
           // addToDequeue(message);
           const makerElement = document.createElement("div");
           // makerElement.textContent = "Maker:";
-          const profileIcon = document.createElement('span');
+          const user = document.createElement("div");
+          user.classList.add('user-info');
+          const profileIcon = document.createElement('div');
           profileIcon.classList.add('profile-icon');
           const usernameSpan = document.createElement('span');
           usernameSpan.classList.add('username');
           usernameSpan.textContent = 'John Doe';
-          makerElement.appendChild(profileIcon);
-          makerElement.appendChild(usernameSpan);
+          user.appendChild(profileIcon);
+          user.appendChild(usernameSpan);
+          makerElement.appendChild(user);
           messageElement.appendChild(makerElement);
           makerElement.appendChild(document.createElement("br"));
       } else if (className === "api-response") {
           const makerElement = document.createElement("div");
-          const profileIcon = document.createElement('span');
+          const user = document.createElement("div");
+          user.classList.add('user-info');
+          const profileIcon = document.createElement('div');
           profileIcon.classList.add('profile-icon');
           const usernameSpan = document.createElement('span');
           usernameSpan.classList.add('username');
           usernameSpan.textContent = 'Copilot';
-          makerElement.appendChild(profileIcon);
-          makerElement.appendChild(usernameSpan);
+          user.appendChild(profileIcon);
+          user.appendChild(usernameSpan);
+          makerElement.appendChild(user);
           messageElement.appendChild(makerElement);
           makerElement.appendChild(document.createElement("br"));
           }

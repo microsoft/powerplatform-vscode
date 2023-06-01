@@ -1,35 +1,44 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
+  padding: 0;
 }
 
 .copilot-window{
   display: flex;
   flex-direction: column;
   height: 100vh;
+  padding: 0px;
 }
 
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 0px;
 }
 
 .chat-input {
   display: flex;
-  /* margin-bottom: 10px; */
-  height: 40px;
+  flex-direction: column;
+  margin: 0px;
+  padding: 12px;
 }
 
 .input-field {
   flex: 1;
-  height: 38px;
-  border-radius: 10px;
+}
+
+.input-field::part(root) {
+ /* font-style: italic; */
+ border-radius: 4px;
+ height: 38px;
 }
 
 .disclaimer {
-  
+  margin: 0px;
+  margin-top: 12px;
 }
+
 .chat-input input {
   flex: 1;
   border: none;
@@ -50,34 +59,46 @@ body {
   font-size: 20x;
 }
 
+.active {
+  pointer-events: auto;
+  opacity: 1;
+  /* Add any other styling for the active button */
+}
+
+
 .user-message {
   /* background-color: #252526;
   color: white; */
-  margin-bottom: 5px;
-  border-bottom: 1px solid grey;
-  padding: 10px;
+  /* border-bottom: 1px solid grey; */
+  padding: 12px;
+  background-color: var(--vscode-editor-background);
 }
 
 .api-response {
   /* background-color: #1E1E1E;
     color: white; */
-  margin-bottom: 5px;
-  border-bottom: 1px solid grey;
-  padding-left: 10px;
-  padding-top: 50px;
-  padding-bottom: 10px;
-  padding-right: 10px;
+  /* border-bottom: 1px solid grey; */
+  padding: 12px;
+  background-color: var(--vscode-activityBar-background);
+}
+
+.message {
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .profile-icon {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  flex-shrink: 0;
-  background-color: aliceblue;
-  z-index: 1;
+  margin-right: 8px;
+  background-color: var(--vscode-button-background);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
 }
 
 .message-wrapper {
@@ -87,6 +108,7 @@ body {
 .code-division {
   position: relative;
   padding-top: 15px;
+  overflow-x: auto;
 }
 
 /*
@@ -186,8 +208,9 @@ body {
 
 .list-container {
   position: relative;
-  /* background-color: #1f1f1f ;
-  border: 1px solid #383434; */
+  /* background-color: #1f1f1f ;*/
+  background-color: var(--vscode-input-background);
+  border: 1px solid #383434; 
   padding: 10px;
   width: 400px;
   /* color: #ffffff; */
@@ -205,11 +228,14 @@ li {
   padding: 2px; 
   /* background-color: #383636; */
   /* background-color: #1f1f1f; */
+  background-color: var(--vscode-input-background);
   transition: background-color 0.2s ease-in-out;
 }
 
 li:hover {
   /* background-color: #3a3d41; */
+  background-color: var(--vscode-input-background);
+  transition: background-color 0.2s ease-in-out;
 }
 
 a {
