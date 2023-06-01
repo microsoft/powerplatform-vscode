@@ -56,8 +56,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     break;
                 }
                 case "newUserPrompt": {
-                    const engineeredPrompt = this.promptEngine(data.value);
-                    const apiResponse = await sendApiRequest(engineeredPrompt);
+                    //const engineeredPrompt = this.promptEngine(data.value);
+                    //const apiResponse = await sendApiRequest(engineeredPrompt);
+                    const apiResponse = await sendApiRequest(data.value);
                     this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
                     break;
                 }

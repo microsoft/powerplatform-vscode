@@ -7,7 +7,7 @@
 
 (function () {
     const vscode = acquireVsCodeApi();
-    const dequeue = [];
+    //const dequeue = [];
     const chatMessages = document.getElementById("chat-messages");
     const chatInput = document.getElementById("chat-input");
 
@@ -65,11 +65,45 @@
 
     vscode.postMessage({ type: "webViewLoaded"});
 
-    function addToDequeue(element) {
-        if (dequeue.length >= 5) {
-            dequeue.shift(); // Remove the first element from the dequeue
+    // function addToDequeue(element) {
+    //     if (dequeue.length >= 5) {
+    //         dequeue.shift(); // Remove the first element from the dequeue
+    //     }
+    //     dequeue.push(element); // Add the new element to the end of the dequeue
+    // }
+
+    function parseCodeBlocks(responseText) {
+        const resultDiv = document.createElement("div");
+        console.log("responseText "+ responseText);
+        for (let i = 0; i < responseText.length; i++) {
+            const textDiv = document.createElement("div");
+            textDiv.innerText = responseText[i].displayText;
+            resultDiv.appendChild(textDiv);
+
+            const codeDiv = document.createElement("div");
+            codeDiv.classList.add("code-division");
+            let codeBlock = responseText[i].Code;
+
+            // console.log("codeblock "+ codeBlock)
+            // if(codeBlock.startsWith("js")) {
+            //     codeBlock = codeBlock.replace("js", "");
+            // }
+            // else if(codeBlock.startsWith("javascript")) {
+            //     codeBlock = codeBlock.replace("javascript", "");
+            // }
+
+            codeDiv.appendChild(createActionWrapper(codeBlock));
+
+            const preFormatted = document.createElement("pre");
+            const codeSnip = document.createElement("code");
+
+            codeSnip.innerText = codeBlock;
+            preFormatted.appendChild(codeSnip);
+
+            codeDiv.appendChild(preFormatted);
+            resultDiv.appendChild(codeDiv);
         }
-        dequeue.push(element); // Add the new element to the end of the dequeue
+        return resultDiv;
     }
 
     function formatCodeBlocks(responseText) {
@@ -175,18 +209,20 @@
 
         const messageElement = document.createElement("div");
         if (className === "user-message") {
-            addToDequeue(message);
+            //addToDequeue(message);
             const makerElement = document.createElement("div");
             makerElement.textContent = "Maker:";
             messageElement.appendChild(makerElement);
             makerElement.appendChild(document.createElement("br"));
+            messageElement.appendChild(formatCodeBlocks(message));
         } else if (className === "api-response") {
             const makerElement = document.createElement("div");
             makerElement.textContent = "PowerPages Copilot:";
             messageElement.appendChild(makerElement);
             makerElement.appendChild(document.createElement("br"));
+            messageElement.appendChild(parseCodeBlocks(message));
         }
-        messageElement.appendChild(formatCodeBlocks(message));
+
         messageElement.classList.add("message", className);
 
         messageWrapper.appendChild(messageElement);
