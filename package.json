@@ -880,8 +880,8 @@
     "ts-node": "^10.7.0",
     "tty-browserify": "0.0.1",
     "typescript": "^4.6.2",
-    "webpack": "^5.76.0",
-    "webpack-cli": "^4.7.0",
+    "webpack": "^5.85.0",
+    "webpack-cli": "^4.10.0",
     "webpack-stream": "^7.0.0",
     "worker-loader": "^3.0.8",
     "yargs": "^16.2.0"
@@ -895,6 +895,7 @@
     "@vscode/extension-telemetry": "^0.6.2",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
+    "gulp-cli": "^2.3.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
@@ -910,6 +911,9 @@
     "vscode-languageserver-textdocument": "^1.0.1",
     "vscode-nls": "^5.2.0",
     "yaml": "^1.10.2"
+  },
+  "overrides": {
+    "graceful-fs": "^4.2.11"
   },
   "__metadata": {
     "id": "b8680bb6-eaa9-481a-ae0b-83574fa58620",

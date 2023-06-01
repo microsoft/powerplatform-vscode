@@ -57,15 +57,29 @@ class AzureFluidClient {
         return this._clientInstance;
     }
 
-    static async fetchContainerAndService(config, id) {
+    static async fetchContainerAndService(config, swpId) {
+        console.log("VSCODE WORKER  Inside fetchContainerAndService");
+        console.log(
+            "VSCODE WORKER details",
+            this._container,
+            this.audience?.connectionState
+        );
         if (
             !this._container &&
             this._container?.connectionState !== ConnectionState.Connected
         ) {
             const azureClient = this.getInstance(config);
+            console.log("VSCODE WORKER  azureClient", azureClient);
             const { container, services } = await azureClient.getContainer(
-                id,
+                swpId,
                 containerSchema
+            );
+            console.log("VSCODE WORKER  container", container);
+            console.log("VSCODE WORKER  container", container?.connectionState);
+            console.log("VSCODE WORKER  services", services.audience);
+            console.log(
+                "VSCODE WORKER  users",
+                container.initialObjects.sharedState
             );
             if (container.connectionState !== ConnectionState.Connected) {
                 await new Promise((resolve) => {
@@ -87,15 +101,15 @@ class AzureFluidClient {
 }
 
 async function loadContainer(config, id, line, column, swpId, file) {
-    console.log("VSCODE WORKER Inside loadContainer with ", id);
+    console.log("VSCODE WORKER Inside loadContainer with ", id, swpId);
+    console.log("VSCODE WORKER Inside loadContainer with ", config, file);
     console.log(`VSCODE WORKER Line: ${line}`);
     console.log(`VSCODE WORKER Column: ${column}`);
 
     console.log("VSCODE WORKER containerSchema creates");
 
     try {
-        console.log(`Retrieving container`);
-        const azureClient = AzureFluidClient.getInstance(config, swpId);
+        console.log(`VSCODE WORKER  Retrieving container`);
 
         // if (myContainer === undefined) {
         // const { container, services } = await azureClient.getContainer(
@@ -108,9 +122,12 @@ async function loadContainer(config, id, line, column, swpId, file) {
         // const myContainer = container;
         // const audience = services.audience;
         // }
-        console.log("container", container);
-        console.log("audience", audience);
-        console.log("conrtainer status", container.connectionState);
+        console.log("VSCODE WORKER  container", container);
+        console.log("VSCODE WORKER  audience", audience);
+        console.log(
+            "VSCODE WORKER  container status",
+            container.connectionState
+        );
 
         // if (myContainer.connectionState !== ConnectionState.Connected) {
         //     await new Promise((resolve) => {
@@ -123,9 +140,9 @@ async function loadContainer(config, id, line, column, swpId, file) {
         // const map = myContainer.initialObjects.sharedState;
         // // }
         const existingMembers = audience.getMembers();
-        // console.log("active users", existingMembers);
+        //  console.log("VSCODE WORKER  active users", existingMembers);
         const myself = audience.getMyself();
-        // console.log("myself", myself);
+        //  console.log("VSCODE WORKER  myself", myself);
 
         const currentUser = {
             lineNumber: line,
@@ -138,7 +155,7 @@ async function loadContainer(config, id, line, column, swpId, file) {
 
         map.set(myself.userId, currentUser);
         // const allMembers = audience.getMembers();
-        // console.log("all memebers", allMembers);
+        //  console.log("VSCODE WORKER  all memebers", allMembers);
         audience.on("membersChanged", (e) => {
             self.postMessage({
                 type: "members-changed",
@@ -146,7 +163,7 @@ async function loadContainer(config, id, line, column, swpId, file) {
             });
         });
         audience.on("memberAdded", (clientId, member) => {
-            console.log("NEW MEMBER JOINED", clientId, member);
+            console.log("VSCODE WORKER  NEW MEMBER JOINED", clientId, member);
 
             // if (!existingMembers.get(member.userId)) {
             //     self.postMessage({
@@ -157,7 +174,11 @@ async function loadContainer(config, id, line, column, swpId, file) {
         });
 
         audience.on("memberRemoved", (clientId, member) => {
-            console.log("EXISTING MEMBER LEFT", clientId, member);
+            console.log(
+                "VSCODE WORKER  EXISTING MEMBER LEFT",
+                clientId,
+                member
+            );
 
             if (!existingMembers.get(member.userId)) {
                 self.postMessage({
@@ -166,12 +187,12 @@ async function loadContainer(config, id, line, column, swpId, file) {
                 });
             }
         });
-        console.log("audience members", audience.getMembers());
+        console.log("VSCODE WORKER  audience members", audience.getMembers());
 
         if (!initial) {
             existingMembers.forEach(async (value, key) => {
                 const otherUser = map.get(key);
-                console.log("in intial other user", otherUser);
+                console.log("VSCODE WORKER  in intial other user", otherUser);
                 self.postMessage({
                     type: "client-data",
                     totalUsers: existingMembers.size,
@@ -191,10 +212,10 @@ async function loadContainer(config, id, line, column, swpId, file) {
 
         map.on("valueChanged", async (changed, local) => {
             eventCounter += 1;
-            console.log("event counter", eventCounter);
-            console.log("changes", local, changed);
+            console.log("VSCODE WORKER  event counter", eventCounter);
+            console.log("VSCODE WORKER  changes", local, changed);
 
-            console.log(`CHANGED BY USER ${map.get(USER_ID)}`);
+            console.log(`VSCODE WORKER  CHANGED BY USER ${map.get(USER_ID)}`);
             console.log(
                 `IN ${map.get(FILE_NAME)} PATH ${map.get(
                     FILE_PATH
@@ -218,7 +239,7 @@ async function loadContainer(config, id, line, column, swpId, file) {
             }
         });
     } catch (error) {
-        console.log(`Error retrieving container: ${error}`);
+        console.log(`VSCODE WORKER  Error retrieving container: ${error}`);
     }
 
     console.log("VSCODE WORKER Sending message back");

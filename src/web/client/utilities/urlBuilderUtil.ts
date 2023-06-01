@@ -170,7 +170,11 @@ export function pathHasEntityFolderName(uri: string): boolean {
 
 export async function getOrCreateSharedWorkspace(config: any) {
     const getWorkspaceResponse = await fetch(
-        `${config.dataverseOrgUrl}/api/data/v9.2/sharedworkspaces?$filter=name eq '${config.websiteid}'`,
+        `${
+            config.dataverseOrgUrl
+        }/api/data/v9.2/sharedworkspaces?$filter=name eq '${
+            "Site-" + config.websiteid
+        }'`,
         {
             headers: config.headers,
             method: "GET",
@@ -193,7 +197,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
             },
             method: "POST",
             body: JSON.stringify({
-                name: config.websiteid,
+                name: "Site-" + config.websiteid,
                 sharedworkspaceid: "00218f43-15d4-f87e-0e08-5dec2c4cfbaa",
             }),
         }
