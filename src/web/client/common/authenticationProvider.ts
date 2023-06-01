@@ -23,6 +23,7 @@ export function getHeader(accessToken: string, useOctetStreamContentType?: boole
 //Get access token for Intelligence API service
 export async function intelligenceAPIAuthentication(): Promise<string> {
     let accessToken = '';
+    const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default"; //move this to constants
     //WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_STARTED);
     try {
         let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
@@ -44,6 +45,7 @@ export async function intelligenceAPIAuthentication(): Promise<string> {
     }
     return accessToken;
 }
+
 
 export async function dataverseAuthentication(dataverseOrgURL: string): Promise<string> {
     let accessToken = '';
