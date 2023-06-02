@@ -9,7 +9,6 @@
   "microsoft-powerapps-portals.walkthrough.overview.title": "Přehled",
   "microsoft-powerapps-portals.walkthrough.title": "Upravit kód Power Pages",
   "microsoft-powerapps-portals.webExtension.init.title": "Inicializovat webové rozšíření",
-  "microsoft-powerapps-portals.webExtension.limitation": "Rozhraní PAC CLI není v editoru VS Code pro web podporováno.",
   "pacCLI.authPanel.clearAuthProfile.title": "Vymazat ověřovací profily",
   "pacCLI.authPanel.copyUser.title": "Zkopírovat uživatele",
   "pacCLI.authPanel.deleteAuthProfile.title": "Odstranit ověřovací profil",
