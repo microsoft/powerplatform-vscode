@@ -26,7 +26,6 @@ import * as Constants from "./common/constants";
 import { DecorationManager } from "./webViews/DecorationCursor";
 import { UserTreeViewProvider } from "./webViews/UsersTreeProvider";
 export interface IContainerData {
-    containerId: string;
     lineNumber: number;
     columnNumber: number;
 }
@@ -39,12 +38,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
-
-    // const treeViewProvider = new WorkspaceTreeViewProvider();
-
-    // vscode.workspace.onDidChangeWorkspaceFolders(() => {
-    //     treeViewProvider.refresh();
-    // });
 
     const userIcon = vscode.Uri.joinPath(
         context.extensionUri,
@@ -97,15 +90,6 @@ export function activate(context: vscode.ExtensionContext): void {
                 //     "nidhi",
                 //     "amit"
                 // );
-                // const treeprovider = new MyTreeDataProvider();
-                // // vscode.window.registerTreeDataProvider(
-                // //     "coPresenceView",
-                // //     treeprovider
-                // // );
-                // vscode.window.createTreeView("testView", {
-                //     treeDataProvider: treeprovider,
-                //     // showCollapseAll: true,
-                // });
 
                 // WebExtensionContext.setUsername(input);
                 WebExtensionContext.telemetry.sendInfoTelemetry(
@@ -292,6 +276,8 @@ export function createCopresenceWorkerInstance(
             copresenceWorker = new Worker(workerUrl);
 
             copresenceWorker.onmessage = (event) => {
+                const existingUsersInActiveEditorsMap =
+                    WebExtensionContext.connectedUsers.getUserMap;
                 const { data } = event;
 
                 if (data.type === "members-changed") {
@@ -302,12 +288,9 @@ export function createCopresenceWorkerInstance(
 
                 console.log(
                     `VSCODE WORKER Received hello from webworker: ${
-                        (JSON.stringify(event),
-                        event.data,
-                        event.data.containerId)
+                        (JSON.stringify(event), event.data)
                     }`
                 );
-                WebExtensionContext.containerId = event.data.containerId;
                 const otherUsercursor = DecorationManager.getInstance(
                     data.userId,
                     data.userName
@@ -315,18 +298,28 @@ export function createCopresenceWorkerInstance(
                 console.log("other user cursor", otherUsercursor);
                 const activeEditor = vscode.window.activeTextEditor;
                 if (data.type === "member-removed") {
+                    const user = existingUsersInActiveEditorsMap.get(
+                        data.userId
+                    );
                     WebExtensionContext.removeConnectedUserInContext(
                         data.userId
                     );
                     userViewProvider.refresh();
 
                     activeEditor?.setDecorations(otherUsercursor, []);
+                    vscode.window.showInformationMessage(
+                        `${user?.userName} left the workspace`
+                    );
                 }
                 if (data.type === "client-data") {
+                    if (!existingUsersInActiveEditorsMap.has(data.userId)) {
+                        vscode.window.showInformationMessage(
+                            `${data.userName} joined the workspace`
+                        );
+                    }
                     WebExtensionContext.updateConnectedUsersInContext(
                         data.lineNumber,
                         data.columnNumber,
-                        data.containerId,
                         data.fileName,
                         data.filePath,
                         data.userName,
@@ -334,7 +327,9 @@ export function createCopresenceWorkerInstance(
                     );
                     userViewProvider.refresh();
 
-                    if (activeEditor) {
+                    if (activeEditor?.document.uri.fsPath === data.filePath) {
+                        console.log("active editor", activeEditor);
+
                         const startPos = new vscode.Position(
                             data.lineNumber,
                             data.columnNumber
@@ -344,27 +339,15 @@ export function createCopresenceWorkerInstance(
                             data.columnNumber + 10
                         );
 
-                        // const position = activeEditor.selection.active.line; // Current line position
                         const decoration = {
                             range: new vscode.Range(startPos, endPos),
                         };
-                        activeEditor.setDecorations(otherUsercursor, []);
+                        activeEditor?.setDecorations(otherUsercursor, []);
 
-                        activeEditor.setDecorations(otherUsercursor, [
+                        activeEditor?.setDecorations(otherUsercursor, [
                             decoration,
                         ]);
-                        // activeEditor.setDecorations(
-                        //     vscode.window.createTextEditorDecorationType({}),
-                        //     [decoration]
-                        // );
                     }
-
-                    vscode.window.showInformationMessage(
-                        "Server sent new position as " +
-                            event.data.lineNumber +
-                            " " +
-                            event.data.columnNumber
-                    );
                 }
             };
         })
@@ -383,11 +366,18 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                 console.log(
                     "VSCODE WORKER Inside onDidChangeTextEditorSelection"
                 );
+                userViewProvider.refresh();
 
                 console.log(`VSCODE WORKER  Line: ${line}`);
                 console.log(`VSCODE WORKER  Column: ${column}`);
 
                 const activeEditor = vscode.window.activeTextEditor;
+                // const existingUsersInActiveEditors =
+                //     WebExtensionContext.connectedUsers.getUserMap;
+
+                // existingUsersInActiveEditors.forEach(([key, val]) => {
+
+                // })
 
                 const swpId = WebExtensionContext.sharedWorkSpaceMap.get(
                     Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
@@ -404,28 +394,8 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                     WebExtensionContext.sharedWorkSpaceMap.get(
                         Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
                     ) as string;
-                // console.log("website id", websiteId);
-                // let currentUserCursor;
-                // if (WebExtensionContext.username !== undefined)
-                //     currentUserCursor = DecorationManager.getInstance(
-                //         WebExtensionContext.username
-                //     );
+
                 if (activeEditor) {
-                    // console.log("active editor", activeEditor);
-                    // const startPos = activeEditor.selection.active;
-                    // const endPos = activeEditor.selection.active;
-
-                    // const decoration = {
-                    //     range: new vscode.Range(startPos, endPos),
-                    // };
-
-                    // if (currentUserCursor !== undefined) {
-                    //     activeEditor.setDecorations(currentUserCursor, []);
-                    //     activeEditor.setDecorations(currentUserCursor, [
-                    //         decoration,
-                    //     ]);
-                    // }
-
                     const entityId =
                         WebExtensionContext.fileDataMap.getFileMap.get(
                             activeEditor.document.uri.fsPath
@@ -441,18 +411,7 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
 
                         console.log("VSCODE WORKER Sending message to worker");
 
-                        // await WebExtensionContext.myWebView.panel.webview.postMessage(
-                        //     {
-                        //         containerId: WebExtensionContext.containerId,
-                        //         lineNumber: line,
-                        //         columnNumber: column,
-                        //     } as IContainerData
-                        // );
-
-                        // const username = WebExtensionContext.username;
                         copresenceWorker.postMessage({
-                            // username,
-
                             afrConfig: {
                                 swpId,
                                 swptenantId,
@@ -463,8 +422,6 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
                                 fileName: fileName,
                                 filePath: activeEditor.document.uri.fsPath,
                             },
-                            containerId: WebExtensionContext.containerId,
-
                             lineNumber: line,
                             columnNumber: column,
                         } as IContainerData);

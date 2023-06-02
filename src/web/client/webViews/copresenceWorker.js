@@ -86,16 +86,15 @@ class AzureFluidClient {
     }
 }
 
-async function loadContainer(config, id, line, column, swpId, file) {
-    console.log("VSCODE WORKER Inside loadContainer with ", id);
+async function loadContainer(config, line, column, swpId, file) {
+    console.log("VSCODE WORKER Inside loadContainer with ", swpId);
     console.log(`VSCODE WORKER Line: ${line}`);
     console.log(`VSCODE WORKER Column: ${column}`);
 
     console.log("VSCODE WORKER containerSchema creates");
 
     try {
-        console.log(`Retrieving container`);
-        const azureClient = AzureFluidClient.getInstance(config, swpId);
+        console.log(`Retrieving container`, config);
 
         // if (myContainer === undefined) {
         // const { container, services } = await azureClient.getContainer(
@@ -130,7 +129,7 @@ async function loadContainer(config, id, line, column, swpId, file) {
         const currentUser = {
             lineNumber: line,
             columnNumber: column,
-            containerId: id,
+            containerId: swpId,
             fileName: file.fileName,
             filePath: file.filePath,
             userName: myself.userName,
@@ -140,26 +139,26 @@ async function loadContainer(config, id, line, column, swpId, file) {
         // const allMembers = audience.getMembers();
         // console.log("all memebers", allMembers);
         audience.on("membersChanged", (e) => {
+            const updatedMembers = audience.getMembers();
             self.postMessage({
                 type: "members-changed",
-                totalUsers: existingMembers.size,
+                totalUsers: updatedMembers.size,
             });
         });
         audience.on("memberAdded", (clientId, member) => {
             console.log("NEW MEMBER JOINED", clientId, member);
-
-            // if (!existingMembers.get(member.userId)) {
-            //     self.postMessage({
-            //         type: "member-removed",
-            //         removedUserId: member.userId,
-            //     });
-            // }
+            if (!existingMembers.has(member.userId)) {
+                self.postMessage({
+                    type: "member-added",
+                    userId: member.userId,
+                });
+            }
         });
 
         audience.on("memberRemoved", (clientId, member) => {
             console.log("EXISTING MEMBER LEFT", clientId, member);
 
-            if (!existingMembers.get(member.userId)) {
+            if (existingMembers.get(member.userId)) {
                 self.postMessage({
                     type: "member-removed",
                     userId: member.userId,
@@ -250,31 +249,16 @@ function runFluidApp() {
     self.addEventListener("message", async (event) => {
         const message = event.data;
 
-        // console.log(
-        //     `VSCODE WORKER Received greeting from extension: ${JSON.stringify(
-        //         message
-        //     )}`
-        // );
-        // if (azureClient === undefined) {
-        //     const afrClientProps = {
-        //         connection: {
-        //             type: "remote",
-        //             tenantId: message.afrConfig.swptenantId,
-        //             tokenProvider: new DataverseTokenProvider(
-        //                 message.afrConfig.swpAccessToken,
-        //                 () => this.fetchAccessToken()
-        //             ),
-        //             endpoint: message.afrConfig.discoveryendpoint,
-        //         },
-        //     };
-        //     azureClient = new AzureClient(afrClientProps);
-        // }
+        console.log(
+            `VSCODE WORKER Received greeting from extension: ${JSON.stringify(
+                message
+            )}`
+        );
 
         await loadContainer(
             //vscode,
             // message.username,
             message.afrConfig,
-            message.containerId,
             message.lineNumber,
             message.columnNumber,
             message.afrConfig.swpId,

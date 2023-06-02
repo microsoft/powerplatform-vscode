@@ -6,7 +6,6 @@
 export interface IUserData {
     lineNumber: number;
     columnNumber: number;
-    containerId: string;
     fileName: string;
     filePath: string;
     userName: string;
@@ -16,7 +15,6 @@ export interface IUserData {
 export class UserData implements IUserData {
     _lineNumber: number;
     _columnNumber: number;
-    _containerId: string;
     _fileName: string;
     _filePath: string;
     _userName: string;
@@ -28,9 +26,6 @@ export class UserData implements IUserData {
     }
     public get columnNumber(): number {
         return this._columnNumber;
-    }
-    public get containerId(): string {
-        return this._containerId;
     }
     public get fileName(): string {
         return this.fileName;
@@ -48,13 +43,11 @@ export class UserData implements IUserData {
     constructor(
         lineNumber: number,
         columnNumber: number,
-        containerId: string,
         fileName: string,
         filePath: string,
         userName: string,
         userId: string
     ) {
-        this._containerId = containerId;
         this._lineNumber = lineNumber;
         this._fileName = fileName;
         this._columnNumber = columnNumber;
@@ -74,7 +67,6 @@ export class UserDataMap {
     public setUserData(
         lineNumber: number,
         columnNumber: number,
-        containerId: string,
         fileName: string,
         filePath: string,
         userName: string,
@@ -83,7 +75,6 @@ export class UserDataMap {
         const userData = new UserData(
             lineNumber,
             columnNumber,
-            containerId,
             fileName,
             filePath,
             userName,

@@ -68,7 +68,6 @@ export interface IWebExtensionContext {
     npsEligibility: boolean;
     userId: string;
     myWebView: MyWebview;
-    containerId: string;
 }
 
 class WebExtensionContext implements IWebExtensionContext {
@@ -95,7 +94,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _userId: string;
     private _formsProEligibilityId: string;
     private _myWebView: MyWebview;
-    private _containerId: string;
+
     private _username: string | undefined;
     private _connectedUsers: UserDataMap;
 
@@ -166,14 +165,6 @@ class WebExtensionContext implements IWebExtensionContext {
         return this._formsProEligibilityId;
     }
 
-    public get containerId() {
-        return this._containerId;
-    }
-
-    public set containerId(id: string) {
-        this._containerId = id;
-    }
-
     public get myWebView() {
         return this._myWebView;
     }
@@ -216,7 +207,6 @@ class WebExtensionContext implements IWebExtensionContext {
         this._userId = "";
         this._formsProEligibilityId = "";
         this._myWebView = new MyWebview();
-        this._containerId = "";
         this._username = "";
         this._connectedUsers = new UserDataMap();
     }
@@ -366,7 +356,6 @@ class WebExtensionContext implements IWebExtensionContext {
     public async updateConnectedUsersInContext(
         lineNumber: number,
         columnNumber: number,
-        containerId: string,
         fileName: string,
         filePath: string,
         userName: string,
@@ -375,7 +364,6 @@ class WebExtensionContext implements IWebExtensionContext {
         this.connectedUsers.setUserData(
             lineNumber,
             columnNumber,
-            containerId,
             fileName,
             filePath,
             userName,
