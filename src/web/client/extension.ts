@@ -185,12 +185,11 @@ export function activate(context: vscode.ExtensionContext): void {
 
     const copilotProvider = new PowerPagesCopilot(context.extensionUri);
 
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(
-            "powerpages.copilot",
-            copilotProvider
-        )
-    );
+    context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
+        webviewOptions: {
+            retainContextWhenHidden: true,
+        },
+    }));
 
 
     showWalkthrough(context, WebExtensionContext.telemetry);
