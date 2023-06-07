@@ -161,7 +161,11 @@ export async function activate(
 
     const copilotProvider = new PowerPagesCopilot(context.extensionUri);
 
-    _context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider));
+    _context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
+        webviewOptions: {
+            retainContextWhenHidden: true,
+        },
+    }));
 }
 
 
