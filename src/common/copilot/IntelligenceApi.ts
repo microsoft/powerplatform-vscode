@@ -5,20 +5,20 @@
 
 // import https from 'https';
 import fetch, { RequestInit } from "node-fetch";
-import { conversation } from "./PowerPagesCopilot";
-import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+import { apiToken} from "./PowerPagesCopilot";
+//import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import https from 'https';
 
-let apiKey = "";
-intelligenceAPIAuthentication().then((token) => {
-    console.log('token: ' + token);
-    apiKey = token;
-});
+//let apiKey = "";
+// intelligenceAPIAuthentication().then((token) => {
+//     console.log('token: ' + token);
+//     apiKey = token;
+// });
 
-export async function sendApiRequest(message: string) {
+export async function sendApiRequest(message: string, activeFilePath: string, activeFileContent: string) {
     console.log("Sending message to API: " + message);
-    conversation.push({ role: "user", content: message });
-    console.log("Conversation: ", conversation.length)
+    // conversation.push({ role: "user", content: message });
+    // console.log("Conversation: ", conversation.length)
     // const endpointUrl = "https://api.openai.com/v1/chat/completions";
     // const requestBody = {
     //     'model': "gpt-3.5-turbo",
@@ -53,9 +53,13 @@ export async function sendApiRequest(message: string) {
         "context": {
           "sessionId": "2c4db921-be75-43fe-8fec-e4d65bd7546c",
           "scenario": "PowerPagesProDev",
-          "subScenario": scenario,
+          //"subScenario": scenario,
+          "subScenario": "PowerPagesProDevGeneric",
           "version": "V1",
-          "information": {}
+          "information": {
+            "activeFilePath": activeFilePath,
+            "activeFileContent": activeFileContent,
+          }
         }
     };
     // Create a custom agent with disabled SSL certificate validation
@@ -68,7 +72,7 @@ export async function sendApiRequest(message: string) {
         method: "POST",
         headers: {
             'Content-Type': "application/json",
-            Authorization: `Bearer ${apiKey}`,
+            Authorization: `Bearer ${apiToken}`,
         },
         body: JSON.stringify(requestBody),
     }
@@ -84,7 +88,7 @@ export async function sendApiRequest(message: string) {
         //const responseMessage = jsonResponse.choices[0].message.content.trim();
         const responseMessage = jsonResponse.additionalData[0].properties.response;
         console.log("Response message:", responseMessage);
-        conversation.push({ role: "assistant", content: responseMessage });
+        // conversation.push({ role: "assistant", content: responseMessage });
         return responseMessage;
     } else {
         console.log("API call failed");

@@ -7,9 +7,12 @@
 import * as vscode from "vscode";
 // import { createAiWebpage } from "./Utils";
 import { sendApiRequest } from "./IntelligenceApi";
+import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+
 // import { getTemplates } from "./Utils";
 
 declare const IS_DESKTOP: boolean;
+export let apiToken: string;
 
 export let conversation = [
     {
@@ -52,13 +55,22 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             switch (data.type) {
                 case "webViewLoaded": {
                     console.log("webview loaded");
+                    let userName = "";
                     this.sendMessageToWebview({ type: 'env', value: this.isDesktop });
+                    // TODO: Reset the token if the user changes the account or signs out
+                    intelligenceAPIAuthentication().then(({ accessToken, user }) => {
+                        console.log('token: ' + accessToken);
+                        apiToken = accessToken;
+                        userName = getUserName(user);
+                        this.sendMessageToWebview({ type: 'userName', value: userName });
+                    });
                     break;
                 }
                 case "newUserPrompt": {
                     //const engineeredPrompt = this.promptEngine(data.value);
                     //const apiResponse = await sendApiRequest(engineeredPrompt);
-                    const apiResponse = await sendApiRequest(data.value);
+                    const {activeFileName, activeFileContent} = this.getActiveEditorContent();
+                    const apiResponse = await sendApiRequest(data.value, activeFileName, activeFileContent);
                     this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
                     break;
                 }
@@ -142,12 +154,17 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
 
 
-    private getActiveEditorContent() {
+    private getActiveEditorContent(): {activeFileName: string, activeFileContent: string} {
         const activeEditor = vscode.window.activeTextEditor;
         if (activeEditor) {
-            return activeEditor.document.getText();
+            const document = activeEditor.document;
+            const fileName = document.fileName;
+            const relativeFileName = vscode.workspace.asRelativePath(fileName);
+            console.log("active file name = " + relativeFileName)
+
+            return {activeFileName: relativeFileName, activeFileContent: document.getText()};
         }
-        return "";
+        return {activeFileName: "", activeFileContent: ""};
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -161,9 +178,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     private _getHtmlForWebview(webview: vscode.Webview) {
 
-        
+
         // const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'scripts', 'copilot.js');
-       // const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
+        // const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
         const webviewPath = vscode.Uri.joinPath(this._extensionUri, "dist", "webview.js");
         const webviewUri = webview.asWebviewUri(webviewPath);
 
@@ -256,4 +273,11 @@ function getTemplates() {
         animate: "Here is the HTML div that I want to add animations to: <div class=\"row sectionBlockLayout text-left\" style=\"display: flex; flex-wrap: wrap; margin: 0px; min-height: auto; padding: 8px;\"> <div class=\"container\" style=\"padding: 0px; display: flex; flex-wrap: wrap; column-gap: 0px;\"> <div class=\"col-md-4 columnBlockLayoutCard\" style=\"flex-grow: 1; display: flex; flex-direction: column; min-width: 310px; word-break: break-word; margin: 0px; padding: 56px; width: calc(33.3333% - 0px);\"> <img src=\"/CompIcon.png\" alt=\"\" name=\"CompIcon.png\" style=\"width: 24%; height: auto; max-width: 100%; margin-left: auto; margin-right: auto;\" /> <h3 style=\"text-align: center; color: var(--portalThemeColor7);\">Easy online Banking</h3> <p style=\"color: var(--portalThemeColor7); text-align: center;\">From daily banking to loans, our secure financial services are available on your desktop or mobile devices</p> </div> <div class=\"col-md-4 columnBlockLayoutCard\" style=\"flex-grow: 1; display: flex; flex-direction: column; min-width: 310px; word-break: break-word; margin: 0px; padding: 56px; width: calc(33.3333% - 0px);\"> <img src=\"/24Icon.png\" alt=\"\" name=\"24Icon.png\" style=\"width: 24%; height: auto; max-width: 100%; margin-left: auto; margin-right: auto;\" /> <h3 style=\"text-align: center; color: var(--portalThemeColor7);\">Stree-free loans</h3> <p style=\"color: var(--portalThemeColor7); text-align: center;\">Whether it’s for the home, vehicle, or personal, our simple process puts you and your needs first</p> </div> <div class=\"col-md-4 columnBlockLayoutCard\" style=\"flex-grow: 1; display: flex; flex-direction: column; min-width: 310px; word-break: break-word; margin: 0px; padding: 56px; width: calc(33.3333% - 0px);\"> <img src=\"/GraphIcon.png\" alt=\"\" name=\"GraphIcon.png\" style=\"width: 24%; height: auto; max-width: 100%; margin-left: auto; margin-right: auto;\" /> <h3 style=\"text-align: center; color: var(--portalThemeColor7);\">Simplified Investing</h3> <p style=\"text-align: center; color: var(--portalThemeColor7);\">We’ll work with you to create an investment strategy designed to meet your unique financial goals</p> </div> </div> </div>"
     };
     return templates;
+}
+
+function getUserName(user: string) {
+    const parts = user.split(" - ");
+    console.log(parts[0]); // "Amit Joshi"
+    console.log(parts[1]); // "amitjoshi@microsoft.com"
+    return parts[0];
 }

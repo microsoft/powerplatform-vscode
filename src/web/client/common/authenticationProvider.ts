@@ -21,17 +21,19 @@ export function getHeader(accessToken: string, useOctetStreamContentType?: boole
 
 
 //Get access token for Intelligence API service
-export async function intelligenceAPIAuthentication(): Promise<string> {
+export async function intelligenceAPIAuthentication(): Promise<{accessToken: string, user: string}> {
     let accessToken = '';
-    const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default"; //move this to constants
+    let user = '';
+    //const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default"; //move this to constants
     //WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_STARTED);
     try {
         let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
         if (!session) {
             session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { createIfNone: true });
         }
-
+        console.log("user", session.account.label);
         accessToken = session?.accessToken ?? '';
+        user = session.account.label;
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
@@ -43,7 +45,7 @@ export async function intelligenceAPIAuthentication(): Promise<string> {
         vscode.l10n.t("There was a permissions problem with the server"));
         //WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_FAILED, authError);
     }
-    return accessToken;
+    return {accessToken, user};
 }
 
 

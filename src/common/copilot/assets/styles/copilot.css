@@ -2,6 +2,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: var(--vscode-editor-background);
 }
 
 .copilot-window{
@@ -79,7 +80,7 @@ body {
     color: white; */
   /* border-bottom: 1px solid grey; */
   padding: 12px;
-  background-color: var(--vscode-activityBar-background);
+  background-color: var(--vscode-sideBar-background);
 }
 
 .message {
@@ -93,6 +94,11 @@ body {
   border-radius: 50%;
   margin-right: 8px;
   background-color: var(--vscode-button-background);
+}
+
+.codicon-account {
+  width: 24px;
+  height: 24px;
 }
 
 .user-info {
@@ -255,3 +261,27 @@ li:before {
   content: "/";
   /* color: #007acc; */
 }
+
+.feedback-div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px 12px 20px;
+  background-color: var(--vscode-sideBar-background);
+}
+
+.feedback-statement {
+  margin: 0 10px 0 0;
+}
+
+.feedback-icons {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.feedback-icons span {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
