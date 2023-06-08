@@ -308,6 +308,12 @@
         "command": "microsoft-powerapps-portals.pagetemplate",
         "category": "Powerpages",
         "title": "New Page Template"
+      },
+      {
+        "command": "powerpages.copilot.clearConversation",
+        "category": "Power Pages Copilot",
+        "title": "Clear Conversation",
+        "icon": "$(clear-all)"
       }
     ],
     "configuration": {
@@ -646,6 +652,10 @@
           "when": "!virtualWorkspace"
         },
         {
+          "command": "powerpages.copilot.clearConversation",
+          "when": "!virtualWorkspace"
+        },
+        {
           "command": "microsoft-powerapps-portals.webpage",
           "when": "config.powerPlatform.generatorInstalled"
         },
@@ -686,6 +696,11 @@
           "command": "pacCLI.envAndSolutionsPanel.refresh",
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel",
           "group": "navigation"
+        },
+        {
+          "command": "powerpages.copilot.clearConversation",
+          "when": "!virtualWorkspace",
+          "group": "navigation@0"
         }
       ],
       "view/item/context": [
