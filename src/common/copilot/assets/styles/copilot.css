@@ -93,7 +93,13 @@ body {
   height: 24px;
   border-radius: 50%;
   margin-right: 8px;
-  background-color: var(--vscode-button-background);
+  /* background-color: var(--vscode-button-background); */
+  color: darkblue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  background-color: #A7CFE8;
 }
 
 .codicon-account {
@@ -285,3 +291,6 @@ li:before {
   margin-right: 5px;
 }
 
+.hide {
+  display: none;
+}

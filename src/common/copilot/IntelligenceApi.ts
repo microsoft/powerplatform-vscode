@@ -5,7 +5,7 @@
 
 // import https from 'https';
 import fetch, { RequestInit } from "node-fetch";
-import { apiToken} from "./PowerPagesCopilot";
+import { apiToken, sessionID} from "./PowerPagesCopilot";
 //import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import https from 'https';
 
@@ -29,6 +29,7 @@ export async function sendApiRequest(message: string, activeFilePath: string, ac
 
     const AIBTestUrl = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
 
+    console.log("sessionID", sessionID)
     console.log("Input message", message);
 
     const hashMap: { [key: string]: string } = {
@@ -51,7 +52,7 @@ export async function sendApiRequest(message: string, activeFilePath: string, ac
         "question": realPrompt,//"Add a div with 3 cards having nice animations purely using css",//,
         "top": 1,
         "context": {
-          "sessionId": "2c4db921-be75-43fe-8fec-e4d65bd7546c",
+          "sessionId": sessionID,
           "scenario": "PowerPagesProDev",
           //"subScenario": scenario,
           "subScenario": "PowerPagesProDevGeneric",

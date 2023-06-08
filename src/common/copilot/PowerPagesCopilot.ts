@@ -8,19 +8,21 @@ import * as vscode from "vscode";
 // import { createAiWebpage } from "./Utils";
 import { sendApiRequest } from "./IntelligenceApi";
 import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+import { v4 as uuidv4 } from 'uuid'
 
 // import { getTemplates } from "./Utils";
 
 declare const IS_DESKTOP: boolean;
 export let apiToken: string;
+export let sessionID: string;
 
-export let conversation = [
-    {
-        role: "system",
-        content:
-            "You are a web developer well versed with css, html, and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development. Uses liquid as a templating language and Bootstrap v3.3.6. You always put code block in markdown syntax",
-    },
-];
+// export let conversation = [
+//     {
+//         role: "system",
+//         content:
+//             "You are a web developer well versed with css, html, and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development. Uses liquid as a templating language and Bootstrap v3.3.6. You always put code block in markdown syntax",
+//     },
+// ];
 
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
@@ -55,6 +57,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             switch (data.type) {
                 case "webViewLoaded": {
                     console.log("webview loaded");
+                    sessionID = uuidv4();
                     let userName = "";
                     this.sendMessageToWebview({ type: 'env', value: this.isDesktop });
                     // TODO: Reset the token if the user changes the account or signs out
@@ -70,6 +73,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     //const engineeredPrompt = this.promptEngine(data.value);
                     //const apiResponse = await sendApiRequest(engineeredPrompt);
                     const {activeFileName, activeFileContent} = this.getActiveEditorContent();
+                    //this.sendMessageToWebview({ type: 'apiResponse', value: "Thinking..."});
                     const apiResponse = await sendApiRequest(data.value, activeFileName, activeFileContent);
                     this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
                     break;
@@ -113,14 +117,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 }
                 case "clearChat": {
                     console.log("clear chat ");
-                    conversation = [
-                        {
-                            role: "system",
-                            content:
-                                "You are a web developer well versed with css, html, and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development. Uses liquid as a templating language and Bootstrap v3.3.6. You always put code block in markdown syntax",
-                        },
-                    ];
-                    break;
+                    sessionID = uuidv4();
+                    // conversation = [
+                    //     {
+                    //         role: "system",
+                    //         content:
+                    //             "You are a web developer well versed with css, html, and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development. Uses liquid as a templating language and Bootstrap v3.3.6. You always put code block in markdown syntax",
+                    //     },
+                    // ];
                     //createNewFile(data.value);
                     break;
                 }
@@ -228,7 +232,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         </div>
 
         <div class="chat-input">
-          <vscode-text-field placeholder="Ask Copilot a question or type '/' for tables"  id="chat-input" class="input-field">
+          <vscode-text-field placeholder="Ask a question..."  id="chat-input" class="input-field">
             <section slot="end" style="display:flex; align-items: center;">
               <vscode-button appearance="icon" aria-label="Match Case" id="send-button">
                 <span>
