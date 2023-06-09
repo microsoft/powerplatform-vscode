@@ -455,10 +455,6 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
         <source xml:lang="en">Overview</source>
         <target state="translated">Обзор</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
-        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
-        <target state="translated">PAC CLI не поддерживается в VS Code для Интернета</target>
-      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
         <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
 [Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
