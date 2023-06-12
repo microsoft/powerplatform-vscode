@@ -5,7 +5,7 @@ body {
   background-color: var(--vscode-editor-background);
 }
 
-.copilot-window{
+.copilot-window {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -25,40 +25,73 @@ body {
   padding: 12px;
 }
 
-.input-field {
-  flex: 1;
+.input-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--vscode-interactiveEditorInput-border);
+  padding: 0px 6px 0px 0px;
+  border-radius: 4px;
+  height: 38px;
+  background-color: var(--vscode-interactiveEditorInput-background);
 }
 
-.input-field::part(root) {
- /* font-style: italic; */
- border-radius: 4px;
- height: 38px;
+.input-container:focus-within {
+  box-shadow: 0 0 0 1px var(--vscode-interactiveEditorInput-focusBorder);
 }
+
+.input-container:focus-within .send-icon path:not(:hover) {
+  fill: var(--vscode-inputOption-activeForeground);
+}
+
+.input-field {
+  flex: 1;
+  padding: 11px 0px 11px 8px;
+  border: none;
+  outline: none;
+  color: var(--vscode-inputOption-activeForeground);
+  background-color: transparent;
+  white-space: pre-wrap;
+}
+
+.input-field:focus {
+  outline: none;
+  color: var(--vscode-inputOption-activeForeground);
+}
+
+.input-field::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+.send-button {
+  margin-left: 6px;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+}
+
 
 .disclaimer {
   margin: 0px;
   margin-top: 12px;
 }
 
-.chat-input input {
-  flex: 1;
-  border: none;
-  color: white;
-  /* added for testing */
-  padding: 10px;
-}
-
-.chat-input button {
-  background-color: #007acc;
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-}
-
 .send-icon {
-  font-size: 20x;
+  fill: var(--vscode-inputOption-activeForeground);
 }
+
+/* 
+.input-field {
+  flex: 1;
+} */
+
+/* .input-field::part(root) { */
+  /* font-style: italic; */
+  /* border-radius: 4px;
+  height: 38px;
+} */
+
+
 
 .active {
   pointer-events: auto;
@@ -123,10 +156,10 @@ body {
   margin: 10px 0px;
   border-radius: 4px;
   background-color: var(--vscode-editor-background);
-  
+
 }
 
-.code-pre{
+.code-pre {
   overflow-x: auto;
 }
 
@@ -230,7 +263,7 @@ body {
   position: relative;
   /* background-color: #1f1f1f ;*/
   background-color: var(--vscode-input-background);
-  border: 1px solid #383434; 
+  border: 1px solid #383434;
   padding: 10px;
   width: 400px;
   /* color: #ffffff; */
@@ -244,7 +277,7 @@ ul {
 
 li {
   font-size: 1.2em;
-  margin-bottom: 3px; 
+  margin-bottom: 3px;
   /* padding: 2px;  */
   /* background-color: #383636; */
   /* background-color: #1f1f1f; */
