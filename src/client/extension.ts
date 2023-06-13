@@ -129,6 +129,11 @@ export async function activate(
         })
     );
 
+    _context.subscriptions.push(
+        vscode.commands.registerCommand('powerpages.copilot.clearConversation', () => {
+            console.log('clearing conversation');
+        }));
+
     if (vscode.window.registerWebviewPanelSerializer) {
         vscode.window.registerWebviewPanelSerializer(PortalWebView.viewType, {
             async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel) {
@@ -151,7 +156,14 @@ export async function activate(
         ) || [];
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
         initializeGenerator(_context, cliContext, _telemetry);
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
     }
+    else {
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
+    }
+
+    const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
+    context.subscriptions.push(workspaceFolderWatcher);
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
@@ -315,6 +327,18 @@ function isCurrentDocumentEdited(): boolean {
     );
 }
 
+function handleWorkspaceFolderChange() {
+    const workspaceFolders =
+        vscode.workspace.workspaceFolders?.map(
+            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+        ) || [];
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
+    }
+    else {
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
+    }
+}
 // allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
 class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(

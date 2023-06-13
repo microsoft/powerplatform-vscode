@@ -509,7 +509,7 @@
         {
           "submenu": "microsoft-powerapps-portals.powerpages",
           "group": "1_powerpages",
-          "when": "config.powerPlatform.generatorInstalled"
+          "when": "!virtualWorkspace && powerpages.websiteYmlExists"
         }
       ],
       "microsoft-powerapps-portals.powerpages": [
@@ -699,8 +699,8 @@
         },
         {
           "command": "powerpages.copilot.clearConversation",
-          "when": "!virtualWorkspace",
-          "group": "navigation@0"
+          "when": "!virtualWorkspace && powerpages.websiteYmlExists",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -789,7 +789,8 @@
         {
           "type": "webview",
           "id": "powerpages.copilot",
-          "name": "Power Pages Copilot"
+          "name": "Power Pages Copilot",
+          "when": "!virtualWorkspace && powerpages.websiteYmlExists"
         }
       ]
     },
