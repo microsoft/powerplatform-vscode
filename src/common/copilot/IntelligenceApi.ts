@@ -95,5 +95,6 @@ export async function sendApiRequest(message: string, activeFilePath: string, ac
         console.log("API call failed");
         const errorResponse = await response.json();
         console.log("Error message:", errorResponse.error.message);
+        return [{displayText: "Oops! Something went wrong please try again", code:''}] //TODO: Update this to return a proper error message
     }
 }
