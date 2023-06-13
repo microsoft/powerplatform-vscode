@@ -20,3 +20,12 @@ export function createAiWebpage(_prompt: string):void {
     )
 }
 
+export function getSelectedSnippet(): string {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return "";
+    }
+    const selection = editor.selection;
+    const text = editor.document.getText(selection);
+    return text;
+}
