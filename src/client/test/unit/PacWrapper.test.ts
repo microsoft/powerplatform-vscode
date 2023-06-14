@@ -12,6 +12,9 @@ class MockContext implements IPacWrapperContext {
     public get globalStorageLocalPath(): string { return ""; }
     public get telemetry(): ITelemetry { return NoopTelemetryInstance; }
     public get automationAgent(): string { return "powerplatform-vscode-tests/0.1.0-dev"; }
+    public IsTelemetryEnabled(): boolean {
+        return true;
+    }
 }
 
 class MockPacInterop implements IPacInterop {

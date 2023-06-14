@@ -34,9 +34,9 @@ steps:
   displayName: Capture build version in package/version.csv
 
 - task: NodeTool@0
-  displayName: 'Use nodejs 14.x'
+  displayName: 'Use nodejs 18.x'
   inputs:
-    versionSpec: '14.x'
+    versionSpec: '18.x'
 
 - task: Npm@1
   displayName: 'Restore (npm install)'
@@ -63,14 +63,20 @@ steps:
 #     customCommand: run increment-version
 
 - task: Npm@1
-  displayName: 'Build and package VSIX'
+  displayName: 'Official Build and Package VSIX'
   inputs:
     command: custom
     customCommand: run dist -- --feedPAT $(AZ_DevOps_Read_PAT) --isOfficialBuild true
 
+- task: Npm@1
+  displayName: 'Preview Build and Package VSIX'
+  inputs:
+    command: custom
+    customCommand: run dist -- --feedPAT $(AZ_DevOps_Read_PAT) --isPreviewBuild true
+
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Generating%20Signing%20JSON.aspx
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Selecting%20CodeSign%20Certificates.aspx
-- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+- task: EsrpCodeSigning@2
   displayName: 'ESRP sign vsix packages'
   inputs:
     ConnectedServiceName: ESRPCodeSigningConnection
