@@ -7,6 +7,7 @@ import * as path from "path";
 import Mocha from "mocha";
 import glob from "glob";
 import * as vscode from "vscode";
+import NYC from "nyc";
 
 async function addTests(): Promise<void> {
     // Ensure the dev-mode extension is activated
@@ -14,39 +15,38 @@ async function addTests(): Promise<void> {
     await vscode.extensions
         .getExtension("microsoft-IsvExpTools.powerplatform-vscode")!
         .activate();
-
+    const nyc = new NYC()
+    await nyc.createTempDirectory()
     // Create the mocha test
     const mocha = new Mocha({
         ui: "bdd",
         color: true,
     });
 
-    const testsRoot = path.resolve(__dirname, "..");
+    const testsRoot = path.resolve(__dirname, '..')
 
-    return new Promise((resolve, reject) => {
-        glob("**/**.test.js", { cwd: testsRoot }, (err, files) => {
-            if (err) {
-                return reject(err);
-            }
+    const files: Array<string> = await new Promise((resolve, reject) =>
+        glob(
+        '**/**.test.js',
+        {
+            cwd: testsRoot,
+        },
+        (err, files) => {
+            if (err) reject(err)
+            else resolve(files)
+        }
+        )
+    )
 
-            // Add files to the test suite
-            files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)));
+    // Add files to the test suite
+    files.forEach((f) => mocha.addFile(path.resolve(testsRoot, f)))
 
-            try {
-                // Run the mocha test
-                mocha.run((failures) => {
-                    if (failures > 0) {
-                        reject(new Error(`${failures} tests failed.`));
-                    } else {
-                        resolve();
-                    }
-                });
-            } catch (err) {
-                console.error(err);
-                reject(err);
-            }
-        });
-    });
+    const failures: number = await new Promise((resolve) => mocha.run(resolve))
+    await nyc.writeCoverageFile()
+
+    if (failures > 0) {
+        throw new Error(`${failures} tests failed.`)
+    }
 }
 
 export async function run(): Promise<void> {

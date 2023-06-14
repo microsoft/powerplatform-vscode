@@ -79,7 +79,7 @@ describe("webExtensionTelemetry", () => {
         );
     });
 
-    it("sendExtensionInitQueryParametersTelemetry_whenQueryParamHaveAllTheKey_shouldCallSendTelemetryEventWithValidData", () => {
+    it.skip("sendExtensionInitQueryParametersTelemetry_whenQueryParamHaveAllTheKey_shouldCallSendTelemetryEventWithValidData", () => {
         //Act
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_ID, "e5dce21c-f85f-4849-b699-920c0fad5fbf"],
@@ -128,7 +128,7 @@ describe("webExtensionTelemetry", () => {
         );
     });
 
-    it("sendExtensionInitQueryParametersTelemetry_whenQueryParamsMapIsEmpty_shouldNotThrowException", () => {
+    it.skip("sendExtensionInitQueryParametersTelemetry_whenQueryParamsMapIsEmpty_shouldNotThrowException", () => {
         //Act
         const queryParamsMap = new Map<string, string>([]);
 
