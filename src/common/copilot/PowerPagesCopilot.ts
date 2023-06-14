@@ -9,12 +9,14 @@ import * as vscode from "vscode";
 import { sendApiRequest } from "./IntelligenceApi";
 import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
+import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 
 // import { getTemplates } from "./Utils";
 
 declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
+export let userName: string;
 
 // export let conversation = [
 //     {
@@ -32,7 +34,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     constructor(private readonly _extensionUri: vscode.Uri) { }
 
     private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
-
+    
     public async resolveWebviewView(
         webviewView: vscode.WebviewView,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -58,21 +60,28 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 case "webViewLoaded": {
                     console.log("webview loaded");
                     sessionID = uuidv4();
-                    let userName = "";
                     this.sendMessageToWebview({ type: 'env', value: this.isDesktop });
+                    await this.checkAuthentication();
+                    this.sendMessageToWebview({ type: 'userName', value: userName });
+                    this.sendMessageToWebview({type: "welcomeScreen"});
+                    break;
+                }
+                case "login": {
+                    console.log("login");
                     // TODO: Reset the token if the user changes the account or signs out
                     intelligenceAPIAuthentication().then(({ accessToken, user }) => {
                         console.log('token: ' + accessToken);
                         apiToken = accessToken;
                         userName = getUserName(user);
                         this.sendMessageToWebview({ type: 'userName', value: userName });
+                        this.sendMessageToWebview({type: "welcomeScreen"});
                     });
                     break;
                 }
                 case "newUserPrompt": {
                     //const engineeredPrompt = this.promptEngine(data.value);
                     //const apiResponse = await sendApiRequest(engineeredPrompt);
-                    const {activeFileName, activeFileContent} = this.getActiveEditorContent();
+                    const { activeFileName, activeFileContent } = this.getActiveEditorContent();
                     //this.sendMessageToWebview({ type: 'apiResponse', value: "Thinking..."});
                     const apiResponse = await sendApiRequest(data.value, activeFileName, activeFileContent);
                     this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
@@ -157,8 +166,17 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         return prompt;
     }
 
+    private async checkAuthentication() {
+        const session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
+        if (session) {
+            console.log('token: ' + session.accessToken);
+            apiToken = session.accessToken;
+            userName = getUserName(session.account.label);
+        }
+     }
 
-    private getActiveEditorContent(): {activeFileName: string, activeFileContent: string} {
+
+    private getActiveEditorContent(): { activeFileName: string, activeFileContent: string } {
         const activeEditor = vscode.window.activeTextEditor;
         if (activeEditor) {
             const document = activeEditor.document;
@@ -166,9 +184,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             const relativeFileName = vscode.workspace.asRelativePath(fileName);
             console.log("active file name = " + relativeFileName)
 
-            return {activeFileName: relativeFileName, activeFileContent: document.getText()};
+            return { activeFileName: relativeFileName, activeFileContent: document.getText() };
         }
-        return {activeFileName: "", activeFileContent: ""};
+        return { activeFileName: "", activeFileContent: "" };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -228,7 +246,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         <body>
         <div class="copilot-window">
         <div class="chat-messages" id="chat-messages">
- 
+        
         </div>
 
         <div class="chat-input">
