@@ -151,6 +151,11 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOrgListOutput>(new PacArguments("org", "list"));
     }
 
+    public async connectorDownload(environmentId: string, connectorId: string, outputDir: string): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("connector", "download",
+            "--connector-id", connectorId, "--environment", environmentId, "--outputDirectory", outputDir));
+    }
+
     public async enableTelemetry(): Promise<PacOutput> {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "enable"));
     }
