@@ -11,11 +11,12 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ![VSCode Terminal with pac CLI](https://github.com/microsoft/powerplatform-vscode/blob/main/src/client/assets/pac-CLI-in-terminal.png?raw=true)
 
 ## Release Notes
-1.1.29:
+1.1.28:
   - pac CLI 1.24.3 (May refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - Linux and Mac - PAC switched to the [CrossPlat Dotnet Tool version](https://www.nuget.org/packages/Microsoft.PowerApps.CLI.Tool) from the x64 architectured  [Linux x64](https://www.nuget.org/packages/Microsoft.PowerApps.CLI.Core.linux-x64) and [OSx x64](https://www.nuget.org/packages/Microsoft.PowerApps.CLI.Core.osx-x64) versions
     - Apple Silicon arm64 machines (M1/M2) should no longer need the x64 version of the net6.0 SDK, just the ARM version
     - Windows still uses the [Windows-only net48 version](https://www.nuget.org/packages/Microsoft.PowerApps.CLI), as there are still some verbs such as `pac data` which have full .NET Framework dependencies
+  - Optimized conflict detection for co-edits in VS Code for web
 
 1.1.27:
   - pac CLI 1.23.3 (Apr refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
