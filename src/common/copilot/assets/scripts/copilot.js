@@ -8,6 +8,7 @@
 (function script() {
   const vscode = acquireVsCodeApi();
 
+  const copilotHeader = document.getElementById("copilot-header");
   const chatMessages = document.getElementById("chat-messages");
   const chatInput = document.getElementById("chat-input");
 
@@ -458,10 +459,10 @@
 
     messageWrapper.appendChild(messageElement);
 
-    if (!chatMessages) {
+    if (!copilotHeader) {
       return;
     }
-    chatMessages.appendChild(messageWrapper);
+    copilotHeader.appendChild(messageWrapper);
     // chatMessages.scrollTop = chatMessages.scrollHeight;
 
     return {

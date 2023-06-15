@@ -154,7 +154,9 @@ export async function activate(
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
-    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+    
+    // TODO: Handle for VSCode.dev also
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         initializeGenerator(_context, cliContext, _telemetry);
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
     }
@@ -163,7 +165,7 @@ export async function activate(
     }
 
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
-    context.subscriptions.push(workspaceFolderWatcher);
+    _context.subscriptions.push(workspaceFolderWatcher);
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);

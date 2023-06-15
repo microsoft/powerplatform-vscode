@@ -54,6 +54,17 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
+        let isHandlingAuthChange = false;
+
+
+        vscode.authentication.onDidChangeSessions(async () => {
+            if (!isHandlingAuthChange) {
+                isHandlingAuthChange = true;
+            console.log("authentication changed");
+            await this.checkAuthentication();
+            isHandlingAuthChange = false;
+        }
+        });
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
@@ -172,6 +183,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             console.log('token: ' + session.accessToken);
             apiToken = session.accessToken;
             userName = getUserName(session.account.label);
+        } else {
+            console.log('no token');
+            apiToken = "";
+            userName = "";
         }
      }
 
@@ -245,6 +260,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         </head>
         <body>
         <div class="copilot-window">
+        <div id="copilot-header"></div>
         <div class="chat-messages" id="chat-messages">
         
         </div>
