@@ -173,7 +173,7 @@ export async function activate(
 
     _telemetry.sendTelemetryEvent("activated");
 
-    const copilotProvider = new PowerPagesCopilot(context.extensionUri);
+    const copilotProvider = new PowerPagesCopilot(context.extensionUri, _context, _telemetry);
 
     _context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
         webviewOptions: {

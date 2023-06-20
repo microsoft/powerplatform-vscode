@@ -10,6 +10,9 @@ import { sendApiRequest } from "./IntelligenceApi";
 import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
+import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
+import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
+import { ITelemetry } from "../../client/telemetry/ITelemetry";
 
 // import { getTemplates } from "./Utils";
 
@@ -30,8 +33,14 @@ export let userName: string;
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     public static readonly viewType = "powerpages.copilot";
     private _view?: vscode.WebviewView;
+    private readonly _pacWrapper: PacWrapper;
 
-    constructor(private readonly _extensionUri: vscode.Uri) { }
+    constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry) { 
+        const pacContext = new PacWrapperContext(_context, telemetry);
+        const interop = new PacInterop(pacContext);
+        this._pacWrapper = new PacWrapper(pacContext, interop); //For Web Terminal will not be available
+        console.log("pacWrapper created " + this._pacWrapper);
+    }
 
     private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
     
@@ -44,7 +53,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     ) {
         this._view = webviewView;
 
+        this._pacWrapper.activeOrg().then((org) => {
+            console.log("active org: " + org.OrganizationId);
+            console.log("friendly name: " + org.FriendlyName);
+        });
 
+       
         webviewView.webview.options = {
             // Allow scripts in the webview
             enableScripts: true,
@@ -55,8 +69,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
         let isHandlingAuthChange = false;
-
-
+        
         vscode.authentication.onDidChangeSessions(async () => {
             if (!isHandlingAuthChange) {
                 isHandlingAuthChange = true;
