@@ -67,9 +67,11 @@ export async function fetchAndProcessData(
     requestUrl: string,
     dataverseOrgUrl?: string,
     portalFs?: PortalsFS
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any>{ 
     let requestSentAtTime = new Date().getTime();   
     let makeRequestCall = true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let data: any[] = [];
     
     while (makeRequestCall) {
@@ -274,6 +276,7 @@ async function processDataAndCreateFile(
     attributeArray: string[],
     attributeExtension: string,
     entityName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result: any,
     mappingEntityFetchQuery: string | undefined,
     entityId: string,
@@ -336,6 +339,7 @@ async function processDataAndCreateFile(
 
 async function processExpandedData(
     entityName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result: any,
     portalFs: PortalsFS,
     dataverseOrgUrl: string,
@@ -359,6 +363,7 @@ async function createFile(
     fileUri: string,
     fileNameWithExtension: string,
     entityName: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     result: any,
     mappingEntityFetchQuery: string | undefined,
     entityId: string,
@@ -479,6 +484,7 @@ async function getMappingEntityContent(
 }
 
 export async function  preprocessData(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any,
     entityType: string
 ) {
@@ -503,6 +509,7 @@ export async function  preprocessData(
             );
 
             const advancedFormStepData = new Map();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             formsData.forEach((dataItem: any) => {                
                 const entityId = fetchedFileId ? dataItem[fetchedFileId] : null;
                 if (!entityId) {
@@ -511,10 +518,13 @@ export async function  preprocessData(
                 advancedFormStepData.set(entityId, dataItem);
             });
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data.forEach((dataItem: any) => {
                 const webFormSteps = GetFileContent(dataItem, attributePath) as []; 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const steps: any[] = [];
 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 webFormSteps.forEach((step: any) => {   
                     const formStepData = advancedFormStepData.get(step);  
 

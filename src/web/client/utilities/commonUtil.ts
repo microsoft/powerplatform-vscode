@@ -64,6 +64,7 @@ export function GetFileContent(result: any, attributePath: IAttributePath) {
     return fileContent;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function setFileContent(result: any, attributePath: IAttributePath, content: any[]){
     if(attributePath.relativePath.length > 0){
         const jsonFromOriginalContent = JSON.parse(
