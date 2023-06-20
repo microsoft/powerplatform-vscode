@@ -9,7 +9,6 @@
   "microsoft-powerapps-portals.walkthrough.overview.title": "概觀",
   "microsoft-powerapps-portals.walkthrough.title": "編輯 Power Pages 代碼",
   "microsoft-powerapps-portals.webExtension.init.title": "初始化 Web 擴充",
-  "microsoft-powerapps-portals.webExtension.limitation": "適用於 Web 的 VS Code 不支援 PAC CLI",
   "pacCLI.authPanel.clearAuthProfile.title": "清除驗證設定檔",
   "pacCLI.authPanel.copyUser.title": "複製使用者",
   "pacCLI.authPanel.deleteAuthProfile.title": "刪除驗證設定檔",

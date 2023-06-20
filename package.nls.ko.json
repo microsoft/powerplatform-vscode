@@ -9,7 +9,6 @@
   "microsoft-powerapps-portals.walkthrough.overview.title": "개요",
   "microsoft-powerapps-portals.walkthrough.title": "Power Pages 코드 편집",
   "microsoft-powerapps-portals.webExtension.init.title": "웹 확장 초기화",
-  "microsoft-powerapps-portals.webExtension.limitation": "PAC CLI는 웹용 VS Code에서 지원되지 않습니다",
   "pacCLI.authPanel.clearAuthProfile.title": "인증 프로필 지우기",
   "pacCLI.authPanel.copyUser.title": "사용자 복사",
   "pacCLI.authPanel.deleteAuthProfile.title": "인증 프로필 삭제",
