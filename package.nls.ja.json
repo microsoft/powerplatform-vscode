@@ -9,7 +9,6 @@
   "microsoft-powerapps-portals.walkthrough.overview.title": "概要",
   "microsoft-powerapps-portals.walkthrough.title": "Power Pages コードの編集",
   "microsoft-powerapps-portals.webExtension.init.title": "Web拡張の初期化",
-  "microsoft-powerapps-portals.webExtension.limitation": "PAC CLI は Web の VS Code ではサポートされていません",
   "pacCLI.authPanel.clearAuthProfile.title": "認証プロファイルのクリア",
   "pacCLI.authPanel.copyUser.title": "ユーザーのコピー",
   "pacCLI.authPanel.deleteAuthProfile.title": "認証プロファイルの削除",

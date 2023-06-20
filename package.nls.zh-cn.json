@@ -9,7 +9,6 @@
   "microsoft-powerapps-portals.walkthrough.overview.title": "概览",
   "microsoft-powerapps-portals.walkthrough.title": "编辑 Power Pages 码",
   "microsoft-powerapps-portals.webExtension.init.title": "初始化 Web 扩展",
-  "microsoft-powerapps-portals.webExtension.limitation": "Web 版 VS Code 不支持 PAC CLI",
   "pacCLI.authPanel.clearAuthProfile.title": "清除身份验证配置文件",
   "pacCLI.authPanel.copyUser.title": "复制用户",
   "pacCLI.authPanel.deleteAuthProfile.title": "删除身份验证配置文件",
