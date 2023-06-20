@@ -210,9 +210,9 @@ async function createContentFiles(
         }
 
         // Create folder paths
-        filePathInPortalFS = filePathInPortalFS ?? `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}`;
+        filePathInPortalFS = filePathInPortalFS ?? `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
         if (exportType && exportType === folderExportType.SubFolders) {
-            filePathInPortalFS = `${filePathInPortalFS}/${fileName}/`;
+            filePathInPortalFS = `${filePathInPortalFS}${fileName}/`;
             await portalsFS.createDirectory(
                 vscode.Uri.parse(filePathInPortalFS, true)
             );
