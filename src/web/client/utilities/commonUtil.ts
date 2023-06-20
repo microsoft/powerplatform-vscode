@@ -30,11 +30,8 @@ export function GetFileNameWithExtension(
     languageCode: string,
     extension: string
 ) {
-    if (IsLanguageCodeNeededInFileName(entity)) {
-        fileName = `${fileName}.${languageCode}`;
-    } else if (IsExtensionNeededInFileName(entity)) {
-        fileName = `${fileName}.${extension}`;
-    }
+    fileName = IsLanguageCodeNeededInFileName(entity) ? `${fileName}.${languageCode}` : fileName;
+    fileName = IsExtensionNeededInFileName(entity) ? `${fileName}.${extension}` : fileName;
 
     return fileName;
 }
