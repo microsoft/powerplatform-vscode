@@ -42,7 +42,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     await Promise.all(entityRequestURLs.map(async (entity) => {
         const requestSentAtTime = new Date().getTime();
         try {
-            await fetchAndProcessData(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs);
+            await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs);
         } catch (error) {
             const errorMsg = (error as Error)?.message;
             showErrorDialog(
@@ -62,7 +62,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     }));
 }
 
-export async function fetchAndProcessData(
+async function fetchFromDataverseAndCreateFiles(
     entityName: string,
     requestUrl: string,
     dataverseOrgUrl?: string,
@@ -503,7 +503,7 @@ export async function  preprocessData(
             ) as string;
             const entityDetails = getEntity(entityType);        
             const fetchedFileId = entityDetails?.get(schemaEntityKey.FILE_ID_FIELD);
-            const formsData = await fetchAndProcessData(entityType, getCustomRequestURL(dataverseOrgUrl, entityType));
+            const formsData = await fetchFromDataverseAndCreateFiles(entityType, getCustomRequestURL(dataverseOrgUrl, entityType));
             const attributePath: IAttributePath = getAttributePath(
                 entityAttributeNeedMapping.webformsteps
             );
