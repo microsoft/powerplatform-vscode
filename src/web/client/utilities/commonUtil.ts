@@ -30,16 +30,27 @@ export function GetFileNameWithExtension(
     languageCode: string,
     extension: string
 ) {
-    if (
-        entity === schemaEntityName.WEBPAGES ||
-        entity === schemaEntityName.CONTENTSNIPPETS
-    ) {
-        return `${fileName}.${languageCode}.${extension}`;
-    } else if (entity === schemaEntityName.WEBTEMPLATES) {
-        return `${fileName}.${extension}`;
+    if (IsLanguageCodeNeededInFileName(entity)) {
+        fileName = `${fileName}.${languageCode}`;
+    } else if (IsExtensionNeededInFileName(entity)) {
+        fileName = `${fileName}.${extension}`;
     }
 
     return fileName;
+}
+
+export function IsLanguageCodeNeededInFileName(entity: string){
+    return entity === schemaEntityName.WEBPAGES ||
+    entity === schemaEntityName.CONTENTSNIPPETS;
+}
+
+export function IsExtensionNeededInFileName(entity: string){
+    return entity === schemaEntityName.WEBTEMPLATES
+        || entity === schemaEntityName.LISTS
+        || entity === schemaEntityName.ADVANCEDFORMSTEPS
+        || entity === schemaEntityName.BASICFORMS
+        || entity === schemaEntityName.WEBPAGES 
+        || entity === schemaEntityName.CONTENTSNIPPETS;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,4 +89,4 @@ export function isVersionControlEnabled() {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function isNullOrUndefined(object: any | null | undefined): boolean {
     return object === null || object === undefined;
-  }
+}

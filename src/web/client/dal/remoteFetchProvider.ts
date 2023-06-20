@@ -24,7 +24,7 @@ import {
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from "../telemetry/constants";
 import { folderExportType, schemaEntityKey } from "../schema/constants";
-import { getRequestUrlForEntities } from "../utilities/folderHelperUtility";
+import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath } from "../common/interfaces";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
@@ -130,7 +130,8 @@ async function createContentFiles(
     result: any,
     entityName: string,
     portalsFS: PortalsFS,
-    dataverseOrgUrl: string
+    dataverseOrgUrl: string,
+    filePathInPortalFS?: string
 ) {
     try {
         const lcid =
@@ -188,9 +189,9 @@ async function createContentFiles(
         }
 
         // Create folder paths
-        let filePathInPortalFS = `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
+        filePathInPortalFS = filePathInPortalFS ?? `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
         if (exportType && exportType === folderExportType.SubFolders) {
-            filePathInPortalFS = `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/${fileName}/`;
+            filePathInPortalFS = `${filePathInPortalFS}/${fileName}/`;
             await portalsFS.createDirectory(
                 vscode.Uri.parse(filePathInPortalFS, true)
             );
@@ -222,90 +223,178 @@ async function createContentFiles(
         WebExtensionContext.telemetry.sendInfoTelemetry(
             telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE,
             { languageCode: languageCode.toString() }
-        );
-
+        );         
+        
         const attributeArray = attributes.split(",");
-        const attributeExtensionMap = attributeExtension as unknown as Map<
-            string,
-            string
-        >;
+        await processDataAndCreateFile(attributeArray, 
+            attributeExtension,
+            entityName,
+            result,
+            mappingEntityFetchQuery,
+            entityId,
+            dataverseOrgUrl,
+            fileName,
+            languageCode,
+            filePathInPortalFS,
+            portalsFS)
 
-        let counter = 0;
-        // Create file content
-        let fileUri = "";
-        for (counter; counter < attributeArray.length; counter++) {
-            const base64Encoded: boolean = isBase64Encoded(
-                entityName,
-                attributeArray[counter]
-            ); // update func for webfiles for V2
-            const attributePath: IAttributePath = getAttributePath(
-                attributeArray[counter]
-            );
-
-            let fileContent = GetFileContent(result, attributePath);
-            if (mappingEntityFetchQuery) {
-                fileContent = await getMappingEntityContent(
-                    mappingEntityFetchQuery,
-                    attributeArray[counter],
-                    entityName,
-                    entityId,
-                    WebExtensionContext.dataverseAccessToken,
-                    dataverseOrgUrl
-                );
-            }
-            const fileExtension = attributeExtensionMap?.get(
-                attributeArray[counter]
-            ) as string;
-            const fileNameWithExtension = GetFileNameWithExtension(
-                entityName,
-                fileName,
-                languageCode,
-                fileExtension
-            );
-            fileUri = filePathInPortalFS + fileNameWithExtension;
-
-            await createVirtualFile(
-                portalsFS,
-                fileUri,
-                base64Encoded
-                    ? convertfromBase64ToString(fileContent)
-                    : fileContent,
-                updateEntityId(entityName, entityId, result),
-                attributePath,
-                encodeAsBase64(entityName, attributeArray[counter]),
-                entityName,
-                fileNameWithExtension,
-                result[attributePath.source] ?? Constants.NO_CONTENT,
-                fileExtension,
-                result[Constants.ODATA_ETAG],
-                result[Constants.MIMETYPE]
-            );
-        }
-
-        if (entityId === WebExtensionContext.defaultEntityId) {
-            await WebExtensionContext.updateSingleFileUrisInContext(
-                vscode.Uri.parse(fileUri)
-            );
-
-            // Not awaited intentionally
-            vscode.commands.executeCommand(
-                "vscode.open",
-                vscode.Uri.parse(fileUri),
-                { background: true, preview: false }
-            );
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
-                { commandId: "vscode.open", type: "file" }
-            );
-        }
     } catch (error) {
         const errorMsg = (error as Error)?.message;
+        console.error(errorMsg);
         vscode.window.showErrorMessage(
             vscode.l10n.t("Failed to get file ready for edit.")
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
             errorMsg
+        );
+    }
+}
+
+async function processDataAndCreateFile(
+    attributeArray: string[],
+    attributeExtension: string,
+    entityName: string,
+    result: any,
+    mappingEntityFetchQuery: string | undefined,
+    entityId: string,
+    dataverseOrgUrl: string,
+    fileName: string,
+    languageCode: string,
+    filePathInPortalFS: string,
+    portalsFS: PortalsFS,
+) {
+    const attributeExtensionMap = attributeExtension as unknown as Map<
+        string,
+        string
+    >;
+    let counter = 0;
+    let fileUri = "";
+
+    for (counter; counter < attributeArray.length; counter++) {        
+        const fileExtension = attributeExtensionMap?.get(
+            attributeArray[counter]
+        ) as string;
+        const fileNameWithExtension = GetFileNameWithExtension(
+            entityName,
+            fileName,
+            languageCode,
+            fileExtension
+        );
+
+        if(result[attributeArray[counter]] && fileExtension === undefined){
+            await processExpandedData(
+                 entityName,
+                 result[attributeArray[counter]],
+                 portalsFS,
+                 dataverseOrgUrl,
+                 filePathInPortalFS);
+        }
+        else 
+        {
+            fileUri = filePathInPortalFS + fileNameWithExtension;
+            await createFile(   
+                attributeArray[counter],
+                fileExtension,
+                fileUri,
+                fileNameWithExtension,
+                entityName,
+                result,
+                mappingEntityFetchQuery,
+                entityId,
+                dataverseOrgUrl,
+                portalsFS
+            );
+        }
+    }
+
+    await openDefaultEntityFile(entityId, fileUri);
+}
+
+async function processExpandedData(
+    entityName: string,
+    result: any,
+    portalFs: PortalsFS,
+    dataverseOrgUrl: string,
+    filePathInPortalFS: string
+){
+    // Load the content of the expanded entity
+    for (let counter = 0; counter < result.length; counter++) {
+        await createContentFiles(
+            result[counter],
+            getEntityNameForExpandedEntityContent(entityName),
+            portalFs,
+            dataverseOrgUrl,
+            filePathInPortalFS
+        );
+    }
+}
+
+async function createFile(    
+    attribute: string,
+    fileExtension: string,
+    fileUri: string,
+    fileNameWithExtension: string,
+    entityName: string,
+    result: any,
+    mappingEntityFetchQuery: string | undefined,
+    entityId: string,
+    dataverseOrgUrl: string,
+    portalsFS: PortalsFS,
+){
+    const base64Encoded: boolean = isBase64Encoded(
+        entityName,
+        attribute
+    ); // update func for webfiles for V2
+    const attributePath: IAttributePath = getAttributePath(
+        attribute
+    );
+
+    let fileContent = GetFileContent(result, attributePath);
+    if (mappingEntityFetchQuery) {
+        fileContent = await getMappingEntityContent(
+            mappingEntityFetchQuery,
+            attribute,
+            entityName,
+            entityId,
+            WebExtensionContext.dataverseAccessToken,
+            dataverseOrgUrl
+        );
+    }
+
+    await createVirtualFile(
+        portalsFS,
+        fileUri,
+        base64Encoded
+            ? convertfromBase64ToString(fileContent)
+            : fileContent,
+        updateEntityId(entityName, entityId, result),
+        attributePath,
+        encodeAsBase64(entityName, attribute),
+        entityName,
+        fileNameWithExtension,
+        result[attributePath.source] ?? Constants.NO_CONTENT,
+        fileExtension,
+        result[Constants.ODATA_ETAG],
+        result[Constants.MIMETYPE]
+    );
+}
+
+async function openDefaultEntityFile(entityId: string, fileUri: string){
+    if (entityId === WebExtensionContext.defaultEntityId) {
+        await WebExtensionContext.updateSingleFileUrisInContext(
+            vscode.Uri.parse(fileUri)
+        );
+
+        // Not awaited intentionally - fire and forget
+        vscode.commands.executeCommand(
+            "vscode.open",
+            vscode.Uri.parse(fileUri),
+            { background: true, preview: false }
+        );
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
+            { commandId: "vscode.open", type: "file" }
         );
     }
 }

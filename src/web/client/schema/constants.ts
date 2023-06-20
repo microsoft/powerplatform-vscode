@@ -33,6 +33,20 @@ export enum schemaEntityName {
     WEBPAGES = "webpages",
     WEBTEMPLATES = "webtemplates",
     CONTENTSNIPPETS = "contentsnippet",
+    LISTS = "lists",
+    BASICFORMS = "basicforms",
+    ADVANCEDFORMS = "advancedforms",
+    ADVANCEDFORMSTEPS = "advancedformsteps",
+}
+
+export enum MultiFileSupportedEntityName {
+    WEBFILES = "webfiles",
+    WEBPAGES = "webpages",
+    WEBTEMPLATES = "webtemplates",
+    CONTENTSNIPPETS = "contentsnippet",
+    LISTS = "lists",
+    BASICFORMS = "basicforms",
+    ADVANCEDFORMS = "advancedforms",
 }
 
 // This decides the folder hierarchy a file being displayed in File explorer will follow.
