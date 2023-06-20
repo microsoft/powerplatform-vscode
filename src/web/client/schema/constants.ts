@@ -62,3 +62,7 @@ export enum entityAttributesWithBase64Encoding {
     documentbody = "documentbody",
     filecontent = "filecontent",
 }
+
+export enum entityAttributeNeedMapping {
+    webformsteps = "content.webFormSteps"
+}

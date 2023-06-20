@@ -29,6 +29,8 @@ export const portal_schema_V1 = {
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters:
                     "?$select=adx_name,adx_websiteid,adx_website_language",
+                _multiFileFetchQueryParameters:
+                    "?$select=adx_name,adx_websiteid,adx_website_language",
             },
             {
                 _vscodeentityname: "websitelanguages",
@@ -42,6 +44,8 @@ export const portal_schema_V1 = {
                 _propextension: "websitelanguage",
                 _exporttype: "SingleFile",
                 _fetchQueryParameters:
+                    "?$select=adx_websitelanguageid,_adx_portallanguageid_value",
+                _multiFileFetchQueryParameters:
                     "?$select=adx_websitelanguageid,_adx_portallanguageid_value",
             },
             {
@@ -57,6 +61,7 @@ export const portal_schema_V1 = {
                 _propextension: "portallanguage",
                 _exporttype: "SingleFile",
                 _fetchQueryParameters: "?$select=adx_lcid,adx_languagecode",
+                _multiFileFetchQueryParameters: "?$select=adx_lcid,adx_languagecode",
             },
             {
                 relationships: "",
@@ -240,6 +245,7 @@ export const portal_schema_V2 = {
                 _propextension: "website",
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters: "?$select=name,powerpagesiteid,content",
+                _multiFileFetchQueryParameters: "?$select=name,powerpagesiteid,content",
             },
             {
                 relationships: "",
@@ -252,6 +258,8 @@ export const portal_schema_V2 = {
                 _primarynamefield: "name",
                 _disableplugins: "false",
                 _fetchQueryParameters:
+                    "?$select=powerpagesitelanguageid,languagecode,lcid",
+                _multiFileFetchQueryParameters:
                     "?$select=powerpagesitelanguageid,languagecode,lcid",
             },
             {
@@ -266,6 +274,8 @@ export const portal_schema_V2 = {
                 _disableplugins: "false",
                 _fetchQueryParameters:
                     "?$select=powerpagesitelanguageid,languagecode,lcid",
+                _multiFileFetchQueryParameters:
+                        "?$select=powerpagesitelanguageid,languagecode,lcid",
             },
             {
                 relationships: "",
@@ -363,8 +373,8 @@ export const portal_schema_V2 = {
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters:
                     "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 17 &$select=name,content&$count=true",
-                _attributes: "content.source",
-                _attributesExtension: new Map([["content.registerstartupscript", "customjs.js"]]),
+                _attributes: "content.registerstartupscript",
+                _attributesExtension: new Map([["content.registerstartupscript", "list.customjs.js"]]),
             },
             {
                 relationships: "",
@@ -381,8 +391,8 @@ export const portal_schema_V2 = {
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters:
                     "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 15 &$select=name,content&$count=true",
-                _attributes: "content.source",
-                _attributesExtension: new Map([["content.registerstartupscript", "customjs.js"]]),
+                _attributes: "content.registerstartupscript",
+                _attributesExtension: new Map([["content.registerstartupscript", "basicform.customjs.js"]]),
             },
             {
                 relationships: "",
@@ -398,9 +408,26 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters:
-                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 19 &$select=name &$count=true",
-                _attributes: "content.source",
+                    "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 19 &$select=name,content &$count=true",
+                _attributes: "content.webFormSteps",
                 _attributesExtension: new Map([]),
+            },
+            {
+                relationships: "",
+                _vscodeentityname: "advancedformsteps",
+                _dataverseenityname: "powerpagecomponents",
+                _displayname: "Advanced Form Steps",
+                _etc: "10060",
+                _primaryidfield: "powerpagecomponentid",
+                _primarynamefield: "name",
+                _disableplugins: "true",
+                _foldername: "advanced-form-steps",
+                _propextension: "",
+                _exporttype: "SubFolders",
+                _fetchQueryParameters: "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
+                _multiFileFetchQueryParameters: "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 20 &$select=name,content &$count=true",
+                _attributes: "content.registerstartupscript",
+                _attributesExtension:new Map([["content.registerstartupscript", "advancedformstep.customjs.js"]]),
             },
         ],
     },

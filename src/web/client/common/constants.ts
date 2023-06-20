@@ -20,7 +20,7 @@ export const MIMETYPE = "mimetype";
 export const IS_FIRST_RUN_EXPERIENCE = "isFirstRunExperience";
 export const ODATA_ETAG = "@odata.etag";
 export const ODATA_NEXT_LINK = "@odata.nextLink";
-export const MAX_ENTITY_FETCH_COUNT = "100";
+export const MAX_ENTITY_FETCH_COUNT = "1000";
 
 // FEATURE FLAGS
 // Version control feature flag

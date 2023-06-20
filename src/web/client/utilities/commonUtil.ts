@@ -64,6 +64,21 @@ export function GetFileContent(result: any, attributePath: IAttributePath) {
     return fileContent;
 }
 
+export function setFileContent(result: any, attributePath: IAttributePath, content: any[]){
+    if(attributePath.relativePath.length > 0){
+        const jsonFromOriginalContent = JSON.parse(
+            result[attributePath.source]
+        );
+
+        jsonFromOriginalContent[attributePath.relativePath] =
+            content;       
+        result[attributePath.source] = JSON.stringify(jsonFromOriginalContent);
+    }
+    else {
+        result[attributePath.source] = content;
+    }
+}
+
 export function isVersionControlEnabled() {
     const isVersionControlEnabled = vscode.workspace
         .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
