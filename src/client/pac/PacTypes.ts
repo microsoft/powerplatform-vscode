@@ -60,11 +60,15 @@ export type PacOrgListOutput = PacOutput & {
     Results: OrgListOutput[];
 }
 
+export type PacActiveOrgListOutput = PacOutput & {
+    Results: ActiveOrgOutput;
+}
+
 export type ActiveOrgOutput = {
-    OrganizationId: string,
+    OrgId: string,
     UniqueName: string,
     FriendlyName: string,
-    OrganizationUrl: string,
+    OrgUrl: string,
     UserEmail: string,
     UserId : string,
     EnvironmentId: string,

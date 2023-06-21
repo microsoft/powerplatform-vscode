@@ -15,7 +15,7 @@ import https from 'https';
 //     apiKey = token;
 // });
 
-export async function sendApiRequest(message: string, activeFilePath: string, activeFileContent: string) {
+export async function sendApiRequest(message: string, activeFilePath: string, activeFileContent: string, orgID:string) {
     console.log("Sending message to API: " + message);
     // conversation.push({ role: "user", content: message });
     // console.log("Conversation: ", conversation.length)
@@ -27,8 +27,8 @@ export async function sendApiRequest(message: string, activeFilePath: string, ac
     //     temperature: 0.2,
     // };
 
-    const AIBTestUrl = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
-
+    //const AIBTestUrl = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
+    const AIBTestUrl = `https://api.powerplatform.microsoft.com/v1.0/${orgID}/appintelligence/chat`;
     console.log("sessionID", sessionID)
     console.log("Input message", message);
 

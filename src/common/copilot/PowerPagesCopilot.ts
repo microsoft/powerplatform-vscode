@@ -13,6 +13,7 @@ import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { getOrgID } from "./Utils";
 
 // import { getTemplates } from "./Utils";
 
@@ -20,6 +21,7 @@ declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
 export let userName: string;
+export let orgID: string;
 
 // export let conversation = [
 //     {
@@ -35,15 +37,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
     private readonly _pacWrapper: PacWrapper;
 
-    constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry) { 
+    constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry) {
         const pacContext = new PacWrapperContext(_context, telemetry);
         const interop = new PacInterop(pacContext);
         this._pacWrapper = new PacWrapper(pacContext, interop); //For Web Terminal will not be available
         console.log("pacWrapper created " + this._pacWrapper);
     }
 
+
     private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
-    
+
     public async resolveWebviewView(
         webviewView: vscode.WebviewView,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -53,12 +56,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     ) {
         this._view = webviewView;
 
-        this._pacWrapper.activeOrg().then((org) => {
-            console.log("active org: " + org.OrganizationId);
-            console.log("friendly name: " + org.FriendlyName);
-        });
+        const pacOutput = await this._pacWrapper.activeOrg();
+        if (pacOutput.Status === "Success") {
+            const activeOrg = pacOutput.Results;
 
-       
+            orgID = activeOrg.OrgId;
+            console.log("orgID from PAC: " + orgID);
+
+        }
+
+
         webviewView.webview.options = {
             // Allow scripts in the webview
             enableScripts: true,
@@ -69,14 +76,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
         let isHandlingAuthChange = false;
-        
+
         vscode.authentication.onDidChangeSessions(async () => {
             if (!isHandlingAuthChange) {
                 isHandlingAuthChange = true;
-            console.log("authentication changed");
-            await this.checkAuthentication();
-            isHandlingAuthChange = false;
-        }
+                console.log("authentication changed");
+                await this.checkAuthentication();
+                isHandlingAuthChange = false;
+            }
         });
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
@@ -84,21 +91,24 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 case "webViewLoaded": {
                     console.log("webview loaded");
                     sessionID = uuidv4();
-                    this.sendMessageToWebview({ type: 'env', value: this.isDesktop });
+                    this.sendMessageToWebview({ type: 'env', value: this.isDesktop }); //TODO Use IS_DESKTOP
                     await this.checkAuthentication();
                     this.sendMessageToWebview({ type: 'userName', value: userName });
-                    this.sendMessageToWebview({type: "welcomeScreen"});
+                    this.sendMessageToWebview({ type: "welcomeScreen" });
                     break;
                 }
                 case "login": {
                     console.log("login");
+                    orgID = await getOrgID()
                     // TODO: Reset the token if the user changes the account or signs out
                     intelligenceAPIAuthentication().then(({ accessToken, user }) => {
-                        console.log('token: ' + accessToken);
-                        apiToken = accessToken;
-                        userName = getUserName(user);
-                        this.sendMessageToWebview({ type: 'userName', value: userName });
-                        this.sendMessageToWebview({type: "welcomeScreen"});
+                        if (accessToken && user) {
+                            console.log('token: ' + accessToken);
+                            apiToken = accessToken;
+                            userName = getUserName(user);
+                            this.sendMessageToWebview({ type: 'userName', value: userName });
+                            this.sendMessageToWebview({ type: "welcomeScreen" });
+                        }
                     });
                     break;
                 }
@@ -107,7 +117,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     //const apiResponse = await sendApiRequest(engineeredPrompt);
                     const { activeFileName, activeFileContent } = this.getActiveEditorContent();
                     //this.sendMessageToWebview({ type: 'apiResponse', value: "Thinking..."});
-                    const apiResponse = await sendApiRequest(data.value, activeFileName, activeFileContent);
+                    const apiResponse = await sendApiRequest(data.value, activeFileName, activeFileContent, orgID);
                     this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
                     break;
                 }
@@ -201,7 +211,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             apiToken = "";
             userName = "";
         }
-     }
+    }
 
 
     private getActiveEditorContent(): { activeFileName: string, activeFileContent: string } {
