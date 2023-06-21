@@ -9,6 +9,7 @@ import {
     convertfromBase64ToString,
     GetFileContent,
     GetFileNameWithExtension,
+    isContentPreloadNeeded,
     setFileContent,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getRequestURL, updateEntityId } from "../utilities/urlBuilderUtil";
@@ -308,7 +309,7 @@ async function processDataAndCreateFile(
         );
 
         const expandedContent = GetFileContent(result, attributePath);
-        if(expandedContent && fileExtension === undefined){
+        if(fileExtension === undefined && expandedContent){
             await processExpandedData(
                  entityName,
                  expandedContent,
@@ -381,7 +382,7 @@ async function createFile(
     );
 
     let fileContent = GetFileContent(result, attributePath);
-    if (mappingEntityFetchQuery) {
+    if (mappingEntityFetchQuery && isContentPreloadNeeded(fileNameWithExtension)) {
         fileContent = await getMappingEntityContent(
             mappingEntityFetchQuery,
             attribute,
