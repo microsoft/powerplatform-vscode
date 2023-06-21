@@ -10,7 +10,7 @@ import {
     queryParameters,
 } from "../common/constants";
 import { IEntityRequestUrl } from "../common/interfaces";
-import { schemaEntityKey } from "../schema/constants";
+import { MultiFileSupportedEntityName, schemaEntityKey, schemaEntityName } from "../schema/constants";
 import { getEntity } from "./schemaHelperUtil";
 import { getRequestURL } from "./urlBuilderUtil";
 
@@ -23,14 +23,15 @@ export function getFolderSubUris(): string[] {
         return [subUri as string];
     }
 
-    WebExtensionContext.schemaEntitiesMap.forEach((entityDetails) => {
+    for (const entry of Object.entries(MultiFileSupportedEntityName)) {
+        const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);        
         const subUri = entityDetails?.get(
             schemaEntityKey.FILE_FOLDER_NAME
         ) as string;
 
         subUris.push(subUri);
-    });
-
+    }
+    
     return subUris;
 }
 
@@ -65,28 +66,36 @@ export function getRequestUrlForEntities(
         ];
     }
 
-    WebExtensionContext.schemaEntitiesMap.forEach(
-        (entityDetails, entityName) => {
-            const folderName = entityDetails?.get(
-                schemaEntityKey.FILE_FOLDER_NAME
-            );
-            if (folderName && folderName?.length > 0) {
-                const requestURL = getRequestURL(
-                    dataverseOrgUrl,
-                    entityDetails?.get(
-                        schemaEntityKey.VSCODE_ENTITY_NAME
-                    ) as string,
-                    "",
-                    httpMethod.GET
-                );
+    for (const entry of Object.entries(MultiFileSupportedEntityName)) {
+        const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);
 
-                entityRequestURLs.push({
-                    requestUrl: requestURL,
-                    entityName: entityName,
-                });
-            }
+        const folderName = entityDetails?.get(
+            schemaEntityKey.FILE_FOLDER_NAME
+        );
+        if (folderName && folderName?.length > 0) {
+            const requestURL = getRequestURL(
+                dataverseOrgUrl,
+                entityDetails?.get(
+                    schemaEntityKey.VSCODE_ENTITY_NAME
+                ) as string,
+                "",
+                httpMethod.GET
+            );
+
+            entityRequestURLs.push({
+                requestUrl: requestURL,
+                entityName: entry[1],
+            });
         }
-    );
+    }
 
     return entityRequestURLs;
+}
+
+export function getEntityNameForExpandedEntityContent(entityName: string): string {
+    if(entityName === schemaEntityName.ADVANCEDFORMS){
+        return schemaEntityName.ADVANCEDFORMSTEPS;
+    }
+
+    return entityName;
 }

@@ -4,7 +4,6 @@
  */
 
 import {
-    ENABLE_MULTI_FILE_FEATURE,
     httpMethod,
     queryParameters,
 } from "../common/constants";
@@ -15,7 +14,7 @@ import {
     schemaEntityName,
     schemaKey,
 } from "../schema/constants";
-import { getEntity } from "./schemaHelperUtil";
+import { getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -49,11 +48,7 @@ export function getRequestURL(
                 parameterizedUrlTemplate =
                     parameterizedUrlTemplate +
                     (attributeQueryParameters ??
-                        getEntity(entity)?.get(
-                            ENABLE_MULTI_FILE_FEATURE
-                                ? schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS
-                                : schemaEntityKey.FETCH_QUERY_PARAMETERS
-                        ));
+                        getEntityFetchQuery(entity));
                 break;
             default:
                 break;
@@ -110,10 +105,8 @@ export function getCustomRequestURL(
     const parameterizedUrl =
         WebExtensionContext.schemaDataSourcePropertiesMap.get(
             urlQueryKey
-        ) as string;
-    const fetchQueryParameters = getEntity(entity)?.get(
-        "_fetchQueryParameters"
-    );
+        ) as string + getEntityFetchQuery(entity);
+
     const requestUrl = parameterizedUrl
         .replace("{dataverseOrgUrl}", dataverseOrgUrl)
         .replace(
@@ -139,9 +132,15 @@ export function getCustomRequestURL(
             WebExtensionContext.schemaDataSourcePropertiesMap.get(
                 schemaKey.DATAVERSE_API_VERSION
             ) as string
+        )        
+        .replace(
+            "{websiteId}",
+            WebExtensionContext.urlParametersMap.get(
+                queryParameters.WEBSITE_ID
+            ) as string
         );
 
-    return requestUrl + fetchQueryParameters;
+    return requestUrl;
 }
 
 export function getPatchRequestUrl(
