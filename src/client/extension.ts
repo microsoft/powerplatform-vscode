@@ -129,10 +129,6 @@ export async function activate(
         })
     );
 
-    _context.subscriptions.push(
-        vscode.commands.registerCommand('powerpages.copilot.clearConversation', () => {
-            console.log('clearing conversation');
-        }));
 
     if (vscode.window.registerWebviewPanelSerializer) {
         vscode.window.registerWebviewPanelSerializer(PortalWebView.viewType, {

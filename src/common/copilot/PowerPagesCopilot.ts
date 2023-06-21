@@ -13,7 +13,7 @@ import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { getOrgID } from "./Utils";
+//import { getOrgID } from "./Utils";
 
 // import { getTemplates } from "./Utils";
 
@@ -22,6 +22,7 @@ export let apiToken: string;
 export let sessionID: string;
 export let userName: string;
 export let orgID: string;
+export let environmentName: string;
 
 // export let conversation = [
 //     {
@@ -42,6 +43,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         const interop = new PacInterop(pacContext);
         this._pacWrapper = new PacWrapper(pacContext, interop); //For Web Terminal will not be available
         console.log("pacWrapper created " + this._pacWrapper);
+        _context.subscriptions.push(
+            vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
+                console.log("clearing conversation");
+                this.sendMessageToWebview({ type: "clearConversation" });
+                sessionID = uuidv4();
+            }
+            )
+        );
     }
 
 
@@ -62,6 +71,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
             orgID = activeOrg.OrgId;
             console.log("orgID from PAC: " + orgID);
+            environmentName = activeOrg.FriendlyName;
+            console.log("environmentName from PAC: " + environmentName);
 
         }
 
@@ -91,15 +102,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 case "webViewLoaded": {
                     console.log("webview loaded");
                     sessionID = uuidv4();
-                    this.sendMessageToWebview({ type: 'env', value: this.isDesktop }); //TODO Use IS_DESKTOP
+                    this.sendMessageToWebview({ type: 'env', value: this.isDesktop, envName: environmentName }); //TODO Use IS_DESKTOP
                     await this.checkAuthentication();
                     this.sendMessageToWebview({ type: 'userName', value: userName });
-                    this.sendMessageToWebview({ type: "welcomeScreen" });
+                    this.sendMessageToWebview({ type: "welcomeScreen"});
                     break;
                 }
                 case "login": {
                     console.log("login");
-                    orgID = await getOrgID()
+                   // orgID = await getOrgID()
                     // TODO: Reset the token if the user changes the account or signs out
                     intelligenceAPIAuthentication().then(({ accessToken, user }) => {
                         if (accessToken && user) {
@@ -290,7 +301,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         <div class="chat-input">
 <div class="input-container">
-    <input type="text" placeholder="Ask Copilot a question or type '/' for tables" id="chat-input" class="input-field">
+    <input type="text" placeholder="Ask a question..." id="chat-input" class="input-field">
     <button aria-label="Match Case" id="send-button" class="send-button">
         <span>
             <svg width="16px" height="16px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
