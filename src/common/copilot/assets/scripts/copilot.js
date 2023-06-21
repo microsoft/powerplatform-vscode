@@ -16,6 +16,7 @@
   let userName;
   let apiResponseHandler;
   let welcomeScreen;
+  let envrionment = "Environment";
 
   const clipboardSvg = `<svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z" fill="#F3F2F1"/>
@@ -380,7 +381,7 @@
 
     const activeOrg = document.createElement("div");
     activeOrg.classList.add("active-org");
-    activeOrg.textContent = "Environment";
+    activeOrg.textContent = `${envrionment}`;
 
     user.appendChild(profileIcon);
     user.appendChild(usernameSpan);
@@ -515,6 +516,7 @@
       case "env": {
         console.log("env received from extension : " + message.value);
         isDesktop = message.value;
+        envrionment = message.envName;
         welcomeScreen = setWelcomeScreen();
         break;
       }
@@ -529,6 +531,11 @@
         } else {
           welcomeScreen.userNotLoggedIn();
         }
+        break;
+      }
+      case "clearConversation": {
+        console.log("clearConversation received from extension");
+        chatMessages.innerHTML = "";
         break;
       }
     }
@@ -585,13 +592,13 @@
     }
   });
 
-  chatInput.addEventListener("input", () => {
-    if ((chatInput).value === "/") {
-      showAutocompletePanel();
-    } else {
-      hideAutocompletePanel();
-    }
-  });
+  // chatInput.addEventListener("input", () => {
+  //   if ((chatInput).value === "/") {
+  //     showAutocompletePanel();
+  //   } else {
+  //     hideAutocompletePanel();
+  //   }
+  // });
 
   // document.addEventListener("click", (event) => {
   //     if (!chatInput.contains(event.target)) {
@@ -602,8 +609,8 @@
   function showAutocompletePanel() {
     const listItems = [
       // { name: "webPage", description: "Create a new webpage" },
-      { name: "entityForm", description: "Create a new entity form" },
-      { name: "entityList", description: "Create a new entity list" },
+      // { name: "entityForm", description: "Create a new entity form" },
+      // { name: "entityList", description: "Create a new entity list" },
       // { name: "fetchXml", description: "Fetch data from table" },
       { name: "clear", description: "Clear the chat window" },
       // { name: "animate", description: "Add animations to your code" }
