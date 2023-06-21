@@ -379,7 +379,7 @@ const recompile = gulp.series(
     setTelemetryTarget,
     compile,
     compileWeb,
-    compileWebView
+    //compileWebView
 );
 
 const dist = gulp.series(

@@ -160,6 +160,10 @@ function script() {
       const textDiv = document.createElement("div");
       textDiv.innerText = responseText[i].displayText;
       resultDiv.appendChild(textDiv);
+      
+      if(responseText[i].Code === "" || responseText[i].Code === null || responseText[i].Code === undefined) {
+          continue;
+      }
 
       const codeDiv = document.createElement("div");
       codeDiv.classList.add("code-division");
@@ -186,6 +190,7 @@ function script() {
       codeDiv.appendChild(preFormatted);
       resultDiv.appendChild(codeDiv);
     }
+    resultDiv.classList.add("result-div");
     return resultDiv;
   }
 
@@ -214,7 +219,7 @@ function script() {
         resultDiv.appendChild(codeDiv);
       }
     }
-
+    resultDiv.classList.add("result-div");
     return resultDiv;
   }
 
@@ -323,7 +328,7 @@ function script() {
       makerElement.appendChild(document.createElement("br"));
       messageElement.appendChild(parseCodeBlocks(message));
 
-    }
+      }
 
 
     messageElement.classList.add("message", className);
