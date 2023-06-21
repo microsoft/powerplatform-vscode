@@ -30,18 +30,18 @@ export function GetFileNameWithExtension(
     languageCode: string,
     extension: string
 ) {
-    fileName = IsLanguageCodeNeededInFileName(entity) ? `${fileName}.${languageCode}` : fileName;
-    fileName = IsExtensionNeededInFileName(entity) ? `${fileName}.${extension}` : fileName;
+    fileName = isLanguageCodeNeededInFileName(entity) ? `${fileName}.${languageCode}` : fileName;
+    fileName = isExtensionNeededInFileName(entity) ? `${fileName}.${extension}` : fileName;
 
     return fileName;
 }
 
-export function IsLanguageCodeNeededInFileName(entity: string){
+export function isLanguageCodeNeededInFileName(entity: string){
     return entity === schemaEntityName.WEBPAGES ||
     entity === schemaEntityName.CONTENTSNIPPETS;
 }
 
-export function IsExtensionNeededInFileName(entity: string){
+export function isExtensionNeededInFileName(entity: string){
     return entity === schemaEntityName.WEBTEMPLATES
         || entity === schemaEntityName.LISTS
         || entity === schemaEntityName.ADVANCEDFORMSTEPS
@@ -54,30 +54,42 @@ export function IsExtensionNeededInFileName(entity: string){
 export function GetFileContent(result: any, attributePath: IAttributePath) {
     let fileContent = result[attributePath.source] ?? NO_CONTENT;
 
-    if (result[attributePath.source] && attributePath.relativePath.length) {
-        fileContent =
-            JSON.parse(result[attributePath.source])[
-                attributePath.relativePath
-            ] ?? NO_CONTENT;
+    try {
+
+        if (result[attributePath.source] && attributePath.relativePath.length) {
+            fileContent =
+                JSON.parse(result[attributePath.source])[
+                    attributePath.relativePath
+                ] ?? NO_CONTENT;
+        }
     }
+   catch (error){
+        const errorMsg = (error as Error)?.message;
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_GET_FILE_CONTENT_ERROR, errorMsg);
+    } 
 
     return fileContent;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function setFileContent(result: any, attributePath: IAttributePath, content: any[]){
-    if(attributePath.relativePath.length > 0){
-        const jsonFromOriginalContent = JSON.parse(
-            result[attributePath.source]
-        );
+    try{
+        if(attributePath.relativePath.length > 0){
+            const jsonFromOriginalContent = JSON.parse(
+                result[attributePath.source]
+            );
 
-        jsonFromOriginalContent[attributePath.relativePath] =
-            content;       
-        result[attributePath.source] = JSON.stringify(jsonFromOriginalContent);
-    }
-    else {
-        result[attributePath.source] = content;
-    }
+            jsonFromOriginalContent[attributePath.relativePath] =
+                content;       
+            result[attributePath.source] = JSON.stringify(jsonFromOriginalContent);
+        }
+        else {
+            result[attributePath.source] = content;
+        }
+    } catch (error){
+        const errorMsg = (error as Error)?.message;
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_SET_FILE_CONTENT_ERROR, errorMsg);
+    } 
 }
 
 export function isVersionControlEnabled() {

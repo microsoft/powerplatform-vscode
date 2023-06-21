@@ -534,6 +534,7 @@ export async function  preprocessData(
                 }); 
                 setFileContent(dataItem, attributePath, steps);
             });
+            WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
        }
    }
    catch (error) {

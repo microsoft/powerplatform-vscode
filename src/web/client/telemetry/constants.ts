@@ -45,4 +45,7 @@ export enum telemetryEventNames {
     WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED = "WebExtensionDiffViewFeatureFlagDisabled",
     WEB_EXTENSION_CREATE_ENTITY_FOLDER_FAILED = "webExtensionCreateEntityFolderFailed",
     WEB_EXTENSION_PREPROCESS_DATA_FAILED = "webExtensionPreprocessDataFailed",
+    WEB_EXTENSION_PREPROCESS_DATA_SUCCESS = "webExtensionPreprocessDataSuccess",
+    WEB_EXTENSION_GET_FILE_CONTENT_ERROR = "webExtensionGetFileContentError",
+    WEB_EXTENSION_SET_FILE_CONTENT_ERROR = "webExtensionSetFileContentError",
 }
