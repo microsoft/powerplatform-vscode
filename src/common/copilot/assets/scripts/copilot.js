@@ -576,7 +576,7 @@
   SendButton?.addEventListener("click", () => {
     if ((chatInput).value.trim()) {
       //((chatInput ).value, "user-message");
-      handleAPIResponse((chatInput).value);
+      handleUserMessage((chatInput).value);
       getApiResponse((chatInput).value);
       (chatInput).value = "";
       (chatInput).focus();
