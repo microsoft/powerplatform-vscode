@@ -375,6 +375,9 @@ async function createFile(
         entityName,
         attribute
     );
+
+    // By default content is preloaded for all the files except for non-text webfiles for V2
+    const isPreloadedContent = mappingEntityFetchQuery ? isContentPreloadNeeded(fileNameWithExtension) : true;
     
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(
@@ -382,7 +385,7 @@ async function createFile(
     );
 
     let fileContent = GetFileContent(result, attributePath);
-    if (mappingEntityFetchQuery && isContentPreloadNeeded(fileNameWithExtension)) {
+    if (mappingEntityFetchQuery && isPreloadedContent) {
         fileContent = await getMappingEntityContent(
             mappingEntityFetchQuery,
             attribute,
@@ -407,7 +410,8 @@ async function createFile(
         result[attributePath.source] ?? Constants.NO_CONTENT,
         fileExtension,
         result[Constants.ODATA_ETAG],
-        result[Constants.MIMETYPE]
+        result[Constants.MIMETYPE],
+        isPreloadedContent
     );
 }
 
@@ -561,7 +565,8 @@ async function createVirtualFile(
     originalAttributeContent: string,
     fileExtension: string,
     odataEtag: string,
-    mimeType?: string
+    mimeType?: string,
+    isPreloadedContent?: boolean
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -573,7 +578,8 @@ async function createVirtualFile(
         fileExtension,
         attributePath,
         encodeAsBase64,
-        mimeType
+        mimeType,
+        isPreloadedContent
     );
 
     // Call file system provider write call for buffering file data in VFS

@@ -205,7 +205,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 }
             );
         }
-
+        
         entry.mtime = Date.now();
         entry.size = content.byteLength;
         entry.data = content;
