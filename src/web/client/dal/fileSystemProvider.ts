@@ -204,8 +204,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     await this._saveFileToDataverseFromVFS(uri);
                 }
             );
-        }        
-        
+        }
+
         entry.mtime = Date.now();
         entry.size = content.byteLength;
         entry.data = content;
