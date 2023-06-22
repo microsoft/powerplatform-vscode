@@ -4,7 +4,6 @@
  */
 
 import * as vscode from "vscode";
-import fetch from "node-fetch";
 import {
     convertfromBase64ToString,
     GetFileContent,
@@ -83,7 +82,7 @@ async function fetchFromDataverseAndCreateFiles(
         );
 
         requestSentAtTime = new Date().getTime();
-        const response = await fetch(requestUrl, {
+        const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
             headers: {
                 ...getCommonHeaders(
                     WebExtensionContext.dataverseAccessToken
@@ -91,6 +90,10 @@ async function fetchFromDataverseAndCreateFiles(
                 Prefer: `odata.maxpagesize=${Constants.MAX_ENTITY_FETCH_COUNT}, odata.include-annotations="Microsoft.Dynamics.CRM.*"`,
             },
         });
+
+        if (response === null){
+            throw new Error(ERRORS.BULKHEAD_FETCH_REJECTED_ERROR);
+        }
 
         if (!response.ok) {
             makeRequestCall = false;
@@ -462,9 +465,13 @@ async function getMappingEntityContent(
     );
     requestSentAtTime = new Date().getTime();
 
-    const response = await fetch(requestUrl, {
+    const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
         headers: getCommonHeaders(accessToken),
     });
+
+    if(response === null){
+        throw new Error(ERRORS.BULKHEAD_FETCH_REJECTED_ERROR);
+    }
 
     if (!response.ok) {
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(

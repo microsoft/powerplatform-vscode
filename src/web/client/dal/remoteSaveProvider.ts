@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import fetch, { RequestInit } from "node-fetch";
+import { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
 import { getCommonHeaders } from "../common/authenticationProvider";
 import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
-import { showErrorDialog } from "../common/errorHandler";
+import { ERRORS, showErrorDialog } from "../common/errorHandler";
 import { FileData } from "../context/fileData";
 import { httpMethod } from "../common/constants";
 import {
@@ -163,10 +163,14 @@ async function saveDataToDataverse(
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_TRIGGERED
             );
-            const response = await fetch(
+            const response = await WebExtensionContext.concurrencyHandler.handleRequest(
                 saveCallParameters.requestUrl,
                 saveCallParameters.requestInit
             );
+
+            if(response === null) {
+                throw new Error(ERRORS.BULKHEAD_SAVE_REJECTED_ERROR);
+            }
 
             if (!response.ok) {
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
