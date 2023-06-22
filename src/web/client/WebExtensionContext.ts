@@ -288,7 +288,8 @@ class WebExtensionContext implements IWebExtensionContext {
         fileExtension: string,
         attributePath: IAttributePath,
         encodeAsBase64: boolean,
-        mimeType?: string
+        mimeType?: string,
+        isContentLoaded?: boolean
     ) {
         this.fileDataMap.setEntity(
             fileUri,
@@ -299,7 +300,8 @@ class WebExtensionContext implements IWebExtensionContext {
             fileExtension,
             attributePath,
             encodeAsBase64,
-            mimeType
+            mimeType,
+            isContentLoaded
         );
     }
 
