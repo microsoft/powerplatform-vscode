@@ -120,6 +120,7 @@ export function isNullOrUndefined(object: any | null | undefined): boolean {
 }
 
 // Clean up the file name to remove special characters
+// Ex: For input: "my_file!@#$%^&*()_|+=?;:'\",<>{}[]\\/"; the output will be "my_file"
 export function getSanitizedFileName(fileName: string): string {
   return fileName.trim().replace(/[`~!@#$%^&*()_|+=?;:'",<>{}[\]\\/]/g, '');
 }
