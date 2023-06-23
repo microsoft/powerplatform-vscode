@@ -23,7 +23,6 @@ import {
     getEntityEtag,
     getFileEntityEtag,
     getFileEntityId,
-    updateEntityEtag,
     updateFileDirtyChanges,
 } from "../utilities/fileAndEntityUtil";
 import { isVersionControlEnabled } from "../utilities/commonUtil";
@@ -95,7 +94,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     getFileEntityEtag(uri.fsPath) !== entityEtagValue
                 ) {
                     await this.updateMtime(uri, latestContent);
-                    updateEntityEtag(uri.fsPath, entityEtagValue);
                     WebExtensionContext.telemetry.sendInfoTelemetry(
                         telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_TRIGGERED
                     );

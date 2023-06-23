@@ -14,6 +14,8 @@ import { GetFileContent } from "../utilities/commonUtil";
 import {
     getFileEntityId,
     getFileEntityType,
+    updateEntityEtag,
+    updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
 import { getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
@@ -87,7 +89,7 @@ export class EtagHandlerService {
                 const latestContent = GetFileContent(result, attributePath);
 
                 if (currentContent !== latestContent) {
-                    WebExtensionContext.entityDataMap.updateEtagValue(
+                    updateEntityEtag(
                         entityId,
                         result[ODATA_ETAG]
                     );
@@ -174,8 +176,8 @@ export class EtagHandlerService {
 
             if (response.ok) {
                 const result = await response.json();
-                WebExtensionContext.entityDataMap.updateEtagValue(
-                    entityId,
+                updateFileEntityEtag(
+                    fileFsPath,
                     result[ODATA_ETAG]
                 );
             } else {
