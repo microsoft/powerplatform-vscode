@@ -23,7 +23,6 @@ import {
     getEntityEtag,
     getFileEntityEtag,
     getFileEntityId,
-    getFileEntityType,
     updateEntityEtag,
     updateFileDirtyChanges,
 } from "../utilities/fileAndEntityUtil";
@@ -82,7 +81,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
             if (isVersionControlEnabled()) {
                 const latestContent =
-                    await EtagHandlerService.getLatestAndUpdateMetadata(
+                    await EtagHandlerService.getLatestFileContentAndUpdateMetadata(
                         uri.fsPath,
                         this
                     );
@@ -437,10 +436,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
         updateFileDirtyChanges(uri.fsPath, false);
 
         // Update the etag of the file after saving
-        await fetchDataFromDataverseAndUpdateVFS(
-            this,
-            getFileEntityId(uri.fsPath),
-            getFileEntityType(uri.fsPath)
-        );
+        await EtagHandlerService.updateFileEtag(uri.fsPath);
     }
 }

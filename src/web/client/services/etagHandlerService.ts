@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import { RequestInit } from "node-fetch";
 import { getCommonHeaders } from "../common/authenticationProvider";
 import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
@@ -16,9 +17,10 @@ import {
 } from "../utilities/fileAndEntityUtil";
 import { getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
+import { ERRORS } from "../common/errorHandler";
 
 export class EtagHandlerService {
-    public static async getLatestAndUpdateMetadata(
+    public static async getLatestFileContentAndUpdateMetadata(
         fileFsPath: string,
         portalFs: PortalsFS
     ): Promise<string> {
@@ -71,7 +73,11 @@ export class EtagHandlerService {
             );
 
             await WebExtensionContext.reAuthenticate();
-            const response = await fetch(requestUrl, requestInit);
+            const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);            
+
+            if (response === null){
+                throw new Error(ERRORS.BULKHEAD_FETCH_REJECTED_ERROR);
+            }
 
             if (response.ok) {
                 const result = await response.json();
@@ -114,16 +120,86 @@ export class EtagHandlerService {
                 new Date().getTime() - requestSentAtTime
             );
         } catch (error) {
-            const authError = (error as Error)?.message;
+            const errorMsg = (error as Error)?.message;
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                 requestUrl,
                 entityName,
                 httpMethod.GET,
                 new Date().getTime() - requestSentAtTime,
-                authError
+                errorMsg
             );
         }
 
         return "";
+    }
+
+    public static async updateFileEtag(fileFsPath: string){
+        const entityName = getFileEntityType(fileFsPath);
+        const entityId = getFileEntityId(fileFsPath);
+        const requestSentAtTime = new Date().getTime();
+
+        const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
+            queryParameters.ORG_URL
+        ) as string;
+
+        const requestUrl = getRequestURL(
+            dataverseOrgUrl,
+            entityName,
+            entityId,
+            httpMethod.GET,
+            true,
+            false
+        );
+
+        try {
+            const requestInit: RequestInit = {
+                method: httpMethod.GET,
+                headers: getCommonHeaders(
+                    WebExtensionContext.dataverseAccessToken
+                ),
+            };
+
+            WebExtensionContext.telemetry.sendAPITelemetry(
+                requestUrl,
+                entityName,
+                httpMethod.GET
+            );
+
+            await WebExtensionContext.reAuthenticate();
+            const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);            
+
+            if (response === null){
+                throw new Error(ERRORS.BULKHEAD_FETCH_REJECTED_ERROR);
+            }
+
+            if (response.ok) {
+                const result = await response.json();
+                WebExtensionContext.entityDataMap.updateEtagValue(
+                    entityId,
+                    result[ODATA_ETAG]
+                );
+            } else {
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
+                    response.statusText
+                );
+            }
+
+            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
+                requestUrl,
+                entityName,
+                httpMethod.GET,
+                new Date().getTime() - requestSentAtTime
+            );
+        } catch (error) {
+            const errorMsg = (error as Error)?.message;
+            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                requestUrl,
+                entityName,
+                httpMethod.GET,
+                new Date().getTime() - requestSentAtTime,
+                errorMsg
+            );
+        }
     }
 }
