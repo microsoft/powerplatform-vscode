@@ -117,7 +117,7 @@ export class EtagHandlerService {
                     response.statusText,
                     '',
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
-                    response.status as unknown as string
+                    response.status.toString()
                 );
             }
 
@@ -138,7 +138,7 @@ export class EtagHandlerService {
                     authError,
                     '',
                     telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
-                    (error as Response)?.status as unknown as string
+                    (error as Response)?.status.toString()
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
