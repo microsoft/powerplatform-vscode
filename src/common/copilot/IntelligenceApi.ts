@@ -28,7 +28,8 @@ export async function sendApiRequest(message: string, activeFilePath: string, ac
     // };
 
     // const AIBTestUrl = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
-    const AIBTestUrl = "https://localhost:5001/v1.0/"+ orgID +"/appintelligence/chat";
+    // const AIBTestUrl = "https://localhost:5001/v1.0/"+ orgID +"/appintelligence/chat";
+    const AIBTestUrl = "https://aibuildertextapiservice.us-il201.gateway.test.island.powerapps.com/v1.0/"+ orgID +"/appintelligence/chat";
     console.log("orgID", orgID)
     console.log("sessionID", sessionID)
     console.log("Input message", message);
@@ -48,6 +49,23 @@ export async function sendApiRequest(message: string, activeFilePath: string, ac
     }
 
     console.log("Input message", realPrompt);
+    // const requestBody = {
+    //     "question": realPrompt,
+    //     "top": 3,
+    //     "context": {
+    //         "sessionId": "2c4db921-be75-43fe-8fec-e4d65bd7546c",
+    //         "scenario": "NL2Text",
+    //         "subScenario": "GenerateNewText",
+    //         "version": "V1",
+    //         "information": {
+    //             "title": "Woodland Bank",
+    //             "element": "<p>",
+    //             "contentType": "Informational",
+    //             "tone": "Educational",
+    //             "length": "Short"
+    //         }
+    //     }
+    // }
 
     const requestBody = {
         "question": realPrompt,//"Add a div with 3 cards having nice animations purely using css",//,

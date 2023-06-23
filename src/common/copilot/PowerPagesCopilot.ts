@@ -51,10 +51,20 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             }
             )
         );
+        vscode.authentication.onDidChangeSessions(this.handleAuthChange);
+        
     }
 
 
     private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
+
+    private handleAuthChange = async () => {
+        console.log("authentication changed");
+        await this.checkAuthentication();
+        this.sendMessageToWebview({ type: 'userName', value: userName });
+        this.sendMessageToWebview({ type: "welcomeScreen" });
+    
+    }
 
     public async resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -86,16 +96,18 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        let isHandlingAuthChange = false;
+        // let isHandlingAuthChange = false;
 
-        vscode.authentication.onDidChangeSessions(async () => {
-            if (!isHandlingAuthChange) {
-                isHandlingAuthChange = true;
-                console.log("authentication changed");
-                await this.checkAuthentication();
-                isHandlingAuthChange = false;
-            }
-        });
+        // vscode.authentication.onDidChangeSessions(async () => {
+        //     if (!isHandlingAuthChange) {
+        //         isHandlingAuthChange = true;
+        //         console.log("authentication changed");
+        //         await this.checkAuthentication();
+        //         this.sendMessageToWebview({ type: 'userName', value: userName });
+        //         this.sendMessageToWebview({ type: "welcomeScreen" });
+        //         isHandlingAuthChange = false;
+        //     }
+        // });
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
@@ -105,7 +117,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     this.sendMessageToWebview({ type: 'env', value: this.isDesktop, envName: environmentName }); //TODO Use IS_DESKTOP
                     await this.checkAuthentication();
                     this.sendMessageToWebview({ type: 'userName', value: userName });
-                    this.sendMessageToWebview({ type: "welcomeScreen"});
+                    this.sendMessageToWebview({ type: "welcomeScreen" });
                     break;
                 }
                 case "login": {
@@ -113,13 +125,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                    // orgID = await getOrgID()
                     // TODO: Reset the token if the user changes the account or signs out
                     intelligenceAPIAuthentication().then(({ accessToken, user }) => {
-                        if (accessToken && user) {
-                            console.log('token: ' + accessToken);
-                            apiToken = accessToken;
-                            userName = getUserName(user);
-                            this.sendMessageToWebview({ type: 'userName', value: userName });
-                            this.sendMessageToWebview({ type: "welcomeScreen" });
-                        }
+                        console.log('token: ' + accessToken);
+                        apiToken = accessToken;
+                        userName = getUserName(user);
                     });
                     break;
                 }
