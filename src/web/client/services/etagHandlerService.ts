@@ -50,7 +50,6 @@ export class EtagHandlerService {
                 ?.attributePath as IAttributePath;
 
         try {
-            throw Error ("Null pointer exception");
             const requestInit: RequestInit = {
                 method: httpMethod.GET,
                 headers: getCommonHeaders(
@@ -58,12 +57,12 @@ export class EtagHandlerService {
                 ),
             };
 
-            // if (entityEtag) {
-            //     requestInit.headers = {
-            //         ...requestInit.headers,
-            //         "If-None-Match": entityEtag,
-            //     };
-            // }
+            if (entityEtag) {
+                requestInit.headers = {
+                    ...requestInit.headers,
+                    "If-None-Match": entityEtag,
+                };
+            }
 
             WebExtensionContext.telemetry.sendAPITelemetry(
                 requestUrl,
@@ -141,8 +140,7 @@ export class EtagHandlerService {
             }else{
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_ETAGHANDLERSERVICE_ERROR,
-                    (error as Error)?.message,
-                    error as Error
+                    (error as Error)?.message
                 );
             }
             
