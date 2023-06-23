@@ -85,10 +85,6 @@ async function fetchFromDataverseAndCreateFiles(
                 },
             });
 
-            if (response === null){
-                throw new Error(ERRORS.BULKHEAD_FETCH_REJECTED_ERROR);
-            }
-
             if (!response.ok) {
                 makeRequestCall = false;
                 vscode.window.showErrorMessage(
@@ -140,6 +136,7 @@ async function fetchFromDataverseAndCreateFiles(
                 }
             }
         } catch (error) {
+            makeRequestCall = false;
             const errorMsg = (error as Error)?.message;
             vscode.window.showErrorMessage(
                 vscode.l10n.t("Failed to fetch some files.")
@@ -475,10 +472,6 @@ async function getMappingEntityContent(
     const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
         headers: getCommonHeaders(accessToken),
     });
-
-    if(response === null){
-        throw new Error(ERRORS.BULKHEAD_FETCH_REJECTED_ERROR);
-    }
 
     if (!response.ok) {
         WebExtensionContext.telemetry.sendAPIFailureTelemetry(

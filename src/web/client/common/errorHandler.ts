@@ -55,8 +55,7 @@ export const ERRORS = {
     FILE_ID_EMPTY: "File ID is empty",
     LANGUAGE_CODE_ID_VALUE_NULL: "Language code ID is empty",
     LANGUAGE_CODE_EMPTY: "Language code is empty",
-    BULKHEAD_FETCH_REJECTED_ERROR : "Bulkhead handle request call returned null on fetch",
-    BULKHEAD_SAVE_REJECTED_ERROR : "Bulkhead handle request call returned null on save",
+    BULKHEAD_LIMITS_EXCEEDED : "Bulkhead queue limits exceeded",
 };
 
 export function showErrorDialog(errorString: string, detailMessage?: string) {

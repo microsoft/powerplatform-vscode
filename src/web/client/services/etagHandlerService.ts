@@ -19,7 +19,6 @@ import {
 } from "../utilities/fileAndEntityUtil";
 import { getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
-import { ERRORS } from "../common/errorHandler";
 
 export class EtagHandlerService {
     public static async getLatestFileContentAndUpdateMetadata(
@@ -75,11 +74,7 @@ export class EtagHandlerService {
             );
 
             await WebExtensionContext.reAuthenticate();
-            const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);            
-
-            if (response === null){
-                throw new Error(ERRORS.BULKHEAD_FETCH_REJECTED_ERROR);
-            }
+            const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);  
 
             if (response.ok) {
                 const result = await response.json();
@@ -168,11 +163,7 @@ export class EtagHandlerService {
             );
 
             await WebExtensionContext.reAuthenticate();
-            const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);            
-
-            if (response === null){
-                throw new Error(ERRORS.BULKHEAD_FETCH_REJECTED_ERROR);
-            }
+            const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);  
 
             if (response.ok) {
                 const result = await response.json();

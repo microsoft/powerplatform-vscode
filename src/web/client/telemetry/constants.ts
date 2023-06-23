@@ -49,4 +49,5 @@ export enum telemetryEventNames {
     WEB_EXTENSION_GET_FILE_CONTENT_ERROR = "webExtensionGetFileContentError",
     WEB_EXTENSION_SET_FILE_CONTENT_ERROR = "webExtensionSetFileContentError",
     WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE  = "webExtensionFailedToPrepareWorkspace",
+    WEB_EXTENSION_BULKHEAD_QUEUE_FULL = "webExtensionBulkheadQueueFull",
 }

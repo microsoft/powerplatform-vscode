@@ -7,7 +7,7 @@ import { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
 import { getCommonHeaders } from "../common/authenticationProvider";
 import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
-import { ERRORS, showErrorDialog } from "../common/errorHandler";
+import { showErrorDialog } from "../common/errorHandler";
 import { FileData } from "../context/fileData";
 import { httpMethod } from "../common/constants";
 import {
@@ -167,10 +167,6 @@ async function saveDataToDataverse(
                 saveCallParameters.requestUrl,
                 saveCallParameters.requestInit
             );
-
-            if(response === null) {
-                throw new Error(ERRORS.BULKHEAD_SAVE_REJECTED_ERROR);
-            }
 
             if (!response.ok) {
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(

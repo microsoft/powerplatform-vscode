@@ -6,24 +6,29 @@
 import { BulkheadRejectedError, bulkhead } from 'cockatiel';
 import fetch, { RequestInfo, RequestInit } from "node-fetch";
 import { MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT } from '../common/constants';
+import { ERRORS } from '../common/errorHandler';
+import WebExtensionContext from "../WebExtensionContext";
+import { telemetryEventNames } from '../telemetry/constants';
 
 export class ConcurrencyHandler {
     private _bulkhead = bulkhead(MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT);
 
-   public async  handleRequest(requestInfo: RequestInfo, requestInit?: RequestInit) {
-    try {
+    public async  handleRequest(requestInfo: RequestInfo, requestInit?: RequestInit) {
+        try {
         return await this._bulkhead.execute(() => fetch(
                 requestInfo,
                 requestInit
             ));
         } catch (e) {
-            if (e instanceof BulkheadRejectedError) {
-                // log telemetry
+            if (e instanceof BulkheadRejectedError) {                
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_BULKHEAD_QUEUE_FULL,
+                    this._bulkhead.executionSlots.toString(),
+                );
+                throw new Error(ERRORS.SUBURI_EMPTY);
             } else {
                 throw e;
             }
         }
-
-        return null;
     }
 }
