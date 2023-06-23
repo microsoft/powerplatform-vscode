@@ -48,7 +48,7 @@ export function getRequestURL(
                 parameterizedUrlTemplate =
                     parameterizedUrlTemplate +
                     (attributeQueryParameters ??
-                        getEntityFetchQuery(entity));
+                        getEntityFetchQuery(entity, entityId.length > 0 && entity.length > 0));
                 break;
             default:
                 break;

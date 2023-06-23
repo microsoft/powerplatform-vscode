@@ -48,7 +48,9 @@ export enum telemetryEventNames {
     WEB_EXTENSION_PREPROCESS_DATA_SUCCESS = "webExtensionPreprocessDataSuccess",
     WEB_EXTENSION_GET_FILE_CONTENT_ERROR = "webExtensionGetFileContentError",
     WEB_EXTENSION_SET_FILE_CONTENT_ERROR = "webExtensionSetFileContentError",
-    WEB_EXTENSION_ETAGHANDLERSERVICE_ERROR = "webExtensionEtagHandlerServiceError",
-    WEB_EXTENSION_ETAGHANDLERSERVICE = 'webExtensionEtagHandlerService',
-    WEB_EXTENSION_ETAGHANDLERSERVICE_API_ERROR = 'webExtensionEtagHandlerServiceAPIFailedError'
+    WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE  = "webExtensionFailedToPrepareWorkspace",
+    WEB_EXTENSION_BULKHEAD_QUEUE_FULL = "webExtensionBulkheadQueueFull",
+    WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR = "webExtensionEtagHandlerServiceError",
+    WEB_EXTENSION_ETAG_HANDLER_SERVICE = 'webExtensionEtagHandlerService',
+    WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR = 'webExtensionEtagHandlerServiceAPIFailedError'
 }
