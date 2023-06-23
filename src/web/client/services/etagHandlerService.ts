@@ -67,7 +67,12 @@ export class EtagHandlerService {
             WebExtensionContext.telemetry.sendAPITelemetry(
                 requestUrl,
                 entityName,
-                httpMethod.GET
+                httpMethod.GET,
+                '',
+                true,
+                0,
+                undefined,
+                telemetryEventNames.WEB_EXTENSION_ETAGHANDLERSERVICE
             );
 
             await WebExtensionContext.reAuthenticate();
@@ -101,9 +106,15 @@ export class EtagHandlerService {
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
                 );
             } else {
-                WebExtensionContext.telemetry.sendErrorTelemetry(
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    entityName,
+                    httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    response.statusText,
+                    '',
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
-                    response.statusText
+                    response.status as unknown as string
                 );
             }
 
@@ -114,14 +125,25 @@ export class EtagHandlerService {
                 new Date().getTime() - requestSentAtTime
             );
         } catch (error) {
-            const authError = (error as Error)?.message;
-            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                entityName,
-                httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                authError
-            );
+            if ((error as Response)?.status>0){
+                const authError = (error as Error)?.message;
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    entityName,
+                    httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    authError,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_ETAGHANDLERSERVICE_API_ERROR,
+                    (error as Response)?.status as unknown as string
+                );
+            }else{
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_ETAGHANDLERSERVICE_ERROR,
+                    (error as Error)?.message
+                );
+            }
+            
         }
 
         return "";
