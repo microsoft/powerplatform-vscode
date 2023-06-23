@@ -134,7 +134,7 @@ export class EtagHandlerService {
                     new Date().getTime() - requestSentAtTime,
                     authError,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_ETAGHANDLERSERVICE_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_ETAGHANDLERSERVICE_API_ERROR,
                     (error as Response)?.status as unknown as string
                 );
             }else{

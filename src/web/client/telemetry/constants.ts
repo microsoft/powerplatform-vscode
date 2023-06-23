@@ -49,5 +49,6 @@ export enum telemetryEventNames {
     WEB_EXTENSION_GET_FILE_CONTENT_ERROR = "webExtensionGetFileContentError",
     WEB_EXTENSION_SET_FILE_CONTENT_ERROR = "webExtensionSetFileContentError",
     WEB_EXTENSION_ETAGHANDLERSERVICE_ERROR = "webExtensionEtagHandlerServiceError",
-    WEB_EXTENSION_ETAGHANDLERSERVICE = 'webExtensionEtagHandlerService'
+    WEB_EXTENSION_ETAGHANDLERSERVICE = 'webExtensionEtagHandlerService',
+    WEB_EXTENSION_ETAGHANDLERSERVICE_API_ERROR = 'webExtensionEtagHandlerServiceAPIFailedError'
 }
