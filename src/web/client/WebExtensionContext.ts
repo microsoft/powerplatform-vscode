@@ -367,7 +367,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     response?.statusText,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATELANGUAGEIDTOCODE_API_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
                     response?.status as unknown as string
                 );
             }
@@ -393,12 +393,12 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     errorMsg,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATELANGUAGEIDTOCODE_API_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
                     (error as Response)?.status as unknown as string
                 );
             }else{
                 this.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_POPULATELANGUAGEIDTOCODE_SYSTEM_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
                     (error as Error)?.message,
                     error as Error
                 );
@@ -439,7 +439,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     response?.statusText,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITELANGUAGEIDTOPORTALLANGUAGE_API_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
                     response?.status as unknown as string
                 );
             }
@@ -462,12 +462,12 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     errorMsg,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITELANGUAGEIDTOPORTALLANGUAGE_API_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
                     (error as Response)?.status as unknown as string
             );
             }else{
                 this.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITELANGUAGEIDTOPORTALLANGUAGE_SYSTEM_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
                     (error as Error)?.message,
                     error as Error
                 );
@@ -508,7 +508,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     response?.statusText,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITEIDTOLANGUAGE_API_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
                     response?.status as unknown as string
                 );
             }
@@ -530,12 +530,12 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     errorMsg,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITEIDTOLANGUAGE_API_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
                     (error as Response)?.status as unknown as string
             );
             }else{
                 this.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITEIDTOLANGUAGE_SYSTEM_ERROR,
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
                     (error as Error)?.message,
                     error as Error
                 );
