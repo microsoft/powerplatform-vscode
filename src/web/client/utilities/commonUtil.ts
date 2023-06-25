@@ -5,23 +5,26 @@
 
 import * as vscode from "vscode";
 import {
+    BASE_64,
+    DATA,
     NO_CONTENT,
-    VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
+    VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME
 } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { schemaEntityName } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
+import { decode, encode } from 'js-base64';
 
 // decodes base64 to text
 export function convertfromBase64ToString(data: string) {
-    return decodeURIComponent(escape(atob(data)));
+  return decode(data);
 }
 
 // encodes text to UTF-8 bytes which are then encoded to base64
 export function convertStringtoBase64(data: string) {
-    return btoa(unescape(encodeURIComponent(data)));
+  return encode(data);
 }
 
 export function GetFileNameWithExtension(
@@ -33,7 +36,7 @@ export function GetFileNameWithExtension(
     fileName = isLanguageCodeNeededInFileName(entity) ? `${fileName}.${languageCode}` : fileName;
     fileName = isExtensionNeededInFileName(entity) ? `${fileName}.${extension}` : fileName;
 
-    return fileName;
+    return getSanitizedFileName(fileName);
 }
 
 export function isLanguageCodeNeededInFileName(entity: string){
@@ -114,4 +117,29 @@ export function isVersionControlEnabled() {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function isNullOrUndefined(object: any | null | undefined): boolean {
     return object === null || object === undefined;
+}
+
+// Clean up the file name to remove special characters
+// Ex: For input: "my_file!@#$%^&*()_|+=?;:'\",<>{}[]\\/"; the output will be "my_file"
+export function getSanitizedFileName(fileName: string): string {
+  return fileName.trim().replace(/[`~!@#$%^&*()_|+=?;:'",<>{}[\]\\/]/g, '');
+}
+
+// Get the file's extension
+export function getFileExtension(fileName: string): string | undefined{
+    return fileName.split('.').pop();
+}
+
+export function getFileExtensionForPreload() {
+  return ['css', 'json', 'txt'];
+}
+
+export function getImageContent(mimeType: string, fileContent: string) {
+    return DATA + mimeType + BASE_64 + fileContent
+}
+
+export function isContentPreloadNeeded(fileName: string): boolean {
+    const fileExtension = getFileExtension(fileName);
+    const validImageExtensions = getFileExtensionForPreload();
+    return fileExtension !== undefined && validImageExtensions.includes(fileExtension.toLowerCase());
 }
