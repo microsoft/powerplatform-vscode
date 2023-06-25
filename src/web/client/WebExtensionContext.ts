@@ -368,7 +368,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     response?.statusText,
                     '',
                     telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
-                    response?.status as unknown as string
+                    response?.status.toSring()
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -394,7 +394,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     errorMsg,
                     '',
                     telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
-                    (error as Response)?.status as unknown as string
+                    (error as Response)?.status.toString()
                 );
             }else{
                 this.telemetry.sendErrorTelemetry(
@@ -440,7 +440,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     response?.statusText,
                     '',
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
-                    response?.status as unknown as string
+                    response?.status.toString()
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -463,7 +463,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     errorMsg,
                     '',
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
-                    (error as Response)?.status as unknown as string
+                    (error as Response)?.status.toString()
             );
             }else{
                 this.telemetry.sendErrorTelemetry(
@@ -509,7 +509,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     response?.statusText,
                     '',
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
-                    response?.status as unknown as string
+                    response?.status.toString()
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -531,7 +531,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     errorMsg,
                     '',
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
-                    (error as Response)?.status as unknown as string
+                    (error as Response)?.status.toString()
             );
             }else{
                 this.telemetry.sendErrorTelemetry(
