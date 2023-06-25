@@ -98,7 +98,7 @@ async function getSaveParameters(
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
             BAD_REQUEST
-        );
+        ); // no API request is made in this case since we do not know in which column should we save the value
         showErrorDialog(
             vscode.l10n.t("Unable to complete the request"),
             vscode.l10n.t(
