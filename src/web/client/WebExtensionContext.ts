@@ -354,7 +354,10 @@ class WebExtensionContext implements IWebExtensionContext {
                     languageEntityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
-                    response?.statusText
+                    response?.statusText,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATELANGUAGEIDTOCODE_API_ERROR,
+                    response?.status as unknown as string
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -370,14 +373,25 @@ class WebExtensionContext implements IWebExtensionContext {
                 schema
             );
         } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            this.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                languageEntityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
-            );
+            if ((error as Response)?.status>0){
+                const errorMsg = (error as Error)?.message;
+                this.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    languageEntityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    errorMsg,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATELANGUAGEIDTOCODE_API_ERROR,
+                    (error as Response)?.status as unknown as string
+                );
+            }else{
+                this.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_POPULATELANGUAGEIDTOCODE_SYSTEM_ERROR,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }
 
@@ -412,7 +426,10 @@ class WebExtensionContext implements IWebExtensionContext {
                     languageEntityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
-                    response?.statusText
+                    response?.statusText,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITELANGUAGEIDTOPORTALLANGUAGE_API_ERROR,
+                    response?.status as unknown as string
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -425,14 +442,25 @@ class WebExtensionContext implements IWebExtensionContext {
             this._websiteLanguageIdToPortalLanguageMap =
                 getWebsiteLanguageIdToPortalLanguageIdMap(result, schema);
         } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            this.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                languageEntityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
+            if ((error as Response)?.status>0){
+                const errorMsg = (error as Error)?.message;
+                this.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    languageEntityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    errorMsg,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITELANGUAGEIDTOPORTALLANGUAGE_API_ERROR,
+                    (error as Response)?.status as unknown as string
             );
+            }else{
+                this.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITELANGUAGEIDTOPORTALLANGUAGE_SYSTEM_ERROR,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }
 
@@ -467,7 +495,10 @@ class WebExtensionContext implements IWebExtensionContext {
                     websiteEntityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
-                    response?.statusText
+                    response?.statusText,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITEIDTOLANGUAGE_API_ERROR,
+                    response?.status as unknown as string
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -479,14 +510,25 @@ class WebExtensionContext implements IWebExtensionContext {
             const result = await response?.json();
             this._websiteIdToLanguage = getWebsiteIdToLcidMap(result, schema);
         } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            this.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                websiteEntityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
+            if ((error as Response)?.status>0){
+                const errorMsg = (error as Error)?.message;
+                this.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    websiteEntityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    errorMsg,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITEIDTOLANGUAGE_API_ERROR,
+                    (error as Response)?.status as unknown as string
             );
+            }else{
+                this.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_POPULATEWEBSITEIDTOLANGUAGE_SYSTEM_ERROR,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }
 

@@ -50,5 +50,17 @@ export enum telemetryEventNames {
     WEB_EXTENSION_SET_FILE_CONTENT_ERROR = "webExtensionSetFileContentError",
     WEB_EXTENSION_ETAGHANDLERSERVICE_ERROR = "webExtensionEtagHandlerServiceError",
     WEB_EXTENSION_ETAGHANDLERSERVICE = 'webExtensionEtagHandlerService',
-    WEB_EXTENSION_ETAGHANDLERSERVICE_API_ERROR = 'webExtensionEtagHandlerServiceAPIFailedError'
+    WEB_EXTENSION_ETAGHANDLERSERVICE_API_ERROR = 'webExtensionEtagHandlerServiceAPIFailedError',
+    WEB_EXTENSION_POPULATELANGUAGEIDTOCODE_API_ERROR = 'webExtensionPopulateLanguageIdToCodeAPIError',
+    WEB_EXTENSION_POPULATELANGUAGEIDTOCODE_SYSTEM_ERROR = 'webExtensionPopulateLanguageIdToCodeSystemError',
+    WEB_EXTENSION_POPULATEWEBSITELANGUAGEIDTOPORTALLANGUAGE_API_ERROR = 'webExtensionPopulateWebsiteLanguageIdToPortalLanguageAPIError',
+    WEB_EXTENSION_POPULATEWEBSITELANGUAGEIDTOPORTALLANGUAGE_SYSTEM_ERROR = 'webExtensionPopulateWebsiteLanguageIdToPortalLanguageSystemError',
+    WEB_EXTENSION_POPULATEWEBSITEIDTOLANGUAGE_API_ERROR = 'webExtensionPopulateWebsiteIdToLanguageAPIError',
+    WEB_EXTENSION_POPULATEWEBSITEIDTOLANGUAGE_SYSTEM_ERROR = 'webExtensionPopulateWebsiteIdToLanguageSystemError',
+    WEB_EXTENSION_GETMAPPINGENTITYCONTENT_API_ERROR = 'webExtensionGetMappingEntityContentAPIError',
+    WEB_EXTENSION_FETCHDATAVERSEANDUPDATEVFS_API_ERROR = 'webExtensionFetchDataverseUpdateVFSAPIError',
+    WEB_EXTENSION_FETCHDATAVERSEANDUPDATEVFS_SYSTEM_ERROR = 'webExtensionFetchDataverseUpdateVFSSystemError',
+    WEB_EXTENSION_FETCHDATAVERSEANDCREATEFILES_API_ERROR = 'webExtensionFetchDataverseCreateFilesAPIError',
+    WEB_EXTENSION_SAVEDATATODATAVERSE_API_ERROR = 'webExtensionSaveDataToDataverseAPIError',
+    WEB_EXTENSION_GETSAVEPARAMETERS_ERROR = 'webExtensionGetSaveParametersError'
 }

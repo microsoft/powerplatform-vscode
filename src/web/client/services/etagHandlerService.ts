@@ -140,7 +140,8 @@ export class EtagHandlerService {
             }else{
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_ETAGHANDLERSERVICE_ERROR,
-                    (error as Error)?.message
+                    (error as Error)?.message,
+                    error as Error
                 );
             }
             

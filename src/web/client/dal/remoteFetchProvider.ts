@@ -51,13 +51,24 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                     "We encountered an error preparing the file for edit."
                 )
             );
-            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                entity.requestUrl,
-                entity.entityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
-            );
+            if ((error as Response)?.status>0){
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                    entity.requestUrl,
+                    entity.entityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    errorMsg,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_FETCHDATAVERSEANDUPDATEVFS_API_ERROR,
+                    (error as Response)?.status as unknown as string
+                );
+            }else{
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_FETCHDATAVERSEANDUPDATEVFS_SYSTEM_ERROR,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }));
 }
@@ -101,7 +112,10 @@ async function fetchFromDataverseAndCreateFiles(
                 entityName,
                 Constants.httpMethod.GET,
                 new Date().getTime() - requestSentAtTime,
-                JSON.stringify(response)
+                JSON.stringify(response),
+                '',
+                telemetryEventNames.WEB_EXTENSION_FETCHDATAVERSEANDCREATEFILES_API_ERROR,
+                response?.status as unknown as string
             );
             throw new Error(response.statusText);
         }
@@ -267,7 +281,8 @@ async function createContentFiles(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
-            errorMsg
+            errorMsg,
+            error as Error
         );
     }
 }
@@ -467,7 +482,10 @@ async function getMappingEntityContent(
             entity,
             Constants.httpMethod.GET,
             new Date().getTime() - requestSentAtTime,
-            JSON.stringify(response)
+            JSON.stringify(response),
+            '',
+            telemetryEventNames.WEB_EXTENSION_GETMAPPINGENTITYCONTENT_API_ERROR,
+            response?.status as unknown as string
         );
         throw new Error(response.statusText);
     }
