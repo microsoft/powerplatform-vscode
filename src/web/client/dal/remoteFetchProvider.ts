@@ -39,39 +39,6 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
-
-    await Promise.all(entityRequestURLs.map(async (entity) => {
-        const requestSentAtTime = new Date().getTime();
-        try {
-            await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs);
-        } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            showErrorDialog(
-                vscode.l10n.t("There was a problem opening the workspace"),
-                vscode.l10n.t(
-                    "We encountered an error preparing the file for edit."
-                )
-            );
-            if ((error as Response)?.status>0){
-                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                    entity.requestUrl,
-                    entity.entityName,
-                    Constants.httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    errorMsg,
-                    '',
-                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_UPDATE_VFS_API_ERROR,
-                    (error as Response)?.status.toString()
-                );
-            }else{
-                WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_UPDATE_VFS_SYSTEM_ERROR,
-                    (error as Error)?.message,
-                    error as Error
-                );
-            }
-        }
-    }));
         await Promise.all(entityRequestURLs.map(async (entity) => {
                 await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs);        
         }));

@@ -195,7 +195,7 @@ export class EtagHandlerService {
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
-                    response.status as unknown as string
+                    response.status.toString()
                 );
             }
 
