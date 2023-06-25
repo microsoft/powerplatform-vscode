@@ -55,6 +55,7 @@ export const ERRORS = {
     FILE_ID_EMPTY: "File ID is empty",
     LANGUAGE_CODE_ID_VALUE_NULL: "Language code ID is empty",
     LANGUAGE_CODE_EMPTY: "Language code is empty",
+    BULKHEAD_LIMITS_EXCEEDED : "Bulkhead queue limits exceeded",
 };
 
 export function showErrorDialog(errorString: string, detailMessage?: string) {

@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import fetch from "node-fetch";
 import * as vscode from "vscode";
 import {
     dataverseAuthentication,
@@ -28,6 +27,7 @@ import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath } from "./common/interfaces";
+import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -61,6 +61,9 @@ export interface IWebExtensionContext {
     telemetry: WebExtensionTelemetry;
     npsEligibility: boolean;
     userId: string;
+
+    // Error handling
+    concurrencyHandler: ConcurrencyHandler;
 }
 
 class WebExtensionContext implements IWebExtensionContext {
@@ -85,6 +88,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _npsEligibility: boolean;
     private _userId: string;
     private _formsProEligibilityId: string;
+    private _concurrencyHandler: ConcurrencyHandler
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -150,6 +154,10 @@ class WebExtensionContext implements IWebExtensionContext {
         return this._formsProEligibilityId;
     }
 
+    public get concurrencyHandler() {
+        return this._concurrencyHandler;
+    }
+
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
         this._schemaEntitiesMap = new Map<string, Map<string, string>>();
@@ -172,6 +180,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._npsEligibility = false;
         this._userId = "";
         this._formsProEligibilityId = "";
+        this._concurrencyHandler = new ConcurrencyHandler();
     }
 
     public setWebExtensionContext(
@@ -288,7 +297,8 @@ class WebExtensionContext implements IWebExtensionContext {
         fileExtension: string,
         attributePath: IAttributePath,
         encodeAsBase64: boolean,
-        mimeType?: string
+        mimeType?: string,
+        isContentLoaded?: boolean
     ) {
         this.fileDataMap.setEntity(
             fileUri,
@@ -299,7 +309,8 @@ class WebExtensionContext implements IWebExtensionContext {
             fileExtension,
             attributePath,
             encodeAsBase64,
-            mimeType
+            mimeType,
+            isContentLoaded
         );
     }
 
@@ -345,7 +356,7 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(requestUrl, {
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
                 headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
@@ -403,7 +414,7 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(requestUrl, {
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
                 headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
@@ -457,7 +468,7 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(requestUrl, {
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
                 headers: getCommonHeaders(accessToken),
             });
 

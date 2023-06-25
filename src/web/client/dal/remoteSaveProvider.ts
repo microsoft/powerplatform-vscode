@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import fetch, { RequestInit } from "node-fetch";
+import { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
 import { getCommonHeaders } from "../common/authenticationProvider";
 import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
@@ -163,7 +163,7 @@ async function saveDataToDataverse(
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_TRIGGERED
             );
-            const response = await fetch(
+            const response = await WebExtensionContext.concurrencyHandler.handleRequest(
                 saveCallParameters.requestUrl,
                 saveCallParameters.requestInit
             );

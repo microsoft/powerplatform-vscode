@@ -15,6 +15,7 @@ export interface IFileData {
     hasDirtyChanges: boolean;
     encodeAsBase64: boolean | undefined;
     mimeType: string | undefined;
+    isContentLoaded?: boolean;
 }
 
 export class FileData implements IFileData {
@@ -27,6 +28,7 @@ export class FileData implements IFileData {
     private _hasDirtyChanges!: boolean;
     private _encodeAsBase64: boolean | undefined;
     private _mimeType: string | undefined;
+    private _isContentLoaded: boolean | undefined;
 
     // Getters
     public get entityName(): string {
@@ -57,6 +59,10 @@ export class FileData implements IFileData {
         return this._hasDirtyChanges;
     }
 
+    public get isContentLoaded(): boolean | undefined {
+        return this._isContentLoaded;
+    }
+
     // Setters
     public set setHasDirtyChanges(value: boolean) {
         this._hasDirtyChanges = value;
@@ -64,7 +70,7 @@ export class FileData implements IFileData {
     public set setEntityEtag(value: string) {
         this._entityEtag = value;
     }
-
+    
     constructor(
         entityId: string,
         entityName: string,
@@ -73,7 +79,8 @@ export class FileData implements IFileData {
         entityFileExtensionType: string,
         attributePath: IAttributePath,
         encodeAsBase64?: boolean,
-        mimeType?: string
+        mimeType?: string,
+        isContentLoaded?: boolean
     ) {
         this._entityId = entityId;
         this._entityName = entityName;
@@ -84,5 +91,6 @@ export class FileData implements IFileData {
         this._encodeAsBase64 = encodeAsBase64;
         this._mimeType = mimeType;
         this._hasDirtyChanges = false;
+        this._isContentLoaded = isContentLoaded;
     }
 }
