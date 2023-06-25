@@ -368,7 +368,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     response?.statusText,
                     '',
                     telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
-                    response?.status.toSring()
+                    response?.status.toString()
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
