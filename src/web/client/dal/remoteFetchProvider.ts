@@ -39,7 +39,6 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
-
         await Promise.all(entityRequestURLs.map(async (entity) => {
                 await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs);        
         }));
@@ -51,7 +50,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                 "We encountered an error preparing the file for edit."
             )
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, errorMsg);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, errorMsg,error as Error);
     }
 }
 
@@ -95,7 +94,10 @@ async function fetchFromDataverseAndCreateFiles(
                     entityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
-                    JSON.stringify(response)
+                    JSON.stringify(response),
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_API_ERROR,
+                    response?.status.toString()
                 );
                 throw new Error(response.statusText);
             }
@@ -141,13 +143,24 @@ async function fetchFromDataverseAndCreateFiles(
             vscode.window.showErrorMessage(
                 vscode.l10n.t("Failed to fetch some files.")
             );
-            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                entityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
+            if ((error as Response)?.status>0){
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    entityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    errorMsg,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_API_ERROR,
+                    (error as Response)?.status.toString()
             );
+            }else{
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }
 
@@ -275,7 +288,8 @@ async function createContentFiles(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
-            errorMsg
+            errorMsg,
+            error as Error
         );
     }
 }
@@ -479,7 +493,10 @@ async function getMappingEntityContent(
             entity,
             Constants.httpMethod.GET,
             new Date().getTime() - requestSentAtTime,
-            JSON.stringify(response)
+            JSON.stringify(response),
+            '',
+            telemetryEventNames.WEB_EXTENSION_GET_MAPPING_ENTITY_CONTENT_API_ERROR,
+            response?.status.toString()
         );
         throw new Error(response.statusText);
     }
@@ -553,7 +570,8 @@ export async function  preprocessData(
        const errorMsg = (error as Error)?.message;
        WebExtensionContext.telemetry.sendErrorTelemetry(
            telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,           
-           errorMsg
+           errorMsg,
+           error as Error
        );
    }
 
