@@ -107,7 +107,7 @@ export function isVersionControlEnabled() {
         );
     }
 
-    return isVersionControlEnabled;
+    return isVersionControlEnabled as boolean;
 }
 
 export function isMultifileEnabled() {
@@ -126,7 +126,7 @@ export function isMultifileEnabled() {
         );
     }
 
-    return isMultifileEnabled;
+    return isMultifileEnabled as boolean;
 }
 
 /**

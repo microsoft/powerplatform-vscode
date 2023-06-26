@@ -10,14 +10,13 @@ import {
 } from "../common/constants";
 import { IEntityRequestUrl } from "../common/interfaces";
 import { MultiFileSupportedEntityName, schemaEntityKey, schemaEntityName } from "../schema/constants";
-import { isMultifileEnabled } from "./commonUtil";
 import { getEntity } from "./schemaHelperUtil";
 import { getRequestURL } from "./urlBuilderUtil";
 
 export function getFolderSubUris(): string[] {
     const subUris: string[] = [];
 
-    if (!isMultifileEnabled()) {
+    if (!WebExtensionContext.showMultifileInVSCode) {
         const entityDetails = getEntity(WebExtensionContext.defaultEntityType);
         const subUri = entityDetails?.get(schemaEntityKey.FILE_FOLDER_NAME);
         return [subUri as string];
@@ -45,7 +44,7 @@ export function getRequestUrlForEntities(
     ) as string;
 
     if (
-        !isMultifileEnabled() ||
+        !WebExtensionContext.showMultifileInVSCode ||
         (entityId.length > 0 && entityType.length > 0)
     ) {
         const requestURL = getRequestURL(

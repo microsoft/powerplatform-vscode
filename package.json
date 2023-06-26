@@ -393,7 +393,7 @@
         "powerPlatform.experimental.enableMultiFileFeature": {
           "type": "boolean",
           "markdownDescription": "Enable multiple file view in Visual Studio Code (Web extension only)",
-          "default": true
+          "default": false
         }
       }
     },

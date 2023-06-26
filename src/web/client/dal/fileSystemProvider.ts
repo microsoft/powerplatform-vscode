@@ -24,7 +24,7 @@ import {
     getFileEntityId,
     updateFileDirtyChanges,
 } from "../utilities/fileAndEntityUtil";
-import { isMultifileEnabled, isVersionControlEnabled } from "../utilities/commonUtil";
+import { isVersionControlEnabled } from "../utilities/commonUtil";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -420,7 +420,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             WebExtensionContext.defaultEntityType
         );
 
-        if (isMultifileEnabled()) {
+        if (WebExtensionContext.showMultifileInVSCode) {
             // load rest of the files
             await fetchDataFromDataverseAndUpdateVFS(this);
         }

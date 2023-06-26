@@ -175,6 +175,7 @@ export function checkMandatoryMultifileParameters(
             const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
             const websiteId = queryParametersMap.get(queryParameters.WEBSITE_ID);
             if ((isMultifileEnabled() && isEnableMultifile && websiteId)
+            || (isMultifileEnabled() && !isEnableMultifile)
             || !isMultifileEnabled()){
                 return true;
             } else {
