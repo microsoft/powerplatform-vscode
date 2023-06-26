@@ -32,7 +32,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid var(--vscode-interactiveEditorInput-border);
+  border: 1px solid var(--vscode-dropdown-border);
   padding: 0px 6px 0px 0px;
   border-radius: 4px;
   height: 38px;
@@ -40,7 +40,7 @@ body {
 }
 
 .input-container:focus-within {
-  box-shadow: 0 0 0 1px var(--vscode-interactiveEditorInput-focusBorder);
+  box-shadow: 0 0 0 1px var(--vscode-focusBorder);
 }
 
 .input-container:focus-within .send-icon path:not(:hover) {
