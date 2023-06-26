@@ -8,6 +8,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import { schemaKey } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 import { PORTALS_FOLDER_NAME_DEFAULT, queryParameters } from "./constants";
+import { isMultifileEnabled } from "../utilities/commonUtil";
 
 export const ERRORS = {
     SUBURI_EMPTY: "SubURI value for entity file is empty",
@@ -88,7 +89,8 @@ export function checkMandatoryParameters(
 ): boolean {
     return (
         checkMandatoryPathParameters(appName, entity, entityId) &&
-        checkMandatoryQueryParameters(appName, queryParamsMap)
+        checkMandatoryQueryParameters(appName, queryParamsMap) &&
+        checkMandatoryMultifileParameters(appName, queryParamsMap)
     );
 }
 
@@ -138,6 +140,41 @@ export function checkMandatoryQueryParameters(
             const schemaName = queryParamsMap?.get(schemaKey.SCHEMA_VERSION);
             const websiteId = queryParamsMap?.get(queryParameters.WEBSITE_ID);
             if (orgURL && dataSource && schemaName && websiteId) {
+                return true;
+            } else {
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
+                );
+                showErrorDialog(
+                    vscode.l10n.t("There was a problem opening the workspace"),
+                    vscode.l10n.t(
+                        "Check the URL and verify the parameters are correct"
+                    )
+                );
+                return false;
+            }
+        }
+        default:
+            showErrorDialog(
+                vscode.l10n.t("There was a problem opening the workspace"),
+                vscode.l10n.t("Unable to find that app")
+            );
+            return false;
+    }
+}
+
+export function checkMandatoryMultifileParameters(
+    appName: string,
+    queryParametersMap: Map<string, string>
+): boolean {
+    switch (
+        appName // remove switch cases and use polymorphism
+    ) {
+        case "portal": {
+            const enableMultifile = queryParametersMap?.get(queryParameters.ENABLE_MULTIFILE);
+            const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
+            const websiteId = queryParametersMap.get(queryParameters.WEBSITE_ID);
+            if (isMultifileEnabled() && isEnableMultifile && websiteId){
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(

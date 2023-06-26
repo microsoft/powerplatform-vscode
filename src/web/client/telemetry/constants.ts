@@ -52,5 +52,8 @@ export enum telemetryEventNames {
     WEB_EXTENSION_BULKHEAD_QUEUE_FULL = "webExtensionBulkheadQueueFull",
     WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR = "webExtensionEtagHandlerServiceError",
     WEB_EXTENSION_ETAG_HANDLER_SERVICE = 'webExtensionEtagHandlerService',
-    WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR = 'webExtensionEtagHandlerServiceAPIFailedError'
+    WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR = 'webExtensionEtagHandlerServiceAPIFailedError',
+    WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED = "WebExtensionDiffViewFeatureFlagEnabled",
+    WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED = "WebExtensionDiffViewFeatureFlagDisabled",
+    WEB_EXTENSION_MULTI_FILE_MANDATORY_PARAMETERS_MISSING = "WebExtensionMultiFileMandatoryParametersMissing",
 }

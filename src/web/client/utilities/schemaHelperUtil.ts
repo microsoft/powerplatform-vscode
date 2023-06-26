@@ -12,10 +12,11 @@ import {
     schemaEntityName,
 } from "../schema/constants";
 import { IAttributePath } from "../common/interfaces";
+import { isMultifileEnabled } from "./commonUtil";
 
 export function getEntityFetchQuery(entity: string, useRegularFetchQuery = false) {
     return getEntity(entity)?.get(
-        Constants.ENABLE_MULTI_FILE_FEATURE && !useRegularFetchQuery
+        isMultifileEnabled() && !useRegularFetchQuery
             ? schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS
             : schemaEntityKey.FETCH_QUERY_PARAMETERS
     );

@@ -94,6 +94,9 @@ The {2} represents Solution's Version number</note>
     <trans-unit id="++CODE++c8fe15ab6371ebd955e8123fd897da623cad8dc11564548e7b4cf9b7e991120c">
       <source xml:lang="en">Failed to fetch file content.</source>
     </trans-unit>
+    <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
+      <source xml:lang="en">Failed to fetch some files.</source>
+    </trans-unit>
     <trans-unit id="++CODE++e1a694d8ed0093d17fa58ee8b44cc76f74583667ffc3511e5d8f77df7b156c41">
       <source xml:lang="en">Failed to get file ready for edit.</source>
     </trans-unit>
