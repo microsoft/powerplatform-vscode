@@ -84,7 +84,7 @@ export class NPSService{
                     WebExtensionContext.setFormsProEligibilityId(result?.FormsProEligibilityId);
                 }
         }catch(error){
-            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.NPS_API_FAILED, (error as Error)?.message);
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.NPS_API_FAILED, (error as Error)?.message,error as Error);
         }
     }
 }

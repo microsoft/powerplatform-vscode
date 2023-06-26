@@ -95,11 +95,8 @@ async function getSaveParameters(
             requestUrl
         );
     } else {
-        WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-            requestUrl,
-            entityName,
-            httpMethod.PATCH,
-            0,
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
             BAD_REQUEST
         ); // no API request is made in this case since we do not know in which column should we save the value
         showErrorDialog(
@@ -174,7 +171,10 @@ async function saveDataToDataverse(
                     entityName,
                     httpMethod.PATCH,
                     new Date().getTime() - requestSentAtTime,
-                    JSON.stringify(response)
+                    JSON.stringify(response),
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
+                    response?.status as unknown as string
                 );
                 WebExtensionContext.telemetry.sendInfoTelemetry(
                     telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
@@ -200,7 +200,9 @@ async function saveDataToDataverse(
                 httpMethod.PATCH,
                 new Date().getTime() - requestSentAtTime,
                 authError,
-                fileExtensionType
+                fileExtensionType,
+                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
+                (error as Response)?.status as unknown as string
             );
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
