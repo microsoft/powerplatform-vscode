@@ -129,7 +129,6 @@ export async function activate(
         })
     );
 
-
     if (vscode.window.registerWebviewPanelSerializer) {
         vscode.window.registerWebviewPanelSerializer(PortalWebView.viewType, {
             async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel) {
@@ -177,9 +176,6 @@ export async function activate(
         },
     }));
 }
-
-
-
 
 export async function deactivate(): Promise<void> {
     if (_telemetry) {

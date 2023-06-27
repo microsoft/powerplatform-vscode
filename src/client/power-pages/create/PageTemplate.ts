@@ -80,7 +80,7 @@ export const createPageTemplate = async (
             command,
             portalDir,
             watcher,
-            //telemetry
+            telemetry
         );
     } catch (error: any) {
     sendTelemetryEvent(telemetry, {
@@ -149,7 +149,7 @@ async function getPageTemplateInputs(
         if (!name) {
             return vscode.l10n.t("Please enter a name for the page template.");
         }
-
+    
         const file = formatFileName(name);
         const filePath = path.join(
             selectedWorkspaceFolder,

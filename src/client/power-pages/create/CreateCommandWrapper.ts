@@ -12,7 +12,7 @@ import { CONTENT_SNIPPET, Tables, WEBFILE } from "./CreateOperationConstants";
 import { createPageTemplate } from "./PageTemplate";
 import { getSelectedWorkspaceFolder } from "./utils/CommonUtils";
 import { createWebfile } from "./Webfile";
-//import { createWebpage } from "./Webpage";
+import { createWebpage } from "./Webpage";
 import { createWebTemplate } from "./WebTemplate";
 const activeEditor = vscode.window.activeTextEditor;
 
@@ -75,23 +75,23 @@ function registerCreateCommands(
         }
     );
 
-    // vscode.commands.registerCommand(
-    //     "microsoft-powerapps-portals.webpage",
-    //     async (uri) => {
-    //         const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
-    //         sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.WEBPAGE, triggerPoint: triggerPoint });
-    //         const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
-    //             uri,
-    //             activeEditor,
-    //         );
-    //         // createWebpage(
-    //         //     context,
-    //         //     selectedWorkspaceFolder,
-    //         //     yoCommandPath,
-    //         //     telemetry
-    //         // );
-    //     }
-    // );
+    vscode.commands.registerCommand(
+        "microsoft-powerapps-portals.webpage",
+        async (uri) => {
+            const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
+            sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType: Tables.WEBPAGE, triggerPoint: triggerPoint });
+            const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
+                uri,
+                activeEditor,
+            );
+            createWebpage(
+                context,
+                selectedWorkspaceFolder,
+                yoCommandPath,
+                telemetry
+            );
+        }
+    );
 
     vscode.commands.registerCommand(
         "microsoft-powerapps-portals.pagetemplate",

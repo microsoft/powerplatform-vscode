@@ -58,7 +58,7 @@ export const createWebTemplate = (
                     command,
                     selectedWorkspaceFolder,
                     watcher,
-                    //telemetry
+                    telemetry
                 );
             }
         });
