@@ -13,24 +13,18 @@ import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
+
 //import { getOrgID } from "./Utils";
 
 // import { getTemplates } from "./Utils";
 
-declare const IS_DESKTOP: boolean;
+//declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
 export let userName: string;
 export let orgID: string;
 export let environmentName: string;
 
-// export let conversation = [
-//     {
-//         role: "system",
-//         content:
-//             "You are a web developer well versed with css, html, and javascript who is using the power pages platform which was formerly known as powerapps portals. It mostly uses html, css, javascript for development. Uses liquid as a templating language and Bootstrap v3.3.6. You always put code block in markdown syntax",
-//     },
-// ];
 
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
@@ -38,9 +32,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
     private readonly _pacWrapper: PacWrapper;
 
-    constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry) {
+    constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
         const pacContext = new PacWrapperContext(_context, telemetry);
-        const interop = new PacInterop(pacContext);
+        const interop = new PacInterop(pacContext, cliPath);
         this._pacWrapper = new PacWrapper(pacContext, interop); //For Web Terminal will not be available
         console.log("pacWrapper created " + this._pacWrapper);
         _context.subscriptions.push(
@@ -85,17 +79,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         };
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-
-        let isHandlingAuthChange = false;
-
-        vscode.authentication.onDidChangeSessions(async () => {
-            if (!isHandlingAuthChange) {
-                isHandlingAuthChange = true;
-                console.log("authentication changed");
-                await this.checkAuthentication();
-                isHandlingAuthChange = false;
-            }
-        });
 
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
@@ -144,19 +127,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         "code ready to be copied to clipboard " + data.value
                     );
                     vscode.env.clipboard.writeText(data.value);
-                    break;
-                }
-                case "createWebpage": {
-                    console.log("create webpage with code = " + data.value);
-
-                    if (IS_DESKTOP) {
-                        try {
-                            const { createAiWebpage } = await import("./Utils");
-                            createAiWebpage(data.value);
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    }
                     break;
                 }
                 case "createWebfile": {
