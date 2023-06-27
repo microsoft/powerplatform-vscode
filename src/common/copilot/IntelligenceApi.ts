@@ -17,18 +17,10 @@ import https from 'https';
 
 export async function sendApiRequest(message: string, activeFilePath: string, activeFileContent: string, orgID:string) {
     console.log("Sending message to API: " + message);
-    // conversation.push({ role: "user", content: message });
-    // console.log("Conversation: ", conversation.length)
-    // const endpointUrl = "https://api.openai.com/v1/chat/completions";
-    // const requestBody = {
-    //     'model': "gpt-3.5-turbo",
-    //     messages: conversation,
-    //     max_tokens: 2000,
-    //     temperature: 0.2,
-    // };
 
     // const AIBTestUrl = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
     const AIBTestUrl = "https://localhost:5001/v1.0/"+ orgID +"/appintelligence/chat";
+    //const AIBTestUrl = `https://aibuildertextapiservice.us-il201.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
     console.log("orgID", orgID)
     console.log("sessionID", sessionID)
     console.log("Input message", message);
