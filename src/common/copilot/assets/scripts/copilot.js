@@ -18,7 +18,7 @@
   let welcomeScreen;
   let envrionment = "Environment";
 
-  const clipboardSvg = `<svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  const clipboardSvg = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z" fill="#F3F2F1"/>
     </svg>`;
 
@@ -140,7 +140,7 @@
     const actionWrapper = document.createElement("div");
     actionWrapper.classList.add("action-wrapper");
 
-    const copyButton = document.createElement("div");
+    const copyButton = document.createElement("button");
     copyButton.innerHTML = clipboardSvg;
     copyButton.classList.add("action-button");
     copyButton.classList.add("copy-button");
@@ -177,18 +177,18 @@
     // });
     // actionWrapper.appendChild(previewButton);
 
-    if (isDesktop) {
-      const createButton = document.createElement("button");
-      createButton.innerHTML = plusSvg;
-      createButton.classList.add("action-button");
-      createButton.classList.add("create-button");
-      createButton.title = "Create a new record";
-      createButton.addEventListener("click", () => {
-        console.log("Create Button Clicked");
-        createWebpage(code);
-      });
-      actionWrapper.appendChild(createButton);
-    }
+    // if (isDesktop) {
+    //   const createButton = document.createElement("button");
+    //   createButton.innerHTML = plusSvg;
+    //   createButton.classList.add("action-button");
+    //   createButton.classList.add("create-button");
+    //   createButton.title = "Create a new record";
+    //   createButton.addEventListener("click", () => {
+    //     console.log("Create Button Clicked");
+    //     createWebpage(code);
+    //   });
+    //   actionWrapper.appendChild(createButton);
+    // }
 
     return actionWrapper;
   }
@@ -199,81 +199,6 @@
     return initials.join("");
   }
 
-  // function addMessageToChat(message, className) {
-  //   const messageWrapper = document.createElement("div");
-  //   messageWrapper.classList.add("message-wrapper");
-
-  //   const messageElement = document.createElement("div");
-  //   if (className === "user-message") {
-  //     // addToDequeue(message);
-  //     const makerElement = document.createElement("div");
-  //     // makerElement.textContent = "Maker:";
-  //     const user = document.createElement("div");
-  //     user.classList.add('user-info');
-  //     const profileIcon = document.createElement('div');
-  //     //profileIcon.classList.add('codicon', 'codicon-account')
-  //     profileIcon.innerText = getInitials(userName);
-  //     profileIcon.classList.add('profile-icon');
-  //     const usernameSpan = document.createElement('span');
-  //     usernameSpan.classList.add('username');
-  //     usernameSpan.textContent = `${userName}`;
-  //     user.appendChild(profileIcon);
-  //     user.appendChild(usernameSpan);
-  //     makerElement.appendChild(user);
-  //     messageElement.appendChild(makerElement);
-  //     makerElement.appendChild(document.createElement("br"));
-  //     messageElement.appendChild(formatCodeBlocks(message));
-  //     messageElement.classList.add("message", className);
-  //   } else if (className === "api-response") {
-  //     const makerElement = document.createElement("div");
-  //     const user = document.createElement("div");
-  //     user.classList.add('user-info');
-  //     const profileIcon = document.createElement('div');
-  //     profileIcon.innerHTML = copilotSvg
-  //     profileIcon.classList.add('profile-icon');
-  //     const usernameSpan = document.createElement('span');
-  //     usernameSpan.classList.add('username');
-  //     usernameSpan.textContent = 'Copilot';
-  //     user.appendChild(profileIcon);
-  //     user.appendChild(usernameSpan);
-  //     makerElement.appendChild(user);
-  //     messageElement.appendChild(makerElement);
-  //     makerElement.appendChild(document.createElement("br"));
-  //     messageElement.appendChild(parseCodeBlocks(message));
-  //     const existingMessageElement = document.querySelector('.api-response .message');
-  //     if (existingMessageElement) {
-  //       existingMessageElement.innerHTML = parseCodeBlocks(message).innerHTML;
-  //     } else {
-  //       const message = document.createElement("div");
-  //       message.innerText = "Thinking..."
-  //       messageElement.appendChild(message);
-
-  //       messageElement.classList.add("message", className);
-
-  //       messageWrapper.appendChild(messageElement);
-  //     }
-
-  //   }
-
-
-
-  //         if(className === "api-response") {
-  //     const feedback = document.createElement("div");
-  //     feedback.innerHTML = `<p class="feedback-statement">AI-generated content may be incorrect. <a href="https://example.com/learn-more" style="display: block;">Learn more</a></p>
-  //         <div class="feedback-icons">
-  //           <span class="codicon codicon-thumbsup" style="cursor: pointer;"></span>
-  //           <span class="codicon codicon-thumbsdown" style="cursor: pointer;"></span>`;
-
-  //     feedback.classList.add("feedback-div");
-  //     messageWrapper.appendChild(feedback);
-  //   }
-
-  //   if (!chatMessages) {
-  //     return;
-  //   }
-  //   chatMessages.appendChild(messageWrapper);
-  //   chatMessages.scrollTop = chatMessages.scrollHeight;
-  // }
 
   function handleUserMessage(message) {
     const messageWrapper = document.createElement("div");
@@ -306,65 +231,6 @@
     chatMessages.appendChild(messageWrapper);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
-
-  // function handleAPIResponse() {
-  //   const messageWrapper = document.createElement("div");
-  //   messageWrapper.classList.add("message-wrapper");
-
-  //   const messageElement = document.createElement("div");
-  //   const makerElement = document.createElement("div");
-  //   const user = document.createElement("div");
-  //   user.classList.add('user-info');
-  //   const profileIcon = document.createElement('div');
-  //   profileIcon.innerHTML = copilotSvg;
-  //   profileIcon.classList.add('profile-icon');
-  //   const usernameSpan = document.createElement('span');
-  //   usernameSpan.classList.add('username');
-  //   usernameSpan.textContent = 'Copilot';
-  //   user.appendChild(profileIcon);
-  //   user.appendChild(usernameSpan);
-  //   makerElement.appendChild(user);
-  //   messageElement.appendChild(makerElement);
-  //   makerElement.appendChild(document.createElement("br"));
-
-  //   messageElement.classList.add("message", "api-response");
-
-  //   messageWrapper.appendChild(messageElement);
-
-  //   if (!chatMessages) {
-  //     return;
-  //   }
-  //   chatMessages.appendChild(messageWrapper);
-  //   chatMessages.scrollTop = chatMessages.scrollHeight;
-
-  //   return {
-  //     updateThinking: function(thinkingMessage) {
-  //       const thinking = document.createElement("div");
-  //       thinking.classList.add("thinking");
-  //       thinking.innerText = thinkingMessage;
-
-  //       messageElement.appendChild(thinking);
-  //     },
-  //     updateResponse: function(apiResponse) {
-  //       const thinkingDiv = messageElement.querySelector(".thinking");
-  //       if (thinkingDiv) {
-  //         thinkingDiv.remove();
-  //       }
-
-  //       const apiResponseElement = parseCodeBlocks(apiResponse);
-  //       messageElement.appendChild(apiResponseElement);
-
-  //       // Add feedback session for the API response
-  //       const feedback = document.createElement("div");
-  //       feedback.innerHTML = `<p class="feedback-statement">AI-generated content may be incorrect. <a href="https://example.com/learn-more" style="display: block;">Learn more</a></p>
-  //           <div class="feedback-icons">
-  //             <span class="codicon codicon-thumbsup" style="cursor: pointer;"></span>
-  //             <span class="codicon codicon-thumbsdown" style="cursor: pointer;"></span>`;
-  //       feedback.classList.add("feedback-div");
-  //       messageWrapper.appendChild(feedback);
-  //     }
-  //   };
-  // }
 
   function createCopilotSection() {
     const makerElement = document.createElement("div");
@@ -561,16 +427,6 @@
 
   function createWebpage(code) {
     vscode.postMessage({ type: "createWebpage", value: code });
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function createWebfile(code) {
-    vscode.postMessage({ type: "createWebfile", value: code });
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function createTablePermission(code) {
-    vscode.postMessage({ type: "createTablePermission", value: code });
   }
 
   SendButton?.addEventListener("click", () => {

@@ -89,8 +89,8 @@ body {
 } */
 
 /* .input-field::part(root) { */
-  /* font-style: italic; */
-  /* border-radius: 4px;
+/* font-style: italic; */
+/* border-radius: 4px;
   height: 38px;
 } */
 
@@ -127,7 +127,8 @@ body {
 .maker-element {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Align child elements to the right */
+  justify-content: space-between;
+  /* Align child elements to the right */
 }
 
 .profile-icon {
@@ -231,44 +232,29 @@ body {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 5px;
+  margin-top: 8px;
+  margin-right: 12px;
   display: flex;
+  /*align-items: center;
+  justify-content: center; */
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  align-self: stretch;
 }
 
 .action-button {
-  margin: 0;
-  padding: 5px;
+  margin-left: 7px;
+  padding: 0;
   border: 0;
   background: none;
   color: inherit;
   box-shadow: none;
   cursor: pointer;
-  width: 30px;
-  /* adjust as needed */
-  height: 30px;
-  /* adjust as needed */
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
 }
 
-.copy-button {
-  width: 18px;
-  /* adjust as needed */
-  height: 18px;
-}
-
-.insert-button {
-  margin-left: 5px;
-}
-
-.preview-button {
-  margin-left: 5px;
-}
-
-.create-button {
-  margin-left: 5px;
-}
 
 .list-container {
   position: relative;
