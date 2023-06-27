@@ -790,6 +790,8 @@
           "type": "webview",
           "id": "powerpages.copilot",
           "name": "Power Pages Copilot",
+          "initialSize": 6,
+          "visibility": "visible",
           "when": "!virtualWorkspace && powerpages.websiteYmlExists"
         }
       ]

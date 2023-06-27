@@ -264,9 +264,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         </head>
         <body>
         <div class="copilot-window">
-        <div id="copilot-header"></div>
-        <div class="chat-messages" id="chat-messages">
         
+        <div class="chat-messages" id="chat-messages">
+        <div id="copilot-header"></div>
         </div>
 
         <div class="chat-input">
