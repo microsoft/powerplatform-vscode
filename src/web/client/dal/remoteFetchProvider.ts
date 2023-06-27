@@ -40,7 +40,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
             Constants.queryParameters.ORG_URL
         ) as string;
         await Promise.all(entityRequestURLs.map(async (entity) => {
-                await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs);        
+            await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs);
         }));
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -50,7 +50,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                 "We encountered an error preparing the file for edit."
             )
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, errorMsg,error as Error);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, errorMsg, error as Error);
     }
 }
 
@@ -59,13 +59,13 @@ async function fetchFromDataverseAndCreateFiles(
     requestUrl: string,
     dataverseOrgUrl?: string,
     portalFs?: PortalsFS
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any>{ 
-    let requestSentAtTime = new Date().getTime();   
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> {
+    let requestSentAtTime = new Date().getTime();
     let makeRequestCall = true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let data: any[] = [];
-    
+
     while (makeRequestCall) {
         try {
             WebExtensionContext.telemetry.sendAPITelemetry(
@@ -126,7 +126,7 @@ async function fetchFromDataverseAndCreateFiles(
                 throw new Error(ERRORS.EMPTY_RESPONSE);
             }
 
-            if(portalFs && dataverseOrgUrl) {
+            if (portalFs && dataverseOrgUrl) {
                 data = await preprocessData(data, entityName);
                 for (let counter = 0; counter < data.length; counter++) {
                     await createContentFiles(
@@ -143,7 +143,7 @@ async function fetchFromDataverseAndCreateFiles(
             vscode.window.showErrorMessage(
                 vscode.l10n.t("Failed to fetch some files.")
             );
-            if ((error as Response)?.status>0){
+            if ((error as Response)?.status > 0) {
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
                     entityName,
@@ -153,8 +153,8 @@ async function fetchFromDataverseAndCreateFiles(
                     '',
                     telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_API_ERROR,
                     (error as Response)?.status.toString()
-            );
-            }else{
+                );
+            } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
                     (error as Error)?.message,
@@ -265,10 +265,10 @@ async function createContentFiles(
         WebExtensionContext.telemetry.sendInfoTelemetry(
             telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE,
             { languageCode: languageCode.toString() }
-        );         
-        
+        );
+
         const attributeArray = attributes.split(",");
-        await processDataAndCreateFile(attributeArray, 
+        await processDataAndCreateFile(attributeArray,
             attributeExtension,
             entityName,
             result,
@@ -315,7 +315,7 @@ async function processDataAndCreateFile(
     let counter = 0;
     let fileUri = "";
 
-    for (counter; counter < attributeArray.length; counter++) {        
+    for (counter; counter < attributeArray.length; counter++) {
         const fileExtension = attributeExtensionMap?.get(
             attributeArray[counter]
         ) as string;
@@ -330,18 +330,17 @@ async function processDataAndCreateFile(
         );
 
         const expandedContent = GetFileContent(result, attributePath);
-        if(fileExtension === undefined && expandedContent){
+        if (fileExtension === undefined && expandedContent) {
             await processExpandedData(
-                 entityName,
-                 expandedContent,
-                 portalsFS,
-                 dataverseOrgUrl,
-                 filePathInPortalFS);
+                entityName,
+                expandedContent,
+                portalsFS,
+                dataverseOrgUrl,
+                filePathInPortalFS);
         }
-        else 
-        {
+        else {
             fileUri = filePathInPortalFS + fileNameWithExtension;
-            await createFile(   
+            await createFile(
                 attributeArray[counter],
                 fileExtension,
                 fileUri,
@@ -366,7 +365,7 @@ async function processExpandedData(
     portalFs: PortalsFS,
     dataverseOrgUrl: string,
     filePathInPortalFS: string
-){
+) {
     // Load the content of the expanded entity
     for (let counter = 0; counter < result.length; counter++) {
         await createContentFiles(
@@ -379,7 +378,7 @@ async function processExpandedData(
     }
 }
 
-async function createFile(    
+async function createFile(
     attribute: string,
     fileExtension: string,
     fileUri: string,
@@ -391,7 +390,7 @@ async function createFile(
     entityId: string,
     dataverseOrgUrl: string,
     portalsFS: PortalsFS,
-){
+) {
     const base64Encoded: boolean = isBase64Encoded(
         entityName,
         attribute
@@ -399,7 +398,7 @@ async function createFile(
 
     // By default content is preloaded for all the files except for non-text webfiles for V2
     const isPreloadedContent = mappingEntityFetchQuery ? isContentPreloadNeeded(fileNameWithExtension) : true;
-    
+
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(
         attribute
@@ -436,7 +435,7 @@ async function createFile(
     );
 }
 
-async function openDefaultEntityFile(entityId: string, fileUri: string){
+async function openDefaultEntityFile(entityId: string, fileUri: string) {
     if (entityId === WebExtensionContext.defaultEntityId) {
         await WebExtensionContext.updateSingleFileUrisInContext(
             vscode.Uri.parse(fileUri)
@@ -512,25 +511,23 @@ async function getMappingEntityContent(
     return result.value ?? Constants.NO_CONTENT;
 }
 
-export async function  preprocessData(
+export async function preprocessData(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any,
     entityType: string
 ) {
-   try
-   {
-       const schema = WebExtensionContext.urlParametersMap
-               .get(schemaKey.SCHEMA_VERSION)
-               ?.toLowerCase() as string;
-               
-       if (entityType === schemaEntityName.ADVANCEDFORMS && schema.toLowerCase() ===
-           portal_schema_V2.entities.dataSourceProperties.schema)
-       {
+    try {
+        const schema = WebExtensionContext.urlParametersMap
+            .get(schemaKey.SCHEMA_VERSION)
+            ?.toLowerCase() as string;
+
+        if (entityType === schemaEntityName.ADVANCEDFORMS && schema.toLowerCase() ===
+            portal_schema_V2.entities.dataSourceProperties.schema) {
             entityType = schemaEntityName.ADVANCEDFORMSTEPS;
             const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
                 Constants.queryParameters.ORG_URL
             ) as string;
-            const entityDetails = getEntity(entityType);        
+            const entityDetails = getEntity(entityType);
             const fetchedFileId = entityDetails?.get(schemaEntityKey.FILE_ID_FIELD);
             const formsData = await fetchFromDataverseAndCreateFiles(entityType, getCustomRequestURL(dataverseOrgUrl, entityType));
             const attributePath: IAttributePath = getAttributePath(
@@ -539,7 +536,7 @@ export async function  preprocessData(
 
             const advancedFormStepData = new Map();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formsData.forEach((dataItem: any) => {                
+            formsData.forEach((dataItem: any) => {
                 const entityId = fetchedFileId ? dataItem[fetchedFileId] : null;
                 if (!entityId) {
                     throw new Error(ERRORS.FILE_ID_EMPTY);
@@ -549,33 +546,33 @@ export async function  preprocessData(
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data.forEach((dataItem: any) => {
-                const webFormSteps = GetFileContent(dataItem, attributePath) as []; 
+                const webFormSteps = GetFileContent(dataItem, attributePath) as [];
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const steps: any[] = [];
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                webFormSteps.forEach((step: any) => {   
-                    const formStepData = advancedFormStepData.get(step);  
+                webFormSteps.forEach((step: any) => {
+                    const formStepData = advancedFormStepData.get(step);
 
                     if (formStepData) {
                         steps.push(formStepData);
                     }
-                }); 
+                });
                 setFileContent(dataItem, attributePath, steps);
             });
             WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
-       }
-   }
-   catch (error) {
-       const errorMsg = (error as Error)?.message;
-       WebExtensionContext.telemetry.sendErrorTelemetry(
-           telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,           
-           errorMsg,
-           error as Error
-       );
-   }
+        }
+    }
+    catch (error) {
+        const errorMsg = (error as Error)?.message;
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,
+            errorMsg,
+            error as Error
+        );
+    }
 
-   return data;
+    return data;
 }
 
 async function createVirtualFile(

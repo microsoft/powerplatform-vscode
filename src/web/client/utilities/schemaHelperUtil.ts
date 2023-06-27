@@ -15,7 +15,7 @@ import { IAttributePath } from "../common/interfaces";
 
 export function getEntityFetchQuery(entity: string, useRegularFetchQuery = false) {
     return getEntity(entity)?.get(
-        Constants.ENABLE_MULTI_FILE_FEATURE && !useRegularFetchQuery
+        WebExtensionContext.showMultifileInVSCode && !useRegularFetchQuery
             ? schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS
             : schemaEntityKey.FETCH_QUERY_PARAMETERS
     );

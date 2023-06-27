@@ -28,6 +28,7 @@ import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
+import { isMultifileEnabled } from "./utilities/commonUtil";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -50,6 +51,7 @@ export interface IWebExtensionContext {
     defaultEntityId: string;
     defaultEntityType: string;
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
+    showMultifileInVSCode: boolean;
 
     // Org specific details
     dataverseAccessToken: string;
@@ -80,6 +82,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _defaultEntityId: string;
     private _defaultEntityType: string;
     private _defaultFileUri: vscode.Uri;
+    private _showMultifileInVSCode: boolean;
     private _dataverseAccessToken: string;
     private _entityDataMap: EntityDataMap;
     private _isContextSet: boolean;
@@ -129,6 +132,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get defaultFileUri() {
         return this._defaultFileUri;
     }
+    public get showMultifileInVSCode() {
+        return this._showMultifileInVSCode;
+    }
     public get dataverseAccessToken() {
         return this._dataverseAccessToken;
     }
@@ -174,6 +180,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._fileDataMap = new FileDataMap();
         this._entityDataMap = new EntityDataMap();
         this._defaultFileUri = vscode.Uri.parse(``);
+        this._showMultifileInVSCode = false;
         this._isContextSet = false;
         this._currentSchemaVersion = "";
         this._telemetry = new WebExtensionTelemetry();
@@ -195,13 +202,17 @@ class WebExtensionContext implements IWebExtensionContext {
         this._defaultEntityId = entityId;
         this._urlParametersMap = queryParamsMap;
         this._rootDirectory = vscode.Uri.parse(
-            `${Constants.PORTALS_URI_SCHEME}:/${
-                queryParamsMap.get(
-                    Constants.queryParameters.WEBSITE_NAME
-                ) as string
+            `${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(
+                Constants.queryParameters.WEBSITE_NAME
+            ) as string
             }/`,
             true
         );
+
+        // Initialize multifile FF here
+        const enableMultifile = queryParamsMap?.get(Constants.queryParameters.ENABLE_MULTIFILE);
+        const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
+        this._showMultifileInVSCode = isMultifileEnabled() && isEnableMultifile;
 
         // Initialize context from schema values
         this._schemaEntitiesMap = getEntitiesSchemaMap(schema);
@@ -384,7 +395,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 schema
             );
         } catch (error) {
-            if ((error as Response)?.status>0){
+            if ((error as Response)?.status > 0) {
                 const errorMsg = (error as Error)?.message;
                 this.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
@@ -396,7 +407,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
                     (error as Response)?.status.toString()
                 );
-            }else{
+            } else {
                 this.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
                     (error as Error)?.message,
@@ -453,7 +464,7 @@ class WebExtensionContext implements IWebExtensionContext {
             this._websiteLanguageIdToPortalLanguageMap =
                 getWebsiteLanguageIdToPortalLanguageIdMap(result, schema);
         } catch (error) {
-            if ((error as Response)?.status>0){
+            if ((error as Response)?.status > 0) {
                 const errorMsg = (error as Error)?.message;
                 this.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
@@ -464,8 +475,8 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
                     (error as Response)?.status.toString()
-            );
-            }else{
+                );
+            } else {
                 this.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
                     (error as Error)?.message,
@@ -521,7 +532,7 @@ class WebExtensionContext implements IWebExtensionContext {
             const result = await response?.json();
             this._websiteIdToLanguage = getWebsiteIdToLcidMap(result, schema);
         } catch (error) {
-            if ((error as Response)?.status>0){
+            if ((error as Response)?.status > 0) {
                 const errorMsg = (error as Error)?.message;
                 this.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
@@ -532,8 +543,8 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
                     (error as Response)?.status.toString()
-            );
-            }else{
+                );
+            } else {
                 this.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
                     (error as Error)?.message,

@@ -65,5 +65,8 @@ export enum telemetryEventNames {
     WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_API_ERROR = 'webExtensionFetchDataverseCreateFilesAPIError',
     WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR = 'webExtensionFetchDataverseCreateFilesSystemError',
     WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR = 'webExtensionSaveDataToDataverseAPIError',
-    WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR = 'webExtensionGetSaveParametersError'
+    WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR = 'webExtensionGetSaveParametersError',
+    WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED = "WebExtensionDiffViewFeatureFlagEnabled",
+    WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED = "WebExtensionDiffViewFeatureFlagDisabled",
+    WEB_EXTENSION_MULTI_FILE_MANDATORY_PARAMETERS_MISSING = "WebExtensionMultiFileMandatoryParametersMissing",
 }

@@ -43,7 +43,7 @@ export const VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME =
     "enableVersionControl";
 
 // Multi-file feature constants
-export const ENABLE_MULTI_FILE_FEATURE = false;
+export const MULTI_FILE_FEATURE_SETTING_NAME = "enableMultiFileFeature";
 
 export enum initializationEntityName {
     WEBSITE = "websites",
@@ -67,6 +67,7 @@ export enum queryParameters {
     REGION = "region",
     ENV_ID = "envid",
     GEO = "geo",
+    ENABLE_MULTIFILE = "enablemultifile",
 }
 
 export enum httpMethod {
