@@ -55,6 +55,10 @@ class MockContext implements ICliAcquisitionContext {
     public showCliInstallFailedError(err: string): void {
         this._errorMessages.push(`Cannot install pac CLI: ${err}`)
     }
+
+    public locDotnetNotInstalledOrInsufficient(): string {
+        return "dotnet sdk 6.0 or greater must be installed";
+    }
 }
 
 describe('CliAcquisition', () => {
@@ -65,7 +69,7 @@ describe('CliAcquisition', () => {
         const pacDistDir = path.resolve(mockDistDir, 'pac');
         fs.ensureDirSync(pacDistDir);
         const testDataDir = path.resolve(__dirname, 'data');
-        const nupkgs = ['microsoft.powerapps.cli.0.9.99.nupkg', 'microsoft.powerapps.cli.core.osx-x64.0.9.99.nupkg', 'microsoft.powerapps.cli.core.linux-x64.0.9.99.nupkg']
+        const nupkgs = ['microsoft.powerapps.cli.0.9.99.nupkg', 'microsoft.powerapps.cli.tool.0.9.99.nupkg']
         nupkgs.forEach(file => {
             fs.copyFileSync(path.resolve(testDataDir, file), path.resolve(pacDistDir, file));
         });

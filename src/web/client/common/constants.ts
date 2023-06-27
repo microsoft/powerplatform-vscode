@@ -20,10 +20,16 @@ export const PUBLIC = "public";
 export const MIMETYPE = "mimetype";
 export const IS_FIRST_RUN_EXPERIENCE = "isFirstRunExperience";
 export const ODATA_ETAG = "@odata.etag";
+export const ODATA_NEXT_LINK = "@odata.nextLink";
+export const MAX_ENTITY_FETCH_COUNT = "1000";
 
-// Feature flag
+// FEATURE FLAGS
+// Version control feature flag
 export const VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME =
     "enableVersionControl";
+
+// Multi-file feature constants
+export const ENABLE_MULTI_FILE_FEATURE = false;
 
 export enum initializationEntityName {
     WEBSITE = "websites",

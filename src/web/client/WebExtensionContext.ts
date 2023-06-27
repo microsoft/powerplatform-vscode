@@ -7,7 +7,7 @@ import fetch from "node-fetch";
 import * as vscode from "vscode";
 import {
     dataverseAuthentication,
-    getHeader,
+    getCommonHeaders,
 } from "./common/authenticationProvider";
 import * as Constants from "./common/constants";
 import {
@@ -21,13 +21,13 @@ import {
     getPortalLanguageIdToLcidMap,
     getWebsiteIdToLcidMap,
     getWebsiteLanguageIdToPortalLanguageIdMap,
-    IAttributePath,
 } from "./utilities/schemaHelperUtil";
 import { getCustomRequestURL } from "./utilities/urlBuilderUtil";
 import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
+import { IAttributePath } from "./common/interfaces";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -46,7 +46,7 @@ export interface IWebExtensionContext {
 
     // VScode specific details
     rootDirectory: vscode.Uri;
-    fileDataMap: FileDataMap; // VFS file URI to file detail map - TODO - convert to class
+    fileDataMap: FileDataMap; // VFS file URI to file detail map
     defaultEntityId: string;
     defaultEntityType: string;
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
@@ -346,7 +346,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
-                headers: getHeader(accessToken),
+                headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
                 this.telemetry.sendAPIFailureTelemetry(
@@ -404,7 +404,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
-                headers: getHeader(accessToken),
+                headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
                 this.telemetry.sendAPIFailureTelemetry(
@@ -458,7 +458,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await fetch(requestUrl, {
-                headers: getHeader(accessToken),
+                headers: getCommonHeaders(accessToken),
             });
 
             if (!response?.ok) {

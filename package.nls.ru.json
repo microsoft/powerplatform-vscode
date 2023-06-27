@@ -9,7 +9,6 @@
   "microsoft-powerapps-portals.walkthrough.overview.title": "Обзор",
   "microsoft-powerapps-portals.walkthrough.title": "Изменить код Power Pages",
   "microsoft-powerapps-portals.webExtension.init.title": "Инициализация веб-расширения",
-  "microsoft-powerapps-portals.webExtension.limitation": "PAC CLI не поддерживается в VS Code для Интернета",
   "pacCLI.authPanel.clearAuthProfile.title": "Удаление профилей проверки подлинности",
   "pacCLI.authPanel.copyUser.title": "Копировать пользователя",
   "pacCLI.authPanel.deleteAuthProfile.title": "Удаление профиля проверки подлинности",

@@ -31,12 +31,12 @@ export class PacInterop implements IPacInterop {
     private tempWorkingDirectory : string;
     private pacExecutablePath : string;
 
-    public constructor(private readonly context: IPacWrapperContext) {
+    public constructor(private readonly context: IPacWrapperContext, cliPath: string) {
         // Set the Working Directory to a random temp folder, as we do not want
         // accidental writes by PAC being placed where they may interfere with things
         this.tempWorkingDirectory = path.join(os.tmpdir(), v4());
         fs.ensureDirSync(this.tempWorkingDirectory);
-        this.pacExecutablePath = path.join(this.context.globalStorageLocalPath, 'pac', 'tools', PacInterop.getPacExecutableName());
+        this.pacExecutablePath = path.join(cliPath, PacInterop.getPacExecutableName());
     }
 
     private static getPacExecutableName(): string {

@@ -3,7 +3,10 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { httpMethod } from "../common/constants";
+import {
+    httpMethod,
+    queryParameters,
+} from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import {
     entityAttributesWithBase64Encoding,
@@ -11,10 +14,12 @@ import {
     schemaEntityName,
     schemaKey,
 } from "../schema/constants";
-import { getEntity } from "./schemaHelperUtil";
+import { getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
 
-export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
-    if (isSingleEntity) {
+export const getParameterizedRequestUrlTemplate = (
+    useSingleEntityUrl: boolean
+) => {
+    if (useSingleEntityUrl) {
         return WebExtensionContext.schemaDataSourcePropertiesMap.get(
             schemaKey.SINGLE_ENTITY_URL
         ) as string;
@@ -30,21 +35,20 @@ export function getRequestURL(
     entity: string,
     entityId: string,
     method: string,
-    isSingleEntity: boolean,
+    useSingleEntityUrl = false,
+    applyFilter = true,
     attributeQueryParameters?: string
 ): string {
     let parameterizedUrlTemplate =
-        getParameterizedRequestUrlTemplate(isSingleEntity);
+        getParameterizedRequestUrlTemplate(useSingleEntityUrl);
 
-    if (!isSingleEntity) {
+    if (applyFilter) {
         switch (method) {
             case httpMethod.GET:
                 parameterizedUrlTemplate =
                     parameterizedUrlTemplate +
                     (attributeQueryParameters ??
-                        getEntity(entity)?.get(
-                            schemaEntityKey.FETCH_QUERY_PARAMETERS
-                        ));
+                        getEntityFetchQuery(entity));
                 break;
             default:
                 break;
@@ -77,7 +81,20 @@ export function getRequestURL(
             WebExtensionContext.schemaDataSourcePropertiesMap.get(
                 schemaKey.DATAVERSE_API_VERSION
             ) as string
-        );
+        )
+        .replace(
+            "{websiteId}",
+            WebExtensionContext.urlParametersMap.get(
+                queryParameters.WEBSITE_ID
+            ) as string
+        )
+        .replace(
+            "{entity}",
+            getEntity(entity)?.get(
+                schemaEntityKey.DATAVERSE_ENTITY_NAME
+            ) as string
+        )
+        .replace("{entityId}", entityId);
 }
 
 export function getCustomRequestURL(
@@ -88,10 +105,8 @@ export function getCustomRequestURL(
     const parameterizedUrl =
         WebExtensionContext.schemaDataSourcePropertiesMap.get(
             urlQueryKey
-        ) as string;
-    const fetchQueryParameters = getEntity(entity)?.get(
-        "_fetchQueryParameters"
-    );
+        ) as string + getEntityFetchQuery(entity);
+
     const requestUrl = parameterizedUrl
         .replace("{dataverseOrgUrl}", dataverseOrgUrl)
         .replace(
@@ -117,9 +132,15 @@ export function getCustomRequestURL(
             WebExtensionContext.schemaDataSourcePropertiesMap.get(
                 schemaKey.DATAVERSE_API_VERSION
             ) as string
+        )        
+        .replace(
+            "{websiteId}",
+            WebExtensionContext.urlParametersMap.get(
+                queryParameters.WEBSITE_ID
+            ) as string
         );
 
-    return requestUrl + fetchQueryParameters;
+    return requestUrl;
 }
 
 export function getPatchRequestUrl(

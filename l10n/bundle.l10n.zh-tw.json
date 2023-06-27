@@ -48,6 +48,10 @@
   "PAC Telemetry disabled": "PAC 遙測已停用",
   "PAC Telemetry enabled": "PAC 遙測已啟用",
   "Page Template name cannot be empty.": "頁面範本名稱不可為空白。",
+  "Please enter a name for the content snippet.": "請輸入內容片段的名稱。",
+  "Please enter a name for the page template.": "請輸入頁面範本的名稱。",
+  "Please enter a name for the web template.": "請輸入 Web 範本的名稱。",
+  "Please enter a name for the webpage.": "請輸入網頁的名稱。",
   "Preparing pac CLI (v{0}).../{0} represents the version number": "正在準備 pac CLI (v{0})...",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "設定檔種類: {0}",
   "Resource: {0}/The {0} represents profile's resource/environment URL": "資源: {0}",
@@ -67,5 +71,6 @@
   "Web files": "Web 檔案",
   "Webfile(s) added successfully": "已成功新增 Web 檔案",
   "You are editing a live, public site ": "您正在編輯已上線、公開的網站",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "必須安裝 DotNet SDK 6.0 或更新版本",
   "{0} created!/{0} will be replaced by the entity type.": "{0} 已建立!"
 }

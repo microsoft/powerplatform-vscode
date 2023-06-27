@@ -8,12 +8,17 @@ import * as Constants from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import {
     entityAttributesWithBase64Encoding,
+    schemaEntityKey,
     schemaEntityName,
 } from "../schema/constants";
+import { IAttributePath } from "../common/interfaces";
 
-export interface IAttributePath {
-    source: string;
-    relativePath: string;
+export function getEntityFetchQuery(entity: string){
+    return getEntity(entity)?.get(
+        Constants.ENABLE_MULTI_FILE_FEATURE
+            ? schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS
+            : schemaEntityKey.FETCH_QUERY_PARAMETERS
+    );
 }
 
 export function getPortalSchema(schema: string) {

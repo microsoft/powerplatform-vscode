@@ -10,10 +10,10 @@ import { saveData } from "../../dal/remoteSaveProvider";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import WebExtensionContext from "../../../client/WebExtensionContext";
 import { expect } from "chai";
-import { IAttributePath } from "../../utilities/schemaHelperUtil";
 import * as errorHandler from "../../common/errorHandler";
 import { BAD_REQUEST, httpMethod } from "../../common/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
+import { IAttributePath } from "../../common/interfaces";
 
 describe("remoteSaveProvider", () => {
     afterEach(() => {
@@ -61,7 +61,7 @@ describe("remoteSaveProvider", () => {
                 relativePath: "relative",
                 source: "dDrive",
             } as IAttributePath,
-            ""
+            "some content here"
         );
 
         const sendAPITelemetry = stub(
@@ -85,7 +85,7 @@ describe("remoteSaveProvider", () => {
         expect(fetchCalls[0].args[0]).eq(requestUrl);
         expect(fetchCalls[0].args[1]).deep.eq({
             method: "PATCH",
-            body: '{"dDrive":"","mimetype":"pdf"}',
+            body: '{"dDrive":"some content here","mimetype":"pdf"}',
             headers: {
                 authorization: "Bearer ae3308da-d75b-4666-bcb8-8f33a3dd8a8d",
                 "content-type": "application/json; charset=utf-8",
@@ -97,10 +97,10 @@ describe("remoteSaveProvider", () => {
 
         assert.calledOnce(sendAPITelemetry);
         const sendAPITelemetryCalls = sendAPITelemetry.getCalls();
-        expect(sendAPITelemetryCalls[1].args[0]).eq(requestUrl);
-        expect(sendAPITelemetryCalls[1].args[1]).eq("");
-        expect(sendAPITelemetryCalls[1].args[2]).eq("PATCH");
-        expect(sendAPITelemetryCalls[1].args[3]).eq("");
+        expect(sendAPITelemetryCalls[0].args[0]).eq(requestUrl);
+        expect(sendAPITelemetryCalls[0].args[1]).eq("");
+        expect(sendAPITelemetryCalls[0].args[2]).eq("PATCH");
+        expect(sendAPITelemetryCalls[0].args[3]).eq("");
         assert.calledOnce(sendAPISuccessTelemetry);
         assert.calledOnce(isWebFileV2);
         assert.calledOnce(vscodeParse);
@@ -203,7 +203,7 @@ describe("remoteSaveProvider", () => {
             //Assert
             const requestInit = {
                 method: "PATCH",
-                body: '{"dDrive":"","mimetype":"pdf"}',
+                body: '{"dDrive":"some content here","mimetype":"pdf"}',
                 headers: {
                     authorization:
                         "Bearer ae3308da-d75b-4666-bcb8-8f33a3dd8a8d",
@@ -326,7 +326,7 @@ describe("remoteSaveProvider", () => {
             "",
             "",
             "",
-            "",
+            "testfilename",
             "",
             "",
             {
@@ -345,7 +345,7 @@ describe("remoteSaveProvider", () => {
                 relativePath: "relative",
                 source: "dDrive",
             } as IAttributePath,
-            ""
+            "some content here"
         );
 
         const sendAPITelemetry = stub(
@@ -369,6 +369,7 @@ describe("remoteSaveProvider", () => {
             "https://orgedfe4d6c.crm10.dynamics.com",
             {
                 method: "PATCH",
+                body: 'some content here',
                 headers: {
                     authorization:
                         "Bearer ae3308da-d75b-4666-bcb8-8f33a3dd8a8d",
@@ -376,6 +377,7 @@ describe("remoteSaveProvider", () => {
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
                     "OData-Version": "4.0",
+                    'x-ms-file-name': 'testfilename'
                 },
             }
         );

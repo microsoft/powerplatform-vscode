@@ -18,8 +18,10 @@ export enum schemaEntityKey {
     FILE_FOLDER_NAME = "_foldername",
     LANGUAGE_FIELD = "_languagefield",
     ATTRIBUTES_EXTENSION = "_attributesExtension",
+    VSCODE_ENTITY_NAME = "_vscodeentityname",
     DATAVERSE_ENTITY_NAME = "_dataverseenityname",
     FETCH_QUERY_PARAMETERS = "_fetchQueryParameters",
+    MULTI_FILE_FETCH_QUERY_PARAMETERS = "_multiFileFetchQueryParameters",
     MAPPING_ENTITY_ID = "_mappingEntityId",
     MAPPING_ATTRIBUTE_FETCH_QUERY = "_mappingAttributeFetchQuery",
     EXPORT_TYPE = "_exporttype",
@@ -31,6 +33,20 @@ export enum schemaEntityName {
     WEBPAGES = "webpages",
     WEBTEMPLATES = "webtemplates",
     CONTENTSNIPPETS = "contentsnippet",
+    LISTS = "lists",
+    BASICFORMS = "basicforms",
+    ADVANCEDFORMS = "advancedforms",
+    ADVANCEDFORMSTEPS = "advancedformsteps",
+}
+
+export enum MultiFileSupportedEntityName {
+    WEBFILES = "webfiles",
+    WEBPAGES = "webpages",
+    WEBTEMPLATES = "webtemplates",
+    CONTENTSNIPPETS = "contentsnippet",
+    LISTS = "lists",
+    BASICFORMS = "basicforms",
+    ADVANCEDFORMS = "advancedforms",
 }
 
 // This decides the folder hierarchy a file being displayed in File explorer will follow.
@@ -45,4 +61,8 @@ export enum folderExportType {
 export enum entityAttributesWithBase64Encoding {
     documentbody = "documentbody",
     filecontent = "filecontent",
+}
+
+export enum entityAttributeNeedMapping {
+    webformsteps = "content.webFormSteps"
 }

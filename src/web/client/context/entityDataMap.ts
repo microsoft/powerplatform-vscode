@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IAttributePath } from "../utilities/schemaHelperUtil";
+import { IAttributePath } from "../common/interfaces";
 import { EntityData } from "./entityData";
 
 export class EntityDataMap {

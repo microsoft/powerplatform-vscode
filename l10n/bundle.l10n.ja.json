@@ -48,6 +48,10 @@
   "PAC Telemetry disabled": "PAC テレメトリが無効になりました",
   "PAC Telemetry enabled": "PAC テレメトリが有効になりました",
   "Page Template name cannot be empty.": "ページ テンプレート名を空にすることはできません。",
+  "Please enter a name for the content snippet.": "コンテンツ スニペットの名前を入力してください。",
+  "Please enter a name for the page template.": "ページ テンプレートの名前を入力してください。",
+  "Please enter a name for the web template.": "Web テンプレートの名前を入力してください。",
+  "Please enter a name for the webpage.": "Web ページの名前を入力してください。",
   "Preparing pac CLI (v{0}).../{0} represents the version number": "pac CLI (v{0}) を準備しています...",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "プロファイルの種類: {0}",
   "Resource: {0}/The {0} represents profile's resource/environment URL": "リソース: {0}",
@@ -67,5 +71,6 @@
   "Web files": "Web ファイル",
   "Webfile(s) added successfully": "正常に追加された Web ファイルの数",
   "You are editing a live, public site ": "ライブのパブリック サイトを編集中です ",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "DotNet SDK 6.0 以上を必ずインストールしてください",
   "{0} created!/{0} will be replaced by the entity type.": "{0} が作成されました。"
 }

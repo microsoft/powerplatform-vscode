@@ -100,7 +100,7 @@
     },
     "virtualWorkspaces": {
       "supported": "limited",
-      "description": "%microsoft-powerapps-portals.webExtension.limitation%"
+      "description": "PAC CLI is not supported in VS Code for the Web"
     }
   },
   "contributes": {
@@ -844,6 +844,7 @@
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@types/chai": "^4.2.14",
+    "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.11",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.3",
@@ -905,6 +906,7 @@
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
     "@vscode/webview-ui-toolkit": "^1.2.2",
+    "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
     "liquidjs": "^10.2.0",

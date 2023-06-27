@@ -48,6 +48,10 @@
   "PAC Telemetry disabled": "PAC Telemetrisi devre dışı bırakıldı",
   "PAC Telemetry enabled": "PAC Telemetrisi etkinleştirildi",
   "Page Template name cannot be empty.": "Sayfa Şablonu adı boş olamaz.",
+  "Please enter a name for the content snippet.": "Lütfen içerik kod parçacığı için bir ad girin.",
+  "Please enter a name for the page template.": "Lütfen sayfa şablonu için bir ad girin.",
+  "Please enter a name for the web template.": "Lütfen web şablonu için bir ad girin.",
+  "Please enter a name for the webpage.": "Lütfen web sayfası için bir ad girin.",
   "Preparing pac CLI (v{0}).../{0} represents the version number": "pac CLI (v{0}) hazırlanıyor...",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Profil Türü: {0}",
   "Resource: {0}/The {0} represents profile's resource/environment URL": "Kaynak: {0}",
@@ -67,5 +71,6 @@
   "Web files": "Web dosyaları",
   "Webfile(s) added successfully": "Web dosyaları başarıyla eklendi",
   "You are editing a live, public site ": "Yayında olan, herkese açık bir siteyi düzenliyorsunuz ",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "dotnet sdk 6.0 veya üstü bir sürüm yüklenmelidir",
   "{0} created!/{0} will be replaced by the entity type.": "{0} oluşturuldu!"
 }

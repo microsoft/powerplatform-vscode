@@ -13,10 +13,10 @@ import * as portalSchemaReader from "../../schema/portalSchemaReader";
 import * as Constants from "../../common/constants";
 import * as authenticationProvider from "../../common/authenticationProvider";
 import { telemetryEventNames } from "../../telemetry/constants";
-import { IAttributePath } from "../../utilities/schemaHelperUtil";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
-import { getHeader } from "../../common/authenticationProvider";
+import { getCommonHeaders } from "../../common/authenticationProvider";
+import { IAttributePath } from "../../common/interfaces";
 
 describe("WebExtensionContext", () => {
     afterEach(() => {
@@ -514,7 +514,7 @@ describe("WebExtensionContext", () => {
         //#endregion
 
         //#region  Fetch
-        const header = getHeader(accessToken);
+        const header = getCommonHeaders(accessToken);
         assert.callCount(_mockFetch, 3);
         const firstFetchCall = _mockFetch.getCalls()[0];
         expect(firstFetchCall.args[0], requestUrl);
@@ -700,7 +700,7 @@ describe("WebExtensionContext", () => {
         //#endregion
 
         //#region  Fetch
-        const header = getHeader(accessToken);
+        const header = getCommonHeaders(accessToken);
         assert.calledThrice(_mockFetch);
         const firstFetchCall = _mockFetch.getCalls()[0];
         expect(firstFetchCall.args[0], requestUrl);
@@ -795,7 +795,7 @@ describe("WebExtensionContext", () => {
 
         assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL);
         //#region  Fetch
-        const header = getHeader(accessToken);
+        const header = getCommonHeaders(accessToken);
         assert.calledThrice(_mockFetch);
         const firstFetchCall = _mockFetch.getCalls()[0];
         expect(firstFetchCall.args[0], requestUrl);

@@ -226,6 +226,22 @@ URL: {1}
         <source xml:lang="en">Page Template name cannot be empty.</source>
         <target state="translated">ページ テンプレート名を空にすることはできません。</target>
       </trans-unit>
+      <trans-unit id="++CODE++116904ea5ee4dd82af7e3da21c5c14755024f98a1e619bdefc161e1d832dbdb2">
+        <source xml:lang="en">Please enter a name for the content snippet.</source>
+        <target state="translated">コンテンツ スニペットの名前を入力してください。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c3433eeaf2c9eaae3ca8fe32bd795fa0693fbe31351dff72ceef19a6d1acb14b">
+        <source xml:lang="en">Please enter a name for the page template.</source>
+        <target state="translated">ページ テンプレートの名前を入力してください。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1077613279fb6d8a1ff3d36befe1c6b15c33748ff0da01e777653cde3ca7d74c">
+        <source xml:lang="en">Please enter a name for the web template.</source>
+        <target state="translated">Web テンプレートの名前を入力してください。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++7f6276dc63b573d177b7d6e17f787b108e3c8c7d449324ac13a6d06b1be59d8e">
+        <source xml:lang="en">Please enter a name for the webpage.</source>
+        <target state="translated">Web ページの名前を入力してください。</target>
+      </trans-unit>
       <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
         <note>{0} represents the version number</note>
@@ -305,6 +321,11 @@ URL: {1}
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">ライブのパブリック サイトを編集中です </target>
+      </trans-unit>
+      <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
+        <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
+        <note>Do not translate 'dotnet' or 'sdk'</note>
+        <target state="translated">DotNet SDK 6.0 以上を必ずインストールしてください</target>
       </trans-unit>
       <trans-unit id="++CODE++48c4c42c9b70ac4687a121f91d8cb9a9063a3b51fbc5eeb68e5edc961ee18482">
         <source xml:lang="en">{0} created!</source>
@@ -433,10 +454,6 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
         <target state="translated">概要</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.webExtension.limitation">
-        <source xml:lang="en">PAC CLI is not supported in VS Code for the Web</source>
-        <target state="translated">PAC CLI は Web の VS Code ではサポートされていません</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
         <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.

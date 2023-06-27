@@ -9,7 +9,6 @@
   "microsoft-powerapps-portals.walkthrough.overview.title": "Panoramica",
   "microsoft-powerapps-portals.walkthrough.title": "Modifica codice Power Pages",
   "microsoft-powerapps-portals.webExtension.init.title": "Inizializza estensione Web",
-  "microsoft-powerapps-portals.webExtension.limitation": "PAC CLI non è supportata in VS Code per il Web",
   "pacCLI.authPanel.clearAuthProfile.title": "Cancella profili di autenticazione",
   "pacCLI.authPanel.copyUser.title": "Copia utente",
   "pacCLI.authPanel.deleteAuthProfile.title": "Elimina profilo di autenticazione",

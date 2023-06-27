@@ -48,6 +48,10 @@
   "PAC Telemetry disabled": "PAC 원격 분석 사용 중지됨",
   "PAC Telemetry enabled": "PAC 원격 분석 사용 설정됨",
   "Page Template name cannot be empty.": "페이지 템플릿 이름은 반드시 입력해야 합니다.",
+  "Please enter a name for the content snippet.": "콘텐츠 조각의 이름을 입력하세요.",
+  "Please enter a name for the page template.": "페이지 템플릿의 이름을 입력하세요.",
+  "Please enter a name for the web template.": "웹 템플릿의 이름을 입력하세요.",
+  "Please enter a name for the webpage.": "웹 페이지의 이름을 입력하세요.",
   "Preparing pac CLI (v{0}).../{0} represents the version number": "pac CLI(v{0}) 준비 중...",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "프로필 종류: {0}",
   "Resource: {0}/The {0} represents profile's resource/environment URL": "리소스: {0}",
@@ -67,5 +71,6 @@
   "Web files": "웹 파일",
   "Webfile(s) added successfully": "웹 파일 추가됨",
   "You are editing a live, public site ": "라이브 상태인 공개 사이트를 편집하고 있습니다. ",
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": "dotnet sdk 6.0 이상을 설치해야 합니다",
   "{0} created!/{0} will be replaced by the entity type.": "{0} 생성 완료!"
 }

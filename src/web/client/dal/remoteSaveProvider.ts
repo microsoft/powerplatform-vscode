@@ -5,18 +5,19 @@
 
 import fetch, { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
-import { getHeader } from "../common/authenticationProvider";
+import { getCommonHeaders } from "../common/authenticationProvider";
 import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
 import { showErrorDialog } from "../common/errorHandler";
 import { FileData } from "../context/fileData";
 import { httpMethod } from "../common/constants";
 import {
-    IAttributePath,
     isWebFileV2,
     useOctetStreamContentType,
 } from "../utilities/schemaHelperUtil";
 import { getPatchRequestUrl, getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
+import { IAttributePath } from "../common/interfaces";
+import { telemetryEventNames } from "../telemetry/constants";
 
 interface ISaveCallParameters {
     requestInit: RequestInit;
@@ -35,7 +36,8 @@ export async function saveData(fileUri: vscode.Uri) {
         dataMap.get(fileUri.fsPath)?.entityName as string,
         dataMap.get(fileUri.fsPath)?.entityId as string,
         httpMethod.PATCH,
-        true
+        true,
+        false
     );
 
     const fileDataMap = WebExtensionContext.fileDataMap.getFileMap;
@@ -75,7 +77,7 @@ async function getSaveParameters(
             webFileV2
         );
 
-        saveCallParameters.requestInit.headers = getHeader(
+        saveCallParameters.requestInit.headers = getCommonHeaders(
             accessToken,
             useOctetStreamContentType(entityName, attributePath.source)
         );
@@ -158,6 +160,9 @@ async function saveDataToDataverse(
                 httpMethod.PATCH,
                 fileExtensionType
             );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_TRIGGERED
+            );
             const response = await fetch(
                 saveCallParameters.requestUrl,
                 saveCallParameters.requestInit
@@ -171,6 +176,9 @@ async function saveDataToDataverse(
                     new Date().getTime() - requestSentAtTime,
                     JSON.stringify(response)
                 );
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
+                );
                 throw new Error(response.statusText);
             }
 
@@ -181,6 +189,9 @@ async function saveDataToDataverse(
                 new Date().getTime() - requestSentAtTime,
                 fileExtensionType
             );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
+            );
         } catch (error) {
             const authError = (error as Error)?.message;
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(
@@ -190,6 +201,9 @@ async function saveDataToDataverse(
                 new Date().getTime() - requestSentAtTime,
                 authError,
                 fileExtensionType
+            );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
             );
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(

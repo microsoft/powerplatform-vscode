@@ -50,7 +50,6 @@
 
   "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview",
   "microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension",
-  "microsoft-powerapps-portals.webExtension.limitation": "PAC CLI is not supported in VS Code for the Web",
   "microsoft-powerapps-portals.walkthrough.title": "Edit Power Pages code",
   "microsoft-powerapps-portals.walkthrough.description": "Discover how you can make complete, modern websites right in VS Code",
   "microsoft-powerapps-portals.walkthrough.overview.title": "Overview",
