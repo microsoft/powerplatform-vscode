@@ -172,61 +172,10 @@ body {
 }
 
 .code-pre {
+  padding-bottom: 12px;
+  margin-bottom: 0px;
   overflow-x: auto;
 }
-
-/*
-.accordion {
-    background-color: #007acc;
-    color: white;
-    cursor: pointer;
-    padding: 5px;
-    width: fit-content;
-    border: none;
-    text-align: left;
-    outline: none;
-    font-size: 15px;
-    transition: 0.4s;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.active, .accordion:hover {
-    background-color: #0066cc;
-}
-
-.accordion:after {
-    content: '+';
-    color: white;
-    font-weight: bold;
-    float: right;
-    margin-left: 5px;
-}
-
-.active:after {
-    content: "-";
-}
-
-.accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out;
-    background-color: transparent;
-    padding: 0 18px;
-}
-
-.accordion-content a {
-    display: block;
-    padding: 12px 0;
-    color: #333;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.accordion-content a:hover {
-    background-color: #ddd;
-} */
 
 .action-wrapper {
   position: absolute;
