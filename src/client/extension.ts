@@ -32,6 +32,7 @@ import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { PowerPagesCopilot } from "./../common/copilot/PowerPagesCopilot";
+import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -179,7 +180,7 @@ export async function activate(
 
     _telemetry.sendTelemetryEvent("activated");
 
-    const copilotProvider = new PowerPagesCopilot(context.extensionUri, _context, _telemetry);
+    const copilotProvider = new PowerPagesCopilot(context.extensionUri, _context, _telemetry, cliPath);
 
     _context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
         webviewOptions: {
