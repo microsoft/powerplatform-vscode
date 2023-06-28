@@ -17,7 +17,6 @@
   ],
   "exclude": [
     "node_modules",
-    ".vscode-test-web",
-    "src/common/copilot/assets"
+    ".vscode-test-web"
   ]
 }
