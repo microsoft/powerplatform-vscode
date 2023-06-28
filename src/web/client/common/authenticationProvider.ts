@@ -30,8 +30,7 @@ export function getCommonHeaders(
 export async function intelligenceAPIAuthentication(): Promise<{ accessToken: string, user: string }> {
     let accessToken = '';
     let user = '';
-    //const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default"; //move this to constants
-    //WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_STARTED);
+    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_STARTED);
     try {
         let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
         if (!session) {
@@ -44,12 +43,12 @@ export async function intelligenceAPIAuthentication(): Promise<{ accessToken: st
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
 
-        //WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_COMPLETED, { "userId": session?.account.id.split('/').pop() ?? session?.account.id ?? '' });
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_COMPLETED, { "userId": session?.account.id.split('/').pop() ?? session?.account.id ?? '' });
     } catch (error) {
-        //const authError = (error as Error)?.message;
+        const authError = (error as Error)?.message;
         showErrorDialog(vscode.l10n.t("Authorization Failed. Please run again to authorize it"),
             vscode.l10n.t("There was a permissions problem with the server"));
-        //WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_FAILED, authError);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_FAILED, authError);
     }
     return { accessToken, user };
 }
