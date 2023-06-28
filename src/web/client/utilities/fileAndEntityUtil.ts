@@ -27,7 +27,7 @@ export function getFileEntityEtag(fileFsPath: string) {
         ?.entityEtag as string;
 }
 
-export function updateEntityEtag(fileFsPath: string, entityEtag: string) {
+export function updateFileEntityEtag(fileFsPath: string, entityEtag: string) {
     WebExtensionContext.fileDataMap.updateEtagValue(fileFsPath, entityEtag);
 }
 
@@ -45,6 +45,13 @@ export function updateFileDirtyChanges(
 export function getEntityEtag(entityId: string) {
     return WebExtensionContext.entityDataMap.getEntityMap.get(entityId)
         ?.entityEtag as string;
+}
+
+export function updateEntityEtag(entityId: string, entityEtag: string) {
+    WebExtensionContext.entityDataMap.updateEtagValue(
+                    entityId,
+                   entityEtag
+                );
 }
 
 export function updateEntityColumnContent(

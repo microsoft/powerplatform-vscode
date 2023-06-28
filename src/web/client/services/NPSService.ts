@@ -6,7 +6,7 @@
 import jwt_decode from 'jwt-decode';
 import { npsAuthentication } from "../common/authenticationProvider";
 import {SurveyConstants, httpMethod, queryParameters} from '../common/constants';
-import fetch,{RequestInit} from 'node-fetch'
+import {RequestInit} from 'node-fetch'
 import WebExtensionContext from '../WebExtensionContext';
 import { telemetryEventNames } from '../telemetry/constants';
 import {getCurrentDataBoundary} from '../utilities/dataBoundary';
@@ -76,7 +76,7 @@ export class NPSService{
                     headers:NPSService.getCesHeader(accessToken)
                 };
                 const requestSentAtTime = new Date().getTime();
-                const response = await fetch(apiEndpoint, requestInitPost);
+                const response = await WebExtensionContext.concurrencyHandler.handleRequest(apiEndpoint, requestInitPost);
                 const result = await response?.json();
                 if( result?.Eligibility){
                     WebExtensionContext.telemetry.sendAPISuccessTelemetry(telemetryEventNames.NPS_USER_ELIGIBLE, "NPS Api",httpMethod.POST,new Date().getTime() - requestSentAtTime);
@@ -84,7 +84,7 @@ export class NPSService{
                     WebExtensionContext.setFormsProEligibilityId(result?.FormsProEligibilityId);
                 }
         }catch(error){
-            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.NPS_API_FAILED, (error as Error)?.message);
+            WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.NPS_API_FAILED, (error as Error)?.message,error as Error);
         }
     }
 }

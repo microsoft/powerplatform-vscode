@@ -394,6 +394,16 @@
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Dev version",
             "PowerPlatform PCF Debugger for VS Code will use Microsoft Edge Canary version"
           ]
+        },
+        "powerPlatform.experimental.enableVersionControl": {
+          "type": "boolean",
+          "markdownDescription": "Enable version control on file save (Web extension only)",
+          "default": true
+        },
+        "powerPlatform.experimental.enableMultiFileFeature": {
+          "type": "boolean",
+          "markdownDescription": "Enable multiple file view in Visual Studio Code (Web extension only)",
+          "default": false
         }
       }
     },
@@ -912,10 +922,11 @@
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
-    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
+    "js-base64": "3.6.1",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",

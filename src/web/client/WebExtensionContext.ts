@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import fetch from "node-fetch";
 import * as vscode from "vscode";
 import {
     dataverseAuthentication,
@@ -28,6 +27,8 @@ import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath } from "./common/interfaces";
+import { ConcurrencyHandler } from "./dal/concurrencyHandler";
+import { isMultifileEnabled } from "./utilities/commonUtil";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -50,6 +51,7 @@ export interface IWebExtensionContext {
     defaultEntityId: string;
     defaultEntityType: string;
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
+    showMultifileInVSCode: boolean;
 
     // Org specific details
     dataverseAccessToken: string;
@@ -61,6 +63,9 @@ export interface IWebExtensionContext {
     telemetry: WebExtensionTelemetry;
     npsEligibility: boolean;
     userId: string;
+
+    // Error handling
+    concurrencyHandler: ConcurrencyHandler;
 }
 
 class WebExtensionContext implements IWebExtensionContext {
@@ -77,6 +82,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _defaultEntityId: string;
     private _defaultEntityType: string;
     private _defaultFileUri: vscode.Uri;
+    private _showMultifileInVSCode: boolean;
     private _dataverseAccessToken: string;
     private _entityDataMap: EntityDataMap;
     private _isContextSet: boolean;
@@ -85,6 +91,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _npsEligibility: boolean;
     private _userId: string;
     private _formsProEligibilityId: string;
+    private _concurrencyHandler: ConcurrencyHandler
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -125,6 +132,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get defaultFileUri() {
         return this._defaultFileUri;
     }
+    public get showMultifileInVSCode() {
+        return this._showMultifileInVSCode;
+    }
     public get dataverseAccessToken() {
         return this._dataverseAccessToken;
     }
@@ -150,6 +160,10 @@ class WebExtensionContext implements IWebExtensionContext {
         return this._formsProEligibilityId;
     }
 
+    public get concurrencyHandler() {
+        return this._concurrencyHandler;
+    }
+
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
         this._schemaEntitiesMap = new Map<string, Map<string, string>>();
@@ -166,12 +180,14 @@ class WebExtensionContext implements IWebExtensionContext {
         this._fileDataMap = new FileDataMap();
         this._entityDataMap = new EntityDataMap();
         this._defaultFileUri = vscode.Uri.parse(``);
+        this._showMultifileInVSCode = false;
         this._isContextSet = false;
         this._currentSchemaVersion = "";
         this._telemetry = new WebExtensionTelemetry();
         this._npsEligibility = false;
         this._userId = "";
         this._formsProEligibilityId = "";
+        this._concurrencyHandler = new ConcurrencyHandler();
     }
 
     public setWebExtensionContext(
@@ -186,13 +202,17 @@ class WebExtensionContext implements IWebExtensionContext {
         this._defaultEntityId = entityId;
         this._urlParametersMap = queryParamsMap;
         this._rootDirectory = vscode.Uri.parse(
-            `${Constants.PORTALS_URI_SCHEME}:/${
-                queryParamsMap.get(
-                    Constants.queryParameters.WEBSITE_NAME
-                ) as string
+            `${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(
+                Constants.queryParameters.WEBSITE_NAME
+            ) as string
             }/`,
             true
         );
+
+        // Initialize multifile FF here
+        const enableMultifile = queryParamsMap?.get(Constants.queryParameters.ENABLE_MULTIFILE);
+        const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
+        this._showMultifileInVSCode = isMultifileEnabled() && isEnableMultifile;
 
         // Initialize context from schema values
         this._schemaEntitiesMap = getEntitiesSchemaMap(schema);
@@ -288,7 +308,8 @@ class WebExtensionContext implements IWebExtensionContext {
         fileExtension: string,
         attributePath: IAttributePath,
         encodeAsBase64: boolean,
-        mimeType?: string
+        mimeType?: string,
+        isContentLoaded?: boolean
     ) {
         this.fileDataMap.setEntity(
             fileUri,
@@ -299,7 +320,8 @@ class WebExtensionContext implements IWebExtensionContext {
             fileExtension,
             attributePath,
             encodeAsBase64,
-            mimeType
+            mimeType,
+            isContentLoaded
         );
     }
 
@@ -345,7 +367,7 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(requestUrl, {
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
                 headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
@@ -354,7 +376,10 @@ class WebExtensionContext implements IWebExtensionContext {
                     languageEntityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
-                    response?.statusText
+                    response?.statusText,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
+                    response?.status.toString()
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -370,14 +395,25 @@ class WebExtensionContext implements IWebExtensionContext {
                 schema
             );
         } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            this.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                languageEntityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
-            );
+            if ((error as Response)?.status > 0) {
+                const errorMsg = (error as Error)?.message;
+                this.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    languageEntityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    errorMsg,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
+                    (error as Response)?.status.toString()
+                );
+            } else {
+                this.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }
 
@@ -403,7 +439,7 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(requestUrl, {
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
                 headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
@@ -412,7 +448,10 @@ class WebExtensionContext implements IWebExtensionContext {
                     languageEntityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
-                    response?.statusText
+                    response?.statusText,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
+                    response?.status.toString()
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -425,14 +464,25 @@ class WebExtensionContext implements IWebExtensionContext {
             this._websiteLanguageIdToPortalLanguageMap =
                 getWebsiteLanguageIdToPortalLanguageIdMap(result, schema);
         } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            this.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                languageEntityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
-            );
+            if ((error as Response)?.status > 0) {
+                const errorMsg = (error as Error)?.message;
+                this.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    languageEntityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    errorMsg,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
+                    (error as Response)?.status.toString()
+                );
+            } else {
+                this.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }
 
@@ -457,7 +507,7 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(requestUrl, {
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
                 headers: getCommonHeaders(accessToken),
             });
 
@@ -467,7 +517,10 @@ class WebExtensionContext implements IWebExtensionContext {
                     websiteEntityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
-                    response?.statusText
+                    response?.statusText,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
+                    response?.status.toString()
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -479,14 +532,25 @@ class WebExtensionContext implements IWebExtensionContext {
             const result = await response?.json();
             this._websiteIdToLanguage = getWebsiteIdToLcidMap(result, schema);
         } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            this.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                websiteEntityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
-            );
+            if ((error as Response)?.status > 0) {
+                const errorMsg = (error as Error)?.message;
+                this.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    websiteEntityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    errorMsg,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
+                    (error as Response)?.status.toString()
+                );
+            } else {
+                this.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }
 

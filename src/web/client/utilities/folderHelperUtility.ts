@@ -5,7 +5,6 @@
 
 import WebExtensionContext from "../WebExtensionContext";
 import {
-    ENABLE_MULTI_FILE_FEATURE,
     httpMethod,
     queryParameters,
 } from "../common/constants";
@@ -17,7 +16,7 @@ import { getRequestURL } from "./urlBuilderUtil";
 export function getFolderSubUris(): string[] {
     const subUris: string[] = [];
 
-    if (!ENABLE_MULTI_FILE_FEATURE) {
+    if (!WebExtensionContext.showMultifileInVSCode) {
         const entityDetails = getEntity(WebExtensionContext.defaultEntityType);
         const subUri = entityDetails?.get(schemaEntityKey.FILE_FOLDER_NAME);
         return [subUri as string];
@@ -45,7 +44,7 @@ export function getRequestUrlForEntities(
     ) as string;
 
     if (
-        !ENABLE_MULTI_FILE_FEATURE ||
+        !WebExtensionContext.showMultifileInVSCode ||
         (entityId.length > 0 && entityType.length > 0)
     ) {
         const requestURL = getRequestURL(

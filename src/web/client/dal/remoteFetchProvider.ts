@@ -4,11 +4,11 @@
  */
 
 import * as vscode from "vscode";
-import fetch from "node-fetch";
 import {
     convertfromBase64ToString,
     GetFileContent,
     GetFileNameWithExtension,
+    isContentPreloadNeeded,
     setFileContent,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getRequestURL, updateEntityId } from "../utilities/urlBuilderUtil";
@@ -34,32 +34,24 @@ export async function fetchDataFromDataverseAndUpdateVFS(
     entityId = "",
     entityType = ""
 ) {
-    const entityRequestURLs = getRequestUrlForEntities(entityId, entityType);
-    const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
-        Constants.queryParameters.ORG_URL
-    ) as string;
-
-    await Promise.all(entityRequestURLs.map(async (entity) => {
-        const requestSentAtTime = new Date().getTime();
-        try {
+    try {
+        const entityRequestURLs = getRequestUrlForEntities(entityId, entityType);
+        const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
+            Constants.queryParameters.ORG_URL
+        ) as string;
+        await Promise.all(entityRequestURLs.map(async (entity) => {
             await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs);
-        } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            showErrorDialog(
-                vscode.l10n.t("There was a problem opening the workspace"),
-                vscode.l10n.t(
-                    "We encountered an error preparing the file for edit."
-                )
-            );
-            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                entity.requestUrl,
-                entity.entityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
-            );
-        }
-    }));
+        }));
+    } catch (error) {
+        const errorMsg = (error as Error)?.message;
+        showErrorDialog(
+            vscode.l10n.t("There was a problem opening the workspace"),
+            vscode.l10n.t(
+                "We encountered an error preparing the file for edit."
+            )
+        );
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, errorMsg, error as Error);
+    }
 }
 
 async function fetchFromDataverseAndCreateFiles(
@@ -67,77 +59,106 @@ async function fetchFromDataverseAndCreateFiles(
     requestUrl: string,
     dataverseOrgUrl?: string,
     portalFs?: PortalsFS
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any>{ 
-    let requestSentAtTime = new Date().getTime();   
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> {
+    let requestSentAtTime = new Date().getTime();
     let makeRequestCall = true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let data: any[] = [];
-    
+
     while (makeRequestCall) {
-        WebExtensionContext.telemetry.sendAPITelemetry(
-            requestUrl,
-            entityName,
-            Constants.httpMethod.GET
-        );
-
-        requestSentAtTime = new Date().getTime();
-        const response = await fetch(requestUrl, {
-            headers: {
-                ...getCommonHeaders(
-                    WebExtensionContext.dataverseAccessToken
-                ),
-                Prefer: `odata.maxpagesize=${Constants.MAX_ENTITY_FETCH_COUNT}, odata.include-annotations="Microsoft.Dynamics.CRM.*"`,
-            },
-        });
-
-        if (!response.ok) {
-            makeRequestCall = false;
-            vscode.window.showErrorMessage(
-                vscode.l10n.t("Failed to fetch file content.")
+        try {
+            WebExtensionContext.telemetry.sendAPITelemetry(
+                requestUrl,
+                entityName,
+                Constants.httpMethod.GET
             );
-            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+
+            requestSentAtTime = new Date().getTime();
+            const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
+                headers: {
+                    ...getCommonHeaders(
+                        WebExtensionContext.dataverseAccessToken
+                    ),
+                    Prefer: `odata.maxpagesize=${Constants.MAX_ENTITY_FETCH_COUNT}, odata.include-annotations="Microsoft.Dynamics.CRM.*"`,
+                },
+            });
+
+            if (!response.ok) {
+                makeRequestCall = false;
+                vscode.window.showErrorMessage(
+                    vscode.l10n.t("Failed to fetch file content.")
+                );
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    entityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    JSON.stringify(response),
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_API_ERROR,
+                    response?.status.toString()
+                );
+                throw new Error(response.statusText);
+            }
+
+            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
                 entityName,
                 Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                JSON.stringify(response)
+                new Date().getTime() - requestSentAtTime
             );
-            throw new Error(response.statusText);
-        }
 
-        WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-            requestUrl,
-            entityName,
-            Constants.httpMethod.GET,
-            new Date().getTime() - requestSentAtTime
-        );
+            const result = await response.json();
+            data = data.concat(result.value);
+            if (result[Constants.ODATA_NEXT_LINK]) {
+                makeRequestCall = true;
+                requestUrl = result[Constants.ODATA_NEXT_LINK];
+            } else {
+                makeRequestCall = false;
+            }
 
-        const result = await response.json();
-        data = data.concat(result.value);
-        if (result[Constants.ODATA_NEXT_LINK]) {
-            makeRequestCall = true;
-            requestUrl = result[Constants.ODATA_NEXT_LINK];
-        } else {
+            if (data.length === 0) {
+                vscode.window.showErrorMessage(
+                    "microsoft-powerapps-portals.webExtension.fetch.nocontent.error",
+                    "Response data is empty"
+                );
+                throw new Error(ERRORS.EMPTY_RESPONSE);
+            }
+
+            if (portalFs && dataverseOrgUrl) {
+                data = await preprocessData(data, entityName);
+                for (let counter = 0; counter < data.length; counter++) {
+                    await createContentFiles(
+                        data[counter],
+                        entityName,
+                        portalFs,
+                        dataverseOrgUrl
+                    );
+                }
+            }
+        } catch (error) {
             makeRequestCall = false;
-        }
-
-        if (data.length === 0) {
+            const errorMsg = (error as Error)?.message;
             vscode.window.showErrorMessage(
-                "microsoft-powerapps-portals.webExtension.fetch.nocontent.error",
-                "Response data is empty"
+                vscode.l10n.t("Failed to fetch some files.")
             );
-            throw new Error(ERRORS.EMPTY_RESPONSE);
-        }
-
-        if(portalFs && dataverseOrgUrl) {
-            data = await preprocessData(data, entityName);
-            for (let counter = 0; counter < data.length; counter++) {
-                await createContentFiles(
-                    data[counter],
+            if ((error as Response)?.status > 0) {
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
                     entityName,
-                    portalFs,
-                    dataverseOrgUrl
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    errorMsg,
+                    '',
+                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_API_ERROR,
+                    (error as Response)?.status.toString()
+                );
+            } else {
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
+                    (error as Error)?.message,
+                    error as Error
                 );
             }
         }
@@ -244,10 +265,10 @@ async function createContentFiles(
         WebExtensionContext.telemetry.sendInfoTelemetry(
             telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE,
             { languageCode: languageCode.toString() }
-        );         
-        
+        );
+
         const attributeArray = attributes.split(",");
-        await processDataAndCreateFile(attributeArray, 
+        await processDataAndCreateFile(attributeArray,
             attributeExtension,
             entityName,
             result,
@@ -267,7 +288,8 @@ async function createContentFiles(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
-            errorMsg
+            errorMsg,
+            error as Error
         );
     }
 }
@@ -293,7 +315,7 @@ async function processDataAndCreateFile(
     let counter = 0;
     let fileUri = "";
 
-    for (counter; counter < attributeArray.length; counter++) {        
+    for (counter; counter < attributeArray.length; counter++) {
         const fileExtension = attributeExtensionMap?.get(
             attributeArray[counter]
         ) as string;
@@ -308,18 +330,17 @@ async function processDataAndCreateFile(
         );
 
         const expandedContent = GetFileContent(result, attributePath);
-        if(expandedContent && fileExtension === undefined){
+        if (fileExtension === undefined && expandedContent) {
             await processExpandedData(
-                 entityName,
-                 expandedContent,
-                 portalsFS,
-                 dataverseOrgUrl,
-                 filePathInPortalFS);
+                entityName,
+                expandedContent,
+                portalsFS,
+                dataverseOrgUrl,
+                filePathInPortalFS);
         }
-        else 
-        {
+        else {
             fileUri = filePathInPortalFS + fileNameWithExtension;
-            await createFile(   
+            await createFile(
                 attributeArray[counter],
                 fileExtension,
                 fileUri,
@@ -344,7 +365,7 @@ async function processExpandedData(
     portalFs: PortalsFS,
     dataverseOrgUrl: string,
     filePathInPortalFS: string
-){
+) {
     // Load the content of the expanded entity
     for (let counter = 0; counter < result.length; counter++) {
         await createContentFiles(
@@ -357,7 +378,7 @@ async function processExpandedData(
     }
 }
 
-async function createFile(    
+async function createFile(
     attribute: string,
     fileExtension: string,
     fileUri: string,
@@ -369,19 +390,22 @@ async function createFile(
     entityId: string,
     dataverseOrgUrl: string,
     portalsFS: PortalsFS,
-){
+) {
     const base64Encoded: boolean = isBase64Encoded(
         entityName,
         attribute
     );
-    
+
+    // By default content is preloaded for all the files except for non-text webfiles for V2
+    const isPreloadedContent = mappingEntityFetchQuery ? isContentPreloadNeeded(fileNameWithExtension) : true;
+
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(
         attribute
     );
 
     let fileContent = GetFileContent(result, attributePath);
-    if (mappingEntityFetchQuery) {
+    if (mappingEntityFetchQuery && isPreloadedContent) {
         fileContent = await getMappingEntityContent(
             mappingEntityFetchQuery,
             attribute,
@@ -406,11 +430,12 @@ async function createFile(
         result[attributePath.source] ?? Constants.NO_CONTENT,
         fileExtension,
         result[Constants.ODATA_ETAG],
-        result[Constants.MIMETYPE]
+        result[Constants.MIMETYPE],
+        isPreloadedContent
     );
 }
 
-async function openDefaultEntityFile(entityId: string, fileUri: string){
+async function openDefaultEntityFile(entityId: string, fileUri: string) {
     if (entityId === WebExtensionContext.defaultEntityId) {
         await WebExtensionContext.updateSingleFileUrisInContext(
             vscode.Uri.parse(fileUri)
@@ -457,7 +482,7 @@ async function getMappingEntityContent(
     );
     requestSentAtTime = new Date().getTime();
 
-    const response = await fetch(requestUrl, {
+    const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
         headers: getCommonHeaders(accessToken),
     });
 
@@ -467,7 +492,10 @@ async function getMappingEntityContent(
             entity,
             Constants.httpMethod.GET,
             new Date().getTime() - requestSentAtTime,
-            JSON.stringify(response)
+            JSON.stringify(response),
+            '',
+            telemetryEventNames.WEB_EXTENSION_GET_MAPPING_ENTITY_CONTENT_API_ERROR,
+            response?.status.toString()
         );
         throw new Error(response.statusText);
     }
@@ -483,25 +511,23 @@ async function getMappingEntityContent(
     return result.value ?? Constants.NO_CONTENT;
 }
 
-export async function  preprocessData(
+export async function preprocessData(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any,
     entityType: string
 ) {
-   try
-   {
-       const schema = WebExtensionContext.urlParametersMap
-               .get(schemaKey.SCHEMA_VERSION)
-               ?.toLowerCase() as string;
-               
-       if (entityType === schemaEntityName.ADVANCEDFORMS && schema.toLowerCase() ===
-           portal_schema_V2.entities.dataSourceProperties.schema)
-       {
+    try {
+        const schema = WebExtensionContext.urlParametersMap
+            .get(schemaKey.SCHEMA_VERSION)
+            ?.toLowerCase() as string;
+
+        if (entityType === schemaEntityName.ADVANCEDFORMS && schema.toLowerCase() ===
+            portal_schema_V2.entities.dataSourceProperties.schema) {
             entityType = schemaEntityName.ADVANCEDFORMSTEPS;
             const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
                 Constants.queryParameters.ORG_URL
             ) as string;
-            const entityDetails = getEntity(entityType);        
+            const entityDetails = getEntity(entityType);
             const fetchedFileId = entityDetails?.get(schemaEntityKey.FILE_ID_FIELD);
             const formsData = await fetchFromDataverseAndCreateFiles(entityType, getCustomRequestURL(dataverseOrgUrl, entityType));
             const attributePath: IAttributePath = getAttributePath(
@@ -510,7 +536,7 @@ export async function  preprocessData(
 
             const advancedFormStepData = new Map();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formsData.forEach((dataItem: any) => {                
+            formsData.forEach((dataItem: any) => {
                 const entityId = fetchedFileId ? dataItem[fetchedFileId] : null;
                 if (!entityId) {
                     throw new Error(ERRORS.FILE_ID_EMPTY);
@@ -520,32 +546,33 @@ export async function  preprocessData(
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data.forEach((dataItem: any) => {
-                const webFormSteps = GetFileContent(dataItem, attributePath) as []; 
+                const webFormSteps = GetFileContent(dataItem, attributePath) as [];
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const steps: any[] = [];
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                webFormSteps.forEach((step: any) => {   
-                    const formStepData = advancedFormStepData.get(step);  
+                webFormSteps.forEach((step: any) => {
+                    const formStepData = advancedFormStepData.get(step);
 
                     if (formStepData) {
                         steps.push(formStepData);
                     }
-                }); 
+                });
                 setFileContent(dataItem, attributePath, steps);
             });
             WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
-       }
-   }
-   catch (error) {
-       const errorMsg = (error as Error)?.message;
-       WebExtensionContext.telemetry.sendErrorTelemetry(
-           telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,           
-           errorMsg
-       );
-   }
+        }
+    }
+    catch (error) {
+        const errorMsg = (error as Error)?.message;
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,
+            errorMsg,
+            error as Error
+        );
+    }
 
-   return data;
+    return data;
 }
 
 async function createVirtualFile(
@@ -560,7 +587,8 @@ async function createVirtualFile(
     originalAttributeContent: string,
     fileExtension: string,
     odataEtag: string,
-    mimeType?: string
+    mimeType?: string,
+    isPreloadedContent?: boolean
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -572,7 +600,8 @@ async function createVirtualFile(
         fileExtension,
         attributePath,
         encodeAsBase64,
-        mimeType
+        mimeType,
+        isPreloadedContent
     );
 
     // Call file system provider write call for buffering file data in VFS

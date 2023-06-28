@@ -21,7 +21,22 @@ export const MIMETYPE = "mimetype";
 export const IS_FIRST_RUN_EXPERIENCE = "isFirstRunExperience";
 export const ODATA_ETAG = "@odata.etag";
 export const ODATA_NEXT_LINK = "@odata.nextLink";
-export const MAX_ENTITY_FETCH_COUNT = "1000";
+export const MAX_ENTITY_FETCH_COUNT = 1000;
+export const MAX_CONCURRENT_REQUEST_COUNT = 50;
+export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 1000;
+
+// Web extension constants
+export const BASE_64= ';base64,';
+export const DATA = 'data:';
+export const ALL_DOCUMENT_MIME_TYPE =
+  '.doc,.dot,.wbk,.docx,.docm,.dotx,.dotm,.docb,.xls,.xlt,.xlm,.xlsx,.xlsm,.xltx,.xltm,.ppt,.pot,.pps,.pptx,.pptm,.potx,.potm,.ppam,.ppsx,.ppsm,.sldx,.sldm,.pdf';
+export const ALL_DOCUMENT_MIME_TYPE_SHORTENED =
+  '.doc,.dot,.docx,.docm,.xls,.xlt,.xlm,.xlsx,.xlsm,.xltm,.ppt,.pptx,.pptm,.pdf';
+export const ALL_AUDIO_MIME_TYPE = 'audio/';
+export const ALL_IMAGE_MIME_TYPE = 'image/';
+export const ALL_VIDEO_MIME_TYPE = 'video/';
+export const ALL_TEXT_MIME_TYPE = 'text/';
+export const ALL_APPLICATION_MIME_TYPE = 'application/';
 
 // FEATURE FLAGS
 // Version control feature flag
@@ -29,7 +44,7 @@ export const VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME =
     "enableVersionControl";
 
 // Multi-file feature constants
-export const ENABLE_MULTI_FILE_FEATURE = false;
+export const MULTI_FILE_FEATURE_SETTING_NAME = "enableMultiFileFeature";
 
 export enum initializationEntityName {
     WEBSITE = "websites",
@@ -53,6 +68,7 @@ export enum queryParameters {
     REGION = "region",
     ENV_ID = "envid",
     GEO = "geo",
+    ENABLE_MULTIFILE = "enablemultifile",
 }
 
 export enum httpMethod {
