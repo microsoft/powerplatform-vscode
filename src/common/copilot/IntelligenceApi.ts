@@ -3,51 +3,28 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-// import https from 'https';
 import fetch, { RequestInit } from "node-fetch";
 import { apiToken, sessionID} from "./PowerPagesCopilot";
-//import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import https from 'https';
 
-//let apiKey = "";
-// intelligenceAPIAuthentication().then((token) => {
-//     console.log('token: ' + token);
-//     apiKey = token;
-// });
 
-export async function sendApiRequest(message: string, activeFilePath: string, activeFileContent: string, orgID:string) {
-    console.log("Sending message to API: " + message);
+export async function sendApiRequest(userPrompt: string, activeFilePath: string, activeFileContent: string, orgID:string) {
+    console.log("Sending message to API: " + userPrompt);
 
     // const AIBTestUrl = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
-    const AIBTestUrl = "https://localhost:5001/v1.0/"+ orgID +"/appintelligence/chat";
-    //const AIBTestUrl = `https://aibuildertextapiservice.us-il201.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
+   // const AIBTestUrl = "https://localhost:5001/v1.0/"+ orgID +"/appintelligence/chat";
+   const AIBTestUrl = `https://aibuildertextapiservice.us-il201.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
     console.log("orgID", orgID)
     console.log("sessionID", sessionID)
-    console.log("Input message", message);
+ 
 
-    const hashMap: { [key: string]: string } = {
-        entityList: "PowerPagesProDevList",
-        entityForm: "PowerPagesProDevForm",
-        webAPI: "PowerPagesProDevWebAPI",
-      };
-
-    const defaultValue = "PowerPagesProDevGeneric";
-    const type = message.split(" ")[0].slice(1);
-    const scenario = hashMap[type] || defaultValue;
-    let realPrompt = message;
-    if (scenario !== defaultValue){
-        realPrompt = message.split(type).slice(1).join("");
-    }
-
-    console.log("Input message", realPrompt);
 
     const requestBody = {
-        "question": realPrompt,//"Add a div with 3 cards having nice animations purely using css",//,
+        "question": userPrompt,
         "top": 1,
         "context": {
           "sessionId": sessionID,
           "scenario": "PowerPagesProDev",
-          //"subScenario": scenario,
           "subScenario": "PowerPagesProDevGeneric",
           "version": "V1",
           "information": {
@@ -56,8 +33,9 @@ export async function sendApiRequest(message: string, activeFilePath: string, ac
           }
         }
     };
-    // Create a custom agent with disabled SSL certificate validation
 
+    //TODO: Remove this once we have test API endpoint working
+    // Create a custom agent with disabled SSL certificate validation
     const agent = new https.Agent({
         rejectUnauthorized: false
     });
@@ -81,16 +59,18 @@ export async function sendApiRequest(message: string, activeFilePath: string, ac
           console.log("API call successful");
           try {
             const jsonResponse = await response.json();
-            if (jsonResponse.additionalData[0].properties.response){
-            const responseMessage = jsonResponse.additionalData[0].properties.response;
-            console.log("Response message:", responseMessage);
-            return responseMessage;
-            } else {
-                return [{ displayText: "Oops! Something went wrong. Please try again. Error Code: 1", code: '' }];
+            if (jsonResponse.additionalData && Array.isArray(jsonResponse.additionalData) && jsonResponse.additionalData.length > 0) {
+              const additionalData = jsonResponse.additionalData[0];
+              if (additionalData.properties && additionalData.properties.response) {
+                const responseMessage = additionalData.properties.response;
+                console.log("Response message:", responseMessage);
+                return responseMessage;
+              }
             }
+            throw new Error("Invalid response format");
           } catch (error) {
-            console.log("JSON parsing error:", error);
-            return [{ displayText: "Oops! Invalid response from the server.", code: '' }];
+            console.log("Error:", error);
+            return [{ displayText: "Oops! Something went wrong. Please try again. Error Code: 1", code: '' }];
           }
         } else {
           console.log("API call failed");
