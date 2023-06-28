@@ -1,5 +1,4 @@
 body {
-  /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
   font-size: var(--vscode-editor-font-size);
   font-weight: var(--vscode-font-weight);
   font-family: var(--vscode-font-family);
@@ -83,38 +82,20 @@ body {
   fill: var(--vscode-inputOption-activeForeground);
 }
 
-/* 
-.input-field {
-  flex: 1;
-} */
-
-/* .input-field::part(root) { */
-/* font-style: italic; */
-/* border-radius: 4px;
-  height: 38px;
-} */
-
-
 
 .active {
   pointer-events: auto;
   opacity: 1;
-  /* Add any other styling for the active button */
+
 }
 
 
 .user-message {
-  /* background-color: #252526;
-  color: white; */
-  /* border-bottom: 1px solid grey; */
   padding: 12px;
   background-color: var(--vscode-editor-background);
 }
 
 .api-response {
-  /* background-color: #1E1E1E;
-    color: white; */
-  /* border-bottom: 1px solid grey; */
   padding: 12px;
   background-color: var(--vscode-sideBar-background);
 }
@@ -207,12 +188,10 @@ body {
 
 .list-container {
   position: relative;
-  /* background-color: #1f1f1f ;*/
   background-color: var(--vscode-input-background);
   border: 1px solid #383434;
   padding: 10px;
   width: 400px;
-  /* color: #ffffff; */
 }
 
 ul {
@@ -224,27 +203,21 @@ ul {
 li {
   font-size: 1.2em;
   margin-bottom: 3px;
-  /* padding: 2px;  */
-  /* background-color: #383636; */
-  /* background-color: #1f1f1f; */
   background-color: var(--vscode-input-background);
   transition: background-color 0.2s ease-in-out;
 }
 
 li:hover {
-  /* background-color: #3a3d41; */
   background-color: var(--vscode-list-hoverBackground);
   transition: background-color 0.2s ease-in-out;
 }
 
 a {
   text-decoration: none;
-  /* color: #ffffff; */
 }
 
 li:before {
   content: "/";
-  /* color: #007acc; */
 }
 
 .feedback-div {
