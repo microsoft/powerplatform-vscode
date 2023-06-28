@@ -12,6 +12,7 @@
   const chatMessages = document.getElementById("chat-messages");
   const chatInput = document.getElementById("chat-input");
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let isDesktop = false;
   let userName;
   let apiResponseHandler;
@@ -22,11 +23,6 @@
     <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z" fill="#F3F2F1"/>
     </svg>`;
 
-  //const pencilSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" data-license="isc-gnc" stroke-width="2" stroke="currentColor" class="w-3 h-3"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>`;
-
-  const plusSvg = `<svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13.0267 5.98667V7H7V12.9733H5.98667V7H0.0133333V5.98667H5.98667V0.0133333H7V5.98667H13.0267Z" fill="#F3F2F1"/>
-    </svg>`;
 
   const insertSvg = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clip-path="url(#clip0_7_7)">
@@ -51,20 +47,8 @@
   chatInput.parentNode?.appendChild(autocompletePanel);
 
   const SendButton = document.getElementById("send-button");
-  // const SendIcon = document.createElement("div");
-  // SendIcon.innerHTML = sendSvg;
-  // SendIcon.classList.add("send-icon");
-  // SendButton.title = "Send";
-  // SendButton.appendChild(SendIcon);
 
   vscode.postMessage({ type: "webViewLoaded" });
-
-  // function addToDequeue(element) {
-  //     if (dequeue.length >= 5) {
-  //         dequeue.shift(); // Remove the first element from the dequeue
-  //     }
-  //     dequeue.push(element); // Add the new element to the end of the dequeue
-  // }
 
   function parseCodeBlocks(responseText) {
     const resultDiv = document.createElement("div");
@@ -81,14 +65,6 @@
       const codeDiv = document.createElement("div");
       codeDiv.classList.add("code-division");
       let codeBlock = responseText[i].Code;
-
-      // console.log("codeblock "+ codeBlock)
-      // if(codeBlock.startsWith("js")) {
-      //     codeBlock = codeBlock.replace("js", "");
-      // }
-      // else if(codeBlock.startsWith("javascript")) {
-      //     codeBlock = codeBlock.replace("javascript", "");
-      // }
 
       codeDiv.appendChild(createActionWrapper(codeBlock));
 
@@ -160,35 +136,6 @@
     });
     actionWrapper.appendChild(insertButton);
 
-    // const previewButton = document.createElement("button");
-    // let isPreviewing = false;
-    // previewButton.innerHTML = pencilSvg;
-    // previewButton.classList.add("action-button");
-    // previewButton.classList.add("preview-button");
-    // previewButton.title = "Preview";
-    // previewButton.addEventListener("click", () => {
-    //   isPreviewing = !isPreviewing;
-    //   if (isPreviewing) {
-    //     PreviewIcon.src = `${pencilSvg}`;
-    //   } else {
-    //     PreviewIcon.src = `${pencilSvg}`;
-    //   }
-    //   // previewCode(code);
-    // });
-    // actionWrapper.appendChild(previewButton);
-
-    // if (isDesktop) {
-    //   const createButton = document.createElement("button");
-    //   createButton.innerHTML = plusSvg;
-    //   createButton.classList.add("action-button");
-    //   createButton.classList.add("create-button");
-    //   createButton.title = "Create a new record";
-    //   createButton.addEventListener("click", () => {
-    //     console.log("Create Button Clicked");
-    //     createWebpage(code);
-    //   });
-    //   actionWrapper.appendChild(createButton);
-    // }
 
     return actionWrapper;
   }
@@ -253,8 +200,6 @@
     user.appendChild(usernameSpan);
     makerElement.appendChild(user);
     makerElement.appendChild(activeOrg);
-
-    // makerElement.appendChild(document.createElement("br"));
 
     return makerElement;
   }
@@ -330,7 +275,6 @@
       return;
     }
     copilotHeader.appendChild(messageWrapper);
-    // chatMessages.scrollTop = chatMessages.scrollHeight;
 
     return {
       userNotLoggedIn: function () {
@@ -358,8 +302,6 @@
         <p>Copilot is powered by AI, so surprises and mistakes are possible. Make sure to verify the responses before using them. View <a href="#">Copilot capabilities and limitations</a>.</p>
         <p>To help improve Copilot, <a href="#">share your feedback</a>.</p>`;
         messageElement.appendChild(loggedInDiv);
-        // const apiResponseElement = parseCodeBlocks(apiResponse);
-        // messageElement.appendChild(apiResponseElement);
       }
     };
   }
@@ -375,7 +317,6 @@
     );
     switch (message.type) {
       case "apiResponse": {
-        // addMessageToChat(message.value, "api-response")
         apiResponseHandler.updateResponse(message.value);
         break;
       }
@@ -425,13 +366,8 @@
     vscode.postMessage({ type: "copyCodeToClipboard", value: code });
   }
 
-  function createWebpage(code) {
-    vscode.postMessage({ type: "createWebpage", value: code });
-  }
-
   SendButton?.addEventListener("click", () => {
     if ((chatInput).value.trim()) {
-      //((chatInput ).value, "user-message");
       handleUserMessage((chatInput).value);
       getApiResponse((chatInput).value);
       (chatInput).value = "";
@@ -441,85 +377,10 @@
 
   chatInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && (chatInput).value.trim()) {
-      // addMessageToChat((chatInput ).value, "user-message");
       handleUserMessage((chatInput).value);
       getApiResponse((chatInput).value);
       (chatInput).value = "";
     }
   });
 
-  // chatInput.addEventListener("input", () => {
-  //   if ((chatInput).value === "/") {
-  //     showAutocompletePanel();
-  //   } else {
-  //     hideAutocompletePanel();
-  //   }
-  // });
-
-  // document.addEventListener("click", (event) => {
-  //     if (!chatInput.contains(event.target)) {
-  //         hideAutocompletePanel();
-  //     }
-  // });
-
-  function showAutocompletePanel() {
-    const listItems = [
-      // { name: "webPage", description: "Create a new webpage" },
-      // { name: "entityForm", description: "Create a new entity form" },
-      // { name: "entityList", description: "Create a new entity list" },
-      // { name: "fetchXml", description: "Fetch data from table" },
-      { name: "clear", description: "Clear the chat window" },
-      // { name: "animate", description: "Add animations to your code" }
-    ];
-
-    const listContainer = document.createElement("div");
-    listContainer.classList.add("list-container");
-
-    const list = document.createElement("ul");
-    list.classList.add("list");
-
-    listItems.forEach((item) => {
-      const listItem = document.createElement("li");
-      listItem.classList.add("list-item");
-
-      const link = document.createElement("a");
-      link.href = "#";
-      link.textContent = item.name;
-      link.title = item.description;
-
-      listItem.appendChild(link);
-      list.appendChild(listItem);
-
-      listItem.addEventListener("click", () => {
-        if (item.name === "clear") {
-          if (chatMessages) {
-            chatMessages.innerHTML = "";
-          }
-          vscode.postMessage({ type: "clearChat" });
-          hideAutocompletePanel();
-          return;
-        }
-        if (chatInput instanceof TextField) {
-          chatInput.value = `/${item.name} `;
-        }
-        hideAutocompletePanel();
-      });
-    });
-
-    // Clear the contents of the autocomplete panel before adding the new list of items
-    autocompletePanel.innerHTML = "";
-
-    listContainer.appendChild(list);
-    autocompletePanel.appendChild(listContainer);
-
-    autocompletePanel.style.display = "block";
-    autocompletePanel.style.position = "absolute";
-    autocompletePanel.style.top =
-      chatInput?.offsetTop ? chatInput.offsetTop - autocompletePanel.offsetHeight + "px" : "0";
-    autocompletePanel.style.left = chatInput?.offsetLeft + "px";
-  }
-
-  function hideAutocompletePanel() {
-    autocompletePanel.style.display = "none";
-  }
 })();
