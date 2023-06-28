@@ -324,6 +324,11 @@
           "default": false,
           "markdownDescription": "Whether the generator installation is complete."
         },
+        "powerPlatform.copilotEnabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Whether the Power Platform Copilot is enabled."
+        },
         "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
           "default": false,
@@ -792,7 +797,7 @@
           "name": "Power Pages Copilot",
           "initialSize": 6,
           "visibility": "visible",
-          "when": "!virtualWorkspace && powerpages.websiteYmlExists"
+          "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.copilotEnabled"
         }
       ]
     },
