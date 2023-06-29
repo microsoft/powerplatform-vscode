@@ -261,7 +261,7 @@ li:before {
 }
 
 .thumbsup-clicked, .thumbsdown-clicked {
-  color: var(--vscode-button-primaryForeground);
+  color: var(--vscode-button-foreground);
   background-color: var(--vscode-button-background);
   padding: 2px;
   border-radius: 2px;
