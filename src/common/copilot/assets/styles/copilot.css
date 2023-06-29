@@ -259,3 +259,17 @@ li:before {
 .hide {
   display: none;
 }
+
+.thumbsup-clicked, .thumbsdown-clicked {
+  color: var(--vscode-button-primaryForeground);
+  background-color: var(--vscode-button-background);
+  padding: 2px;
+  border-radius: 2px;
+}
+
+/* .codicon-thumbsup:hover, .codicon-thumbsdown:hover {
+  color: var(--vscode-button-primaryForeground);
+  background-color: var(--vscode-button-secondaryBackground);
+  padding: 2px;
+  border-radius: 2px;
+} */

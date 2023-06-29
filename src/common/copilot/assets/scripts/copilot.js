@@ -382,5 +382,46 @@
       (chatInput).value = "";
     }
   });
+  chatMessages.addEventListener("click", handleFeedbackClick);
+
+function handleFeedbackClick(event) {
+  const target = event.target;
+
+  if (target.classList.contains("codicon-thumbsup")) {
+    handleThumbsUpClick(target);
+  }
+
+  if (target.classList.contains("codicon-thumbsdown")) {
+    handleThumbsDownClick(target);
+  }
+}
+
+function handleThumbsUpClick(element) {
+  if (element.classList.contains("thumbsup-clicked")) {
+    return; // Do nothing if it already has the class
+  }
+
+  const thumbsDownButton = element.parentNode.querySelector(".codicon-thumbsdown");
+
+  element.classList.add("thumbsup-clicked");
+  thumbsDownButton.classList.remove("thumbsdown-clicked");
+
+  console.log("thumbsup clicked");
+}
+
+function handleThumbsDownClick(element) {
+  if (element.classList.contains("thumbsdown-clicked")) {
+    return; // Do nothing if it already has the class
+  }
+
+  const thumbsUpButton = element.parentNode.querySelector(".codicon-thumbsup");
+
+  element.classList.add("thumbsdown-clicked");
+  thumbsUpButton.classList.remove("thumbsup-clicked");
+
+  console.log("thumbsdown clicked");
+}
+
+  
 
 })();
