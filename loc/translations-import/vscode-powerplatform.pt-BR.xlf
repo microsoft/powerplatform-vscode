@@ -124,6 +124,9 @@ Versão: {2}</target>
         <source xml:lang="en">Failed to fetch file content.</source>
         <target state="translated">Falha ao obter o conteúdo do arquivo.</target>
       </trans-unit>
+      <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
+        <source xml:lang="en">Failed to fetch some files.</source>
+      </trans-unit>
       <trans-unit id="++CODE++e1a694d8ed0093d17fa58ee8b44cc76f74583667ffc3511e5d8f77df7b156c41">
         <source xml:lang="en">Failed to get file ready for edit.</source>
         <target state="translated">Falha ao preparar o arquivo para edição.</target>

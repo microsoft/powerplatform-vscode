@@ -26,6 +26,7 @@
   "Failed to disable PAC telemetry.": "No se pudo deshabilitar la telemetría de PAC.",
   "Failed to enable PAC telemetry.": "No se pudo habilitar la telemetría de PAC.",
   "Failed to fetch file content.": "No se pudo capturar contenido del archivo.",
+  "Failed to fetch some files.": "No se pudieron capturar algunos archivos.",
   "Failed to get file ready for edit.": "No se pudo preparar el archivo para su edición.",
   "Fetching your file ...": "Capturando su archivo...",
   "File might be referenced by name {0} here./{0} represents the name of the file": "Se puede hacer referencia al archivo por su nombre {0} aquí.",
