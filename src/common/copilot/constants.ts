@@ -16,6 +16,7 @@ export const DataverseEntityNameMap = new Map<string, string> ([
   ['list', 'adx_entitylist'],
   ['webtemplate', 'adx_webtemplate'],
   ['basicform', 'adx_entityform'],
+  ['advancedformstep', 'adx_entityform'],
 ]);
 
 export const EntityFieldMap = new Map<string, string> ([
