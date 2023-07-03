@@ -298,9 +298,7 @@
         }
         const loggedInDiv = document.createElement("div");
         loggedInDiv.classList.add("loggedIn");
-        loggedInDiv.innerHTML = `<p id="greeting">Hi <strong>@${userName}!</strong> In your own words, describe what you need. You can get help with writing code for Power Pages sites or learn about Visual Studio Code.</p>
-        <p>Copilot is powered by AI, so surprises and mistakes are possible. Make sure to verify the responses before using them. View <a href="#">Copilot capabilities and limitations</a>.</p>
-        <p>To help improve Copilot, <a href="#">share your feedback</a>.</p>`;
+        loggedInDiv.innerHTML = `<p id="greeting">Hi <strong>@${userName}!</strong> In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, JS, and Liquid.</p>`;
         messageElement.appendChild(loggedInDiv);
       }
     };
