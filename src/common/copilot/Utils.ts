@@ -54,3 +54,6 @@ export function getLastThreeParts(string: string): string[] {
     }
   }
   
+export function escapeDollarSign(paragraph: string): string {
+    return paragraph.replace(/\$/g, "\\$");
+}

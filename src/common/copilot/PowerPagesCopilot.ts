@@ -13,7 +13,7 @@ import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
-import { getLastThreeParts, getNonce, getUserName } from "./Utils";
+import { escapeDollarSign, getLastThreeParts, getNonce, getUserName } from "./Utils";
 //declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
@@ -108,9 +108,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     break;
                 }
                 case "insertCode": {
-                    console.log("code ready to be inserted " + data.value);
+                    console.log("code to be inserted " + data.value);
+                    const escapedSnippet = escapeDollarSign(data.value);
+                    console.log("escapedSnippet " + escapedSnippet);
                     vscode.window.activeTextEditor?.insertSnippet(
-                        new vscode.SnippetString(`${data.value}`)
+                        new vscode.SnippetString(`${escapedSnippet}`)
                     );
                     break;
                 }
