@@ -897,7 +897,6 @@
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
-    "js-base64": "3.6.1",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
