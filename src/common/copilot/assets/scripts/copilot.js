@@ -206,7 +206,7 @@
 
   function createFeedbackDiv() {
     const feedback = document.createElement("div");
-    feedback.innerHTML = `<p class="feedback-statement">AI-generated content may be incorrect. <a href="https://example.com/learn-more" style="display: block;">Learn more</a></p>
+    feedback.innerHTML = `<p class="feedback-statement">AI-generated content may be incorrect. <a href="https://go.microsoft.com/fwlink/?linkid=2240145" style="display: block;">Learn more</a></p>
       <div class="feedback-icons">
         <span class="codicon codicon-thumbsup" style="cursor: pointer;"></span>
         <span class="codicon codicon-thumbsdown" style="cursor: pointer;"></span>`;
