@@ -108,7 +108,8 @@ export function checkMandatoryPathParameters(
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING
+                    telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING,
+                    `entity:${entity}, entityId:${entityId}`
                 );
                 showErrorDialog(
                     vscode.l10n.t("There was a problem opening the workspace"),
@@ -143,7 +144,8 @@ export function checkMandatoryQueryParameters(
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
+                    telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+                    `orgURL:${orgURL}, dataSource:${dataSource}, schemaName:${schemaName} ,websiteId:${websiteId}`
                 );
                 showErrorDialog(
                     vscode.l10n.t("There was a problem opening the workspace"),
