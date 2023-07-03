@@ -44,3 +44,16 @@ export function getUserName(user: string) {
     console.log(parts[1]);
     return parts[0];
 }
+
+export function getLastThreeParts(string: string): string[] {
+    const parts: string[] = string.split('.');
+    if (parts.length >= 3) {
+      return parts.slice(-3);
+    } else {
+      return parts;
+    }
+  }
+  
+export function escapeDollarSign(paragraph: string): string {
+    return paragraph.replace(/\$/g, "\\$");
+}
