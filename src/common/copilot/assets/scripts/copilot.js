@@ -58,13 +58,13 @@
       textDiv.innerText = responseText[i].displayText;
       resultDiv.appendChild(textDiv);
 
-      if (responseText[i].Code === "" || responseText[i].Code === null || responseText[i].Code === undefined) {
+      if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined) {
         continue;
       }
 
       const codeDiv = document.createElement("div");
       codeDiv.classList.add("code-division");
-      let codeBlock = responseText[i].Code;
+      let codeBlock = responseText[i].code;
 
       codeDiv.appendChild(createActionWrapper(codeBlock));
 

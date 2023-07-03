@@ -12,8 +12,8 @@ import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { WebViewMessage } from "./constants";
-import { getNonce, getUserName } from "./Utils";
+import { DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
+import { getLastThreeParts, getNonce, getUserName } from "./Utils";
 //declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
@@ -102,8 +102,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     break;
                 }
                 case "newUserPrompt": {
-                    const { activeFileName, activeFileContent } = this.getActiveEditorContent();
-                    const apiResponse = await sendApiRequest(data.value, activeFileName, activeFileContent, orgID);
+                    const { activeFileParams, activeFileContent } = this.getActiveEditorContent();
+                    const apiResponse = await sendApiRequest(data.value, activeFileParams, activeFileContent, orgID);
                     this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
                     break;
                 }
@@ -143,17 +143,28 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
     }
 
-    private getActiveEditorContent(): { activeFileName: string, activeFileContent: string } {
+    private getActiveEditorContent(): { activeFileParams: string[], activeFileContent: string } {
         const activeEditor = vscode.window.activeTextEditor;
         if (activeEditor) {
             const document = activeEditor.document;
             const fileName = document.fileName;
             const relativeFileName = vscode.workspace.asRelativePath(fileName);
             console.log("active file name = " + relativeFileName)
+            const activeFileParams: string[] = getLastThreeParts(relativeFileName);
 
-            return { activeFileName: relativeFileName, activeFileContent: document.getText() };
+            const activeFileParamsMapped = this.getMappedParams(activeFileParams);
+
+            return { activeFileParams: activeFileParamsMapped, activeFileContent: document.getText() };
         }
-        return { activeFileName: "", activeFileContent: "" };
+        return { activeFileParams: ['','',''], activeFileContent: "" };
+    }
+
+    private getMappedParams(activeFileParams: string[]): string[] {
+        const mappedParams: string[] = [];
+        mappedParams.push(DataverseEntityNameMap.get(activeFileParams[0]) || "");
+        mappedParams.push(EntityFieldMap.get(activeFileParams[1]) || "");
+        mappedParams.push(FieldTypeMap.get(activeFileParams[2]) || "");
+        return mappedParams;
     }
 
     public sendMessageToWebview(message: WebViewMessage) {
