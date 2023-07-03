@@ -864,8 +864,8 @@
     "@types/webpack-env": "^1.17.0",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
-    "@vscode/l10n-dev": "^0.0.23",
-    "@vscode/test-electron": "^2.1.5",
+    "@vscode/l10n-dev": "^0.0.24",
+    "@vscode/test-electron": "^2.3.0",
     "@vscode/test-web": "^0.0.24",
     "@vscode/vsce": "^2.19.0",
     "assert": "^2.0.0",
@@ -922,7 +922,7 @@
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
-    "yaml": "^1.10.2"
+    "yaml": "^2.2.2"
   },
   "__metadata": {
     "id": "b8680bb6-eaa9-481a-ae0b-83574fa58620",
