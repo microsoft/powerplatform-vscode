@@ -54,13 +54,18 @@ export class WebExtensionTelemetry {
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
     }
 
-    public sendErrorTelemetry(eventName: string, errorMessage?: string) {
+    public sendErrorTelemetry(eventName: string, errorMessage?: string, error?:Error) {
         const telemetryData: IWebExtensionExceptionTelemetryData = {
             properties: {
                 eventName: eventName
             }
         }
-        if (errorMessage) {
+        if (error){
+            telemetryData.properties.errorMessage = errorMessage;
+            telemetryData.properties.errorName = error.name;
+            telemetryData.properties.stack = error.stack;
+        }
+        if (errorMessage || error) {
             const error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, telemetryData.properties);
         } else {

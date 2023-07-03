@@ -7,7 +7,6 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { pathHasEntityFolderName } from "../utilities/urlBuilderUtil";
 import {
-    ENABLE_MULTI_FILE_FEATURE,
     PORTALS_URI_SCHEME,
     queryParameters,
 } from "../common/constants";
@@ -421,7 +420,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             WebExtensionContext.defaultEntityType
         );
 
-        if (ENABLE_MULTI_FILE_FEATURE) {
+        if (WebExtensionContext.showMultifileInVSCode) {
             // load rest of the files
             await fetchDataFromDataverseAndUpdateVFS(this);
         }

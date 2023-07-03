@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import {
     BASE_64,
     DATA,
+    MULTI_FILE_FEATURE_SETTING_NAME,
     NO_CONTENT,
     VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME
 } from "../common/constants";
@@ -106,7 +107,26 @@ export function isVersionControlEnabled() {
         );
     }
 
-    return isVersionControlEnabled;
+    return isVersionControlEnabled as boolean;
+}
+
+export function isMultifileEnabled() {
+    const isMultifileEnabled = vscode.workspace
+        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
+        .get(MULTI_FILE_FEATURE_SETTING_NAME);
+
+    if (!isMultifileEnabled) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
+        );
+    }
+    else{
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
+        );
+    }
+
+    return isMultifileEnabled as boolean;
 }
 
 /**

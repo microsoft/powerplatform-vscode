@@ -47,6 +47,9 @@ export interface IWebExtensionAPITelemetryData extends IWebExtensionTelemetryDat
 export interface IWebExtensionExceptionTelemetryData extends IWebExtensionTelemetryData {
     properties: {
         'eventName': string;
+        'errorMessage'?: string;
+        'errorName'?: string;
+        'stack'?:string
     }
 }
 
