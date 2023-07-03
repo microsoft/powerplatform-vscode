@@ -368,6 +368,10 @@
     vscode.postMessage({ type: "copyCodeToClipboard", value: code });
   }
 
+  function sendUserFeedback(feedback) {
+    vscode.postMessage({ type: "userFeedback", value: feedback });
+  }
+
   SendButton?.addEventListener("click", () => {
     if ((chatInput).value.trim()) {
       handleUserMessage((chatInput).value);
@@ -409,6 +413,8 @@ function handleThumbsUpClick(element) {
   thumbsDownButton.classList.remove("thumbsdown-clicked");
 
   console.log("thumbsup clicked");
+
+  sendUserFeedback("thumbsUp");
 }
 
 function handleThumbsDownClick(element) {
@@ -422,6 +428,8 @@ function handleThumbsDownClick(element) {
   thumbsUpButton.classList.remove("thumbsup-clicked");
 
   console.log("thumbsdown clicked");
+
+  sendUserFeedback("thumbsDown");
 }
 
   
