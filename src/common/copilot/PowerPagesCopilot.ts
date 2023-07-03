@@ -14,12 +14,14 @@ import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
 import { escapeDollarSign, getLastThreeParts, getNonce, getUserName } from "./Utils";
+import { CESUserFeedback } from "./user-feedback/CESSurvey";
 //declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
 export let userName: string;
 export let orgID: string;
 export let environmentName: string;
+export let userID: string;
 
 
 
@@ -27,8 +29,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     public static readonly viewType = "powerpages.copilot";
     private _view?: vscode.WebviewView;
     private readonly _pacWrapper: PacWrapper;
+    private _extensionContext: vscode.ExtensionContext;
 
     constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
+        this._extensionContext = _context;
         const pacContext = new PacWrapperContext(_context, telemetry);
         const interop = new PacInterop(pacContext, cliPath);
         this._pacWrapper = new PacWrapper(pacContext, interop); //For Web Terminal will not be available
@@ -63,6 +67,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             console.log("orgID from PAC: " + orgID);
             environmentName = activeOrg.FriendlyName;
             console.log("environmentName from PAC: " + environmentName);
+            userID = activeOrg.UserId;
+            console.log("userID from PAC: " + userID);
 
         }
 
@@ -127,6 +133,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     console.log("clear chat ");
                     sessionID = uuidv4();
                     break;
+                }
+                case "userFeedback": {
+                    console.log("user feedback " + data.value);
+                    if(data.value === "thumbsUp"){
+                        console.log("Thumbs up telemetry")
+                        CESUserFeedback(this._extensionContext, sessionID, userID)
+                    } else if(data.value === "thumbsDown"){
+                        console.log("Thumbs down telemetry")
+                    }
                 }
             }
         });
