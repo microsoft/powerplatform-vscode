@@ -58,7 +58,7 @@
       textDiv.innerText = responseText[i].displayText;
       resultDiv.appendChild(textDiv);
 
-      if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined) {
+      if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined || responseText[i].code === "violation" || responseText[i].code === "unclear") {
         continue;
       }
 
