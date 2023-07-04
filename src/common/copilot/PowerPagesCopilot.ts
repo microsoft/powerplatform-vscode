@@ -70,6 +70,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             userID = activeOrg.UserId;
             console.log("userID from PAC: " + userID);
 
+        } else {
+            console.log("Error getting active org from PAC");
+            vscode.window.showErrorMessage("Error getting active org from PAC");
         }
 
 
