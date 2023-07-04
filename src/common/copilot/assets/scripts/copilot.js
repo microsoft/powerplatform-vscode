@@ -284,9 +284,7 @@
         notLoggedIn.classList.add("not-loggedIn");
         notLoggedIn.innerHTML = `<p id="greeting"></p>
         <p>Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.</p>
-        <button id="loginButton" >Login</button>
-        <p>Copilot is powered by AI, so surprises and mistakes are possible. Make sure to verify the responses before using them. View <a href="#">Copilot capabilities and limitations</a>.</p>
-        <p>To help improve Copilot, <a href="#">share your feedback</a>.</p>`;
+        <button id="loginButton" >Login</button>`;
 
         messageElement.appendChild(notLoggedIn);
 
@@ -388,48 +386,48 @@
   });
   chatMessages.addEventListener("click", handleFeedbackClick);
 
-function handleFeedbackClick(event) {
-  const target = event.target;
+  function handleFeedbackClick(event) {
+    const target = event.target;
 
-  if (target.classList.contains("codicon-thumbsup")) {
-    handleThumbsUpClick(target);
+    if (target.classList.contains("codicon-thumbsup")) {
+      handleThumbsUpClick(target);
+    }
+
+    if (target.classList.contains("codicon-thumbsdown")) {
+      handleThumbsDownClick(target);
+    }
   }
 
-  if (target.classList.contains("codicon-thumbsdown")) {
-    handleThumbsDownClick(target);
-  }
-}
+  function handleThumbsUpClick(element) {
+    if (element.classList.contains("thumbsup-clicked")) {
+      return; // Do nothing if it already has the class
+    }
 
-function handleThumbsUpClick(element) {
-  if (element.classList.contains("thumbsup-clicked")) {
-    return; // Do nothing if it already has the class
-  }
+    const thumbsDownButton = element.parentNode.querySelector(".codicon-thumbsdown");
 
-  const thumbsDownButton = element.parentNode.querySelector(".codicon-thumbsdown");
+    element.classList.add("thumbsup-clicked");
+    thumbsDownButton.classList.remove("thumbsdown-clicked");
 
-  element.classList.add("thumbsup-clicked");
-  thumbsDownButton.classList.remove("thumbsdown-clicked");
+    console.log("thumbsup clicked");
 
-  console.log("thumbsup clicked");
-
-  sendUserFeedback("thumbsUp");
-}
-
-function handleThumbsDownClick(element) {
-  if (element.classList.contains("thumbsdown-clicked")) {
-    return; // Do nothing if it already has the class
+    sendUserFeedback("thumbsUp");
   }
 
-  const thumbsUpButton = element.parentNode.querySelector(".codicon-thumbsup");
+  function handleThumbsDownClick(element) {
+    if (element.classList.contains("thumbsdown-clicked")) {
+      return; // Do nothing if it already has the class
+    }
 
-  element.classList.add("thumbsdown-clicked");
-  thumbsUpButton.classList.remove("thumbsup-clicked");
+    const thumbsUpButton = element.parentNode.querySelector(".codicon-thumbsup");
 
-  console.log("thumbsdown clicked");
+    element.classList.add("thumbsdown-clicked");
+    thumbsUpButton.classList.remove("thumbsup-clicked");
 
-  sendUserFeedback("thumbsDown");
-}
+    console.log("thumbsdown clicked");
 
-  
+    sendUserFeedback("thumbsDown");
+  }
+
+
 
 })();
