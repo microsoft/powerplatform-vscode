@@ -26,6 +26,7 @@
   "Failed to disable PAC telemetry.": "Не удалось отключить телеметрию PAC.",
   "Failed to enable PAC telemetry.": "Не удалось включить телеметрию PAC.",
   "Failed to fetch file content.": "Не удалось получить содержимое файла.",
+  "Failed to fetch some files.": "Не удалось получить некоторые файлы.",
   "Failed to get file ready for edit.": "Не удалось получить файл для редактирования.",
   "Fetching your file ...": "Извлечение файла...",
   "File might be referenced by name {0} here./{0} represents the name of the file": "Здесь файл может быть задан именем {0}.",
