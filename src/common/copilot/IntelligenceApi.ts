@@ -12,8 +12,9 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: strin
     console.log("Sending message to API: " + userPrompt);
 
     // const AIBTestUrl = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
-    const AIBTestUrl = "https://localhost:5001/v1.0/"+ orgID +"/appintelligence/chat";
-   //const AIBTestUrl = `https://aibuildertextapiservice.us-il201.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
+    // const AIBTestUrl = "https://localhost:5001/v1.0/"+ orgID +"/appintelligence/chat";
+    //const AIBTestUrl = `https://aibuildertextapiservice.us-il201.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
+    const AIBTestUrl = `https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
     console.log("orgID", orgID)
     console.log("sessionID", sessionID)
  
