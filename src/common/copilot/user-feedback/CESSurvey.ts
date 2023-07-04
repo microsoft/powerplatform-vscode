@@ -51,7 +51,8 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
         message => {
             switch (message.command) {
                 case 'feedback':
-                    vscode.window.showInformationMessage(message.text);
+                    //vscode.window.showInformationMessage(message.text);
+                    console.log(message.text);
                     feedbackData.Feedbacks[0].value = message.text;
                     fetch(endpointUrl, {
                         method: 'POST',
