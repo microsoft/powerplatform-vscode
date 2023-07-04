@@ -250,6 +250,7 @@ li:before {
   padding: 6px 11px;
   outline: 1px solid transparent;
   outline-offset: 2px !important;
+  width: 100%;
 }
 
 #loginButton:hover {

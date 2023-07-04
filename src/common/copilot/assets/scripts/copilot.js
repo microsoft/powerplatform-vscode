@@ -284,9 +284,7 @@
         notLoggedIn.classList.add("not-loggedIn");
         notLoggedIn.innerHTML = `<p id="greeting"></p>
         <p>Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.</p>
-        <button id="loginButton" >Login</button>
-        <p>Copilot is powered by AI, so surprises and mistakes are possible. Make sure to verify the responses before using them. View <a href="#">Copilot capabilities and limitations</a>.</p>
-        <p>To help improve Copilot, <a href="#">share your feedback</a>.</p>`;
+        <button id="loginButton" >Login</button>`;
 
         messageElement.appendChild(notLoggedIn);
 
