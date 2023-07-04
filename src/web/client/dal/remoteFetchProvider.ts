@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import {
-    convertfromBase64ToString,
+    convertContentToUint8Array,
     GetFileContent,
     GetFileNameWithExtension,
     isContentPreloadNeeded,
@@ -118,7 +118,7 @@ async function fetchFromDataverseAndCreateFiles(
                 makeRequestCall = false;
             }
 
-            if (data.length === 0) {
+            if (result[Constants.ODATA_COUNT] !== 0 && data.length === 0) {
                 vscode.window.showErrorMessage(
                     "microsoft-powerapps-portals.webExtension.fetch.nocontent.error",
                     "Response data is empty"
@@ -419,9 +419,7 @@ async function createFile(
     await createVirtualFile(
         portalsFS,
         fileUri,
-        base64Encoded
-            ? convertfromBase64ToString(fileContent)
-            : fileContent,
+        convertContentToUint8Array(fileContent, base64Encoded),
         updateEntityId(entityName, entityId, result),
         attributePath,
         encodeAsBase64(entityName, attribute),
@@ -578,7 +576,7 @@ export async function preprocessData(
 async function createVirtualFile(
     portalsFS: PortalsFS,
     fileUri: string,
-    fileContent: string | undefined,
+    fileContent: Uint8Array,
     entityId: string,
     attributePath: IAttributePath,
     encodeAsBase64: boolean,
@@ -607,7 +605,7 @@ async function createVirtualFile(
     // Call file system provider write call for buffering file data in VFS
     await portalsFS.writeFile(
         vscode.Uri.parse(fileUri),
-        new TextEncoder().encode(fileContent),
+        fileContent,
         { create: true, overwrite: true }
     );
 

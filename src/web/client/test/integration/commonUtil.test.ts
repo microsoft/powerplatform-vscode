@@ -6,8 +6,8 @@
 import { expect } from "chai";
 import { schemaEntityName } from "../../schema/constants";
 import {
-    convertfromBase64ToString,
-    convertStringtoBase64,
+    convertContentToUint8Array,
+    convertContentToString,
     GetFileNameWithExtension,
 } from "../../utilities/commonUtil";
 
@@ -17,7 +17,7 @@ describe("commonUtil", async () => {
         const data = "this is test case";
         const encodedString = "dGhpcyBpcyB0ZXN0IGNhc2U=";
         //Action
-        const base64totext = convertfromBase64ToString(encodedString);
+        const base64totext = convertContentToUint8Array(encodedString, true);
         //Assert
         expect(base64totext).eq(data);
     });
@@ -27,7 +27,7 @@ describe("commonUtil", async () => {
         const data = "this is test case";
         const encodedString = "dGhpcyBpcyB0ZXN0IGNhc2U=";
         //Action
-        const base64 = convertStringtoBase64(data);
+        const base64 = convertContentToString(data, true);
         //Assert
         expect(base64).eq(encodedString);
     });
