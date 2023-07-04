@@ -141,6 +141,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         CESUserFeedback(this._extensionContext, sessionID, userID)
                     } else if(data.value === "thumbsDown"){
                         console.log("Thumbs down telemetry")
+                        CESUserFeedback(this._extensionContext, sessionID, userID)
                     }
                 }
             }
