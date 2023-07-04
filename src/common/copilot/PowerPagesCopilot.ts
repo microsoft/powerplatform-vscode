@@ -127,6 +127,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         "code ready to be copied to clipboard " + data.value
                     );
                     vscode.env.clipboard.writeText(data.value);
+                    vscode.window.showInformationMessage(vscode.l10n.t('Copied to clipboard!'))
                     break;
                 }
                 case "clearChat": {
