@@ -5,7 +5,6 @@
 
 
 import * as vscode from "vscode";
-//declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
 export let userName: string;
