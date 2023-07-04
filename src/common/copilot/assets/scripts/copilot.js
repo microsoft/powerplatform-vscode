@@ -252,6 +252,8 @@
         const apiResponseElement = parseCodeBlocks(apiResponse);
         messageElement.appendChild(apiResponseElement);
 
+        messageWrapper.appendChild(document.createElement("hr"));
+
         // Add feedback session for the API response
         const feedback = createFeedbackDiv();
         messageWrapper.appendChild(feedback);

@@ -259,3 +259,10 @@ li:before {
 .hide {
   display: none;
 }
+
+hr {
+  border: 0;
+  height: 1px;
+  background-color: var(--vscode-dropdown-border);
+  margin: 0px 20px;
+}
