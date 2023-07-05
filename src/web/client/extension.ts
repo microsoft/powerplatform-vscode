@@ -18,7 +18,7 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { convertStringtoBase64 as convertStringToBase64 } from "./utilities/commonUtil";
+import { convertContentToString } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
@@ -199,9 +199,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
                 // Update the latest content in context
                 if (fileData?.entityId && fileData.attributePath) {
                     let fileContent = e.document.getText();
-                    if (fileData.encodeAsBase64 as boolean) {
-                        fileContent = convertStringToBase64(fileContent);
-                    }
+                    fileContent = convertContentToString(fileContent, fileData.encodeAsBase64 as boolean);
                     updateEntityColumnContent(
                         fileData?.entityId,
                         fileData.attributePath,

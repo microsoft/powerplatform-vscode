@@ -16,16 +16,23 @@ import { schemaEntityName } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
-import { decode, encode } from 'js-base64';
 
-// decodes base64 to text
-export function convertfromBase64ToString(data: string) {
-  return decode(data);
+// decodes file content to UTF-8
+export function convertContentToUint8Array(content: string, isBase64Encoded: boolean): Uint8Array {
+    if(isBase64Encoded){
+        return new Uint8Array(Buffer.from(content, BASE_64));
+    }
+
+    return new TextEncoder().encode(content as string);
 }
 
-// encodes text to UTF-8 bytes which are then encoded to base64
-export function convertStringtoBase64(data: string) {
-  return encode(data);
+// encodes file content to base64 or returns the content as is
+export function convertContentToString(content: string, isBase64Encoded: boolean): string {
+    if(isBase64Encoded) {
+        return Buffer.from(content).toString(BASE_64);
+    }
+
+    return content;
 }
 
 export function GetFileNameWithExtension(
@@ -59,7 +66,6 @@ export function GetFileContent(result: any, attributePath: IAttributePath) {
     let fileContent = result[attributePath.source] ?? NO_CONTENT;
 
     try {
-
         if (result[attributePath.source] && attributePath.relativePath.length) {
             fileContent =
                 JSON.parse(result[attributePath.source])[
