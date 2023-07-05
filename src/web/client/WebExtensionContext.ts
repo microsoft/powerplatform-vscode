@@ -26,7 +26,7 @@ import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
-import { IAttributePath } from "./common/interfaces";
+import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 import { isMultifileEnabled } from "./utilities/commonUtil";
 
@@ -38,6 +38,9 @@ export interface IWebExtensionContext {
 
     // Passed from Vscode URL call
     urlParametersMap: Map<string, string>;
+
+    // VScode workspace state
+    vscodeWorkspaceState: Map<string, IEntityInfo>;
 
     // Language maps from dataverse
     languageIdCodeMap: Map<string, string>;
@@ -73,6 +76,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _schemaEntitiesMap: Map<string, Map<string, string>>;
     private _entitiesFolderNameMap: Map<string, string>;
     private _urlParametersMap: Map<string, string>;
+    private _vscodeWorkspaceState: Map<string, IEntityInfo>;
     private _languageIdCodeMap: Map<string, string>;
     private _portalLanguageIdCodeMap: Map<string, string>;
     private _websiteLanguageIdToPortalLanguageMap: Map<string, string>;
@@ -104,6 +108,9 @@ class WebExtensionContext implements IWebExtensionContext {
     }
     public get urlParametersMap() {
         return this._urlParametersMap;
+    }
+    public get vscodeWorkspaceState() {
+        return this._vscodeWorkspaceState;
     }
     public get languageIdCodeMap() {
         return this._languageIdCodeMap;
@@ -159,7 +166,6 @@ class WebExtensionContext implements IWebExtensionContext {
     public get formsProEligibilityId() {
         return this._formsProEligibilityId;
     }
-
     public get concurrencyHandler() {
         return this._concurrencyHandler;
     }
@@ -172,6 +178,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
         this._websiteIdToLanguage = new Map<string, string>();
         this._urlParametersMap = new Map<string, string>();
+        this._vscodeWorkspaceState = new Map<string, IEntityInfo>();
         this._entitiesFolderNameMap = new Map<string, string>();
         this._defaultEntityType = "";
         this._defaultEntityId = "";
@@ -224,54 +231,42 @@ class WebExtensionContext implements IWebExtensionContext {
         this._isContextSet = true;
     }
 
+    public async setVscodeWorkspaceState(workspaceState: vscode.Memento) {
+        workspaceState.keys().forEach((key) => {
+            const entityInfo = workspaceState.get(key) as IEntityInfo;
+            this._vscodeWorkspaceState.set(key, entityInfo);
+        });
+    }
+
     public async authenticateAndUpdateDataverseProperties() {
+        await this.dataverseAuthentication();
+
         const dataverseOrgUrl = this.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
-        const accessToken: string = await dataverseAuthentication(
-            dataverseOrgUrl
-        );
         const schema = this.urlParametersMap
             .get(schemaKey.SCHEMA_VERSION)
             ?.toLowerCase() as string;
 
-        if (accessToken.length === 0) {
-            // re-set all properties to default values
-            this._dataverseAccessToken = "";
-            this._websiteIdToLanguage = new Map<string, string>();
-            this._websiteLanguageIdToPortalLanguageMap = new Map<
-                string,
-                string
-            >();
-            this._portalLanguageIdCodeMap = new Map<string, string>();
-            this._languageIdCodeMap = new Map<string, string>();
-
-            this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING
-            );
-            throw vscode.FileSystemError.NoPermissions();
-        }
-
-        this._dataverseAccessToken = accessToken;
         await this.populateWebsiteIdToLanguageMap(
-            accessToken,
+            this._dataverseAccessToken,
             dataverseOrgUrl,
             schema
         );
 
         await this.populateWebsiteLanguageIdToPortalLanguageMap(
-            accessToken,
+            this._dataverseAccessToken,
             dataverseOrgUrl,
             schema
         );
         await this.populateLanguageIdToCode(
-            accessToken,
+            this._dataverseAccessToken,
             dataverseOrgUrl,
             schema
         );
     }
 
-    public async reAuthenticate() {
+    public async dataverseAuthentication() {
         const dataverseOrgUrl = this.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
@@ -557,11 +552,34 @@ class WebExtensionContext implements IWebExtensionContext {
     public setNPSEligibility(eligibility: boolean) {
         this._npsEligibility = eligibility;
     }
+
     public setUserId(uid: string) {
         this._userId = uid;
     }
+
     public setFormsProEligibilityId(formsProEligibilityId: string) {
         this._formsProEligibilityId = formsProEligibilityId;
+    }
+
+    /**
+    * Store a value maintained in Extension context workspaceState. 
+    *
+    * *Note* that using `undefined` as value removes the key from the underlying
+    * storage.
+    *
+    * @param key A string.
+    * @param value A value.
+    */
+    public updateVscodeWorkspaceState(key: string, value?: IEntityInfo) {
+        if (value === undefined) {
+            this._vscodeWorkspaceState.delete(key);
+            return;
+        }
+        this._vscodeWorkspaceState.set(key, value);
+    }
+
+    public getVscodeWorkspaceState(key: string): IEntityInfo | undefined {
+        return this._vscodeWorkspaceState.get(key);
     }
 }
 
