@@ -26,6 +26,7 @@
   "Failed to disable PAC telemetry.": "PAC telemetrisi devre dışı bırakılamadı.",
   "Failed to enable PAC telemetry.": "PAC telemetrisi etkinleştirilmedi.",
   "Failed to fetch file content.": "Dosya içeriği alınamadı.",
+  "Failed to fetch some files.": "Bazı dosyalar alınamadı.",
   "Failed to get file ready for edit.": "Dosya düzenlenmek üzere alınamadı.",
   "Fetching your file ...": "Dosyanız alınıyor...",
   "File might be referenced by name {0} here./{0} represents the name of the file": "Dosyaya burada {0} adıyla başvurulmuş olabilir.",
