@@ -23,20 +23,20 @@ export function getFolderSubUris(): string[] {
     }
 
     for (const entry of Object.entries(MultiFileSupportedEntityName)) {
-        const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);        
+        const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);
         const subUri = entityDetails?.get(
             schemaEntityKey.FILE_FOLDER_NAME
         ) as string;
 
         subUris.push(subUri);
     }
-    
+
     return subUris;
 }
 
 export function getRequestUrlForEntities(
-    entityId: string,
-    entityType: string
+    entityId?: string,
+    entityType?: string
 ): IEntityRequestUrl[] {
     const entityRequestURLs: IEntityRequestUrl[] = [];
     const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
@@ -45,14 +45,14 @@ export function getRequestUrlForEntities(
 
     if (
         !WebExtensionContext.showMultifileInVSCode ||
-        (entityId.length > 0 && entityType.length > 0)
+        (entityId && entityType && entityId.length > 0 && entityType.length > 0)
     ) {
         const requestURL = getRequestURL(
             dataverseOrgUrl,
-            entityType.length > 0
+            entityType && entityType.length > 0
                 ? entityType
                 : WebExtensionContext.defaultEntityType,
-            entityId.length > 0
+            entityId && entityId.length > 0
                 ? entityId
                 : WebExtensionContext.defaultEntityId,
             httpMethod.GET
@@ -92,7 +92,7 @@ export function getRequestUrlForEntities(
 }
 
 export function getEntityNameForExpandedEntityContent(entityName: string): string {
-    if(entityName === schemaEntityName.ADVANCEDFORMS){
+    if (entityName === schemaEntityName.ADVANCEDFORMS) {
         return schemaEntityName.ADVANCEDFORMSTEPS;
     }
 

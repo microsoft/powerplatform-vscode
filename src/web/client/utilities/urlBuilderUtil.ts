@@ -132,7 +132,7 @@ export function getCustomRequestURL(
             WebExtensionContext.schemaDataSourcePropertiesMap.get(
                 schemaKey.DATAVERSE_API_VERSION
             ) as string
-        )        
+        )
         .replace(
             "{websiteId}",
             WebExtensionContext.urlParametersMap.get(
@@ -189,4 +189,15 @@ export function pathHasEntityFolderName(uri: string): boolean {
     }
 
     return false;
+}
+
+export function isValidFilePath(fsPath: string) {
+    return WebExtensionContext.isContextSet &&
+        fsPath.includes(WebExtensionContext.rootDirectory.fsPath) &&
+        pathHasEntityFolderName(fsPath);
+}
+
+export function isValidDirectoryPath(fsPath: string) {
+    return WebExtensionContext.isContextSet &&
+        fsPath.toLowerCase() === WebExtensionContext.rootDirectory.fsPath.toLowerCase();
 }
