@@ -7,20 +7,32 @@ import * as vscode from "vscode";
 import { npsAuthentication } from "../../../web/client/common/authenticationProvider";
 import { SurveyConstants } from "../../../web/client/common/constants";
 import fetch from "node-fetch";
+import { getNonce } from "../Utils";
 
 
-export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID:string) { // TODO: Add scenerio
+export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID:string, thumbType:string) { // TODO: Add scenerio
 
-    const panel = vscode.window.createWebviewPanel(
+    const feedbackPanel = vscode.window.createWebviewPanel(
         "CESUserFeedback",
-        "CES User Feedback",
+        "Feedback",
         vscode.ViewColumn.Seven,
         {
             enableScripts: true,
         }
     );
+    
+    context.subscriptions.push(feedbackPanel);
 
-    panel.webview.html = getWebviewContent();
+    feedbackPanel.webview.postMessage({ type: "thumbType", value: thumbType });
+    const feedbackCssPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "user-feedback", "feedback.css");
+    const feedbackCssUri = feedbackPanel.webview.asWebviewUri(feedbackCssPath);
+
+    const feedbackJsPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "user-feedback", "feedback.js");
+    const feedbackJsUri = feedbackPanel.webview.asWebviewUri(feedbackJsPath);
+
+    const nonce = getNonce();
+
+    feedbackPanel.webview.html = getWebviewContent(feedbackCssUri, feedbackJsUri, nonce);
 
     const feedbackData = {
         IsDismissed: false,
@@ -47,7 +59,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
     const endpointUrl = `https://world.tip1.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
     // Handle messages from the webview
     let responseJson;
-    panel.webview.onDidReceiveMessage(
+    feedbackPanel.webview.onDidReceiveMessage(
         message => {
             switch (message.command) {
                 case 'feedback':
@@ -79,7 +91,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
                         // Network error or other exception
                         console.error('Error sending feedback:', error);
                       });
-                      panel.dispose();
+                      feedbackPanel.dispose();
                     }
                     return;
 
@@ -90,34 +102,27 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
 
 }
 
-function getWebviewContent() {
+function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri, nonce: string) {
+
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="${feedbackCssUri}" rel="stylesheet">
+        </link>
         <title>Cat Coding</title>
     </head>
     <body>
     <form id="feedbackForm">
-    <label for="feedbackText">Feedback:</label>
+    <label for="feedbackText" class="form-label" id="form-label"> Tell us more.</label>
     <br/>
     <textarea id="feedbackText" name="feedbackText" rows="5" required></textarea>
     <br/>
-    <button type="submit">Send</button>
+    <p class="privacy-statement">Try and be as specific as possible. Your feedback will be used to improve Copilot. <a href="https://privacy.microsoft.com/en-US/data-privacy-notice"> View privacy details </a> </p>
+    <button type="submit" class="submit-feedback">Submit</button>
   </form>
-  <script>
-  const vscode = acquireVsCodeApi();
-
-  document.getElementById('feedbackForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent form submission
-
-    // Get the feedback text from the form field
-    const feedbackText = document.getElementById('feedbackText').value;
-    vscode.postMessage({ command: 'feedback', text: feedbackText })
-  });
-
-  </script>
+  <script type="module" nonce="${nonce}" src="${feedbackJsUri}"></script>
   </body>
     </html>`;
 }
