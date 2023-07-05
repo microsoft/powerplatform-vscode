@@ -3,12 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IAttributePath } from "../common/interfaces";
+import { IAttributePath, IFileInfo } from "../common/interfaces";
 
-export interface IFileData {
-    entityName: string;
-    fileName: string;
-    entityId: string;
+export interface IFileData extends IFileInfo {
     entityEtag: string;
     entityFileExtensionType: string;
     attributePath: IAttributePath;
@@ -70,7 +67,7 @@ export class FileData implements IFileData {
     public set setEntityEtag(value: string) {
         this._entityEtag = value;
     }
-    
+
     constructor(
         entityId: string,
         entityName: string,

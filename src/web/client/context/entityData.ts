@@ -3,9 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export interface IEntityData {
-    entityName: string;
-    entityId: string;
+import { IEntityInfo } from "../common/interfaces";
+
+export interface IEntityData extends IEntityInfo {
     entityEtag: string;
     entityColumn: Map<string, string>;
 }

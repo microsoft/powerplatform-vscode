@@ -5,7 +5,7 @@
 
 import * as path from "path";
 import * as vscode from "vscode";
-import { pathHasEntityFolderName } from "../utilities/urlBuilderUtil";
+import { isValidDirectoryPath, isValidFilePath } from "../utilities/urlBuilderUtil";
 import {
     PORTALS_URI_SCHEME,
     queryParameters,
@@ -22,9 +22,12 @@ import {
     getEntityEtag,
     getFileEntityEtag,
     getFileEntityId,
+    getFileEntityName,
+    getFileName,
     updateFileDirtyChanges,
 } from "../utilities/fileAndEntityUtil";
 import { isVersionControlEnabled } from "../utilities/commonUtil";
+import { IFileInfo } from "../common/interfaces";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -105,60 +108,40 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
         const result: [string, vscode.FileType][] = [];
-        try {
-            const entry = await this._lookupAsDirectory(uri, false);
+        const entry = await this._lookup(uri, true);
+
+        if (!entry && isValidDirectoryPath(uri.fsPath)) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED
+            );
+            await this._loadFromDataverseToVFS();
+            return result;
+        }
+
+        if (entry instanceof Directory) {
             for (const [name, child] of entry.entries) {
                 result.push([name, child.type]);
             }
-        } catch (error) {
-            const castedError = error as vscode.FileSystemError;
-
-            if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                if (
-                    WebExtensionContext.isContextSet &&
-                    uri.toString().toLowerCase() ===
-                        WebExtensionContext.rootDirectory
-                            .toString()
-                            .toLowerCase()
-                ) {
-                    WebExtensionContext.telemetry.sendInfoTelemetry(
-                        telemetryEventNames.WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED
-                    );
-                    await this._loadFromDataverseToVFS();
-                }
-            }
         }
+
         return result;
     }
 
     // --- manage file contents
 
     async readFile(uri: vscode.Uri): Promise<Uint8Array> {
-        try {
-            const data = await this._lookupAsFile(uri, false);
-            return data.data;
-        } catch (error) {
-            const castedError = error as vscode.FileSystemError;
+        let data = await this._lookup(uri, true);
 
-            if (castedError.code === vscode.FileSystemError.FileNotFound.name) {
-                if (
-                    WebExtensionContext.isContextSet &&
-                    uri
-                        .toString()
-                        .includes(WebExtensionContext.rootDirectory.toString())
-                ) {
-                    if (pathHasEntityFolderName(uri.toString())) {
-                        WebExtensionContext.telemetry.sendInfoTelemetry(
-                            telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED
-                        );
-                        await this._loadFromDataverseToVFS(); // TODO - make single file load
-                        const data = await this._lookupAsFile(uri, false);
-                        return data.data;
-                    }
-                }
-            }
+        if (!data && isValidFilePath(uri.fsPath)) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED
+            );
+
+            await this._loadFileFromDataverseToVFS(uri);
+            data = await this._lookup(uri, true);
         }
-        return new Uint8Array();
+
+        return data instanceof File ? data.data : new Uint8Array();
     }
 
     async writeFile(
@@ -169,15 +152,19 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const basename = path.posix.basename(uri.path);
         const parent = await this._lookupParentDirectory(uri);
         let entry = parent.entries.get(basename);
+
         if (entry instanceof Directory) {
             throw vscode.FileSystemError.FileIsADirectory(uri);
         }
+
         if (!entry && !options.create) {
             throw vscode.FileSystemError.FileNotFound();
         }
+
         if (entry && options.create && !options.overwrite) {
             throw vscode.FileSystemError.FileExists(uri);
         }
+
         if (!entry) {
             entry = new File(basename);
             parent.entries.set(basename, entry);
@@ -213,6 +200,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
     async createDirectory(uri: vscode.Uri): Promise<void> {
         // Do silent lookup to check for existing entry
         const entry = await this._lookup(uri, true);
+
         if (!entry) {
             const basename = path.posix.basename(uri.path);
             const dirname = uri.with({ path: path.posix.dirname(uri.path) });
@@ -245,6 +233,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         if (!entry) {
             throw vscode.FileSystemError.FileNotFound();
         }
+
         if (entry instanceof Directory) {
             throw vscode.FileSystemError.FileIsADirectory(uri);
         }
@@ -272,10 +261,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
             if (!part) {
                 continue;
             }
+
             let child: Entry | undefined;
             if (entry instanceof Directory) {
                 child = entry.entries.get(part);
             }
+
             if (!child) {
                 if (!silent) {
                     throw vscode.FileSystemError.FileNotFound();
@@ -283,6 +274,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     return undefined;
                 }
             }
+
             entry = child;
         }
         return entry;
@@ -293,9 +285,11 @@ export class PortalsFS implements vscode.FileSystemProvider {
         silent: boolean
     ): Promise<Directory> {
         const entry = await this._lookup(uri, silent);
+
         if (entry instanceof Directory) {
             return entry;
         }
+
         throw vscode.FileSystemError.FileNotADirectory(uri);
     }
 
@@ -304,10 +298,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
         silent: boolean
     ): Promise<File> {
         const entry = await this._lookup(uri, silent);
+
         if (entry instanceof File) {
             return entry;
         }
-        throw vscode.FileSystemError.FileIsADirectory(uri);
+
+        throw vscode.FileSystemError.FileNotFound(uri);
     }
 
     private async _lookupParentDirectory(uri: vscode.Uri): Promise<Directory> {
@@ -328,7 +324,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
     watch(_resource: vscode.Uri): vscode.Disposable {
         // ignore, fires for all changes...
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        return new vscode.Disposable(() => {});
+        return new vscode.Disposable(() => { });
     }
 
     private _fireSoon(...events: vscode.FileChangeEvent[]): void {
@@ -337,6 +333,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         if (this._fireSoonHandle) {
             clearTimeout(this._fireSoonHandle);
         }
+
         this._fireSoonHandle = setTimeout(() => {
             this._emitter.fire(this._bufferedEvents);
             this._bufferedEvents.length = 0;
@@ -355,7 +352,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
         WebExtensionContext.telemetry.sendInfoTelemetry(
             telemetryEventNames.WEB_EXTENSION_CREATE_ROOT_FOLDER
         );
-
         await this.createDirectory(
             vscode.Uri.parse(
                 `${PORTALS_URI_SCHEME}:/${portalFolderName}/`,
@@ -416,13 +412,60 @@ export class PortalsFS implements vscode.FileSystemProvider {
         // Load default file first
         await fetchDataFromDataverseAndUpdateVFS(
             this,
-            WebExtensionContext.defaultEntityId,
-            WebExtensionContext.defaultEntityType
+            {
+                entityId: WebExtensionContext.defaultEntityId,
+                entityName: WebExtensionContext.defaultEntityType,
+            } as IFileInfo
+        );
+
+        // Fire and forget
+        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: true, preserveFocus: true });
+
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
+            {
+                commandId: "vscode.open",
+                type: "file",
+                entityId: WebExtensionContext.defaultEntityId,
+                entityName: WebExtensionContext.defaultEntityType
+            }
         );
 
         if (WebExtensionContext.showMultifileInVSCode) {
             // load rest of the files
             await fetchDataFromDataverseAndUpdateVFS(this);
+        }
+    }
+
+    private async _loadFileFromDataverseToVFS(uri: vscode.Uri) {
+        const entityId = getFileEntityId(uri.fsPath);
+        const entityName = getFileEntityName(uri.fsPath);
+        const fileName = getFileName(uri.fsPath);
+
+        if (entityId && entityName && fileName) {
+            await WebExtensionContext.dataverseAuthentication();
+            await this.createFileSystem(
+                WebExtensionContext.urlParametersMap.get(
+                    queryParameters.WEBSITE_NAME
+                ) as string
+            );
+
+            await fetchDataFromDataverseAndUpdateVFS(
+                this,
+                {
+                    entityId: entityId,
+                    entityName: entityName,
+                    fileName: fileName
+                } as IFileInfo
+            );
+
+            // Fire and forget
+            vscode.window.showTextDocument(uri, { preview: true, preserveFocus: true });
+
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_VSCODE_RELOAD_FILE,
+                { entityId: entityId, entityName: entityName }
+            );
         }
     }
 

@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import {
-    convertfromBase64ToString,
+    convertContentToUint8Array,
     GetFileContent,
     GetFileNameWithExtension,
     isContentPreloadNeeded,
@@ -26,21 +26,20 @@ import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from "../telemetry/constants";
 import { entityAttributeNeedMapping, folderExportType, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
-import { IAttributePath } from "../common/interfaces";
+import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
-    entityId = "",
-    entityType = ""
+    defaultFileInfo?: IFileInfo,
 ) {
     try {
-        const entityRequestURLs = getRequestUrlForEntities(entityId, entityType);
+        const entityRequestURLs = getRequestUrlForEntities(defaultFileInfo?.entityId, defaultFileInfo?.entityName);
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
         await Promise.all(entityRequestURLs.map(async (entity) => {
-            await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs);
+            await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
         }));
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -58,7 +57,8 @@ async function fetchFromDataverseAndCreateFiles(
     entityName: string,
     requestUrl: string,
     dataverseOrgUrl?: string,
-    portalFs?: PortalsFS
+    portalFs?: PortalsFS,
+    defaultFileInfo?: IFileInfo,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
     let requestSentAtTime = new Date().getTime();
@@ -118,7 +118,7 @@ async function fetchFromDataverseAndCreateFiles(
                 makeRequestCall = false;
             }
 
-            if (data.length === 0) {
+            if (result[Constants.ODATA_COUNT] !== 0 && data.length === 0) {
                 vscode.window.showErrorMessage(
                     "microsoft-powerapps-portals.webExtension.fetch.nocontent.error",
                     "Response data is empty"
@@ -133,7 +133,9 @@ async function fetchFromDataverseAndCreateFiles(
                         data[counter],
                         entityName,
                         portalFs,
-                        dataverseOrgUrl
+                        dataverseOrgUrl,
+                        undefined,
+                        defaultFileInfo
                     );
                 }
             }
@@ -173,7 +175,8 @@ async function createContentFiles(
     entityName: string,
     portalsFS: PortalsFS,
     dataverseOrgUrl: string,
-    filePathInPortalFS?: string
+    filePathInPortalFS?: string,
+    defaultFileInfo?: IFileInfo,
 ) {
     try {
         const lcid =
@@ -186,9 +189,14 @@ async function createContentFiles(
             telemetryEventNames.WEB_EXTENSION_EDIT_LCID,
             { lcid: lcid ? lcid.toString() : "" }
         );
+
         let languageCode = WebExtensionContext.languageIdCodeMap.get(
             lcid
         ) as string;
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_WEBSITE_LANGUAGE_CODE,
+            { languageCode: languageCode }
+        );
 
         const entityDetails = getEntity(entityName);
         const attributes = entityDetails?.get(schemaEntityKey.ATTRIBUTES);
@@ -247,7 +255,9 @@ async function createContentFiles(
             throw new Error(ERRORS.LANGUAGE_CODE_ID_VALUE_NULL);
         }
 
-        if (languageCodeAttribute && result[languageCodeAttribute]) {
+        if (defaultFileInfo === undefined &&
+            languageCodeAttribute &&
+            result[languageCodeAttribute]) {
             const portalLanguageId =
                 WebExtensionContext.websiteLanguageIdToPortalLanguageMap.get(
                     result[languageCodeAttribute]
@@ -256,16 +266,16 @@ async function createContentFiles(
             languageCode = WebExtensionContext.portalLanguageIdCodeMap.get(
                 portalLanguageId as string
             ) as string;
-        }
 
-        if (languageCode === Constants.DEFAULT_LANGUAGE_CODE) {
-            throw new Error(ERRORS.LANGUAGE_CODE_EMPTY);
-        }
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_ENTITY_LANGUAGE_CODE,
+                { languageCode: languageCode as string, entityId: entityId, entityName: entityName }
+            );
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_EDIT_LANGUAGE_CODE,
-            { languageCode: languageCode.toString() }
-        );
+            if (languageCode === Constants.DEFAULT_LANGUAGE_CODE || languageCode === undefined) {
+                throw new Error(ERRORS.LANGUAGE_CODE_EMPTY);
+            }
+        }
 
         const attributeArray = attributes.split(",");
         await processDataAndCreateFile(attributeArray,
@@ -278,7 +288,8 @@ async function createContentFiles(
             fileName,
             languageCode,
             filePathInPortalFS,
-            portalsFS)
+            portalsFS,
+            defaultFileInfo)
 
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -307,6 +318,7 @@ async function processDataAndCreateFile(
     languageCode: string,
     filePathInPortalFS: string,
     portalsFS: PortalsFS,
+    defaultFileInfo?: IFileInfo,
 ) {
     const attributeExtensionMap = attributeExtension as unknown as Map<
         string,
@@ -319,7 +331,7 @@ async function processDataAndCreateFile(
         const fileExtension = attributeExtensionMap?.get(
             attributeArray[counter]
         ) as string;
-        const fileNameWithExtension = GetFileNameWithExtension(
+        const fileNameWithExtension = defaultFileInfo?.fileName ?? GetFileNameWithExtension(
             entityName,
             fileName,
             languageCode,
@@ -355,7 +367,11 @@ async function processDataAndCreateFile(
         }
     }
 
-    await openDefaultEntityFile(entityId, fileUri);
+    if (entityId === WebExtensionContext.defaultEntityId) {
+        await WebExtensionContext.updateSingleFileUrisInContext(
+            vscode.Uri.parse(fileUri)
+        );
+    }
 }
 
 async function processExpandedData(
@@ -419,9 +435,7 @@ async function createFile(
     await createVirtualFile(
         portalsFS,
         fileUri,
-        base64Encoded
-            ? convertfromBase64ToString(fileContent)
-            : fileContent,
+        convertContentToUint8Array(fileContent, base64Encoded),
         updateEntityId(entityName, entityId, result),
         attributePath,
         encodeAsBase64(entityName, attribute),
@@ -433,25 +447,6 @@ async function createFile(
         result[Constants.MIMETYPE],
         isPreloadedContent
     );
-}
-
-async function openDefaultEntityFile(entityId: string, fileUri: string) {
-    if (entityId === WebExtensionContext.defaultEntityId) {
-        await WebExtensionContext.updateSingleFileUrisInContext(
-            vscode.Uri.parse(fileUri)
-        );
-
-        // Not awaited intentionally - fire and forget
-        vscode.commands.executeCommand(
-            "vscode.open",
-            vscode.Uri.parse(fileUri),
-            { background: true, preview: false }
-        );
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
-            { commandId: "vscode.open", type: "file" }
-        );
-    }
 }
 
 async function getMappingEntityContent(
@@ -578,7 +573,7 @@ export async function preprocessData(
 async function createVirtualFile(
     portalsFS: PortalsFS,
     fileUri: string,
-    fileContent: string | undefined,
+    fileContent: Uint8Array,
     entityId: string,
     attributePath: IAttributePath,
     encodeAsBase64: boolean,
@@ -607,7 +602,7 @@ async function createVirtualFile(
     // Call file system provider write call for buffering file data in VFS
     await portalsFS.writeFile(
         vscode.Uri.parse(fileUri),
-        new TextEncoder().encode(fileContent),
+        fileContent,
         { create: true, overwrite: true }
     );
 
