@@ -126,6 +126,7 @@ Verze: {2}</target>
       </trans-unit>
       <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
         <source xml:lang="en">Failed to fetch some files.</source>
+        <target state="translated">Nepodařilo se načíst některé soubory.</target>
       </trans-unit>
       <trans-unit id="++CODE++e1a694d8ed0093d17fa58ee8b44cc76f74583667ffc3511e5d8f77df7b156c41">
         <source xml:lang="en">Failed to get file ready for edit.</source>
