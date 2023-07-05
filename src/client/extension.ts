@@ -31,6 +31,7 @@ import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
+import { PowerPagesCopilot } from "./../common/copilot/PowerPagesCopilot";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 
 let client: LanguageClient;
@@ -160,15 +161,32 @@ export async function activate(
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
-    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-        initializeGenerator(_context, cliContext, _telemetry);
+    
+    // TODO: Handle for VSCode.dev also
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
+        initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
     }
+    else {
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
+    }
+
+    const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
+    _context.subscriptions.push(workspaceFolderWatcher);
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
     }
 
     _telemetry.sendTelemetryEvent("activated");
+
+    const copilotProvider = new PowerPagesCopilot(context.extensionUri);
+
+    _context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
+        webviewOptions: {
+            retainContextWhenHidden: true,
+        },
+    }));
 }
 
 export async function deactivate(): Promise<void> {
@@ -315,6 +333,18 @@ function isCurrentDocumentEdited(): boolean {
     );
 }
 
+function handleWorkspaceFolderChange() {
+    const workspaceFolders =
+        vscode.workspace.workspaceFolders?.map(
+            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+        ) || [];
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
+    }
+    else {
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
+    }
+}
 // allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
 class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(
