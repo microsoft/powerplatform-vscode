@@ -75,7 +75,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             vscode.window.showErrorMessage("Error getting active org from PAC");
         }
 
-
+        webviewView.description = "PREVIEW"
         webviewView.webview.options = {
             // Allow scripts in the webview
             enableScripts: true,
