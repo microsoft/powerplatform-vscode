@@ -32,7 +32,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: strin
             "dataverseEntity": activeFileParams[0],
             "entityField": activeFileParams[1],
             "fieldType": activeFileParams[2],
-            "activeFileContent": activeFileContent,
+            "activeFileContent": '',
           }
         }
     };
