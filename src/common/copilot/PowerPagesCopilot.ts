@@ -13,7 +13,7 @@ import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
-import { escapeDollarSign, getLastThreeParts, getNonce, getUserName } from "./Utils";
+import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage } from "./Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 //declare const IS_DESKTOP: boolean;
 export let apiToken: string;
@@ -59,22 +59,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     ) {
         this._view = webviewView;
 
-        const pacOutput = await this._pacWrapper.activeOrg();
-        if (pacOutput.Status === "Success") {
-            const activeOrg = pacOutput.Results;
-
-            orgID = activeOrg.OrgId;
-            console.log("orgID from PAC: " + orgID);
-            environmentName = activeOrg.FriendlyName;
-            console.log("environmentName from PAC: " + environmentName);
-            userID = activeOrg.UserId;
-            console.log("userID from PAC: " + userID);
-
-        } else {
-            console.log("Error getting active org from PAC");
-            vscode.window.showErrorMessage("Error getting active org from PAC");
-        }
-
         webviewView.description = "PREVIEW"
         webviewView.webview.options = {
             // Allow scripts in the webview
@@ -98,16 +82,35 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 }
                 case "login": {
                     console.log("login");
-                    // TODO: Reset the token if the user changes the account or signs out
-                    intelligenceAPIAuthentication().then(({ accessToken, user }) => {
-                        if (accessToken && user) {
-                            console.log('token: ' + accessToken);
-                            apiToken = accessToken;
-                            userName = getUserName(user);
-                            this.sendMessageToWebview({ type: 'userName', value: userName });
-                            this.sendMessageToWebview({ type: "welcomeScreen" });
-                        }
-                    });
+                    const pacOutput = await this._pacWrapper.activeOrg();
+                    if (pacOutput.Status === "Success") {
+                        const activeOrg = pacOutput.Results;
+            
+                        orgID = activeOrg.OrgId;
+                        console.log("orgID from PAC: " + orgID);
+                        environmentName = activeOrg.FriendlyName;
+                        console.log("environmentName from PAC: " + environmentName);
+                        userID = activeOrg.UserId;
+                        console.log("userID from PAC: " + userID);
+                        const orgUrl = activeOrg.OrgUrl;
+
+                        showConnectedOrgMessage(environmentName, orgUrl);
+
+                        intelligenceAPIAuthentication().then(({ accessToken, user }) => {
+                            if (accessToken && user) {
+                                console.log('token: ' + accessToken);
+                                apiToken = accessToken;
+                                userName = getUserName(user);
+                                this.sendMessageToWebview({ type: 'userName', value: userName });
+                                this.sendMessageToWebview({ type: "welcomeScreen" });
+                            }
+                        });
+            
+                    } else {
+                        //TODO: Initiate PAC Auth Create
+                        console.log("Error getting active org from PAC");
+                        vscode.window.showErrorMessage("Error getting active org from PAC");
+                    }
                     break;
                 }
                 case "newUserPrompt": {

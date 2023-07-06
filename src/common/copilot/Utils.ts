@@ -57,3 +57,13 @@ export function getLastThreeParts(string: string): string[] {
 export function escapeDollarSign(paragraph: string): string {
     return paragraph.replace(/\$/g, "\\$");
 }
+
+export function showConnectedOrgMessage(environmentName: string, orgUrl: string) {
+    vscode.window.showInformationMessage(
+      vscode.l10n.t({
+        message: "Power Pages Copilot is now connected to the environment: {0} : {1}",
+        args: [environmentName, orgUrl],
+        comment: ["{0} represents the environment name"]
+      })
+    );
+  }
