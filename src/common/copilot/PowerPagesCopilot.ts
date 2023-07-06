@@ -15,6 +15,7 @@ import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
 import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage } from "./Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
+import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 //declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
@@ -30,6 +31,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
     private readonly _pacWrapper: PacWrapper;
     private _extensionContext: vscode.ExtensionContext;
+    private readonly _disposables: vscode.Disposable[] = [];
 
     constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
         this._extensionContext = _context;
@@ -45,10 +47,48 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             }
             )
         );
+        this.setupFileWatcher();
+        this.handleOrgChange();
     }
 
 
     private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
+
+    private setupFileWatcher() {
+        const watchPath = GetAuthProfileWatchPattern();
+        if (watchPath) {
+            const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
+
+            watcher.onDidChange(() => this.handleOrgChange()),
+            watcher.onDidCreate(() => this.handleOrgChange()),
+            watcher.onDidDelete(() => this.handleOrgChange())
+            this._extensionContext.subscriptions.push(watcher);
+        }
+
+    }
+
+    private async handleOrgChange() {
+        orgID = '';
+        const pacOutput = await this._pacWrapper.activeOrg();
+
+        if (pacOutput.Status === "Success") {
+            const activeOrg = pacOutput.Results;
+
+            orgID = activeOrg.OrgId;
+            console.log("orgID from PAC: " + orgID);
+            environmentName = activeOrg.FriendlyName;
+            console.log("environmentName from PAC: " + environmentName);
+            userID = activeOrg.UserId;
+            console.log("userID from PAC: " + userID);
+            const orgUrl = activeOrg.OrgUrl;
+
+            showConnectedOrgMessage(environmentName, orgUrl);
+        } else {
+            console.log("Error getting active org from PAC");
+            vscode.window.showErrorMessage("Error getting active org from PAC");
+        }
+    }
+
 
     public async resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -85,7 +125,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     const pacOutput = await this._pacWrapper.activeOrg();
                     if (pacOutput.Status === "Success") {
                         const activeOrg = pacOutput.Results;
-            
+
                         orgID = activeOrg.OrgId;
                         console.log("orgID from PAC: " + orgID);
                         environmentName = activeOrg.FriendlyName;
@@ -105,18 +145,37 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                                 this.sendMessageToWebview({ type: "welcomeScreen" });
                             }
                         });
-            
+
                     } else {
                         //TODO: Initiate PAC Auth Create
                         console.log("Error getting active org from PAC");
-                        vscode.window.showErrorMessage("Error getting active org from PAC");
+                        // vscode.window.showErrorMessage("Please login to an environment before using Copilot");
                     }
                     break;
                 }
                 case "newUserPrompt": {
+                    if(orgID) {
                     const { activeFileParams, activeFileContent } = this.getActiveEditorContent();
-                    const apiResponse = await sendApiRequest(data.value, activeFileParams, activeFileContent, orgID);
-                    this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
+                    intelligenceAPIAuthentication()
+                        .then(({ accessToken, user }) => {
+                            console.log('token: ' + accessToken);
+                            apiToken = accessToken;
+                            userName = getUserName(user);
+                            this.sendMessageToWebview({ type: 'userName', value: userName });
+
+                            return sendApiRequest(data.value, activeFileParams, activeFileContent, orgID, apiToken);
+                        })
+                        .then(apiResponse => {
+                            this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
+                        })
+                        .catch(error => {
+                            console.log("Error during authentication or API request: " + error);
+                            apiToken = "";
+                            // Handle any error scenarios
+                        });
+                    } else {
+                        vscode.window.showErrorMessage("Please login to an environment before using Copilot");
+                    }
                     break;
                 }
                 case "insertCode": {
@@ -143,10 +202,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 }
                 case "userFeedback": {
                     console.log("user feedback " + data.value);
-                    if(data.value === "thumbsUp"){
+                    if (data.value === "thumbsUp") {
                         console.log("Thumbs up telemetry")
                         CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp")
-                    } else if(data.value === "thumbsDown"){
+                    } else if (data.value === "thumbsDown") {
                         console.log("Thumbs down telemetry")
                         CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown")
                     }
@@ -181,7 +240,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
             return { activeFileParams: activeFileParamsMapped, activeFileContent: document.getText() };
         }
-        return { activeFileParams: ['','',''], activeFileContent: "" };
+        return { activeFileParams: ['', '', ''], activeFileContent: "" };
     }
 
     private getMappedParams(activeFileParams: string[]): string[] {

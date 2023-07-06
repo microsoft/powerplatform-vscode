@@ -4,11 +4,11 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { apiToken, sessionID} from "./PowerPagesCopilot";
+import {sessionID} from "./PowerPagesCopilot";
 import https from 'https';
 
 
-export async function sendApiRequest(userPrompt: string, activeFileParams: string[], activeFileContent: string, orgID:string) {
+export async function sendApiRequest(userPrompt: string, activeFileParams: string[], activeFileContent: string, orgID:string, apiToken:string) {
     console.log("Sending message to API: " + userPrompt);
 
     // const AIBTestUrl = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
