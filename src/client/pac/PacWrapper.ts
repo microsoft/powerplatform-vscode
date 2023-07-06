@@ -121,6 +121,11 @@ export class PacWrapper {
             new PacArguments("auth", "create"));
     }
 
+    public async authCreateNewAuthProfileForOrg(orgUrl: string): Promise<PacAuthListOutput> {
+        return this.executeCommandAndParseResults<PacAuthListOutput>(
+            new PacArguments("auth", "create", "--url", orgUrl));
+    }
+
     public async authSelectByIndex(index: number): Promise<PacOutput>{
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "select", "--index", index.toString()))
     }

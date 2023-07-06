@@ -13,9 +13,10 @@ import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
-import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage } from "./Utils";
+import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "./Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
+import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
 //declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
@@ -23,6 +24,7 @@ export let userName: string;
 export let orgID: string;
 export let environmentName: string;
 export let userID: string;
+export let activeOrgUrl: string;
 
 
 
@@ -48,7 +50,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             )
         );
         this.setupFileWatcher();
-        this.handleOrgChange();
+        //this.handleOrgChange();
     }
 
 
@@ -85,7 +87,22 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             showConnectedOrgMessage(environmentName, orgUrl);
         } else {
             console.log("Error getting active org from PAC");
-            vscode.window.showErrorMessage("Error getting active org from PAC");
+            // vscode.window.showErrorMessage("Error getting active org from PAC");
+            vscode.window.showInputBox({
+                // prompt: "Please enter the environment name",
+                placeHolder: "Enter the environment URL",
+            }).then(async (orgUrl) => {
+                if (!orgUrl) {
+                    return;
+                }
+                const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(orgUrl);
+                if (pacAuthCreateOutput.Status === "Success") {
+                    this.handleOrgChange();
+                } else {
+                    vscode.window.showErrorMessage("Error creating auth profile for org");
+                }
+            });
+
         }
     }
 
@@ -121,58 +138,29 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     break;
                 }
                 case "login": {
-                    console.log("login");
-                    const pacOutput = await this._pacWrapper.activeOrg();
-                    if (pacOutput.Status === "Success") {
-                        const activeOrg = pacOutput.Results;
-
-                        orgID = activeOrg.OrgId;
-                        console.log("orgID from PAC: " + orgID);
-                        environmentName = activeOrg.FriendlyName;
-                        console.log("environmentName from PAC: " + environmentName);
-                        userID = activeOrg.UserId;
-                        console.log("userID from PAC: " + userID);
-                        const orgUrl = activeOrg.OrgUrl;
-
-                        showConnectedOrgMessage(environmentName, orgUrl);
-
-                        intelligenceAPIAuthentication().then(({ accessToken, user }) => {
-                            if (accessToken && user) {
+                    this.handleLogin();
+                    break;
+                }
+                case "newUserPrompt": {
+                    if (orgID) {
+                        const { activeFileParams, activeFileContent } = this.getActiveEditorContent();
+                        intelligenceAPIAuthentication()
+                            .then(({ accessToken, user }) => {
                                 console.log('token: ' + accessToken);
                                 apiToken = accessToken;
                                 userName = getUserName(user);
                                 this.sendMessageToWebview({ type: 'userName', value: userName });
-                                this.sendMessageToWebview({ type: "welcomeScreen" });
-                            }
-                        });
 
-                    } else {
-                        //TODO: Initiate PAC Auth Create
-                        console.log("Error getting active org from PAC");
-                        // vscode.window.showErrorMessage("Please login to an environment before using Copilot");
-                    }
-                    break;
-                }
-                case "newUserPrompt": {
-                    if(orgID) {
-                    const { activeFileParams, activeFileContent } = this.getActiveEditorContent();
-                    intelligenceAPIAuthentication()
-                        .then(({ accessToken, user }) => {
-                            console.log('token: ' + accessToken);
-                            apiToken = accessToken;
-                            userName = getUserName(user);
-                            this.sendMessageToWebview({ type: 'userName', value: userName });
-
-                            return sendApiRequest(data.value, activeFileParams, activeFileContent, orgID, apiToken);
-                        })
-                        .then(apiResponse => {
-                            this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
-                        })
-                        .catch(error => {
-                            console.log("Error during authentication or API request: " + error);
-                            apiToken = "";
-                            // Handle any error scenarios
-                        });
+                                return sendApiRequest(data.value, activeFileParams, activeFileContent, orgID, apiToken);
+                            })
+                            .then(apiResponse => {
+                                this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
+                            })
+                            .catch(error => {
+                                console.log("Error during authentication or API request: " + error);
+                                apiToken = "";
+                                // Handle any error scenarios
+                            });
                     } else {
                         vscode.window.showErrorMessage("Please login to an environment before using Copilot");
                     }
@@ -214,6 +202,57 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         });
     }
 
+    private async handleLogin() {
+        console.log("login");
+        const pacOutput = await this._pacWrapper.activeOrg();
+        if (pacOutput.Status === "Success") {
+            this.handleOrgChangeSuccess.call(this, pacOutput);
+
+            intelligenceAPIAuthentication().then(({ accessToken, user }) => {
+                this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
+            });
+
+        } else {
+
+            const userOrgUrl = await showInputBoxAndGetOrgUrl();
+            if (!userOrgUrl) {
+                return;
+            }
+            const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
+            if (pacAuthCreateOutput.Status === "Success") {
+                intelligenceAPIAuthentication().then(({ accessToken, user }) => {
+                    this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
+                });
+            } else {
+                vscode.window.showErrorMessage("Error creating auth profile for org");
+            }
+
+        }
+    }
+
+    private async handleOrgChangeSuccess(pacOutput: PacActiveOrgListOutput) {
+        const activeOrg = pacOutput.Results;
+
+        orgID = activeOrg.OrgId;
+        console.log("orgID from PAC: " + orgID);
+        environmentName = activeOrg.FriendlyName;
+        console.log("environmentName from PAC: " + environmentName);
+        userID = activeOrg.UserId;
+        console.log("userID from PAC: " + userID);
+        activeOrgUrl = activeOrg.OrgUrl;
+
+        showConnectedOrgMessage(environmentName, activeOrgUrl);
+    }
+
+    private async intelligenceAPIAuthenticationHandler(accessToken: string, user: string) {
+        if (accessToken && user) {
+            console.log('token: ' + accessToken);
+            apiToken = accessToken;
+            userName = getUserName(user);
+            this.sendMessageToWebview({ type: 'userName', value: userName });
+            this.sendMessageToWebview({ type: "welcomeScreen" });
+        }
+    }
 
     private async checkAuthentication() {
         const session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });

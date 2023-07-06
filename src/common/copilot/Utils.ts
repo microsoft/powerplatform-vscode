@@ -67,3 +67,9 @@ export function showConnectedOrgMessage(environmentName: string, orgUrl: string)
       })
     );
   }
+
+  export async function showInputBoxAndGetOrgUrl() {
+    return vscode.window.showInputBox({
+        placeHolder: "Enter the environment URL",
+    });
+}
