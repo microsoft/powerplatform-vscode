@@ -15,6 +15,13 @@ export class ConcurrencyHandler {
 
     public async handleRequest(requestInfo: RequestInfo, requestInit?: RequestInit) {
         try {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_BULKHEAD_FETCH_REQUEST,
+                {
+                    executionSlots: this._bulkhead.executionSlots.toString(),
+                    queueSlots: this._bulkhead.queueSlots.toString()
+                }
+            );
             return await this._bulkhead.execute(() => fetch(
                 requestInfo,
                 requestInit

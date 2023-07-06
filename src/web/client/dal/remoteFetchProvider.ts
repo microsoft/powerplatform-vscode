@@ -40,6 +40,10 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         ) as string;
         await Promise.all(entityRequestURLs.map(async (entity) => {
             await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
+                { entityName: entity.entityName }
+            );
         }));
     } catch (error) {
         const errorMsg = (error as Error)?.message;

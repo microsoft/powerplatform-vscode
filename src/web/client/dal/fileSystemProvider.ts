@@ -421,7 +421,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         );
 
         // Fire and forget
-        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: true, preserveFocus: true });
+        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true });
 
         WebExtensionContext.telemetry.sendInfoTelemetry(
             telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
@@ -437,6 +437,10 @@ export class PortalsFS implements vscode.FileSystemProvider {
             // load rest of the files
             await fetchDataFromDataverseAndUpdateVFS(this);
         }
+
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS
+        );
     }
 
     private async _loadFileFromDataverseToVFS(uri: vscode.Uri, showTextDocument: boolean) {
