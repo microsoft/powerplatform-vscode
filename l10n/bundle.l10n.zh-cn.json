@@ -26,6 +26,7 @@
   "Failed to disable PAC telemetry.": "无法禁用 PAC 遥测。",
   "Failed to enable PAC telemetry.": "无法启用 PAC 遥测。",
   "Failed to fetch file content.": "无法提取文件内容。",
+  "Failed to fetch some files.": "无法获取部分文件。",
   "Failed to get file ready for edit.": "无法获取可供编辑的文件。",
   "Fetching your file ...": "正在提取文件...",
   "File might be referenced by name {0} here./{0} represents the name of the file": "文件可能由此处的名称 {0} 引用。",

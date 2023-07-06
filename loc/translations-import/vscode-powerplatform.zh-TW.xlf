@@ -124,6 +124,10 @@ The {2} represents Solution's Version number</note>
         <source xml:lang="en">Failed to fetch file content.</source>
         <target state="translated">無法擷取檔案內容。</target>
       </trans-unit>
+      <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
+        <source xml:lang="en">Failed to fetch some files.</source>
+        <target state="translated">無法擷取部分檔案。</target>
+      </trans-unit>
       <trans-unit id="++CODE++e1a694d8ed0093d17fa58ee8b44cc76f74583667ffc3511e5d8f77df7b156c41">
         <source xml:lang="en">Failed to get file ready for edit.</source>
         <target state="translated">無法準備好文件進行編輯。</target>

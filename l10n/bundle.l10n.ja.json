@@ -26,6 +26,7 @@
   "Failed to disable PAC telemetry.": "PAC テレメトリを無効にできませんでした。",
   "Failed to enable PAC telemetry.": "PAC テレメトリを有効にできませんでした。",
   "Failed to fetch file content.": "ファイル コンテンツの取得に失敗しました。",
+  "Failed to fetch some files.": "一部のファイルを取得できませんでした。",
   "Failed to get file ready for edit.": "ファイルの編集準備に失敗しました。",
   "Fetching your file ...": "ファイルを取得しています...",
   "File might be referenced by name {0} here./{0} represents the name of the file": "ここではファイルが {0} の名前で参照されている可能性があります。",

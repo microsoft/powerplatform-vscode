@@ -26,6 +26,7 @@
   "Failed to disable PAC telemetry.": "Telemetrii PAC se nepodařilo zakázat.",
   "Failed to enable PAC telemetry.": "Telemetrii PAC se nepodařilo povolit.",
   "Failed to fetch file content.": "Nepodařilo se načíst obsah souboru.",
+  "Failed to fetch some files.": "Nepodařilo se načíst některé soubory.",
   "Failed to get file ready for edit.": "Soubor se nepodařilo připravit k úpravám.",
   "Fetching your file ...": "Načítá se soubor...",
   "File might be referenced by name {0} here./{0} represents the name of the file": "Na soubor zde může být odkazováno názvem {0}.",
