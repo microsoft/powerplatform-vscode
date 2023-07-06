@@ -5,7 +5,7 @@
 
 import * as path from "path";
 import * as vscode from "vscode";
-import { isValidDirectoryPath, isValidFilePath } from "../utilities/urlBuilderUtil";
+import { isValidDirectoryPath, isValidFilePath, isWebFileWithLazyLoad } from "../utilities/urlBuilderUtil";
 import {
     PORTALS_URI_SCHEME,
     queryParameters,
@@ -132,12 +132,14 @@ export class PortalsFS implements vscode.FileSystemProvider {
     async readFile(uri: vscode.Uri): Promise<Uint8Array> {
         let data = await this._lookup(uri, true);
 
-        if (!data && isValidFilePath(uri.fsPath)) {
+        const isLazyLoadedWebFile = isWebFileWithLazyLoad(uri.fsPath);
+        if ((!data && isValidFilePath(uri.fsPath))
+            || isLazyLoadedWebFile) {
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED
             );
 
-            await this._loadFileFromDataverseToVFS(uri);
+            await this._loadFileFromDataverseToVFS(uri, !isLazyLoadedWebFile);
             data = await this._lookup(uri, true);
         }
 
@@ -437,7 +439,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         }
     }
 
-    private async _loadFileFromDataverseToVFS(uri: vscode.Uri) {
+    private async _loadFileFromDataverseToVFS(uri: vscode.Uri, showTextDocument: boolean) {
         const entityId = getFileEntityId(uri.fsPath);
         const entityName = getFileEntityName(uri.fsPath);
         const fileName = getFileName(uri.fsPath);
@@ -459,8 +461,10 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 } as IFileInfo
             );
 
-            // Fire and forget
-            vscode.window.showTextDocument(uri, { preview: true, preserveFocus: true });
+            if (showTextDocument) {
+                // Fire and forget
+                vscode.window.showTextDocument(uri, { preview: true, preserveFocus: true });
+            }
 
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_VSCODE_RELOAD_FILE,
