@@ -34,6 +34,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private readonly _pacWrapper: PacWrapper;
     private _extensionContext: vscode.ExtensionContext;
     private readonly _disposables: vscode.Disposable[] = [];
+    private loginButtonRendered = false;
 
     constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
         this._extensionContext = _context;
@@ -50,7 +51,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             )
         );
         this.setupFileWatcher();
-        //this.handleOrgChange();
     }
 
 
@@ -71,38 +71,25 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     private async handleOrgChange() {
         orgID = '';
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Introduce a 1000ms (1 second) delay
+
         const pacOutput = await this._pacWrapper.activeOrg();
 
         if (pacOutput.Status === "Success") {
-            const activeOrg = pacOutput.Results;
-
-            orgID = activeOrg.OrgId;
-            console.log("orgID from PAC: " + orgID);
-            environmentName = activeOrg.FriendlyName;
-            console.log("environmentName from PAC: " + environmentName);
-            userID = activeOrg.UserId;
-            console.log("userID from PAC: " + userID);
-            const orgUrl = activeOrg.OrgUrl;
-
-            showConnectedOrgMessage(environmentName, orgUrl);
+            this.handleOrgChangeSuccess(pacOutput);
         } else {
-            console.log("Error getting active org from PAC");
-            // vscode.window.showErrorMessage("Error getting active org from PAC");
-            vscode.window.showInputBox({
-                // prompt: "Please enter the environment name",
-                placeHolder: "Enter the environment URL",
-            }).then(async (orgUrl) => {
-                if (!orgUrl) {
-                    return;
-                }
-                const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(orgUrl);
-                if (pacAuthCreateOutput.Status === "Success") {
-                    this.handleOrgChange();
-                } else {
-                    vscode.window.showErrorMessage("Error creating auth profile for org");
-                }
-            });
 
+            const userOrgUrl = await showInputBoxAndGetOrgUrl();
+            if (!userOrgUrl) {
+                return;
+            }
+            const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
+            if (pacAuthCreateOutput.Status === "Success") {
+                this.handleOrgChange();
+            } else {
+                vscode.window.showErrorMessage("Error creating auth profile for org");
+            }
         }
     }
 
@@ -132,9 +119,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     console.log("webview loaded");
                     sessionID = uuidv4();
                     this.sendMessageToWebview({ type: 'env', value: this.isDesktop, envName: environmentName }); //TODO Use IS_DESKTOP
-                    await this.checkAuthentication();
-                    this.sendMessageToWebview({ type: 'userName', value: userName });
-                    this.sendMessageToWebview({ type: "welcomeScreen" });
+                    this.handleLogin();
                     break;
                 }
                 case "login": {
@@ -156,11 +141,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                             .then(apiResponse => {
                                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
                             })
-                            .catch(error => {
-                                console.log("Error during authentication or API request: " + error);
-                                apiToken = "";
-                                // Handle any error scenarios
-                            });
                     } else {
                         vscode.window.showErrorMessage("Please login to an environment before using Copilot");
                     }
@@ -216,6 +196,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
             const userOrgUrl = await showInputBoxAndGetOrgUrl();
             if (!userOrgUrl) {
+                userName = "";
+                this.sendMessageToWebview({ type: 'userName', value: userName });
+
+                if (!this.loginButtonRendered) {
+                    this.sendMessageToWebview({ type: "welcomeScreen" });
+                    this.loginButtonRendered = true; // Set the flag to indicate that the login button has been rendered
+                }
+
                 return;
             }
             const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
