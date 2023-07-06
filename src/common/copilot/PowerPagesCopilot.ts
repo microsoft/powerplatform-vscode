@@ -71,9 +71,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     private async handleOrgChange() {
         orgID = '';
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Introduce a 1000ms (1 second) delay
-
         const pacOutput = await this._pacWrapper.activeOrg();
 
         if (pacOutput.Status === "Success") {
