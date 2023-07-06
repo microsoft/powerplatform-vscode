@@ -143,7 +143,8 @@
   function getInitials(name) {
     const nameArray = name.split(" ");
     const initials = nameArray.map((word) => word.charAt(0));
-    return initials.join("");
+    const truncatedInitials = initials.slice(0, 2);
+    return truncatedInitials.join("");
   }
 
 
