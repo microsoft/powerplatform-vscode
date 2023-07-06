@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { IAttributePath } from "../common/interfaces";
 
@@ -39,6 +40,10 @@ export function updateFileDirtyChanges(
         fileFsPath,
         hasDirtyChanges
     );
+}
+
+export function doesFileExist(fileFsPath: string) {
+    return WebExtensionContext.fileDataMap.getFileMap.has(vscode.Uri.parse(fileFsPath).fsPath);
 }
 
 // Entity utility functions

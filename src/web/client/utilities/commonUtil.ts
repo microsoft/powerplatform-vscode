@@ -16,6 +16,7 @@ import { schemaEntityName } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
+import { doesFileExist } from "./fileAndEntityUtil";
 
 // decodes file content to UTF-8
 export function convertContentToUint8Array(content: string, isBase64Encoded: boolean): Uint8Array {
@@ -157,8 +158,18 @@ export function getImageContent(mimeType: string, fileContent: string) {
     return DATA + mimeType + BASE_64 + fileContent
 }
 
-export function isContentPreloadNeeded(fileName: string): boolean {
-    const fileExtension = getFileExtension(fileName);
+export function isPreloadedWebfile(fileName: string) {
+    const fileExtension = getFileExtension(fileName) as string;
     const validImageExtensions = getFileExtensionForPreload();
+
     return fileExtension !== undefined && validImageExtensions.includes(fileExtension.toLowerCase());
+}
+
+export function isWebfileContentLoadNeeded(fileName: string, fsPath: string): boolean {
+    const fileExtension = getFileExtension(fileName) as string;
+    const validImageExtensions = getFileExtensionForPreload();
+
+    return fileExtension !== undefined ?
+        validImageExtensions.includes(fileExtension.toLowerCase()) ||
+        doesFileExist(fsPath) : false;
 }

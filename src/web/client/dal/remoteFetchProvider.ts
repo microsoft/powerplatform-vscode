@@ -8,7 +8,7 @@ import {
     convertContentToUint8Array,
     GetFileContent,
     GetFileNameWithExtension,
-    isContentPreloadNeeded,
+    isWebfileContentLoadNeeded,
     setFileContent,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getRequestURL, updateEntityId } from "../utilities/urlBuilderUtil";
@@ -405,7 +405,7 @@ async function createFile(
     mappingEntityFetchQuery: string | undefined,
     entityId: string,
     dataverseOrgUrl: string,
-    portalsFS: PortalsFS,
+    portalsFS: PortalsFS
 ) {
     const base64Encoded: boolean = isBase64Encoded(
         entityName,
@@ -413,7 +413,7 @@ async function createFile(
     );
 
     // By default content is preloaded for all the files except for non-text webfiles for V2
-    const isPreloadedContent = mappingEntityFetchQuery ? isContentPreloadNeeded(fileNameWithExtension) : true;
+    const isPreloadedContent = mappingEntityFetchQuery ? isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
 
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(

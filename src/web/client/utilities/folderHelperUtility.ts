@@ -36,7 +36,7 @@ export function getFolderSubUris(): string[] {
 
 export function getRequestUrlForEntities(
     entityId?: string,
-    entityType?: string
+    entityName?: string
 ): IEntityRequestUrl[] {
     const entityRequestURLs: IEntityRequestUrl[] = [];
     const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
@@ -45,13 +45,14 @@ export function getRequestUrlForEntities(
 
     if (
         !WebExtensionContext.showMultifileInVSCode ||
-        (entityId && entityType && entityId.length > 0 && entityType.length > 0)
+        (entityId && entityName && entityId.length > 0 && entityName.length > 0)
     ) {
+        entityName = entityName && entityName.length > 0
+            ? entityName
+            : WebExtensionContext.defaultEntityType;
         const requestURL = getRequestURL(
             dataverseOrgUrl,
-            entityType && entityType.length > 0
-                ? entityType
-                : WebExtensionContext.defaultEntityType,
+            entityName,
             entityId && entityId.length > 0
                 ? entityId
                 : WebExtensionContext.defaultEntityId,
@@ -60,7 +61,7 @@ export function getRequestUrlForEntities(
         return [
             {
                 requestUrl: requestURL,
-                entityName: WebExtensionContext.defaultEntityType,
+                entityName: entityName,
             },
         ];
     }

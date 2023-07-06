@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+export const SCHEMA_WEBFILE_FOLDER_NAME = "web-files";
+
 export enum schemaKey {
     SINGLE_ENTITY_URL = "singleEntityURL",
     MULTI_ENTITY_URL = "multiEntityURL",
