@@ -13,7 +13,7 @@ import { telemetryEventNames } from "../telemetry/constants";
 import { GetFileContent } from "../utilities/commonUtil";
 import {
     getFileEntityId,
-    getFileEntityType,
+    getFileEntityName,
     updateEntityEtag,
     updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
@@ -25,7 +25,7 @@ export class EtagHandlerService {
         fileFsPath: string,
         portalFs: PortalsFS
     ): Promise<string> {
-        const entityName = getFileEntityType(fileFsPath);
+        const entityName = getFileEntityName(fileFsPath);
         const entityId = getFileEntityId(fileFsPath);
 
         const requestSentAtTime = new Date().getTime();
@@ -78,7 +78,7 @@ export class EtagHandlerService {
                 telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE
             );
 
-            await WebExtensionContext.reAuthenticate();
+            await WebExtensionContext.dataverseAuthentication();
             const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);
 
             if (response.ok) {
@@ -152,7 +152,7 @@ export class EtagHandlerService {
     }
 
     public static async updateFileEtag(fileFsPath: string) {
-        const entityName = getFileEntityType(fileFsPath);
+        const entityName = getFileEntityName(fileFsPath);
         const entityId = getFileEntityId(fileFsPath);
         const requestSentAtTime = new Date().getTime();
 
@@ -183,7 +183,7 @@ export class EtagHandlerService {
                 httpMethod.GET
             );
 
-            await WebExtensionContext.reAuthenticate();
+            await WebExtensionContext.dataverseAuthentication();
             const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, requestInit);
 
             if (response.ok) {

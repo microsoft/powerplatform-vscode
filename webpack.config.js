@@ -85,7 +85,8 @@ const webConfig = {
             "os": require.resolve("os-browserify"),
             "path": require.resolve("path-browserify"),
             'stream': require.resolve("stream-browserify"),
-            'util': false
+            'util': false,
+            buffer: require.resolve('buffer'),
         }
     },
     module: {
@@ -100,6 +101,9 @@ const webConfig = {
     plugins: [
         new webpack.ProvidePlugin({
             process: 'process/browser', // provide a shim for the global `process` variable
+        }),
+        new webpack.ProvidePlugin({
+            Buffer: [ 'buffer', 'Buffer' ],
         }),
     ],
     externals: {

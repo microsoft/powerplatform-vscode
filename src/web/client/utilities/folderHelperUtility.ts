@@ -23,20 +23,20 @@ export function getFolderSubUris(): string[] {
     }
 
     for (const entry of Object.entries(MultiFileSupportedEntityName)) {
-        const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);        
+        const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);
         const subUri = entityDetails?.get(
             schemaEntityKey.FILE_FOLDER_NAME
         ) as string;
 
         subUris.push(subUri);
     }
-    
+
     return subUris;
 }
 
 export function getRequestUrlForEntities(
-    entityId: string,
-    entityType: string
+    entityId?: string,
+    entityName?: string
 ): IEntityRequestUrl[] {
     const entityRequestURLs: IEntityRequestUrl[] = [];
     const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
@@ -45,14 +45,15 @@ export function getRequestUrlForEntities(
 
     if (
         !WebExtensionContext.showMultifileInVSCode ||
-        (entityId.length > 0 && entityType.length > 0)
+        (entityId && entityName && entityId.length > 0 && entityName.length > 0)
     ) {
+        entityName = entityName && entityName.length > 0
+            ? entityName
+            : WebExtensionContext.defaultEntityType;
         const requestURL = getRequestURL(
             dataverseOrgUrl,
-            entityType.length > 0
-                ? entityType
-                : WebExtensionContext.defaultEntityType,
-            entityId.length > 0
+            entityName,
+            entityId && entityId.length > 0
                 ? entityId
                 : WebExtensionContext.defaultEntityId,
             httpMethod.GET
@@ -60,7 +61,7 @@ export function getRequestUrlForEntities(
         return [
             {
                 requestUrl: requestURL,
-                entityName: WebExtensionContext.defaultEntityType,
+                entityName: entityName,
             },
         ];
     }
@@ -92,7 +93,7 @@ export function getRequestUrlForEntities(
 }
 
 export function getEntityNameForExpandedEntityContent(entityName: string): string {
-    if(entityName === schemaEntityName.ADVANCEDFORMS){
+    if (entityName === schemaEntityName.ADVANCEDFORMS) {
         return schemaEntityName.ADVANCEDFORMSTEPS;
     }
 

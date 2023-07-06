@@ -56,7 +56,7 @@ export const ERRORS = {
     FILE_ID_EMPTY: "File ID is empty",
     LANGUAGE_CODE_ID_VALUE_NULL: "Language code ID is empty",
     LANGUAGE_CODE_EMPTY: "Language code is empty",
-    BULKHEAD_LIMITS_EXCEEDED : "Bulkhead queue limits exceeded",
+    BULKHEAD_LIMITS_EXCEEDED: "Bulkhead queue limits exceeded",
 };
 
 export function showErrorDialog(errorString: string, detailMessage?: string) {
@@ -100,7 +100,7 @@ export function checkMandatoryPathParameters(
     entityId: string
 ): boolean {
     switch (
-        appName // remove switch cases and use polymorphism
+    appName // remove switch cases and use polymorphism
     ) {
         case "portal":
             if (entity && entityId) {
@@ -108,7 +108,8 @@ export function checkMandatoryPathParameters(
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING
+                    telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING,
+                    `entity:${entity}, entityId:${entityId}`
                 );
                 showErrorDialog(
                     vscode.l10n.t("There was a problem opening the workspace"),
@@ -132,7 +133,7 @@ export function checkMandatoryQueryParameters(
     queryParamsMap: Map<string, string>
 ): boolean {
     switch (
-        appName // remove switch cases and use polymorphism
+    appName // remove switch cases and use polymorphism
     ) {
         case "portal": {
             const orgURL = queryParamsMap?.get(queryParameters.ORG_URL);
@@ -143,7 +144,8 @@ export function checkMandatoryQueryParameters(
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
+                    telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+                    `orgURL:${orgURL}, dataSource:${dataSource}, schemaName:${schemaName} ,websiteId:${websiteId}`
                 );
                 showErrorDialog(
                     vscode.l10n.t("There was a problem opening the workspace"),
@@ -168,19 +170,20 @@ export function checkMandatoryMultifileParameters(
     queryParametersMap: Map<string, string>
 ): boolean {
     switch (
-        appName // remove switch cases and use polymorphism
+    appName // remove switch cases and use polymorphism
     ) {
         case "portal": {
             const enableMultifile = queryParametersMap?.get(queryParameters.ENABLE_MULTIFILE);
             const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
             const websiteId = queryParametersMap.get(queryParameters.WEBSITE_ID);
             if ((isMultifileEnabled() && isEnableMultifile && websiteId)
-            || (isMultifileEnabled() && !isEnableMultifile)
-            || !isMultifileEnabled()){
+                || (isMultifileEnabled() && !isEnableMultifile)
+                || !isMultifileEnabled()) {
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
+                    telemetryEventNames.WEB_EXTENSION_MULTI_FILE_MANDATORY_PARAMETERS_MISSING,
+                    `enableMultifile:${enableMultifile}, websiteId:${websiteId}`
                 );
                 showErrorDialog(
                     vscode.l10n.t("There was a problem opening the workspace"),

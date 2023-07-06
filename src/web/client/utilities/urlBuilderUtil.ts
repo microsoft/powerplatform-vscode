@@ -9,6 +9,7 @@ import {
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import {
+    SCHEMA_WEBFILE_FOLDER_NAME,
     entityAttributesWithBase64Encoding,
     schemaEntityKey,
     schemaEntityName,
@@ -132,7 +133,7 @@ export function getCustomRequestURL(
             WebExtensionContext.schemaDataSourcePropertiesMap.get(
                 schemaKey.DATAVERSE_API_VERSION
             ) as string
-        )        
+        )
         .replace(
             "{websiteId}",
             WebExtensionContext.urlParametersMap.get(
@@ -189,4 +190,25 @@ export function pathHasEntityFolderName(uri: string): boolean {
     }
 
     return false;
+}
+
+export function isValidFilePath(fsPath: string): boolean {
+    return WebExtensionContext.isContextSet &&
+        fsPath.includes(WebExtensionContext.rootDirectory.fsPath) &&
+        pathHasEntityFolderName(fsPath);
+}
+
+export function isValidDirectoryPath(fsPath: string): boolean {
+    return WebExtensionContext.isContextSet &&
+        fsPath.toLowerCase() === WebExtensionContext.rootDirectory.fsPath.toLowerCase();
+}
+
+export function isWebFileWithLazyLoad(fsPath: string): boolean {
+    const isPreloadedContent = WebExtensionContext.fileDataMap.getFileMap.get(fsPath)
+        ?.isContentLoaded;
+
+    return WebExtensionContext.isContextSet &&
+        fsPath.includes(WebExtensionContext.rootDirectory.fsPath) &&
+        fsPath.includes(SCHEMA_WEBFILE_FOLDER_NAME) &&
+        !isPreloadedContent;
 }

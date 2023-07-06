@@ -18,14 +18,18 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { convertStringtoBase64 as convertStringToBase64 } from "./utilities/commonUtil";
+import { convertContentToString } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
 import {
     updateFileDirtyChanges,
     updateEntityColumnContent,
+    getFileEntityId,
+    getFileEntityName,
 } from "./utilities/fileAndEntityUtil";
+import { IEntityInfo } from "./common/interfaces";
+import { telemetryEventNames } from "./telemetry/constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -95,6 +99,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     entityId,
                     queryParamsMap
                 );
+                WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
                     entity,
@@ -135,6 +140,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                         }
                                     );
                                 }
+
                                 await vscode.window.withProgress(
                                     {
                                         location:
@@ -151,6 +157,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                         );
                                     }
                                 );
+
                                 await NPSService.setEligibility();
                                 if (WebExtensionContext.npsEligibility) {
                                     NPSWebView.createOrShow(
@@ -160,12 +167,19 @@ export function activate(context: vscode.ExtensionContext): void {
                             }
                             break;
                         default:
-                            showErrorDialog(
-                                vscode.l10n.t(
-                                    "There was a problem opening the workspace"
-                                ),
-                                vscode.l10n.t("Unable to find that app")
-                            );
+                            {
+                                showErrorDialog(
+                                    vscode.l10n.t(
+                                        "There was a problem opening the workspace"
+                                    ),
+                                    vscode.l10n.t("Unable to find that app")
+                                );
+
+                                WebExtensionContext.telemetry.sendErrorTelemetry(
+                                    telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                                    `appName:${appName}`
+                                );
+                            }
                     }
                 } else {
                     showErrorDialog(
@@ -174,15 +188,42 @@ export function activate(context: vscode.ExtensionContext): void {
                         ),
                         vscode.l10n.t("Unable to find that app")
                     );
+
+                    WebExtensionContext.telemetry.sendErrorTelemetry(
+                        telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                        `appName:${appName}`
+                    );
                     return;
                 }
             }
         )
     );
 
+    processWorkspaceStateChanges(context);
+
     processWillSaveDocument(context);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.workspace.onDidOpenTextDocument((textDocument) => {
+            const entityInfo: IEntityInfo = {
+                entityId: getFileEntityId(textDocument.uri.fsPath),
+                entityName: getFileEntityName(textDocument.uri.fsPath)
+            };
+            context.workspaceState.update(textDocument.uri.fsPath, entityInfo);
+            WebExtensionContext.updateVscodeWorkspaceState(textDocument.uri.fsPath, entityInfo);
+        })
+    );
+
+    context.subscriptions.push(
+        vscode.workspace.onDidCloseTextDocument((textDocument) => {
+            context.workspaceState.update(textDocument.uri.fsPath, undefined);
+            WebExtensionContext.updateVscodeWorkspaceState(textDocument.uri.fsPath, undefined);
+        })
+    );
 }
 
 export function processWillSaveDocument(context: vscode.ExtensionContext) {
@@ -199,9 +240,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
                 // Update the latest content in context
                 if (fileData?.entityId && fileData.attributePath) {
                     let fileContent = e.document.getText();
-                    if (fileData.encodeAsBase64 as boolean) {
-                        fileContent = convertStringToBase64(fileContent);
-                    }
+                    fileContent = convertContentToString(fileContent, fileData.encodeAsBase64 as boolean);
                     updateEntityColumnContent(
                         fileData?.entityId,
                         fileData.attributePath,
