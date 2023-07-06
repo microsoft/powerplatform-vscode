@@ -221,6 +221,11 @@ class WebExtensionContext implements IWebExtensionContext {
         const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
         this._showMultifileInVSCode = isMultifileEnabled() && isEnableMultifile;
 
+        this.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_AVAILABILITY,
+            { showMultifileInVSCode: this._showMultifileInVSCode.toString() }
+        );
+
         // Initialize context from schema values
         this._schemaEntitiesMap = getEntitiesSchemaMap(schema);
         this._schemaDataSourcePropertiesMap =
@@ -232,10 +237,19 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     public async setVscodeWorkspaceState(workspaceState: vscode.Memento) {
-        workspaceState.keys().forEach((key) => {
-            const entityInfo = workspaceState.get(key) as IEntityInfo;
-            this._vscodeWorkspaceState.set(key, entityInfo);
-        });
+        try {
+            workspaceState.keys().forEach((key) => {
+                const entityInfo = workspaceState.get(key) as IEntityInfo;
+                this._vscodeWorkspaceState.set(key, entityInfo);
+            });
+            this.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_SUCCESS,
+                { count: this._vscodeWorkspaceState.size.toString() });
+        } catch (error) {
+            this.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_FAILED,
+                error as string
+            );
+        }
     }
 
     public async authenticateAndUpdateDataverseProperties() {

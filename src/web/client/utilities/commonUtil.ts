@@ -117,12 +117,12 @@ export function isMultifileEnabled() {
 
     if (!isMultifileEnabled) {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
+            telemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED
         );
     }
     else {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
+            telemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED
         );
     }
 

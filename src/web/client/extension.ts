@@ -29,6 +29,7 @@ import {
     getFileEntityName,
 } from "./utilities/fileAndEntityUtil";
 import { IEntityInfo } from "./common/interfaces";
+import { telemetryEventNames } from "./telemetry/constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -166,12 +167,19 @@ export function activate(context: vscode.ExtensionContext): void {
                             }
                             break;
                         default:
-                            showErrorDialog(
-                                vscode.l10n.t(
-                                    "There was a problem opening the workspace"
-                                ),
-                                vscode.l10n.t("Unable to find that app")
-                            );
+                            {
+                                showErrorDialog(
+                                    vscode.l10n.t(
+                                        "There was a problem opening the workspace"
+                                    ),
+                                    vscode.l10n.t("Unable to find that app")
+                                );
+
+                                WebExtensionContext.telemetry.sendErrorTelemetry(
+                                    telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                                    `appName:${appName}`
+                                );
+                            }
                     }
                 } else {
                     showErrorDialog(
@@ -179,6 +187,11 @@ export function activate(context: vscode.ExtensionContext): void {
                             "There was a problem opening the workspace"
                         ),
                         vscode.l10n.t("Unable to find that app")
+                    );
+
+                    WebExtensionContext.telemetry.sendErrorTelemetry(
+                        telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                        `appName:${appName}`
                     );
                     return;
                 }
