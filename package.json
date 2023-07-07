@@ -152,6 +152,10 @@
     ],
     "commands": [
       {
+        "command": "powerpages.copilot",
+        "title": "Power Pages: Copilot"
+      },
+      {
         "command": "extension.createChatView",
         "title": "Create Chat View"
       },

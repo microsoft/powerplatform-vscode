@@ -139,7 +139,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
                             })
                     } else {
-                        vscode.window.showErrorMessage("Please login to an environment before using Copilot");
+                        this.handleLogin();
                     }
                     break;
                 }
@@ -178,6 +178,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             }
         });
     }
+
+    public show() {
+        if (this._view) {
+          // Show the webview view
+          this._view.show(true);
+        }
+      }
 
     private async handleLogin() {
         console.log("login");

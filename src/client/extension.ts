@@ -100,12 +100,12 @@ export async function activate(
 
     // registering bootstrapdiff command
     _context.subscriptions.push(
-        vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async() => {
-                _telemetry.sendTelemetryEvent("StartCommand", {
-                    commandId: "microsoft-powerapps-portals.bootstrap-diff",
-                });
-                bootstrapDiff();
-            }
+        vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async () => {
+            _telemetry.sendTelemetryEvent("StartCommand", {
+                commandId: "microsoft-powerapps-portals.bootstrap-diff",
+            });
+            bootstrapDiff();
+        }
         )
     );
 
@@ -161,9 +161,9 @@ export async function activate(
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
-    
+
     // TODO: Handle for VSCode.dev also
-    if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
         initializeGenerator(_context, cliContext, _telemetry);
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
     }
@@ -181,6 +181,20 @@ export async function activate(
     _telemetry.sendTelemetryEvent("activated");
 
     const copilotProvider = new PowerPagesCopilot(context.extensionUri, _context, _telemetry, cliPath);
+    copilotProvider.show();
+
+    _context.subscriptions.push(vscode.commands.registerCommand('powerpages.copilot', () => {
+        const message = vscode.l10n.t('Get help writing code in HTML, CSS, JS, and Liquid languages for Power Pages sites with Copilot. Learn more');
+        const actionTitle = vscode.l10n.t('Try Copilot For Power Pages');
+
+        vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
+            if (selection === actionTitle) {
+                copilotProvider.show();
+            }
+        });
+    }));
+
+    showNotificationForCopilot(copilotProvider);
 
     _context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
         webviewOptions: {
@@ -315,6 +329,17 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
                 );
             }
         });
+    });
+}
+
+function showNotificationForCopilot(copilotProvider: PowerPagesCopilot) {
+    const message = vscode.l10n.t('Get help writing code in HTML, CSS, JS, and Liquid languages for Power Pages sites with Copilot. Learn more');
+    const actionTitle = vscode.l10n.t('Try Copilot For Power Pages');
+
+    vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
+        if (selection === actionTitle) {
+            copilotProvider.show();
+        }
     });
 }
 
