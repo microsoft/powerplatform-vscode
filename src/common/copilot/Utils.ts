@@ -71,5 +71,6 @@ export function showConnectedOrgMessage(environmentName: string, orgUrl: string)
   export async function showInputBoxAndGetOrgUrl() {
     return vscode.window.showInputBox({
         placeHolder: "Enter the environment URL",
+        prompt: "Active auth profile not found or expired. Please enter the environment URL to create a new auth profile."
     });
 }
