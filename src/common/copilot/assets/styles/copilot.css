@@ -124,6 +124,7 @@ body {
   justify-content: center;
   font-weight: bold;
   background-color: #A7CFE8;
+  aspect-ratio: 1 / 1;
 }
 
 .user-info {
