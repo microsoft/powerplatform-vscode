@@ -203,15 +203,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillSaveDocument(context);
 
-    //const copilotProvider = new PowerPagesCopilot(context.extensionUri);
-
-    // context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
-    //     webviewOptions: {
-    //         retainContextWhenHidden: true,
-    //     },
-    // }));
-
-
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
