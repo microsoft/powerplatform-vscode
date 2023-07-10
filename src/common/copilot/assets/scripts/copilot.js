@@ -17,7 +17,6 @@
   let userName;
   let apiResponseHandler;
   let welcomeScreen;
-  let environment = "Environment";
 
   const clipboardSvg = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z" fill="#F3F2F1"/>
@@ -52,7 +51,7 @@
 
   function parseCodeBlocks(responseText) {
     const resultDiv = document.createElement("div");
-    console.log("responseText " + responseText);
+   
     for (let i = 0; i < responseText.length; i++) {
       const textDiv = document.createElement("div");
       textDiv.innerText = responseText[i].displayText;
@@ -304,26 +303,20 @@
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
     const message = event.data; // The JSON data our extension sent
-    console.log(
-      "message received from extension : " +
-      message.type +
-      " " +
-      message.value
-    );
+   
     switch (message.type) {
       case "apiResponse": {
         apiResponseHandler.updateResponse(message.value);
         break;
       }
       case "env": {
-        console.log("env received from extension : " + message.value);
+      
         isDesktop = message.value;
-        environment = message.envName;
         welcomeScreen = setWelcomeScreen();
         break;
       }
       case "userName": {
-        console.log("userName received from extension : " + message.value);
+       
         userName = message.value;
         break;
       }
@@ -336,7 +329,7 @@
         break;
       }
       case "clearConversation": {
-        console.log("clearConversation received from extension");
+      
         chatMessages.innerHTML = "";
         break;
       }
@@ -405,8 +398,6 @@
     element.classList.add("thumbsup-clicked");
     thumbsDownButton.classList.remove("thumbsdown-clicked");
 
-    console.log("thumbsup clicked");
-
     sendUserFeedback("thumbsUp");
   }
 
@@ -420,8 +411,7 @@
     element.classList.add("thumbsdown-clicked");
     thumbsUpButton.classList.remove("thumbsup-clicked");
 
-    console.log("thumbsdown clicked");
-
+ 
     sendUserFeedback("thumbsDown");
   }
 
