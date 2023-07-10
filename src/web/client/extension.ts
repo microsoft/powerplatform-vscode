@@ -8,8 +8,8 @@ import WebExtensionContext from "./WebExtensionContext";
 import {
     PORTALS_URI_SCHEME,
     PUBLIC,
-    IS_FIRST_RUN_EXPERIENCE,
     queryParameters,
+    IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
 } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
 import {
@@ -90,8 +90,9 @@ export function activate(context: vscode.ExtensionContext): void {
                         entityId,
                         queryParamsMap
                     )
-                )
+                ) {
                     return;
+                }
 
                 removeEncodingFromParameters(queryParamsMap);
                 WebExtensionContext.setWebExtensionContext(
@@ -116,45 +117,16 @@ export function activate(context: vscode.ExtensionContext): void {
                                     queryParamsMap
                                 );
 
-                                const isFirstRun = context.globalState.get(
-                                    IS_FIRST_RUN_EXPERIENCE,
-                                    true
-                                );
-                                if (isFirstRun) {
-                                    vscode.commands.executeCommand(
-                                        `workbench.action.openWalkthrough`,
-                                        `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted`,
-                                        false
-                                    );
-                                    context.globalState.update(
-                                        IS_FIRST_RUN_EXPERIENCE,
-                                        false
-                                    );
-                                    WebExtensionContext.telemetry.sendInfoTelemetry(
-                                        "StartCommand",
-                                        {
-                                            commandId:
-                                                "workbench.action.openWalkthrough",
-                                            walkthroughId:
-                                                "microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted",
-                                        }
-                                    );
-                                }
+                                processWalkthroughFirstRunExperience(context);
 
                                 await vscode.window.withProgress(
                                     {
-                                        location:
-                                            vscode.ProgressLocation
-                                                .Notification,
+                                        location: vscode.ProgressLocation.Notification,
                                         cancellable: true,
-                                        title: vscode.l10n.t(
-                                            "Fetching your file ..."
-                                        ),
+                                        title: vscode.l10n.t("Fetching your file ..."),
                                     },
                                     async () => {
-                                        await portalsFS.readDirectory(
-                                            WebExtensionContext.rootDirectory
-                                        );
+                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory);
                                     }
                                 );
 
@@ -204,6 +176,33 @@ export function activate(context: vscode.ExtensionContext): void {
     processWillSaveDocument(context);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function processWalkthroughFirstRunExperience(context: vscode.ExtensionContext) {
+    const isMultifileFirstRun = context.globalState.get(
+        IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
+        true
+    );
+    if (isMultifileFirstRun && WebExtensionContext.showMultifileInVSCode) {
+        vscode.commands.executeCommand(
+            `workbench.action.openWalkthrough`,
+            `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted-multiFile`,
+            false
+        );
+        context.globalState.update(
+            IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
+            false
+        );
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            "StartCommand",
+            {
+                commandId:
+                    "workbench.action.openWalkthrough",
+                walkthroughId:
+                    "microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted-multiFile",
+            }
+        );
+    }
 }
 
 export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
@@ -321,6 +320,39 @@ export function showWalkthrough(
                         "powerplatform-walkthrough.fileSystem-open-folder",
                 });
                 vscode.commands.executeCommand("workbench.view.explorer");
+            }
+        )
+    );
+
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "powerplatform-walkthrough.saveConflict-learn-more",
+            async () => {
+                telemetry.sendInfoTelemetry("StartCommand", {
+                    commandId:
+                        "powerplatform-walkthrough.saveConflict-learn-more",
+                });
+                vscode.env.openExternal(
+                    vscode.Uri.parse(
+                        "https://go.microsoft.com/fwlink/?linkid=2241221"
+                    )
+                );
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "powerplatform-walkthrough.saveConflict-start-coding",
+            async () => {
+                telemetry.sendInfoTelemetry("StartCommand", {
+                    commandId:
+                        "powerplatform-walkthrough.saveConflict-start-coding",
+                });
+                vscode.window.showTextDocument(
+                    WebExtensionContext.defaultFileUri
+                );
             }
         )
     );

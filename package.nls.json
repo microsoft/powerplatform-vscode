@@ -77,6 +77,13 @@
       "The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified",
       "The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified"
    ]
+  },
+  "microsoft-powerapps-portals.walkthrough.saveConflict.title": "Save conflict",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.description": {
+    "message": "You have unsaved changes in the Power Pages studio. \n \n To save your changes, click the Save button in the Power Pages studio. \n \n To discard your changes, click the Discard button in the Power Pages studio. \n \n To learn more about the Power Pages studio, visit our [documentation](command:powerplatform-walkthrough.saveConflict-learn-more).\n \n[Start coding](command:powerplatform-walkthrough.saveConflict-start-coding)",
+    "comment": [
+      "This is a Markdown formatted string, and the formatting must persist across translations.",
+      "The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified"
+   ]
   }
-
 }

@@ -18,6 +18,7 @@ export const BAD_REQUEST = "BAD_REQUEST";
 export const PUBLIC = "public";
 export const MIMETYPE = "mimetype";
 export const IS_FIRST_RUN_EXPERIENCE = "isFirstRunExperience";
+export const IS_MULTIFILE_FIRST_RUN_EXPERIENCE = "isMultiFileFirstRunExperience";
 export const ODATA_ETAG = "@odata.etag";
 export const ODATA_NEXT_LINK = "@odata.nextLink";
 export const ODATA_COUNT = "@odata.count";
@@ -26,12 +27,12 @@ export const MAX_CONCURRENT_REQUEST_COUNT = 50;
 export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 1000;
 
 // Web extension constants
-export const BASE_64= 'base64';
+export const BASE_64 = 'base64';
 export const DATA = 'data';
 export const ALL_DOCUMENT_MIME_TYPE =
-  '.doc,.dot,.wbk,.docx,.docm,.dotx,.dotm,.docb,.xls,.xlt,.xlm,.xlsx,.xlsm,.xltx,.xltm,.ppt,.pot,.pps,.pptx,.pptm,.potx,.potm,.ppam,.ppsx,.ppsm,.sldx,.sldm,.pdf';
+    '.doc,.dot,.wbk,.docx,.docm,.dotx,.dotm,.docb,.xls,.xlt,.xlm,.xlsx,.xlsm,.xltx,.xltm,.ppt,.pot,.pps,.pptx,.pptm,.potx,.potm,.ppam,.ppsx,.ppsm,.sldx,.sldm,.pdf';
 export const ALL_DOCUMENT_MIME_TYPE_SHORTENED =
-  '.doc,.dot,.docx,.docm,.xls,.xlt,.xlm,.xlsx,.xlsm,.xltm,.ppt,.pptx,.pptm,.pdf';
+    '.doc,.dot,.docx,.docm,.xls,.xlt,.xlm,.xlsx,.xlsm,.xltm,.ppt,.pptx,.pptm,.pdf';
 export const ALL_AUDIO_MIME_TYPE = 'audio/';
 export const ALL_IMAGE_MIME_TYPE = 'image/';
 export const ALL_VIDEO_MIME_TYPE = 'video/';
