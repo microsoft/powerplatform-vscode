@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AuthProfileNotFound, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
+import { AuthProfileNotFound, CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
 import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "./Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
@@ -290,23 +290,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     const copilotStylePath = vscode.Uri.joinPath(
       this._extensionUri,
-      'src',
-      "common",
-      "copilot",
-      "assets",
-      "styles",
-      "copilot.css"
+      ...CopilotStylePathSegments
     );
     const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
 
     const codiconStylePath = vscode.Uri.joinPath(
       this._extensionUri,
-      'src',
-      "common",
-      "copilot",
-      "assets",
-      "styles",
-      "codicon.css"
+      ...CodiconStylePathSegments
     );
     const codiconStyleUri = webview.asWebviewUri(codiconStylePath);
 
@@ -348,8 +338,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                   </span>
                 </button>
               </div>
-              <p class="disclaimer">Make sure AI-generated content is accurate and appropriate before using. <a href="#">See
-                  terms</a></p>
+              <p class="disclaimer">${CopilotDisclaimer}</p>
             </div>
           </div>
         
