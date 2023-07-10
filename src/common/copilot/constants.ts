@@ -31,3 +31,5 @@ export const FieldTypeMap = new Map<string, string> ([
 ]);
 
 export const AuthProfileNotFound =   [{ displayText: "Auth Profile not found or expired. Create an Auth profile to start chatting with Copilot again.", code: '' }];
+export const NetworkError = [{ displayText: "There was an issue connecting to the server. Don’t worry, you can try again.", code: '' }];
+export const InvalidResponse = [{ displayText: "Something went wrong. Don’t worry, you can try again.", code: '' }];

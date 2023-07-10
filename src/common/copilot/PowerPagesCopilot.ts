@@ -17,15 +17,14 @@ import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
 import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent, sendTelemetryEvent } from "./telemetry/copilotTelemetry";
-//declare const IS_DESKTOP: boolean;
-export let apiToken: string;
-export let sessionID: string;
-export let userName: string;
-export let orgID: string;
-export let environmentName: string;
-export let userID: string;
-export let activeOrgUrl: string;
 
+let apiToken: string;
+let userName: string;
+let orgID: string;
+let environmentName: string;
+let userID: string;
+let activeOrgUrl: string;
+export let sessionID: string;
 
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
@@ -127,6 +126,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
         case "newUserPrompt": {
           if (orgID) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { activeFileParams, activeFileContent } = this.getActiveEditorContent();
             intelligenceAPIAuthentication()
               .then(({ accessToken, user }) => {
@@ -135,7 +135,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 userName = getUserName(user);
                 this.sendMessageToWebview({ type: 'userName', value: userName });
 
-                return sendApiRequest(data.value, activeFileParams, activeFileContent, orgID, apiToken);
+                return sendApiRequest(data.value, activeFileParams, orgID, apiToken);
               })
               .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
