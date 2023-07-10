@@ -10,7 +10,7 @@ import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacActiveOrgListOutput } from "./PacTypes";
 import { v4 } from "uuid";
 
 export interface IPacWrapperContext {
@@ -121,6 +121,11 @@ export class PacWrapper {
             new PacArguments("auth", "create"));
     }
 
+    public async authCreateNewAuthProfileForOrg(orgUrl: string): Promise<PacAuthListOutput> {
+        return this.executeCommandAndParseResults<PacAuthListOutput>(
+            new PacArguments("auth", "create", "--url", orgUrl));
+    }
+
     public async authSelectByIndex(index: number): Promise<PacOutput>{
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("auth", "select", "--index", index.toString()))
     }
@@ -150,6 +155,11 @@ export class PacWrapper {
     public async orgList(): Promise<PacOrgListOutput> {
         return this.executeCommandAndParseResults<PacOrgListOutput>(new PacArguments("org", "list"));
     }
+
+    public async activeOrg(): Promise <PacActiveOrgListOutput> {
+        return this.executeCommandAndParseResults<PacActiveOrgListOutput>(new PacArguments("org", "who"));
+    }
+
 
     public async enableTelemetry(): Promise<PacOutput> {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "enable"));
