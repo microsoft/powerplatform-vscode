@@ -82,4 +82,5 @@ export enum telemetryEventNames {
     WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_FAILED = "WebExtensionIntelligenceAPIAuthenticationFailed",
     WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_STARTED = "WebExtensionIntelligenceAPIAuthenticationStarted",
     WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_COMPLETED = "WebExtensionIntelligenceAPIAuthenticationCompleted",
+    WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_SUCCESS = 'webExtensionSaveDataToDataverseAPISuccess'
 }
