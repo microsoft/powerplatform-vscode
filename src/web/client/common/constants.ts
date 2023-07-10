@@ -13,7 +13,6 @@ export const EMPTY_FILE_NAME = "defaultfilename";
 export const CHARSET = "utf-8";
 export const PROVIDER_ID = "microsoft";
 export const SCOPE_OPTION_DEFAULT = "//.default";
-export const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default";
 export const SCOPE_OPTION_OFFLINE_ACCESS = "offline_access";
 export const BAD_REQUEST = "BAD_REQUEST";
 export const PUBLIC = "public";
@@ -21,13 +20,15 @@ export const MIMETYPE = "mimetype";
 export const IS_FIRST_RUN_EXPERIENCE = "isFirstRunExperience";
 export const ODATA_ETAG = "@odata.etag";
 export const ODATA_NEXT_LINK = "@odata.nextLink";
+export const ODATA_COUNT = "@odata.count";
 export const MAX_ENTITY_FETCH_COUNT = 1000;
 export const MAX_CONCURRENT_REQUEST_COUNT = 50;
 export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 1000;
+export const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default";
 
 // Web extension constants
-export const BASE_64= ';base64,';
-export const DATA = 'data:';
+export const BASE_64= 'base64';
+export const DATA = 'data';
 export const ALL_DOCUMENT_MIME_TYPE =
   '.doc,.dot,.wbk,.docx,.docm,.dotx,.dotm,.docb,.xls,.xlt,.xlm,.xlsx,.xlsm,.xltx,.xltm,.ppt,.pot,.pps,.pptx,.pptm,.potx,.potm,.ppam,.ppsx,.ppsm,.sldx,.sldm,.pdf';
 export const ALL_DOCUMENT_MIME_TYPE_SHORTENED =

@@ -111,7 +111,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                   </span>
                 </button>
               </div>
-              <p class="disclaimer">Make sure AI-generated content is accurate and appropriate before using. <a href="#">See
+              <p class="disclaimer">Make sure AI-generated content is accurate and appropriate before using. <a href="https://go.microsoft.com/fwlink/?linkid=2240145">Learn more</a> | <a href="#">View
                   terms</a></p>
             </div>
           </div>
