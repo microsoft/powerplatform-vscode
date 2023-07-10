@@ -8,7 +8,6 @@ import * as vscode from "vscode";
 import { sendApiRequest } from "./IntelligenceApi";
 import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
-import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
@@ -30,306 +29,292 @@ export let activeOrgUrl: string;
 
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
-    public static readonly viewType = "powerpages.copilot";
-    private _view?: vscode.WebviewView;
-    private readonly _pacWrapper: PacWrapper;
-    private _extensionContext: vscode.ExtensionContext;
-    private readonly _disposables: vscode.Disposable[] = [];
-    private loginButtonRendered = false;
-    private telemetry: ITelemetry;
+  public static readonly viewType = "powerpages.copilot";
+  private _view?: vscode.WebviewView;
+  private readonly _pacWrapper: PacWrapper;
+  private _extensionContext: vscode.ExtensionContext;
+  private readonly _disposables: vscode.Disposable[] = [];
+  private loginButtonRendered = false;
+  private telemetry: ITelemetry;
 
-    constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
-        this.telemetry = telemetry;
-        this._extensionContext = _context;
-        const pacContext = new PacWrapperContext(_context, telemetry);
-        const interop = new PacInterop(pacContext, cliPath);
-        this._pacWrapper = new PacWrapper(pacContext, interop); //For Web Terminal will not be available
-        console.log("pacWrapper created " + this._pacWrapper);
-        _context.subscriptions.push(
-            vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
-                console.log("clearing conversation");
-                this.sendMessageToWebview({ type: "clearConversation" });
-                sessionID = uuidv4();
-            }
-            )
-        );
-        this.setupFileWatcher();
-    }
+  constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
+    this.telemetry = telemetry;
+    this._extensionContext = _context;
+    const pacContext = new PacWrapperContext(_context, telemetry);
+    const interop = new PacInterop(pacContext, cliPath);
+    this._pacWrapper = new PacWrapper(pacContext, interop); //For Web Terminal will not be available
 
+    _context.subscriptions.push(
+      vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
 
-    private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
-
-    private setupFileWatcher() {
-        const watchPath = GetAuthProfileWatchPattern();
-        if (watchPath) {
-            const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
-
-            watcher.onDidChange(() => this.handleOrgChange()),
-            watcher.onDidCreate(() => this.handleOrgChange()),
-            watcher.onDidDelete(() => this.handleOrgChange())
-            this._extensionContext.subscriptions.push(watcher);
-        }
-
-    }
-
-    private async handleOrgChange() {
-        orgID = '';
-        const pacOutput = await this._pacWrapper.activeOrg();
-
-        if (pacOutput.Status === "Success") {
-            this.handleOrgChangeSuccess(pacOutput);
-        } else if(this._view?.visible) {
-
-            const userOrgUrl = await showInputBoxAndGetOrgUrl();
-            if (!userOrgUrl) {
-                return;
-            }
-            const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
-            if (pacAuthCreateOutput.Status === "Success") {
-                this.handleOrgChange();
-            } else {
-                vscode.window.showErrorMessage("Error creating auth profile for org");
-            }
-        }
-    }
-
-
-    public async resolveWebviewView(
-        webviewView: vscode.WebviewView,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        context: vscode.WebviewViewResolveContext,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _token: vscode.CancellationToken
-    ) {
-        this._view = webviewView;
-
-        webviewView.description = "PREVIEW"
-        webviewView.webview.options = {
-            // Allow scripts in the webview
-            enableScripts: true,
-
-            localResourceRoots: [this._extensionUri],
-        };
-
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-
-        webviewView.webview.onDidReceiveMessage(async (data) => {
-            switch (data.type) {
-                case "webViewLoaded": {
-                    console.log("webview loaded");
-                    sessionID = uuidv4();
-                    this.sendMessageToWebview({ type: 'env', value: this.isDesktop, envName: environmentName }); //TODO Use IS_DESKTOP
-                    this.handleLogin();
-                    break;
-                }
-                case "login": {
-                    this.handleLogin();
-                    break;
-                }
-                case "newUserPrompt": {
-                    if (orgID) {
-                        const { activeFileParams, activeFileContent } = this.getActiveEditorContent();
-                        intelligenceAPIAuthentication()
-                            .then(({ accessToken, user }) => {
-                                console.log('token: ' + accessToken);
-                                apiToken = accessToken;
-                                userName = getUserName(user);
-                                this.sendMessageToWebview({ type: 'userName', value: userName });
-
-                                return sendApiRequest(data.value, activeFileParams, activeFileContent, orgID, apiToken);
-                            })
-                            .then(apiResponse => {
-                                this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
-                            })
-                    } else {
-                        this.sendMessageToWebview({type: 'apiResponse', value: AuthProfileNotFound});
-                    }
-                    break;
-                }
-                case "insertCode": {
-                    console.log("code to be inserted " + data.value);
-                    const escapedSnippet = escapeDollarSign(data.value);
-                    console.log("escapedSnippet " + escapedSnippet);
-                    vscode.window.activeTextEditor?.insertSnippet(
-                        new vscode.SnippetString(`${escapedSnippet}`)
-                    );
-                    sendTelemetryEvent(this.telemetry, {eventName: InsertCodeToEditorEvent, copilotSessionId: sessionID });
-                    break;
-                }
-                case "copyCodeToClipboard": {
-                    console.log(
-                        "code ready to be copied to clipboard " + data.value
-                    );
-                    vscode.env.clipboard.writeText(data.value);
-                    vscode.window.showInformationMessage(vscode.l10n.t('Copied to clipboard!'))
-                    sendTelemetryEvent(this.telemetry, {eventName: CopyCodeToClipboardEvent, copilotSessionId: sessionID });
-                    break;
-                }
-                case "clearChat": {
-                    console.log("clear chat ");
-                    sessionID = uuidv4();
-                    break;
-                }
-                case "userFeedback": {
-                    console.log("user feedback " + data.value);
-                    if (data.value === "thumbsUp") {
-                        console.log("Thumbs up telemetry")
-                        sendTelemetryEvent(this.telemetry, {eventName: UserFeedbackThumbsUpEvent, copilotSessionId: sessionID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp")
-                    } else if (data.value === "thumbsDown") {
-                        console.log("Thumbs down telemetry")
-                        sendTelemetryEvent(this.telemetry, {eventName: UserFeedbackThumbsDownEvent, copilotSessionId: sessionID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown")
-                    }
-                }
-            }
-        });
-    }
-
-    public show() {
-        if (this._view) {
-          // Show the webview view
-          this._view.show(true);
-        }
+        this.sendMessageToWebview({ type: "clearConversation" });
+        sessionID = uuidv4();
       }
+      )
+    );
+    this.setupFileWatcher();
+  }
 
-    private async handleLogin() {
-        console.log("login");
-        const pacOutput = await this._pacWrapper.activeOrg();
-        if (pacOutput.Status === "Success") {
-            this.handleOrgChangeSuccess.call(this, pacOutput);
 
-            intelligenceAPIAuthentication().then(({ accessToken, user }) => {
-                this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
-            });
+  private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
 
-        } else if(this._view?.visible) {
+  private setupFileWatcher() {
+    const watchPath = GetAuthProfileWatchPattern();
+    if (watchPath) {
+      const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
 
-            const userOrgUrl = await showInputBoxAndGetOrgUrl();
-            if (!userOrgUrl) {
-                userName = "";
+      watcher.onDidChange(() => this.handleOrgChange()),
+        watcher.onDidCreate(() => this.handleOrgChange()),
+        watcher.onDidDelete(() => this.handleOrgChange())
+      this._extensionContext.subscriptions.push(watcher);
+    }
+
+  }
+
+  private async handleOrgChange() {
+    orgID = '';
+    const pacOutput = await this._pacWrapper.activeOrg();
+
+    if (pacOutput.Status === "Success") {
+      this.handleOrgChangeSuccess(pacOutput);
+    } else if (this._view?.visible) {
+
+      const userOrgUrl = await showInputBoxAndGetOrgUrl();
+      if (!userOrgUrl) {
+        return;
+      }
+      const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
+      if (pacAuthCreateOutput.Status === "Success") {
+        this.handleOrgChange();
+      } else {
+        vscode.window.showErrorMessage("Error creating auth profile for org");
+      }
+    }
+  }
+
+
+  public async resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    context: vscode.WebviewViewResolveContext,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _token: vscode.CancellationToken
+  ) {
+    this._view = webviewView;
+
+    webviewView.description = "PREVIEW"
+    webviewView.webview.options = {
+      // Allow scripts in the webview
+      enableScripts: true,
+
+      localResourceRoots: [this._extensionUri],
+    };
+
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+
+    webviewView.webview.onDidReceiveMessage(async (data) => {
+      switch (data.type) {
+        case "webViewLoaded": {
+
+          sessionID = uuidv4();
+          this.sendMessageToWebview({ type: 'env', value: this.isDesktop, envName: environmentName }); //TODO Use IS_DESKTOP
+          this.handleLogin();
+          break;
+        }
+        case "login": {
+          this.handleLogin();
+          break;
+        }
+        case "newUserPrompt": {
+          if (orgID) {
+            const { activeFileParams, activeFileContent } = this.getActiveEditorContent();
+            intelligenceAPIAuthentication()
+              .then(({ accessToken, user }) => {
+
+                apiToken = accessToken;
+                userName = getUserName(user);
                 this.sendMessageToWebview({ type: 'userName', value: userName });
 
-                if (!this.loginButtonRendered) {
-                    this.sendMessageToWebview({ type: "welcomeScreen" });
-                    this.loginButtonRendered = true; // Set the flag to indicate that the login button has been rendered
-                }
-
-                return;
-            }
-            const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
-            if (pacAuthCreateOutput.Status === "Success") {
-                intelligenceAPIAuthentication().then(({ accessToken, user }) => {
-                    this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
-                });
-            } else {
-                vscode.window.showErrorMessage("Error creating auth profile for org");
-            }
-
+                return sendApiRequest(data.value, activeFileParams, activeFileContent, orgID, apiToken);
+              })
+              .then(apiResponse => {
+                this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
+              })
+          } else {
+            this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
+          }
+          break;
         }
-    }
+        case "insertCode": {
 
-    private async handleOrgChangeSuccess(pacOutput: PacActiveOrgListOutput) {
-        const activeOrg = pacOutput.Results;
+          const escapedSnippet = escapeDollarSign(data.value);
 
-        orgID = activeOrg.OrgId;
-        console.log("orgID from PAC: " + orgID);
-        environmentName = activeOrg.FriendlyName;
-        console.log("environmentName from PAC: " + environmentName);
-        userID = activeOrg.UserId;
-        console.log("userID from PAC: " + userID);
-        activeOrgUrl = activeOrg.OrgUrl;
-
-        showConnectedOrgMessage(environmentName, activeOrgUrl);
-    }
-
-    private async intelligenceAPIAuthenticationHandler(accessToken: string, user: string) {
-        if (accessToken && user) {
-            console.log('token: ' + accessToken);
-            apiToken = accessToken;
-            userName = getUserName(user);
-            this.sendMessageToWebview({ type: 'userName', value: userName });
-            this.sendMessageToWebview({ type: "welcomeScreen" });
+          vscode.window.activeTextEditor?.insertSnippet(
+            new vscode.SnippetString(`${escapedSnippet}`)
+          );
+          sendTelemetryEvent(this.telemetry, { eventName: InsertCodeToEditorEvent, copilotSessionId: sessionID });
+          break;
         }
-    }
+        case "copyCodeToClipboard": {
 
-    private async checkAuthentication() {
-        const session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
-        if (session) {
-            console.log('token: ' + session.accessToken);
-            apiToken = session.accessToken;
-            userName = getUserName(session.account.label);
-        } else {
-            console.log('no session');
-            console.log("apiToken no session= " + apiToken);
+          vscode.env.clipboard.writeText(data.value);
+          vscode.window.showInformationMessage(vscode.l10n.t('Copied to clipboard!'))
+          sendTelemetryEvent(this.telemetry, { eventName: CopyCodeToClipboardEvent, copilotSessionId: sessionID });
+          break;
         }
-    }
+        case "clearChat": {
 
-    private getActiveEditorContent(): { activeFileParams: string[], activeFileContent: string } {
-        const activeEditor = vscode.window.activeTextEditor;
-        if (activeEditor) {
-            const document = activeEditor.document;
-            const fileName = document.fileName;
-            const relativeFileName = vscode.workspace.asRelativePath(fileName);
-            console.log("active file name = " + relativeFileName)
-            const activeFileParams: string[] = getLastThreeParts(relativeFileName);
-
-            const activeFileParamsMapped = this.getMappedParams(activeFileParams);
-
-            return { activeFileParams: activeFileParamsMapped, activeFileContent: document.getText() };
+          sessionID = uuidv4();
+          break;
         }
-        return { activeFileParams: ['', '', ''], activeFileContent: "" };
-    }
+        case "userFeedback": {
 
-    private getMappedParams(activeFileParams: string[]): string[] {
-        const mappedParams: string[] = [];
-        mappedParams.push(DataverseEntityNameMap.get(activeFileParams[0]) || "");
-        mappedParams.push(EntityFieldMap.get(activeFileParams[1]) || "");
-        mappedParams.push(FieldTypeMap.get(activeFileParams[2]) || "");
-        return mappedParams;
-    }
+          if (data.value === "thumbsUp") {
 
-    public sendMessageToWebview(message: WebViewMessage) {
-        if (this._view) {
-            this._view.webview.postMessage(message);
-        } else {
-            console.log("webview not found");
+            sendTelemetryEvent(this.telemetry, { eventName: UserFeedbackThumbsUpEvent, copilotSessionId: sessionID });
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp")
+          } else if (data.value === "thumbsDown") {
+
+            sendTelemetryEvent(this.telemetry, { eventName: UserFeedbackThumbsDownEvent, copilotSessionId: sessionID });
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown")
+          }
         }
+      }
+    });
+  }
+
+  public show() {
+    if (this._view) {
+      // Show the webview view
+      this._view.show(true);
     }
+  }
 
-    private _getHtmlForWebview(webview: vscode.Webview) {
+  private async handleLogin() {
+
+    const pacOutput = await this._pacWrapper.activeOrg();
+    if (pacOutput.Status === "Success") {
+      this.handleOrgChangeSuccess.call(this, pacOutput);
+
+      intelligenceAPIAuthentication().then(({ accessToken, user }) => {
+        this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
+      });
+
+    } else if (this._view?.visible) {
+
+      const userOrgUrl = await showInputBoxAndGetOrgUrl();
+      if (!userOrgUrl) {
+        userName = "";
+        this.sendMessageToWebview({ type: 'userName', value: userName });
+
+        if (!this.loginButtonRendered) {
+          this.sendMessageToWebview({ type: "welcomeScreen" });
+          this.loginButtonRendered = true; // Set the flag to indicate that the login button has been rendered
+        }
+
+        return;
+      }
+      const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
+      if (pacAuthCreateOutput.Status === "Success") {
+        intelligenceAPIAuthentication().then(({ accessToken, user }) => {
+          this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
+        });
+      } else {
+        vscode.window.showErrorMessage("Error creating auth profile for org");
+      }
+
+    }
+  }
+
+  private async handleOrgChangeSuccess(pacOutput: PacActiveOrgListOutput) {
+    const activeOrg = pacOutput.Results;
+
+    orgID = activeOrg.OrgId;
+
+    environmentName = activeOrg.FriendlyName;
+
+    userID = activeOrg.UserId;
+
+    activeOrgUrl = activeOrg.OrgUrl;
+
+    showConnectedOrgMessage(environmentName, activeOrgUrl);
+  }
+
+  private async intelligenceAPIAuthenticationHandler(accessToken: string, user: string) {
+    if (accessToken && user) {
+
+      apiToken = accessToken;
+      userName = getUserName(user);
+      this.sendMessageToWebview({ type: 'userName', value: userName });
+      this.sendMessageToWebview({ type: "welcomeScreen" });
+    }
+  }
 
 
-        const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'scripts', 'copilot.js');
-        const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
 
-        const copilotStylePath = vscode.Uri.joinPath(
-            this._extensionUri,
-            'src',
-            "common",
-            "copilot",
-            "assets",
-            "styles",
-            "copilot.css"
-        );
-        const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
+  private getActiveEditorContent(): { activeFileParams: string[], activeFileContent: string } {
+    const activeEditor = vscode.window.activeTextEditor;
+    if (activeEditor) {
+      const document = activeEditor.document;
+      const fileName = document.fileName;
+      const relativeFileName = vscode.workspace.asRelativePath(fileName);
 
-        const codiconStylePath = vscode.Uri.joinPath(
-            this._extensionUri,
-            'src',
-            "common",
-            "copilot",
-            "assets",
-            "styles",
-            "codicon.css"
-        );
-        const codiconStyleUri = webview.asWebviewUri(codiconStylePath);
+      const activeFileParams: string[] = getLastThreeParts(relativeFileName);
 
-        // Use a nonce to only allow specific scripts to be run
-        const nonce = getNonce();
+      const activeFileParamsMapped = this.getMappedParams(activeFileParams);
 
-        //TODO: Add CSP
-        return `
+      return { activeFileParams: activeFileParamsMapped, activeFileContent: document.getText() };
+    }
+    return { activeFileParams: ['', '', ''], activeFileContent: "" };
+  }
+
+  private getMappedParams(activeFileParams: string[]): string[] {
+    const mappedParams: string[] = [];
+    mappedParams.push(DataverseEntityNameMap.get(activeFileParams[0]) || "");
+    mappedParams.push(EntityFieldMap.get(activeFileParams[1]) || "");
+    mappedParams.push(FieldTypeMap.get(activeFileParams[2]) || "");
+    return mappedParams;
+  }
+
+  public sendMessageToWebview(message: WebViewMessage) {
+    if (this._view) {
+      this._view.webview.postMessage(message);
+    }
+  }
+
+  private _getHtmlForWebview(webview: vscode.Webview) {
+
+
+    const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'scripts', 'copilot.js');
+    const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
+
+    const copilotStylePath = vscode.Uri.joinPath(
+      this._extensionUri,
+      'src',
+      "common",
+      "copilot",
+      "assets",
+      "styles",
+      "copilot.css"
+    );
+    const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
+
+    const codiconStylePath = vscode.Uri.joinPath(
+      this._extensionUri,
+      'src',
+      "common",
+      "copilot",
+      "assets",
+      "styles",
+      "codicon.css"
+    );
+    const codiconStyleUri = webview.asWebviewUri(codiconStylePath);
+
+    // Use a nonce to only allow specific scripts to be run
+    const nonce = getNonce();
+
+    //TODO: Add CSP
+    return `
         <!DOCTYPE html>
         <html lang="en">
         
@@ -372,5 +357,5 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         </body>
         
         </html>`;
-    }
+  }
 }
