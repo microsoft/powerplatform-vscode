@@ -25,6 +25,7 @@ export const ODATA_COUNT = "@odata.count";
 export const MAX_ENTITY_FETCH_COUNT = 1000;
 export const MAX_CONCURRENT_REQUEST_COUNT = 50;
 export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 1000;
+export const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default";
 
 // Web extension constants
 export const BASE_64 = 'base64';

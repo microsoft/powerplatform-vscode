@@ -79,4 +79,8 @@ export enum telemetryEventNames {
     WEB_EXTENSION_APP_NAME_NOT_FOUND = "WebExtensionAppNameNotFound",
     WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_FAILED = "WebExtensionSetVscodeWorkspaceStateFailed",
     WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_SUCCESS = "WebExtensionGetVscodeWorkspaceStateSuccess",
+    WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_FAILED = "WebExtensionIntelligenceAPIAuthenticationFailed",
+    WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_STARTED = "WebExtensionIntelligenceAPIAuthenticationStarted",
+    WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_COMPLETED = "WebExtensionIntelligenceAPIAuthenticationCompleted",
+    WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_SUCCESS = 'webExtensionSaveDataToDataverseAPISuccess'
 }
