@@ -440,7 +440,10 @@ export class PortalsFS implements vscode.FileSystemProvider {
         }
 
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS
+            telemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS,
+            {
+                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString()
+            }
         );
     }
 
