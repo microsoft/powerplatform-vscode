@@ -5,6 +5,7 @@
 
 
 import * as vscode from "vscode";
+import { CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments } from "./Constants";
 export let apiToken: string;
 export let sessionID: string;
 export let userName: string;
@@ -14,49 +15,70 @@ export let environmentName: string;
 
 
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
-    public static readonly viewType = "powerpages.copilot";
-    private _view?: vscode.WebviewView;
-   
-
-    constructor(private readonly _extensionUri: vscode.Uri) {
-
-    }
+  public static readonly viewType = "powerpages.copilot";
+  private _view?: vscode.WebviewView;
 
 
-    private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
+  constructor(private readonly _extensionUri: vscode.Uri) {
 
-    public async resolveWebviewView(
-        webviewView: vscode.WebviewView,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        context: vscode.WebviewViewResolveContext,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _token: vscode.CancellationToken
-    ) {
-        this._view = webviewView;
+  }
 
 
-        webviewView.webview.options = {
-            // Allow scripts in the webview
-            enableScripts: true,
+  private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
 
-            localResourceRoots: [this._extensionUri],
-        };
+  public async resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    context: vscode.WebviewViewResolveContext,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _token: vscode.CancellationToken
+  ) {
+    this._view = webviewView;
 
-        webviewView.webview.html = this._getHtmlForWebview();
+
+    webviewView.webview.options = {
+      // Allow scripts in the webview
+      enableScripts: true,
+
+      localResourceRoots: [this._extensionUri],
+    };
+
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
 
-    }
+  }
 
 
-    private _getHtmlForWebview() {
-        //TODO: Add CSP
-        return `
+  private _getHtmlForWebview(webview: vscode.Webview) {
+
+
+
+    const copilotStylePath = vscode.Uri.joinPath(
+      this._extensionUri,
+      ...CopilotStylePathSegments
+    );
+    const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
+
+    const codiconStylePath = vscode.Uri.joinPath(
+      this._extensionUri,
+      ...CodiconStylePathSegments
+    );
+    const codiconStyleUri = webview.asWebviewUri(codiconStylePath);
+
+
+
+    //TODO: Add CSP & View Terms link
+    return `
         <!DOCTYPE html>
         <html lang="en">
         
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+           <link href="${copilotStyleUri}" rel="stylesheet">
+          </link>
+          <link href="${codiconStyleUri}" rel="stylesheet">
+          </link>
           <title>Chat View</title>
         </head>
         
@@ -69,7 +91,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         
             <div class="chat-input">
               <div class="input-container">
-                <input type="text" placeholder="Ask a question..." id="chat-input" class="input-field">
+                <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
                 <button aria-label="Match Case" id="send-button" class="send-button">
                   <span>
                     <svg width="16px" height="16px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,13 +102,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                   </span>
                 </button>
               </div>
-              <p class="disclaimer">Make sure AI-generated content is accurate and appropriate before using. <a href="#">See
-                  terms</a></p>
+              <p class="disclaimer">${CopilotDisclaimer}</p>
             </div>
           </div>
         
         </body>
         
         </html>`;
-    }
+  }
 }
