@@ -166,19 +166,6 @@ async function saveDataToDataverse(
             );
 
             if (!response.ok) {
-                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                    saveCallParameters.requestUrl,
-                    entityName,
-                    httpMethod.PATCH,
-                    new Date().getTime() - requestSentAtTime,
-                    JSON.stringify(response),
-                    '',
-                    telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
-                    response?.status as unknown as string
-                );
-                WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
-                );
                 throw new Error(response.statusText);
             }
 
@@ -187,10 +174,8 @@ async function saveDataToDataverse(
                 entityName,
                 httpMethod.PATCH,
                 new Date().getTime() - requestSentAtTime,
-                fileExtensionType
-            );
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
+                fileExtensionType,
+                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_SUCCESS
             );
         } catch (error) {
             const authError = (error as Error)?.message;
@@ -203,9 +188,6 @@ async function saveDataToDataverse(
                 fileExtensionType,
                 telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
                 (error as Response)?.status as unknown as string
-            );
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_FAILED
             );
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(

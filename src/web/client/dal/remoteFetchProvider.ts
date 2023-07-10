@@ -93,16 +93,6 @@ async function fetchFromDataverseAndCreateFiles(
                 vscode.window.showErrorMessage(
                     vscode.l10n.t("Failed to fetch file content.")
                 );
-                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                    requestUrl,
-                    entityName,
-                    Constants.httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    JSON.stringify(response),
-                    '',
-                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_API_ERROR,
-                    response?.status.toString()
-                );
                 throw new Error(response.statusText);
             }
 
