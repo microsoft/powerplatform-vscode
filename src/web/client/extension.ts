@@ -344,21 +344,6 @@ export function showWalkthrough(
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
-            "powerplatform-walkthrough.saveConflict-start-coding",
-            async () => {
-                telemetry.sendInfoTelemetry("StartCommand", {
-                    commandId:
-                        "powerplatform-walkthrough.saveConflict-start-coding",
-                });
-                vscode.window.showTextDocument(
-                    WebExtensionContext.defaultFileUri
-                );
-            }
-        )
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(
             "powerplatform-walkthrough.advancedCapabilities-learn-more",
             async () => {
                 telemetry.sendInfoTelemetry("StartCommand", {

@@ -51,18 +51,18 @@
   "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview",
   "microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension",
   "microsoft-powerapps-portals.walkthrough.title": "Edit Power Pages code",
-  "microsoft-powerapps-portals.walkthrough.description": "Discover how you can make complete, modern websites right in VS Code",
+  "microsoft-powerapps-portals.walkthrough.description": "Discover how you can make complete, modern websites right in Visual Studio Code",
   "microsoft-powerapps-portals.walkthrough.overview.title": "Overview",
   "microsoft-powerapps-portals.walkthrough.overview.description": {
-    "message": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
+    "message": "Now easily edit code of your Power Pages site. Access code from supported site components like forms, content snippets, lists, and more from within Visual Studio Code.\n \n To learn more, visit [Edit Power Pages code in VS Code](command:powerplatform-walkthrough.overview-learn-more).",
     "comment": [
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified"
    ]
   },
-  "microsoft-powerapps-portals.walkthrough.fileSystem.title": "File system",
+  "microsoft-powerapps-portals.walkthrough.fileSystem.title": "File explorer",
   "microsoft-powerapps-portals.walkthrough.fileSystem.description": {
-    "message": "Your files are stored in nested folders under your site name. \n \n The individual page files can be found in the web-pages folder under your site name. \n \n All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. \n \n To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)",
+    "message": "Find your page files organized in folders under your site name. All your pages are arranged into HTML, CSS, and JS files within the respective site component folders. \n \n You can find site components like forms, content snippets, lists, and more to edit. \n \n To learn more, visit [Power Pages file structure in VS Code](command:powerplatform-walkthrough.fileSystem-documentation). \n \n[Visit site folder](command:powerplatform-walkthrough.fileSystem-open-folder)",
     "comment": [
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified",
@@ -80,7 +80,7 @@
   },
   "microsoft-powerapps-portals.walkthrough.saveConflict.title": "Save conflict",
   "microsoft-powerapps-portals.walkthrough.saveConflict.description": {
-    "message": "You have unsaved changes in the Power Pages studio. \n \n To save your changes, click the Save button in the Power Pages studio. \n \n To discard your changes, click the Discard button in the Power Pages studio. \n \n To learn more about the Power Pages studio, visit our [documentation](command:powerplatform-walkthrough.saveConflict-learn-more).\n \n[Start coding](command:powerplatform-walkthrough.saveConflict-start-coding)",
+    "message": "Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. \n \nTo learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more).",
     "comment": [
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified"
