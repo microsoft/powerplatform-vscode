@@ -6,7 +6,7 @@
 
 export type WebViewMessage = {
     type: string;
-    value?: string | number | boolean;
+    value?: string | number | boolean | object;
     envName?: string;
   };
   
@@ -29,3 +29,5 @@ export const FieldTypeMap = new Map<string, string> ([
   ['js', 'JavaScript'],
   ['html', 'html']
 ]);
+
+export const AuthProfileNotFound =   [{ displayText: "Auth Profile not found or expired. Create an Auth profile to start chatting with Copilot again.", code: '' }];

@@ -12,7 +12,7 @@ import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
+import { AuthProfileNotFound, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage } from "./constants";
 import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "./Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
@@ -142,7 +142,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
                             })
                     } else {
-                        this.handleLogin();
+                        this.sendMessageToWebview({type: 'apiResponse', value: AuthProfileNotFound});
                     }
                     break;
                 }
