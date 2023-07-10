@@ -17,6 +17,7 @@ import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnect
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
+import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent, sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 //declare const IS_DESKTOP: boolean;
 export let apiToken: string;
 export let sessionID: string;
@@ -35,8 +36,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private _extensionContext: vscode.ExtensionContext;
     private readonly _disposables: vscode.Disposable[] = [];
     private loginButtonRendered = false;
+    private telemetry: ITelemetry;
 
     constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
+        this.telemetry = telemetry;
         this._extensionContext = _context;
         const pacContext = new PacWrapperContext(_context, telemetry);
         const interop = new PacInterop(pacContext, cliPath);
@@ -150,6 +153,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     vscode.window.activeTextEditor?.insertSnippet(
                         new vscode.SnippetString(`${escapedSnippet}`)
                     );
+                    sendTelemetryEvent(this.telemetry, {eventName: InsertCodeToEditorEvent, copilotSessionId: sessionID });
                     break;
                 }
                 case "copyCodeToClipboard": {
@@ -158,6 +162,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     );
                     vscode.env.clipboard.writeText(data.value);
                     vscode.window.showInformationMessage(vscode.l10n.t('Copied to clipboard!'))
+                    sendTelemetryEvent(this.telemetry, {eventName: CopyCodeToClipboardEvent, copilotSessionId: sessionID });
                     break;
                 }
                 case "clearChat": {
@@ -169,9 +174,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     console.log("user feedback " + data.value);
                     if (data.value === "thumbsUp") {
                         console.log("Thumbs up telemetry")
+                        sendTelemetryEvent(this.telemetry, {eventName: UserFeedbackThumbsUpEvent, copilotSessionId: sessionID });
                         CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp")
                     } else if (data.value === "thumbsDown") {
                         console.log("Thumbs down telemetry")
+                        sendTelemetryEvent(this.telemetry, {eventName: UserFeedbackThumbsDownEvent, copilotSessionId: sessionID });
                         CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown")
                     }
                 }
