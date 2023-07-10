@@ -429,7 +429,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 commandId: "vscode.open",
                 type: "file",
                 entityId: WebExtensionContext.defaultEntityId,
-                entityName: WebExtensionContext.defaultEntityType
+                entityName: WebExtensionContext.defaultEntityType,
+                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString()
             }
         );
 
