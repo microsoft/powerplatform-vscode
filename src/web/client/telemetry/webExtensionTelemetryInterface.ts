@@ -37,7 +37,8 @@ export interface IWebExtensionAPITelemetryData extends IWebExtensionTelemetryDat
         'httpMethod': string;
         'entityFileExtensionType'?: string;
         'isSuccessful'?: string;
-        'status'?:string
+        'status'?:string;
+        'methodName'?:string;
     },
     measurements: {
         'durationInMillis': number;

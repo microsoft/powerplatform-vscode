@@ -147,8 +147,9 @@ async function fetchFromDataverseAndCreateFiles(
                     new Date().getTime() - requestSentAtTime,
                     errorMsg,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_API_ERROR,
-                    (error as Response)?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    (error as Response)?.status.toString(),
+                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_API_ERROR
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
@@ -483,8 +484,9 @@ async function getMappingEntityContent(
             new Date().getTime() - requestSentAtTime,
             JSON.stringify(response),
             '',
-            telemetryEventNames.WEB_EXTENSION_GET_MAPPING_ENTITY_CONTENT_API_ERROR,
-            response?.status.toString()
+            telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+            response?.status.toString(),
+            telemetryEventNames.WEB_EXTENSION_GET_MAPPING_ENTITY_CONTENT_API_ERROR
         );
         throw new Error(response.statusText);
     }

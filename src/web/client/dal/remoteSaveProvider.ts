@@ -186,8 +186,9 @@ async function saveDataToDataverse(
                 new Date().getTime() - requestSentAtTime,
                 authError,
                 fileExtensionType,
-                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
-                (error as Response)?.status as unknown as string
+                telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                (error as Response)?.status as unknown as string,
+                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR
             );
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(

@@ -116,8 +116,9 @@ export class EtagHandlerService {
                     new Date().getTime() - requestSentAtTime,
                     response.statusText,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
-                    response.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    response.status.toString(),
+                    telemetryEventNames.WEB_EXTENSION_LATEST_FILE_CONTENT_UPDATE_METADATA
                 );
             }
 
@@ -137,8 +138,9 @@ export class EtagHandlerService {
                     new Date().getTime() - requestSentAtTime,
                     authError,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
-                    (error as Response)?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    (error as Response)?.status.toString(),
+                    telemetryEventNames.WEB_EXTENSION_LATEST_FILE_CONTENT_UPDATE_METADATA
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
@@ -215,8 +217,9 @@ export class EtagHandlerService {
                     new Date().getTime() - requestSentAtTime,
                     authError,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
-                    (error as Response)?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    (error as Response)?.status.toString(),
+                    telemetryEventNames.WEB_EXTENSION_UPDATE_FILE_ETAG,
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
