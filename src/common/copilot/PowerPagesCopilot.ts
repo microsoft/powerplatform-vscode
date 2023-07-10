@@ -78,7 +78,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         if (pacOutput.Status === "Success") {
             this.handleOrgChangeSuccess(pacOutput);
-        } else {
+        } else if(this._view?.visible) {
 
             const userOrgUrl = await showInputBoxAndGetOrgUrl();
             if (!userOrgUrl) {
@@ -203,7 +203,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
             });
 
-        } else {
+        } else if(this._view?.visible) {
 
             const userOrgUrl = await showInputBoxAndGetOrgUrl();
             if (!userOrgUrl) {
