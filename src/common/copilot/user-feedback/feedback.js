@@ -15,12 +15,6 @@
       // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
     const message = event.data; // The JSON data our extension sent
-    console.log(
-      "message received from extension : " +
-      message.type +
-      " " +
-      message.value
-    );
     switch (message.type) {
         case "thumbType":
             if(message.value === "thumbsUp"){

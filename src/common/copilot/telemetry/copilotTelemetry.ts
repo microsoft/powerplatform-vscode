@@ -15,6 +15,8 @@ export const CopilotResponseFailureEvent = 'CopilotResponseFailureEvent';
 export const CopilotLoginSuccessEvent = 'CopilotLoginSuccessEvent';
 export const CopilotLoginFailureEvent = 'CopilotLoginFailureEvent';
 export const CopilotClearChatEvent = 'CopilotClearChatEvent';
+export const UserFeedbackSuccessEvent = 'UserFeedbackEventSuccessEvent';
+export const UserFeedbackFailureEvent = 'UserFeedbackEventFailureEvent';
 
 interface IProDevCopilotTelemetryData {
     eventName: string,
@@ -22,7 +24,8 @@ interface IProDevCopilotTelemetryData {
     exception?: Error,
     copilotSessionId?: string,
     orgId?: string,
-
+    FeedbackId?: string
+    error?: string
 }
 
 export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDevCopilotTelemetryData): void {

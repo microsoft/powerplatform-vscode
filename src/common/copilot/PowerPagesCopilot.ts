@@ -172,11 +172,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           if (data.value === "thumbsUp") {
 
             sendTelemetryEvent(this.telemetry, { eventName: UserFeedbackThumbsUpEvent, copilotSessionId: sessionID });
-            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp")
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry)
           } else if (data.value === "thumbsDown") {
 
             sendTelemetryEvent(this.telemetry, { eventName: UserFeedbackThumbsDownEvent, copilotSessionId: sessionID });
-            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown")
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry)
           }
         }
       }

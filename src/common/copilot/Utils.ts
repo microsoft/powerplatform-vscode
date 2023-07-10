@@ -40,8 +40,6 @@ export function getNonce() {
 
 export function getUserName(user: string) {
     const parts = user.split(" - ");
-    console.log(parts[0]);
-    console.log(parts[1]);
     return parts[0];
 }
 
