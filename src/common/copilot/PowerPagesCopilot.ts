@@ -5,6 +5,7 @@
 
 
 import * as vscode from "vscode";
+import { CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments } from "./Constants";
 export let apiToken: string;
 export let sessionID: string;
 export let userName: string;
@@ -54,29 +55,19 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     const copilotStylePath = vscode.Uri.joinPath(
       this._extensionUri,
-      'src',
-      "common",
-      "copilot",
-      "assets",
-      "styles",
-      "copilot.css"
-  );
+      ...CopilotStylePathSegments
+    );
+    const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
 
-  const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
     const codiconStylePath = vscode.Uri.joinPath(
       this._extensionUri,
-      'src',
-      "common",
-      "copilot",
-      "assets",
-      "styles",
-      "codicon.css"
+      ...CodiconStylePathSegments
     );
     const codiconStyleUri = webview.asWebviewUri(codiconStylePath);
 
 
 
-    //TODO: Add CSP
+    //TODO: Add CSP & View Terms link
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -100,7 +91,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         
             <div class="chat-input">
               <div class="input-container">
-                <input type="text" placeholder="Ask a question..." id="chat-input" class="input-field">
+                <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
                 <button aria-label="Match Case" id="send-button" class="send-button">
                   <span>
                     <svg width="16px" height="16px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -111,8 +102,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                   </span>
                 </button>
               </div>
-              <p class="disclaimer">Make sure AI-generated content is accurate and appropriate before using. <a href="https://go.microsoft.com/fwlink/?linkid=2240145">Learn more</a> | <a href="#">View
-                  terms</a></p>
+              <p class="disclaimer">${CopilotDisclaimer}</p>
             </div>
           </div>
         

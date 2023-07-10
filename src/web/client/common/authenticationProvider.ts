@@ -39,7 +39,6 @@ export async function intelligenceAPIAuthentication(): Promise<{ accessToken: st
         if (!session) {
             session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { createIfNone: true });
         }
-        console.log("user", session.account.label);
         accessToken = session?.accessToken ?? '';
         user = session.account.label;
         if (!accessToken) {
