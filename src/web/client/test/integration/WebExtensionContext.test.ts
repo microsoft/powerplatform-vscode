@@ -112,7 +112,7 @@ describe("WebExtensionContext", () => {
         );
         //Action
         try {
-            await WebExtensionContext.reAuthenticate();
+            await WebExtensionContext.dataverseAuthentication();
         } catch {
             assert.calledOnce(noPermissions);
             expect(WebExtensionContext.dataverseAccessToken).eq("");
@@ -152,7 +152,7 @@ describe("WebExtensionContext", () => {
             queryParamsMap
         );
         //Action
-        await WebExtensionContext.reAuthenticate();
+        await WebExtensionContext.dataverseAuthentication();
 
         //Assert
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);

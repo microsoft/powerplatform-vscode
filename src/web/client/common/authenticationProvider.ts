@@ -3,11 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as vscode from 'vscode';
-import WebExtensionContext from '../WebExtensionContext';
-import { telemetryEventNames } from '../telemetry/constants';
-import { PROVIDER_ID, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, INTELLIGENCE_SCOPE_DEFAULT } from './constants';
-import { ERRORS, showErrorDialog } from './errorHandler';
+import * as vscode from "vscode";
+import WebExtensionContext from "../WebExtensionContext";
+import { telemetryEventNames } from "../telemetry/constants";
+import {
+    INTELLIGENCE_SCOPE_DEFAULT,
+    PROVIDER_ID,
+    SCOPE_OPTION_DEFAULT,
+    SCOPE_OPTION_OFFLINE_ACCESS,
+} from "./constants";
+import { ERRORS, showErrorDialog } from "./errorHandler";
 
 export function getCommonHeaders(
     accessToken: string,
@@ -24,8 +29,6 @@ export function getCommonHeaders(
     };
 }
 
-
-
 //Get access token for Intelligence API service
 export async function intelligenceAPIAuthentication(): Promise<{ accessToken: string, user: string }> {
     let accessToken = '';
@@ -36,7 +39,6 @@ export async function intelligenceAPIAuthentication(): Promise<{ accessToken: st
         if (!session) {
             session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { createIfNone: true });
         }
-        console.log("user", session.account.label);
         accessToken = session?.accessToken ?? '';
         user = session.account.label;
         if (!accessToken) {
@@ -52,7 +54,6 @@ export async function intelligenceAPIAuthentication(): Promise<{ accessToken: st
     }
     return { accessToken, user };
 }
-
 
 export async function dataverseAuthentication(
     dataverseOrgURL: string

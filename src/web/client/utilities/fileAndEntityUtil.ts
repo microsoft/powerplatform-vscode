@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { IAttributePath } from "../common/interfaces";
 
@@ -14,12 +15,12 @@ export function fileHasDirtyChanges(fileFsPath: string) {
 
 export function getFileEntityId(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
-        ?.entityId as string;
+        ?.entityId as string ?? WebExtensionContext.getVscodeWorkspaceState(fileFsPath)?.entityId as string;
 }
 
-export function getFileEntityType(fileFsPath: string) {
+export function getFileEntityName(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
-        ?.entityName as string;
+        ?.entityName as string ?? WebExtensionContext.getVscodeWorkspaceState(fileFsPath)?.entityName as string;
 }
 
 export function getFileEntityEtag(fileFsPath: string) {
@@ -41,6 +42,10 @@ export function updateFileDirtyChanges(
     );
 }
 
+export function doesFileExist(fileFsPath: string) {
+    return WebExtensionContext.fileDataMap.getFileMap.has(vscode.Uri.parse(fileFsPath).fsPath);
+}
+
 // Entity utility functions
 export function getEntityEtag(entityId: string) {
     return WebExtensionContext.entityDataMap.getEntityMap.get(entityId)
@@ -49,9 +54,9 @@ export function getEntityEtag(entityId: string) {
 
 export function updateEntityEtag(entityId: string, entityEtag: string) {
     WebExtensionContext.entityDataMap.updateEtagValue(
-                    entityId,
-                   entityEtag
-                );
+        entityId,
+        entityEtag
+    );
 }
 
 export function updateEntityColumnContent(
@@ -64,4 +69,8 @@ export function updateEntityColumnContent(
         attributePath,
         fileContent
     );
+}
+
+export function getFileName(fsPath: string) {
+    return fsPath.split(/[\\/]/).pop();
 }

@@ -161,11 +161,11 @@ export async function activate(
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
-
+    
     // TODO: Handle for VSCode.dev also
-    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-        initializeGenerator(_context, cliContext, _telemetry);
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
+        initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
