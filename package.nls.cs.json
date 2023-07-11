@@ -2,7 +2,7 @@
   "microsoft-powerapps-portals.preview-show.title": "Portál PowerApps -> Zobrazit náhled",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Visual Studio Code pro web umožňuje úpravu a publikování webových stránek na webu.\n \n Pokud chcete používat rozhraní příkazového řádku a pokročilejší možnosti, nainstalujte rozšíření Power Platform pro VS Code, které je dostupné na VS Code Marketplace pro počítače. \n \n[Další informace](command:powerplatform-walkthrough.advancedCapabilities-learn-more) o rozdílu mezi editorem Visual Studio Code pro počítače a web.\n \n[Začít kódovat](command:powerplatform-walkthrough.advancedCapabilities-start-coding)",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Rozšířené možnosti",
-  "microsoft-powerapps-portals.walkthrough.description": "Objevte, jak můžete vytvářet kompletní moderní weby přímo v editoru VS Code.",
+  "microsoft-powerapps-portals.walkthrough.description": "Objevte, jak můžete vytvářet kompletní moderní weby přímo v editoru Visual Studio Code.",
   "microsoft-powerapps-portals.walkthrough.fileSystem.description": "Vaše soubory jsou uloženy ve vnořených složkách pod názvem vašeho webu. \n \n Soubory jednotlivých stránek se nacházejí ve složce webových stránek pod názvem vašeho webu. \n \n Všechny stránky jsou uspořádány do souborů HTML, CSS a JS ve složce s příslušným názvem stránky. \n \n Další informace o systému souborů Power Pages v editoru VS Code pro web najdete v naší [dokumentaci](command:powerplatform-walkthrough.fileSystem-documentation). \n[Otevřít složku webu](command:powerplatform-walkthrough.fileSystem-open-folder)",
   "microsoft-powerapps-portals.walkthrough.fileSystem.title": "Systém souborů",
   "microsoft-powerapps-portals.walkthrough.overview.description": "Rozšíření Power Pages nabízí přizpůsobený systém souborů, který se synchronizuje se strukturou projektu v Power Pages Studiu.\n[Další informace](command:powerplatform-walkthrough.overview-learn-more)",
@@ -38,5 +38,7 @@
   "pacCLI.pacPackageHelp.title": "Zobrazit nápovědu k balíčku PAC",
   "pacCLI.pacPcfHelp.title": "Zobrazit nápovědu k PCF PAC",
   "pacCLI.pacSolutionHelp.title": "Zobrazit nápovědu k řešení PAC",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.title": "Save conflict",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.description": "Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. \n \nTo learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more)."
 }
