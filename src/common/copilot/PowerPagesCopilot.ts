@@ -258,7 +258,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
   private getActiveEditorContent(): IActiveFileData {
     const activeEditor = vscode.window.activeTextEditor;
-    let activeFileData : IActiveFileData = {
+    const activeFileData : IActiveFileData = {
       activeFileContent:'',
       activeFileParams:{
         dataverseEntity:'',
