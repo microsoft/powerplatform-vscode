@@ -8,15 +8,15 @@
 (function script() {
   const vscode = acquireVsCodeApi();
 
-  const copilotHeader = document.getElementById("copilot-header");
+  // const copilotHeader = document.getElementById("copilot-header");
   const chatMessages = document.getElementById("chat-messages");
   const chatInput = document.getElementById("chat-input");
+  const chatInputComponent = document.getElementById("input-component");
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let isDesktop = false;
   let userName;
   let apiResponseHandler;
   let welcomeScreen;
+  let isCopilotEnabled = true;
 
   const clipboardSvg = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z" fill="#F3F2F1"/>
@@ -56,6 +56,13 @@
       const textDiv = document.createElement("div");
       textDiv.innerText = responseText[i].displayText;
       resultDiv.appendChild(textDiv);
+
+      if(responseText[i].displayText === "Feature is not enabled for this geo.") {
+        chatInputComponent.classList.add("hide")
+        textDiv.innerText = "Your Microsoft account doesn’t currently support Copilot. Contact your admin for details."
+        isCopilotEnabled = false;
+        return resultDiv;
+      }
 
       if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined || responseText[i].code === "violation" || responseText[i].code === "unclear") {
         continue;
@@ -202,6 +209,9 @@
 
   function createFeedbackDiv() {
     const feedback = document.createElement("div");
+    if(!isCopilotEnabled) {
+      return feedback;
+    }
     feedback.innerHTML = `<p class="feedback-statement">AI-generated content may be incorrect. <a href="https://go.microsoft.com/fwlink/?linkid=2240145" style="display: block;">Learn more</a></p>
       <div class="feedback-icons">
         <span class="codicon codicon-thumbsup" style="cursor: pointer;"></span>
@@ -269,10 +279,7 @@
 
     messageWrapper.appendChild(messageElement);
 
-    if (!copilotHeader) {
-      return;
-    }
-    copilotHeader.appendChild(messageWrapper);
+    chatMessages.appendChild(messageWrapper);
 
     return {
       userNotLoggedIn: function () {
@@ -310,8 +317,7 @@
         break;
       }
       case "env": {
-      
-        isDesktop = message.value;
+    
         welcomeScreen = setWelcomeScreen();
         break;
       }
@@ -329,8 +335,9 @@
         break;
       }
       case "clearConversation": {
-      
         chatMessages.innerHTML = "";
+        welcomeScreen = setWelcomeScreen();
+        welcomeScreen.userLoggedIn();
         break;
       }
     }

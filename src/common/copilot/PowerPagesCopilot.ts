@@ -5,7 +5,7 @@
 
 
 import * as vscode from "vscode";
-import { sendApiRequest } from "./IntelligenceApi";
+import { sendApiRequest } from "./IntelligenceApiService";
 import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
@@ -325,7 +325,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
               <div id="copilot-header"></div>
             </div>
         
-            <div class="chat-input">
+            <div class="chat-input" id="input-component">
               <div class="input-container">
                 <input type="text" placeholder="Ask a question..." id="chat-input" class="input-field">
                 <button aria-label="Match Case" id="send-button" class="send-button">
