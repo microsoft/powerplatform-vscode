@@ -389,7 +389,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                     response?.status.toString(),
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
+                    this.populateLanguageIdToCode.name
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -416,7 +416,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                     (error as Response)?.status.toString(),
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR
+                    this.populateLanguageIdToCode.name
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
@@ -463,7 +463,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                     response?.status.toString(),
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
+                    this.populateWebsiteLanguageIdToPortalLanguageMap.name
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -487,7 +487,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                     (error as Response)?.status.toString(),
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
+                    this.populateWebsiteLanguageIdToPortalLanguageMap.name
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
@@ -534,7 +534,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                     response?.status.toString(),
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
+                    this.populateWebsiteIdToLanguageMap.name
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -557,7 +557,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                     (error as Response)?.status.toString(),
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR
+                    this.populateWebsiteIdToLanguageMap.name
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(

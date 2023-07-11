@@ -188,7 +188,7 @@ async function saveDataToDataverse(
                 fileExtensionType,
                 telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                 (error as Response)?.status as unknown as string,
-                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR
+                saveDataToDataverse.name
             );
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(

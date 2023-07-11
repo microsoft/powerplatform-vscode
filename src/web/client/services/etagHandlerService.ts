@@ -118,7 +118,7 @@ export class EtagHandlerService {
                     '',
                     telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                     response.status.toString(),
-                    telemetryEventNames.WEB_EXTENSION_LATEST_FILE_CONTENT_UPDATE_METADATA
+                    this.getLatestFileContentAndUpdateMetadata.name
                 );
             }
 
@@ -140,7 +140,7 @@ export class EtagHandlerService {
                     '',
                     telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                     (error as Response)?.status.toString(),
-                    telemetryEventNames.WEB_EXTENSION_LATEST_FILE_CONTENT_UPDATE_METADATA
+                    this.getLatestFileContentAndUpdateMetadata.name
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
@@ -219,7 +219,7 @@ export class EtagHandlerService {
                     '',
                     telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
                     (error as Response)?.status.toString(),
-                    telemetryEventNames.WEB_EXTENSION_UPDATE_FILE_ETAG,
+                    this.updateFileEtag.name
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
