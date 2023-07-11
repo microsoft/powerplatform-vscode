@@ -2,7 +2,7 @@
   "microsoft-powerapps-portals.preview-show.title": "Portal de PowerApps -> Mostrar vista previa",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Visual Studio Code para web permite editar y publicar páginas web en su sitio web.\n \n Si desea utilizar una interfaz de línea de comandos y funcionalidades más avanzadas, instale la Extensión Power Platform para VS Code, que está disponible en VS Code Marketplace para el escritorio. \n \n [Más información](command:powerplatform-walkthrough.advancedCapabilities-learn-more) sobre la diferencia entre Visual Studio Code para el escritorio y para la web.\n \n[Empiece a programar](command:powerplatform-walkthrough.advancedCapabilities-start-coding)",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Funcionalidades avanzadas",
-  "microsoft-powerapps-portals.walkthrough.description": "Descubra cómo puede crear sitios web completos y modernos directamente en VS Code",
+  "microsoft-powerapps-portals.walkthrough.description": "Descubra cómo puede crear sitios web completos y modernos directamente en Visual Studio Code",
   "microsoft-powerapps-portals.walkthrough.fileSystem.description": "Sus archivos se almacenan en carpetas anidadas bajo el nombre del sitio. \n \n Los archivos de página individuales se pueden encontrar en la carpeta de páginas web bajo el nombre de su sitio. \n \n Todas sus páginas están organizadas en archivos HTML, CSS y JS dentro de la carpeta con el nombre de página respectivo. \n \n Para obtener más información sobre el sistema de archivos de Power Pages en VS Code para web, visite nuestra [documentación](command:powerplatform-walkthrough.fileSystem-documentation). \n[Abrir carpeta del sitio](command:powerplatform-walkthrough.fileSystem-open-folder)",
   "microsoft-powerapps-portals.walkthrough.fileSystem.title": "Sistema de archivos",
   "microsoft-powerapps-portals.walkthrough.overview.description": "La extensión de Power Pages permite disponer de un sistema de archivos personalizado que se sincroniza con la estructura del proyecto del estudio de diseño de Power Pages.\n[Más información](command:powerplatform-walkthrough.overview-learn-more)",
@@ -38,5 +38,7 @@
   "pacCLI.pacPackageHelp.title": "Mostrar ayuda del paquete de PAC",
   "pacCLI.pacPcfHelp.title": "Mostrar ayuda de PCF de PAC",
   "pacCLI.pacSolutionHelp.title": "Mostrar ayuda de la solución de PAC",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.title": "Save conflict",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.description": "Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. \n \nTo learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more)."
 }

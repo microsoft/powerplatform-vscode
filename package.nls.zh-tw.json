@@ -2,7 +2,7 @@
   "microsoft-powerapps-portals.preview-show.title": "PowerApps 入口網站 -> 顯示預覽",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Visual Studio Code 網頁版讓您可以在您的網站上編輯和發佈網頁。\n \n 如需命令列介面和更進階的功能，請安裝適用於 VS Code 的 Power Platform 擴充功能，您可以從電腦版 VS Code 服務商場中取得。\n \n [深入了解](command:powerplatform-walkthrough.advancedCapabilities-learn-more) 關於 Visual Studio Code 電腦版與網頁版之間的差異。\n \n[開始撰寫程式碼](command:powerplatform-walkthrough.advancedCapabilities-start-coding)",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "進階功能",
-  "microsoft-powerapps-portals.walkthrough.description": "了解如何在 VS Code 中製作完整的現代網站",
+  "microsoft-powerapps-portals.walkthrough.description": "了解如何在 Visual Studio Code 中製作完整的現代網站",
   "microsoft-powerapps-portals.walkthrough.fileSystem.description": "您的檔案儲存在網站名稱下的巢狀資料夾中。\n \n 個別頁面的檔案可以在網站名稱下的網頁資料夾中找到。\n \n 所有頁面都在對應頁面名稱的資料夾內以 HTML、CSS 和 JS 檔案排列。\n \n 若要深入了解有關 VS Code 網頁版中的 Power Pages 檔案系統，請造訪我們的 [文件](command:powerplatform-walkthrough.fileSystem-documentation)。\n[開啟網站資料夾](command:powerplatform-walkthrough.fileSystem-open-folder)",
   "microsoft-powerapps-portals.walkthrough.fileSystem.title": "檔案系統",
   "microsoft-powerapps-portals.walkthrough.overview.description": "Power Pages 擴充功能實現了與 Power Pages 工作室的專案結構同步的自訂檔案系統。\n[深入了解](command:powerplatform-walkthrough.overview-learn-more)",
@@ -38,5 +38,7 @@
   "pacCLI.pacPackageHelp.title": "顯示 PAC 套件說明",
   "pacCLI.pacPcfHelp.title": "顯示 PAC PCF 說明",
   "pacCLI.pacSolutionHelp.title": "顯示 PAC 解決方案說明",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.title": "Save conflict",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.description": "Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. \n \nTo learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more)."
 }

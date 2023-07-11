@@ -2,7 +2,7 @@
   "microsoft-powerapps-portals.preview-show.title": "Портал PowerApps -> Показать предварительную версию",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Веб-версия Visual Studio Code позволяет редактировать и публиковать страницы веб-сайта.\n \n Для работы с интерфейсом командной строки и использования расширенных функций установите расширение Power Platform для VS Code из магазина классической версии VS Code. \n \n [Подробнее](command:powerplatform-walkthrough.advancedCapabilities-learn-more) о различиях между классической и веб-версией Visual Studio Code.\n \n[Писать код](command:powerplatform-walkthrough.advancedCapabilities-start-coding)",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Расширенные возможности",
-  "microsoft-powerapps-portals.walkthrough.description": "Узнайте, как создавать работающие современные веб-сайты в VS Code",
+  "microsoft-powerapps-portals.walkthrough.description": "Узнайте, как создавать работающие современные веб-сайты в Visual Studio Code",
   "microsoft-powerapps-portals.walkthrough.fileSystem.description": "Файлы хранятся во вложенных папках в папке с именем вашего сайта. \n \n Файлы отдельных страниц можно найти в папке веб-страниц с именем вашего сайта. \n \n Все ваши страницы представляют собой файлы форматов HTML, CSS и JS в папке с именем соответствующей страницы. \n \n Чтобы узнать больше о файловой системе Power Pages в VS Code для веб-страницы, посетите страницу нашей [документации](command:powerplatform-walkthrough.fileSystem-documentation). \n[Открыть папку сайта](command:powerplatform-walkthrough.fileSystem-open-folder)",
   "microsoft-powerapps-portals.walkthrough.fileSystem.title": "Файловая система",
   "microsoft-powerapps-portals.walkthrough.overview.description": "Расширение Power Pages поддерживает пользовательскую файловую систему, которая синхронизируется со структурой проекта в студии Power Pages.\n[Подробнее](command:powerplatform-walkthrough.overview-learn-more)",
@@ -38,5 +38,7 @@
   "pacCLI.pacPackageHelp.title": "Показать справку по пакету PAC",
   "pacCLI.pacPcfHelp.title": "Показать справку по PAC PCF",
   "pacCLI.pacSolutionHelp.title": "Показать справку по решению PAC",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.title": "Save conflict",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.description": "Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. \n \nTo learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more)."
 }
