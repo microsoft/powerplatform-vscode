@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import { npsAuthentication } from "../../../web/client/common/authenticationProvider";
 import { SurveyConstants } from "../../../web/client/common/constants";
 import fetch from "node-fetch";
-import { getNonce } from "../Utils";
+import { getNonce } from "../../Utils";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { UserFeedbackFailureEvent, UserFeedbackSuccessEvent} from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";

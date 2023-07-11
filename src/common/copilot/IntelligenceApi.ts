@@ -46,6 +46,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: Activ
         });
       
         if (response.ok) {
+          //TODO: Log Telemetry
           try {
             const jsonResponse = await response.json();
             if (jsonResponse.additionalData && Array.isArray(jsonResponse.additionalData) && jsonResponse.additionalData.length > 0) {
@@ -60,6 +61,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: Activ
             return InvalidResponse;
           }
         } else {
+          //TODO: Log error
           try {
             const errorResponse = await response.json();
             if (errorResponse.error && errorResponse.error.messages[0]) {
@@ -70,6 +72,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: Activ
           }
         }
       } catch (error) {
+        //TODO: Log error
         return NetworkError;
       }
       

@@ -56,6 +56,7 @@ export function escapeDollarSign(paragraph: string): string {
     return paragraph.replace(/\$/g, "\\$");
 }
 
+//TODO: Take message as a parameter
 export function showConnectedOrgMessage(environmentName: string, orgUrl: string) {
     vscode.window.showInformationMessage(
       vscode.l10n.t({

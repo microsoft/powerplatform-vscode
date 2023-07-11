@@ -12,7 +12,7 @@ import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ActiveFileParams, AuthProfileNotFound, CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
-import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "./Utils";
+import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
@@ -27,7 +27,7 @@ let userID: string;
 let activeOrgUrl: string;
 export let sessionID: string;
 
-
+//TODO: Check if it can be converted to singleton
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   public static readonly viewType = "powerpages.copilot";
   private _view?: vscode.WebviewView;
