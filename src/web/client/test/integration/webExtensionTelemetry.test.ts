@@ -273,6 +273,7 @@ describe("webExtensionTelemetry", () => {
             URL,
             entity,
             httpMethod,
+            "sendAPITelemetry_whenErrorMessageIsPassed_shouldCallsendTelemetryException",
             entityFileExtensionType, // TODO: Pass these as function properties parameters
             isSuccessful,
             duration,
@@ -322,6 +323,7 @@ describe("webExtensionTelemetry", () => {
             URL,
             entity,
             httpMethod,
+            "sendAPITelemetry_whenErrorMessageNotPassed_shouldCallsendTelemetryException",
             entityFileExtensionType, // TODO: Pass these as function properties parameters
             isSuccessful,
             duration,
@@ -368,6 +370,7 @@ describe("webExtensionTelemetry", () => {
             URL,
             entity,
             httpMethod,
+            "sendAPITelemetry_whenIsSuccessfulAndDurationIsUndefined_shouldSetDurationInMillisAs0orIsSuccessfulAsBlankString",
             entityFileExtensionType, // TODO: Pass these as function properties parameters
             isSuccessful,
             duration,
@@ -413,6 +416,7 @@ describe("webExtensionTelemetry", () => {
             URL,
             entity,
             httpMethod,
+            "sendAPITelemetry_whenIsSuccessfulIsFalse_shouldSetIsSuccessfulAsFalse",
             entityFileExtensionType, // TODO: Pass these as function properties parameters
             isSuccessful,
             duration,
@@ -501,6 +505,7 @@ describe("webExtensionTelemetry", () => {
             entity,
             httpMethod,
             duration,
+            "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException",
             errorMessage,
             entityFileExtensionType
         );

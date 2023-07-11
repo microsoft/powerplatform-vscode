@@ -71,6 +71,7 @@ export class EtagHandlerService {
                 requestUrl,
                 entityName,
                 httpMethod.GET,
+                this.getLatestFileContentAndUpdateMetadata.name,
                 '',
                 true,
                 0,
@@ -109,23 +110,19 @@ export class EtagHandlerService {
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
                 );
             } else {
-                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                    requestUrl,
-                    entityName,
-                    httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    response.statusText,
-                    '',
-                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
-                    response.status.toString()
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
+                    response.statusText
                 );
+                throw new Error(JSON.stringify(response));
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
                 entityName,
                 httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                this.getLatestFileContentAndUpdateMetadata.name
             );
         } catch (error) {
             if ((error as Response)?.status > 0) {
@@ -135,9 +132,9 @@ export class EtagHandlerService {
                     entityName,
                     httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
+                    this.getLatestFileContentAndUpdateMetadata.name,
                     authError,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
                     (error as Response)?.status.toString()
                 );
             } else {
@@ -180,7 +177,8 @@ export class EtagHandlerService {
             WebExtensionContext.telemetry.sendAPITelemetry(
                 requestUrl,
                 entityName,
-                httpMethod.GET
+                httpMethod.GET,
+                this.updateFileEtag.name
             );
 
             await WebExtensionContext.dataverseAuthentication();
@@ -197,13 +195,15 @@ export class EtagHandlerService {
                     telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
                     response.statusText
                 );
+                throw new Error(JSON.stringify(response));
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
                 entityName,
                 httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                this.updateFileEtag.name
             );
         } catch (error) {
             if ((error as Response)?.status > 0) {
@@ -213,14 +213,14 @@ export class EtagHandlerService {
                     entityName,
                     httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
+                    this.updateFileEtag.name,
                     authError,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
                     (error as Response)?.status.toString()
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE,
+                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR,
                     (error as Error)?.message,
                     error as Error
                 );

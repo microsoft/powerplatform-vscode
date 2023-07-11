@@ -86,6 +86,8 @@
     "onCommand:powerplatform-walkthrough.overview-learn-more",
     "onCommand:powerplatform-walkthrough.fileSystem-documentation",
     "onCommand:powerplatform-walkthrough.fileSystem-open-folder",
+    "onCommand:powerplatform-walkthrough.saveConflict-learn-more",
+    "onCommand:powerplatform-walkthrough.saveConflict-start-folder",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
     "onStartupFinished",
@@ -817,7 +819,7 @@
     },
     "walkthroughs": [
       {
-        "id": "PowerPage-gettingStarted",
+        "id": "PowerPage-gettingStarted-multiFile",
         "title": "%microsoft-powerapps-portals.walkthrough.title%",
         "description": "%microsoft-powerapps-portals.walkthrough.description%",
         "when": "isWeb && virtualWorkspace",
@@ -844,6 +846,18 @@
             },
             "completionEvents": [
               "onCommand:powerplatform-walkthrough.fileSystem-open-folder"
+            ]
+          },
+          {
+            "id": "saveConflict",
+            "title": "%microsoft-powerapps-portals.walkthrough.saveConflict.title%",
+            "description": "%microsoft-powerapps-portals.walkthrough.saveConflict.description%",
+            "media": {
+              "svg": "./src/web/client/assets/saveConflict.svg",
+              "altText": "%microsoft-powerapps-portals.walkthrough.saveConflict.title%"
+            },
+            "completionEvents": [
+              "onCommand:powerplatform-walkthrough.saveConflict-start-coding"
             ]
           },
           {

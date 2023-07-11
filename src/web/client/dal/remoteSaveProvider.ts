@@ -155,6 +155,7 @@ async function saveDataToDataverse(
                 saveCallParameters.requestUrl,
                 entityName,
                 httpMethod.PATCH,
+                saveDataToDataverse.name,
                 fileExtensionType
             );
             WebExtensionContext.telemetry.sendInfoTelemetry(
@@ -174,21 +175,31 @@ async function saveDataToDataverse(
                 entityName,
                 httpMethod.PATCH,
                 new Date().getTime() - requestSentAtTime,
-                fileExtensionType,
-                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_SUCCESS
+                saveDataToDataverse.name,
+                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_SUCCESS,
+                fileExtensionType
             );
         } catch (error) {
             const authError = (error as Error)?.message;
-            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                saveCallParameters.requestUrl,
-                entityName,
-                httpMethod.PATCH,
-                new Date().getTime() - requestSentAtTime,
-                authError,
-                fileExtensionType,
-                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
-                (error as Response)?.status as unknown as string
-            );
+            if ((error as Response)?.status > 0) {
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                    saveCallParameters.requestUrl,
+                    entityName,
+                    httpMethod.PATCH,
+                    new Date().getTime() - requestSentAtTime,
+                    saveDataToDataverse.name,
+                    authError,
+                    fileExtensionType,
+                    (error as Response)?.status as unknown as string
+                );
+            } else {
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
+
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(
                     vscode.l10n.t(
@@ -204,6 +215,7 @@ async function saveDataToDataverse(
                     vscode.l10n.t("Try again")
                 );
             }
+
             throw error;
         }
     }

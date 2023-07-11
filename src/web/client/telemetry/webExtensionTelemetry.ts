@@ -54,13 +54,13 @@ export class WebExtensionTelemetry {
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
     }
 
-    public sendErrorTelemetry(eventName: string, errorMessage?: string, error?:Error) {
+    public sendErrorTelemetry(eventName: string, errorMessage?: string, error?: Error) {
         const telemetryData: IWebExtensionExceptionTelemetryData = {
             properties: {
                 eventName: eventName
             }
         }
-        if (error){
+        if (error) {
             telemetryData.properties.errorMessage = errorMessage;
             telemetryData.properties.errorName = error.name;
             telemetryData.properties.stack = error.stack;
@@ -81,12 +81,14 @@ export class WebExtensionTelemetry {
         URL: string,
         entity: string,
         httpMethod: string,
+        methodName: string,
         entityFileExtensionType?: string, // TODO: Pass these as function properties parameters
         isSuccessful?: boolean,
         duration?: number,
         errorMessage?: string,
         eventName?: string,
         status?: string) {
+
         eventName = eventName ?? telemetryEventNames.WEB_EXTENSION_API_REQUEST;
 
         const telemetryData: IWebExtensionAPITelemetryData = {
@@ -97,7 +99,8 @@ export class WebExtensionTelemetry {
                 httpMethod: httpMethod,
                 entityFileExtensionType: entityFileExtensionType,
                 isSuccessful: (isSuccessful === undefined) ? "" : (isSuccessful ? "true" : "false"),
-                status: status
+                status: status,
+                methodName: methodName
             },
             measurements: {
                 durationInMillis: (duration) ? duration : 0
@@ -116,10 +119,20 @@ export class WebExtensionTelemetry {
         entity: string,
         httpMethod: string,
         duration: number,
-        entityFileExtensionType?: string, // TODO: Pass these as function properties parameters
-        eventName?:string
+        methodName: string,
+        eventName?: string,
+        entityFileExtensionType?: string
     ) {
-        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, true, duration, undefined, !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+        this.sendAPITelemetry(
+            URL,
+            entity,
+            httpMethod,
+            methodName,
+            entityFileExtensionType,
+            true,
+            duration,
+            undefined,
+            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
     }
 
     public sendAPIFailureTelemetry(
@@ -127,12 +140,23 @@ export class WebExtensionTelemetry {
         entity: string,
         httpMethod: string,
         duration: number,
+        methodName: string,
         errorMessage?: string,
         entityFileExtensionType?: string, // TODO: Pass these as function properties parameters
-        eventName?:string,
-        status?:string
+        status?: string,
+        eventName?: string
     ) {
-        this.sendAPITelemetry(URL, entity, httpMethod, entityFileExtensionType, false, duration, errorMessage, !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,status);
+        this.sendAPITelemetry(
+            URL,
+            entity,
+            httpMethod,
+            methodName,
+            entityFileExtensionType,
+            false,
+            duration,
+            errorMessage,
+            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+            status);
     }
 
     public sendPerfTelemetry(eventName: string, duration: number) {
