@@ -84,11 +84,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         return;
       }
       const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
-      if (pacAuthCreateOutput.Status === "Success") {
-        this.handleOrgChange();
-      } else {
-        vscode.window.showErrorMessage("Error creating auth profile for org");
-      }
+      pacAuthCreateOutput.Status === "Success"
+        ? this.handleOrgChange()
+        : vscode.window.showErrorMessage("Error creating auth profile for org");
+
     }
   }
 
@@ -208,13 +207,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         return;
       }
       const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
-      if (pacAuthCreateOutput.Status === "Success") {
-        intelligenceAPIAuthentication().then(({ accessToken, user }) => {
-          this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
-        });
-      } else {
-        vscode.window.showErrorMessage("Error creating auth profile for org");
-      }
+      pacAuthCreateOutput.Status === "Success"
+      ? intelligenceAPIAuthentication().then(({ accessToken, user }) =>
+          this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user)
+        )
+      : vscode.window.showErrorMessage("Error creating auth profile for org");
+    
 
     }
   }
