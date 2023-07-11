@@ -1,0 +1,36 @@
+body {
+    padding: 12px 24px;
+}
+
+.form-label {
+    font-size: 14px;
+}
+
+
+#feedbackText {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border-radius: 2px;
+    margin: 16px 0px;
+    width: 100%;
+    resize: none;
+    font-family: var(--vscode-font-family);
+}
+
+#feedbackText:focus {
+    outline: 1px solid var(--vscode-focusBorder);
+}
+
+.privacy-statement {
+   margin:  0px 0px 16px 0px;
+}
+
+.submit-feedback {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    cursor: pointer;
+    padding: 6px 11px;
+    outline: 1px solid transparent;
+    outline-offset: 2px !important;
+    border-radius: 2px;
+}
