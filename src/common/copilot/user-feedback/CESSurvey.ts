@@ -11,10 +11,40 @@ import { getNonce } from "../Utils";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { UserFeedbackFailureEvent, UserFeedbackSuccessEvent} from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
+import { FeedbackData } from "../constants";
 
 
 export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry) {
+  const feedbackPanel = createFeedbackPanel(context);
 
+  feedbackPanel.webview.postMessage({ type: "thumbType", value: thumbType });
+
+  const { feedbackCssUri, feedbackJsUri } = getWebviewURIs(context, feedbackPanel);
+
+  const nonce = getNonce();
+  feedbackPanel.webview.html = getWebviewContent(feedbackCssUri, feedbackJsUri, nonce);
+
+  const feedbackData = initializeFeedbackData(sessionId);
+
+  const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
+
+  const endpointUrl = `https://world.tip1.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
+
+  feedbackPanel.webview.onDidReceiveMessage(
+    async message => {
+      switch (message.command) {
+        case 'feedback':
+          await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, telemetry);
+          feedbackPanel.dispose();
+          break;
+      }
+    },
+    undefined,
+    context.subscriptions
+  );
+}
+
+function createFeedbackPanel(context: vscode.ExtensionContext): vscode.WebviewPanel {
   const feedbackPanel = vscode.window.createWebviewPanel(
     "CESUserFeedback",
     "Feedback",
@@ -26,18 +56,21 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
 
   context.subscriptions.push(feedbackPanel);
 
-  feedbackPanel.webview.postMessage({ type: "thumbType", value: thumbType });
+  return feedbackPanel;
+}
+
+function getWebviewURIs(context: vscode.ExtensionContext, feedbackPanel: vscode.WebviewPanel): { feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri } {
   const feedbackCssPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "user-feedback", "feedback.css");
   const feedbackCssUri = feedbackPanel.webview.asWebviewUri(feedbackCssPath);
 
   const feedbackJsPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "user-feedback", "feedback.js");
   const feedbackJsUri = feedbackPanel.webview.asWebviewUri(feedbackJsPath);
 
-  const nonce = getNonce();
+  return { feedbackCssUri, feedbackJsUri };
+}
 
-  feedbackPanel.webview.html = getWebviewContent(feedbackCssUri, feedbackJsUri, nonce);
-
-  const feedbackData = {
+function initializeFeedbackData(sessionId: string): FeedbackData {
+  const feedbackData: FeedbackData = {
     IsDismissed: false,
     ProductContext: [
       {
@@ -57,50 +90,35 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
     ]
   };
 
-  const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT)
+  return feedbackData;
+}
 
-  const endpointUrl = `https://world.tip1.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
-  // Handle messages from the webview
+async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: FeedbackData, telemetry: ITelemetry) {
+  feedbackData.Feedbacks[0].value = text;
 
-  feedbackPanel.webview.onDidReceiveMessage(
-    async message => {
-      switch (message.command) {
-        case 'feedback':
-          feedbackData.Feedbacks[0].value = message.text;
-          try {
-            const response = await fetch(endpointUrl, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + apiToken,
-              },
-              body: JSON.stringify(feedbackData)
-            });
+  try {
+    const response = await fetch(endpointUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + apiToken,
+      },
+      body: JSON.stringify(feedbackData)
+    });
 
-            if (response.ok) {
-              // Feedback sent successfully
-              const responseJson = await response.json();
-              const feedbackId = responseJson.FeedbackId;
-              sendTelemetryEvent(telemetry, { eventName: UserFeedbackSuccessEvent, FeedbackId: feedbackId });
-            } else {
-              // Error sending feedback
-              sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, error: response.statusText });
-            }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          } catch (error: any) {
-            // Network error or other exception
-            sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, exception: error.message });
-          }
-
-          feedbackPanel.dispose();
-      }
-      return;
-
-    },
-    undefined,
-    context.subscriptions
-  );
-
+    if (response.ok) {
+      // Feedback sent successfully
+      const responseJson = await response.json();
+      const feedbackId = responseJson.FeedbackId;
+      sendTelemetryEvent(telemetry, { eventName: UserFeedbackSuccessEvent, FeedbackId: feedbackId });
+    } else {
+      // Error sending feedback
+      sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, error: response.statusText });
+    }
+  } catch (error: any) {
+    // Network error or other exception
+    sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, exception: error.message });
+  }
 }
 
 function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri, nonce: string) {

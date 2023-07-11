@@ -20,6 +20,12 @@ export type WebViewMessage = {
   envName?: string;
 };
 
+export interface FeedbackData {
+  IsDismissed: boolean;
+  ProductContext: { key: string, value: string }[];
+  Feedbacks: { key: string, value: string }[];
+}
+
 
 export const DataverseEntityNameMap = new Map<string, string>([
   ['webpage', 'adx_webpage'],

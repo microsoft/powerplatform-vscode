@@ -224,7 +224,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         userName = getUserName(user);
         this.sendMessageToWebview({ type: 'userName', value: userName });
 
-        return sendApiRequest(data.value, activeFileParams, orgID, apiToken);
+        return sendApiRequest(data, activeFileParams, orgID, apiToken);
       })
       .then(apiResponse => {
         this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
