@@ -4,29 +4,8 @@
  */
 
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
+import { IProDevCopilotTelemetryData } from "./ITelemetry";
 
-// Telemetry Event Names
-export const CopyCodeToClipboardEvent = 'CopyCodeToClipboardEvent';
-export const InsertCodeToEditorEvent = 'InsertCodeToEditorEvent';
-export const UserFeedbackThumbsUpEvent = 'ThumbsUpEvent';
-export const UserFeedbackThumbsDownEvent = 'ThumbsDownEvent';
-export const CopilotResponseSuccessEvent = 'CopilotResponseSuccessEvent';
-export const CopilotResponseFailureEvent = 'CopilotResponseFailureEvent';
-export const CopilotLoginSuccessEvent = 'CopilotLoginSuccessEvent';
-export const CopilotLoginFailureEvent = 'CopilotLoginFailureEvent';
-export const CopilotClearChatEvent = 'CopilotClearChatEvent';
-export const UserFeedbackSuccessEvent = 'UserFeedbackEventSuccessEvent';
-export const UserFeedbackFailureEvent = 'UserFeedbackEventFailureEvent';
-
-interface IProDevCopilotTelemetryData {
-    eventName: string,
-    durationInMills?: number,
-    exception?: Error,
-    copilotSessionId?: string,
-    orgId?: string,
-    FeedbackId?: string
-    error?: string
-}
 
 export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDevCopilotTelemetryData): void {
     const telemetryDataProperties: Record<string, string> = {}

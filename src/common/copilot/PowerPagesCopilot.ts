@@ -16,7 +16,8 @@ import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnect
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
-import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent, sendTelemetryEvent } from "./telemetry/copilotTelemetry";
+import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent } from "./telemetry/telemetryConstants";
+import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 
 let apiToken: string;
 let userName: string;

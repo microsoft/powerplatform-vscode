@@ -9,7 +9,8 @@ import { SurveyConstants } from "../../../web/client/common/constants";
 import fetch from "node-fetch";
 import { getNonce } from "../Utils";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
-import { UserFeedbackFailureEvent, UserFeedbackSuccessEvent, sendTelemetryEvent } from "../telemetry/copilotTelemetry";
+import { UserFeedbackFailureEvent, UserFeedbackSuccessEvent} from "../telemetry/telemetryConstants";
+import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 
 
 export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry) {
