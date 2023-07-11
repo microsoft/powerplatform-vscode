@@ -116,8 +116,9 @@ export class EtagHandlerService {
                     new Date().getTime() - requestSentAtTime,
                     response.statusText,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
-                    response.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    response.status.toString(),
+                    this.getLatestFileContentAndUpdateMetadata.name
                 );
             }
 
@@ -137,8 +138,9 @@ export class EtagHandlerService {
                     new Date().getTime() - requestSentAtTime,
                     authError,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
-                    (error as Response)?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    (error as Response)?.status.toString(),
+                    this.getLatestFileContentAndUpdateMetadata.name
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
@@ -205,7 +207,7 @@ export class EtagHandlerService {
                 httpMethod.GET,
                 new Date().getTime() - requestSentAtTime
             );
-        } catch (error) {
+        } catch (error) {            
             if ((error as Response)?.status > 0) {
                 const authError = (error as Error)?.message;
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
@@ -215,8 +217,9 @@ export class EtagHandlerService {
                     new Date().getTime() - requestSentAtTime,
                     authError,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
-                    (error as Response)?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    (error as Response)?.status.toString(),
+                    this.updateFileEtag.name
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(

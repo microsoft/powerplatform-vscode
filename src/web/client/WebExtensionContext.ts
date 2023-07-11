@@ -387,8 +387,9 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     response?.statusText,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
-                    response?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    response?.status.toString(),
+                    this.populateLanguageIdToCode.name
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -413,8 +414,9 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     errorMsg,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_API_ERROR,
-                    (error as Response)?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    (error as Response)?.status.toString(),
+                    this.populateLanguageIdToCode.name
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
@@ -459,8 +461,9 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     response?.statusText,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
-                    response?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    response?.status.toString(),
+                    this.populateWebsiteLanguageIdToPortalLanguageMap.name
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -482,8 +485,9 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     errorMsg,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_API_ERROR,
-                    (error as Response)?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    (error as Response)?.status.toString(),
+                    this.populateWebsiteLanguageIdToPortalLanguageMap.name
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
@@ -528,8 +532,9 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     response?.statusText,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
-                    response?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    response?.status.toString(),
+                    this.populateWebsiteIdToLanguageMap.name
                 );
             }
             this.telemetry.sendAPISuccessTelemetry(
@@ -550,8 +555,9 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     errorMsg,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_API_ERROR,
-                    (error as Response)?.status.toString()
+                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+                    (error as Response)?.status.toString(),
+                    this.populateWebsiteIdToLanguageMap.name
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
