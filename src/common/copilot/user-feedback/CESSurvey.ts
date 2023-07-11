@@ -115,6 +115,7 @@ async function handleFeedbackSubmission(text: string, endpointUrl: string, apiTo
       // Error sending feedback
       sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, error: response.statusText });
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // Network error or other exception
     sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, exception: error.message });

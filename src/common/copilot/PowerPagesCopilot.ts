@@ -217,7 +217,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
-  private authenticateAndSendAPIRequest(data: any, activeFileParams: ActiveFileParams, orgID: string) {
+  private authenticateAndSendAPIRequest(data: string, activeFileParams: ActiveFileParams, orgID: string) {
     return intelligenceAPIAuthentication()
       .then(({ accessToken, user }) => {
         apiToken = accessToken;
