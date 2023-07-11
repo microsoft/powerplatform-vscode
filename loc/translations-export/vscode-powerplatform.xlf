@@ -91,9 +91,6 @@ The {2} represents Solution's Version number</note>
     <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
       <source xml:lang="en">Failed to enable PAC telemetry.</source>
     </trans-unit>
-    <trans-unit id="++CODE++c8fe15ab6371ebd955e8123fd897da623cad8dc11564548e7b4cf9b7e991120c">
-      <source xml:lang="en">Failed to fetch file content.</source>
-    </trans-unit>
     <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
       <source xml:lang="en">Failed to fetch some files.</source>
     </trans-unit>

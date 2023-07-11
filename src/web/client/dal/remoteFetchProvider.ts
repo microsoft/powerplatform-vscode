@@ -75,7 +75,8 @@ async function fetchFromDataverseAndCreateFiles(
             WebExtensionContext.telemetry.sendAPITelemetry(
                 requestUrl,
                 entityName,
-                Constants.httpMethod.GET
+                Constants.httpMethod.GET,
+                fetchFromDataverseAndCreateFiles.name
             );
 
             requestSentAtTime = new Date().getTime();
@@ -90,17 +91,15 @@ async function fetchFromDataverseAndCreateFiles(
 
             if (!response.ok) {
                 makeRequestCall = false;
-                vscode.window.showErrorMessage(
-                    vscode.l10n.t("Failed to fetch file content.")
-                );
-                throw new Error(response.statusText);
+                throw new Error(JSON.stringify(response));
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
                 entityName,
                 Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                fetchFromDataverseAndCreateFiles.name
             );
 
             const result = await response.json();
@@ -145,11 +144,10 @@ async function fetchFromDataverseAndCreateFiles(
                     entityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
+                    fetchFromDataverseAndCreateFiles.name,
                     errorMsg,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
-                    (error as Response)?.status.toString(),
-                    fetchFromDataverseAndCreateFiles.name
+                    (error as Response)?.status.toString()
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
@@ -468,7 +466,8 @@ async function getMappingEntityContent(
     WebExtensionContext.telemetry.sendAPITelemetry(
         requestUrl,
         entity,
-        Constants.httpMethod.GET
+        Constants.httpMethod.GET,
+        getMappingEntityContent.name
     );
     requestSentAtTime = new Date().getTime();
 
@@ -482,11 +481,10 @@ async function getMappingEntityContent(
             entity,
             Constants.httpMethod.GET,
             new Date().getTime() - requestSentAtTime,
+            getMappingEntityContent.name,
             JSON.stringify(response),
             '',
-            telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
-            response?.status.toString(),
-            getMappingEntityContent.name
+            response?.status.toString()
         );
         throw new Error(response.statusText);
     }
@@ -495,7 +493,8 @@ async function getMappingEntityContent(
         requestUrl,
         entity,
         Constants.httpMethod.GET,
-        new Date().getTime() - requestSentAtTime
+        new Date().getTime() - requestSentAtTime,
+        getMappingEntityContent.name
     );
 
     const result = await response.json();
