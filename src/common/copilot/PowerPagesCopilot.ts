@@ -5,7 +5,7 @@
 
 
 import * as vscode from "vscode";
-import { sendApiRequest } from "./IntelligenceApi";
+import { sendApiRequest } from "./IntelligenceApiService";
 import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";

@@ -10,7 +10,17 @@ import { ActiveFileParams, InvalidResponse, NetworkError } from "./constants";
 
 export async function sendApiRequest(userPrompt: string, activeFileParams: ActiveFileParams, orgID:string, apiToken:string) {
 
-    const AIBTestUrl = `https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
+    const region = 'test';
+    let aibEndpoint = '';
+
+    //TODO: Add prod endpoint
+    switch (region) {
+        case 'test':
+         aibEndpoint = `https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
+          break;
+        default:
+          break;
+      }
  
  
     const requestBody = {
@@ -41,7 +51,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: Activ
     }
 
     try {
-        const response = await fetch(AIBTestUrl, {
+        const response = await fetch(aibEndpoint, {
           ...requestInit
         });
       
