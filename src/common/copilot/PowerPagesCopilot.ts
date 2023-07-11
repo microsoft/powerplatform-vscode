@@ -126,26 +126,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           break;
         }
         case "newUserPrompt": {
-          if (orgID) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { activeFileParams, activeFileContent } = this.getActiveEditorContent();
-            intelligenceAPIAuthentication()
-              .then(({ accessToken, user }) => {
+          orgID
+            ? (() => {
+              const { activeFileParams } = this.getActiveEditorContent();
+              this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID);
+            })()
+            : (() => {
+              this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
+              this.sendMessageToWebview({ type: 'enableInput' });
+            })();
 
-                apiToken = accessToken;
-                userName = getUserName(user);
-                this.sendMessageToWebview({ type: 'userName', value: userName });
-
-                return sendApiRequest(data.value, activeFileParams, orgID, apiToken);
-              })
-              .then(apiResponse => {
-                this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
-                this.sendMessageToWebview({type: 'enableInput'});
-              })
-          } else {
-            this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
-            this.sendMessageToWebview({type: 'enableInput'});
-          }
           break;
         }
         case "insertCode": {
@@ -229,15 +219,27 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
+  private authenticateAndSendAPIRequest(data: any, activeFileParams: string[], orgID: string) {
+    return intelligenceAPIAuthentication()
+      .then(({ accessToken, user }) => {
+        apiToken = accessToken;
+        userName = getUserName(user);
+        this.sendMessageToWebview({ type: 'userName', value: userName });
+
+        return sendApiRequest(data.value, activeFileParams, orgID, apiToken);
+      })
+      .then(apiResponse => {
+        this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
+        this.sendMessageToWebview({ type: 'enableInput' });
+      });
+  }
+
+
   private async handleOrgChangeSuccess(pacOutput: PacActiveOrgListOutput) {
     const activeOrg = pacOutput.Results;
-
     orgID = activeOrg.OrgId;
-
     environmentName = activeOrg.FriendlyName;
-
     userID = activeOrg.UserId;
-
     activeOrgUrl = activeOrg.OrgUrl;
 
     showConnectedOrgMessage(environmentName, activeOrgUrl);
