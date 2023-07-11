@@ -14,14 +14,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
   const region = 'test';
   let aibEndpoint = '';
 
-  //TODO: Add prod endpoint
-  switch (region) {
-    case 'test':
-      aibEndpoint = `https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
-      break;
-    default:
-      break;
-  }
+  aibEndpoint = getAibEndpoint(region, orgID);
 
 
   const requestBody = {
@@ -92,4 +85,14 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
     return NetworkError;
   }
 
+}
+
+function getAibEndpoint(region: string, orgID: string): string {
+  switch (region) {
+    case 'test':
+      return `https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`;
+    default:
+      // TODO: Add prod endpoint
+      return '';
+  }
 }
