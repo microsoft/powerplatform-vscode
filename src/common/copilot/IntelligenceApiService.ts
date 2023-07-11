@@ -74,8 +74,8 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: strin
     } else {
       try {
         const errorResponse = await response.json();
-        if (errorResponse.error && errorResponse.error.message) {
-          return [{ displayText: errorResponse.error.message, code: '' }];
+        if (errorResponse.error && errorResponse.error.messages[0]) {
+          return [{ displayText: errorResponse.error.messages[0], code: '' }];
         }
       } catch (error) {
         return InvalidResponse;
