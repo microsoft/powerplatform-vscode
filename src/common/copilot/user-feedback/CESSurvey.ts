@@ -11,7 +11,7 @@ import { getNonce } from "../../Utils";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { UserFeedbackFailureEvent, UserFeedbackSuccessEvent} from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
-import { FeedbackData } from "../constants";
+import { IFeedbackData } from "../model";
 
 
 export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry) {
@@ -69,8 +69,8 @@ function getWebviewURIs(context: vscode.ExtensionContext, feedbackPanel: vscode.
   return { feedbackCssUri, feedbackJsUri };
 }
 
-function initializeFeedbackData(sessionId: string): FeedbackData {
-  const feedbackData: FeedbackData = {
+function initializeFeedbackData(sessionId: string): IFeedbackData {
+  const feedbackData: IFeedbackData = {
     IsDismissed: false,
     ProductContext: [
       {
@@ -93,7 +93,7 @@ function initializeFeedbackData(sessionId: string): FeedbackData {
   return feedbackData;
 }
 
-async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: FeedbackData, telemetry: ITelemetry) {
+async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, telemetry: ITelemetry) {
   feedbackData.Feedbacks[0].value = text;
 
   try {

@@ -11,7 +11,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { ActiveFileParams, AuthProfileNotFound, CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
+import { AuthProfileNotFound, CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
+import { IActiveFileParams, IActiveFileData} from './model';
 import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
@@ -217,7 +218,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
-  private authenticateAndSendAPIRequest(data: string, activeFileParams: ActiveFileParams, orgID: string) {
+  private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string) {
     return intelligenceAPIAuthentication()
       .then(({ accessToken, user }) => {
         apiToken = accessToken;
@@ -255,20 +256,30 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
 
 
-  private getActiveEditorContent(): { activeFileParams: ActiveFileParams, activeFileContent: string } {
+  private getActiveEditorContent(): IActiveFileData {
     const activeEditor = vscode.window.activeTextEditor;
+    let activeFileData : IActiveFileData = {
+      activeFileContent:'',
+      activeFileParams:{
+        dataverseEntity:'',
+        entityField: '',
+        fieldType:''
+      } as IActiveFileParams
+    };
     if (activeEditor) {
       const document = activeEditor.document;
       const fileName = document.fileName;
       const relativeFileName = vscode.workspace.asRelativePath(fileName);
   
       const activeFileParams: string[] = getLastThreeParts(relativeFileName);
-      const activeFileParamsMapped = this.getMappedParams(activeFileParams);
   
-      return { activeFileParams: { dataverseEntity: activeFileParamsMapped[0], entityField: activeFileParamsMapped[1], fieldType: activeFileParamsMapped[2] }, activeFileContent: document.getText() };
+      activeFileData.activeFileContent = document.getText();
+      activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
+      activeFileData.activeFileParams.entityField = EntityFieldMap.get(activeFileParams[1]) || "";
+      activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "" ;
     }
   
-    return { activeFileParams: {} as ActiveFileParams, activeFileContent: "" };
+    return activeFileData;
   }
 
   

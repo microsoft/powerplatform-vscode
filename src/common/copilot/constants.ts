@@ -21,19 +21,6 @@ export type WebViewMessage = {
   envName?: string;
 };
 
-export interface FeedbackData {
-  IsDismissed: boolean;
-  ProductContext: { key: string, value: string }[];
-  Feedbacks: { key: string, value: string }[];
-}
-
-export interface ActiveFileParams {
-  dataverseEntity: string;
-  entityField: string;
-  fieldType: string;
-}
-
-
 export const DataverseEntityNameMap = new Map<string, string>([
   ['webpage', 'adx_webpage'],
   ['list', 'adx_entitylist'],
