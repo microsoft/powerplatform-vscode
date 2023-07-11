@@ -126,7 +126,10 @@ export class EtagHandlerService {
                 requestUrl,
                 entityName,
                 httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                undefined,
+                undefined,
+                this.getLatestFileContentAndUpdateMetadata.name
             );
         } catch (error) {
             if ((error as Response)?.status > 0) {
@@ -205,7 +208,10 @@ export class EtagHandlerService {
                 requestUrl,
                 entityName,
                 httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                undefined,
+                undefined,
+                this.updateFileEtag.name
             );
         } catch (error) {            
             if ((error as Response)?.status > 0) {

@@ -79,7 +79,15 @@ export class NPSService{
                 const response = await WebExtensionContext.concurrencyHandler.handleRequest(apiEndpoint, requestInitPost);
                 const result = await response?.json();
                 if( result?.Eligibility){
-                    WebExtensionContext.telemetry.sendAPISuccessTelemetry(telemetryEventNames.NPS_USER_ELIGIBLE, "NPS Api",httpMethod.POST,new Date().getTime() - requestSentAtTime);
+                    WebExtensionContext.telemetry.sendAPISuccessTelemetry(
+                      telemetryEventNames.NPS_USER_ELIGIBLE, 
+                      "NPS Api",
+                      httpMethod.POST,
+                      new Date().getTime() - requestSentAtTime,
+                      undefined,
+                      undefined,
+                      this.setEligibility.name
+                    );
                     WebExtensionContext.setNPSEligibility(true);
                     WebExtensionContext.setFormsProEligibilityId(result?.FormsProEligibilityId);
                 }

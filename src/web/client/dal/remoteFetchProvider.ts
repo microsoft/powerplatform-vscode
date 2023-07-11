@@ -100,7 +100,10 @@ async function fetchFromDataverseAndCreateFiles(
                 requestUrl,
                 entityName,
                 Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                undefined,
+                undefined,
+                fetchFromDataverseAndCreateFiles.name
             );
 
             const result = await response.json();
@@ -495,7 +498,10 @@ async function getMappingEntityContent(
         requestUrl,
         entity,
         Constants.httpMethod.GET,
-        new Date().getTime() - requestSentAtTime
+        new Date().getTime() - requestSentAtTime,
+        undefined,
+        undefined,
+        getMappingEntityContent.name
     );
 
     const result = await response.json();

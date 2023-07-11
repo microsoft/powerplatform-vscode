@@ -396,7 +396,10 @@ class WebExtensionContext implements IWebExtensionContext {
                 requestUrl,
                 languageEntityName,
                 Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                undefined,
+                undefined,
+                this.populateLanguageIdToCode.name
             );
             const result = await response?.json();
             this._languageIdCodeMap = getLcidCodeMap(result, schema);
@@ -470,7 +473,10 @@ class WebExtensionContext implements IWebExtensionContext {
                 requestUrl,
                 languageEntityName,
                 Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                undefined,
+                undefined,
+                this.populateWebsiteLanguageIdToPortalLanguageMap.name
             );
             const result = await response?.json();
             this._websiteLanguageIdToPortalLanguageMap =
@@ -541,7 +547,10 @@ class WebExtensionContext implements IWebExtensionContext {
                 requestUrl,
                 websiteEntityName,
                 Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                undefined,
+                undefined,
+                this.populateWebsiteIdToLanguageMap.name
             );
             const result = await response?.json();
             this._websiteIdToLanguage = getWebsiteIdToLcidMap(result, schema);

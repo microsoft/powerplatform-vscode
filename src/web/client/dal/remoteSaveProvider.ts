@@ -175,7 +175,8 @@ async function saveDataToDataverse(
                 httpMethod.PATCH,
                 new Date().getTime() - requestSentAtTime,
                 fileExtensionType,
-                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_SUCCESS
+                undefined,
+                saveDataToDataverse.name
             );
         } catch (error) {
             const authError = (error as Error)?.message;
