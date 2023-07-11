@@ -181,7 +181,6 @@ async function saveDataToDataverse(
             );
         } catch (error) {
             const authError = (error as Error)?.message;
-             );
             if ((error as Response)?.status > 0) {
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                     saveCallParameters.requestUrl,
