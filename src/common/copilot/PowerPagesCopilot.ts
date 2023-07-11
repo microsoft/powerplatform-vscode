@@ -13,7 +13,7 @@ import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { AuthProfileNotFound, CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData} from './model';
-import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "../Utils";
+import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
@@ -271,7 +271,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       const fileName = document.fileName;
       const relativeFileName = vscode.workspace.asRelativePath(fileName);
   
-      const activeFileParams: string[] = getLastThreeParts(relativeFileName);
+      const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
   
       activeFileData.activeFileContent = document.getText();
       activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
@@ -280,16 +280,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   
     return activeFileData;
-  }
-
-  
-
-  private getMappedParams(activeFileParams: string[]): string[] {
-    const mappedParams: string[] = [];
-    mappedParams.push(DataverseEntityNameMap.get(activeFileParams[0]) || "");
-    mappedParams.push(EntityFieldMap.get(activeFileParams[1]) || "");
-    mappedParams.push(FieldTypeMap.get(activeFileParams[2]) || "");
-    return mappedParams;
   }
 
   public sendMessageToWebview(message: WebViewMessage) {

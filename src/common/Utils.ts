@@ -43,7 +43,7 @@ export function getUserName(user: string) {
     return parts[0];
 }
 
-export function getLastThreeParts(string: string): string[] {
+export function getLastThreePartsOfFileName(string: string): string[] {
     const parts: string[] = string.split('.');
     if (parts.length >= 3) {
       return parts.slice(-3);
