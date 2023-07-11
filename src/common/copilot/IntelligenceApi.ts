@@ -5,10 +5,10 @@
 
 import fetch, { RequestInit } from "node-fetch";
 import {sessionID} from "./PowerPagesCopilot";
-import { InvalidResponse, NetworkError } from "./constants";
+import { ActiveFileParams, InvalidResponse, NetworkError } from "./constants";
 
 
-export async function sendApiRequest(userPrompt: string, activeFileParams: string[], orgID:string, apiToken:string) {
+export async function sendApiRequest(userPrompt: string, activeFileParams: ActiveFileParams, orgID:string, apiToken:string) {
 
     const AIBTestUrl = `https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
  
@@ -22,9 +22,9 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: strin
           "subScenario": "PowerPagesProDevGeneric",
           "version": "V1",
           "information": {
-            "dataverseEntity": activeFileParams[0],
-            "entityField": activeFileParams[1],
-            "fieldType": activeFileParams[2],
+            "dataverseEntity": activeFileParams.dataverseEntity,
+            "entityField": activeFileParams.entityField,
+            "fieldType": activeFileParams.fieldType,
             "activeFileContent": '',
           }
         }

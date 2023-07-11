@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AuthProfileNotFound, CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
+import { ActiveFileParams, AuthProfileNotFound, CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
 import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "./Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
@@ -217,7 +217,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
-  private authenticateAndSendAPIRequest(data: any, activeFileParams: string[], orgID: string) {
+  private authenticateAndSendAPIRequest(data: any, activeFileParams: ActiveFileParams, orgID: string) {
     return intelligenceAPIAuthentication()
       .then(({ accessToken, user }) => {
         apiToken = accessToken;
@@ -255,21 +255,23 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
 
 
-  private getActiveEditorContent(): { activeFileParams: string[], activeFileContent: string } {
+  private getActiveEditorContent(): { activeFileParams: ActiveFileParams, activeFileContent: string } {
     const activeEditor = vscode.window.activeTextEditor;
     if (activeEditor) {
       const document = activeEditor.document;
       const fileName = document.fileName;
       const relativeFileName = vscode.workspace.asRelativePath(fileName);
-
+  
       const activeFileParams: string[] = getLastThreeParts(relativeFileName);
-
       const activeFileParamsMapped = this.getMappedParams(activeFileParams);
-
-      return { activeFileParams: activeFileParamsMapped, activeFileContent: document.getText() };
+  
+      return { activeFileParams: { dataverseEntity: activeFileParamsMapped[0], entityField: activeFileParamsMapped[1], fieldType: activeFileParamsMapped[2] }, activeFileContent: document.getText() };
     }
-    return { activeFileParams: ['', '', ''], activeFileContent: "" };
+  
+    return { activeFileParams: {} as ActiveFileParams, activeFileContent: "" };
   }
+
+  
 
   private getMappedParams(activeFileParams: string[]): string[] {
     const mappedParams: string[] = [];

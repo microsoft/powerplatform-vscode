@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+
 export const CopilotDisclaimer = `Make sure AI-generated content is accurate and appropriate before using. <a href="https://go.microsoft.com/fwlink/?linkid=2240145">Learn more</a> | <a href="https://go.microsoft.com/fwlink/?linkid=2189520">View
 terms</a>`;
 export const sendIconSvg = ` <svg width="16px" height="16px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -24,6 +25,12 @@ export interface FeedbackData {
   IsDismissed: boolean;
   ProductContext: { key: string, value: string }[];
   Feedbacks: { key: string, value: string }[];
+}
+
+export interface ActiveFileParams {
+  dataverseEntity: string;
+  entityField: string;
+  fieldType: string;
 }
 
 
