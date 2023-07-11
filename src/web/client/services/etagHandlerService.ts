@@ -207,8 +207,7 @@ export class EtagHandlerService {
                 httpMethod.GET,
                 new Date().getTime() - requestSentAtTime
             );
-        } catch (error) {
-            
+        } catch (error) {            
             if ((error as Response)?.status > 0) {
                 const authError = (error as Error)?.message;
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
