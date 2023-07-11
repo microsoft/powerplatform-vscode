@@ -333,6 +333,9 @@
         chatMessages.innerHTML = "";
         break;
       }
+      case "enableInput": {
+        chatInput.disabled = false;
+      }
     }
   });
 
@@ -361,6 +364,7 @@
   SendButton?.addEventListener("click", () => {
     if ((chatInput).value.trim()) {
       handleUserMessage((chatInput).value);
+      chatInput.disabled = true;
       getApiResponse((chatInput).value);
       (chatInput).value = "";
       (chatInput).focus();
@@ -370,6 +374,7 @@
   chatInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && (chatInput).value.trim()) {
       handleUserMessage((chatInput).value);
+      chatInput.disabled = true;
       getApiResponse((chatInput).value);
       (chatInput).value = "";
     }

@@ -140,9 +140,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
               })
               .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
+                this.sendMessageToWebview({type: 'enableInput'});
               })
           } else {
             this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
+            this.sendMessageToWebview({type: 'enableInput'});
           }
           break;
         }
