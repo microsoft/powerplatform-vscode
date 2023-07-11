@@ -5,8 +5,11 @@
 
 
 import * as vscode from "vscode";
+import fs from 'fs';
+import path from 'path';
+import yaml from 'yaml';
 import { sendApiRequest } from "./IntelligenceApi";
-import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+import { intelligenceAPIAuthentication, dataverseAuthentication } from "../../web/client/common/authenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
@@ -16,6 +19,7 @@ import { escapeDollarSign, getLastThreeParts, getNonce, getUserName, showConnect
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
+import { getEntityMetadata } from "./dataverseMetadata";
 import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent, sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 
 let apiToken: string;
@@ -129,13 +133,40 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { activeFileParams, activeFileContent } = this.getActiveEditorContent();
             intelligenceAPIAuthentication()
-              .then(({ accessToken, user }) => {
+              .then(async ({ accessToken, user }) => {
 
                 apiToken = accessToken;
                 userName = getUserName(user);
                 this.sendMessageToWebview({ type: 'userName', value: userName });
 
-                return sendApiRequest(data.value, activeFileParams, orgID, apiToken);
+                const dataverseEntity = activeFileParams[0];
+                let columns : string[] = [];
+                if (dataverseEntity == "adx_entityform" || dataverseEntity == "adx_entitylist") {
+
+
+                    const activeEditor = vscode.window.activeTextEditor;
+                    if (activeEditor) {
+                        const document = activeEditor.document;
+                        const absoluteFilePath = document.fileName;
+                        const activeFileFolderPath = path.dirname(absoluteFilePath);
+                        const files = fs.readdirSync(activeFileFolderPath);
+                        const yamlFiles = files.filter(file => path.extname(file) === '.yml');
+
+                        if (yamlFiles.length === 1) {
+                            const yamlFilePath = path.join(activeFileFolderPath, yamlFiles[0]);
+                            const yamlContent = fs.readFileSync(yamlFilePath, 'utf8');
+                            const parsedData = yaml.parse(yamlContent);
+                            const entityName = parsedData['adx_entityname'];
+
+                            const accessToken: string = await dataverseAuthentication(
+                                activeOrgUrl
+                            );
+
+                            columns = await getEntityMetadata(entityName, activeOrgUrl, accessToken);
+                        }
+                    }
+                }
+                return sendApiRequest(data.value, activeFileParams, orgID, apiToken, columns);
               })
               .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
@@ -307,7 +338,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     return `
         <!DOCTYPE html>
         <html lang="en">
-        
+
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -317,14 +348,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           </link>
           <title>Chat View</title>
         </head>
-        
+
         <body>
           <div class="copilot-window">
-        
+
             <div class="chat-messages" id="chat-messages">
               <div id="copilot-header"></div>
             </div>
-        
+
             <div class="chat-input">
               <div class="input-container">
                 <input type="text" placeholder="Ask a question..." id="chat-input" class="input-field">
@@ -341,10 +372,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
               <p class="disclaimer">${CopilotDisclaimer}</p>
             </div>
           </div>
-        
+
           <script type="module" nonce="${nonce}" src="${copilotScriptUri}"></script>
         </body>
-        
+
         </html>`;
   }
 }

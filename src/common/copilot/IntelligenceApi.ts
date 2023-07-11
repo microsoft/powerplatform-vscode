@@ -8,11 +8,11 @@ import {sessionID} from "./PowerPagesCopilot";
 import { InvalidResponse, NetworkError } from "./constants";
 
 
-export async function sendApiRequest(userPrompt: string, activeFileParams: string[], orgID:string, apiToken:string) {
+export async function sendApiRequest(userPrompt: string, activeFileParams: string[], orgID:string, apiToken:string, columns: string[]) {
 
     const AIBTestUrl = `https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`
- 
- 
+
+    console.log("columns", columns.toString());
     const requestBody = {
         "question": userPrompt,
         "top": 1,
@@ -25,7 +25,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: strin
             "dataverseEntity": activeFileParams[0],
             "entityField": activeFileParams[1],
             "fieldType": activeFileParams[2],
-            "activeFileContent": '',
+            "activeFileContent": columns.toString(),
           }
         }
     };
@@ -44,7 +44,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: strin
         const response = await fetch(AIBTestUrl, {
           ...requestInit
         });
-      
+
         if (response.ok) {
           try {
             const jsonResponse = await response.json();
@@ -72,5 +72,5 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: strin
       } catch (error) {
         return NetworkError;
       }
-      
+
 }
