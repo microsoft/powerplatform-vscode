@@ -154,10 +154,6 @@
     ],
     "commands": [
       {
-        "command": "powerpages.copilot",
-        "title": "Power Pages: Copilot"
-      },
-      {
         "command": "extension.createChatView",
         "title": "Create Chat View"
       },
@@ -674,7 +670,7 @@
         },
         {
           "command": "powerpages.copilot.clearConversation",
-          "when": "!virtualWorkspace"
+          "when": "never"
         },
         {
           "command": "microsoft-powerapps-portals.webpage",

@@ -48,9 +48,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     _context.subscriptions.push(
       vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
-
+        if(userName && orgID) {
         this.sendMessageToWebview({ type: "clearConversation" });
         sessionID = uuidv4();
+        }
       }
       )
     );
