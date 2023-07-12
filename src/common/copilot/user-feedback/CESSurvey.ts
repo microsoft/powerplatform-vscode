@@ -16,7 +16,7 @@ import { IFeedbackData } from "../model";
 let feedbackPanel: vscode.WebviewPanel | undefined;
 
 
-export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry) {
+export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, ) {
 
   if(feedbackPanel) {
     feedbackPanel.dispose();
@@ -41,7 +41,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
     async message => {
       switch (message.command) {
         case 'feedback':
-          await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, telemetry, thumbType);
+          await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, telemetry, thumbType, sessionId);
           feedbackPanel?.dispose();
           break;
       }
@@ -100,7 +100,7 @@ function initializeFeedbackData(sessionId: string): IFeedbackData {
   return feedbackData;
 }
 
-async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, telemetry: ITelemetry, thumbType: string) {
+async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, telemetry: ITelemetry, thumbType: string, sessionID: string) {
   feedbackData.Feedbacks[0].value = thumbType + " " +  text;
   try {
     const response = await fetch(endpointUrl, {
@@ -116,15 +116,15 @@ async function handleFeedbackSubmission(text: string, endpointUrl: string, apiTo
       // Feedback sent successfully
       const responseJson = await response.json();
       const feedbackId = responseJson.FeedbackId;
-      sendTelemetryEvent(telemetry, { eventName: UserFeedbackSuccessEvent, FeedbackId: feedbackId });
+      sendTelemetryEvent(telemetry, { eventName: UserFeedbackSuccessEvent, feedbackType:thumbType, FeedbackId: feedbackId, copilotSessionId: sessionID });
     } else {
       // Error sending feedback
-      sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, error: response.statusText });
+      sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, error: response.statusText });
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // Network error or other exception
-    sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, exception: error.message });
+    sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, exception: error.message });
   }
 }
 

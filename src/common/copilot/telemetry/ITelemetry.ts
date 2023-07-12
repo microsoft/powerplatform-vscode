@@ -7,9 +7,10 @@ export interface IProDevCopilotTelemetryData {
     eventName: string,
     durationInMills?: number,
     exception?: Error,
-    copilotSessionId?: string,
+    copilotSessionId: string,
     orgId?: string,
     FeedbackId?: string
     error?: string | Error,
     dataverseEntity?: string,
+    feedbackType?: string,
 }
