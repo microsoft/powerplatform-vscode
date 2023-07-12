@@ -130,7 +130,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           orgID
             ? (() => {
               const { activeFileParams } = this.getActiveEditorContent();
-              this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID);
+              this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID, this.telemetry);
             })()
             : (() => {
               this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
@@ -219,7 +219,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
-  private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string) {
+  private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
     return intelligenceAPIAuthentication()
       .then(async ({ accessToken, user }) => {
         apiToken = accessToken;
@@ -230,11 +230,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         let entityColumns: string[] = [];
 
         if(activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
-           entityName = getEntityName();
+           entityName = getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
            const dataverseToken = await dataverseAuthentication(activeOrgUrl);
 
-           entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken);
+           entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
         }
 
         return sendApiRequest(data, activeFileParams, orgID, apiToken, sessionID, entityName, entityColumns);

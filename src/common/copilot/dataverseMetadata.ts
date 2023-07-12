@@ -8,12 +8,15 @@ import path from "path";
 import * as vscode from "vscode";
 import fs from "fs";
 import yaml from 'yaml';
+import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
+import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 
 interface Attribute {
     LogicalName: string;
 }
 
-export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string): Promise<string[]> {
+export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string, telemetry:ITelemetry, sessionID:string): Promise<string[]> {
     try {
         const dataverseURL = `${orgUrl}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$expand=Attributes($select=LogicalName)`;
         const requestInit: RequestInit = {
@@ -27,8 +30,12 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
         const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
         const attributes = getAttributesFromResponse(jsonResponse);
 
+        sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID})
         return attributes.map((attribute: Attribute) => attribute.LogicalName);
-    } catch (error) {
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error:any) {
+        sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error})
         return [];
     }
 }
@@ -54,7 +61,7 @@ function getAttributesFromResponse(jsonResponse: any): Attribute[] {
 }
 
 
-export function getEntityName(): string {
+export function getEntityName(telemetry: ITelemetry, sessionID:string, dataverseEntity: string): string {
     let entityName = '';
 
     try {
@@ -72,11 +79,13 @@ export function getEntityName(): string {
             if (matchingFiles[0]) {
                 const yamlFilePath = path.join(activeFileFolderPath, matchingFiles[0]);
                 const yamlContent = fs.readFileSync(yamlFilePath, 'utf8');
-                const parsedData = parseYamlContent(yamlContent);
+                const parsedData = parseYamlContent(yamlContent, telemetry, sessionID, dataverseEntity);
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
             }
         }
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error });
         entityName = '';
     }
 
@@ -90,10 +99,12 @@ function getMatchingFiles(folderPath: string, fileNameFirstPart: string): string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseYamlContent(content: string): any {
+function parseYamlContent(content: string, telemetry: ITelemetry, sessionID:string, dataverseEntity: string): any {
     try {
         return yaml.parse(content);
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotYamlParsingFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error });
         return {};
     }
 }

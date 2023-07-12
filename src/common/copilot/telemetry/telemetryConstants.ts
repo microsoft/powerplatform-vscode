@@ -15,3 +15,7 @@ export const CopilotLoginFailureEvent = 'CopilotLoginFailureEvent';
 export const CopilotClearChatEvent = 'CopilotClearChatEvent';
 export const UserFeedbackSuccessEvent = 'UserFeedbackEventSuccessEvent';
 export const UserFeedbackFailureEvent = 'UserFeedbackEventFailureEvent';
+export const CopilotDataverseMetadataSuccessEvent = 'CopilotDataverseMetadataSuccessEvent';
+export const CopilotDataverseMetadataFailureEvent = 'CopilotDataverseMetadataFailureEvent';
+export const CopilotYamlParsingFailureEvent = 'CopilotYamlParsingFailureEvent';
+export const CopilotGetEntityFailureEvent = 'CopilotGetEntityFailureEvent';
