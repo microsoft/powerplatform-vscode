@@ -131,7 +131,7 @@ function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="${feedbackCssUri}" rel="stylesheet">
         </link>
-        <title>Cat Coding</title>
+        <title>Feedback</title>
     </head>
     <body>
     <form id="feedbackForm">

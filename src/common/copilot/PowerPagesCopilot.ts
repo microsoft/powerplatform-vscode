@@ -333,7 +333,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         
             <div class="chat-input" id="input-component">
               <div class="input-container">
-                <input type="text" placeholder="Ask a question..." id="chat-input" class="input-field">
+                <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
                 <button aria-label="Match Case" id="send-button" class="send-button">
                   <span>
                     ${sendIconSvg}
