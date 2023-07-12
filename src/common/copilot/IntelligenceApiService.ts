@@ -4,12 +4,11 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { sessionID } from "./PowerPagesCopilot";
 import { InvalidResponse, NetworkError } from "./constants";
 import { IActiveFileParams } from "./model";
 
 
-export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string) {
+export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string) {
 
   const region = 'test';
   let aibEndpoint = '';
