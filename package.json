@@ -317,7 +317,7 @@
       },
       {
         "command": "powerpages.copilot.clearConversation",
-        "category": "Power Pages Copilot",
+        "category": "Copilot In Power Pages",
         "title": "Clear Conversation",
         "icon": "$(clear-all)"
       }
@@ -332,7 +332,7 @@
         },
         "powerPlatform.experimental.copilotEnabled": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "markdownDescription": "Whether the Power Platform Copilot is enabled."
         },
         "powerPlatform.experimental.disableActivityBarPanels": {
@@ -810,7 +810,7 @@
         {
           "type": "webview",
           "id": "powerpages.copilot",
-          "name": "Power Pages Copilot",
+          "name": "Copilot In Power Pages",
           "initialSize": 6,
           "visibility": "visible",
           "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled"
