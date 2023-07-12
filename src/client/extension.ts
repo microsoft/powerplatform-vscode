@@ -166,6 +166,7 @@ export async function activate(
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
+        showNotificationForCopilot();
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -188,7 +189,6 @@ export async function activate(
         },
     }));
 
-    showNotificationForCopilot();
 }
 
 export async function deactivate(): Promise<void> {
