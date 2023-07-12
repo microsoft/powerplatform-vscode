@@ -8,7 +8,7 @@ import { InvalidResponse, NetworkError } from "./constants";
 import { IActiveFileParams } from "./model";
 
 
-export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string) {
+export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[]) {
 
   const region = 'test';
   let aibEndpoint = '';
@@ -29,6 +29,8 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         "entityField": activeFileParams.entityField,
         "fieldType": activeFileParams.fieldType,
         "activeFileContent": '',
+        "targetEntity": entityName, 
+        "targetColumns": entityColumns 
       }
     }
   };
