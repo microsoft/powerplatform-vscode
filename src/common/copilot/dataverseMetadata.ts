@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import fetch, { RequestInit, Response } from "node-fetch";
+import fetch, { RequestInit } from "node-fetch";
 import path from "path";
 import * as vscode from "vscode";
 import fs from "fs";
