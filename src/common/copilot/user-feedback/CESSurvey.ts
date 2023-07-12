@@ -13,9 +13,16 @@ import { UserFeedbackFailureEvent, UserFeedbackSuccessEvent} from "../telemetry/
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
 
+let feedbackPanel: vscode.WebviewPanel | undefined;
+
 
 export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry) {
-  const feedbackPanel = createFeedbackPanel(context);
+
+  if(feedbackPanel) {
+    feedbackPanel.dispose();
+  }
+  
+  feedbackPanel = createFeedbackPanel(context);
 
   feedbackPanel.webview.postMessage({ type: "thumbType", value: thumbType });
 
@@ -34,8 +41,8 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
     async message => {
       switch (message.command) {
         case 'feedback':
-          await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, telemetry);
-          feedbackPanel.dispose();
+          await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, telemetry, thumbType);
+          feedbackPanel?.dispose();
           break;
       }
     },
@@ -93,9 +100,8 @@ function initializeFeedbackData(sessionId: string): IFeedbackData {
   return feedbackData;
 }
 
-async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, telemetry: ITelemetry) {
-  feedbackData.Feedbacks[0].value = text;
-
+async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, telemetry: ITelemetry, thumbType: string) {
+  feedbackData.Feedbacks[0].value = thumbType + " " +  text;
   try {
     const response = await fetch(endpointUrl, {
       method: 'POST',
