@@ -94,14 +94,6 @@ async function fetchFromDataverseAndCreateFiles(
                 throw new Error(JSON.stringify(response));
             }
 
-            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-                requestUrl,
-                entityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                fetchFromDataverseAndCreateFiles.name
-            );
-
             const result = await response.json();
             data = data.concat(result.value);
             if (result[Constants.ODATA_NEXT_LINK]) {
@@ -118,6 +110,14 @@ async function fetchFromDataverseAndCreateFiles(
                 );
                 throw new Error(ERRORS.EMPTY_RESPONSE);
             }
+
+            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
+                requestUrl,
+                entityName,
+                Constants.httpMethod.GET,
+                new Date().getTime() - requestSentAtTime,
+                fetchFromDataverseAndCreateFiles.name
+            );
 
             if (portalFs && dataverseOrgUrl) {
                 data = await preprocessData(data, entityName);
@@ -157,6 +157,13 @@ async function fetchFromDataverseAndCreateFiles(
                 );
             }
         }
+    }
+
+    if (defaultFileInfo === undefined) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_DATAVERSE_API_CALL_FILE_FETCH_COUNT,
+            { entityName: entityName, count: data.length.toString() }
+        );
     }
 
     return data;
@@ -335,7 +342,7 @@ async function processDataAndCreateFile(
         );
 
         const expandedContent = GetFileContent(result, attributePath);
-        if (fileExtension === undefined && expandedContent) {
+        if (fileExtension === undefined && expandedContent !== Constants.NO_CONTENT) {
             await processExpandedData(
                 entityName,
                 expandedContent,
@@ -343,7 +350,7 @@ async function processDataAndCreateFile(
                 dataverseOrgUrl,
                 filePathInPortalFS);
         }
-        else {
+        else if (fileExtension !== undefined) {
             fileUri = filePathInPortalFS + fileNameWithExtension;
             await createFile(
                 attributeArray[counter],
