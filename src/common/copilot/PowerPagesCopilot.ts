@@ -6,7 +6,7 @@
 
 import * as vscode from "vscode";
 import { sendApiRequest } from "./IntelligenceApiService";
-import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
@@ -19,6 +19,7 @@ import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
 import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
+import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 
 let apiToken: string;
 let userName: string;
@@ -129,7 +130,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           orgID
             ? (() => {
               const { activeFileParams } = this.getActiveEditorContent();
-              this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID);
+              this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID, this.telemetry);
             })()
             : (() => {
               this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
@@ -218,14 +219,25 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
-  private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string) {
+  private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
     return intelligenceAPIAuthentication()
-      .then(({ accessToken, user }) => {
+      .then(async ({ accessToken, user }) => {
         apiToken = accessToken;
         userName = getUserName(user);
         this.sendMessageToWebview({ type: 'userName', value: userName });
 
-        return sendApiRequest(data, activeFileParams, orgID, apiToken, sessionID);
+        let entityName = "";
+        let entityColumns: string[] = [];
+
+        if(activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+           entityName = getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
+
+           const dataverseToken = await dataverseAuthentication(activeOrgUrl);
+
+           entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+        }
+
+        return sendApiRequest(data, activeFileParams, orgID, apiToken, sessionID, entityName, entityColumns);
       })
       .then(apiResponse => {
         this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
