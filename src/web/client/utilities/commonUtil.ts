@@ -73,7 +73,7 @@ export function GetFileContent(result: any, attributePath: IAttributePath) {
     }
 
     if (fileContent === NO_CONTENT) {
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION__FILE_NO_CONTENT);
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FILE_NO_CONTENT);
     }
 
     return fileContent;
