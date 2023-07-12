@@ -212,7 +212,7 @@
     if(!isCopilotEnabled) {
       return feedback;
     }
-    feedback.innerHTML = `<p class="feedback-statement">AI-generated content may be incorrect. <a href="https://go.microsoft.com/fwlink/?linkid=2240145" style="display: block;">Learn more</a></p>
+    feedback.innerHTML = `<p class="feedback-statement">AI-generated content can contain mistakes</p>
       <div class="feedback-icons">
         <span class="codicon codicon-thumbsup" style="cursor: pointer;"></span>
         <span class="codicon codicon-thumbsdown" style="cursor: pointer;"></span>`;
@@ -301,7 +301,7 @@
         }
         const loggedInDiv = document.createElement("div");
         loggedInDiv.classList.add("loggedIn");
-        loggedInDiv.innerHTML = `<p id="greeting">Hi <strong>@${userName}!</strong> In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, JS, and Liquid.</p>`;
+        loggedInDiv.innerHTML = `<p id="greeting">Hi <strong>${userName}!</strong> In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</p>`;
         messageElement.appendChild(loggedInDiv);
       }
     };
@@ -352,7 +352,7 @@
 
   function getApiResponse(userPrompt) {
     apiResponseHandler = handleAPIResponse();
-    apiResponseHandler.updateThinking("Thinking...");
+    apiResponseHandler.updateThinking("Working on it...");
     vscode.postMessage({ type: "newUserPrompt", value: userPrompt });
   }
 
