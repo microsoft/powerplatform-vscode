@@ -141,6 +141,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                 const dataverseEntity = activeFileParams[0];
                 let columns : string[] = [];
+                let entityName  = '';
                 if (dataverseEntity == "adx_entityform" || dataverseEntity == "adx_entitylist") {
 
 
@@ -156,7 +157,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                             const yamlFilePath = path.join(activeFileFolderPath, yamlFiles[0]);
                             const yamlContent = fs.readFileSync(yamlFilePath, 'utf8');
                             const parsedData = yaml.parse(yamlContent);
-                            const entityName = parsedData['adx_entityname'];
+                            entityName = parsedData['adx_entityname'];
 
                             const accessToken: string = await dataverseAuthentication(
                                 activeOrgUrl
@@ -166,7 +167,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         }
                     }
                 }
-                return sendApiRequest(data.value, activeFileParams, orgID, apiToken, columns);
+                return sendApiRequest(data.value, activeFileParams, orgID, apiToken, entityName, columns);
               })
               .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });

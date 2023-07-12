@@ -4,6 +4,7 @@
  */
 
 import { NetworkError } from "./constants";
+import fetch, { RequestInit } from "node-fetch";
 
 export async function getEntityMetadata(entityName: string, orgUrl: string, apiToken:string) {
 
