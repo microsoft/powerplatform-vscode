@@ -26,7 +26,7 @@ let orgID: string;
 let environmentName: string;
 let userID: string;
 let activeOrgUrl: string;
-export let sessionID: string;
+let sessionID: string;
 
 //TODO: Check if it can be converted to singleton
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
@@ -117,7 +117,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         case "webViewLoaded": {
 
           sessionID = uuidv4();
-          this.sendMessageToWebview({ type: 'env', value: this.isDesktop, envName: environmentName }); //TODO Use IS_DESKTOP
+          this.sendMessageToWebview({ type: 'env'}); //TODO Use IS_DESKTOP
           this.handleLogin();
           break;
         }
@@ -225,7 +225,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         userName = getUserName(user);
         this.sendMessageToWebview({ type: 'userName', value: userName });
 
-        return sendApiRequest(data, activeFileParams, orgID, apiToken);
+        return sendApiRequest(data, activeFileParams, orgID, apiToken, sessionID);
       })
       .then(apiResponse => {
         this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
@@ -241,7 +241,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     userID = activeOrg.UserId;
     activeOrgUrl = activeOrg.OrgUrl;
 
-    showConnectedOrgMessage(environmentName, activeOrgUrl);
+    if(this._view?.visible){
+      showConnectedOrgMessage(environmentName, activeOrgUrl);
+    }
   }
 
   private async intelligenceAPIAuthenticationHandler(accessToken: string, user: string) {
