@@ -31,7 +31,7 @@ import { handleFileSystemCallbacks } from "./power-pages/fileSystemCallbacks";
 import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
-import { PowerPagesCopilot } from "./../common/copilot/PowerPagesCopilot";
+// import { PowerPagesCopilot } from "./../common/copilot/PowerPagesCopilot";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 
 let client: LanguageClient;
@@ -166,7 +166,7 @@ export async function activate(
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
-        showNotificationForCopilot();
+        // showNotificationForCopilot();
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -181,13 +181,13 @@ export async function activate(
 
     _telemetry.sendTelemetryEvent("activated");
 
-    const copilotProvider = new PowerPagesCopilot(context.extensionUri, _context, _telemetry, cliPath);
+    // const copilotProvider = new PowerPagesCopilot(context.extensionUri, _context, _telemetry, cliPath);
 
-    _context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
-        webviewOptions: {
-            retainContextWhenHidden: true,
-        },
-    }));
+    // _context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
+    //     webviewOptions: {
+    //         retainContextWhenHidden: true,
+    //     },
+    // }));
 
 }
 
@@ -349,19 +349,19 @@ function handleWorkspaceFolderChange() {
     }
 }
 
-function showNotificationForCopilot() {
-    if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
-        return;
-    }
-    const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
-    const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
+// function showNotificationForCopilot() {
+//     if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
+//         return;
+//     }
+//     const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
+//     const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
 
-    vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
-        if (selection === actionTitle) {
-            vscode.commands.executeCommand('powerpages.copilot.focus')
-        }
-    });
-}
+//     vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
+//         if (selection === actionTitle) {
+//             vscode.commands.executeCommand('powerpages.copilot.focus')
+//         }
+//     });
+// }
 
 // allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
 class CliAcquisitionContext implements ICliAcquisitionContext {
