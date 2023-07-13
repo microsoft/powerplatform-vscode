@@ -167,7 +167,7 @@ async function saveDataToDataverse(
             );
 
             if (!response.ok) {
-                throw new Error(response.statusText);
+                throw new Error(JSON.stringify(response));
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
