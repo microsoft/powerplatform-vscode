@@ -326,11 +326,6 @@
           "default": false,
           "markdownDescription": "Whether the generator installation is complete."
         },
-        "powerPlatform.experimental.copilotEnabled": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Whether the Power Platform Copilot is enabled."
-        },
         "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
           "default": false,
@@ -809,7 +804,7 @@
           "name": "Copilot In Power Pages",
           "initialSize": 6,
           "visibility": "visible",
-          "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled"
+          "when": "never"
         }
       ]
     },
