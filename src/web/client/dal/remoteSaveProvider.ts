@@ -209,6 +209,7 @@ async function saveDataToDataverse(
                     error as Error
                 );
             }
+            
             if (typeof error === "string" && error.includes("Unauthorized")) {
                 showErrorDialog(
                     vscode.l10n.t(
