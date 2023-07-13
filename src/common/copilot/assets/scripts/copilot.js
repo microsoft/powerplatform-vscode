@@ -309,6 +309,30 @@
     };
   }
 
+  function setDiabledScreen() {
+    const messageWrapper = document.createElement("div");
+    messageWrapper.classList.add("message-wrapper");
+
+    const messageElement = document.createElement("div");
+    const makerElement = createCopilotSection();
+    messageElement.appendChild(makerElement);
+
+    messageElement.classList.add("message", "api-response");
+
+    messageWrapper.appendChild(messageElement);
+
+    chatMessages.appendChild(messageWrapper);
+
+    const notAvailabel = document.createElement("div");
+    notAvailabel.classList.add("not-available");
+    notAvailabel.innerHTML = `<p id="notAvailableGreeting"></p>
+    <p>Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details</p>
+    <p>Learn about <a href="#">Copilot licensing.<a></p>`;
+
+    messageElement.appendChild(notAvailabel);
+
+  }
+
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
     const message = event.data; // The JSON data our extension sent
@@ -348,6 +372,13 @@
       }
       case "enableInput": {
         chatInput.disabled = false;
+        break;
+      }
+      case "notAvailable": {
+        chatMessages.innerHTML = "";
+        setDiabledScreen();
+        chatInputComponent.classList.add("hide");
+        break;
       }
     }
   });

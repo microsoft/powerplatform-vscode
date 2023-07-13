@@ -21,6 +21,7 @@ import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDo
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
+import { getIntelligenceEndpoint } from "../ArtemisService";
 
 let apiToken: string;
 let userName: string;
@@ -39,6 +40,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   private readonly _disposables: vscode.Disposable[] = [];
   private loginButtonRendered = false;
   private telemetry: ITelemetry;
+  private aibEndpoint: string | null = null;
 
   constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
     this.telemetry = telemetry;
@@ -268,7 +270,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
            entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
         }
 
-        return sendApiRequest(data, activeFileParams, orgID, apiToken, sessionID, entityName, entityColumns);
+        return sendApiRequest(data, activeFileParams, orgID, apiToken, sessionID, entityName, entityColumns, this.aibEndpoint);
       })
       .then(apiResponse => {
         this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
@@ -283,6 +285,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     environmentName = activeOrg.FriendlyName;
     userID = activeOrg.UserId;
     activeOrgUrl = activeOrg.OrgUrl;
+
+    this.aibEndpoint = await getIntelligenceEndpoint(orgID);
+    if(!this.aibEndpoint) {
+      this.sendMessageToWebview({ type: 'notAvailable'});
+    }
 
     if(this._view?.visible){
       showConnectedOrgMessage(environmentName, activeOrgUrl);
