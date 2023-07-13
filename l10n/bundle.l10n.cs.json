@@ -25,7 +25,6 @@
   "Failed to create: {0}./{0} will be replaced by the error message.": "Nepodařilo se vytvořit: {0}",
   "Failed to disable PAC telemetry.": "Telemetrii PAC se nepodařilo zakázat.",
   "Failed to enable PAC telemetry.": "Telemetrii PAC se nepodařilo povolit.",
-  "Failed to fetch file content.": "Nepodařilo se načíst obsah souboru.",
   "Failed to fetch some files.": "Nepodařilo se načíst některé soubory.",
   "Failed to get file ready for edit.": "Soubor se nepodařilo připravit k úpravám.",
   "Fetching your file ...": "Načítá se soubor...",
