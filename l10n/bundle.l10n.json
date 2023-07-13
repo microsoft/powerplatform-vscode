@@ -14,10 +14,19 @@
   "There’s a problem on the back end": "There’s a problem on the back end",
   "Try again": "Try again",
   "We encountered an error preparing the file for edit.": "We encountered an error preparing the file for edit.",
-  "Failed to fetch file content.": "Failed to fetch file content.",
   "Failed to fetch some files.": "Failed to fetch some files.",
   "Failed to get file ready for edit.": "Failed to get file ready for edit.",
   "Saving your file ...": "Saving your file ...",
+  "Enter Organization ID": "Enter Organization ID",
+  "Power Pages Copilot is now connected to the environment: {0} : {1}/{0} represents the environment name": {
+    "message": "Power Pages Copilot is now connected to the environment: {0} : {1}",
+    "comment": [
+      "{0} represents the environment name"
+    ]
+  },
+  "Copied to clipboard!": "Copied to clipboard!",
+  "Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.": "Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.",
+  "Try Copilot for Power Pages": "Try Copilot for Power Pages",
   "Preparing pac CLI (v{0}).../{0} represents the version number": {
     "message": "Preparing pac CLI (v{0})...",
     "comment": [

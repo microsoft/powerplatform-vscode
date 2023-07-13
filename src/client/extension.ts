@@ -100,12 +100,12 @@ export async function activate(
 
     // registering bootstrapdiff command
     _context.subscriptions.push(
-        vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async() => {
-                _telemetry.sendTelemetryEvent("StartCommand", {
-                    commandId: "microsoft-powerapps-portals.bootstrap-diff",
-                });
-                bootstrapDiff();
-            }
+        vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async () => {
+            _telemetry.sendTelemetryEvent("StartCommand", {
+                commandId: "microsoft-powerapps-portals.bootstrap-diff",
+            });
+            bootstrapDiff();
+        }
         )
     );
 
@@ -166,6 +166,7 @@ export async function activate(
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
+        showNotificationForCopilot();
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -180,13 +181,14 @@ export async function activate(
 
     _telemetry.sendTelemetryEvent("activated");
 
-    const copilotProvider = new PowerPagesCopilot(context.extensionUri);
+    const copilotProvider = new PowerPagesCopilot(context.extensionUri, _context, _telemetry, cliPath);
 
     _context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotProvider, {
         webviewOptions: {
             retainContextWhenHidden: true,
         },
     }));
+
 }
 
 export async function deactivate(): Promise<void> {
@@ -318,6 +320,7 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
     });
 }
 
+
 function isCurrentDocumentEdited(): boolean {
     const workspaceFolderExists =
         vscode.workspace.workspaceFolders !== undefined;
@@ -345,6 +348,21 @@ function handleWorkspaceFolderChange() {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
     }
 }
+
+function showNotificationForCopilot() {
+    if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
+        return;
+    }
+    const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
+    const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
+
+    vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
+        if (selection === actionTitle) {
+            vscode.commands.executeCommand('powerpages.copilot.focus')
+        }
+    });
+}
+
 // allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
 class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(

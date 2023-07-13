@@ -72,6 +72,10 @@ export function GetFileContent(result: any, attributePath: IAttributePath) {
         WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_GET_FILE_CONTENT_ERROR, errorMsg);
     }
 
+    if (fileContent === NO_CONTENT) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FILE_NO_CONTENT);
+    }
+
     return fileContent;
 }
 
@@ -158,16 +162,12 @@ export function getImageContent(mimeType: string, fileContent: string) {
     return DATA + mimeType + BASE_64 + fileContent
 }
 
-export function isPreloadedWebfile(fileName: string) {
-    const fileExtension = getFileExtension(fileName) as string;
-    const validImageExtensions = getFileExtensionForPreload();
-
-    return fileExtension !== undefined && validImageExtensions.includes(fileExtension.toLowerCase());
-}
-
 export function isWebfileContentLoadNeeded(fileName: string, fsPath: string): boolean {
     const fileExtension = getFileExtension(fileName) as string;
     const validImageExtensions = getFileExtensionForPreload();
+
+    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEBFILE_EXTENSION,
+        { fileExtension: fileExtension });
 
     return fileExtension !== undefined ?
         validImageExtensions.includes(fileExtension.toLowerCase()) ||

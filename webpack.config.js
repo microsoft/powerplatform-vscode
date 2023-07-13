@@ -53,6 +53,9 @@ const nodeConfig = {
         new webpack.DefinePlugin({
             __GENERATOR_PACKAGE_VERSION__: JSON.stringify(dependencies["@microsoft/generator-powerpages"] || "1.0.0"), // get the currently used version of powerpages generator with fallback to ^1.0.0
         }),
+        new webpack.DefinePlugin({
+            IS_DESKTOP: true,
+        }),
     ]
 };
 const webConfig = {
@@ -104,6 +107,9 @@ const webConfig = {
         }),
         new webpack.ProvidePlugin({
             Buffer: [ 'buffer', 'Buffer' ],
+        }),
+        new webpack.DefinePlugin({
+            IS_DESKTOP: false,
         }),
     ],
     externals: {

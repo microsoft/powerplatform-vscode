@@ -75,7 +75,8 @@ async function fetchFromDataverseAndCreateFiles(
             WebExtensionContext.telemetry.sendAPITelemetry(
                 requestUrl,
                 entityName,
-                Constants.httpMethod.GET
+                Constants.httpMethod.GET,
+                fetchFromDataverseAndCreateFiles.name
             );
 
             requestSentAtTime = new Date().getTime();
@@ -90,18 +91,8 @@ async function fetchFromDataverseAndCreateFiles(
 
             if (!response.ok) {
                 makeRequestCall = false;
-                vscode.window.showErrorMessage(
-                    vscode.l10n.t("Failed to fetch file content.")
-                );
-                throw new Error(response.statusText);
+                throw new Error(JSON.stringify(response));
             }
-
-            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-                requestUrl,
-                entityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
-            );
 
             const result = await response.json();
             data = data.concat(result.value);
@@ -119,6 +110,14 @@ async function fetchFromDataverseAndCreateFiles(
                 );
                 throw new Error(ERRORS.EMPTY_RESPONSE);
             }
+
+            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
+                requestUrl,
+                entityName,
+                Constants.httpMethod.GET,
+                new Date().getTime() - requestSentAtTime,
+                fetchFromDataverseAndCreateFiles.name
+            );
 
             if (portalFs && dataverseOrgUrl) {
                 data = await preprocessData(data, entityName);
@@ -145,11 +144,10 @@ async function fetchFromDataverseAndCreateFiles(
                     entityName,
                     Constants.httpMethod.GET,
                     new Date().getTime() - requestSentAtTime,
+                    fetchFromDataverseAndCreateFiles.name,
                     errorMsg,
                     '',
-                    telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
-                    (error as Response)?.status.toString(),
-                    fetchFromDataverseAndCreateFiles.name
+                    (error as Response)?.status.toString()
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
@@ -159,6 +157,13 @@ async function fetchFromDataverseAndCreateFiles(
                 );
             }
         }
+    }
+
+    if (defaultFileInfo === undefined) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_DATAVERSE_API_CALL_FILE_FETCH_COUNT,
+            { entityName: entityName, count: data.length.toString() }
+        );
     }
 
     return data;
@@ -337,7 +342,7 @@ async function processDataAndCreateFile(
         );
 
         const expandedContent = GetFileContent(result, attributePath);
-        if (fileExtension === undefined && expandedContent) {
+        if (fileExtension === undefined && expandedContent !== Constants.NO_CONTENT) {
             await processExpandedData(
                 entityName,
                 expandedContent,
@@ -345,7 +350,7 @@ async function processDataAndCreateFile(
                 dataverseOrgUrl,
                 filePathInPortalFS);
         }
-        else {
+        else if (fileExtension !== undefined) {
             fileUri = filePathInPortalFS + fileNameWithExtension;
             await createFile(
                 attributeArray[counter],
@@ -468,7 +473,8 @@ async function getMappingEntityContent(
     WebExtensionContext.telemetry.sendAPITelemetry(
         requestUrl,
         entity,
-        Constants.httpMethod.GET
+        Constants.httpMethod.GET,
+        getMappingEntityContent.name
     );
     requestSentAtTime = new Date().getTime();
 
@@ -482,11 +488,10 @@ async function getMappingEntityContent(
             entity,
             Constants.httpMethod.GET,
             new Date().getTime() - requestSentAtTime,
+            getMappingEntityContent.name,
             JSON.stringify(response),
             '',
-            telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
-            response?.status.toString(),
-            getMappingEntityContent.name
+            response?.status.toString()
         );
         throw new Error(response.statusText);
     }
@@ -495,7 +500,8 @@ async function getMappingEntityContent(
         requestUrl,
         entity,
         Constants.httpMethod.GET,
-        new Date().getTime() - requestSentAtTime
+        new Date().getTime() - requestSentAtTime,
+        getMappingEntityContent.name
     );
 
     const result = await response.json();

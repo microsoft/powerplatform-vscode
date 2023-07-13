@@ -5,26 +5,95 @@
 
 
 import * as vscode from "vscode";
-import { CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments } from "./Constants";
-export let apiToken: string;
-export let sessionID: string;
-export let userName: string;
-export let orgID: string;
-export let environmentName: string;
+import { sendApiRequest } from "./IntelligenceApiService";
+import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+import { v4 as uuidv4 } from 'uuid'
+import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
+import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
+import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { AuthProfileNotFound, CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
+import { IActiveFileParams, IActiveFileData} from './model';
+import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "../Utils";
+import { CESUserFeedback } from "./user-feedback/CESSurvey";
+import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
+import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
+import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent } from "./telemetry/telemetryConstants";
+import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
+import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 
+let apiToken: string;
+let userName: string;
+let orgID: string;
+let environmentName: string;
+let userID: string;
+let activeOrgUrl: string;
+let sessionID: string;
 
-
+//TODO: Check if it can be converted to singleton
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   public static readonly viewType = "powerpages.copilot";
   private _view?: vscode.WebviewView;
+  private readonly _pacWrapper: PacWrapper;
+  private _extensionContext: vscode.ExtensionContext;
+  private readonly _disposables: vscode.Disposable[] = [];
+  private loginButtonRendered = false;
+  private telemetry: ITelemetry;
 
+  constructor(private readonly _extensionUri: vscode.Uri, _context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
+    this.telemetry = telemetry;
+    this._extensionContext = _context;
+    const pacContext = new PacWrapperContext(_context, telemetry);
+    const interop = new PacInterop(pacContext, cliPath);
+    this._pacWrapper = new PacWrapper(pacContext, interop); //For Web Terminal will not be available
 
-  constructor(private readonly _extensionUri: vscode.Uri) {
-
+    _context.subscriptions.push(
+      vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
+        if(userName && orgID) {
+        this.sendMessageToWebview({ type: "clearConversation" });
+        sessionID = uuidv4();
+        }
+      }
+      )
+    );
+    this.setupFileWatcher();
   }
 
 
   private isDesktop: boolean = vscode.env.uiKind === vscode.UIKind.Desktop;
+
+  private setupFileWatcher() {
+    const watchPath = GetAuthProfileWatchPattern();
+    if (watchPath) {
+      const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
+
+      watcher.onDidChange(() => this.handleOrgChange()),
+        watcher.onDidCreate(() => this.handleOrgChange()),
+        watcher.onDidDelete(() => this.handleOrgChange())
+      this._extensionContext.subscriptions.push(watcher);
+    }
+
+  }
+
+  private async handleOrgChange() {
+    orgID = '';
+    const pacOutput = await this._pacWrapper.activeOrg();
+
+    if (pacOutput.Status === "Success") {
+      this.handleOrgChangeSuccess(pacOutput);
+    } else if (this._view?.visible) {
+
+      const userOrgUrl = await showInputBoxAndGetOrgUrl();
+      if (!userOrgUrl) {
+        return;
+      }
+      const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
+      pacAuthCreateOutput.Status === "Success"
+        ? this.handleOrgChange()
+        : vscode.window.showErrorMessage("Error creating auth profile for org");
+
+    }
+  }
+
 
   public async resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -35,7 +104,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   ) {
     this._view = webviewView;
 
-
+    webviewView.description = "PREVIEW"
     webviewView.webview.options = {
       // Allow scripts in the webview
       enableScripts: true,
@@ -45,13 +114,200 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
+    webviewView.webview.onDidReceiveMessage(async (data) => {
+      switch (data.type) {
+        case "webViewLoaded": {
 
+          sessionID = uuidv4();
+          this.sendMessageToWebview({ type: 'env'}); //TODO Use IS_DESKTOP
+          this.handleLogin();
+          break;
+        }
+        case "login": {
+          this.handleLogin();
+          break;
+        }
+        case "newUserPrompt": {
+          orgID
+            ? (() => {
+              const { activeFileParams } = this.getActiveEditorContent();
+              this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID, this.telemetry);
+            })()
+            : (() => {
+              this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
+              this.sendMessageToWebview({ type: 'enableInput' });
+            })();
+
+          break;
+        }
+        case "insertCode": {
+
+          const escapedSnippet = escapeDollarSign(data.value);
+
+          vscode.window.activeTextEditor?.insertSnippet(
+            new vscode.SnippetString(`${escapedSnippet}`)
+          );
+          sendTelemetryEvent(this.telemetry, { eventName: InsertCodeToEditorEvent, copilotSessionId: sessionID });
+          break;
+        }
+        case "copyCodeToClipboard": {
+
+          vscode.env.clipboard.writeText(data.value);
+          vscode.window.showInformationMessage(vscode.l10n.t('Copied to clipboard!'))
+          sendTelemetryEvent(this.telemetry, { eventName: CopyCodeToClipboardEvent, copilotSessionId: sessionID });
+          break;
+        }
+        case "clearChat": {
+
+          sessionID = uuidv4();
+          break;
+        }
+        case "userFeedback": {
+
+          if (data.value === "thumbsUp") {
+
+            sendTelemetryEvent(this.telemetry, { eventName: UserFeedbackThumbsUpEvent, copilotSessionId: sessionID });
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry)
+          } else if (data.value === "thumbsDown") {
+
+            sendTelemetryEvent(this.telemetry, { eventName: UserFeedbackThumbsDownEvent, copilotSessionId: sessionID });
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry)
+          }
+        }
+      }
+    });
   }
 
+  public show() {
+    if (this._view) {
+      // Show the webview view
+      this._view.show(true);
+    }
+  }
+
+  private async handleLogin() {
+
+    const pacOutput = await this._pacWrapper.activeOrg();
+    if (pacOutput.Status === "Success") {
+      this.handleOrgChangeSuccess.call(this, pacOutput);
+
+      intelligenceAPIAuthentication().then(({ accessToken, user }) => {
+        this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
+      });
+
+    } else if (this._view?.visible) {
+
+      const userOrgUrl = await showInputBoxAndGetOrgUrl();
+      if (!userOrgUrl) {
+        userName = "";
+        this.sendMessageToWebview({ type: 'userName', value: userName });
+
+        if (!this.loginButtonRendered) {
+          this.sendMessageToWebview({ type: "welcomeScreen" });
+          this.loginButtonRendered = true; // Set the flag to indicate that the login button has been rendered
+        }
+
+        return;
+      }
+      const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
+      pacAuthCreateOutput.Status === "Success"
+      ? intelligenceAPIAuthentication().then(({ accessToken, user }) =>
+          this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user)
+        )
+      : vscode.window.showErrorMessage("Error creating auth profile for org");
+    
+
+    }
+  }
+
+  private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
+    return intelligenceAPIAuthentication()
+      .then(async ({ accessToken, user }) => {
+        apiToken = accessToken;
+        userName = getUserName(user);
+        this.sendMessageToWebview({ type: 'userName', value: userName });
+
+        let entityName = "";
+        let entityColumns: string[] = [];
+
+        if(activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+           entityName = getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
+
+           const dataverseToken = await dataverseAuthentication(activeOrgUrl);
+
+           entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+        }
+
+        return sendApiRequest(data, activeFileParams, orgID, apiToken, sessionID, entityName, entityColumns);
+      })
+      .then(apiResponse => {
+        this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
+        this.sendMessageToWebview({ type: 'enableInput' });
+      });
+  }
+
+
+  private async handleOrgChangeSuccess(pacOutput: PacActiveOrgListOutput) {
+    const activeOrg = pacOutput.Results;
+    orgID = activeOrg.OrgId;
+    environmentName = activeOrg.FriendlyName;
+    userID = activeOrg.UserId;
+    activeOrgUrl = activeOrg.OrgUrl;
+
+    if(this._view?.visible){
+      showConnectedOrgMessage(environmentName, activeOrgUrl);
+    }
+  }
+
+  private async intelligenceAPIAuthenticationHandler(accessToken: string, user: string) {
+    if (accessToken && user) {
+
+      apiToken = accessToken;
+      userName = getUserName(user);
+      this.sendMessageToWebview({ type: 'userName', value: userName });
+      this.sendMessageToWebview({ type: "welcomeScreen" });
+    }
+  }
+
+
+
+  private getActiveEditorContent(): IActiveFileData {
+    const activeEditor = vscode.window.activeTextEditor;
+    const activeFileData : IActiveFileData = {
+      activeFileContent:'',
+      activeFileParams:{
+        dataverseEntity:'',
+        entityField: '',
+        fieldType:''
+      } as IActiveFileParams
+    };
+    if (activeEditor) {
+      const document = activeEditor.document;
+      const fileName = document.fileName;
+      const relativeFileName = vscode.workspace.asRelativePath(fileName);
+  
+      const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
+  
+      activeFileData.activeFileContent = document.getText();
+      activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
+      activeFileData.activeFileParams.entityField = EntityFieldMap.get(activeFileParams[1]) || "";
+      activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "" ;
+    }
+  
+    return activeFileData;
+  }
+
+  public sendMessageToWebview(message: WebViewMessage) {
+    if (this._view) {
+      this._view.webview.postMessage(message);
+    }
+  }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
 
 
+    const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'scripts', 'copilot.js');
+    const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
 
     const copilotStylePath = vscode.Uri.joinPath(
       this._extensionUri,
@@ -65,9 +321,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     );
     const codiconStyleUri = webview.asWebviewUri(codiconStylePath);
 
+    // Use a nonce to only allow specific scripts to be run
+    const nonce = getNonce();
 
-
-    //TODO: Add CSP & View Terms link
+    //TODO: Add CSP
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -75,7 +332,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-           <link href="${copilotStyleUri}" rel="stylesheet">
+          <link href="${copilotStyleUri}" rel="stylesheet">
           </link>
           <link href="${codiconStyleUri}" rel="stylesheet">
           </link>
@@ -89,16 +346,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
               <div id="copilot-header"></div>
             </div>
         
-            <div class="chat-input">
+            <div class="chat-input" id="input-component">
               <div class="input-container">
                 <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
                 <button aria-label="Match Case" id="send-button" class="send-button">
                   <span>
-                    <svg width="16px" height="16px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M1.17683 1.1185C1.32953 0.989145 1.54464 0.963297 1.72363 1.05279L14.7236 7.55279C14.893 7.63748 15 7.81061 15 8C15 8.18939 14.893 8.36252 14.7236 8.44721L1.72363 14.9472C1.54464 15.0367 1.32953 15.0109 1.17683 14.8815C1.02414 14.7522 0.96328 14.5442 1.02213 14.353L2.97688 8L1.02213 1.64705C0.96328 1.45578 1.02414 1.24785 1.17683 1.1185ZM3.8693 8.5L2.32155 13.5302L13.382 8L2.32155 2.46979L3.8693 7.5H9.50001C9.77615 7.5 10 7.72386 10 8C10 8.27614 9.77615 8.5 9.50001 8.5H3.8693Z"
-                        class="send-icon" />
-                    </svg>
+                    ${sendIconSvg}
                   </span>
                 </button>
               </div>
@@ -106,6 +359,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             </div>
           </div>
         
+          <script type="module" nonce="${nonce}" src="${copilotScriptUri}"></script>
         </body>
         
         </html>`;
