@@ -25,7 +25,6 @@
   "Failed to create: {0}./{0} will be replaced by the error message.": "Oluşturulamadı: {0}.",
   "Failed to disable PAC telemetry.": "PAC telemetrisi devre dışı bırakılamadı.",
   "Failed to enable PAC telemetry.": "PAC telemetrisi etkinleştirilmedi.",
-  "Failed to fetch file content.": "Dosya içeriği alınamadı.",
   "Failed to fetch some files.": "Bazı dosyalar alınamadı.",
   "Failed to get file ready for edit.": "Dosya düzenlenmek üzere alınamadı.",
   "Fetching your file ...": "Dosyanız alınıyor...",

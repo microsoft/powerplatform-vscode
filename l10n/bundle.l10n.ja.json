@@ -25,7 +25,6 @@
   "Failed to create: {0}./{0} will be replaced by the error message.": "作成できませんでした: {0}。",
   "Failed to disable PAC telemetry.": "PAC テレメトリを無効にできませんでした。",
   "Failed to enable PAC telemetry.": "PAC テレメトリを有効にできませんでした。",
-  "Failed to fetch file content.": "ファイル コンテンツの取得に失敗しました。",
   "Failed to fetch some files.": "一部のファイルを取得できませんでした。",
   "Failed to get file ready for edit.": "ファイルの編集準備に失敗しました。",
   "Fetching your file ...": "ファイルを取得しています...",

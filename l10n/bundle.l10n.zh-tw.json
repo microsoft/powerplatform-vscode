@@ -25,7 +25,6 @@
   "Failed to create: {0}./{0} will be replaced by the error message.": "無法建立: {0}。",
   "Failed to disable PAC telemetry.": "無法停用 PAC 遙測。",
   "Failed to enable PAC telemetry.": "無法啟用 PAC 遙測。",
-  "Failed to fetch file content.": "無法擷取檔案內容。",
   "Failed to fetch some files.": "無法擷取部分檔案。",
   "Failed to get file ready for edit.": "無法準備好文件進行編輯。",
   "Fetching your file ...": "正在擷取您的檔案...",
