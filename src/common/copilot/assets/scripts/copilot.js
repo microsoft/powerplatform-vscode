@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+
 /* eslint-disable no-undef */
 
 (function script() {
@@ -17,6 +18,7 @@
   let apiResponseHandler;
   let welcomeScreen;
   let isCopilotEnabled = true;
+  let isLoggedIn = false;
 
   const clipboardSvg = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z" fill="#F3F2F1"/>
@@ -320,14 +322,18 @@
     
         welcomeScreen = setWelcomeScreen();
         break;
+      } 
+      case "isLoggedIn": {
+        isLoggedIn = message.value;
+        break;
       }
       case "userName": {
-       
         userName = message.value;
         break;
       }
       case "welcomeScreen": {
-        if (userName != null && userName != undefined && userName != "") {
+        console.log("is logged in", isLoggedIn)
+        if (isLoggedIn) {
           welcomeScreen.userLoggedIn();
         } else {
           welcomeScreen.userNotLoggedIn();

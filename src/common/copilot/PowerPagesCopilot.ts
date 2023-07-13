@@ -20,6 +20,7 @@ import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
 import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
+import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 
 let apiToken: string;
 let userName: string;
@@ -87,9 +88,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         return;
       }
       const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
-      pacAuthCreateOutput.Status === "Success"
-        ? this.handleOrgChange()
-        : vscode.window.showErrorMessage("Error creating auth profile for org");
+      if (pacAuthCreateOutput.Status !== "Success") {
+        vscode.window.showErrorMessage("Failed to create auth profile for the org"); //TODO: Provide Experience to create auth profile
+        return;
+      }
 
     }
   }
@@ -112,6 +114,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       localResourceRoots: [this._extensionUri],
     };
 
+    const pacOutput = await this._pacWrapper.activeOrg();
+
+    if (pacOutput.Status === "Success") { 
+      this.handleOrgChangeSuccess(pacOutput);
+    }
+
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
     webviewView.webview.onDidReceiveMessage(async (data) => {
@@ -120,7 +128,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
           sessionID = uuidv4();
           this.sendMessageToWebview({ type: 'env'}); //TODO Use IS_DESKTOP
-          this.handleLogin();
+          await this.checkAuthentication();
+          if(orgID && userName) {
+            this.sendMessageToWebview({type: 'isLoggedIn', value: true});
+            this.sendMessageToWebview({ type: 'userName', value: userName });
+          }else
+          {
+            this.sendMessageToWebview({type: 'isLoggedIn', value: false});
+            this.loginButtonRendered = true;
+          }
+          this.sendMessageToWebview({ type: "welcomeScreen" });
           break;
         }
         case "login": {
@@ -192,6 +209,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       this.handleOrgChangeSuccess.call(this, pacOutput);
 
       intelligenceAPIAuthentication().then(({ accessToken, user }) => {
+
         this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user);
       });
 
@@ -199,8 +217,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
       const userOrgUrl = await showInputBoxAndGetOrgUrl();
       if (!userOrgUrl) {
-        userName = "";
-        this.sendMessageToWebview({ type: 'userName', value: userName });
+        this.sendMessageToWebview({ type: 'isLoggedIn', value: false });
 
         if (!this.loginButtonRendered) {
           this.sendMessageToWebview({ type: "welcomeScreen" });
@@ -219,6 +236,19 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     }
   }
+
+  private async checkAuthentication() {
+    const session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
+    if (session) {
+        console.log('token: ' + session.accessToken);
+        apiToken = session.accessToken;
+        userName = getUserName(session.account.label);
+    } else {
+        console.log('no token');
+        apiToken = "";
+        userName = "";
+    }
+}
 
   private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
     return intelligenceAPIAuthentication()
@@ -264,6 +294,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
       apiToken = accessToken;
       userName = getUserName(user);
+      this.sendMessageToWebview({ type: 'isLoggedIn', value: true})
       this.sendMessageToWebview({ type: 'userName', value: userName });
       this.sendMessageToWebview({ type: "welcomeScreen" });
     }

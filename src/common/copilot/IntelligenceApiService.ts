@@ -91,7 +91,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
 function getAibEndpoint(region: string, orgID: string): string {
   switch (region) {
     case 'test':
-      return `https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`;
+      return `https://aibuildertextapiservice.eus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`;
     default:
       // TODO: Add prod endpoint
       return '';
