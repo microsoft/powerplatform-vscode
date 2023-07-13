@@ -381,16 +381,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
-                this.telemetry.sendAPIFailureTelemetry(
-                    requestUrl,
-                    languageEntityName,
-                    Constants.httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    this.populateLanguageIdToCode.name,
-                    response?.statusText,
-                    '',
-                    response?.status.toString()
-                );
+                throw new Error(JSON.stringify(response));
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -455,16 +446,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
-                this.telemetry.sendAPIFailureTelemetry(
-                    requestUrl,
-                    languageEntityName,
-                    Constants.httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    this.populateWebsiteLanguageIdToPortalLanguageMap.name,
-                    response?.statusText,
-                    '',
-                    response?.status.toString(),
-                );
+               throw new Error(JSON.stringify(response));
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -526,16 +508,7 @@ class WebExtensionContext implements IWebExtensionContext {
             });
 
             if (!response?.ok) {
-                this.telemetry.sendAPIFailureTelemetry(
-                    requestUrl,
-                    websiteEntityName,
-                    Constants.httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    this.populateWebsiteIdToLanguageMap.name,
-                    response?.statusText,
-                    '',
-                    response?.status.toString()
-                );
+                throw new Error(JSON.stringify(response));
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
