@@ -6,7 +6,7 @@
 
 import * as vscode from "vscode";
 import { sendApiRequest } from "./IntelligenceApiService";
-import { intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
@@ -19,6 +19,7 @@ import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
 import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
+import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 
 let apiToken: string;
 let userName: string;
@@ -26,7 +27,7 @@ let orgID: string;
 let environmentName: string;
 let userID: string;
 let activeOrgUrl: string;
-export let sessionID: string;
+let sessionID: string;
 
 //TODO: Check if it can be converted to singleton
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
@@ -47,9 +48,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     _context.subscriptions.push(
       vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
-
+        if(userName && orgID) {
         this.sendMessageToWebview({ type: "clearConversation" });
         sessionID = uuidv4();
+        }
       }
       )
     );
@@ -117,7 +119,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         case "webViewLoaded": {
 
           sessionID = uuidv4();
-          this.sendMessageToWebview({ type: 'env', value: this.isDesktop, envName: environmentName }); //TODO Use IS_DESKTOP
+          this.sendMessageToWebview({ type: 'env'}); //TODO Use IS_DESKTOP
           this.handleLogin();
           break;
         }
@@ -129,7 +131,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           orgID
             ? (() => {
               const { activeFileParams } = this.getActiveEditorContent();
-              this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID);
+              this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID, this.telemetry);
             })()
             : (() => {
               this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
@@ -218,14 +220,25 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
-  private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string) {
+  private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
     return intelligenceAPIAuthentication()
-      .then(({ accessToken, user }) => {
+      .then(async ({ accessToken, user }) => {
         apiToken = accessToken;
         userName = getUserName(user);
         this.sendMessageToWebview({ type: 'userName', value: userName });
 
-        return sendApiRequest(data, activeFileParams, orgID, apiToken);
+        let entityName = "";
+        let entityColumns: string[] = [];
+
+        if(activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+           entityName = getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
+
+           const dataverseToken = await dataverseAuthentication(activeOrgUrl);
+
+           entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+        }
+
+        return sendApiRequest(data, activeFileParams, orgID, apiToken, sessionID, entityName, entityColumns);
       })
       .then(apiResponse => {
         this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
@@ -241,7 +254,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     userID = activeOrg.UserId;
     activeOrgUrl = activeOrg.OrgUrl;
 
-    showConnectedOrgMessage(environmentName, activeOrgUrl);
+    if(this._view?.visible){
+      showConnectedOrgMessage(environmentName, activeOrgUrl);
+    }
   }
 
   private async intelligenceAPIAuthenticationHandler(accessToken: string, user: string) {
@@ -333,7 +348,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         
             <div class="chat-input" id="input-component">
               <div class="input-container">
-                <input type="text" placeholder="Ask a question..." id="chat-input" class="input-field">
+                <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
                 <button aria-label="Match Case" id="send-button" class="send-button">
                   <span>
                     ${sendIconSvg}

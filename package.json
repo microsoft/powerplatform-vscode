@@ -154,10 +154,6 @@
     ],
     "commands": [
       {
-        "command": "powerpages.copilot",
-        "title": "Power Pages: Copilot"
-      },
-      {
         "command": "extension.createChatView",
         "title": "Create Chat View"
       },
@@ -317,7 +313,7 @@
       },
       {
         "command": "powerpages.copilot.clearConversation",
-        "category": "Power Pages Copilot",
+        "category": "Copilot In Power Pages",
         "title": "Clear Conversation",
         "icon": "$(clear-all)"
       }
@@ -329,11 +325,6 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Whether the generator installation is complete."
-        },
-        "powerPlatform.experimental.copilotEnabled": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Whether the Power Platform Copilot is enabled."
         },
         "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
@@ -674,7 +665,7 @@
         },
         {
           "command": "powerpages.copilot.clearConversation",
-          "when": "!virtualWorkspace"
+          "when": "never"
         },
         {
           "command": "microsoft-powerapps-portals.webpage",
@@ -810,10 +801,10 @@
         {
           "type": "webview",
           "id": "powerpages.copilot",
-          "name": "Power Pages Copilot",
+          "name": "Copilot In Power Pages",
           "initialSize": 6,
           "visibility": "visible",
-          "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled"
+          "when": "never"
         }
       ]
     },

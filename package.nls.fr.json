@@ -2,11 +2,13 @@
   "microsoft-powerapps-portals.preview-show.title": "Portail PowerApps -> Afficher la version préliminaire",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": "Visual Studio Code pour le Web permet de modifier et de publier des pages Web sur votre site Web.\n \n Si vous souhaitez utiliser une interface de ligne de commande et des fonctionnalités plus avancées, installez l’extension Power Platform pour VS Code, qui est disponible dans le Marketplace VS Code pour le bureau. \n \n [En savoir plus](command:powerplatform-walkthrough.advancedCapabilities-learn-more) sur la différence entre Visual Studio Code pour le bureau et le web.\n \n[Commencer le codage](command:powerplatform-walkthrough.advancedCapabilities-start-coding)",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Fonctionnalités avancées",
-  "microsoft-powerapps-portals.walkthrough.description": "Découvrez comment créer des sites Web complets et modernes directement dans Visual Studio Code",
-  "microsoft-powerapps-portals.walkthrough.fileSystem.description": "Vos fichiers sont stockés dans des dossiers imbriqués sous le nom de votre site. \n \n Les fichiers de page individuels se trouvent dans le dossier des pages web sous le nom de votre site. \n \n Toutes vos pages sont organisées en fichiers HTML, CSS et JS dans le dossier avec le nom de page respectif. \n \n Pour en savoir plus sur le système de fichiers Power Pages dans VS Code pour le Web, consultez notre [documentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Ouvrir le dossier du site](command:powerplatform-walkthrough.fileSystem-open-folder)",
-  "microsoft-powerapps-portals.walkthrough.fileSystem.title": "Système de fichiers",
-  "microsoft-powerapps-portals.walkthrough.overview.description": "L’extension Power Pages active un système de fichiers personnalisé qui est synchronisé avec la structure de projet du studio Power Pages.\n[En savoir plus](command:powerplatform-walkthrough.overview-learn-more)",
+  "microsoft-powerapps-portals.walkthrough.description": "Découvrez comment créer des sites web complets et modernes directement dans Visual Studio Code",
+  "microsoft-powerapps-portals.walkthrough.fileSystem.description": "Vous pouvez rechercher les fichiers de vos pages organisés dans des dossiers sous le nom de votre site. Toutes vos pages sont organisées en fichiers HTML, CSS et JS dans les dossiers de composants de site respectif. \n \n Vous pouvez trouver des composants de site tels que des formulaires, des extraits de contenu, des listes, etc., à modifier. \n \n Pour en savoir plus, visitez [Structure de fichiers Power Pages dans VS Code](command:powerplatform-walkthrough.fileSystem-documentation). \n \n[Visitez le dossier du site](command:powerplatform-walkthrough.fileSystem-open-folder)",
+  "microsoft-powerapps-portals.walkthrough.fileSystem.title": "Explorateur de fichiers",
+  "microsoft-powerapps-portals.walkthrough.overview.description": "Vous pouvez désormais modifier facilement le code de votre site Power Pages. Vous pouvez accéder au code à partir des composants de site pris en charge, comme les formulaires, les extraits de contenu, les listes, etc, à partir de Visual Studio Code.\n \n Pour en savoir plus, visitez [Modifier le code Power Pages dans VS Code](command:powerplatform-walkthrough.overview-learn-more).",
   "microsoft-powerapps-portals.walkthrough.overview.title": "Vue d’ensemble",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.description": "Vous pouvez éviter les remplacements accidentels lors de la sauvegarde d’un code obsolète dans VS Code pour le Web. Vous pouvez comparer les modifications côte à côte et décider d’accepter ou d’annuler les modifications. \n \nPour en savoir plus, visitez [Éviter les remplacements accidentels](command:powerplatform-walkthrough.saveConflict-learn-more).",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.title": "Conflit d’enregistrement",
   "microsoft-powerapps-portals.walkthrough.title": "Modifier le code Power Pages",
   "microsoft-powerapps-portals.webExtension.init.title": "Initialiser l’extension Web",
   "pacCLI.authPanel.clearAuthProfile.title": "Effacer les profils d’authentification",
@@ -38,7 +40,5 @@
   "pacCLI.pacPackageHelp.title": "Afficher l’aide du package PAC",
   "pacCLI.pacPcfHelp.title": "Afficher l’aide de PCF PAC",
   "pacCLI.pacSolutionHelp.title": "Afficher l’aide de la solution PAC",
-  "power-platform-activitybar.title": "Power Platform",
-  "microsoft-powerapps-portals.walkthrough.saveConflict.title": "Save conflict",
-  "microsoft-powerapps-portals.walkthrough.saveConflict.description": "Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. \n \nTo learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more)."
+  "power-platform-activitybar.title": "Power Platform"
 }

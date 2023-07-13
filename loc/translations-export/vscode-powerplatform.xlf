@@ -59,6 +59,9 @@
     <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
       <source xml:lang="en">Confirm</source>
     </trans-unit>
+    <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
+      <source xml:lang="en">Copied to clipboard!</source>
+    </trans-unit>
     <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
       <source xml:lang="en">Creating {0}...</source>
       <note>{0} will be replaced by the entity type.</note>
@@ -74,6 +77,9 @@ The {2} represents Solution's Version number</note>
     </trans-unit>
     <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
       <source xml:lang="en">Edit the site</source>
+    </trans-unit>
+    <trans-unit id="++CODE++0feefedc5916a0c9a464f4ef9f28fab835a23e1d035878f397e38053381aa3fa">
+      <source xml:lang="en">Enter Organization ID</source>
     </trans-unit>
     <trans-unit id="++CODE++80ccd89cd4c287f3ca9f3693982e8034544fefeba563c974f93482158e8f0737">
       <source xml:lang="en">Enter name</source>
@@ -182,6 +188,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++7f6276dc63b573d177b7d6e17f787b108e3c8c7d449324ac13a6d06b1be59d8e">
       <source xml:lang="en">Please enter a name for the webpage.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
+      <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
+      <note>{0} represents the environment name</note>
     </trans-unit>
     <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
       <source xml:lang="en">Preparing pac CLI (v{0})...</source>
