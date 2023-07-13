@@ -391,6 +391,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     response?.status.toString()
                 );
+                return;
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -465,6 +466,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     response?.status.toString(),
                 );
+                return;
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -536,6 +538,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     '',
                     response?.status.toString()
                 );
+                return;
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
