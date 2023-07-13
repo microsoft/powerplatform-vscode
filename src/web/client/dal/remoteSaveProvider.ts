@@ -167,17 +167,7 @@ async function saveDataToDataverse(
             );
 
             if (!response.ok) {
-                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                    saveCallParameters.requestUrl,
-                    entityName,
-                    httpMethod.PATCH,
-                    new Date().getTime() - requestSentAtTime,
-                    saveDataToDataverse.name,
-                    response?.statusText,
-                    fileExtensionType,
-                    response?.status.toString()
-                );
-                return;
+                throw new Error(JSON.stringify(response));
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
