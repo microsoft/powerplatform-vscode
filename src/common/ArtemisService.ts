@@ -4,6 +4,7 @@
  */
 
 import fetch, {RequestInit} from "node-fetch";
+import { COPILOT_DISABLED, US_GEO } from "./copilot/constants";
 
 export async function getIntelligenceEndpoint (orgId: string) {
     const { tstUrl, preprodUrl, prodUrl } = convertGuidToUrls(orgId);
@@ -17,8 +18,8 @@ export async function getIntelligenceEndpoint (orgId: string) {
 
     const { clusterNumber, geoName, environment } = artemisResponse[0];
 
-    if(geoName !== "us") {
-        return null;
+    if(geoName !== US_GEO) {
+        return COPILOT_DISABLED;
     }
 
     const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-il${clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
