@@ -56,6 +56,9 @@
       "{0} represents the name of the file"
     ]
   },
+  "Enter the name of the web template": "Enter the name of the web template",
+  "Please enter a name for the web template.": "Please enter a name for the web template.",
+  "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
   "No page templates found": "No page templates found",
   "No webpages found": "No webpages found",
   "New Webpage": "New Webpage",
@@ -68,9 +71,6 @@
   "File(s) already exist. No new files to add": "File(s) already exist. No new files to add",
   "Web files": "Web files",
   "Webfile(s) added successfully": "Webfile(s) added successfully",
-  "Enter the name of the web template": "Enter the name of the web template",
-  "Please enter a name for the web template.": "Please enter a name for the web template.",
-  "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
   "Page Template name cannot be empty.": "Page Template name cannot be empty.",
   "New Page Template": "New Page Template",
   "Choose web template": "Choose web template",
@@ -112,13 +112,16 @@
     ]
   },
   "The Power Pages generator is ready for use in your VS Code extension!": "The Power Pages generator is ready for use in your VS Code extension!",
-  "Display Name: {0}\nUnique Name: {1}\nVersion: {2}/This is a multi-line tooltipThe {0} represents Solution's Friendly / Display nameThe {1} represents Solution's unique nameThe {2} represents Solution's Version number": {
-    "message": "Display Name: {0}\nUnique Name: {1}\nVersion: {2}",
+  "Managed": "Managed",
+  "Unmanaged": "Unmanaged",
+  "Display Name: {0}\nUnique Name: {1}\nVersion: {2}\nType: {3}/This is a multi-line tooltipThe {0} represents Solution's Friendly / Display nameThe {1} represents Solution's unique nameThe {2} represents Solution's Version numberThe {3} represents Solution's Type (Managed or Unmanaged), but that test is localized separately.": {
+    "message": "Display Name: {0}\nUnique Name: {1}\nVersion: {2}\nType: {3}",
     "comment": [
       "This is a multi-line tooltip",
       "The {0} represents Solution's Friendly / Display name",
       "The {1} represents Solution's unique name",
-      "The {2} represents Solution's Version number"
+      "The {2} represents Solution's Version number",
+      "The {3} represents Solution's Type (Managed or Unmanaged), but that test is localized separately."
     ]
   },
   "Name: {0}\nURL: {1}\nEnvironment ID: {2}\nOrganization ID: {3}/This is a multi-line tooltipThe {0} represents Dataverse Environment's Friendly / Display nameThe {1} represents Dataverse Environment's URLThe {2} represents Dataverse Environment's Environment ID (GUID)The {3} represents Dataverse Environment's Organization ID (GUID)": {
