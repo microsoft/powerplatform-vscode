@@ -33,6 +33,7 @@ import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 // import { PowerPagesCopilot } from "./../common/copilot/PowerPagesCopilot";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
+// import { CopilotTryNotificationClickedEvent } from "../common/copilot/telemetry/telemetryConstants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -166,7 +167,7 @@ export async function activate(
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
-        // showNotificationForCopilot();
+        // showNotificationForCopilot(_telemetry);
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -349,7 +350,7 @@ function handleWorkspaceFolderChange() {
     }
 }
 
-// function showNotificationForCopilot() {
+//function showNotificationForCopilot(telemetry: TelemetryReporter) {
 //     if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
 //         return;
 //     }
@@ -358,6 +359,7 @@ function handleWorkspaceFolderChange() {
 
 //     vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
 //         if (selection === actionTitle) {
+              // telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent);
 //             vscode.commands.executeCommand('powerpages.copilot.focus')
 //         }
 //     });
