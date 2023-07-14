@@ -326,6 +326,23 @@
           "default": false,
           "markdownDescription": "Whether the generator installation is complete."
         },
+        "powerPlatform.auth.cloud": {
+          "type": "string",
+          "default": "Public",
+          "enum": [
+            "Public",
+            "USGov",
+            "USGovHigh",
+            "USGovDoD",
+            "China"
+          ],
+          "description": "%powerPlatform.auth.cloud.description%"
+        },
+        "powerPlatform.experimental.auth.testCloudOverride": {
+          "type": "string",
+          "default": null,
+          "markdownDescription": "%powerPlatform.experimental.auth.testCloudOverride.description%"
+        },
         "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
           "default": false,
