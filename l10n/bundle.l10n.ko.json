@@ -25,7 +25,6 @@
   "Failed to create: {0}./{0} will be replaced by the error message.": "생성 실패: {0}.",
   "Failed to disable PAC telemetry.": "PAC 원격 분석 기능을 사용 중지하지 못했습니다.",
   "Failed to enable PAC telemetry.": "PAC 원격 분석 기능을 사용 설정하지 못했습니다.",
-  "Failed to fetch file content.": "파일 콘텐츠를 가져오지 못했습니다.",
   "Failed to fetch some files.": "일부 파일을 가져오지 못했습니다.",
   "Failed to get file ready for edit.": "편집을 위해 파일 준비를 하지 못했습니다.",
   "Fetching your file ...": "파일을 가져오는 중...",

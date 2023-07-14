@@ -78,6 +78,9 @@
         <source xml:lang="en">Confirm</source>
         <target state="translated">확인</target>
       </trans-unit>
+      <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
+        <source xml:lang="en">Copied to clipboard!</source>
+      </trans-unit>
       <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
         <source xml:lang="en">Creating {0}...</source>
         <note>{0} will be replaced by the entity type.</note>
@@ -98,6 +101,9 @@ The {2} represents Solution's Version number</note>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
         <target state="translated">사이트 편집</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0feefedc5916a0c9a464f4ef9f28fab835a23e1d035878f397e38053381aa3fa">
+        <source xml:lang="en">Enter Organization ID</source>
       </trans-unit>
       <trans-unit id="++CODE++80ccd89cd4c287f3ca9f3693982e8034544fefeba563c974f93482158e8f0737">
         <source xml:lang="en">Enter name</source>
@@ -120,10 +126,6 @@ The {2} represents Solution's Version number</note>
         <source xml:lang="en">Failed to enable PAC telemetry.</source>
         <target state="translated">PAC 원격 분석 기능을 사용 설정하지 못했습니다.</target>
       </trans-unit>
-      <trans-unit id="++CODE++c8fe15ab6371ebd955e8123fd897da623cad8dc11564548e7b4cf9b7e991120c">
-        <source xml:lang="en">Failed to fetch file content.</source>
-        <target state="translated">파일 콘텐츠를 가져오지 못했습니다.</target>
-      </trans-unit>
       <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
         <source xml:lang="en">Failed to fetch some files.</source>
         <target state="translated">일부 파일을 가져오지 못했습니다.</target>
@@ -144,6 +146,9 @@ The {2} represents Solution's Version number</note>
       <trans-unit id="++CODE++1b93e507157d91755f08e1abfe8a33d725b637a32ddadf149420b25907d440a0">
         <source xml:lang="en">File(s) already exist. No new files to add</source>
         <target state="translated">파일이 이미 있습니다. 추가할 새 파일이 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6658fe1c5f8e493175e012ea4a3f7e08df6207342fba111ccc67ba8d4d91977f">
+        <source xml:lang="en">Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.</source>
       </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
@@ -246,6 +251,10 @@ URL: {1}
         <source xml:lang="en">Please enter a name for the webpage.</source>
         <target state="translated">웹 페이지의 이름을 입력하세요.</target>
       </trans-unit>
+      <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
+        <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
+        <note>{0} represents the environment name</note>
+      </trans-unit>
       <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
         <note>{0} represents the version number</note>
@@ -292,6 +301,9 @@ URL: {1}
       <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
         <source xml:lang="en">Thereâ€™s a problem on the back end</source>
         <target state="translated">백 엔드에 문제가 있습니다</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8d6329ce370e7f2cf3a5b77a73e0100c08550628408f2763deafe57dce769719">
+        <source xml:lang="en">Try Copilot for Power Pages</source>
       </trans-unit>
       <trans-unit id="++CODE++d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f">
         <source xml:lang="en">Try again</source>
@@ -348,6 +360,16 @@ URL: {1}
         <source xml:lang="en">Auth Profiles</source>
         <target state="translated">인증 프로필</target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.description">
+        <source xml:lang="en">Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. 
+ 
+To learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more).</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">웹용 VS Code에 구식 코드를 저장하려고 할 때 실수로 덮어쓰지 않도록 방지하세요. 변경 내용을 나란히 비교하고 변경 내용을 수락하거나 되돌릴지 결정할 수 있습니다. 
+ 
+자세한 내용은 [실수로 덮어쓰기 방지](command:powerplatform-walkthrough.saveConflict-learn-more)를 방문하세요.</target>
+      </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
         <target state="translated">인증 프로필 지우기</target>
@@ -393,8 +415,8 @@ URL: {1}
         <target state="translated">PAC 원격 분석 사용 중지</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
-        <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
-        <target state="translated">VS Code에서 현대식 웹 사이트를 바로 만드는 방법을 알아보세요.</target>
+        <source xml:lang="en">Discover how you can make complete, modern websites right in Visual Studio Code</source>
+        <target state="translated">Visual Studio Code에서 현대식 웹 사이트를 바로 만드는 방법을 알아보세요.</target>
       </trans-unit>
       <trans-unit id="pacCLI.openDocumentation.title">
         <source xml:lang="en">Documentation</source>
@@ -413,8 +435,27 @@ URL: {1}
         <target state="translated">환경 및 솔루션</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
-        <source xml:lang="en">File system</source>
-        <target state="translated">파일 시스템</target>
+        <source xml:lang="en">File explorer</source>
+        <target state="translated">파일 탐색기</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
+        <source xml:lang="en">Find your page files organized in folders under your site name. All your pages are arranged into HTML, CSS, and JS files within the respective site component folders. 
+ 
+ You can find site components like forms, content snippets, lists, and more to edit. 
+ 
+ To learn more, visit [Power Pages file structure in VS Code](command:powerplatform-walkthrough.fileSystem-documentation). 
+ 
+[Visit site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
+The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">사이트 이름 아래 폴더에 정리된 페이지 파일을 찾으세요. 모든 페이지가 해당 사이트 구성 요소 폴더에 HTML, CSS, JS 파일로 정리됩니다. 
+ 
+ 양식, 콘텐츠 조각, 목록 등 편집할 사이트 구성 요소를 찾을 수 있습니다. 
+ 
+ 자세한 내용은 [VS Code의 Power Pages 파일 구조](command:powerplatform-walkthrough.fileSystem-documentation)를 방문하세요. 
+ 
+[사이트 폴더 방문](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
         <source xml:lang="en">Initialize Web Extension</source>
@@ -451,6 +492,16 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
         <target state="translated">이 컴퓨터에는 인증 프로필이 없습니다.
 [인증 프로필 추가](command:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
+        <source xml:lang="en">Now easily edit code of your Power Pages site. Access code from supported site components like forms, content snippets, lists, and more from within Visual Studio Code.
+ 
+ To learn more, visit [Edit Power Pages code in VS Code](command:powerplatform-walkthrough.overview-learn-more).</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">이제 Power Pages 사이트의 코드를 쉽게 편집할 수 있습니다. Visual Studio Code 내에서 양식, 콘텐츠 조각, 목록 등 지원되는 사이트 구성 요소의 코드에 액세스하세요.
+ 
+ 자세한 내용은 [VS Code의 Power Pages 코드 편집](command:powerplatform-walkthrough.overview-learn-more)을 방문하세요.</target>
+      </trans-unit>
       <trans-unit id="pacCLI.openPacLab.title">
         <source xml:lang="en">Open PAC Lab</source>
         <target state="translated">PAC 랩 열기</target>
@@ -458,14 +509,6 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
         <target state="translated">개요</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
-        <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
-[Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
-        <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Power Pages 확장을 사용하면 Power Pages 스튜디오의 프로젝트 구조와 동기화되는 사용자 지정된 파일 시스템을 사용할 수 있습니다.
-[자세히 알아보기](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="power-platform-activitybar.title">
         <source xml:lang="en">Power Platform</source>
@@ -482,6 +525,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="pacCLI.authPanel.refresh.title">
         <source xml:lang="en">Refresh</source>
         <target state="translated">새로 고침</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
+        <source xml:lang="en">Save conflict</source>
+        <target state="translated">충돌 저장</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -525,27 +572,6 @@ The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough
  데스크톱 및 웹용 Visual Studio Code의 차이점을 [자세히 알아보세요](command:powerplatform-walkthrough.advancedCapabilities-learn-more).
  
 [코딩 시작](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
-        <source xml:lang="en">Your files are stored in nested folders under your site name. 
- 
- The individual page files can be found in the web-pages folder under your site name. 
- 
- All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. 
- 
- To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
-[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
-        <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
-The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">파일은 사이트 이름 아래에 중첩된 폴더에 저장됩니다. 
- 
- 개별 페이지 파일은 사이트 이름 아래 웹 페이지 폴더에서 찾을 수 있습니다. 
- 
- 모든 페이지가 각 페이지 이름의 폴더 안에 있는 HTML, CSS, JS 파일로 정렬됩니다. 
- 
- 웹용 VS Code의 Power Pages 파일 시스템에 대한 자세한 내용은 [설명서](command:powerplatform-walkthrough.fileSystem-documentation)를 참조하세요. 
-[사이트 폴더 열기](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
     </body>
   </file>

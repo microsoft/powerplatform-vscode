@@ -25,7 +25,6 @@
   "Failed to create: {0}./{0} will be replaced by the error message.": "Impossibile creare: {0}.",
   "Failed to disable PAC telemetry.": "Impossibile disabilitare telemetria PAC.",
   "Failed to enable PAC telemetry.": "Impossibile abilitare telemetria PAC.",
-  "Failed to fetch file content.": "Impossibile recuperare il contenuto del file.",
   "Failed to fetch some files.": "Impossibile recuperare alcuni file.",
   "Failed to get file ready for edit.": "Impossibile preparare il file per la modifica.",
   "Fetching your file ...": "Recupero del file in corso...",
