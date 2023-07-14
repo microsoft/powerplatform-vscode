@@ -384,6 +384,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="pacCLI.openPacLab.title">
       <source xml:lang="en">Open PAC Lab</source>
     </trans-unit>
+    <trans-unit id="powerPlatform.experimental.auth.testCloudOverride.description">
+      <source xml:lang="en">Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.</source>
+      <note>This is a Markdown formatted string, and `#powerPlatform.auth.cloud#` must remain unmodified.</note>
+    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
       <source xml:lang="en">Overview</source>
     </trans-unit>
@@ -431,6 +435,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified
 The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified</note>
+    </trans-unit>
+    <trans-unit id="powerPlatform.auth.cloud.description">
+      <source xml:lang="en">Which Azure Cloud Power Platform Tools should use for authentication.</source>
     </trans-unit>
   </body></file>
 </xliff>
