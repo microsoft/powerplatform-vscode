@@ -9,7 +9,7 @@ import { SurveyConstants } from "../../../web/client/common/constants";
 import fetch from "node-fetch";
 import { getNonce } from "../../Utils";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
-import { UserFeedbackFailureEvent, UserFeedbackSuccessEvent} from "../telemetry/telemetryConstants";
+import { CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent} from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
 
@@ -116,15 +116,15 @@ async function handleFeedbackSubmission(text: string, endpointUrl: string, apiTo
       // Feedback sent successfully
       const responseJson = await response.json();
       const feedbackId = responseJson.FeedbackId;
-      sendTelemetryEvent(telemetry, { eventName: UserFeedbackSuccessEvent, feedbackType:thumbType, FeedbackId: feedbackId, copilotSessionId: sessionID });
+      sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackSuccessEvent, feedbackType:thumbType, FeedbackId: feedbackId, copilotSessionId: sessionID });
     } else {
       // Error sending feedback
-      sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, error: response.statusText });
+      sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, error: response.statusText });
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // Network error or other exception
-    sendTelemetryEvent(telemetry, { eventName: UserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, exception: error.message });
+    sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, exception: error.message });
   }
 }
 
