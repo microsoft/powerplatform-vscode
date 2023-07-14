@@ -35,7 +35,6 @@ async function fetchDataParallel(endpoints: string[]) {
         redirect: 'follow'
     };
 
-
     try {
       const promises = endpoints.map(async endpoint => {
         try {
@@ -54,8 +53,7 @@ async function fetchDataParallel(endpoints: string[]) {
       const successfulResponses = responses.filter(response => response !== null);
       return successfulResponses;
     } catch (error) {
-      console.error('Error:', error);
-      // Handle the error as needed
+      return null;
     }
   }
   
@@ -75,18 +73,4 @@ export function convertGuidToUrls(orgId: string) {
         preprodUrl,
         prodUrl
     };
-}
-
-export async function fetchIslandData(endpoint: string) {
-    try {
-        const response = await fetch(endpoint);
-        if (!response.ok) {
-            throw new Error('Request failed');
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error(error);
-        // Handle the error as needed
-    }
 }
