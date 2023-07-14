@@ -43,6 +43,7 @@ export type SolutionListing = {
     SolutionUniqueName: string;
     FriendlyName: string;
     VersionNumber: string;
+    IsManaged: boolean;
 }
 
 export type PacSolutionListOutput = PacOutput & {
