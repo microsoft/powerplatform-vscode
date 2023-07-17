@@ -416,9 +416,9 @@
       return; // Do nothing if it already has the class
     }
 
-    const thumbsDownPath= document.querySelector("#thumbsdown-path")
+    const thumbsDownPath= element.parentNode.querySelector("#thumbsdown-path")
 
-    const thumpsUpPath = document.querySelector("#thumbsup-path")
+    const thumpsUpPath = element.parentNode.querySelector("#thumbsup-path")
     thumpsUpPath.classList.add("thumbsup-clicked");
     thumbsDownPath.classList.remove("thumbsdown-clicked");
 
@@ -430,9 +430,9 @@
       return; // Do nothing if it already has the class
     }
 
-    const thumbsUpPath= document.querySelector("#thumbsup-path")
+    const thumbsUpPath= element.parentNode.querySelector("#thumbsup-path")
 
-    const thumbsDownPath= document.querySelector("#thumbsdown-path")
+    const thumbsDownPath= element.parentNode.querySelector("#thumbsdown-path")
     thumbsDownPath.classList.add("thumbsdown-clicked");
     thumbsUpPath.classList.remove("thumbsup-clicked");
 
