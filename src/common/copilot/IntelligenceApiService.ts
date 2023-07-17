@@ -71,6 +71,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
           return [{ displayText: errorMessage, code: '' }];
         }
         throw new Error("Invalid response format");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error });
         return InvalidResponse;
@@ -86,11 +87,13 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         if (errorResponse.error && errorResponse.error.messages[0]) {
           return [{ displayText: errorResponse.error.messages[0], code: '' }];
         }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error});
         return InvalidResponse;
       }
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error});
     return NetworkError;
