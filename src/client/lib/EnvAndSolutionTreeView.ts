@@ -89,18 +89,25 @@ class EnvOrSolutionTreeItem extends vscode.TreeItem {
         super(EnvOrSolutionTreeItem.createLabel(model), EnvOrSolutionTreeItem.setCollapsibleState(model));
         if ("SolutionUniqueName" in model) {
             this.contextValue = "SOLUTION";
+            const solutionType = model.IsManaged
+                ? vscode.l10n.t("Managed")
+                : vscode.l10n.t("Unmanaged");
             this.tooltip = vscode.l10n.t(
                 {
-                    message: "Display Name: {0}\nUnique Name: {1}\nVersion: {2}",
-                    args: [model.FriendlyName, model.SolutionUniqueName, model.VersionNumber],
+                    message: "Display Name: {0}\nUnique Name: {1}\nVersion: {2}\nType: {3}",
+                    args: [model.FriendlyName, model.SolutionUniqueName, model.VersionNumber, solutionType],
                     comment: [
                         "This is a multi-line tooltip",
                         "The {0} represents Solution's Friendly / Display name",
                         "The {1} represents Solution's unique name",
-                        "The {2} represents Solution's Version number"
+                        "The {2} represents Solution's Version number",
+                        "The {3} represents Solution's Type (Managed or Unmanaged), but that test is localized separately."
                     ]
                 }
             );
+            if (model.IsManaged) {
+                this.iconPath = new vscode.ThemeIcon("lock");
+            }
         } else {
             this.contextValue = "ENVIRONMENT";
             this.tooltip = vscode.l10n.t(
