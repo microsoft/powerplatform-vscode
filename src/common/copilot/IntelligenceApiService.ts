@@ -49,15 +49,21 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
   }
 
   try {
+    const startTime = performance.now();
+
     const response = await fetch(aibEndpoint, {
       ...requestInit
     });
+
+    const endTime = performance.now();
+
+    const responseTime = endTime - startTime;
 
     if (response.ok) {
       try {
         const jsonResponse = await response.json();
         if (jsonResponse.operationStatus === 'Success') {
-          sendTelemetryEvent(telemetry, { eventName: CopilotResponseSuccessEvent, copilotSessionId: sessionID });
+          sendTelemetryEvent(telemetry, { eventName: CopilotResponseSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime });
           if (jsonResponse.additionalData && Array.isArray(jsonResponse.additionalData) && jsonResponse.additionalData.length > 0) {
             const additionalData = jsonResponse.additionalData[0];
             if (additionalData.properties && additionalData.properties.response) {
@@ -73,14 +79,14 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         throw new Error("Invalid response format");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error, durationInMills: responseTime });
         return InvalidResponse;
       }
     } else {
       //TODO: Log error
       try {
         const errorResponse = await response.json();
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: errorResponse.error.messages[0]});
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: errorResponse.error.messages[0], durationInMills: responseTime});
         if(response.status >= 500 && response.status < 600) {
           return InvalidResponse
         }
