@@ -48,6 +48,14 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copy Unique Name",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copy Version Number",
 
+  "powerPlatform.auth.cloud.description": "Which Azure Cloud Power Platform Tools should use for authentication.",
+  "powerPlatform.experimental.auth.testCloudOverride.description": {
+    "message": "Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.",
+    "comment": [
+      "This is a Markdown formatted string, and `#powerPlatform.auth.cloud#` must remain unmodified."
+    ]
+  },
+
   "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview",
   "microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension",
   "microsoft-powerapps-portals.walkthrough.title": "Edit Power Pages code",
