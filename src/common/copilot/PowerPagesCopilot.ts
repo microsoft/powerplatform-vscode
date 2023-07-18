@@ -173,6 +173,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             sendTelemetryEvent(this.telemetry, { eventName: UserFeedbackThumbsDownEvent, copilotSessionId: sessionID });
             CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry)
           }
+          break;
+        }
+        case "walkthrough": {
+          this.openWalkthrough();
+          break;
         }
       }
     });
@@ -218,6 +223,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     
 
     }
+  }
+
+  private openWalkthrough() {
+    const walkthroughUri = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'walkthrough', 'Copilot-In-PowerPages.md');
+    vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
   }
 
   private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
