@@ -17,7 +17,7 @@ import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, s
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
-import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 
@@ -176,6 +176,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           break;
         }
         case "walkthrough": {
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID });
           this.openWalkthrough();
           break;
         }
