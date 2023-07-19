@@ -367,7 +367,6 @@
         break;
       }
       case "welcomeScreen": {
-        console.log("is logged in", isLoggedIn)
         if (isLoggedIn) {
           welcomeScreen.userLoggedIn();
         } else {

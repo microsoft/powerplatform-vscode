@@ -242,11 +242,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   private async checkAuthentication() {
     const session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
     if (session) {
-        console.log('token: ' + session.accessToken);
         apiToken = session.accessToken;
         userName = getUserName(session.account.label);
     } else {
-        console.log('no token');
         apiToken = "";
         userName = "";
     }
@@ -286,7 +284,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     userID = activeOrg.UserId;
     activeOrgUrl = activeOrg.OrgUrl;
 
-    this.aibEndpoint = await getIntelligenceEndpoint(orgID);
+    this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
     if(this.aibEndpoint === COPILOT_DISABLED) {
       this.sendMessageToWebview({ type: 'notAvailable'});
     }

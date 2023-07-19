@@ -5,17 +5,20 @@
 
 import fetch, {RequestInit} from "node-fetch";
 import { COPILOT_DISABLED, US_GEO } from "./copilot/constants";
+import { ITelemetry } from "../client/telemetry/ITelemetry";
+import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
+import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
 
-export async function getIntelligenceEndpoint (orgId: string) {
+export async function getIntelligenceEndpoint (orgId: string, telemetry:ITelemetry, sessionID:string) {
     const { tstUrl, preprodUrl, prodUrl } = convertGuidToUrls(orgId);
     const endpoints = [tstUrl, preprodUrl, prodUrl];
 
-    const artemisResponse = await fetchDataParallel(endpoints);
+    const artemisResponse = await fetchDataParallel(endpoints, telemetry, sessionID);
     
     if (!artemisResponse) {
         return null;
     }
-
+    sendTelemetryEvent(telemetry, {eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID})
     const { clusterNumber, geoName, environment } = artemisResponse[0];
 
     if(geoName !== US_GEO) {
@@ -28,7 +31,7 @@ export async function getIntelligenceEndpoint (orgId: string) {
     
 }
 
-async function fetchDataParallel(endpoints: string[]) {
+async function fetchDataParallel(endpoints: string[], telemetry: ITelemetry, sessionID: string) {
 
     const requestInit: RequestInit = {
         method: 'GET',
@@ -44,7 +47,6 @@ async function fetchDataParallel(endpoints: string[]) {
           }
           return response.json();
         } catch (error) {
-          console.error(`Request failed for ${endpoint}:`, error);
           return null;
         }
       });
@@ -52,7 +54,9 @@ async function fetchDataParallel(endpoints: string[]) {
       const responses = await Promise.all(promises);
       const successfulResponses = responses.filter(response => response !== null);
       return successfulResponses;
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      sendTelemetryEvent(telemetry, {eventName: CopilotArtemisFailureEvent, copilotSessionId: sessionID, error: error})
       return null;
     }
   }
