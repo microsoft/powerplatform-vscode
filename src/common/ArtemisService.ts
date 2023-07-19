@@ -13,7 +13,7 @@ export async function getIntelligenceEndpoint (orgId: string, telemetry:ITelemet
     const { tstUrl, preprodUrl, prodUrl } = convertGuidToUrls(orgId);
     const endpoints = [tstUrl, preprodUrl, prodUrl];
 
-    const artemisResponse = await fetchDataParallel(endpoints, telemetry, sessionID);
+    const artemisResponse = await fetchIslandInfo(endpoints, telemetry, sessionID);
     
     if (!artemisResponse) {
         return null;
@@ -31,7 +31,7 @@ export async function getIntelligenceEndpoint (orgId: string, telemetry:ITelemet
     
 }
 
-async function fetchDataParallel(endpoints: string[], telemetry: ITelemetry, sessionID: string) {
+async function fetchIslandInfo(endpoints: string[], telemetry: ITelemetry, sessionID: string) {
 
     const requestInit: RequestInit = {
         method: 'GET',
@@ -64,8 +64,8 @@ async function fetchDataParallel(endpoints: string[], telemetry: ITelemetry, ses
 
 export function convertGuidToUrls(orgId: string) {
     const updatedOrgId = orgId.replace(/-/g, "");
-    const domain = updatedOrgId.replace(/-/g, "").slice(0, -1);
-    const domainProd = updatedOrgId.replace(/-/g, "").slice(0, -2);
+    const domain = updatedOrgId.slice(0, -1);
+    const domainProd = updatedOrgId.slice(0, -2);
     const nonProdSegment = updatedOrgId.slice(-1);
     const prodSegment = updatedOrgId.slice(-2);
     const tstUrl = `https://${domain}.${nonProdSegment}.organization.api.test.powerplatform.com/gateway/cluster?api-version=1`;
