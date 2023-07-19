@@ -64,7 +64,8 @@ export class PacTerminal implements vscode.Disposable {
             }
         }));
 
-        this._cmdDisposables.push(...RegisterPanels(this._pacWrapper));
+        this._cmdDisposables.push(...RegisterPanels(this._pacWrapper, context, telemetry));
+
     }
 
     public openDocumentation(): void {
