@@ -10,7 +10,7 @@ import { EnvAndSolutionTreeView } from './EnvAndSolutionTreeView';
 import { PowerPagesCopilot } from '../../common/copilot/PowerPagesCopilot';
 import { ITelemetry } from '../telemetry/ITelemetry';
 
-export function RegisterPanels(pacWrapper: PacWrapper, context:vscode.ExtensionContext, telemetry:ITelemetry): vscode.Disposable[] {
+export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.ExtensionContext, telemetry: ITelemetry): vscode.Disposable[] {
     const authPanel = new AuthTreeView(() => pacWrapper.authList(), pacWrapper);
     const envAndSolutionPanel = new EnvAndSolutionTreeView(
         () => pacWrapper.orgList(),
@@ -19,11 +19,11 @@ export function RegisterPanels(pacWrapper: PacWrapper, context:vscode.ExtensionC
 
     const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, telemetry, pacWrapper);
 
-    context.subscriptions.push(vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotPanel, {
+    vscode.window.registerWebviewViewProvider('powerpages.copilot', copilotPanel, {
         webviewOptions: {
             retainContextWhenHidden: true,
         },
-    }));
+    });
 
     return [authPanel, envAndSolutionPanel, copilotPanel];
 }

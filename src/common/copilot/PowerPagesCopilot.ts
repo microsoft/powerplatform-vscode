@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { AuthProfileNotFound, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
-import { IActiveFileParams, IActiveFileData} from './model';
+import { IActiveFileParams, IActiveFileData } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
@@ -43,9 +43,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     this._extensionContext = _context;
     this._pacWrapper = pacWrapper;
 
-    _context.subscriptions.push(
+    this._disposables.push(
       vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
-        if(userName && orgID) {
+        if (userName && orgID) {
           this.sendMessageToWebview({ type: "clearConversation" });
           sessionID = uuidv4();
         }
@@ -66,13 +66,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     const watchPath = GetAuthProfileWatchPattern();
     if (watchPath) {
       const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
-
-      watcher.onDidChange(() => this.handleOrgChange()),
+      this._disposables.push(
+        watcher,
+        watcher.onDidChange(() => this.handleOrgChange()),
         watcher.onDidCreate(() => this.handleOrgChange()),
         watcher.onDidDelete(() => this.handleOrgChange())
-      this._extensionContext.subscriptions.push(watcher);
+      );
     }
-
   }
 
   private async handleOrgChange() {
@@ -120,7 +120,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         case "webViewLoaded": {
 
           sessionID = uuidv4();
-          this.sendMessageToWebview({ type: 'env'}); //TODO Use IS_DESKTOP
+          this.sendMessageToWebview({ type: 'env' }); //TODO Use IS_DESKTOP
           this.handleLogin();
           break;
         }
@@ -231,7 +231,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         let entityName = "";
         let entityColumns: string[] = [];
 
-        if(activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+        if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
           entityName = getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
           const dataverseToken = await dataverseAuthentication(activeOrgUrl);
@@ -255,7 +255,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     userID = activeOrg.UserId;
     activeOrgUrl = activeOrg.OrgUrl;
 
-    if(this._view?.visible){
+    if (this._view?.visible) {
       showConnectedOrgMessage(environmentName, activeOrgUrl);
     }
   }
@@ -274,12 +274,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
   private getActiveEditorContent(): IActiveFileData {
     const activeEditor = vscode.window.activeTextEditor;
-    const activeFileData : IActiveFileData = {
-      activeFileContent:'',
-      activeFileParams:{
-        dataverseEntity:'',
+    const activeFileData: IActiveFileData = {
+      activeFileContent: '',
+      activeFileParams: {
+        dataverseEntity: '',
         entityField: '',
-        fieldType:''
+        fieldType: ''
       } as IActiveFileParams
     };
     if (activeEditor) {
@@ -292,7 +292,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       activeFileData.activeFileContent = document.getText();
       activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
       activeFileData.activeFileParams.entityField = EntityFieldMap.get(activeFileParams[1]) || "";
-      activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "" ;
+      activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "";
     }
 
     return activeFileData;
