@@ -221,6 +221,10 @@ a {
   text-decoration: none;
 }
 
+a:focus {
+  outline: none;
+}
+
 li:before {
   content: "/";
 }
@@ -276,10 +280,11 @@ hr {
 .walkthrough-title {
   font-size: 11px;
   margin-bottom: 10px;
+  margin-top: 18px;
   color: var(--vscode-input-placeholderForeground);
 }
 
-.walkthrough-content {
+.walkthrough-content, .suggested-prompt {
   display: inline-flex;
   align-items: center;
 }
@@ -290,4 +295,16 @@ hr {
 
 .play-icon {
   margin-right: 5px;
+}
+
+.suggested-prompt {
+  margin-bottom: 10px;
+}
+
+.suggested-title {
+  margin: 16px 0px;
+}
+
+.star-icon {
+  margin-right: 4px;
 }
