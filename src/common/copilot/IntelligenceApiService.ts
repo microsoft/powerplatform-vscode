@@ -8,13 +8,15 @@ import { InvalidResponse, NetworkError } from "./constants";
 import { IActiveFileParams } from "./model";
 
 
-export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[]) {
+export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], aibEndpoint: string | null) {
 
-  const region = 'test';
-  let aibEndpoint = '';
+  // const region = 'test';
+  // let aibEndpoint = '';
 
-  aibEndpoint = getAibEndpoint(region, orgID);
-
+  // aibEndpoint = getAibEndpoint(region, orgID);
+  if(!aibEndpoint) {
+    return NetworkError;
+  }
 
   const requestBody = {
     "question": userPrompt,
@@ -86,14 +88,4 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
     return NetworkError;
   }
 
-}
-
-function getAibEndpoint(region: string, orgID: string): string {
-  switch (region) {
-    case 'test':
-      return `https://aibuildertextapiservice.wus-il001.gateway.test.island.powerapps.com/v1.0/${orgID}/appintelligence/chat`;
-    default:
-      // TODO: Add prod endpoint
-      return '';
-  }
 }
