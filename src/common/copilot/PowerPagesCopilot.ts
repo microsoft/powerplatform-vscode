@@ -10,7 +10,7 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AuthProfileNotFound, COPILOT_DISABLED, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
+import { AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData} from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -286,12 +286,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     activeOrgUrl = activeOrg.OrgUrl;
 
     this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
-    if(this.aibEndpoint === COPILOT_DISABLED) {
-      this.sendMessageToWebview({ type: 'notAvailable'});
-    }
-
-    this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
-    if(this.aibEndpoint === COPILOT_DISABLED) {
+    if(this.aibEndpoint === COPILOT_UNAVAILABLE) {
       this.sendMessageToWebview({ type: 'notAvailable'});
     }
 

@@ -14,7 +14,7 @@ export const sendIconSvg = ` <svg width="16px" height="16px" viewBox="0 0 16 16"
 export const CodiconStylePathSegments = ['src', 'common', 'copilot', 'assets', 'styles', 'codicon.css'];
 export const CopilotStylePathSegments = ['src', 'common', 'copilot', 'assets', 'styles', 'copilot.css'];
 export const US_GEO = 'us';
-export const COPILOT_DISABLED = 'copilotDisabled';
+export const COPILOT_UNAVAILABLE = 'copilotunavailable';
 
 
 export type WebViewMessage = {

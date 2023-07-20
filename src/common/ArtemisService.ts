@@ -4,7 +4,7 @@
  */
 
 import fetch, {RequestInit} from "node-fetch";
-import { COPILOT_DISABLED, US_GEO } from "./copilot/constants";
+import { COPILOT_UNAVAILABLE, US_GEO } from "./copilot/constants";
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
@@ -22,7 +22,7 @@ export async function getIntelligenceEndpoint (orgId: string, telemetry:ITelemet
     const { clusterNumber, geoName, environment } = artemisResponse[0];
 
     if(geoName !== US_GEO) {
-        return COPILOT_DISABLED;
+        return COPILOT_UNAVAILABLE;
     }
 
     const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-il${clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
@@ -54,14 +54,21 @@ async function fetchIslandInfo(endpoints: string[], telemetry: ITelemetry, sessi
       const responses = await Promise.all(promises);
       const successfulResponses = responses.filter(response => response !== null);
       return successfulResponses;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      sendTelemetryEvent(telemetry, {eventName: CopilotArtemisFailureEvent, copilotSessionId: sessionID, error: error})
+    } catch (error) {
+      sendTelemetryEvent(telemetry, {eventName: CopilotArtemisFailureEvent, copilotSessionId: sessionID, error: error as Error})
       return null;
     }
   }
   
 
+/**
+ * @param orgId 
+ * @returns urls
+ * ex. orgId: c7809087-d9b8-4a00-a78a-a4b901caa23f
+ * TST (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.test.powerplatform.com/artemis 
+ * PreProd (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.preprod.powerplatform.com/artemis 
+ * Prod: https:// c7809087d9b84a00a78aa4b901caa2.3f.organization.api.powerplatform.com/artemis 
+ */
 export function convertGuidToUrls(orgId: string) {
     const updatedOrgId = orgId.replace(/-/g, "");
     const domain = updatedOrgId.slice(0, -1);
