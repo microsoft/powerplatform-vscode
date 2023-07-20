@@ -36,7 +36,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
 
   const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
-  const endpointUrl = `https://world.tip1.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
+  const endpointUrl = `https://world.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
 
   feedbackPanel.webview.onDidReceiveMessage(
     async message => {
