@@ -29,13 +29,14 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
   const { feedbackCssUri, feedbackJsUri } = getWebviewURIs(context, feedbackPanel);
 
   const nonce = getNonce();
-  feedbackPanel.webview.html = getWebviewContent(feedbackCssUri, feedbackJsUri, nonce);
+  const webview = feedbackPanel.webview
+  feedbackPanel.webview.html = getWebviewContent(feedbackCssUri, feedbackJsUri, nonce, webview);
 
   const feedbackData = initializeFeedbackData(sessionId);
 
   const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
-  const endpointUrl = `https://world.tip1.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
+  const endpointUrl = `https://world.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
 
   feedbackPanel.webview.onDidReceiveMessage(
     async message => {
@@ -128,12 +129,13 @@ async function handleFeedbackSubmission(text: string, endpointUrl: string, apiTo
   }
 }
 
-function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri, nonce: string) {
+function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri, nonce: string, webview: vscode.Webview) {
 
   return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="${feedbackCssUri}" rel="stylesheet">
         </link>

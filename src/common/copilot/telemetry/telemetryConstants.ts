@@ -24,3 +24,6 @@ export const CopilotLoadedEvent = 'CopilotLoadedEvent';
 export const CopilotOrgChangedEvent = 'CopilotOrgChangedEvent';
 export const CopilotUserPromptedEvent = 'CopilotUserPromptedEvent';
 export const CopilotTryNotificationClickedEvent = 'CopilotTryNotificationClickedEvent';
+export const CopilotArtemisSuccessEvent = 'CopilotArtemisSuccessEvent';
+export const CopilotArtemisFailureEvent = 'CopilotArtemisFailureEvent';
+export const CopilotWalkthroughEvent = 'CopilotWalkthroughEvent';

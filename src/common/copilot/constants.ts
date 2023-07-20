@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import vscode from "vscode";
+
 
 export const CopilotDisclaimer = `Make sure AI-generated content is accurate and appropriate before using. <a href="https://go.microsoft.com/fwlink/?linkid=2240145">Learn more</a> | <a href="https://go.microsoft.com/fwlink/?linkid=2189520">View
 terms</a>`;
@@ -13,7 +15,11 @@ export const sendIconSvg = ` <svg width="16px" height="16px" viewBox="0 0 16 16"
 </svg>`;
 export const CodiconStylePathSegments = ['src', 'common', 'copilot', 'assets', 'styles', 'codicon.css'];
 export const CopilotStylePathSegments = ['src', 'common', 'copilot', 'assets', 'styles', 'copilot.css'];
-
+export const US_GEO = 'us';
+export const COPILOT_UNAVAILABLE = 'copilotunavailable';
+export const AUTH_CREATE_MESSAGE = vscode.l10n.t('Creating new Auth Profile');
+export const AUTH_CREATE_FAILED = vscode.l10n.t("Error creating auth profile for org")
+export const PAC_SUCCESS = "Success";
 
 export type WebViewMessage = {
   type: string;

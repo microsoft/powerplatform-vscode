@@ -78,7 +78,11 @@ body {
   margin-top: 12px;
 }
 
-.send-icon, .copyIcon, .insertIcon, .thumbsup-clicked, .thumbsdown-clicked {
+.send-icon,
+.copyIcon,
+.insertIcon,
+.thumbsup-clicked,
+.thumbsdown-clicked {
   fill: var(--vscode-inputOption-activeForeground);
 }
 
@@ -217,6 +221,10 @@ a {
   text-decoration: none;
 }
 
+a:focus {
+  outline: none;
+}
+
 li:before {
   content: "/";
 }
@@ -267,4 +275,36 @@ hr {
   height: 1px;
   background-color: var(--vscode-dropdown-border);
   margin: 0px 20px;
+}
+
+.walkthrough-title {
+  font-size: 11px;
+  margin-bottom: 10px;
+  margin-top: 18px;
+  color: var(--vscode-input-placeholderForeground);
+}
+
+.walkthrough-content, .suggested-prompt {
+  display: inline-flex;
+  align-items: center;
+}
+
+.play-icon-path {
+  fill: var(--vscode-textLink-foreground);
+}
+
+.play-icon {
+  margin-right: 5px;
+}
+
+.suggested-prompt {
+  margin-bottom: 10px;
+}
+
+.suggested-title {
+  margin: 16px 0px;
+}
+
+.star-icon {
+  margin-right: 4px;
 }
