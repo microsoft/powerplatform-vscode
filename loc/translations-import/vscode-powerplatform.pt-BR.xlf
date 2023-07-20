@@ -97,6 +97,10 @@ The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
 The {2} represents Solution's Version number
 The {3} represents Solution's Type (Managed or Unmanaged), but that test is localized separately.</note>
+        <target state="translated">Nome de Exibição: {0}
+Nome Exclusivo: {1}
+Versão: {2}
+Tipo: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
@@ -155,6 +159,7 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       </trans-unit>
       <trans-unit id="++CODE++8f2de600bf940a26c63a7ac23984a12ca8970fcf1a85947aa5566c34e23eea07">
         <source xml:lang="en">Managed</source>
+        <target state="translated">Gerenciado(a)</target>
       </trans-unit>
       <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
         <source xml:lang="en">Maximum 30 characters allowed</source>
@@ -318,6 +323,7 @@ ID da Organização: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
         <source xml:lang="en">Unmanaged</source>
+        <target state="translated">Não gerenciado(a)</target>
       </trans-unit>
       <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
         <source xml:lang="en">User: {0}</source>
@@ -511,6 +517,7 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="powerPlatform.experimental.auth.testCloudOverride.description">
         <source xml:lang="en">Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.</source>
         <note>This is a Markdown formatted string, and `#powerPlatform.auth.cloud#` must remain unmodified.</note>
+        <target state="translated">Substitui o `#powerPlatform.auth.cloud#` ara destinos de teste. Deixe em branco para o comportamento padrão.</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
@@ -581,6 +588,7 @@ The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough
       </trans-unit>
       <trans-unit id="powerPlatform.auth.cloud.description">
         <source xml:lang="en">Which Azure Cloud Power Platform Tools should use for authentication.</source>
+        <target state="translated">Quais Power Platform Tools a Nuvem do Azure deve usar para autenticação.</target>
       </trans-unit>
     </body>
   </file>
