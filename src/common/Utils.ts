@@ -69,7 +69,17 @@ export function showConnectedOrgMessage(environmentName: string, orgUrl: string)
 
   export async function showInputBoxAndGetOrgUrl() {
     return vscode.window.showInputBox({
-        placeHolder: "Enter the environment URL",
-        prompt: "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL."
+        placeHolder: vscode.l10n.t("Enter the environment URL"),
+        prompt: vscode.l10n.t("Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.")
     });
+}
+
+export async function showProgressWithNotification<T>(title: string, task: () => Promise<T>): Promise<T> {
+  return await vscode.window.withProgress({
+    location: vscode.ProgressLocation.Notification,
+    title: title,
+    cancellable: false
+  }, async () => {
+    return await task();
+  });
 }
