@@ -32,7 +32,9 @@
 
         // Get the feedback text from the form field
         const feedbackText = document.getElementById('feedbackText').value;
-        vscode.postMessage({ command: 'feedback', text: feedbackText })
+        if (feedbackText.trim() !== '') {
+            vscode.postMessage({ command: 'feedback', text: feedbackText });
+          } 
     });
 
 }());

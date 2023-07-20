@@ -16,7 +16,7 @@ import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, s
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
-import { CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopyCodeToClipboardEvent, InsertCodeToEditorEvent, UserFeedbackThumbsDownEvent, UserFeedbackThumbsUpEvent } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
@@ -194,6 +194,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             sendTelemetryEvent(this.telemetry, { eventName: UserFeedbackThumbsDownEvent, copilotSessionId: sessionID });
             CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry)
           }
+          break;
+        }
+        case "walkthrough": {
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID });
+          this.openWalkthrough();
+          break;
         }
       }
     });
@@ -251,6 +257,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         userName = "";
     }
 }
+
+  private openWalkthrough() {
+    const walkthroughUri = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'walkthrough', 'Copilot-In-PowerPages.md');
+    vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
+  }
 
   private authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
     return intelligenceAPIAuthentication()
