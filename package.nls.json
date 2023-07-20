@@ -39,6 +39,7 @@
 
   "pacCLI.envAndSolutionsPanel.title": "Environments & Solutions",
   "pacCLI.envAndSolutionsPanel.refresh.title": "Refresh",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "Select Environment",
   "pacCLI.envAndSolutionsPanel.copyDisplayName.title": "Copy Display Name",
   "pacCLI.envAndSolutionsPanel.copyEnvironmentId.title": "Copy Environment Id",
   "pacCLI.envAndSolutionsPanel.copyEnvironmentUrl.title": "Copy Environment Url",

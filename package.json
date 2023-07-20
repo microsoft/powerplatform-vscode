@@ -242,6 +242,11 @@
         "title": "%pacCLI.authPanel.copyUser.title%"
       },
       {
+        "command": "pacCLI.envAndSolutionsPanel.selectEnvironment",
+        "title": "%pacCLI.envAndSolutionsPanel.selectEnvironment.title%",
+        "icon": "$(star-empty)"
+      },
+      {
         "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",
         "title": "%pacCLI.envAndSolutionsPanel.copyFriendlyName.title%"
       },
@@ -621,6 +626,10 @@
           "when": "never"
         },
         {
+          "command": "pacCLI.envAndSolutionsPanel.selectEnvironment",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.authPanel.selectAuthProfile",
           "when": "never"
         },
@@ -766,6 +775,11 @@
         {
           "command": "pacCLI.envAndSolutionsPanel.copyVersionNumber",
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
+        },
+        {
+          "command": "pacCLI.envAndSolutionsPanel.selectEnvironment",
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
+          "group": "inline"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyDisplayName",

@@ -54,7 +54,8 @@ export type OrgListOutput = {
     FriendlyName: string,
     OrganizationId: string,
     EnvironmentId: string,
-    EnvironmentUrl: string
+    EnvironmentUrl: string,
+    IsActive: boolean
 }
 
 export type PacOrgListOutput = PacOutput & {
