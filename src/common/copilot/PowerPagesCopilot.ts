@@ -10,9 +10,9 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData} from './model';
-import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "../Utils";
+import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
@@ -80,25 +80,25 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
   private async handleOrgChange() {
     orgID = '';
-    const pacOutput = await this._pacWrapper.activeOrg();
+      const pacOutput = await this._pacWrapper.activeOrg();
+  
+    if (pacOutput.Status === PAC_SUCCESS) {
+        this.handleOrgChangeSuccess(pacOutput);
+      } else if (this._view?.visible) {
 
-    if (pacOutput.Status === "Success") {
-      this.handleOrgChangeSuccess(pacOutput);
-    } else if (this._view?.visible) {
-
-      const userOrgUrl = await showInputBoxAndGetOrgUrl();
-      if (!userOrgUrl) {
-        return;
-      }
-      const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
-      if (pacAuthCreateOutput.Status !== "Success") {
-        vscode.window.showErrorMessage("Failed to create auth profile for the org"); //TODO: Provide Experience to create auth profile
-        return;
-      }
+        const userOrgUrl = await showInputBoxAndGetOrgUrl();
+        if (!userOrgUrl) {
+          return;
+        }
+        const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async() => { return await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl)});
+        if (pacAuthCreateOutput.Status !== PAC_SUCCESS) {
+          vscode.window.showErrorMessage(AUTH_CREATE_FAILED); // TODO: Provide Experience to create auth profile
+          return;
+        }
 
     }
   }
-
+  
 
   public async resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -119,7 +119,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     const pacOutput = await this._pacWrapper.activeOrg();
 
-    if (pacOutput.Status === "Success") { 
+    if (pacOutput.Status === PAC_SUCCESS) { 
       this.handleOrgChangeSuccess(pacOutput);
     }
 
@@ -155,6 +155,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             })()
             : (() => {
               this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
+              this.handleOrgChange();
               this.sendMessageToWebview({ type: 'enableInput' });
             })();
 
@@ -208,7 +209,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   private async handleLogin() {
 
     const pacOutput = await this._pacWrapper.activeOrg();
-    if (pacOutput.Status === "Success") {
+    if (pacOutput.Status === PAC_SUCCESS) {
       this.handleOrgChangeSuccess.call(this, pacOutput);
 
       intelligenceAPIAuthentication().then(({ accessToken, user }) => {
@@ -229,12 +230,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         return;
       }
-      const pacAuthCreateOutput = await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl);
-      pacAuthCreateOutput.Status === "Success"
+      const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async() => { return await this._pacWrapper.authCreateNewAuthProfileForOrg(userOrgUrl)});
+      pacAuthCreateOutput.Status === PAC_SUCCESS
         ? intelligenceAPIAuthentication().then(({ accessToken, user }) =>
           this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user)
         )
-        : vscode.window.showErrorMessage("Error creating auth profile for org");
+        : vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
 
 
     }
