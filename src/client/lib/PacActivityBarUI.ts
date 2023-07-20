@@ -15,7 +15,8 @@ export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.Extension
     const envAndSolutionPanel = new EnvAndSolutionTreeView(
         () => pacWrapper.orgList(),
         (environmentUrl) => pacWrapper.solutionListFromEnvironment(environmentUrl),
-        authPanel.onDidChangeTreeData);
+        authPanel.onDidChangeTreeData,
+        pacWrapper);
 
     const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, telemetry, pacWrapper);
 
