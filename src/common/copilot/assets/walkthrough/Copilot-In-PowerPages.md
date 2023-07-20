@@ -1,4 +1,4 @@
-# Copilot in Power Pages
+# ![Copilot Screen](./images/M365.svg) Copilot in Power Pages
 
 Copilot in Visual Studio Code helps you code using natural language chat interaction. In Power Pages, you work with site code that includes HTML, JS, or CSS code to make site customizations that are not currently supported in Power Pages low-code design studio. This Copilot chat experience assists Power Pages developers like you to write code by simply describing your expected code behavior using natural language. You can then refine the generated code and use it when customizing your site.
 
