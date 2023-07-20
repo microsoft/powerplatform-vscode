@@ -300,9 +300,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     sessionID = uuidv4(); // Generate a new session ID on org change
     sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
-    sessionID = uuidv4(); // Generate a new session ID on org change
-    sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
-
     this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
     if(this.aibEndpoint === COPILOT_UNAVAILABLE) {
       this.sendMessageToWebview({ type: 'notAvailable'}); 
