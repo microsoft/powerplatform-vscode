@@ -20,4 +20,5 @@ export const CopilotDataverseMetadataFailureEvent = 'CopilotDataverseMetadataFai
 export const CopilotYamlParsingFailureEvent = 'CopilotYamlParsingFailureEvent';
 export const CopilotGetEntityFailureEvent = 'CopilotGetEntityFailureEvent';
 export const CopilotArtemisSuccessEvent = 'CopilotArtemisSuccessEvent';
-export const CopilotArtemisFailureEvent = 'CopilotArtemisFailureEvent';export const CopilotWalkthroughEvent = 'CopilotWalkthroughEvent';
+export const CopilotArtemisFailureEvent = 'CopilotArtemisFailureEvent';
+export const CopilotWalkthroughEvent = 'CopilotWalkthroughEvent';
