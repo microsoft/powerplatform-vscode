@@ -34,7 +34,7 @@ Note
 
 ![Demo File Screen](./images/contextpowerpages.svg)
 
-To know more, see [Copilot in Power Pages documentation].
+To know more, see [Copilot in Power Pages documentation](https://go.microsoft.com/fwlink/?linkid=2206366).
 
 ## Help us in improving this feature
 
