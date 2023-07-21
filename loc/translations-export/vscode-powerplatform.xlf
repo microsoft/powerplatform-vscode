@@ -415,6 +415,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
       <source xml:lang="en">Select Auth Profile</source>
     </trans-unit>
+    <trans-unit id="pacCLI.envAndSolutionsPanel.selectEnvironment.title">
+      <source xml:lang="en">Select Environment</source>
+    </trans-unit>
     <trans-unit id="pacCLI.pacAuthHelp.title">
       <source xml:lang="en">Show PAC Authentication Help</source>
     </trans-unit>

@@ -367,8 +367,8 @@ async function snapshot() {
     }
 }
 
-const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.25.2';
+const feedName = 'CAP_ISVExp_Tools_Daily';
+const cliVersion = '1.26.1-daily-23071923';
 
 const recompile = gulp.series(
     clean,
