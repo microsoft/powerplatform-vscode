@@ -20,6 +20,7 @@ export const COPILOT_UNAVAILABLE = 'copilotunavailable';
 export const AUTH_CREATE_MESSAGE = vscode.l10n.t('Creating new Auth Profile');
 export const AUTH_CREATE_FAILED = vscode.l10n.t("Error creating auth profile for org")
 export const PAC_SUCCESS = "Success";
+export const RELEVANCY_CHECK_FAILED = 'RelevancyCheckFailed';
 
 export type WebViewMessage = {
   type: string;
@@ -49,3 +50,4 @@ export const FieldTypeMap = new Map<string, string>([
 export const AuthProfileNotFound = [{ displayText: "Active auth profile is not found or has expired. Create an Auth profile to start chatting with Copilot again.", code: '' }];
 export const NetworkError = [{ displayText: "There was an issue connecting to the server. Don’t worry, you can try again.", code: '' }];
 export const InvalidResponse = [{ displayText: "Something went wrong. Don’t worry, you can try again.", code: '' }];
+export const MalaciousScenerioResponse = [{ displayText: "Try a different prompt that’s related to writing code for Power Pages sites. You can get help with HTML, CSS, and JS languages.", code: '' }];
