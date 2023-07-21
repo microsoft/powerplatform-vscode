@@ -48,6 +48,6 @@ export const FieldTypeMap = new Map<string, string>([
 ]);
 
 export const AuthProfileNotFound = [{ displayText: "Active auth profile is not found or has expired. Create an Auth profile to start chatting with Copilot again.", code: '' }];
-export const NetworkError = [{ displayText: "There was an issue connecting to the server. Don’t worry, you can try again.", code: '' }];
+export const NetworkError = [{ displayText: "There was an issue connecting to the server. Please check your internet connection and try again.", code: '' }];
 export const InvalidResponse = [{ displayText: "Something went wrong. Don’t worry, you can try again.", code: '' }];
 export const MalaciousScenerioResponse = [{ displayText: "Try a different prompt that’s related to writing code for Power Pages sites. You can get help with HTML, CSS, and JS languages.", code: '' }];
