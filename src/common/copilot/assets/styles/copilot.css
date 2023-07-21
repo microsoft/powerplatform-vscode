@@ -1,5 +1,5 @@
 body {
-  font-size: var(--vscode-editor-font-size);
+  font-size: 13px;
   font-weight: var(--vscode-font-weight);
   font-family: var(--vscode-font-family);
   margin: 0;
