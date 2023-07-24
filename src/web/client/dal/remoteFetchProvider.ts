@@ -53,7 +53,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                 "We encountered an error preparing the file for edit."
             )
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, errorMsg, error as Error);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, fetchDataFromDataverseAndUpdateVFS.name,errorMsg, error as Error);
     }
 }
 
@@ -152,6 +152,7 @@ async function fetchFromDataverseAndCreateFiles(
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
+                    fetchFromDataverseAndCreateFiles.name,
                     (error as Error)?.message,
                     error as Error
                 );
@@ -299,6 +300,7 @@ async function createContentFiles(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+            createContentFiles.name,
             errorMsg,
             error as Error
         );
@@ -564,6 +566,7 @@ export async function preprocessData(
         const errorMsg = (error as Error)?.message;
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,
+            preprocessData.name,
             errorMsg,
             error as Error
         );

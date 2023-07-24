@@ -69,7 +69,7 @@ export function GetFileContent(result: any, attributePath: IAttributePath) {
     }
     catch (error) {
         const errorMsg = (error as Error)?.message;
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_GET_FILE_CONTENT_ERROR, errorMsg);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_GET_FILE_CONTENT_ERROR, GetFileContent.name,errorMsg);
     }
 
     if (fileContent === NO_CONTENT) {
@@ -96,7 +96,7 @@ export function setFileContent(result: any, attributePath: IAttributePath, conte
         }
     } catch (error) {
         const errorMsg = (error as Error)?.message;
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_SET_FILE_CONTENT_ERROR, errorMsg);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_SET_FILE_CONTENT_ERROR, setFileContent.name,errorMsg);
     }
 }
 

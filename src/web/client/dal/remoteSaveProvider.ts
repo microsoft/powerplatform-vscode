@@ -97,6 +97,7 @@ async function getSaveParameters(
     } else {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
+            getSaveParameters.name,
             BAD_REQUEST
         ); // no API request is made in this case since we do not know in which column should we save the value
         showErrorDialog(
@@ -195,6 +196,7 @@ async function saveDataToDataverse(
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
+                    saveDataToDataverse.name,
                     (error as Error)?.message,
                     error as Error
                 );

@@ -149,6 +149,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
                                 WebExtensionContext.telemetry.sendErrorTelemetry(
                                     telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                                    activate.name,
                                     `appName:${appName}`
                                 );
                             }
@@ -163,6 +164,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
                     WebExtensionContext.telemetry.sendErrorTelemetry(
                         telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                        activate.name,
                         `appName:${appName}`
                     );
                     return;

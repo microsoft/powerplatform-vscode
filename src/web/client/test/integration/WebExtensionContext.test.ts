@@ -118,7 +118,8 @@ describe("WebExtensionContext", () => {
             expect(WebExtensionContext.dataverseAccessToken).eq("");
             assert.calledOnceWithExactly(
                 sendErrorTelemetry,
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                'triggeredMethod'
             );
             expect(WebExtensionContext.websiteIdToLanguage).empty;
             expect(WebExtensionContext.languageIdCodeMap).empty;
@@ -332,7 +333,8 @@ describe("WebExtensionContext", () => {
             expect(WebExtensionContext.dataverseAccessToken).eq("");
             assert.calledOnceWithExactly(
                 sendErrorTelemetry,
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                'triggeredMethod'
             );
             expect(WebExtensionContext.websiteIdToLanguage).length(0);
             expect(WebExtensionContext.languageIdCodeMap).length(0);
