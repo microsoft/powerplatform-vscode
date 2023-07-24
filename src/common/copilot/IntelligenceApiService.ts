@@ -87,7 +87,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
     } else {
       try {
         const errorResponse = await response.json();
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: errorResponse.error.messages[0], durationInMills: responseTime });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: errorResponse.error.messages[0], durationInMills: responseTime });
 
         if (response.status >= 500 && response.status < 600) {
           return InvalidResponse
@@ -98,7 +98,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
           return [{ displayText: errorResponse.error.messages[0], code: '' }];
         }
       } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: error as Error, durationInMills: responseTime });
         return InvalidResponse;
       }
     }
