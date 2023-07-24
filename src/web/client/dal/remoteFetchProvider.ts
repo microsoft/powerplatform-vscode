@@ -533,7 +533,7 @@ export async function preprocessData(
 
             const advancedFormStepData = new Map();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formsData.forEach((dataItem: any) => {
+            formsData?.forEach((dataItem: any) => {
                 const entityId = fetchedFileId ? dataItem[fetchedFileId] : null;
                 if (!entityId) {
                     throw new Error(ERRORS.FILE_ID_EMPTY);
@@ -542,13 +542,13 @@ export async function preprocessData(
             });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            data.forEach((dataItem: any) => {
+            data?.forEach((dataItem: any) => {
                 const webFormSteps = GetFileContent(dataItem, attributePath) as [];
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const steps: any[] = [];
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                webFormSteps.forEach((step: any) => {
+                webFormSteps?.forEach((step: any) => {
                     const formStepData = advancedFormStepData.get(step);
 
                     if (formStepData) {
