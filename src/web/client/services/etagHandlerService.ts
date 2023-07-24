@@ -87,7 +87,7 @@ export class EtagHandlerService {
                 const currentContent = new TextDecoder().decode(
                     await portalFs.readFile(vscode.Uri.parse(fileFsPath))
                 );
-                const latestContent = GetFileContent(result, attributePath);
+                const latestContent = GetFileContent(result, attributePath, entityName, entityId);
 
                 if (currentContent !== latestContent) {
                     updateEntityEtag(
