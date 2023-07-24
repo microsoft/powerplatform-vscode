@@ -78,26 +78,33 @@
         <source xml:lang="en">Confirm</source>
         <target state="translated">Potvrdit</target>
       </trans-unit>
+      <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
+        <source xml:lang="en">Copied to clipboard!</source>
+        <target state="translated">Zkopírováno do schránky</target>
+      </trans-unit>
       <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
         <source xml:lang="en">Creating {0}...</source>
         <note>{0} will be replaced by the entity type.</note>
         <target state="translated">Vytváří se {0}...</target>
       </trans-unit>
-      <trans-unit id="++CODE++315cb81be825c1f87db8249e03180f9561436c9b79693c5cdfba05edb619c793">
+      <trans-unit id="++CODE++e9f79ac902b11087dd0d34e8afc1de54df4e48d45861a0c0b6e4edd3c204f314">
         <source xml:lang="en">Display Name: {0}
 Unique Name: {1}
-Version: {2}</source>
+Version: {2}
+Type: {3}</source>
         <note>This is a multi-line tooltip
 The {0} represents Solution's Friendly / Display name
 The {1} represents Solution's unique name
-The {2} represents Solution's Version number</note>
-        <target state="translated">Zobrazované jméno: {0}
-Jedinečné jméno: {1}
-Verze: {2}</target>
+The {2} represents Solution's Version number
+The {3} represents Solution's Type (Managed or Unmanaged), but that test is localized separately.</note>
       </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
         <target state="translated">Upravit web</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0feefedc5916a0c9a464f4ef9f28fab835a23e1d035878f397e38053381aa3fa">
+        <source xml:lang="en">Enter Organization ID</source>
+        <target state="translated">Zadejte kód organizace.</target>
       </trans-unit>
       <trans-unit id="++CODE++80ccd89cd4c287f3ca9f3693982e8034544fefeba563c974f93482158e8f0737">
         <source xml:lang="en">Enter name</source>
@@ -119,10 +126,6 @@ Verze: {2}</target>
       <trans-unit id="++CODE++95da24b6bc127a935e2e4323fe85d8f46be20c5e8ca5e10c6a134e5a0c6443a2">
         <source xml:lang="en">Failed to enable PAC telemetry.</source>
         <target state="translated">Telemetrii PAC se nepodařilo povolit.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++c8fe15ab6371ebd955e8123fd897da623cad8dc11564548e7b4cf9b7e991120c">
-        <source xml:lang="en">Failed to fetch file content.</source>
-        <target state="translated">Nepodařilo se načíst obsah souboru.</target>
       </trans-unit>
       <trans-unit id="++CODE++83d9d98e86aca9239f8a2635a98356d956268fb41a465fbc039b9ac979c61649">
         <source xml:lang="en">Failed to fetch some files.</source>
@@ -149,6 +152,9 @@ Verze: {2}</target>
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
         <note>{0} represents the version number</note>
         <target state="translated">Instaluje se generátor Power Pages (verze {0})...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8f2de600bf940a26c63a7ac23984a12ca8970fcf1a85947aa5566c34e23eea07">
+        <source xml:lang="en">Managed</source>
       </trans-unit>
       <trans-unit id="++CODE++8a194d5287e3da019883144787cd5f282753f5ce892d933be0833b3818c25503">
         <source xml:lang="en">Maximum 30 characters allowed</source>
@@ -246,6 +252,11 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Please enter a name for the webpage.</source>
         <target state="translated">Zadejte název webové stránky.</target>
       </trans-unit>
+      <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
+        <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
+        <note>{0} represents the environment name</note>
+        <target state="translated">Copilot služby Power Pages je nyní připojen k prostředí: {0}: {1}</target>
+      </trans-unit>
       <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
         <note>{0} represents the version number</note>
@@ -305,6 +316,9 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">Tuto aplikaci nelze najít.</target>
       </trans-unit>
+      <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
+        <source xml:lang="en">Unmanaged</source>
+      </trans-unit>
       <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
         <source xml:lang="en">User: {0}</source>
         <note>The {0} represents auth profile's user name (email address))</note>
@@ -347,6 +361,16 @@ Kód organizace: {3}</target>
       <trans-unit id="pacCLI.authPanel.title">
         <source xml:lang="en">Auth Profiles</source>
         <target state="translated">Ověřovací profily</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.description">
+        <source xml:lang="en">Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. 
+ 
+To learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more).</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Vyhněte se náhodným přepisům při pokusu o uložení zastaralého kódu v editoru VS Code pro web. Změny můžete porovnat vedle sebe a rozhodnout, zda je přijmete, nebo vrátíte zpět. 
+ 
+Další informace najdete v článku, který popisuje, jak se [vyhnout náhodným přepisům](command:powerplatform-walkthrough.saveConflict-learn-more).</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -393,8 +417,8 @@ Kód organizace: {3}</target>
         <target state="translated">Zakázat telemetrii PAC</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.description">
-        <source xml:lang="en">Discover how you can make complete, modern websites right in VS Code</source>
-        <target state="translated">Objevte, jak můžete vytvářet kompletní moderní weby přímo v editoru VS Code.</target>
+        <source xml:lang="en">Discover how you can make complete, modern websites right in Visual Studio Code</source>
+        <target state="translated">Zjistěte, jak můžete vytvářet kompletní moderní weby přímo v editoru Visual Studio Code.</target>
       </trans-unit>
       <trans-unit id="pacCLI.openDocumentation.title">
         <source xml:lang="en">Documentation</source>
@@ -413,8 +437,27 @@ Kód organizace: {3}</target>
         <target state="translated">Prostředí a řešení</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.title">
-        <source xml:lang="en">File system</source>
-        <target state="translated">Systém souborů</target>
+        <source xml:lang="en">File explorer</source>
+        <target state="translated">Průzkumník souborů</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
+        <source xml:lang="en">Find your page files organized in folders under your site name. All your pages are arranged into HTML, CSS, and JS files within the respective site component folders. 
+ 
+ You can find site components like forms, content snippets, lists, and more to edit. 
+ 
+ To learn more, visit [Power Pages file structure in VS Code](command:powerplatform-walkthrough.fileSystem-documentation). 
+ 
+[Visit site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
+The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Soubory stránek jsou umístěny ve složkách pod názvem webu. Všechny stránky jsou uspořádané do souborů HTML, CSS a JS ve složkách příslušných komponent webu. 
+ 
+ Komponenty webu, jako jsou formuláře, fragmenty obsahu, seznamy a další, lze upravit. 
+ 
+ Další informace popisuje článek věnovaný [struktuře souborů Power Pages v editoru VS Code](command:powerplatform-walkthrough.fileSystem-documentation). 
+ 
+[Přejít do složky webu](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
       </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
         <source xml:lang="en">Initialize Web Extension</source>
@@ -451,21 +494,27 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
         <target state="translated">V tomto počítači nebyly nalezeny žádné ověřovací profily.
 [Přidat ověřovací profil](command:pacCLI.authPanel.newAuthProfile)</target>
       </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
+        <source xml:lang="en">Now easily edit code of your Power Pages site. Access code from supported site components like forms, content snippets, lists, and more from within Visual Studio Code.
+ 
+ To learn more, visit [Edit Power Pages code in VS Code](command:powerplatform-walkthrough.overview-learn-more).</source>
+        <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
+        <target state="translated">Nyní můžete kód webu Power Pages snadno upravit. Ke kódu podporovaných komponent webu, jako jsou formuláře, fragmenty obsahu, seznamy a další, získáte přístup z editoru Visual Studio Code.
+ 
+ Další informace najdete v článku věnovaném [úpravě kódu Power Pages v editoru VS Code](command:powerplatform-walkthrough.overview-learn-more).</target>
+      </trans-unit>
       <trans-unit id="pacCLI.openPacLab.title">
         <source xml:lang="en">Open PAC Lab</source>
         <target state="translated">Otevřít testovací prostředí PAC</target>
       </trans-unit>
+      <trans-unit id="powerPlatform.experimental.auth.testCloudOverride.description">
+        <source xml:lang="en">Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.</source>
+        <note>This is a Markdown formatted string, and `#powerPlatform.auth.cloud#` must remain unmodified.</note>
+      </trans-unit>
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
         <target state="translated">Přehled</target>
-      </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.description">
-        <source xml:lang="en">Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.
-[Learn More](command:powerplatform-walkthrough.overview-learn-more)</source>
-        <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Rozšíření Power Pages nabízí přizpůsobený systém souborů, který se synchronizuje se strukturou projektu v Power Pages Studiu.
-[Další informace](command:powerplatform-walkthrough.overview-learn-more)</target>
       </trans-unit>
       <trans-unit id="power-platform-activitybar.title">
         <source xml:lang="en">Power Platform</source>
@@ -482,6 +531,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="pacCLI.authPanel.refresh.title">
         <source xml:lang="en">Refresh</source>
         <target state="translated">Aktualizovat</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
+        <source xml:lang="en">Save conflict</source>
+        <target state="translated">Konflikt při ukládání</target>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
@@ -526,26 +579,8 @@ The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough
  
 [Začít kódovat](command:powerplatform-walkthrough.advancedCapabilities-start-coding)</target>
       </trans-unit>
-      <trans-unit id="microsoft-powerapps-portals.walkthrough.fileSystem.description">
-        <source xml:lang="en">Your files are stored in nested folders under your site name. 
- 
- The individual page files can be found in the web-pages folder under your site name. 
- 
- All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. 
- 
- To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). 
-[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)</source>
-        <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified
-The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified</note>
-        <target state="translated">Vaše soubory jsou uloženy ve vnořených složkách pod názvem vašeho webu. 
- 
- Soubory jednotlivých stránek se nacházejí ve složce webových stránek pod názvem vašeho webu. 
- 
- Všechny stránky jsou uspořádány do souborů HTML, CSS a JS ve složce s příslušným názvem stránky. 
- 
- Další informace o systému souborů Power Pages v editoru VS Code pro web najdete v naší [dokumentaci](command:powerplatform-walkthrough.fileSystem-documentation). 
-[Otevřít složku webu](command:powerplatform-walkthrough.fileSystem-open-folder)</target>
+      <trans-unit id="powerPlatform.auth.cloud.description">
+        <source xml:lang="en">Which Azure Cloud Power Platform Tools should use for authentication.</source>
       </trans-unit>
     </body>
   </file>

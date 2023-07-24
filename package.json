@@ -326,10 +326,22 @@
           "default": false,
           "markdownDescription": "Whether the generator installation is complete."
         },
-        "powerPlatform.experimental.copilotEnabled": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Whether the Power Platform Copilot is enabled."
+        "powerPlatform.auth.cloud": {
+          "type": "string",
+          "default": "Public",
+          "enum": [
+            "Public",
+            "USGov",
+            "USGovHigh",
+            "USGovDoD",
+            "China"
+          ],
+          "description": "%powerPlatform.auth.cloud.description%"
+        },
+        "powerPlatform.experimental.auth.testCloudOverride": {
+          "type": "string",
+          "default": null,
+          "markdownDescription": "%powerPlatform.experimental.auth.testCloudOverride.description%"
         },
         "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
@@ -809,7 +821,7 @@
           "name": "Copilot In Power Pages",
           "initialSize": 6,
           "visibility": "visible",
-          "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled"
+          "when": "never"
         }
       ]
     },
@@ -893,8 +905,8 @@
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
     "@vscode/l10n-dev": "^0.0.24",
-    "@vscode/test-electron": "^2.3.0",
-    "@vscode/test-web": "^0.0.24",
+    "@vscode/test-electron": "^2.3.3",
+    "@vscode/test-web": "^0.0.44",
     "@vscode/vsce": "^2.19.0",
     "assert": "^2.0.0",
     "chai": "^4.3.6",
@@ -925,7 +937,6 @@
     "ts-loader": "^9.2.8",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
-    "vsce": "^2.15.0",
     "webpack": "^5.76.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",

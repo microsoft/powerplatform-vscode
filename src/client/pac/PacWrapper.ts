@@ -18,6 +18,7 @@ export interface IPacWrapperContext {
     readonly telemetry: ITelemetry;
     readonly automationAgent: string;
     IsTelemetryEnabled(): boolean;
+    GetCloudSetting(): string;
 }
 
 export interface IPacInterop {
@@ -118,7 +119,7 @@ export class PacWrapper {
 
     public async authCreateNewAuthProfile(): Promise<PacAuthListOutput> {
         return this.executeCommandAndParseResults<PacAuthListOutput>(
-            new PacArguments("auth", "create"));
+            new PacArguments("auth", "create", "--cloud", this.context.GetCloudSetting()));
     }
 
     public async authCreateNewAuthProfileForOrg(orgUrl: string): Promise<PacAuthListOutput> {

@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { PacInterop, PacWrapper } from "../../client/pac/PacWrapper";
 import { PacWrapperContext } from "../../client/pac/PacWrapperContext";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AuthProfileNotFound, CodiconStylePathSegments, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
+import { AuthProfileNotFound, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData} from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -315,12 +315,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     );
     const copilotStyleUri = webview.asWebviewUri(copilotStylePath);
 
-    const codiconStylePath = vscode.Uri.joinPath(
-      this._extensionUri,
-      ...CodiconStylePathSegments
-    );
-    const codiconStyleUri = webview.asWebviewUri(codiconStylePath);
-
     // Use a nonce to only allow specific scripts to be run
     const nonce = getNonce();
 
@@ -331,10 +325,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         
         <head>
           <meta charset="UTF-8">
+          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <link href="${copilotStyleUri}" rel="stylesheet">
-          </link>
-          <link href="${codiconStyleUri}" rel="stylesheet">
           </link>
           <title>Chat View</title>
         </head>

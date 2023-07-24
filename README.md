@@ -21,7 +21,9 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 ## Release Notes
 2.0.0:
   - pac CLI 1.25.2 (June refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
-  - Multi file editing support for Power Pages components in VS Code for Web
+  - Power Pages site code edit support - in VScode web extension - for components like forms, content snippets, lists, and more
+  - Enhanced Power Pages (paportal) download to have CSS, JS and HTML files as placeholders always.
+  - Power Pages (paportal) commands to have better error handling for deployment profiles and unsupported web-files.
 
 1.1.28:
   - pac CLI 1.24.3 (May refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
