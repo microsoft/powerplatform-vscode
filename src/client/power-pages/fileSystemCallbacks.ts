@@ -8,7 +8,7 @@ import { ITelemetry } from "../telemetry/ITelemetry";
 import { getCurrentWorkspaceURI, getExcludedFileGlobPattern, getFileProperties, getPowerPageEntityType, getRegExPattern } from "./commonUtility";
 import { PowerPagesEntityType } from "./constants";
 import { cleanupRelatedFiles, fileRenameValidation, updateEntityPathNames } from "./fileSystemUpdatesUtility";
-import { FileDeleteEvent, FileRenameEvent, sendTelemetryEvent, UserFileDeleteEvent, UserFileRenameEvent } from "./telemetry";
+import { FileDeleteEvent, FileRenameEvent, sendTelemetryEvent, UserFileDeleteEvent, UserFileDeleteEventFailure, UserFileRenameEvent, UserFileRenameEventFailure } from "./telemetry";
 import { showDiagnosticMessage, validateTextDocument } from "./validationDiagnostics";
 
 export async function handleFileSystemCallbacks(
@@ -64,7 +64,7 @@ async function processOnDidDeleteFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, { eventName: UserFileDeleteEventFailure, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileDeleteEvent
@@ -120,7 +120,7 @@ async function processOnDidRenameFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, { eventName: UserFileRenameEventFailure, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileRenameEvent
