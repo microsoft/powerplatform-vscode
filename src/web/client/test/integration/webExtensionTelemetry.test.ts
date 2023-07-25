@@ -164,6 +164,7 @@ describe("webExtensionTelemetry", () => {
     it("sendErrorTelemetry_whenErrorMessagePassed_shouldCallSendTelemetryExceptionWithGivenError", () => {
         //Action
         const eventName = "update";
+        const methodName = "triggeredMethod";
 
         const errorMessage = "not a valid Id";
         const sendTelemetryException = stub(
@@ -172,6 +173,7 @@ describe("webExtensionTelemetry", () => {
         );
         const properties = {
             eventName: eventName,
+            methodName: methodName
         };
 
         //Act
@@ -191,6 +193,7 @@ describe("webExtensionTelemetry", () => {
     it("sendErrorTelemetry_whenErrorMessageNotPassed_shouldCallSendTelemetryExceptionWithNewError", () => {
         //Action
         const eventName = "update";
+        const methodName = "triggeredMethod";
 
         const sendTelemetryException = stub(
             telemetry,
@@ -198,9 +201,10 @@ describe("webExtensionTelemetry", () => {
         );
         const properties = {
             eventName: eventName,
+            methodName: methodName
         };
         //Act
-        webExtensionTelemetry.sendErrorTelemetry(eventName);
+        webExtensionTelemetry.sendErrorTelemetry(eventName,methodName);
         //Assert
 
         assert.calledOnce(sendTelemetryException);

@@ -59,7 +59,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                 "We encountered an error preparing the file for edit."
             )
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, errorMsg, error as Error);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, fetchDataFromDataverseAndUpdateVFS.name, errorMsg, error as Error);
     }
 }
 
@@ -159,6 +159,7 @@ async function fetchFromDataverseAndCreateFiles(
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
+                    fetchFromDataverseAndCreateFiles.name,
                     (error as Error)?.message,
                     error as Error
                 );
@@ -288,6 +289,7 @@ async function createContentFiles(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+            createContentFiles.name,
             errorMsg,
             error as Error
         );
@@ -524,7 +526,7 @@ export async function preprocessData(
 
             const advancedFormStepData = new Map();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formsData.forEach((dataItem: any) => {
+            formsData?.forEach((dataItem: any) => {
                 const entityId = fetchedFileId ? dataItem[fetchedFileId] : null;
                 if (!entityId) {
                     throw new Error(ERRORS.FILE_ID_EMPTY);
@@ -533,13 +535,14 @@ export async function preprocessData(
             });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            data.forEach((dataItem: any) => {
+            data?.forEach((dataItem: any) => {
                 const webFormSteps = GetFileContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
+
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const steps: any[] = [];
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                webFormSteps.forEach((step: any) => {
+                webFormSteps?.forEach((step: any) => {
                     const formStepData = advancedFormStepData.get(step);
 
                     if (formStepData) {
@@ -555,6 +558,7 @@ export async function preprocessData(
         const errorMsg = (error as Error)?.message;
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,
+            preprocessData.name,
             errorMsg,
             error as Error
         );

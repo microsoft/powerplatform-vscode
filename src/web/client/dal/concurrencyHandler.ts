@@ -30,6 +30,7 @@ export class ConcurrencyHandler {
             if (e instanceof BulkheadRejectedError) {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_BULKHEAD_QUEUE_FULL,
+                    this.handleRequest.name,
                     this._bulkhead.executionSlots.toString(),
                 );
                 throw new Error(ERRORS.SUBURI_EMPTY);

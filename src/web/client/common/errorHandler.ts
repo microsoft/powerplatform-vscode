@@ -109,6 +109,7 @@ export function checkMandatoryPathParameters(
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING,
+                    checkMandatoryPathParameters.name,
                     `entity:${entity}, entityId:${entityId}`
                 );
                 showErrorDialog(
@@ -145,6 +146,7 @@ export function checkMandatoryQueryParameters(
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+                    checkMandatoryQueryParameters.name,
                     `orgURL:${orgURL}, dataSource:${dataSource}, schemaName:${schemaName} ,websiteId:${websiteId}`
                 );
                 showErrorDialog(
@@ -183,6 +185,7 @@ export function checkMandatoryMultifileParameters(
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_MULTI_FILE_MANDATORY_PARAMETERS_MISSING,
+                    checkMandatoryMultifileParameters.name,
                     `enableMultifile:${enableMultifile}, websiteId:${websiteId}`
                 );
                 showErrorDialog(

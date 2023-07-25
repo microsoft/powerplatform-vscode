@@ -259,6 +259,7 @@ class WebExtensionContext implements IWebExtensionContext {
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
                 telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_FAILED,
+                this.setVscodeWorkspaceState.name,
                 error as string
             );
         }
@@ -314,7 +315,8 @@ class WebExtensionContext implements IWebExtensionContext {
             this._languageIdCodeMap = new Map<string, string>();
 
             this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                dataverseAuthentication.name
             );
             throw vscode.FileSystemError.NoPermissions();
         }
@@ -426,6 +428,7 @@ class WebExtensionContext implements IWebExtensionContext {
             } else {
                 this.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
+                    this.populateLanguageIdToCode.name,
                     (error as Error)?.message,
                     error as Error
                 );
@@ -488,6 +491,7 @@ class WebExtensionContext implements IWebExtensionContext {
             } else {
                 this.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
+                    this.populateWebsiteLanguageIdToPortalLanguageMap.name,
                     (error as Error)?.message,
                     error as Error
                 );
@@ -549,6 +553,7 @@ class WebExtensionContext implements IWebExtensionContext {
             } else {
                 this.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
+                    this.populateWebsiteIdToLanguageMap.name,
                     (error as Error)?.message,
                     error as Error
                 );
