@@ -431,7 +431,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 type: "file",
                 entityId: WebExtensionContext.defaultEntityId,
                 entityName: WebExtensionContext.defaultEntityType,
-                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString()
+                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
+                duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
             }
         );
 
@@ -443,7 +444,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
         WebExtensionContext.telemetry.sendInfoTelemetry(
             telemetryEventNames.WEB_EXTENSION_PREPARE_WORKSPACE_SUCCESS,
             {
-                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString()
+                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
+                duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
             }
         );
     }

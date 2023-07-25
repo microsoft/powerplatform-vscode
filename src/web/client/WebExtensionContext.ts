@@ -55,12 +55,14 @@ export interface IWebExtensionContext {
     defaultEntityType: string;
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
     showMultifileInVSCode: boolean;
+    extensionActivationTime: number;
 
     // Org specific details
     dataverseAccessToken: string;
     entityDataMap: EntityDataMap;
     isContextSet: boolean;
     currentSchemaVersion: string;
+    websiteLanguageCode: string;
 
     // Telemetry and survey
     telemetry: WebExtensionTelemetry;
@@ -87,10 +89,12 @@ class WebExtensionContext implements IWebExtensionContext {
     private _defaultEntityType: string;
     private _defaultFileUri: vscode.Uri;
     private _showMultifileInVSCode: boolean;
+    private _extensionActivationTime: number;
     private _dataverseAccessToken: string;
     private _entityDataMap: EntityDataMap;
     private _isContextSet: boolean;
     private _currentSchemaVersion: string;
+    private _websiteLanguageCode: string;
     private _telemetry: WebExtensionTelemetry;
     private _npsEligibility: boolean;
     private _userId: string;
@@ -142,6 +146,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get showMultifileInVSCode() {
         return this._showMultifileInVSCode;
     }
+    public get extensionActivationTime() {
+        return this._extensionActivationTime
+    }
     public get dataverseAccessToken() {
         return this._dataverseAccessToken;
     }
@@ -153,6 +160,9 @@ class WebExtensionContext implements IWebExtensionContext {
     }
     public get currentSchemaVersion() {
         return this._currentSchemaVersion;
+    }
+    public get websiteLanguageCode() {
+        return this._websiteLanguageCode;
     }
     public get telemetry() {
         return this._telemetry;
@@ -188,8 +198,10 @@ class WebExtensionContext implements IWebExtensionContext {
         this._entityDataMap = new EntityDataMap();
         this._defaultFileUri = vscode.Uri.parse(``);
         this._showMultifileInVSCode = false;
+        this._extensionActivationTime = new Date().getTime();
         this._isContextSet = false;
         this._currentSchemaVersion = "";
+        this._websiteLanguageCode = "";
         this._telemetry = new WebExtensionTelemetry();
         this._npsEligibility = false;
         this._userId = "";
@@ -279,6 +291,8 @@ class WebExtensionContext implements IWebExtensionContext {
             dataverseOrgUrl,
             schema
         );
+
+        await this.setWebsiteLanguageCode();
     }
 
     public async dataverseAuthentication() {
@@ -449,7 +463,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
-               throw new Error(JSON.stringify(response));
+                throw new Error(JSON.stringify(response));
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
@@ -545,6 +559,27 @@ class WebExtensionContext implements IWebExtensionContext {
                 );
             }
         }
+    }
+
+    private async setWebsiteLanguageCode() {
+        const lcid =
+            this.websiteIdToLanguage.get(
+                this.urlParametersMap.get(
+                    Constants.queryParameters.WEBSITE_ID
+                ) as string
+            ) ?? "";
+        this.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_EDIT_LCID,
+            { lcid: lcid ? lcid.toString() : "" }
+        );
+
+        this._websiteLanguageCode = this.languageIdCodeMap.get(
+            lcid
+        ) as string;
+        this.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_WEBSITE_LANGUAGE_CODE,
+            { languageCode: this._websiteLanguageCode }
+        );
     }
 
     public setNPSEligibility(eligibility: boolean) {
