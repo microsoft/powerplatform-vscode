@@ -40,13 +40,16 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         ) as string;
         await Promise.all(entityRequestURLs.map(async (entity) => {
             await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
-                {
-                    entityName: entity.entityName,
-                    duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
-                }
-            );
+
+            if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
+                    {
+                        entityName: entity.entityName,
+                        duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
+                    }
+                );
+            }
         }));
     } catch (error) {
         const errorMsg = (error as Error)?.message;
