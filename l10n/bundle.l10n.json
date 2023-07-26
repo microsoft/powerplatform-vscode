@@ -24,6 +24,8 @@
       "{0} represents the environment name"
     ]
   },
+  "Enter the environment URL": "Enter the environment URL",
+  "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.": "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.",
   "Copied to clipboard!": "Copied to clipboard!",
   "Preparing pac CLI (v{0}).../{0} represents the version number": {
     "message": "Preparing pac CLI (v{0})...",
