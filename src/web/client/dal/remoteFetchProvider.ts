@@ -40,10 +40,16 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         ) as string;
         await Promise.all(entityRequestURLs.map(async (entity) => {
             await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
-                { entityName: entity.entityName }
-            );
+
+            if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
+                    {
+                        entityName: entity.entityName,
+                        duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
+                    }
+                );
+            }
         }));
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -53,7 +59,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                 "We encountered an error preparing the file for edit."
             )
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, errorMsg, error as Error);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, fetchDataFromDataverseAndUpdateVFS.name, errorMsg, error as Error);
     }
 }
 
@@ -69,6 +75,7 @@ async function fetchFromDataverseAndCreateFiles(
     let makeRequestCall = true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let data: any[] = [];
+    let counter = 0;
 
     while (makeRequestCall) {
         try {
@@ -121,7 +128,7 @@ async function fetchFromDataverseAndCreateFiles(
 
             if (portalFs && dataverseOrgUrl) {
                 data = await preprocessData(data, entityName);
-                for (let counter = 0; counter < data.length; counter++) {
+                for (; counter < data.length; counter++) {
                     await createContentFiles(
                         data[counter],
                         entityName,
@@ -152,6 +159,7 @@ async function fetchFromDataverseAndCreateFiles(
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
+                    fetchFromDataverseAndCreateFiles.name,
                     (error as Error)?.message,
                     error as Error
                 );
@@ -179,25 +187,6 @@ async function createContentFiles(
     defaultFileInfo?: IFileInfo,
 ) {
     try {
-        const lcid =
-            WebExtensionContext.websiteIdToLanguage.get(
-                WebExtensionContext.urlParametersMap.get(
-                    Constants.queryParameters.WEBSITE_ID
-                ) as string
-            ) ?? "";
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_EDIT_LCID,
-            { lcid: lcid ? lcid.toString() : "" }
-        );
-
-        let languageCode = WebExtensionContext.languageIdCodeMap.get(
-            lcid
-        ) as string;
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_WEBSITE_LANGUAGE_CODE,
-            { languageCode: languageCode }
-        );
-
         const entityDetails = getEntity(entityName);
         const attributes = entityDetails?.get(schemaEntityKey.ATTRIBUTES);
         const attributeExtension = entityDetails?.get(
@@ -255,6 +244,7 @@ async function createContentFiles(
             throw new Error(ERRORS.LANGUAGE_CODE_ID_VALUE_NULL);
         }
 
+        let languageCode = WebExtensionContext.websiteLanguageCode;
         if (defaultFileInfo === undefined &&
             languageCodeAttribute &&
             result[languageCodeAttribute]) {
@@ -299,6 +289,7 @@ async function createContentFiles(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+            createContentFiles.name,
             errorMsg,
             error as Error
         );
@@ -330,7 +321,7 @@ async function processDataAndCreateFile(
     for (counter; counter < attributeArray.length; counter++) {
         const fileExtension = attributeExtensionMap?.get(
             attributeArray[counter]
-        ) as string;
+        ) as string; // This will be undefined for Advanced forms where we need to further expand the data to look for steps information
         const fileNameWithExtension = defaultFileInfo?.fileName ?? GetFileNameWithExtension(
             entityName,
             fileName,
@@ -341,16 +332,19 @@ async function processDataAndCreateFile(
             attributeArray[counter]
         );
 
-        const expandedContent = GetFileContent(result, attributePath);
-        if (fileExtension === undefined && expandedContent !== Constants.NO_CONTENT) {
-            await processExpandedData(
-                entityName,
-                expandedContent,
-                portalsFS,
-                dataverseOrgUrl,
-                filePathInPortalFS);
+        if (fileExtension === undefined) {
+            const expandedContent = GetFileContent(result, attributePath, entityName, entityId);
+
+            if (expandedContent !== Constants.NO_CONTENT) {
+                await processExpandedData(
+                    entityName,
+                    expandedContent,
+                    portalsFS,
+                    dataverseOrgUrl,
+                    filePathInPortalFS);
+            }
         }
-        else if (fileExtension !== undefined) {
+        else {
             fileUri = filePathInPortalFS + fileNameWithExtension;
             await createFile(
                 attributeArray[counter],
@@ -420,17 +414,16 @@ async function createFile(
         attribute
     );
 
-    let fileContent = GetFileContent(result, attributePath);
-    if (mappingEntityFetchQuery && isPreloadedContent) {
-        fileContent = await getMappingEntityContent(
+    const fileContent = mappingEntityFetchQuery && isPreloadedContent ?
+        await getMappingEntityContent(
             mappingEntityFetchQuery,
             attribute,
             entityName,
             entityId,
             WebExtensionContext.dataverseAccessToken,
             dataverseOrgUrl
-        );
-    }
+        ) : GetFileContent(result, attributePath, entityName, entityId);
+
 
     await createVirtualFile(
         portalsFS,
@@ -518,8 +511,8 @@ export async function preprocessData(
             .get(schemaKey.SCHEMA_VERSION)
             ?.toLowerCase() as string;
 
-        if (entityType === schemaEntityName.ADVANCEDFORMS && schema.toLowerCase() ===
-            portal_schema_V2.entities.dataSourceProperties.schema) {
+        if (entityType === schemaEntityName.ADVANCEDFORMS &&
+            schema.toLowerCase() === portal_schema_V2.entities.dataSourceProperties.schema) {
             entityType = schemaEntityName.ADVANCEDFORMSTEPS;
             const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
                 Constants.queryParameters.ORG_URL
@@ -533,7 +526,7 @@ export async function preprocessData(
 
             const advancedFormStepData = new Map();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formsData.forEach((dataItem: any) => {
+            formsData?.forEach((dataItem: any) => {
                 const entityId = fetchedFileId ? dataItem[fetchedFileId] : null;
                 if (!entityId) {
                     throw new Error(ERRORS.FILE_ID_EMPTY);
@@ -542,13 +535,14 @@ export async function preprocessData(
             });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            data.forEach((dataItem: any) => {
-                const webFormSteps = GetFileContent(dataItem, attributePath) as [];
+            data?.forEach((dataItem: any) => {
+                const webFormSteps = GetFileContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
+
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const steps: any[] = [];
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                webFormSteps.forEach((step: any) => {
+                webFormSteps?.forEach((step: any) => {
                     const formStepData = advancedFormStepData.get(step);
 
                     if (formStepData) {
@@ -564,6 +558,7 @@ export async function preprocessData(
         const errorMsg = (error as Error)?.message;
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,
+            preprocessData.name,
             errorMsg,
             error as Error
         );

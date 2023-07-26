@@ -358,6 +358,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
+            'triggeredMethod',
             telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING
         );
     });
@@ -385,6 +386,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
+            'triggeredMethod',
             telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING
         );
     });
@@ -457,6 +459,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
+            'triggeredMethod',
             telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
         );
     });
@@ -494,6 +497,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
+            'triggeredMethod',
             telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
         );
     });
@@ -531,6 +535,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
+            'triggeredMethod',
             telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
         );
     });
@@ -565,6 +570,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
+            'triggeredMethod',
             telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
         );
     });

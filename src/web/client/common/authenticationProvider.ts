@@ -110,6 +110,7 @@ export async function dataverseAuthentication(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
+            dataverseAuthentication.name,
             authError
         );
     }
@@ -147,6 +148,7 @@ export async function npsAuthentication(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.NPS_AUTHENTICATION_FAILED,
+            npsAuthentication.name,
             authError
         );
     }

@@ -66,6 +66,7 @@ export class NPSWebView {
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 telemetryEventNames.RENDER_NPS_FAILED,
+                this._getHtml.name,
                 (error as Error)?.message
             );
             return "";
