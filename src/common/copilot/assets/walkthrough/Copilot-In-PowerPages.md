@@ -19,7 +19,7 @@ Review the [terms](https://go.microsoft.com/fwlink/?linkid=2189520) and [Respons
 Copilot in Visual Studio Code is tuned to generate code for Power Pages sites, so its functionalities are limited to Power Pages site supported languages like HTML, JS, and CSS. The generated code from Copilot makes use of supported frameworks like bootstrap and jQuery.
 
 1. In the Copilot chat, describe the code behavior you want using natural language. For example, code for form validation or Ajax calls using the Power Pages Web API.
-1. Continue to refine your questions in the Copilot chat and iterate them till you’ve got what you need.  
+1. Continue to repharse your questions in the Copilot chat and iterate them till you’ve got what you need.  
 1. Once you are happy with the generated code, you can easily copy and paste the code snippet or insert the code to Power Pages site and modify the code further.
 
 Examples
@@ -34,7 +34,7 @@ Note
 
 ![Demo File Screen](./images/contextpowerpages.svg)
 
-To know more, see [Copilot in Power Pages documentation].
+To know more, see [Copilot in Power Pages documentation](https://go.microsoft.com/fwlink/?linkid=2206366).
 
 ## Help us in improving this feature
 
