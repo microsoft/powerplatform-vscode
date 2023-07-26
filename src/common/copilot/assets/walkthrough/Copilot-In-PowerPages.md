@@ -12,7 +12,7 @@ Review the [terms](https://go.microsoft.com/fwlink/?linkid=2189520) and [Respons
 - Open site root folder in Visual Studio Code.
 
   ![Demo Site Screen](./images/websiteselection.svg)
-- Login to Power Pages Copilot with your Dataverse Environment credentials. (Expand this to include how to connect to different environment)  
+- Login to Power Pages Copilot with your Dataverse Environment credentials.
 
 ## How to use Copilot to generate code
 
