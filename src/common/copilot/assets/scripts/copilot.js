@@ -493,6 +493,7 @@
       handleUserMessage((chatInput).value);
       chatInput.disabled = true;
       saveInputToHistory(chatInput.value);
+      apiResponseInProgress = true;
       getApiResponse((chatInput).value);
       (chatInput).value = "";
       (chatInput).focus();
@@ -504,6 +505,7 @@
       handleUserMessage((chatInput).value);
       chatInput.disabled = true;
       saveInputToHistory(chatInput.value);
+      apiResponseInProgress = true;
       getApiResponse((chatInput).value);
       (chatInput).value = "";
     }
@@ -558,7 +560,7 @@
     const userPrompt = this.textContent.trim();
     handleUserMessage(userPrompt);
     chatInput.disabled = true;
-
+    saveInputToHistory(userPrompt);
     apiResponseInProgress = true;
     getApiResponse(userPrompt);
   }
@@ -602,7 +604,7 @@
   }
 
   function saveInputToHistory(inputValue) {
-    if (inputHistory.length >= 3) {
+    if (inputHistory.length >= 50) {
       inputHistory.shift();
     }
     inputHistory.push(inputValue);
