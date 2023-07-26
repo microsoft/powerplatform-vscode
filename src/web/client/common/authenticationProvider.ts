@@ -13,6 +13,10 @@ import {
     SCOPE_OPTION_OFFLINE_ACCESS,
 } from "./constants";
 import { ERRORS, showErrorDialog } from "./errorHandler";
+import { ITelemetry } from "../../../client/telemetry/ITelemetry";
+import { sendTelemetryEvent } from "../../../common/copilot/telemetry/copilotTelemetry";
+import { CopilotLoginFailureEvent, CopilotLoginStartEvent, CopilotLoginSuccessEvent } from "../../../common/copilot/telemetry/telemetryConstants";
+
 
 export function getCommonHeaders(
     accessToken: string,
@@ -30,10 +34,10 @@ export function getCommonHeaders(
 }
 
 //Get access token for Intelligence API service
-export async function intelligenceAPIAuthentication(): Promise<{ accessToken: string, user: string }> {
+export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string): Promise<{ accessToken: string, user: string }> {
     let accessToken = '';
     let user = '';
-    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_STARTED);
+    sendTelemetryEvent(telemetry, { eventName: CopilotLoginStartEvent, copilotSessionId: sessionID });
     try {
         let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
         if (!session) {
@@ -45,12 +49,12 @@ export async function intelligenceAPIAuthentication(): Promise<{ accessToken: st
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_COMPLETED, { "userId": session?.account.id.split('/').pop() ?? session?.account.id ?? '' });
+        sendTelemetryEvent(telemetry, { eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID });
     } catch (error) {
         const authError = (error as Error)?.message;
         showErrorDialog(vscode.l10n.t("Authorization Failed. Please run again to authorize it"),
             vscode.l10n.t("There was a permissions problem with the server"));
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_FAILED, intelligenceAPIAuthentication.name,authError);
+        sendTelemetryEvent(telemetry, { eventName: CopilotLoginFailureEvent, copilotSessionId: sessionID, error: authError });
     }
     return { accessToken, user };
 }
