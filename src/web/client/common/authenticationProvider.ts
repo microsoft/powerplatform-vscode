@@ -50,7 +50,7 @@ export async function intelligenceAPIAuthentication(): Promise<{ accessToken: st
         const authError = (error as Error)?.message;
         showErrorDialog(vscode.l10n.t("Authorization Failed. Please run again to authorize it"),
             vscode.l10n.t("There was a permissions problem with the server"));
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_FAILED, authError);
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_INTELLIGENCE_API_AUTHENTICATION_FAILED, intelligenceAPIAuthentication.name,authError);
     }
     return { accessToken, user };
 }
@@ -106,6 +106,7 @@ export async function dataverseAuthentication(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
+            dataverseAuthentication.name,
             authError
         );
     }
@@ -143,6 +144,7 @@ export async function npsAuthentication(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.NPS_AUTHENTICATION_FAILED,
+            npsAuthentication.name,
             authError
         );
     }

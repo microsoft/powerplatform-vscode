@@ -19,6 +19,8 @@
   let welcomeScreen;
   let isCopilotEnabled = true;
   let isLoggedIn = false;
+  let apiResponseInProgress = false;
+
 
 
   const inputHistory = [];
@@ -416,6 +418,7 @@
     switch (message.type) {
       case "apiResponse": {
         apiResponseHandler.updateResponse(message.value);
+        apiResponseInProgress = false;
         break;
       }
       case "env": {
@@ -549,9 +552,14 @@
   }
 
   function handleSuggestionsClick() {
+    if(apiResponseInProgress) {
+      return;
+    }
     const userPrompt = this.textContent.trim();
     handleUserMessage(userPrompt);
     chatInput.disabled = true;
+
+    apiResponseInProgress = true;
     getApiResponse(userPrompt);
   }
 
