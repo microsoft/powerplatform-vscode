@@ -40,5 +40,7 @@
   "pacCLI.pacPackageHelp.title": "Zobrazit nápovědu k balíčku PAC",
   "pacCLI.pacPcfHelp.title": "Zobrazit nápovědu k PCF PAC",
   "pacCLI.pacSolutionHelp.title": "Zobrazit nápovědu k řešení PAC",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "powerPlatform.auth.cloud.description": "Cloudové nástroje Power Platform Tools ve službě Azure, které se mají používat k ověřování",
+  "powerPlatform.experimental.auth.testCloudOverride.description": "Přepíše `#powerPlatform.auth.cloud#` pro testovací cíle. Nezadávejte, pokud chcete použít výchozí chování."
 }

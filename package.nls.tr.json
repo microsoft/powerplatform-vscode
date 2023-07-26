@@ -40,5 +40,7 @@
   "pacCLI.pacPackageHelp.title": "PAC Paketi Yardımını Göster",
   "pacCLI.pacPcfHelp.title": "PAC PCF Yardımını Göster",
   "pacCLI.pacSolutionHelp.title": "PAC Çözümü Yardımını Göster",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "powerPlatform.auth.cloud.description": "Kimlik doğrulaması için kullanılması gereken Azure Bulut Power Platform Tools.",
+  "powerPlatform.experimental.auth.testCloudOverride.description": "Test hedefleri için `#powerPlatform.auth.cloud#` öğesini geçersiz kılar. Varsayılan davranış için boş bırakın."
 }

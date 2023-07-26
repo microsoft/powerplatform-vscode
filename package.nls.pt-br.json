@@ -40,5 +40,7 @@
   "pacCLI.pacPackageHelp.title": "Mostrar Ajuda do Pacote de PAC",
   "pacCLI.pacPcfHelp.title": "Mostrar Ajuda de PCF de PAC",
   "pacCLI.pacSolutionHelp.title": "Mostrar Ajuda da Solução PAC",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "powerPlatform.auth.cloud.description": "Quais Power Platform Tools a Nuvem do Azure deve usar para autenticação.",
+  "powerPlatform.experimental.auth.testCloudOverride.description": "Substitui o `#powerPlatform.auth.cloud#` ara destinos de teste. Deixe em branco para o comportamento padrão."
 }
