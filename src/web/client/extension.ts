@@ -30,6 +30,7 @@ import {
 } from "./utilities/fileAndEntityUtil";
 import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
+import { PowerPagesNavigationProvider } from "./webViews/powerPagesNavigationProvider";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -119,6 +120,8 @@ export function activate(context: vscode.ExtensionContext): void {
 
                                 processWalkthroughFirstRunExperience(context);
 
+                                powerPagesNavigation();
+
                                 await vscode.window.withProgress(
                                     {
                                         location: vscode.ProgressLocation.Notification,
@@ -178,6 +181,13 @@ export function activate(context: vscode.ExtensionContext): void {
     processWillSaveDocument(context);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function powerPagesNavigation() {
+    const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
+    vscode.window.registerTreeDataProvider('powerPagesFileExplorer', powerPagesNavigationProvider);
+    vscode.commands.registerCommand('powerPagesFileExplorer.previewPowerPages', () => powerPagesNavigationProvider.previewPowerPageSite());
+    vscode.commands.registerCommand('powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
 }
 
 export function processWalkthroughFirstRunExperience(context: vscode.ExtensionContext) {

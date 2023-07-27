@@ -71,6 +71,7 @@ export enum queryParameters {
     ENV_ID = "envid",
     GEO = "geo",
     ENABLE_MULTIFILE = "enablemultifile",
+    WEBSITE_PREVIEW_URL = "websitepreviewurl"
 }
 
 export enum httpMethod {

@@ -154,6 +154,14 @@
     ],
     "commands": [
       {
+        "command": "powerPagesFileExplorer.previewPowerPages",
+        "title": "Preview Power Pages site"
+      },
+      {
+        "command": "powerPagesFileExplorer.backToStudio",
+        "title": "Back to Studio"
+      },
+      {
         "command": "extension.createChatView",
         "title": "Create Chat View"
       },
@@ -836,6 +844,15 @@
           "initialSize": 6,
           "visibility": "visible",
           "when": "never"
+        }
+      ],
+      "explorer": [
+        {
+          "id": "powerPagesFileExplorer",
+          "name": "POWERPAGE",
+          "when": "isWeb && virtualWorkspace",
+          "icon": "src/web/client/assets/powerPages.svg",
+          "contextualTitle": "Power Pages"
         }
       ]
     },
