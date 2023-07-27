@@ -64,7 +64,7 @@ export const createWebTemplate = (
         });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:Tables.WEBTEMPLATE, exception: error as Error })
+        sendTelemetryEvent(telemetry, { methodName:createWebTemplate.name,eventName: UserFileCreateEvent, fileEntityType:Tables.WEBTEMPLATE, exception: error as Error })
         throw new Error(error);
     }
 };

@@ -102,7 +102,7 @@ export const createWebpage = async (
             );
         }
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:Tables.WEBPAGE, exception: error as Error })
+        sendTelemetryEvent(telemetry, { methodName: createWebpage.name, eventName: UserFileCreateEvent, fileEntityType:Tables.WEBPAGE, exception: error as Error })
         throw new Error(error);
     }
 };

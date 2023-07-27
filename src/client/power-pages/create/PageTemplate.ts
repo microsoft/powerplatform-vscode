@@ -84,6 +84,7 @@ export const createPageTemplate = async (
         );
     } catch (error: any) {
     sendTelemetryEvent(telemetry, {
+        methodName:createPageTemplate.name,
         eventName: UserFileCreateEvent,
         fileEntityType: Tables.PAGETEMPLATE,
         exception: error as Error,
