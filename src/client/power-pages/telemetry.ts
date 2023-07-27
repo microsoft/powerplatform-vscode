@@ -25,6 +25,7 @@ interface IPowerPagesTelemetryData {
     durationInMills?: number,
     exception?: Error,
     triggerPoint?: string
+    methodName:string
 }
 
 export enum TriggerPoint {
@@ -52,8 +53,13 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerP
         telemetryDataProperties.triggerPoint = telemetryData.triggerPoint;
     }
 
+    if(telemetryData.methodName) {
+        telemetryDataProperties.methodName = telemetryData.methodName;
+    }
+
     if (telemetryData.exception) {
         telemetryDataProperties.eventName = telemetryData.eventName;
+        telemetryDataProperties.errorMessage = telemetryData.exception?.message;
         telemetry.sendTelemetryException(telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
     } else {
         telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
