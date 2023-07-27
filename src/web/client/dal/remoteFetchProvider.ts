@@ -39,6 +39,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
             Constants.queryParameters.ORG_URL
         ) as string;
         await Promise.all(entityRequestURLs.map(async (entity) => {
+            const startTime = new Date().getTime();
             await fetchFromDataverseAndCreateFiles(entity.entityName, entity.requestUrl, dataverseOrgUrl, portalFs, defaultFileInfo);
 
             if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
@@ -46,7 +47,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                     telemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
                     {
                         entityName: entity.entityName,
-                        duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
+                        duration: (new Date().getTime() - startTime).toString(),
                     }
                 );
             }
