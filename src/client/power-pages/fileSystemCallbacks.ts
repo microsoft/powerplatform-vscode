@@ -38,7 +38,7 @@ async function processOnDidDeleteFiles(
                         const fileEntityType = getPowerPageEntityType(f.path);
                         
                         // Usage of FileDeleteEvent per file
-                        sendTelemetryEvent(telemetry, { eventName: FileDeleteEvent, fileEntityType: PowerPagesEntityType[fileEntityType] });
+                        sendTelemetryEvent(telemetry, { eventName: FileDeleteEvent, fileEntityType: PowerPagesEntityType[fileEntityType] , methodName:processOnDidDeleteFiles.name});
 
                         if (fileEntityType === PowerPagesEntityType.UNKNOWN) {
                             return;                            
@@ -64,11 +64,11 @@ async function processOnDidDeleteFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, { methodName:processOnDidDeleteFiles.name,eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileDeleteEvent
-                sendTelemetryEvent(telemetry, { eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent(telemetry, { methodName:processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
             }
         })
     );
@@ -91,7 +91,7 @@ async function processOnDidRenameFiles(
                         const fileEntityType = getPowerPageEntityType(f.oldUri.path);                        
 
                         // Usage of FileRenameEvent per file
-                        sendTelemetryEvent(telemetry, { eventName: FileRenameEvent, fileEntityType: PowerPagesEntityType[fileEntityType] });
+                        sendTelemetryEvent(telemetry, { methodName:processOnDidRenameFiles.name,eventName: FileRenameEvent, fileEntityType: PowerPagesEntityType[fileEntityType] });
 
                         if (fileEntityType === PowerPagesEntityType.UNKNOWN) {
                             return;                            
@@ -120,11 +120,11 @@ async function processOnDidRenameFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, {  methodName:processOnDidRenameFiles.name,eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileRenameEvent
-                sendTelemetryEvent(telemetry, { eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent(telemetry, {  methodName:processOnDidRenameFiles.name,eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
             }
         })
     );

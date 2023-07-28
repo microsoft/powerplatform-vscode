@@ -70,7 +70,7 @@ export const createContentSnippet = async (
             );
         }
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: UserFileCreateEvent, fileEntityType:CONTENT_SNIPPET, exception: error as Error })
+        sendTelemetryEvent(telemetry, { methodName:createContentSnippet.name,eventName: UserFileCreateEvent, fileEntityType:CONTENT_SNIPPET, exception: error as Error })
         throw new Error(error);
     }
 };

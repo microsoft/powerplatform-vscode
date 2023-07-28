@@ -203,10 +203,10 @@ export async function createRecord(
                             args: [error.message],
                             comment: ["{0} will be replaced by the error message."]
                         }));
-                        sendTelemetryEvent(telemetry, { eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime), exception: error as Error })
+                        sendTelemetryEvent(telemetry, { methodName:createRecord.name,eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime), exception: error as Error })
                         reject(error);
                     } else {
-                        sendTelemetryEvent(telemetry, { eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime) })
+                        sendTelemetryEvent(telemetry, { methodName:createRecord.name, eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime) })
                         progress.report({ increment: 100 });
                     }
                 });
