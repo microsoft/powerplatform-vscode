@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "一意の名前のコピー",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "バージョン番号のコピー",
   "pacCLI.envAndSolutionsPanel.refresh.title": "最新の情報に更新",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "環境を選択します",
   "pacCLI.envAndSolutionsPanel.title": "環境およびソリューション",
   "pacCLI.openDocumentation.title": "ドキュメント",
   "pacCLI.openPacLab.title": "PAC ラボを開く",
@@ -40,5 +41,7 @@
   "pacCLI.pacPackageHelp.title": "PAC パッケージ のヘルプを表示する",
   "pacCLI.pacPcfHelp.title": "PAC PCF のヘルプを表示する",
   "pacCLI.pacSolutionHelp.title": "PAC ソリューションのヘルプを表示する",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "powerPlatform.auth.cloud.description": "認証で使用するべき Azure クラウド Power Platform Tools を指定します。",
+  "powerPlatform.experimental.auth.testCloudOverride.description": "テスト対象の `#powerPlatform.auth.cloud#` をオーバーライドします。空白のままにすると、既定の動作を行います。"
 }

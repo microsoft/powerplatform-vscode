@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copiar nombre único",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copiar número de versión",
   "pacCLI.envAndSolutionsPanel.refresh.title": "Actualizar",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "Seleccionar entorno",
   "pacCLI.envAndSolutionsPanel.title": "Entornos y soluciones",
   "pacCLI.openDocumentation.title": "Documentación",
   "pacCLI.openPacLab.title": "Abrir laboratorio de PAC",
@@ -40,5 +41,7 @@
   "pacCLI.pacPackageHelp.title": "Mostrar ayuda del paquete de PAC",
   "pacCLI.pacPcfHelp.title": "Mostrar ayuda de PCF de PAC",
   "pacCLI.pacSolutionHelp.title": "Mostrar ayuda de la solución de PAC",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "powerPlatform.auth.cloud.description": "Las Power Platform Tools en la nube de Azure que se deben usar para la autenticación.",
+  "powerPlatform.experimental.auth.testCloudOverride.description": "Reemplaza `#powerPlatform.auth.cloud#` para los destinos de prueba. Deje en blanco este valor si desea que tenga el comportamiento predeterminado."
 }
