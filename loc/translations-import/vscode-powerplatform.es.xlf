@@ -18,6 +18,9 @@
         <source xml:lang="en">A webtemplate with the same name already exists. Please enter a different name.</source>
         <target state="translated">Ya existe una plantilla web con el mismo nombre. Especifique otro nombre.</target>
       </trans-unit>
+      <trans-unit id="++CODE++5d8300ceca093c3e9b111bbcadfac87c89ca4274fc9a7fe3267f037a5ab4ceac">
+        <source xml:lang="en">Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.</source>
+      </trans-unit>
       <trans-unit id="++CODE++b544cb198e99ff113ac41467fc99191f11916287ccdb1ae619dba61dd6bbeff6">
         <source xml:lang="en">Add content snippet name (name should be unique)</source>
         <target state="translated">Agregar el nombre del fragmento de contenido (el nombre debe ser único)</target>
@@ -113,6 +116,9 @@ Tipo: {3}</target>
       <trans-unit id="++CODE++80ccd89cd4c287f3ca9f3693982e8034544fefeba563c974f93482158e8f0737">
         <source xml:lang="en">Enter name</source>
         <target state="translated">Escribir nombre</target>
+      </trans-unit>
+      <trans-unit id="++CODE++02009b0b8ebfd63aa5f308dbee9b564a7d73eaf254c5260ce3251a7376e79a88">
+        <source xml:lang="en">Enter the environment URL</source>
       </trans-unit>
       <trans-unit id="++CODE++048d1e764983197603f13e79d28f59bbfa358c0c11e1184c27fc687512589778">
         <source xml:lang="en">Enter the name of the web template</source>
@@ -546,6 +552,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="pacCLI.authPanel.selectAuthProfile.title">
         <source xml:lang="en">Select Auth Profile</source>
         <target state="translated">Seleccionar perfil de autenticación</target>
+      </trans-unit>
+      <trans-unit id="pacCLI.envAndSolutionsPanel.selectEnvironment.title">
+        <source xml:lang="en">Select Environment</source>
+        <target state="translated">Seleccionar entorno</target>
       </trans-unit>
       <trans-unit id="pacCLI.pacAuthHelp.title">
         <source xml:lang="en">Show PAC Authentication Help</source>

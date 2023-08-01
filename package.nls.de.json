@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Eindeutigen Namen kopieren",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Versionsnummer kopieren",
   "pacCLI.envAndSolutionsPanel.refresh.title": "Aktualisieren",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "Umgebung auswählen",
   "pacCLI.envAndSolutionsPanel.title": "Umgebungen und Lösungen",
   "pacCLI.openDocumentation.title": "Dokumentation",
   "pacCLI.openPacLab.title": "PAC-Labor öffnen",

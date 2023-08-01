@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Копировать уникальное имя",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Копировать номер версии",
   "pacCLI.envAndSolutionsPanel.refresh.title": "Обновить",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "Выберите среду",
   "pacCLI.envAndSolutionsPanel.title": "Среды и решения",
   "pacCLI.openDocumentation.title": "Документация",
   "pacCLI.openPacLab.title": "Открыть лабораторию PAC",
