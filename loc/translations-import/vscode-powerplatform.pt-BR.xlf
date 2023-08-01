@@ -20,6 +20,7 @@
       </trans-unit>
       <trans-unit id="++CODE++5d8300ceca093c3e9b111bbcadfac87c89ca4274fc9a7fe3267f037a5ab4ceac">
         <source xml:lang="en">Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.</source>
+        <target state="translated">O perfil de autenticação ativo não foi encontrado ou expirou. Para criar um novo perfil de autenticação, insira a URL do ambiente.</target>
       </trans-unit>
       <trans-unit id="++CODE++b544cb198e99ff113ac41467fc99191f11916287ccdb1ae619dba61dd6bbeff6">
         <source xml:lang="en">Add content snippet name (name should be unique)</source>
@@ -119,6 +120,7 @@ Tipo: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++02009b0b8ebfd63aa5f308dbee9b564a7d73eaf254c5260ce3251a7376e79a88">
         <source xml:lang="en">Enter the environment URL</source>
+        <target state="translated">Inserir a URL do ambiente</target>
       </trans-unit>
       <trans-unit id="++CODE++048d1e764983197603f13e79d28f59bbfa358c0c11e1184c27fc687512589778">
         <source xml:lang="en">Enter the name of the web template</source>
