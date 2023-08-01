@@ -9,17 +9,21 @@ import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { CopilotResponseFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
+import { getExtensionType, getExtensionVersion } from "../Utils";
+import { EXTENSION_NAME } from "../../client/constants";
 
+const clientType = EXTENSION_NAME + '-' + getExtensionType();
+const clientVersion = getExtensionVersion();
 
 export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null) {
 
-  // const region = 'test';
-  // let aibEndpoint = '';
 
-  // aibEndpoint = getAibEndpoint(region, orgID);
   if (!aibEndpoint) {
     return NetworkError;
   }
+
+
+
 
   const requestBody = {
     "question": userPrompt,
@@ -29,6 +33,8 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
       "scenario": "PowerPagesProDev",
       "subScenario": "PowerPagesProDevGeneric",
       "version": "V1",
+      "clientType" : clientType,
+      "clientVersion" : clientVersion,
       "information": {
         "dataverseEntity": activeFileParams.dataverseEntity,
         "entityField": activeFileParams.entityField,
