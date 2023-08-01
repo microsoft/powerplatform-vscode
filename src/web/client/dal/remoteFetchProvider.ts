@@ -173,6 +173,9 @@ async function fetchFromDataverseAndCreateFiles(
             telemetryEventNames.WEB_EXTENSION_DATAVERSE_API_CALL_FILE_FETCH_COUNT,
             { entityName: entityName, count: data.length.toString() }
         );
+
+        // Make sure the current active editor file is revealed in the explorer
+        vscode.commands.executeCommand('workbench.files.action.showActiveFileInExplorer');
     }
 
     return data;
@@ -246,7 +249,7 @@ async function createContentFiles(
         }
 
         let languageCode = WebExtensionContext.websiteLanguageCode;
-        if (defaultFileInfo === undefined &&
+        if (defaultFileInfo?.fileName === undefined &&
             languageCodeAttribute &&
             result[languageCodeAttribute]) {
             const portalLanguageId =
@@ -323,12 +326,7 @@ async function processDataAndCreateFile(
         const fileExtension = attributeExtensionMap?.get(
             attributeArray[counter]
         ) as string; // This will be undefined for Advanced forms where we need to further expand the data to look for steps information
-        const fileNameWithExtension = defaultFileInfo?.fileName ?? GetFileNameWithExtension(
-            entityName,
-            fileName,
-            languageCode,
-            fileExtension
-        );
+
         const attributePath: IAttributePath = getAttributePath(
             attributeArray[counter]
         );
@@ -346,23 +344,36 @@ async function processDataAndCreateFile(
             }
         }
         else {
-            fileUri = filePathInPortalFS + fileNameWithExtension;
-            await createFile(
-                attributeArray[counter],
-                fileExtension,
-                fileUri,
-                fileNameWithExtension,
-                entityName,
-                result,
-                mappingEntityFetchQuery,
-                entityId,
-                dataverseOrgUrl,
-                portalsFS
-            );
+            let fileCreationValid = true;
+            let fileNameWithExtension = GetFileNameWithExtension(entityName, fileName, languageCode, fileExtension);
+
+            if (defaultFileInfo?.fileName) {
+                fileCreationValid = defaultFileInfo?.fileName === fileNameWithExtension ||
+                    (defaultFileInfo?.fileName.startsWith(fileName) && defaultFileInfo?.fileName.endsWith(fileExtension));
+                fileNameWithExtension = defaultFileInfo?.fileName;
+            }
+
+            if (fileCreationValid) {
+                fileUri = filePathInPortalFS + fileNameWithExtension;
+                await createFile(
+                    attributeArray[counter],
+                    fileExtension,
+                    fileUri,
+                    fileNameWithExtension,
+                    entityName,
+                    result,
+                    mappingEntityFetchQuery,
+                    entityId,
+                    dataverseOrgUrl,
+                    portalsFS
+                );
+            }
         }
     }
 
-    if (entityId === WebExtensionContext.defaultEntityId) {
+    if (entityId === WebExtensionContext.defaultEntityId
+        && defaultFileInfo !== undefined
+        && defaultFileInfo.fileName === undefined) { // Triggered default file load defines this value
         await WebExtensionContext.updateSingleFileUrisInContext(
             vscode.Uri.parse(fileUri)
         );
