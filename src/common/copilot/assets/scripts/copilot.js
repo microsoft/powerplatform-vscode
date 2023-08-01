@@ -22,6 +22,11 @@
   let apiResponseInProgress = false;
 
 
+
+  const inputHistory = [];
+  let currentIndex = -1;
+
+
   const clipboardSvg = `<svg  width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z"  class="copyIcon"/>
     </svg>`;
@@ -487,6 +492,8 @@
     if ((chatInput).value.trim()) {
       handleUserMessage((chatInput).value);
       chatInput.disabled = true;
+      saveInputToHistory(chatInput.value);
+      apiResponseInProgress = true;
       getApiResponse((chatInput).value);
       (chatInput).value = "";
       (chatInput).focus();
@@ -497,6 +504,8 @@
     if (event.key === "Enter" && (chatInput).value.trim()) {
       handleUserMessage((chatInput).value);
       chatInput.disabled = true;
+      saveInputToHistory(chatInput.value);
+      apiResponseInProgress = true;
       getApiResponse((chatInput).value);
       (chatInput).value = "";
     }
@@ -551,9 +560,55 @@
     const userPrompt = this.textContent.trim();
     handleUserMessage(userPrompt);
     chatInput.disabled = true;
-
+    saveInputToHistory(userPrompt);
     apiResponseInProgress = true;
     getApiResponse(userPrompt);
+  }
+
+  chatInput.addEventListener('keydown', handleArrowKeys);
+
+  function handleArrowKeys(event) {
+    if (document.activeElement !== chatInput) {
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      handleArrowUp();
+    } else if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      handleArrowDown();
+    }
+  }
+
+  function handleArrowUp() {
+    if (currentIndex < inputHistory.length - 1) {
+      currentIndex++;
+    }
+    updateInputBoxValue();
+  }
+
+  function handleArrowDown() {
+    if (currentIndex >= 0) {
+      currentIndex--;
+    }
+    updateInputBoxValue();
+  }
+
+  function updateInputBoxValue() {
+    if (currentIndex >= 0) {
+      chatInput.value = inputHistory[inputHistory.length - 1 - currentIndex];
+    } else {
+      chatInput.value = '';
+    }
+  }
+
+  function saveInputToHistory(inputValue) {
+    if (inputHistory.length >= 50) {
+      inputHistory.shift();
+    }
+    inputHistory.push(inputValue);
+    currentIndex = -1;
   }
 
 
