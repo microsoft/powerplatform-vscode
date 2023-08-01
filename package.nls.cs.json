@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Zkopírovat jedinečné jméno",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Zkopírovat číslo verze",
   "pacCLI.envAndSolutionsPanel.refresh.title": "Aktualizovat",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "Vybrat prostředí",
   "pacCLI.envAndSolutionsPanel.title": "Prostředí a řešení",
   "pacCLI.openDocumentation.title": "Dokumentace",
   "pacCLI.openPacLab.title": "Otevřít testovací prostředí PAC",

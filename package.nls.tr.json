@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Benzersiz Adı Kopyala",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Sürüm Numarasını Kopyala",
   "pacCLI.envAndSolutionsPanel.refresh.title": "Yenile",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "Ortam seçin",
   "pacCLI.envAndSolutionsPanel.title": "Ortamlar ve Çözümler",
   "pacCLI.openDocumentation.title": "Belgeler",
   "pacCLI.openPacLab.title": "PAC Lab'i Aç",

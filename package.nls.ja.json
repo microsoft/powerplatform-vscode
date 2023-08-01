@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "一意の名前のコピー",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "バージョン番号のコピー",
   "pacCLI.envAndSolutionsPanel.refresh.title": "最新の情報に更新",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "環境を選択します",
   "pacCLI.envAndSolutionsPanel.title": "環境およびソリューション",
   "pacCLI.openDocumentation.title": "ドキュメント",
   "pacCLI.openPacLab.title": "PAC ラボを開く",

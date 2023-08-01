@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "고유 이름 복사",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "버전 번호 복사",
   "pacCLI.envAndSolutionsPanel.refresh.title": "새로 고침",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "환경 선택",
   "pacCLI.envAndSolutionsPanel.title": "환경 및 솔루션",
   "pacCLI.openDocumentation.title": "설명서",
   "pacCLI.openPacLab.title": "PAC 랩 열기",

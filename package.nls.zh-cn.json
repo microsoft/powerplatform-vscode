@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "复制唯一名称",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "复制版本号",
   "pacCLI.envAndSolutionsPanel.refresh.title": "刷新",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "选择环境",
   "pacCLI.envAndSolutionsPanel.title": "环境和解决方案",
   "pacCLI.openDocumentation.title": "文档",
   "pacCLI.openPacLab.title": "打开 PAC Lab",
