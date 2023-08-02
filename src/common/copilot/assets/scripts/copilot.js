@@ -405,7 +405,7 @@
     notAvailabel.classList.add("not-available");
     notAvailabel.innerHTML = `<p id="notAvailableGreeting"></p>
     <p>Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details</p>
-    <p>Learn about <a href="#">Copilot licensing.<a></p>`;
+    <p>To know more, see <a href="https://go.microsoft.com/fwlink/?linkid=2206366">Copilot in Power Pages documentation.<a></p>`;
 
     messageElement.appendChild(notAvailabel);
 
@@ -443,22 +443,34 @@
         break;
       }
       case "clearConversation": {
+        if(isCopilotEnabled) {
         chatMessages.innerHTML = "";
         welcomeScreen = setWelcomeScreen();
         welcomeScreen.userLoggedIn();
+        }
         break;
       }
       case "enableInput": {
         chatInput.disabled = false;
         break;
       }
-      case "notAvailable": {
+      case "Unavailable": {
+        isCopilotEnabled = false;
         chatMessages.innerHTML = "";
         setDiabledScreen();
         chatInputComponent.classList.add("hide");
         break;
       }
-    }
+      case "Available": {
+        if(isCopilotEnabled== false) {
+          isCopilotEnabled = true;
+          chatInputComponent.classList.remove("hide");
+          chatMessages.innerHTML = "";
+          welcomeScreen = setWelcomeScreen();
+          welcomeScreen.userLoggedIn();
+        }
+        break;
+    }}
   });
 
   function handleLoginButtonClick() {
