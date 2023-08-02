@@ -33,15 +33,15 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
       "scenario": "PowerPagesProDev",
       "subScenario": "PowerPagesProDevGeneric",
       "version": "V1",
-      "clientType" : clientType,
-      "clientVersion" : clientVersion,
       "information": {
         "dataverseEntity": activeFileParams.dataverseEntity,
         "entityField": activeFileParams.entityField,
         "fieldType": activeFileParams.fieldType,
         "activeFileContent": '',
         "targetEntity": entityName,
-        "targetColumns": entityColumns
+        "targetColumns": entityColumns,
+        "clientType" : clientType,
+        "clientVersion" : clientVersion,
       }
     }
   };
