@@ -266,7 +266,7 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     public async authenticateAndUpdateDataverseProperties() {
-        await this.dataverseAuthentication();
+        await this.dataverseAuthentication(true);
 
         const dataverseOrgUrl = this.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
@@ -295,12 +295,13 @@ class WebExtensionContext implements IWebExtensionContext {
         await this.setWebsiteLanguageCode();
     }
 
-    public async dataverseAuthentication() {
+    public async dataverseAuthentication(firstTimeAuth = false) {
         const dataverseOrgUrl = this.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
         const accessToken: string = await dataverseAuthentication(
-            dataverseOrgUrl
+            dataverseOrgUrl,
+            firstTimeAuth
         );
 
         if (accessToken.length === 0) {
