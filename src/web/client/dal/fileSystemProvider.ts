@@ -76,10 +76,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
         if (fileHasDirtyChanges(uri.fsPath)) {
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FILE_HAS_DIRTY_CHANGES
-            );
-
             if (isVersionControlEnabled()) {
                 const latestContent =
                     await EtagHandlerService.getLatestFileContentAndUpdateMetadata(
@@ -135,10 +131,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const isLazyLoadedWebFile = isWebFileWithLazyLoad(uri.fsPath);
         if ((!data && isValidFilePath(uri.fsPath))
             || isLazyLoadedWebFile) {
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED
-            );
-
             await this._loadFileFromDataverseToVFS(uri);
             data = await this._lookup(uri, true);
         }
