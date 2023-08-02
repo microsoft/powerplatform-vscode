@@ -302,7 +302,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
     if(this.aibEndpoint === COPILOT_UNAVAILABLE) {
-      this.sendMessageToWebview({ type: 'notAvailable'}); 
+      this.sendMessageToWebview({ type: 'Unavailable'}); 
+    } else {
+      this.sendMessageToWebview({ type: 'Available'});
     }
 
     if (this._view?.visible) { 
