@@ -65,7 +65,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         console.log("Execute preview power pages site", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string);
 
         // Runtime clear cache call
-        const requestUrl = "https://site-e1qvm.powerappsportals.com/_services/portal/5f518837-2ee2-4fd6-9c21-a4bfb8b8f699/invalidate-cache-maker?portalId=5f518837-2ee2-4fd6-9c21-a4bfb8b8f699&multiTenantPortalUrl=https:%2F%2Fsite-e1qvm.prod-us-il0201-1.tip.powerappsmtportals.com&runTimePortalUrl=https:%2F%2Fsite-e1qvm.powerappsportals.com&orgId=1e2468b8-e925-ee11-8476-00224820c64c&instanceUrl=https:%2F%2Forgd07539e4.crm10.dynamics.com%2F";
+        const requestUrl = "https://site-npeby.powerappsportals.com/_services/portal/547f0b36-0ad2-446f-9543-99effc6fce8e/invalidate-cache-maker";
 
         WebExtensionContext.telemetry.sendAPITelemetry(
             requestUrl,
@@ -80,10 +80,13 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             // headers: getCommonHeaders(WebExtensionContext.dataverseAccessToken),
             headers: {
                 authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
-            }
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify({
+                runtimeInvalidationRequest: "{\"entities\":[{\"entityName\":\"*\"}],\"source\":\"\"}"
+            })
         });
 
         if (response.ok) {
