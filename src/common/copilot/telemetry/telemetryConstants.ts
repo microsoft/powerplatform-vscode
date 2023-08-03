@@ -10,7 +10,6 @@ export const CopilotUserFeedbackThumbsUpEvent = 'ThumbsUpEvent';
 export const CopilotUserFeedbackThumbsDownEvent = 'ThumbsDownEvent';
 export const CopilotResponseSuccessEvent = 'CopilotResponseSuccessEvent';
 export const CopilotResponseFailureEvent = 'CopilotResponseFailureEvent';
-export const CopilotLoginStartEvent = 'CopilotLoginStartEvent';
 export const CopilotLoginSuccessEvent = 'CopilotLoginSuccessEvent';
 export const CopilotLoginFailureEvent = 'CopilotLoginFailureEvent';
 export const CopilotClearChatEvent = 'CopilotClearChatEvent';
