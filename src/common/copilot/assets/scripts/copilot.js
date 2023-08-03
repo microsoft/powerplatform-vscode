@@ -501,6 +501,9 @@
 
 
   SendButton?.addEventListener("click", () => {
+    if(apiResponseInProgress) {
+      return;
+    }
     if ((chatInput).value.trim()) {
       handleUserMessage((chatInput).value);
       chatInput.disabled = true;
@@ -513,6 +516,9 @@
   });
 
   chatInput.addEventListener("keydown", (event) => {
+    if(apiResponseInProgress) {
+      return;
+    }
     if (event.key === "Enter" && (chatInput).value.trim()) {
       handleUserMessage((chatInput).value);
       chatInput.disabled = true;
