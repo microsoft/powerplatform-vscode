@@ -317,6 +317,11 @@
         "title": "New Page Template"
       },
       {
+        "command": "microsoft-powerapps-portals.bootstrap-diff",
+        "category": "Powerpages",
+        "title": "Bootstrap Diff"
+      },
+      {
         "command": "powerpages.copilot.clearConversation",
         "category": "Copilot In Power Pages",
         "title": "Clear Conversation",
