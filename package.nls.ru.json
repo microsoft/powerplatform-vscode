@@ -32,6 +32,7 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Копировать уникальное имя",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Копировать номер версии",
   "pacCLI.envAndSolutionsPanel.refresh.title": "Обновить",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "Выберите среду",
   "pacCLI.envAndSolutionsPanel.title": "Среды и решения",
   "pacCLI.openDocumentation.title": "Документация",
   "pacCLI.openPacLab.title": "Открыть лабораторию PAC",
@@ -40,5 +41,7 @@
   "pacCLI.pacPackageHelp.title": "Показать справку по пакету PAC",
   "pacCLI.pacPcfHelp.title": "Показать справку по PAC PCF",
   "pacCLI.pacSolutionHelp.title": "Показать справку по решению PAC",
-  "power-platform-activitybar.title": "Power Platform"
+  "power-platform-activitybar.title": "Power Platform",
+  "powerPlatform.auth.cloud.description": "Какие инструменты Power Platform Tools облака Azure следует использовать для проверки подлинности.",
+  "powerPlatform.experimental.auth.testCloudOverride.description": "Переопределяет `#powerPlatform.auth.cloud#` для тестовых целей. Оставьте пустым, чтобы действовали параметры по умолчанию."
 }

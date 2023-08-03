@@ -4,19 +4,26 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { InvalidResponse, NetworkError } from "./constants";
+import { InvalidResponse, MalaciousScenerioResponse, NetworkError, RELEVANCY_CHECK_FAILED } from "./constants";
 import { IActiveFileParams } from "./model";
+import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
+import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { CopilotResponseFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
+import { getExtensionType, getExtensionVersion } from "../Utils";
+import { EXTENSION_NAME } from "../../client/constants";
+
+const clientType = EXTENSION_NAME + '-' + getExtensionType();
+const clientVersion = getExtensionVersion();
+
+export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null) {
 
 
-export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], aibEndpoint: string | null) {
-
-  // const region = 'test';
-  // let aibEndpoint = '';
-
-  // aibEndpoint = getAibEndpoint(region, orgID);
-  if(!aibEndpoint) {
+  if (!aibEndpoint) {
     return NetworkError;
   }
+
+
+
 
   const requestBody = {
     "question": userPrompt,
@@ -31,8 +38,10 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         "entityField": activeFileParams.entityField,
         "fieldType": activeFileParams.fieldType,
         "activeFileContent": '',
-        "targetEntity": entityName, 
-        "targetColumns": entityColumns 
+        "targetEntity": entityName,
+        "targetColumns": entityColumns,
+        "clientType" : clientType,
+        "clientVersion" : clientVersion,
       }
     }
   };
@@ -48,14 +57,22 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
   }
 
   try {
+    const startTime = performance.now();
+
     const response = await fetch(aibEndpoint, {
       ...requestInit
     });
 
+    const endTime = performance.now();
+
+    const responseTime = endTime - startTime;
+
     if (response.ok) {
       try {
         const jsonResponse = await response.json();
+
         if (jsonResponse.operationStatus === 'Success') {
+          sendTelemetryEvent(telemetry, { eventName: CopilotResponseSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime });
           if (jsonResponse.additionalData && Array.isArray(jsonResponse.additionalData) && jsonResponse.additionalData.length > 0) {
             const additionalData = jsonResponse.additionalData[0];
             if (additionalData.properties && additionalData.properties.response) {
@@ -70,21 +87,29 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         }
         throw new Error("Invalid response format");
       } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime });
         return InvalidResponse;
       }
     } else {
-      //TODO: Log error
       try {
         const errorResponse = await response.json();
-        if (errorResponse.error && errorResponse.error.messages[0]) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: errorResponse.error.messages[0], durationInMills: responseTime });
+
+        if (response.status >= 500 && response.status < 600) {
+          return InvalidResponse
+        } else if (errorResponse.error.code === RELEVANCY_CHECK_FAILED) {
+          return MalaciousScenerioResponse;
+        }
+        else if (errorResponse.error && errorResponse.error.messages[0]) {
           return [{ displayText: errorResponse.error.messages[0], code: '' }];
         }
       } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: error as Error, durationInMills: responseTime });
         return InvalidResponse;
       }
     }
   } catch (error) {
-    //TODO: Log error
+    sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error });
     return NetworkError;
   }
 

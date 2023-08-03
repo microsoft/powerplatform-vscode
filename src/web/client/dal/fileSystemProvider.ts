@@ -76,10 +76,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
     async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
         if (fileHasDirtyChanges(uri.fsPath)) {
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FILE_HAS_DIRTY_CHANGES
-            );
-
             if (isVersionControlEnabled()) {
                 const latestContent =
                     await EtagHandlerService.getLatestFileContentAndUpdateMetadata(
@@ -135,11 +131,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const isLazyLoadedWebFile = isWebFileWithLazyLoad(uri.fsPath);
         if ((!data && isValidFilePath(uri.fsPath))
             || isLazyLoadedWebFile) {
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_FILE_TRIGGERED
-            );
-
-            await this._loadFileFromDataverseToVFS(uri, !isLazyLoadedWebFile);
+            await this._loadFileFromDataverseToVFS(uri);
             data = await this._lookup(uri, true);
         }
 
@@ -422,7 +414,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         );
 
         // Fire and forget
-        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true });
+        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
 
         WebExtensionContext.telemetry.sendInfoTelemetry(
             telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
@@ -450,7 +442,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         );
     }
 
-    private async _loadFileFromDataverseToVFS(uri: vscode.Uri, showTextDocument: boolean) {
+    private async _loadFileFromDataverseToVFS(uri: vscode.Uri) {
         const entityId = getFileEntityId(uri.fsPath);
         const entityName = getFileEntityName(uri.fsPath);
         const fileName = getFileName(uri.fsPath);
@@ -471,11 +463,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     fileName: fileName
                 } as IFileInfo
             );
-
-            if (showTextDocument) {
-                // Fire and forget
-                vscode.window.showTextDocument(uri, { preview: true, preserveFocus: true });
-            }
 
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_VSCODE_RELOAD_FILE,

@@ -43,7 +43,7 @@ export async function fileRenameValidation(oldUri: vscode.Uri,
             }
         }
     } catch (e) {
-        sendTelemetryEvent(telemetry, { eventName: FileRenameValidationEvent, exception: e as Error });
+        sendTelemetryEvent(telemetry, {  methodName:fileRenameValidation.name,eventName: FileRenameValidationEvent, exception: e as Error });
     }
     return success;
 }
@@ -96,7 +96,7 @@ export async function updateEntityPathNames(oldUri: vscode.Uri,
             }
         }
     } catch (e) {
-        sendTelemetryEvent(telemetry, { eventName: UpdateEntityPathNamesEvent, exception: e as Error });
+        sendTelemetryEvent(telemetry, { methodName:updateEntityPathNames.name,eventName: UpdateEntityPathNamesEvent, exception: e as Error });
     }
 }
 
@@ -111,7 +111,7 @@ export async function cleanupRelatedFiles(uriPath: string,
             await vscode.workspace.fs.delete(pathUri, { recursive: true, useTrash: true });
         });
     } catch (e) {
-        sendTelemetryEvent(telemetry, { eventName: CleanupRelatedFilesEvent, exception: e as Error });
+        sendTelemetryEvent(telemetry, { methodName:cleanupRelatedFiles.name,eventName: CleanupRelatedFilesEvent, exception: e as Error });
     }
 }
 
@@ -138,6 +138,6 @@ function updateEntityNameInYml(uriPath: string,
         const newFileContents = YAML.stringify(parsedFileContents);
         fs.writeFileSync(uri.fsPath, newFileContents);
     } catch (e) {
-        sendTelemetryEvent(telemetry, { eventName: UpdateEntityNameInYmlEvent, exception: e as Error });
+        sendTelemetryEvent(telemetry, {  methodName:updateEntityNameInYml.name,eventName: UpdateEntityNameInYmlEvent, exception: e as Error });
     }
 }

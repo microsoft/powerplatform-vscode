@@ -339,6 +339,11 @@
           "default": false,
           "markdownDescription": "Whether the generator installation is complete."
         },
+        "powerPlatform.experimental.copilotEnabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Whether the Power Platform Copilot is enabled."
+        },
         "powerPlatform.auth.cloud": {
           "type": "string",
           "default": "Public",
@@ -843,7 +848,7 @@
           "name": "Copilot In Power Pages",
           "initialSize": 6,
           "visibility": "visible",
-          "when": "never"
+          "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled"
         }
       ],
       "explorer": [

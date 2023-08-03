@@ -27,10 +27,13 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
             },
         };
 
+        const startTime = performance.now();
         const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
+        const endTime = performance.now();
+        const responseTime = endTime - startTime || 0;
         const attributes = getAttributesFromResponse(jsonResponse);
 
-        sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID})
+        sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime})
         return attributes.map((attribute: Attribute) => attribute.LogicalName);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
