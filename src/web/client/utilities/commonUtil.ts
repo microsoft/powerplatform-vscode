@@ -72,11 +72,6 @@ export function GetFileContent(result: any, attributePath: IAttributePath, entit
             `For ${entityName} with entityId ${entityId} and attributePath ${JSON.stringify(attributePath)} error: ${errorMsg}`);
     }
 
-    if (fileContent === NO_CONTENT) {
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_FILE_NO_CONTENT,
-            { entityName: entityName, entityId: entityId, attributePath: JSON.stringify(attributePath) });
-    }
-
     return fileContent;
 }
 
