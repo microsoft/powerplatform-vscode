@@ -53,7 +53,7 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
             sendTelemetryEvent(telemetry, { eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID });
         }
     } catch (error) {
-        const authError = (error as Error)?.message;
+        const authError = (error as Error)
         showErrorDialog(vscode.l10n.t("Authorization Failed. Please run again to authorize it"),
             vscode.l10n.t("There was a permissions problem with the server"));
         sendTelemetryEvent(telemetry, { eventName: CopilotLoginFailureEvent, copilotSessionId: sessionID, error: authError });

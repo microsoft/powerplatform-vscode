@@ -36,9 +36,8 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
         sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime})
         return attributes.map((attribute: Attribute) => attribute.LogicalName);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error:any) {
-        sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error})
+    } catch (error) {
+        sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error})
         return [];
     }
 }
@@ -86,9 +85,8 @@ export function getEntityName(telemetry: ITelemetry, sessionID:string, dataverse
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
             }
         }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error });
+    } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error as Error});
         entityName = '';
     }
 
@@ -105,9 +103,8 @@ function getMatchingFiles(folderPath: string, fileNameFirstPart: string): string
 function parseYamlContent(content: string, telemetry: ITelemetry, sessionID:string, dataverseEntity: string): any {
     try {
         return yaml.parse(content);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotYamlParsingFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error });
+    } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotYamlParsingFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         return {};
     }
 }
