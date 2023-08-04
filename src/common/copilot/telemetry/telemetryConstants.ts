@@ -4,17 +4,17 @@
  */
 
 // Telemetry Event Names
-export const CopilotCopyCodeToClipboardEvent = 'CopyCodeToClipboardEvent';
-export const CopilotInsertCodeToEditorEvent = 'InsertCodeToEditorEvent';
-export const CopilotUserFeedbackThumbsUpEvent = 'ThumbsUpEvent';
-export const CopilotUserFeedbackThumbsDownEvent = 'ThumbsDownEvent';
+export const CopilotCopyCodeToClipboardEvent = 'CopilotCopyCodeToClipboardEvent';
+export const CopilotInsertCodeToEditorEvent = 'CopilotInsertCodeToEditorEvent';
+export const CopilotUserFeedbackThumbsUpEvent = 'CopilotUserFeedbackThumbsUpEvent';
+export const CopilotUserFeedbackThumbsDownEvent = 'CopilotUserFeedbackThumbsDownEvent';
 export const CopilotResponseSuccessEvent = 'CopilotResponseSuccessEvent';
 export const CopilotResponseFailureEvent = 'CopilotResponseFailureEvent';
 export const CopilotLoginSuccessEvent = 'CopilotLoginSuccessEvent';
 export const CopilotLoginFailureEvent = 'CopilotLoginFailureEvent';
 export const CopilotClearChatEvent = 'CopilotClearChatEvent';
-export const CopilotUserFeedbackSuccessEvent = 'UserFeedbackEventSuccessEvent';
-export const CopilotUserFeedbackFailureEvent = 'UserFeedbackEventFailureEvent';
+export const CopilotUserFeedbackSuccessEvent = 'CopilotUserFeedbackSuccessEvent';
+export const CopilotUserFeedbackFailureEvent = 'CopilotUserFeedbackFailureEvent';
 export const CopilotDataverseMetadataSuccessEvent = 'CopilotDataverseMetadataSuccessEvent';
 export const CopilotDataverseMetadataFailureEvent = 'CopilotDataverseMetadataFailureEvent';
 export const CopilotYamlParsingFailureEvent = 'CopilotYamlParsingFailureEvent';
