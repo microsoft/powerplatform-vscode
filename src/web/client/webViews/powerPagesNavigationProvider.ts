@@ -81,7 +81,10 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             headers: {
                 authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                //'referrer-policy': 'strict-origin-when-cross-origin',
+                // 'Access-Control-Allow-Origin': '*',
+                // 'Access-Control-Allow-Headers': 'access-control-allow-origin,authorization,content-type,referrer-policy'
             },
             method: 'POST',
             body: JSON.stringify({
