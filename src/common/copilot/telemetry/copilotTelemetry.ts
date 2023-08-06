@@ -23,9 +23,9 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDev
         telemetryDataProperties.orgId = telemetryData.orgId;
     }
 
-    if (telemetryData.exception) {
+    if (telemetryData.error) {
         telemetryDataProperties.eventName = telemetryData.eventName;
-        telemetry.sendTelemetryException(telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
+        telemetry.sendTelemetryException(telemetryData.error, telemetryDataProperties, telemetryDataMeasurements);
     } else {
         telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
     }
