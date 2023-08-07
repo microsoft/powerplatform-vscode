@@ -285,12 +285,12 @@ async function createContentFiles(
         vscode.window.showErrorMessage(
             vscode.l10n.t("Failed to get file ready for edit.")
         );
-        // WebExtensionContext.telemetry.sendErrorTelemetry(
-        //     telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
-        //     createContentFiles.name,
-        //     errorMsg,
-        //     error as Error
-        // );
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+            createContentFiles.name,
+            errorMsg,
+            error as Error
+        );
     }
 }
 
