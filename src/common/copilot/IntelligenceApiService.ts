@@ -9,17 +9,21 @@ import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { CopilotResponseFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
+import { getExtensionType, getExtensionVersion } from "../Utils";
+import { EXTENSION_NAME } from "../../client/constants";
 
+const clientType = EXTENSION_NAME + '-' + getExtensionType();
+const clientVersion = getExtensionVersion();
 
 export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null) {
 
-  // const region = 'test';
-  // let aibEndpoint = '';
 
-  // aibEndpoint = getAibEndpoint(region, orgID);
   if (!aibEndpoint) {
     return NetworkError;
   }
+
+
+
 
   const requestBody = {
     "question": userPrompt,
@@ -35,7 +39,9 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         "fieldType": activeFileParams.fieldType,
         "activeFileContent": '',
         "targetEntity": entityName,
-        "targetColumns": entityColumns
+        "targetColumns": entityColumns,
+        "clientType" : clientType,
+        "clientVersion" : clientVersion,
       }
     }
   };
@@ -87,7 +93,8 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
     } else {
       try {
         const errorResponse = await response.json();
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: errorResponse.error.messages[0], durationInMills: responseTime });
+        const responseError = new Error(errorResponse.error.messages[0]);
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: responseError, durationInMills: responseTime });
 
         if (response.status >= 500 && response.status < 600) {
           return InvalidResponse

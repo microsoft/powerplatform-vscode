@@ -15,7 +15,7 @@ import {
 import { ERRORS, showErrorDialog } from "./errorHandler";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../../../common/copilot/telemetry/copilotTelemetry";
-import { CopilotLoginFailureEvent, CopilotLoginStartEvent, CopilotLoginSuccessEvent } from "../../../common/copilot/telemetry/telemetryConstants";
+import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../../../common/copilot/telemetry/telemetryConstants";
 
 
 export function getCommonHeaders(
@@ -34,14 +34,14 @@ export function getCommonHeaders(
 }
 
 //Get access token for Intelligence API service
-export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string): Promise<{ accessToken: string, user: string }> {
+export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string }> {
     let accessToken = '';
     let user = '';
-    sendTelemetryEvent(telemetry, { eventName: CopilotLoginStartEvent, copilotSessionId: sessionID });
     try {
         let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
         if (!session) {
             session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { createIfNone: true });
+            firstTimeAuth = true;
         }
         accessToken = session?.accessToken ?? '';
         user = session.account.label;
@@ -49,9 +49,11 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
 
-        sendTelemetryEvent(telemetry, { eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID });
+        if(firstTimeAuth) {
+            sendTelemetryEvent(telemetry, { eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID });
+        }
     } catch (error) {
-        const authError = (error as Error)?.message;
+        const authError = (error as Error)
         showErrorDialog(vscode.l10n.t("Authorization Failed. Please run again to authorize it"),
             vscode.l10n.t("There was a permissions problem with the server"));
         sendTelemetryEvent(telemetry, { eventName: CopilotLoginFailureEvent, copilotSessionId: sessionID, error: authError });
@@ -60,12 +62,10 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
 }
 
 export async function dataverseAuthentication(
-    dataverseOrgURL: string
+    dataverseOrgURL: string,
+    firstTimeAuth = false
 ): Promise<string> {
     let accessToken = "";
-    WebExtensionContext.telemetry.sendInfoTelemetry(
-        telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_STARTED
-    );
     try {
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
@@ -91,15 +91,17 @@ export async function dataverseAuthentication(
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
-            {
-                userId:
-                    session?.account.id.split("/").pop() ??
-                    session?.account.id ??
-                    "",
-            }
-        );
+        if (firstTimeAuth) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+                {
+                    userId:
+                        session?.account.id.split("/").pop() ??
+                        session?.account.id ??
+                        "",
+                }
+            );
+        }
     } catch (error) {
         const authError = (error as Error)?.message;
         showErrorDialog(

@@ -261,11 +261,6 @@ async function createContentFiles(
                 portalLanguageId as string
             ) as string;
 
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_ENTITY_LANGUAGE_CODE,
-                { languageCode: languageCode as string, entityId: entityId, entityName: entityName }
-            );
-
             if (languageCode === Constants.DEFAULT_LANGUAGE_CODE || languageCode === undefined) {
                 throw new Error(ERRORS.LANGUAGE_CODE_EMPTY);
             }
@@ -290,12 +285,12 @@ async function createContentFiles(
         vscode.window.showErrorMessage(
             vscode.l10n.t("Failed to get file ready for edit.")
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
-            createContentFiles.name,
-            errorMsg,
-            error as Error
-        );
+        // WebExtensionContext.telemetry.sendErrorTelemetry(
+        //     telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+        //     createContentFiles.name,
+        //     errorMsg,
+        //     error as Error
+        // );
     }
 }
 

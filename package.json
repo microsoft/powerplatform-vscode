@@ -317,6 +317,11 @@
         "title": "New Page Template"
       },
       {
+        "command": "microsoft-powerapps-portals.bootstrap-diff",
+        "category": "Powerpages",
+        "title": "Bootstrap Diff"
+      },
+      {
         "command": "powerpages.copilot.clearConversation",
         "category": "Copilot In Power Pages",
         "title": "Clear Conversation",
@@ -330,6 +335,11 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Whether the generator installation is complete."
+        },
+        "powerPlatform.experimental.copilotEnabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Whether the Power Platform Copilot is enabled."
         },
         "powerPlatform.auth.cloud": {
           "type": "string",
@@ -835,7 +845,7 @@
           "name": "Copilot In Power Pages",
           "initialSize": 6,
           "visibility": "visible",
-          "when": "never"
+          "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled"
         }
       ]
     },

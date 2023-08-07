@@ -276,7 +276,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
           entityName = getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
-          const dataverseToken = await dataverseAuthentication(activeOrgUrl);
+          const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
 
           entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
         }
@@ -302,7 +302,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
     if(this.aibEndpoint === COPILOT_UNAVAILABLE) {
-      this.sendMessageToWebview({ type: 'notAvailable'}); 
+      this.sendMessageToWebview({ type: 'Unavailable'}); 
+    } else {
+      this.sendMessageToWebview({ type: 'Available'});
     }
 
     if (this._view?.visible) { 

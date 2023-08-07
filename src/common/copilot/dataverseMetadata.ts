@@ -36,9 +36,8 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
         sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime})
         return attributes.map((attribute: Attribute) => attribute.LogicalName);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error:any) {
-        sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error})
+    } catch (error) {
+        sendTelemetryEvent(telemetry, {eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error})
         return [];
     }
 }
@@ -72,12 +71,12 @@ export function getEntityName(telemetry: ITelemetry, sessionID:string, dataverse
 
         if (activeEditor) {
             const document = activeEditor.document;
-            const absoluteFilePath = document.fileName;
-            const activeFileFolderPath = path.dirname(absoluteFilePath);
-            const activeFileName = path.basename(absoluteFilePath);
-            const fileNameFirstPart = activeFileName.split('.')[0];
+            const absoluteFilePath = document.fileName; //"c:\\pac-portals\\downloads\\site-1---site-wiz1i\\basic-forms\\copilot-student-loan-registration-56a4\\Copilot-Student-Loan-Registration-56a4.basicform.custom_javascript.js"
+            const activeFileFolderPath = path.dirname(absoluteFilePath); // "c:\\pac-portals\\downloads\\site-1---site-wiz1i\\basic-forms\\copilot-student-loan-registration-56a4"
+            const activeFileName = path.basename(absoluteFilePath); //"Copilot-Student-Loan-Registration-56a4.basicform.custom_javascript.js"
+            const fileNameFirstPart = activeFileName.split('.')[0]; //"Copilot-Student-Loan-Registration-56a4"
 
-            const matchingFiles = getMatchingFiles(activeFileFolderPath, fileNameFirstPart);
+            const matchingFiles = getMatchingFiles(activeFileFolderPath, fileNameFirstPart); // ["Copilot-Student-Loan-Registration-56a4.basicform.yml"]
 
             if (matchingFiles[0]) {
                 const yamlFilePath = path.join(activeFileFolderPath, matchingFiles[0]);
@@ -86,9 +85,8 @@ export function getEntityName(telemetry: ITelemetry, sessionID:string, dataverse
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
             }
         }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error });
+    } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error as Error});
         entityName = '';
     }
 
@@ -97,7 +95,7 @@ export function getEntityName(telemetry: ITelemetry, sessionID:string, dataverse
 
 function getMatchingFiles(folderPath: string, fileNameFirstPart: string): string[] {
     const files = fs.readdirSync(folderPath);
-    const pattern = new RegExp(`^${fileNameFirstPart}..*.yml$`);
+    const pattern = new RegExp(`^${fileNameFirstPart}\\.(basicform|list|advancedformstep)\\.yml$`);
     return files.filter((fileName) => pattern.test(fileName));
 }
 
@@ -105,9 +103,8 @@ function getMatchingFiles(folderPath: string, fileNameFirstPart: string): string
 function parseYamlContent(content: string, telemetry: ITelemetry, sessionID:string, dataverseEntity: string): any {
     try {
         return yaml.parse(content);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotYamlParsingFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error });
+    } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotYamlParsingFailureEvent, copilotSessionId:sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         return {};
     }
 }
