@@ -38,7 +38,8 @@ export function getRequestURL(
     method: string,
     useSingleEntityUrl = false,
     applyFilter = true,
-    attributeQueryParameters?: string
+    attributeQueryParameters?: string,
+    mappingEntityName?: string
 ): string {
     let parameterizedUrlTemplate =
         getParameterizedRequestUrlTemplate(useSingleEntityUrl);
@@ -60,7 +61,7 @@ export function getRequestURL(
         .replace("{dataverseOrgUrl}", dataverseOrgUrl)
         .replace(
             "{entity}",
-            getEntity(entity)?.get(
+            mappingEntityName ?? getEntity(entity)?.get(
                 schemaEntityKey.DATAVERSE_ENTITY_NAME
             ) as string
         )
@@ -87,12 +88,6 @@ export function getRequestURL(
             "{websiteId}",
             WebExtensionContext.urlParametersMap.get(
                 queryParameters.WEBSITE_ID
-            ) as string
-        )
-        .replace(
-            "{entity}",
-            getEntity(entity)?.get(
-                schemaEntityKey.DATAVERSE_ENTITY_NAME
             ) as string
         )
         .replace("{entityId}", entityId);
@@ -170,7 +165,7 @@ export function sanitizeURL(url: string): string {
 
 // TODO - Make Json for different response type and update any here
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function updateEntityId(entity: string, entityId: string, result: any) {
+export function getMappingEntityId(entity: string, result: any) {
     const mappedEntityId = getEntity(entity)?.get(
         schemaEntityKey.MAPPING_ENTITY_ID
     );
@@ -179,7 +174,21 @@ export function updateEntityId(entity: string, entityId: string, result: any) {
         return result[mappedEntityId];
     }
 
-    return entityId;
+    return null;
+}
+
+// TODO - Make Json for different response type and update any here
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getMappingEntityContent(entity: string, result: any, attribute: string) {
+    const mappedEntity = getEntity(entity)?.get(
+        schemaEntityKey.MAPPING_ENTITY
+    );
+
+    if (mappedEntity) {
+        return result[attribute];
+    }
+
+    return result;
 }
 
 export function pathHasEntityFolderName(uri: string): boolean {

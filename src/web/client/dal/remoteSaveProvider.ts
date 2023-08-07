@@ -11,6 +11,7 @@ import { showErrorDialog } from "../common/errorHandler";
 import { FileData } from "../context/fileData";
 import { httpMethod } from "../common/constants";
 import {
+    getEntity,
     isWebFileV2,
     useOctetStreamContentType,
 } from "../utilities/schemaHelperUtil";
@@ -18,6 +19,8 @@ import { getPatchRequestUrl, getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { IAttributePath } from "../common/interfaces";
 import { telemetryEventNames } from "../telemetry/constants";
+import { schemaEntityKey } from "../schema/constants";
+import { getEntityMappingEntityId } from "../utilities/fileAndEntityUtil";
 
 interface ISaveCallParameters {
     requestInit: RequestInit;
@@ -30,14 +33,21 @@ export async function saveData(fileUri: vscode.Uri) {
     const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
         queryParameters.ORG_URL
     ) as string;
+    const entityName = dataMap.get(fileUri.fsPath)?.entityName as string;
+    const mappedEntity = getEntity(entityName)?.get(
+        schemaEntityKey.MAPPING_ENTITY
+    );
+    const entityId = dataMap.get(fileUri.fsPath)?.entityId as string;
 
     const requestUrl = getRequestURL(
         dataverseOrgUrl,
-        dataMap.get(fileUri.fsPath)?.entityName as string,
-        dataMap.get(fileUri.fsPath)?.entityId as string,
+        mappedEntity ?? entityName,
+        getEntityMappingEntityId(entityId) ?? entityId,
         httpMethod.PATCH,
         true,
-        false
+        false,
+        undefined,
+        mappedEntity
     );
 
     const fileDataMap = WebExtensionContext.fileDataMap.getFileMap;
