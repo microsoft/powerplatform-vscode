@@ -46,10 +46,19 @@ export function doesFileExist(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.has(vscode.Uri.parse(fileFsPath).fsPath);
 }
 
+export function getFileName(fsPath: string) {
+    return fsPath.split(/[\\/]/).pop();
+}
+
 // Entity utility functions
 export function getEntityEtag(entityId: string) {
     return WebExtensionContext.entityDataMap.getEntityMap.get(entityId)
         ?.entityEtag as string;
+}
+
+export function getEntityMappingEntityId(entityId: string) {
+    return WebExtensionContext.entityDataMap.getEntityMap.get(entityId)
+        ?.mappingEntityId;
 }
 
 export function updateEntityEtag(entityId: string, entityEtag: string) {
@@ -69,8 +78,4 @@ export function updateEntityColumnContent(
         attributePath,
         fileContent
     );
-}
-
-export function getFileName(fsPath: string) {
-    return fsPath.split(/[\\/]/).pop();
 }

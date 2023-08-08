@@ -91,21 +91,25 @@ export const portal_schema_V1 = {
             {
                 relationships: "",
                 _vscodeentityname: "webfiles",
-                _dataverseenityname: "annotations",
+                _dataverseenityname: "adx_webfiles",
                 _displayname: "Web File",
                 _etc: "10020",
-                _primaryidfield: "_objectid_value",
-                _primarynamefield: "filename",
+                _primaryidfield: "adx_webfileid",
+                _primarynamefield: "adx_name",
                 _disableplugins: "true",
                 _foldername: "web-files",
                 _propextension: "webfile",
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters:
-                    "?$filter=_objectid_value eq {entityId} &$select=mimetype,documentbody,filename,annotationid,_objectid_value",
-                _multiFileFetchQueryParameters: "?$select=mimetype,documentbody,filename,annotationid,_objectid_value&$count=true",
+                    "?$filter=adx_webfileid eq {entityId} &$select=adx_name",
+                _multiFileFetchQueryParameters: "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_webfileid,adx_name&$count=true",
                 _attributes: "documentbody",
                 _attributesExtension: new Map([["documentbody", "css"]]),
                 _mappingEntityId: "annotationid", // Webfile in old schema are maintained with two dataverse entity adx_webfile and annotations. This Id acts as foreign key for that mapping
+                _mappingEntity: "annotations",
+                _mappingEntityFetchQuery: new Map([
+                    ["documentbody", "?$filter=_objectid_value eq {entityId} &$select=mimetype,documentbody,filename,annotationid,_objectid_value&$count=true"],
+                ]),
             },
             {
                 relationships: "",
@@ -179,7 +183,7 @@ export const portal_schema_V1 = {
                 _fetchQueryParameters: "?$filter=adx_entityformid eq {entityId} &$select=adx_name,adx_registerstartupscript",
                 _multiFileFetchQueryParameters: "?$filter=_adx_websiteid_value eq {websiteId}&$select=adx_name,adx_registerstartupscript,adx_entityformid&$count=true",
                 _attributes: "adx_registerstartupscript",
-                _attributesExtension:new Map([["adx_registerstartupscript", "basicform.customjs.js"]]),
+                _attributesExtension: new Map([["adx_registerstartupscript", "basicform.customjs.js"]]),
             },
             {
                 relationships: "",
@@ -213,7 +217,7 @@ export const portal_schema_V1 = {
                 _fetchQueryParameters: "?$filter=_adx_webform_value eq {entityId} &$select=adx_name,adx_registerstartupscript,adx_webformstepid",
                 _multiFileFetchQueryParameters: "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_registerstartupscript,adx_webformstepid&$count=true",
                 _attributes: "adx_registerstartupscript",
-                _attributesExtension:new Map([["adx_registerstartupscript", "advancedformstep.customjs.js"]]),
+                _attributesExtension: new Map([["adx_registerstartupscript", "advancedformstep.customjs.js"]]),
             },
         ],
         "_xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
@@ -275,7 +279,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters:
                     "?$select=powerpagesitelanguageid,languagecode,lcid",
                 _multiFileFetchQueryParameters:
-                        "?$select=powerpagesitelanguageid,languagecode,lcid",
+                    "?$select=powerpagesitelanguageid,languagecode,lcid",
             },
             {
                 relationships: "",
@@ -318,7 +322,7 @@ export const portal_schema_V2 = {
                     "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 3 &$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "filecontent",
                 _attributesExtension: new Map([["filecontent", "css"]]),
-                _mappingAttributeFetchQuery: new Map([
+                _mappingEntityFetchQuery: new Map([
                     ["filecontent", "({entityId})/filecontent"],
                 ]),
             },
@@ -427,7 +431,7 @@ export const portal_schema_V2 = {
                 _fetchQueryParameters: "?$filter=powerpagecomponentid eq {entityId}&$select=name,content",
                 _multiFileFetchQueryParameters: "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 20 &$select=name,content &$count=true",
                 _attributes: "content.registerstartupscript",
-                _attributesExtension:new Map([["content.registerstartupscript", "advancedformstep.customjs.js"]]),
+                _attributesExtension: new Map([["content.registerstartupscript", "advancedformstep.customjs.js"]]),
             },
         ],
     },

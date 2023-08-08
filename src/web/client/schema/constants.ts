@@ -25,7 +25,8 @@ export enum schemaEntityKey {
     FETCH_QUERY_PARAMETERS = "_fetchQueryParameters",
     MULTI_FILE_FETCH_QUERY_PARAMETERS = "_multiFileFetchQueryParameters",
     MAPPING_ENTITY_ID = "_mappingEntityId",
-    MAPPING_ATTRIBUTE_FETCH_QUERY = "_mappingAttributeFetchQuery",
+    MAPPING_ENTITY = "_mappingEntity",
+    MAPPING_ENTITY_FETCH_QUERY = "_mappingEntityFetchQuery",
     EXPORT_TYPE = "_exporttype",
     ATTRIBUTES = "_attributes",
 }

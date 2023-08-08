@@ -11,7 +11,7 @@ import {
     isWebfileContentLoadNeeded,
     setFileContent,
 } from "../utilities/commonUtil";
-import { getCustomRequestURL, getRequestURL, updateEntityId } from "../utilities/urlBuilderUtil";
+import { getCustomRequestURL, getMappingEntityContent, getMappingEntityId, getRequestURL } from "../utilities/urlBuilderUtil";
 import { getCommonHeaders } from "../common/authenticationProvider";
 import * as Constants from "../common/constants";
 import { ERRORS, showErrorDialog } from "../common/errorHandler";
@@ -197,7 +197,7 @@ async function createContentFiles(
             schemaEntityKey.ATTRIBUTES_EXTENSION
         );
         const mappingEntityFetchQuery = entityDetails?.get(
-            schemaEntityKey.MAPPING_ATTRIBUTE_FETCH_QUERY
+            schemaEntityKey.MAPPING_ENTITY_FETCH_QUERY
         );
         const exportType = entityDetails?.get(schemaEntityKey.EXPORT_TYPE);
         const portalFolderName = WebExtensionContext.urlParametersMap.get(
@@ -282,16 +282,15 @@ async function createContentFiles(
 
     } catch (error) {
         const errorMsg = (error as Error)?.message;
-        console.error(errorMsg);
         vscode.window.showErrorMessage(
             vscode.l10n.t("Failed to get file ready for edit.")
         );
-        // WebExtensionContext.telemetry.sendErrorTelemetry(
-        //     telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
-        //     createContentFiles.name,
-        //     errorMsg,
-        //     error as Error
-        // );
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+            createContentFiles.name,
+            errorMsg,
+            error as Error
+        );
     }
 }
 
@@ -412,7 +411,8 @@ async function createFile(
         entityName,
         attribute
     );
-
+    let fileContent = Constants.NO_CONTENT;
+    let mappingEntityId = null
     // By default content is preloaded for all the files except for non-text webfiles for V2
     const isPreloadedContent = mappingEntityFetchQuery ? isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
 
@@ -421,22 +421,26 @@ async function createFile(
         attribute
     );
 
-    const fileContent = mappingEntityFetchQuery && isPreloadedContent ?
-        await getMappingEntityContent(
+    if (mappingEntityFetchQuery && isPreloadedContent) {
+        const mappingContent = await fetchMappingEntityContent(
             mappingEntityFetchQuery,
             attribute,
             entityName,
             entityId,
             WebExtensionContext.dataverseAccessToken,
             dataverseOrgUrl
-        ) : GetFileContent(result, attributePath, entityName, entityId);
-
+        );
+        mappingEntityId = getMappingEntityId(entityName, mappingContent);
+        fileContent = getMappingEntityContent(entityName, mappingContent, attribute);
+    } else {
+        fileContent = GetFileContent(result, attributePath, entityName, entityId);
+    }
 
     await createVirtualFile(
         portalsFS,
         fileUri,
         convertContentToUint8Array(fileContent, base64Encoded),
-        updateEntityId(entityName, entityId, result),
+        entityId,
         attributePath,
         encodeAsBase64(entityName, attribute),
         entityName,
@@ -445,11 +449,12 @@ async function createFile(
         fileExtension,
         result[Constants.ODATA_ETAG],
         result[Constants.MIMETYPE],
-        isPreloadedContent
+        isPreloadedContent,
+        mappingEntityId
     );
 }
 
-async function getMappingEntityContent(
+async function fetchMappingEntityContent(
     mappingEntityFetchQuery: string,
     attributeKey: string,
     entity: string,
@@ -467,14 +472,15 @@ async function getMappingEntityContent(
         Constants.httpMethod.GET,
         false,
         true,
-        mappingEntityFetchQueryMap?.get(attributeKey) as string
+        mappingEntityFetchQueryMap?.get(attributeKey) as string,
+        getEntity(entity)?.get(schemaEntityKey.MAPPING_ENTITY)
     );
 
     WebExtensionContext.telemetry.sendAPITelemetry(
         requestUrl,
         entity,
         Constants.httpMethod.GET,
-        getMappingEntityContent.name
+        fetchMappingEntityContent.name
     );
     requestSentAtTime = new Date().getTime();
 
@@ -488,7 +494,7 @@ async function getMappingEntityContent(
             entity,
             Constants.httpMethod.GET,
             new Date().getTime() - requestSentAtTime,
-            getMappingEntityContent.name,
+            fetchMappingEntityContent.name,
             JSON.stringify(response),
             '',
             response?.status.toString()
@@ -501,11 +507,16 @@ async function getMappingEntityContent(
         entity,
         Constants.httpMethod.GET,
         new Date().getTime() - requestSentAtTime,
-        getMappingEntityContent.name
+        fetchMappingEntityContent.name
     );
 
     const result = await response.json();
-    return result.value ?? Constants.NO_CONTENT;
+    const data = result.value ?? result;
+    if (result[Constants.ODATA_COUNT] !== 0 && data.length === 1) {
+        return data[0];
+    }
+
+    return data ?? Constants.NO_CONTENT;
 }
 
 export async function preprocessData(
@@ -587,7 +598,8 @@ async function createVirtualFile(
     fileExtension: string,
     odataEtag: string,
     mimeType?: string,
-    isPreloadedContent?: boolean
+    isPreloadedContent?: boolean,
+    mappingEntityId?: string
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -616,6 +628,7 @@ async function createVirtualFile(
         entityName,
         odataEtag,
         attributePath,
-        originalAttributeContent
+        originalAttributeContent,
+        mappingEntityId
     );
 }
