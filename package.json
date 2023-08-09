@@ -905,6 +905,29 @@
             ]
           }
         ]
+      },
+      {
+        "id": "pacCLI.pcfWalkthrough",
+        "title": "PCF Title Goes Here",
+        "description": "PCF Description Goes Here",
+        "steps": [
+          {
+            "id": "overview",
+            "title": "PCF Overview Title Goes Here",
+            "description": "PCF Overview Description Goes Here \n\n Links in the step description are rendered as buttons: \n[Learn More](https://docs.microsoft.com/en-us/powerapps/developer/component-framework/overview)",
+            "media": {
+              "markdown": "./src/client/assets/pcfwalkthrough/overview.md"
+            }
+          },
+          {
+            "id": "pacCommands",
+            "title": "PAC PCF Commands",
+            "description": "PAC PCF Commands Description Goes Here \n[PCF Help Command](command:pacCLI.pacPcfHelp)",
+            "media": {
+              "markdown": "./src/client/assets/pcfwalkthrough/pacCommands.md"
+            }
+          }
+        ]
       }
     ]
   },
