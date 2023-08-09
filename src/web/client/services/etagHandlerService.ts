@@ -12,6 +12,7 @@ import { PortalsFS } from "../dal/fileSystemProvider";
 import { telemetryEventNames } from "../telemetry/constants";
 import { GetFileContent } from "../utilities/commonUtil";
 import {
+    getFileEntityEtag,
     getFileEntityId,
     getFileEntityName,
     updateEntityEtag,
@@ -30,10 +31,7 @@ export class EtagHandlerService {
 
         const requestSentAtTime = new Date().getTime();
 
-        const entityEtag =
-            WebExtensionContext.fileDataMap.getFileMap.get(
-                fileFsPath
-            )?.entityEtag;
+        const entityEtag = getFileEntityEtag(fileFsPath);
 
         const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
             queryParameters.ORG_URL
@@ -88,13 +86,9 @@ export class EtagHandlerService {
                     await portalFs.readFile(vscode.Uri.parse(fileFsPath))
                 );
                 const latestContent = GetFileContent(result, attributePath, entityName, entityId);
+                updateEntityEtag(entityId, result[ODATA_ETAG]);
 
                 if (currentContent !== latestContent) {
-                    updateEntityEtag(
-                        entityId,
-                        result[ODATA_ETAG]
-                    );
-
                     WebExtensionContext.telemetry.sendInfoTelemetry(
                         telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_CHANGED
                     );
