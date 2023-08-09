@@ -10,6 +10,7 @@ export interface IFileData extends IFileInfo {
     entityFileExtensionType: string;
     attributePath: IAttributePath;
     hasDirtyChanges: boolean;
+    hasDiffViewTriggered: boolean;
     encodeAsBase64: boolean | undefined;
     mimeType: string | undefined;
     isContentLoaded?: boolean;
@@ -23,6 +24,7 @@ export class FileData implements IFileData {
     private _entityFileExtensionType: string;
     private _attributePath: IAttributePath;
     private _hasDirtyChanges!: boolean;
+    private _hasDiffViewTriggered!: boolean;
     private _encodeAsBase64: boolean | undefined;
     private _mimeType: string | undefined;
     private _isContentLoaded: boolean | undefined;
@@ -55,7 +57,9 @@ export class FileData implements IFileData {
     public get hasDirtyChanges(): boolean {
         return this._hasDirtyChanges;
     }
-
+    public get hasDiffViewTriggered(): boolean {
+        return this._hasDiffViewTriggered;
+    }
     public get isContentLoaded(): boolean | undefined {
         return this._isContentLoaded;
     }
@@ -66,6 +70,9 @@ export class FileData implements IFileData {
     }
     public set setEntityEtag(value: string) {
         this._entityEtag = value;
+    }
+    public set setHasDiffViewTriggered(value: boolean) {
+        this._hasDiffViewTriggered = value;
     }
 
     constructor(
@@ -88,6 +95,7 @@ export class FileData implements IFileData {
         this._encodeAsBase64 = encodeAsBase64;
         this._mimeType = mimeType;
         this._hasDirtyChanges = false;
+        this._hasDiffViewTriggered = false;
         this._isContentLoaded = isContentLoaded;
     }
 }

@@ -18,13 +18,17 @@ import { telemetryEventNames } from "../telemetry/constants";
 import { getFolderSubUris } from "../utilities/folderHelperUtility";
 import { EtagHandlerService } from "../services/etagHandlerService";
 import {
+    fileHasDiffViewTriggered,
     fileHasDirtyChanges,
     getEntityEtag,
     getFileEntityEtag,
     getFileEntityId,
     getFileEntityName,
     getFileName,
+    updateDiffViewTriggered,
+    updateEntityColumnContent,
     updateFileDirtyChanges,
+    updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
 import { isVersionControlEnabled } from "../utilities/commonUtil";
 import { IFileInfo } from "../common/interfaces";
@@ -91,6 +95,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     latestContent.length > 0 &&
                     getFileEntityEtag(uri.fsPath) !== entityEtagValue
                 ) {
+                    updateDiffViewTriggered(uri.fsPath, true);
+                    updateFileEntityEtag(uri.fsPath, entityEtagValue);
                     await this.updateMtime(uri, latestContent);
                     WebExtensionContext.telemetry.sendInfoTelemetry(
                         telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_TRIGGERED
@@ -135,7 +141,20 @@ export class PortalsFS implements vscode.FileSystemProvider {
             data = await this._lookup(uri, true);
         }
 
-        return data instanceof File ? data.data : new Uint8Array();
+        const fileContent = data instanceof File ? data.data : new Uint8Array();
+        if (fileHasDirtyChanges(uri.fsPath)) {
+            if (fileHasDiffViewTriggered(uri.fsPath)) {
+                updateDiffViewTriggered(uri.fsPath, false);
+            } else {
+                const fileData = WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath);
+                if (fileData?.entityId && fileData.attributePath) {
+                    updateEntityColumnContent(fileData?.entityId, fileData?.attributePath, Buffer.from(fileContent).toString());
+                    updateFileDirtyChanges(uri.fsPath, false);
+                }
+            }
+        }
+
+        return fileContent;
     }
 
     async writeFile(
@@ -476,6 +495,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
         // Update fileDataMap with the latest changes
         updateFileDirtyChanges(uri.fsPath, false);
+        updateDiffViewTriggered(uri.fsPath, false);
 
         // Update the etag of the file after saving
         await EtagHandlerService.updateFileEtag(uri.fsPath);

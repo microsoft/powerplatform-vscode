@@ -13,6 +13,11 @@ export function fileHasDirtyChanges(fileFsPath: string) {
         ?.hasDirtyChanges as boolean;
 }
 
+export function fileHasDiffViewTriggered(fileFsPath: string) {
+    return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
+        ?.hasDiffViewTriggered as boolean;
+}
+
 export function getFileEntityId(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
         ?.entityId as string ?? WebExtensionContext.getVscodeWorkspaceState(fileFsPath)?.entityId as string;
@@ -39,6 +44,16 @@ export function updateFileDirtyChanges(
     WebExtensionContext.fileDataMap.updateDirtyChanges(
         fileFsPath,
         hasDirtyChanges
+    );
+}
+
+export function updateDiffViewTriggered(
+    fileFsPath: string,
+    hasDiffViewTriggered: boolean
+) {
+    WebExtensionContext.fileDataMap.updateDiffViewTriggered(
+        fileFsPath,
+        hasDiffViewTriggered
     );
 }
 
