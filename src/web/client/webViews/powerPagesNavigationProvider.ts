@@ -65,12 +65,14 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         console.log("Execute preview power pages site", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string);
 
         // Runtime clear cache call
-        const requestUrl = "https://site-npeby.powerappsportals.com/_services/portal/547f0b36-0ad2-446f-9543-99effc6fce8e/invalidate-cache-maker";
+        //const requestUrl = "https://site-npeby.powerappsportals.com/_services/portal/547f0b36-0ad2-446f-9543-99effc6fce8e/invalidate-cache-maker";
+        const requestUrl = "https://site-npeby.powerappsportals.com/_services/cache/config";
 
         WebExtensionContext.telemetry.sendAPITelemetry(
             requestUrl,
             "Preview power pages site",
-            httpMethod.POST,
+            //httpMethod.POST,
+            httpMethod.DELETE,
             this.previewPowerPageSite.name
         );
         requestSentAtTime = new Date().getTime();
@@ -80,23 +82,25 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             // headers: getCommonHeaders(WebExtensionContext.dataverseAccessToken),
             headers: {
                 authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
+                'Accept': '*/*',
+                'Content-Type': 'text/plain',
+                //'orgId': WebExtensionContext.urlParametersMap.get(queryParameters.ORG_ID),
                 //'referrer-policy': 'strict-origin-when-cross-origin',
+                //'origin': 'https://v--1p5gunfsmqb4gsdpnrjapmdv61ofml3sahb9pd8de82ruqv7m773.vscode-cdn.net/'
                 // 'Access-Control-Allow-Origin': '*',
                 // 'Access-Control-Allow-Headers': 'access-control-allow-origin,authorization,content-type,referrer-policy'
             },
-            method: 'POST',
-            body: JSON.stringify({
-                runtimeInvalidationRequest: "{\"entities\":[{\"entityName\":\"*\"}],\"source\":\"\"}"
-            })
+            method: 'DELETE',
+            // body: JSON.stringify({
+            //     runtimeInvalidationRequest: "{\"entities\":[{\"entityName\":\"*\"}],\"source\":\"\"}"
+            // })
         });
 
         if (response.ok) {
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
                 "Preview power pages site",
-                httpMethod.POST,
+                httpMethod.DELETE,
                 new Date().getTime() - requestSentAtTime,
                 this.previewPowerPageSite.name
             );
@@ -104,7 +108,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                 requestUrl,
                 "Preview power pages site",
-                httpMethod.POST,
+                httpMethod.DELETE,
                 new Date().getTime() - requestSentAtTime,
                 this.previewPowerPageSite.name,
                 JSON.stringify(response),

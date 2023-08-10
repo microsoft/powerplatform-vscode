@@ -78,6 +78,7 @@ export enum httpMethod {
     PATCH = "PATCH",
     GET = "GET",
     POST = "POST",
+    DELETE = "DELETE",
 }
 
 export enum SurveyConstants {
