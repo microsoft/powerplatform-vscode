@@ -108,11 +108,9 @@ export class PortalsFS implements vscode.FileSystemProvider {
         return await this._lookup(uri, false);
     }
 
-    async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
+    async readDirectory(uri: vscode.Uri, isActivationFlow = false): Promise<[string, vscode.FileType][]> {
         const result: [string, vscode.FileType][] = [];
-        const entry = await this._lookup(uri, true);
-
-        if (!entry && isValidDirectoryPath(uri.fsPath)) {
+        if (isActivationFlow && isValidDirectoryPath(uri.fsPath)) {
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_FETCH_DIRECTORY_TRIGGERED
             );
@@ -120,12 +118,12 @@ export class PortalsFS implements vscode.FileSystemProvider {
             return result;
         }
 
+        const entry = await this._lookup(uri, true);
         if (entry instanceof Directory) {
             for (const [name, child] of entry.entries) {
                 result.push([name, child.type]);
             }
         }
-
         return result;
     }
 

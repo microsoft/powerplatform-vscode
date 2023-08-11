@@ -160,6 +160,10 @@ Typ: {3}</target>
         <source xml:lang="en">File(s) already exist. No new files to add</source>
         <target state="translated">Dateien sind bereits vorhanden. Es gibt keine neuen Dateien zum Hinzufügen.</target>
       </trans-unit>
+      <trans-unit id="++CODE++6658fe1c5f8e493175e012ea4a3f7e08df6207342fba111ccc67ba8d4d91977f">
+        <source xml:lang="en">Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.</source>
+        <target state="translated">Erhalten Sie Hilfe beim Schreiben von Code in HTML-, CSS- und JS-Sprache für Power Pages-Websites mit Copilot.</target>
+      </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
         <note>{0} represents the version number</note>
@@ -316,6 +320,10 @@ Organisations-ID: {3}</target>
       <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
         <source xml:lang="en">Thereâ€™s a problem on the back end</source>
         <target state="translated">Problem mit dem Backend</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8d6329ce370e7f2cf3a5b77a73e0100c08550628408f2763deafe57dce769719">
+        <source xml:lang="en">Try Copilot for Power Pages</source>
+        <target state="translated">Copilot für Power Pages testen</target>
       </trans-unit>
       <trans-unit id="++CODE++d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f">
         <source xml:lang="en">Try again</source>
