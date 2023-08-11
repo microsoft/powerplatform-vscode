@@ -126,7 +126,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                         title: vscode.l10n.t("Fetching your file ..."),
                                     },
                                     async () => {
-                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory);
+                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
                                     }
                                 );
 
