@@ -8,6 +8,7 @@ import {
     convertContentToUint8Array,
     GetFileContent,
     GetFileNameWithExtension,
+    getSanitizedFileName,
     isWebfileContentLoadNeeded,
     setFileContent,
 } from "../utilities/commonUtil";
@@ -234,7 +235,7 @@ async function createContentFiles(
         // Create folder paths
         filePathInPortalFS = filePathInPortalFS ?? `${Constants.PORTALS_URI_SCHEME}:/${portalFolderName}/${subUri}/`;
         if (exportType && exportType === folderExportType.SubFolders) {
-            filePathInPortalFS = `${filePathInPortalFS}${fileName}/`;
+            filePathInPortalFS = `${filePathInPortalFS}${getSanitizedFileName(fileName)}/`;
             await portalsFS.createDirectory(
                 vscode.Uri.parse(filePathInPortalFS, true)
             );
