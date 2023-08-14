@@ -5,7 +5,7 @@
 
 
 import * as vscode from "vscode";
-import { EXTENSION_ID } from "./copilot/constants";
+import { EXTENSION_ID } from "../client/constants";
 
 export function getSelectedSnippet(): string {
   const editor = vscode.window.activeTextEditor;

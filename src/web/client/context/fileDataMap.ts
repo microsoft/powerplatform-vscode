@@ -50,6 +50,16 @@ export class FileDataMap {
         throw Error("File does not exist in the map"); // TODO - Revisit errors and dialog experience here
     }
 
+    public updateDiffViewTriggered(fileFsPath: string, diffViewTriggerValue: boolean) {
+        const existingEntity = this.fileMap.get(fileFsPath);
+
+        if (existingEntity) {
+            existingEntity.setHasDiffViewTriggered = diffViewTriggerValue;
+            return;
+        }
+        throw Error("File does not exist in the map"); // TODO - Revisit errors and dialog experience here
+    }
+
     public updateEtagValue(fileFsPath: string, etag: string) {
         const existingEntity = this.fileMap.get(fileFsPath);
 
