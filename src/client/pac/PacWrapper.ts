@@ -165,6 +165,9 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacActiveOrgListOutput>(new PacArguments("org", "who"));
     }
 
+    public async pcfInit(outputDirectory : string): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pcf", "init", "--outputDirectory", outputDirectory));
+    }
 
     public async enableTelemetry(): Promise<PacOutput> {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "enable"));
