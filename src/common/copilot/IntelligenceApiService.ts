@@ -4,7 +4,7 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { InvalidResponse, MalaciousScenerioResponse, NetworkError, RELEVANCY_CHECK_FAILED } from "./constants";
+import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse } from "./constants";
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
@@ -93,16 +93,24 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
     } else {
       try {
         const errorResponse = await response.json();
-        const responseError = new Error(errorResponse.error.messages[0]);
+        const errorCode = errorResponse.error && errorResponse.error.code;
+        const errorMessage = errorResponse.error && errorResponse.error.messages[0];
+      
+        const responseError = new Error(errorMessage);
         sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: responseError, durationInMills: responseTime });
 
         if (response.status >= 500 && response.status < 600) {
           return InvalidResponse
-        } else if (errorResponse.error.code === RELEVANCY_CHECK_FAILED) {
-          return MalaciousScenerioResponse;
+        } else if (response.status === 429) {
+          return RateLimitingResponse
         }
-        else if (errorResponse.error && errorResponse.error.messages[0]) {
-          return [{ displayText: errorResponse.error.messages[0], code: '' }];
+        else if (errorCode === RELEVANCY_CHECK_FAILED || errorCode === INAPPROPRIATE_CONTENT || errorCode === INPUT_CONTENT_FILTERED) {
+          return MalaciousScenerioResponse;
+        } else if(errorCode === PROMPT_LIMIT_EXCEEDED || errorCode === INVALID_INFERENCE_INPUT) {
+          return PromptLimitExceededResponse;
+        }
+        else if (errorMessage) {
+          return [{ displayText: errorMessage, code: '' }];
         }
       } catch (error) {
         sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: error as Error, durationInMills: responseTime });

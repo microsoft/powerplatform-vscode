@@ -21,6 +21,10 @@ export const AUTH_CREATE_MESSAGE = vscode.l10n.t('Creating new Auth Profile');
 export const AUTH_CREATE_FAILED = vscode.l10n.t("Error creating auth profile for org")
 export const PAC_SUCCESS = "Success";
 export const RELEVANCY_CHECK_FAILED = 'RelevancyCheckFailed';
+export const INAPPROPRIATE_CONTENT = 'InappropriateContentDetected';
+export const INPUT_CONTENT_FILTERED = 'InputContentFiltered';
+export const PROMPT_LIMIT_EXCEEDED = 'PromptLimitExceeded';
+export const INVALID_INFERENCE_INPUT = 'InvalidInferenceInput';
 
 export type WebViewMessage = {
   type: string;
@@ -51,3 +55,5 @@ export const AuthProfileNotFound = [{ displayText: "Active auth profile is not f
 export const NetworkError = [{ displayText: "There was an issue connecting to the server. Please check your internet connection and try again.", code: '' }];
 export const InvalidResponse = [{ displayText: "Something went wrong. Don’t worry, you can try again.", code: '' }];
 export const MalaciousScenerioResponse = [{ displayText: "Try a different prompt that’s related to writing code for Power Pages sites. You can get help with HTML, CSS, and JS languages.", code: '' }];
+export const PromptLimitExceededResponse = [{ displayText: "Please try again with a shorter prompt.", code: '' }];
+export const RateLimitingResponse = [{ displayText: "Too many requests at once. Try again after some time.", code: '' }];
