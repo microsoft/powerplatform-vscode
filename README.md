@@ -20,7 +20,7 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Release Notes
 2.0.1:
-  - pac CLI 1.26.4 (July refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+  - pac CLI 1.26.5 (July refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - Authentication Settings - Can now choose other Azure clouds for the "New Auth Profile" button to target [#619](https://github.com/microsoft/powerplatform-vscode/pull/619)
   - Environments & Solutions panel improvements:
     - Environments now display an icon for the active environment, and button added to select a different environment [#629](https://github.com/microsoft/powerplatform-vscode/pull/629)
