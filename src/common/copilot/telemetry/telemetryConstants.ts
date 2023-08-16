@@ -26,5 +26,3 @@ export const CopilotTryNotificationClickedEvent = 'CopilotTryNotificationClicked
 export const CopilotArtemisSuccessEvent = 'CopilotArtemisSuccessEvent';
 export const CopilotArtemisFailureEvent = 'CopilotArtemisFailureEvent';
 export const CopilotWalkthroughEvent = 'CopilotWalkthroughEvent';
-export const CopilotResponseOkFailureEvent = 'CopilotResponseOkFailureEvent';
-export const CopilotResponseFailureEventWithMessage = 'CopilotResponseFailureEventWithMessage';
