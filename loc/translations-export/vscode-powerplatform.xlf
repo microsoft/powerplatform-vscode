@@ -222,6 +222,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
       <source xml:lang="en">Saving your file ...</source>
     </trans-unit>
+    <trans-unit id="++CODE++6e26632772595a9d2fdf17191f6d7b59983c308d884deed6ba317054f7d30688">
+      <source xml:lang="en">Select Folder for new PCF Control</source>
+      <note>Do not translate 'PCF' as it is a product name.</note>
+    </trans-unit>
     <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
       <source xml:lang="en">Select Type</source>
     </trans-unit>
