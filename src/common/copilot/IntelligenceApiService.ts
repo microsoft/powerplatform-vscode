@@ -8,7 +8,7 @@ import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT,
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { CopilotResponseFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
+import { CopilotResponseFailureEvent, CopilotResponseFailureEventWithMessage, CopilotResponseOkFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
 import { getExtensionType, getExtensionVersion } from "../Utils";
 import { EXTENSION_NAME } from "../../client/constants";
 
@@ -87,7 +87,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         }
         throw new Error("Invalid response format");
       } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseOkFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime });
         return InvalidResponse;
       }
     } else {
@@ -97,7 +97,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         const errorMessage = errorResponse.error && errorResponse.error.messages[0];
       
         const responseError = new Error(errorMessage);
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: responseError, durationInMills: responseTime });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEventWithMessage, copilotSessionId: sessionID, responseStatus: response.status, error: responseError, durationInMills: responseTime });
 
         if (response.status >= 500 && response.status < 600) {
           return InvalidResponse
