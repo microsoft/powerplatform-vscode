@@ -25,6 +25,8 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
   - Environments & Solutions panel improvements:
     - Environments now display an icon for the active environment, and button added to select a different environment [#629](https://github.com/microsoft/powerplatform-vscode/pull/629)
     - Solutions now have tooltip and icon to indicated managed vs. unmanaged solutions [#618](https://github.com/microsoft/powerplatform-vscode/pull/618)
+  - (Preview) Added AI code generation assistance with Power Pages Copilot
+    - Only supports vscode on the desktop currently, not available in the web extension
   - Web Extension updates:
     - Conflict resolution optimization for incoming changes accept scenario [#664](https://github.com/microsoft/powerplatform-vscode/pull/664)
     - Optimized load of webfiles for old data model - media files are now loaded only on view a specific file action [#662](https://github.com/microsoft/powerplatform-vscode/pull/662)
