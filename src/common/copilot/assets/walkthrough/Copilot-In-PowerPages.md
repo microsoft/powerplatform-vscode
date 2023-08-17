@@ -31,6 +31,7 @@ Examples
 Note
 
 - Copilot generated code might not have the correct names for tables or columns, so it’s recommended to verify these details before using the code.
+- To generate more accurate code, it is recommended that you open the file where you want to use the code. For example, open a web template for web API or open custom JavaScript file for forms where you want to add field validation.
 
 ![Demo File Screen](./images/contextpowerpages.svg)
 
