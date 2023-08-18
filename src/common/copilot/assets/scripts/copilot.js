@@ -64,6 +64,7 @@
 
   function parseCodeBlocks(responseText) {
     const resultDiv = document.createElement("div");
+    let codeLineCount = 0;
 
     for (let i = 0; i < responseText.length; i++) {
       const textDiv = document.createElement("div");
@@ -85,6 +86,8 @@
       codeDiv.classList.add("code-division");
       let codeBlock = responseText[i].code;
 
+      codeLineCount += countLines(codeBlock);
+
       codeDiv.appendChild(createActionWrapper(codeBlock));
 
       const preFormatted = document.createElement("pre");
@@ -98,8 +101,14 @@
       codeDiv.appendChild(preFormatted);
       resultDiv.appendChild(codeDiv);
     }
+    vscode.postMessage({ type: "codeLineCount", codeLineCount });
     resultDiv.classList.add("result-div");
     return resultDiv;
+  }
+
+  function countLines(str) {
+    const lines = str.split('\n');
+    return lines.length;
   }
 
   function formatCodeBlocks(responseText) {

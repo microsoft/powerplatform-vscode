@@ -28,3 +28,4 @@ export const CopilotArtemisFailureEvent = 'CopilotArtemisFailureEvent';
 export const CopilotWalkthroughEvent = 'CopilotWalkthroughEvent';
 export const CopilotResponseOkFailureEvent = 'CopilotResponseOkFailureEvent';
 export const CopilotResponseFailureEventWithMessage = 'CopilotResponseFailureEventWithMessage';
+export const CopilotCodeLineCountEvent = 'CopilotCodeLineCountEvent';
