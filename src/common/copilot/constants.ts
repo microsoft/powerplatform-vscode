@@ -57,3 +57,4 @@ export const InvalidResponse = [{ displayText: "Something went wrong. Don’t wo
 export const MalaciousScenerioResponse = [{ displayText: "Try a different prompt that’s related to writing code for Power Pages sites. You can get help with HTML, CSS, and JS languages.", code: '' }];
 export const PromptLimitExceededResponse = [{ displayText: "Please try again with a shorter prompt.", code: '' }];
 export const RateLimitingResponse = [{ displayText: "Too many requests at once. Try again after some time.", code: '' }];
+export const UnauthorizedResponse = [{ displayText: "Unauthorized access. Please log in with valid credentials and try again.", code: '' }];
