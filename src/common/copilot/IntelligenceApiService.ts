@@ -4,7 +4,7 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse } from "./constants";
+import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse } from "./constants";
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
@@ -99,10 +99,11 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         const responseError = new Error(errorMessage);
         sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEventWithMessage, copilotSessionId: sessionID, responseStatus: response.status, error: responseError, durationInMills: responseTime });
 
-        if (response.status >= 500 && response.status < 600) {
-          return InvalidResponse
-        } else if (response.status === 429) {
+        if (response.status === 429) {
           return RateLimitingResponse
+        }
+        else if (response.status === 401) {
+          return UnauthorizedResponse;
         }
         else if (errorCode === RELEVANCY_CHECK_FAILED || errorCode === INAPPROPRIATE_CONTENT || errorCode === INPUT_CONTENT_FILTERED) {
           return MalaciousScenerioResponse;
@@ -110,7 +111,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
           return PromptLimitExceededResponse;
         }
         else if (errorMessage) {
-          return [{ displayText: errorMessage, code: '' }];
+          return InvalidResponse;
         }
       } catch (error) {
         sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: error as Error, durationInMills: responseTime });
