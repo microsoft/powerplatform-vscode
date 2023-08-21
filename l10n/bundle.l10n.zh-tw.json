@@ -63,6 +63,7 @@
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "設定檔種類: {0}",
   "Resource: {0}/The {0} represents profile's resource/environment URL": "資源: {0}",
   "Saving your file ...": "正在儲存您的檔案...",
+  "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": "為新的 PCF 控制項選取資料夾",
   "Select Type": "選取類型",
   "The Power Pages generator is ready for use in your VS Code extension!": "您已可在 VS Code 擴充功能中使用 Power Pages 產生器!",
   "The name you want to give to this authentication profile": "您要為此驗證設定檔指定的名稱",

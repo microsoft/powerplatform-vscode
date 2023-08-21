@@ -63,6 +63,7 @@
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Вид профиля: {0}",
   "Resource: {0}/The {0} represents profile's resource/environment URL": "Ресурс: {0}",
   "Saving your file ...": "Сохранение файла...",
+  "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": "Выберите папку для нового элемента управления PCF",
   "Select Type": "Выбрать тип",
   "The Power Pages generator is ready for use in your VS Code extension!": "Генератор Power Pages готов к использованию в расширении VS Code.",
   "The name you want to give to this authentication profile": "Имя, которое вы хотите дать этому профилю проверки подлинности",
