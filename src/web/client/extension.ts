@@ -25,6 +25,8 @@ import { NPSWebView } from "./webViews/NPSWebView";
 import * as Constants from "./common/constants";
 import { DecorationManager } from "./webViews/DecorationCursor";
 import { UserTreeViewProvider } from "./webViews/UsersTreeProvider";
+// import { dataverseAuthentication } from "../../web/client/common/authenticationProvider";
+
 export interface IContainerData {
     containerId: string;
     lineNumber: number;
@@ -298,15 +300,50 @@ export function createCopresenceWorkerInstance(
                     updateStatusBarItem(data.totalUsers);
                 }
 
+                // WebExtensionContext.removeConnectedUserInContext(
+                //     "d7de15c8-5037-ee11-bdf5-00224809038f"
+                // );
+                // userViewProvider.refresh();
+
                 console.log("recived data", data);
 
                 console.log(
-                    `VSCODE WORKER Received hello from webworker: ${
-                        (JSON.stringify(event),
+                    `VSCODE WORKER Received hello from webworker: ${(JSON.stringify(event),
                         event.data,
                         event.data.containerId)
                     }`
                 );
+
+                // async function Temp() {
+                //     console.log("Trying to fetch data from dataverse")
+                //     const dataverseToken = await dataverseAuthentication('https://ritiktest.crm.dynamics.com/');
+
+                //     fetch('https://ritiktest.crm.dynamics.com/api/data/v9.2/sharedworkspaces?$select=sharedworkspaceid', {
+                //         method: 'GET',
+                //         headers: {
+                //             'Content-Type': 'application/json',
+                //             'Authorization': 'Bearer ' + dataverseToken,
+                //         }
+                //     })
+                //         .then(response => response.json())
+                //         .then(data => {
+                //             // console.log("Hello from the other side")
+                //             // console.log(data);
+                //             if (data.value && data.value.length > 0) {
+                //                 const firstSharedWorkspaceId = data.value[0].sharedworkspaceid;
+                //                 console.log("First shareworespaceid")
+                //                 console.log(firstSharedWorkspaceId);
+                //             } else {
+                //                 console.log("No shared workspaces found in the response.");
+                //             }
+                //         })
+                //         .catch(error => {
+                //             console.error('Error fetching data:', error);
+                //         });
+                // }
+                // Temp()
+
+
                 WebExtensionContext.containerId = event.data.containerId;
                 const otherUsercursor = DecorationManager.getInstance(
                     data.userId,
@@ -350,21 +387,31 @@ export function createCopresenceWorkerInstance(
                         };
                         activeEditor.setDecorations(otherUsercursor, []);
 
-                        activeEditor.setDecorations(otherUsercursor, [
-                            decoration,
-                        ]);
+                        // activeEditor.setDecorations(otherUsercursor, [
+                        //     decoration,
+                        // ]);
                         // activeEditor.setDecorations(
                         //     vscode.window.createTextEditorDecorationType({}),
                         //     [decoration]
                         // );
                     }
 
-                    vscode.window.showInformationMessage(
-                        "Server sent new position as " +
+                    if (event.data.lineNumber !== undefined && event.data.columnNumber !== undefined) {
+                        vscode.window.showInformationMessage(
+                            event.data.userName +
+                            " new position is " +
                             event.data.lineNumber +
                             " " +
-                            event.data.columnNumber
-                    );
+                            event.data.columnNumber +
+                            " " +
+                            "on page " +
+                            event.data.fileName
+                        );
+                    } else {
+                        vscode.window.showInformationMessage(
+                            "Some one join at studio side"
+                        );
+                    }
                 }
             };
         })

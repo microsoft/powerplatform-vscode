@@ -94,8 +94,8 @@ async function loadContainer(config, id, line, column, swpId, file) {
     console.log("VSCODE WORKER containerSchema creates");
 
     try {
-        console.log(`Retrieving container`);
-        const azureClient = AzureFluidClient.getInstance(config, swpId);
+        // console.log(`Retrieving container`);
+        // const azureClient = AzureFluidClient.getInstance(config, swpId);
 
         // if (myContainer === undefined) {
         // const { container, services } = await azureClient.getContainer(
@@ -112,6 +112,8 @@ async function loadContainer(config, id, line, column, swpId, file) {
         console.log("audience", audience);
         console.log("conrtainer status", container.connectionState);
 
+        // container.dispose("a371cba0-e7f9-47fb-b819-d36b3b70db84")
+
         // if (myContainer.connectionState !== ConnectionState.Connected) {
         //     await new Promise((resolve) => {
         //         myContainer.once("connected", () => {
@@ -122,8 +124,13 @@ async function loadContainer(config, id, line, column, swpId, file) {
         // // if (map === undefined) {
         // const map = myContainer.initialObjects.sharedState;
         // // }
+
         const existingMembers = audience.getMembers();
-        // console.log("active users", existingMembers);
+        console.log("active users", existingMembers);
+        existingMembers.forEach((e) => {
+            console.log(e.userId, e.userName);
+        });
+
         const myself = audience.getMyself();
         // console.log("myself", myself);
 
@@ -135,6 +142,8 @@ async function loadContainer(config, id, line, column, swpId, file) {
             filePath: file.filePath,
             userName: myself.userName,
         };
+
+        console.log("Current Users: " + currentUser);
 
         map.set(myself.userId, currentUser);
         // const allMembers = audience.getMembers();
@@ -170,7 +179,8 @@ async function loadContainer(config, id, line, column, swpId, file) {
 
         if (!initial) {
             existingMembers.forEach(async (value, key) => {
-                const otherUser = map.get(key);
+                console.log("Map: key: ", key, " value: ", value);
+                const otherUser = value;
                 console.log("in intial other user", otherUser);
                 self.postMessage({
                     type: "client-data",
@@ -178,9 +188,10 @@ async function loadContainer(config, id, line, column, swpId, file) {
                     userName: otherUser.userName,
                     userId: key,
                     containerId: swpId,
+                    // onVsCode:  otherUser.lineNumber && otherUser.lineNumber ? true : false,
                     lineNumber: otherUser.lineNumber,
                     columnNumber: otherUser.columnNumber,
-                    fileName: otherUser.fileName,
+                    fileName: otherUser.fileName === undefined ? "On Studio" : otherUser.fileName,
                     filePath: otherUser.filePath,
                 });
             });

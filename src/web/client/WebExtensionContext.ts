@@ -587,6 +587,8 @@ class WebExtensionContext implements IWebExtensionContext {
 
         const sharedWorkSpaceParamsMap = new Map<string, string>();
         for (const key in sharedworkspace) {
+            console.log("key: " +  String(key).trim().toLocaleLowerCase())
+            console.log("value: " + String(sharedworkspace[key]).trim())
             sharedWorkSpaceParamsMap.set(
                 String(key).trim().toLocaleLowerCase(),
                 String(sharedworkspace[key]).trim()

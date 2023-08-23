@@ -12,6 +12,8 @@ import {
     schemaKey,
 } from "../schema/constants";
 import { getEntity } from "./schemaHelperUtil";
+// import { dataverseAuthentication } from "../common/authenticationProvider";
+// import WebExtensionContext from "../WebExtensionContext"
 
 export const getParameterizedRequestUrlTemplate = (isSingleEntity: boolean) => {
     if (isSingleEntity) {
@@ -169,20 +171,29 @@ export function pathHasEntityFolderName(uri: string): boolean {
 }
 
 export async function getOrCreateSharedWorkspace(config: any) {
+    console.log("Config: ", config.websiteid);
     const getWorkspaceResponse = await fetch(
-        `${config.dataverseOrgUrl}/api/data/v9.2/sharedworkspaces?$filter=name eq '${config.websiteid}'`,
+        `${config.dataverseOrgUrl}/api/data/v9.2/sharedworkspaces`,
         {
             headers: config.headers,
             method: "GET",
         }
     );
     const getWorkspaceResult = await getWorkspaceResponse.json();
+    console.log("getWorkspaceResult", getWorkspaceResult)
+    // console.log(getWorkspaceResult);
     if (getWorkspaceResult.value.length) {
         console.log(`FETCHED EXISTING SHAREDWORKSPACE`);
-
-        return getWorkspaceResult.value[0];
+        for (const workspace of await getWorkspaceResult.value) {
+            // TODO: add logic for v2 or v1 datamodel
+            // console.log("Current Schema Version: ", WebExtensionContext.currentSchemaVersion);
+            if (workspace.name === `Site-${WebExtensionContext.currentSchemaVersion === "PortalSchemaV1" ? 'v1' : 'v2'}-${config.websiteid}`) {
+                console.log("Found matching workspace")
+                return workspace;
+            }
+        }
+        // return await getWorkspaceResult.value[3];
     }
-
     console.log(`CREATING NEW SHAREDWORKSPACE`);
     const createWorkspaceResponse = await fetch(
         `${config.dataverseOrgUrl}/api/data/v9.2/sharedworkspaces`,
@@ -200,4 +211,47 @@ export async function getOrCreateSharedWorkspace(config: any) {
     );
 
     return await createWorkspaceResponse.json();
+
+    // console.log("Trying to fetch data from dataverse")
+    // const dataverseToken = await dataverseAuthentication('https://ritiktest.crm.dynamics.com/');
+
+    // fetch('https://ritiktest.crm.dynamics.com/api/data/v9.2/sharedworkspaces?$select=sharedworkspaceid', {
+    //     method: 'GET',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': 'Bearer ' + dataverseToken,
+    //         'headers': config.headers,
+    //     }
+    // })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         // console.log("Hello from the other side")
+    //         // console.log(data);
+    //         if (data.value && data.value.length > 0) {
+    //             const firstSharedWorkspace = data.value[0];
+    //             console.log("First shareworespace picked up")
+    //             return firstSharedWorkspace;
+    //         } else {
+    //             console.log(`CREATING NEW SHAREDWORKSPACE`);
+    //             const createWorkspaceResponse = fetch(
+    //                 `${config.dataverseOrgUrl}/api/data/v9.2/sharedworkspaces`,
+    //                 {
+    //                     headers: {
+    //                         ...config.headers,
+    //                         Prefer: "return=representation",
+    //                     },
+    //                     method: "POST",
+    //                     body: JSON.stringify({
+    //                         name: config.websiteid,
+    //                         sharedworkspaceid: "00218f43-15d4-f87e-0e08-5dec2c4cfbaa",
+    //                     }),
+    //                 }
+    //             );
+
+    //             return createWorkspaceResponse;
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error fetching data:', error);
+    //     });
 }
