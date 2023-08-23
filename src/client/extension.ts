@@ -164,6 +164,7 @@ export async function activate(
     
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
+        _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry);
