@@ -296,6 +296,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
   private async handleOrgChangeSuccess(pacOutput: PacActiveOrgListOutput) {
     const activeOrg = pacOutput.Results;
+    if(orgID === activeOrg.OrgId) {
+      return;
+    }
+
     orgID = activeOrg.OrgId;
     environmentName = activeOrg.FriendlyName;
     userID = activeOrg.UserId;
