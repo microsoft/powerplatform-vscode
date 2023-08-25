@@ -30,6 +30,8 @@ import {
 } from "./utilities/fileAndEntityUtil";
 import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
+import * as copilot from "../../common/copilot/PowerPagesCopilot";
+import { IOrgInfo } from "../../common/copilot/model";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -100,6 +102,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     entityId,
                     queryParamsMap
                 );
+                registerCopilot(context);
                 WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
@@ -375,6 +378,28 @@ export function showWalkthrough(
             }
         )
     );
+}
+
+export function registerCopilot(context: vscode.ExtensionContext) {
+    try {
+        const orgInfo = {
+            orgId: WebExtensionContext.urlParametersMap.get(
+                queryParameters.ORG_ID
+            ) as string,
+            environmentName: "",
+            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string
+        } as IOrgInfo;
+
+        const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
+            context,
+            WebExtensionContext.telemetry.getTelemetryReporter(),
+            undefined,
+            orgInfo);
+
+        context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel));
+    } catch (error) {
+        console.log("registerCopilot", error);
+    }
 }
 
 export async function deactivate(): Promise<void> {
