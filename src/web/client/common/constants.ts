@@ -73,6 +73,13 @@ export enum queryParameters {
     ENABLE_MULTIFILE = "enablemultifile",
 }
 
+export enum sharedWorkspaceParameters {
+    SHAREWORKSPACE_ID = "sharedworkspaceid",
+    TENANT_ID = "tenantid",
+    ACCESS_TOKEN = "accesstoken",
+    DISCOVERY_ENDPOINT = "discoveryendpoint",
+}
+
 export enum httpMethod {
     PATCH = "PATCH",
     GET = "GET",

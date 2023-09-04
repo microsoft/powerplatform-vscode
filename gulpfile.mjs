@@ -34,7 +34,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 
 import webpackConfig from './webpack.config.js';
-const [nodeConfig, webConfig] = webpackConfig;
+const [nodeConfig, webConfig, copresenceWorkerConfig] = webpackConfig;
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
@@ -78,6 +78,13 @@ function compileWeb() {
         .src('src/web/**/*.ts')
         .pipe(gulpWebpack(webConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
+        .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
+}
+
+function compileWorker() {
+    return gulp
+        .src(["src/web/**/*.ts"])
+        .pipe(gulpWebpack(copresenceWorkerConfig, webpack))
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
 
@@ -378,7 +385,8 @@ const recompile = gulp.series(
     translationsImport,
     setTelemetryTarget,
     compile,
-    compileWeb
+    compileWeb,
+    compileWorker
 );
 
 const dist = gulp.series(
@@ -441,6 +449,7 @@ export {
     compile,
     compileWeb,
     recompile,
+    compileWorker,
     snapshot,
     lint,
     test,
