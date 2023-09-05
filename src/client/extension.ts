@@ -32,7 +32,7 @@ import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
-import { CopilotTryNotificationClickedEvent } from "../common/copilot/telemetry/telemetryConstants";
+import { CopilotNotificationShown, CopilotTryNotificationClickedEvent } from "../common/copilot/telemetry/telemetryConstants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -348,6 +348,8 @@ function showNotificationForCopilot(telemetry: TelemetryReporter) {
     }
     const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
     const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
+
+    telemetry.sendTelemetryEvent(CopilotNotificationShown);
 
     vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
         if (selection === actionTitle) {
