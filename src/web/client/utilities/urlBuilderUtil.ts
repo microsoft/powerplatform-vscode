@@ -4,6 +4,7 @@
  */
 
 import {
+    MIMETYPE,
     httpMethod,
     queryParameters,
 } from "../common/constants";
@@ -189,6 +190,12 @@ export function getMappingEntityContent(entity: string, result: any, attribute: 
     }
 
     return result;
+}
+
+// TODO - Make Json for different response type and update any here
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getMimeType(result: any) {
+    return result[MIMETYPE];
 }
 
 export function pathHasEntityFolderName(uri: string): boolean {
