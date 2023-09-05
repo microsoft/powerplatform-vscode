@@ -21,7 +21,7 @@ import {
     TransportKind,
     WorkspaceFolder,
 } from "vscode-languageclient/node";
-import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
+import { workspaceContainsPattern } from "../common/PatternFinder";
 import {
     activateDebugger,
     deactivateDebugger,
@@ -161,15 +161,22 @@ export async function activate(
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
-    
+
     // TODO: Handle for VSCode.dev also
-    if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
+    if (workspaceContainsPattern('**/website.yml', workspaceFolders)) {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry);
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
+    }
+
+    if (workspaceContainsPattern('**/*.pcfproj', workspaceFolders)) {
+        vscode.commands.executeCommand('setContext', 'powerPlatform.pcfControlExists', true);
+    }
+    else {
+        vscode.commands.executeCommand('setContext', 'powerPlatform.pcfControlExists', false);
     }
 
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
@@ -333,11 +340,18 @@ function handleWorkspaceFolderChange() {
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
-    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+    if (workspaceContainsPattern('**/website.yml', workspaceFolders)) {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
+    }
+
+    if (workspaceContainsPattern('**/*.pcfproj', workspaceFolders)) {
+        vscode.commands.executeCommand('setContext', 'powerPlatform.pcfControlExists', true);
+    }
+    else {
+        vscode.commands.executeCommand('setContext', 'powerPlatform.pcfControlExists', false);
     }
 }
 

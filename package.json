@@ -842,10 +842,10 @@
         {
           "type": "webview",
           "id": "powerpages.copilot",
-          "name": "Copilot In Power Pages",
+          "name": "Copilot In Power Platform",
           "initialSize": 6,
           "visibility": "visible",
-          "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled"
+          "when": "!virtualWorkspace && (powerPlatform.pcfControlExists || powerpages.websiteYmlExists) && config.powerPlatform.experimental.copilotEnabled"
         }
       ]
     },
