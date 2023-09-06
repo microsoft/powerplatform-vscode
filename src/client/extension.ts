@@ -166,7 +166,7 @@ export async function activate(
     // Added this loop to get all the orgURLs customers are working on. Combination of orgURLs and vscodemachineId help us determine desktop usage
     data?.forEach(value =>{
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,  @typescript-eslint/no-extra-non-null-assertion
-        const orgId = value.toLowerCase().match(/([a-z,A-Z,0-9]*.[a-z,A-Z,0-9]*.dynamics.com)/g)![0] // extract the orgURLs from the manifest file name.
+        const orgId = value.toLowerCase().match(/([a-z,A-Z,0-9]*.[a-z,A-Z,0-9]*.[a-z,A-Z]*.[a-z,A-Z]*)/g)![0] // extract the orgURLs from the manifest file name.
         _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { orgId });
     })
     // TODO: Handle for VSCode.dev also
