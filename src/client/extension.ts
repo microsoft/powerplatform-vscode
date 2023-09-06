@@ -170,7 +170,6 @@ export async function activate(
         _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { orgId });
     })
     // TODO: Handle for VSCode.dev also
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
