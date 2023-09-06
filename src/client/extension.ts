@@ -21,7 +21,7 @@ import {
     TransportKind,
     WorkspaceFolder,
 } from "vscode-languageclient/node";
-import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
+import { getPortalsOrgURLs, workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
 import {
     activateDebugger,
     deactivateDebugger,
@@ -162,7 +162,15 @@ export async function activate(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
     
+    const data = getPortalsOrgURLs(workspaceFolders);
+    // Added this loop to get all the orgURLs customers are working on. Combination of orgURLs and vscodemachineId help us determine desktop usage
+    data?.forEach(value =>{
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,  @typescript-eslint/no-extra-non-null-assertion
+        const orgId = value.toLowerCase().match(/([a-z,A-Z,0-9]*.[a-z,A-Z,0-9]*.dynamics.com)/g)![0] // extract the orgURLs from the manifest file name.
+        _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { orgId });
+    })
     // TODO: Handle for VSCode.dev also
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists

@@ -70,3 +70,17 @@ function isSibling(file: string): URL | null {
     }
     return null;
 }
+
+export function getPortalsOrgURLs(workspaceRootFolders:WorkspaceFolder[] | null) {
+    let output:string[] = [];
+    workspaceRootFolders?.forEach(workspaceRootFolder => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const data  = glob.sync('**/*-manifest.yml', { dot: true, cwd: workspaceRootFolder!.uri });
+        if(data.length == 1){
+            output.push(data[0])
+        }else if(data?.length>1){
+           output =  output.concat(data);
+        }
+    });
+    return output;
+    }
