@@ -15,4 +15,7 @@ export interface IProDevCopilotTelemetryData {
     feedbackType?: string,
     responseStatus?: number,
     codeLineCount?: number,
+    geoName?: string,
+    aibEndpoint?: string,
+    orgUrl?: string,
 }

@@ -72,7 +72,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         const jsonResponse = await response.json();
 
         if (jsonResponse.operationStatus === 'Success') {
-          sendTelemetryEvent(telemetry, { eventName: CopilotResponseSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime });
+          sendTelemetryEvent(telemetry, { eventName: CopilotResponseSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgId: orgID });
           if (jsonResponse.additionalData && Array.isArray(jsonResponse.additionalData) && jsonResponse.additionalData.length > 0) {
             const additionalData = jsonResponse.additionalData[0];
             if (additionalData.properties && additionalData.properties.response) {
@@ -87,7 +87,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         }
         throw new Error("Invalid response format");
       } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseOkFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseOkFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime, orgId: orgID });
         return InvalidResponse;
       }
     } else {
@@ -97,7 +97,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         const errorMessage = errorResponse.error && errorResponse.error.messages[0];
       
         const responseError = new Error(errorMessage);
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEventWithMessage, copilotSessionId: sessionID, responseStatus: response.status, error: responseError, durationInMills: responseTime });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEventWithMessage, copilotSessionId: sessionID, responseStatus: response.status, error: responseError, durationInMills: responseTime, orgId: orgID });
 
         if (response.status === 429) {
           return RateLimitingResponse
@@ -114,12 +114,12 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
           return InvalidResponse;
         }
       } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: error as Error, durationInMills: responseTime });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: error as Error, durationInMills: responseTime, orgId: orgID });
         return InvalidResponse;
       }
     }
   } catch (error) {
-    sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error });
+    sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error, orgId: orgID });
     return NetworkError;
   }
 

@@ -16,7 +16,7 @@ import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, s
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
@@ -50,6 +50,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     this._disposables.push(
       vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
         if (userName && orgID) {
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotClearChatEvent, copilotSessionId: sessionID, orgId: orgID });
           this.sendMessageToWebview({ type: "clearConversation" });
           sessionID = uuidv4();
         }
@@ -129,7 +130,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
         case "webViewLoaded": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID });
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
           this.sendMessageToWebview({ type: 'env'}); //TODO Use IS_DESKTOP
           await this.checkAuthentication();
           if(orgID && userName) {
@@ -148,7 +149,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           break;
         }
         case "newUserPrompt": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID }); //TODO: Add active Editor info
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID }); //TODO: Add active Editor info
           orgID
             ? (() => {
               const { activeFileParams } = this.getActiveEditorContent();
@@ -169,14 +170,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           vscode.window.activeTextEditor?.insertSnippet(
             new vscode.SnippetString(`${escapedSnippet}`)
           );
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotInsertCodeToEditorEvent, copilotSessionId: sessionID });
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotInsertCodeToEditorEvent, copilotSessionId: sessionID, orgId: orgID });
           break;
         }
         case "copyCodeToClipboard": {
 
           vscode.env.clipboard.writeText(data.value);
           vscode.window.showInformationMessage(vscode.l10n.t('Copied to clipboard!'))
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotCopyCodeToClipboardEvent, copilotSessionId: sessionID });
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotCopyCodeToClipboardEvent, copilotSessionId: sessionID, orgId: orgID });
           break;
         }
         case "clearChat": {
@@ -188,22 +189,22 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
           if (data.value === "thumbsUp") {
 
-            sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID });
+            sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
             CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry)
           } else if (data.value === "thumbsDown") {
 
-            sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID });
+            sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
             CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry)
           }
           break;
         }
         case "walkthrough": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID });
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID, orgId: orgID });
           this.openWalkthrough();
           break;
         }
         case "codeLineCount": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: data.value });
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: data.value ?? 0, orgId: orgID });
           break;
         }
       }
@@ -296,6 +297,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
   private async handleOrgChangeSuccess(pacOutput: PacActiveOrgListOutput) {
     const activeOrg = pacOutput.Results;
+    if(orgID === activeOrg.OrgId) {
+      return;
+    }
+
     orgID = activeOrg.OrgId;
     environmentName = activeOrg.FriendlyName;
     userID = activeOrg.UserId;

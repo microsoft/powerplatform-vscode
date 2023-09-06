@@ -18,8 +18,9 @@ export async function getIntelligenceEndpoint (orgId: string, telemetry:ITelemet
     if (!artemisResponse) {
         return null;
     }
-    sendTelemetryEvent(telemetry, {eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID})
+    
     const { clusterNumber, geoName, environment } = artemisResponse[0];
+    sendTelemetryEvent(telemetry, {eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: geoName, orgId: orgId})
 
     if(geoName !== US_GEO) {
         return COPILOT_UNAVAILABLE;
