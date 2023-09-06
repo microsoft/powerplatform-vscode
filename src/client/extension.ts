@@ -360,7 +360,7 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
 
     vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
         if (selection === actionTitle) {
-              telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent);
+              telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, {listOfOrgs: telemetryData});
             vscode.commands.executeCommand('powerpages.copilot.focus')
         }
     });
