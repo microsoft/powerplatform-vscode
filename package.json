@@ -433,6 +433,11 @@
           "type": "boolean",
           "markdownDescription": "Enable multiple file view in Visual Studio Code (Web extension only)",
           "default": true
+        },
+        "powerPlatform.experimental.enableCoPresence": {
+          "type": "boolean",
+          "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
+          "default": true
         }
       }
     },
@@ -846,6 +851,13 @@
           "initialSize": 6,
           "visibility": "visible",
           "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled"
+        }
+      ],
+      "explorer": [
+        {
+          "id": "powerpages.treeWebView",
+          "name": "Power Pages Actions",
+          "when": "isWeb && config.powerPlatform.experimental.enableCoPresence"
         }
       ]
     },

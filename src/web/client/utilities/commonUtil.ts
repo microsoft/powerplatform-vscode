@@ -8,6 +8,7 @@ import {
     BASE_64,
     DATA,
     MULTI_FILE_FEATURE_SETTING_NAME,
+    CO_PRESENCE_FEATURE_SETTING_NAME,
     NO_CONTENT,
     VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME
 } from "../common/constants";
@@ -127,6 +128,25 @@ export function isMultifileEnabled() {
     }
 
     return isMultifileEnabled as boolean;
+}
+
+export function isCoPresenceEnabled() {
+    const isCoPresenceEnabled = vscode.workspace
+        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
+        .get(CO_PRESENCE_FEATURE_SETTING_NAME);
+
+    if (!isCoPresenceEnabled) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED
+        );
+    }
+    else {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED
+        );
+    }
+
+    return isCoPresenceEnabled as boolean;
 }
 
 /**
