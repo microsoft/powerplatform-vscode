@@ -83,7 +83,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   private async handleOrgChange() {
     orgID = '';
       const pacOutput = await this._pacWrapper.activeOrg();
-  
+
     if (pacOutput.Status === PAC_SUCCESS) {
         this.handleOrgChangeSuccess(pacOutput);
       } else if (this._view?.visible) {
@@ -100,7 +100,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     }
   }
-  
+
 
   public async resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -121,7 +121,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     const pacOutput = await this._pacWrapper.activeOrg();
 
-    if (pacOutput.Status === PAC_SUCCESS) { 
+    if (pacOutput.Status === PAC_SUCCESS) {
       this.handleOrgChangeSuccess(pacOutput);
     }
 
@@ -204,7 +204,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           break;
         }
         case "codeLineCount": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: data.value ?? 0, orgId: orgID });
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: String(data.value), orgId: orgID });
           break;
         }
       }
@@ -311,12 +311,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
     if(this.aibEndpoint === COPILOT_UNAVAILABLE) {
-      this.sendMessageToWebview({ type: 'Unavailable'}); 
+      this.sendMessageToWebview({ type: 'Unavailable'});
     } else {
       this.sendMessageToWebview({ type: 'Available'});
     }
 
-    if (this._view?.visible) { 
+    if (this._view?.visible) {
       showConnectedOrgMessage(environmentName, activeOrgUrl);
     }
   }
@@ -384,7 +384,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     return `
         <!DOCTYPE html>
         <html lang="en">
-        
+
         <head>
           <meta charset="UTF-8">
           <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
@@ -393,14 +393,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           </link>
           <title>Chat View</title>
         </head>
-        
+
         <body>
           <div class="copilot-window">
-        
+
             <div class="chat-messages" id="chat-messages">
               <div id="copilot-header"></div>
             </div>
-        
+
             <div class="chat-input" id="input-component">
               <div class="input-container">
                 <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
@@ -413,10 +413,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
               <p class="disclaimer">${CopilotDisclaimer}</p>
             </div>
           </div>
-        
+
           <script type="module" nonce="${nonce}" src="${copilotScriptUri}"></script>
         </body>
-        
+
         </html>`;
   }
 }
