@@ -165,8 +165,8 @@ export async function activate(
     const data = getPortalsOrgURLs(workspaceFolders);
     // Added this loop to get all the orgURLs customers are working on. Combination of orgURLs and vscodemachineId help us determine desktop usage
     data?.forEach(value =>{
-        const orgId = value.split("-manifest")[0].replace(/.*[portalconfig]\//,''); // extract the orgURLs from the manifest file name.
-        _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { orgId });
+        const orgURL = value.split("-manifest")[0].replace(/.*[portalconfig]\//,''); // extract the orgURLs from the manifest file name.
+        _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { orgURL });
     })
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
