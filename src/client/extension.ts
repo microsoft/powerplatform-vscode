@@ -168,17 +168,7 @@ export async function activate(
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry);
         try {
-            const telemetryDataProperties: Record<string, string> = {}
-            const data = getPortalsOrgURLs(workspaceFolders, _telemetry);
-            let count = 0;
-            data?.forEach(val =>{
-                const orgURL = 'orgURL' + count;
-                const isManifestExists = 'isManifestExists' + count;
-                telemetryDataProperties[`${orgURL}`] = val.orgURL;
-                telemetryDataProperties[`${isManifestExists}`] = val.isManifestExists
-                count++;
-            })
-           _telemetry.sendTelemetryEvent("VscodeDesktopUsage", telemetryDataProperties);
+           _telemetry.sendTelemetryEvent("VscodeDesktopUsage", {listOfOrgs: JSON.stringify(getPortalsOrgURLs(workspaceFolders, _telemetry))});
         }catch(exception){
             _telemetry.sendTelemetryException(exception as Error, {eventName: 'VscodeDesktopUsage'});
         }
