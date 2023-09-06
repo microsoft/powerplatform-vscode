@@ -164,15 +164,17 @@ export async function activate(
     
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
+        let telemetryData = '';
+        try {
+            telemetryData = JSON.stringify(getPortalsOrgURLs(workspaceFolders, _telemetry));
+            _telemetry.sendTelemetryEvent("VscodeDesktopUsage", {listOfOrgs: telemetryData});
+         }catch(exception){
+             _telemetry.sendTelemetryException(exception as Error, {eventName: 'VscodeDesktopUsage'});
+         }
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
-        showNotificationForCopilot(_telemetry);
-        try {
-           _telemetry.sendTelemetryEvent("VscodeDesktopUsage", {listOfOrgs: JSON.stringify(getPortalsOrgURLs(workspaceFolders, _telemetry))});
-        }catch(exception){
-            _telemetry.sendTelemetryException(exception as Error, {eventName: 'VscodeDesktopUsage'});
-        }
+        showNotificationForCopilot(_telemetry, telemetryData);
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -347,14 +349,14 @@ function handleWorkspaceFolderChange() {
     }
 }
 
-function showNotificationForCopilot(telemetry: TelemetryReporter) {
+function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:string) {
     if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
         return;
     }
     const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
     const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
 
-    telemetry.sendTelemetryEvent(CopilotNotificationShown);
+    telemetry.sendTelemetryEvent(CopilotNotificationShown, {listOfOrgs: telemetryData});
 
     vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
         if (selection === actionTitle) {
