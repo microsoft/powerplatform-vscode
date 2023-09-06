@@ -169,14 +169,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           vscode.window.activeTextEditor?.insertSnippet(
             new vscode.SnippetString(`${escapedSnippet}`)
           );
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotInsertCodeToEditorEvent, copilotSessionId: sessionID });
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotInsertCodeToEditorEvent, copilotSessionId: sessionID, orgId: orgID });
           break;
         }
         case "copyCodeToClipboard": {
 
           vscode.env.clipboard.writeText(data.value);
           vscode.window.showInformationMessage(vscode.l10n.t('Copied to clipboard!'))
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotCopyCodeToClipboardEvent, copilotSessionId: sessionID });
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotCopyCodeToClipboardEvent, copilotSessionId: sessionID, orgId: orgID });
           break;
         }
         case "clearChat": {
@@ -203,7 +203,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           break;
         }
         case "codeLineCount": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: data.value ?? 0 });
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: data.value ?? 0, orgId: orgID });
           break;
         }
       }
