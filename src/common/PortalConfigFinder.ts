@@ -10,6 +10,7 @@ import { URL } from 'url';
 import * as path from 'path';
 import * as fs from 'fs';
 import { glob } from 'glob';
+import * as YAML from 'yaml';
 
 const portalConfigFolderName = '.portalconfig';
 
@@ -72,15 +73,28 @@ function isSibling(file: string): URL | null {
 }
 
 export function getPortalsOrgURLs(workspaceRootFolders:WorkspaceFolder[] | null) {
-    let output:string[] = [];
+    let output = new Array<TelemetryUsageContext>();
+    try{
     workspaceRootFolders?.forEach(workspaceRootFolder => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const data  = glob.sync('**/*-manifest.yml', { dot: true, cwd: workspaceRootFolder!.uri });
-        if(data.length == 1){
-            output.push(data[0])
-        }else if(data?.length>1){
-           output =  output.concat(data);
-        }
+        const manifestFiles  = glob.sync('**/*-manifest.yml', { dot: true, cwd: workspaceRootFolder!.uri })[0];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const manifestFilePath = "" //path.join(portalConfigFolderUrl.href, configFile);
+        const websiteFiles  = glob.sync('**/website.yml', { dot: true, cwd: workspaceRootFolder!.uri })[0];
+        const websiteData = fs.readFileSync(new URL(websiteFiles), 'utf8');
+        const parsedWebsiteData = YAML.parse(websiteData);
+        const websiteId = parsedWebsiteData['adx_websiteid'];
+        output.push({
+            websiteId: websiteId,
+            orgId: manifestFiles
+        })
+        
     });
+    }catch(exception){}   
     return output;
-    }
+}
+
+export interface TelemetryUsageContext {
+    websiteId?: string;
+    orgId?: string;
+}
