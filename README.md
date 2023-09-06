@@ -19,6 +19,22 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 [Power Platform CLI Exposed](https://www.youtube.com/playlist?list=PLlrxD0HtieHhEdLHxQOU96ySSZpMCyAxf)
 
 ## Release Notes
+2.0.4:
+  - pac CLI 1.26.6 (QFE for `pac paportal bootstrap-migrate`)
+
+2.0.3:
+  - pac CLI 1.26.5 (July refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+  - Authentication Settings - Can now choose other Azure clouds for the "New Auth Profile" button to target [#619](https://github.com/microsoft/powerplatform-vscode/pull/619)
+  - Environments & Solutions panel improvements:
+    - Environments now display an icon for the active environment, and button added to select a different environment [#629](https://github.com/microsoft/powerplatform-vscode/pull/629)
+    - Solutions now have tooltip and icon to indicated managed vs. unmanaged solutions [#618](https://github.com/microsoft/powerplatform-vscode/pull/618)
+  - (Preview) Added AI code generation assistance with Power Pages Copilot
+    - Only supports vscode on the desktop currently, not available in the web extension
+  - Web Extension updates:
+    - Conflict resolution optimization for incoming changes accept scenario [#664](https://github.com/microsoft/powerplatform-vscode/pull/664)
+    - Optimized load of webfiles for old data model - media files are now loaded only on view a specific file action [#662](https://github.com/microsoft/powerplatform-vscode/pull/662)
+    - Performance optimizations and better support for revisit sessions file load [#646](https://github.com/microsoft/powerplatform-vscode/pull/646) [#668](https://github.com/microsoft/powerplatform-vscode/pull/668) [#669](https://github.com/microsoft/powerplatform-vscode/pull/669)
+
 2.0.0:
   - pac CLI 1.25.2 (June refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - Power Pages site code edit support - in VScode web extension - for components like forms, content snippets, lists, and more

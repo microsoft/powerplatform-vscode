@@ -27,6 +27,12 @@
   "Enter the environment URL": "Enter the environment URL",
   "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.": "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.",
   "Copied to clipboard!": "Copied to clipboard!",
+  "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
+    "message": "Select Folder for new PCF Control",
+    "comment": [
+      "Do not translate 'PCF' as it is a product name."
+    ]
+  },
   "Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.": "Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.",
   "Try Copilot for Power Pages": "Try Copilot for Power Pages",
   "Preparing pac CLI (v{0}).../{0} represents the version number": {

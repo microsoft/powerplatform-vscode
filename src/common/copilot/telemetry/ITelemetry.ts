@@ -14,4 +14,5 @@ export interface IProDevCopilotTelemetryData {
     dataverseEntity?: string,
     feedbackType?: string,
     responseStatus?: number,
+    codeLineCount?: number,
 }

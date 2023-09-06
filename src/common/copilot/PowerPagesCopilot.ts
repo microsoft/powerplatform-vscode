@@ -16,7 +16,7 @@ import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, s
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
@@ -221,6 +221,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         case "walkthrough": {
           sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID });
           this.openWalkthrough();
+          break;
+        }
+        case "codeLineCount": {
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: data.value });
           break;
         }
       }
