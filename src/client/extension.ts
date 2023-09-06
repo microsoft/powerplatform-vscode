@@ -162,17 +162,26 @@ export async function activate(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
     
-     getPortalsOrgURLs(workspaceFolders);
-    // Added this loop to get all the orgURLs customers are working on. Combination of orgURLs and vscodemachineId help us determine desktop usage
-    // data?.forEach(value =>{
-    //     const orgURL = value.split("-manifest")[0].replace(/.*[portalconfig]\//,''); // extract the orgURLs from the manifest file name.
-    //     _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { orgURL });
-    // })
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry);
+        try {
+            const telemetryDataProperties: Record<string, string> = {}
+            const data = getPortalsOrgURLs(workspaceFolders, _telemetry);
+            let count = 0;
+            data?.forEach(val =>{
+                const orgURL = 'orgURL' + count;
+                const isManifestExists = 'isManifestExists' + count;
+                telemetryDataProperties[`${orgURL}`] = val.orgURL;
+                telemetryDataProperties[`${isManifestExists}`] = val.isManifestExists
+                count++;
+            })
+           _telemetry.sendTelemetryEvent("VscodeDesktopUsage", telemetryDataProperties);
+        }catch(exception){
+            _telemetry.sendTelemetryException(exception as Error, {eventName: 'VscodeDesktopUsage'});
+        }
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);

@@ -10,7 +10,8 @@ import { URL } from 'url';
 import * as path from 'path';
 import * as fs from 'fs';
 import { glob } from 'glob';
-import * as YAML from 'yaml';
+import { sendTelemetryEvent} from "../client/power-pages/telemetry";
+import { ITelemetry } from "../client/telemetry/ITelemetry";
 
 const portalConfigFolderName = '.portalconfig';
 
@@ -72,29 +73,29 @@ function isSibling(file: string): URL | null {
     return null;
 }
 
-export function getPortalsOrgURLs(workspaceRootFolders:WorkspaceFolder[] | null) {
-    let output = new Array<TelemetryUsageContext>();
-    try{
-    workspaceRootFolders?.forEach(workspaceRootFolder => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const manifestFiles  = glob.sync('**/*-manifest.yml', { dot: true, cwd: workspaceRootFolder!.uri })[0];
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const manifestFilePath = "" //path.join(portalConfigFolderUrl.href, configFile);
-        const websiteFiles  = glob.sync('**/website.yml', { dot: true, cwd: workspaceRootFolder!.uri })[0];
-        const websiteData = fs.readFileSync(new URL(websiteFiles), 'utf8');
-        const parsedWebsiteData = YAML.parse(websiteData);
-        const websiteId = parsedWebsiteData['adx_websiteid'];
-        output.push({
-            websiteId: websiteId,
-            orgId: manifestFiles
-        })
-        
-    });
-    }catch(exception){}   
+export function getPortalsOrgURLs(workspaceRootFolders:WorkspaceFolder[] | null, telemetry: ITelemetry ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let output: any[] = [];
+    try {
+        workspaceRootFolders?.forEach(workspaceRootFolder => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const manifestFiles  = glob.sync('**/*-manifest.yml', { dot: true, cwd: workspaceRootFolder!.uri });
+            if (manifestFiles.length == 0) {
+                output = [{
+                    orgURL: '',
+                    isManifestExists: false
+                }];
+            }else {
+                manifestFiles?.forEach(manifestFile =>{
+                    output.push({
+                        orgURL: manifestFile.split("-manifest")[0].replace(/.*[portalconfig]\//,''),
+                        isManifestExists: true
+                    });
+                })
+            }
+        });
+    }catch(exception){
+        sendTelemetryEvent(telemetry, { methodName:getPortalsOrgURLs.name,eventName: 'getPortalsOrgURLs', exception: exception as Error });
+    }
     return output;
-}
-
-export interface TelemetryUsageContext {
-    websiteId?: string;
-    orgId?: string;
 }
