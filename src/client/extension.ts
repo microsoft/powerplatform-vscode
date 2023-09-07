@@ -165,16 +165,18 @@ export async function activate(
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
         let telemetryData = '';
+        let listOfOrgs = [];
         try {
-            telemetryData = JSON.stringify(getPortalsOrgURLs(workspaceFolders, _telemetry));
-            _telemetry.sendTelemetryEvent("VscodeDesktopUsage", {listOfOrgs: telemetryData});
+            listOfOrgs = getPortalsOrgURLs(workspaceFolders, _telemetry);
+            telemetryData = JSON.stringify(listOfOrgs);
+            _telemetry.sendTelemetryEvent("VscodeDesktopUsage", {listOfOrgs: telemetryData, countOfOrgs: listOfOrgs.length.toString()});
          }catch(exception){
              _telemetry.sendTelemetryException(exception as Error, {eventName: 'VscodeDesktopUsage'});
          }
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
-        showNotificationForCopilot(_telemetry, telemetryData);
+        showNotificationForCopilot(_telemetry, telemetryData, listOfOrgs.length.toString());
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -349,18 +351,18 @@ function handleWorkspaceFolderChange() {
     }
 }
 
-function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:string) {
+function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:string, countOfOrgs: string) {
     if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
         return;
     }
     const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
     const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
 
-    telemetry.sendTelemetryEvent(CopilotNotificationShown, {listOfOrgs: telemetryData});
+    telemetry.sendTelemetryEvent(CopilotNotificationShown, {listOfOrgs: telemetryData, countOfOrgs});
 
     vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
         if (selection === actionTitle) {
-              telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, {listOfOrgs: telemetryData});
+              telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, {listOfOrgs: telemetryData, countOfOrgs});
               
             vscode.commands.executeCommand('powerpages.copilot.focus')
         }
