@@ -108,7 +108,7 @@ export const portal_schema_V1 = {
                 _mappingEntityId: "annotationid", // Webfile in old schema are maintained with two dataverse entity adx_webfile and annotations. This Id acts as foreign key for that mapping
                 _mappingEntity: "annotations",
                 _mappingEntityFetchQuery: new Map([
-                    ["documentbody", "?$filter=_objectid_value eq {entityId} &$select=mimetype,documentbody,filename,annotationid,_objectid_value&$count=true"],
+                    ["documentbody", "?$filter=_objectid_value eq {entityId} &$select=mimetype,documentbody,filename,annotationid,_objectid_value &$count=true &$orderby=modifiedon desc"],
                 ]),
             },
             {
