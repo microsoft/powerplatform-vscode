@@ -12,7 +12,7 @@ import {
     isWebfileContentLoadNeeded,
     setFileContent,
 } from "../utilities/commonUtil";
-import { getCustomRequestURL, getMappingEntityContent, getMappingEntityId, getRequestURL } from "../utilities/urlBuilderUtil";
+import { getCustomRequestURL, getMappingEntityContent, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
 import { getCommonHeaders } from "../common/authenticationProvider";
 import * as Constants from "../common/constants";
 import { ERRORS, showErrorDialog } from "../common/errorHandler";
@@ -413,6 +413,7 @@ async function createFile(
         attribute
     );
     let fileContent = Constants.NO_CONTENT;
+    let mimeType = undefined;
     let mappingEntityId = null
     // By default content is preloaded for all the files except for non-text webfiles for V2
     const isPreloadedContent = mappingEntityFetchQuery ? isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
@@ -432,6 +433,7 @@ async function createFile(
             dataverseOrgUrl
         );
         mappingEntityId = getMappingEntityId(entityName, mappingContent);
+        mimeType = getMimeType(mappingContent);
         fileContent = getMappingEntityContent(entityName, mappingContent, attribute);
     } else {
         fileContent = GetFileContent(result, attributePath, entityName, entityId);
@@ -449,7 +451,7 @@ async function createFile(
         result[attributePath.source] ?? Constants.NO_CONTENT,
         fileExtension,
         result[Constants.ODATA_ETAG],
-        result[Constants.MIMETYPE],
+        mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId
     );
@@ -513,7 +515,7 @@ async function fetchMappingEntityContent(
 
     const result = await response.json();
     const data = result.value ?? result;
-    if (result[Constants.ODATA_COUNT] !== 0 && data.length === 1) {
+    if (result[Constants.ODATA_COUNT] !== 0 && data.length >= 1) {
         return data[0];
     }
 
