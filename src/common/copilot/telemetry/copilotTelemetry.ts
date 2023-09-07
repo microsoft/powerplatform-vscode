@@ -15,14 +15,17 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDev
         telemetryDataMeasurements.durationInMills = telemetryData.durationInMills;
     }
 
-    if(telemetryData.copilotSessionId) {
-        telemetryDataProperties.copilotSessionId = telemetryData.copilotSessionId;
-    }
-
-    if(telemetryData.orgId) {
-        telemetryDataProperties.orgId = telemetryData.orgId;
-    }
-
+    telemetryDataProperties.copilotSessionId = telemetryData.copilotSessionId ? telemetryData.copilotSessionId : '';
+    telemetryDataProperties.orgId = telemetryData.orgId ? telemetryData.orgId : '';
+    telemetryDataProperties.FeedbackId = telemetryData.FeedbackId ? telemetryData.FeedbackId : '';
+    telemetryDataProperties.aibEndpoint = telemetryData.aibEndpoint ? telemetryData.aibEndpoint : '';
+    telemetryDataProperties.codeLineCount = telemetryData.codeLineCount ? telemetryData.codeLineCount : '';
+    telemetryDataProperties.geoName = telemetryData.geoName ? telemetryData.geoName : '';
+    telemetryDataProperties.feedbackType = telemetryData.feedbackType ? telemetryData.feedbackType : '';
+    telemetryDataProperties.FeedbackId = telemetryData.FeedbackId ? telemetryData.FeedbackId : '';
+    telemetryDataProperties.dataverseEntity = telemetryData.dataverseEntity ? telemetryData.dataverseEntity : '';
+    telemetryDataProperties.responseStatus = telemetryData.responseStatus ? telemetryData.responseStatus : '';
+    
     if (telemetryData.error) {
         telemetryDataProperties.eventName = telemetryData.eventName;
         telemetry.sendTelemetryException(telemetryData.error, telemetryDataProperties, telemetryDataMeasurements);
