@@ -434,7 +434,7 @@
           "markdownDescription": "Enable multiple file view in Visual Studio Code (Web extension only)",
           "default": true
         },
-        "powerPlatform.experimental.enableCoPresence": {
+        "powerPlatform.experimental.enableCoPresenceFeature": {
           "type": "boolean",
           "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
           "default": true
@@ -857,7 +857,7 @@
         {
           "id": "powerpages.treeWebView",
           "name": "Power Pages Actions",
-          "when": "isWeb && config.powerPlatform.experimental.enableCoPresence"
+          "when": "isWeb && config.powerPlatform.experimental.enableCoPresenceFeature"
         }
       ]
     },

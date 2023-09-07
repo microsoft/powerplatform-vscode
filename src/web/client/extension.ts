@@ -18,7 +18,7 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { convertContentToString } from "./utilities/commonUtil";
+import { convertContentToString, isCoPresenceEnabled } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
@@ -30,6 +30,7 @@ import {
 } from "./utilities/fileAndEntityUtil";
 import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
+import { TreeWebViewProvider } from "./webViews/TreeWebViewProvider";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -177,6 +178,8 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillSaveDocument(context);
 
+    processWillStartCollaboartion();
+
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
@@ -252,6 +255,12 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
             }
         })
     );
+}
+
+export function processWillStartCollaboartion() {
+    if (isCoPresenceEnabled()) {
+        new TreeWebViewProvider();
+    }
 }
 
 export async function showSiteVisibilityDialog() {
