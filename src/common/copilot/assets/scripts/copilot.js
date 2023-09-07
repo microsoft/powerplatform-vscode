@@ -101,7 +101,7 @@
       codeDiv.appendChild(preFormatted);
       resultDiv.appendChild(codeDiv);
     }
-    vscode.postMessage({ type: "codeLineCount", codeLineCount });
+    vscode.postMessage({ type: "codeLineCount", value: codeLineCount });
     resultDiv.classList.add("result-div");
     return resultDiv;
   }
