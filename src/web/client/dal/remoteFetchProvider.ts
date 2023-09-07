@@ -432,7 +432,7 @@ async function createFile(
             WebExtensionContext.dataverseAccessToken,
             dataverseOrgUrl
         );
-        mappingEntityId = getMappingEntityId(entityName, mappingContent);       
+        mappingEntityId = getMappingEntityId(entityName, mappingContent);
         mimeType = getMimeType(mappingContent);
         fileContent = getMappingEntityContent(entityName, mappingContent, attribute);
     } else {
@@ -515,7 +515,7 @@ async function fetchMappingEntityContent(
 
     const result = await response.json();
     const data = result.value ?? result;
-    if (result[Constants.ODATA_COUNT] !== 0 && data.length === 1) {
+    if (result[Constants.ODATA_COUNT] !== 0 && data.length >= 1) {
         return data[0];
     }
 
