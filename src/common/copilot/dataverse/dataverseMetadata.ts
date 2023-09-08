@@ -33,11 +33,11 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
         const responseTime = endTime - startTime || 0;
         const attributes = getAttributesFromResponse(jsonResponse);
 
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime })
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return attributes.map((attribute: Attribute) => attribute.LogicalName);
 
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error })
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
         return [];
     }
 }
