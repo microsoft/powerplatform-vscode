@@ -15,7 +15,7 @@ import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
-import { PacActiveOrgListOutput } from "../../client/pac/PacTypes";
+import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
@@ -103,7 +103,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     const pacOutput = await this._pacWrapper?.activeOrg();
 
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
-      this.handleOrgChangeSuccess(pacOutput);
+      this.handleOrgChangeSuccess(pacOutput.Results);
     } else if (this._view?.visible) {
 
       const userOrgUrl = await showInputBoxAndGetOrgUrl();
@@ -140,7 +140,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     const pacOutput = await this._pacWrapper?.activeOrg();
 
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
-      this.handleOrgChangeSuccess(pacOutput);
+      this.handleOrgChangeSuccess(pacOutput.Results);
+    } else if (this._pacWrapper == undefined) {
+      // TODO - Do we need to add env name here for web copilot
+      this.handleOrgChangeSuccess({ OrgId: orgID, UserId: userID, OrgUrl: activeOrgUrl } as ActiveOrgOutput);
     }
 
     console.log("PowerPagesCopilot resolveWebviewView", this._view?.webview.html);
@@ -152,7 +155,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       switch (data.type) {
         case "webViewLoaded": {
           sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID });
-          this.sendMessageToWebview({ type: IS_DESKTOP as string }); //TODO Use IS_DESKTOP
+          this.sendMessageToWebview({ type: 'env' as string });
           await this.checkAuthentication();
           if (orgID && userName) {
             this.sendMessageToWebview({ type: 'isLoggedIn', value: true });
@@ -243,7 +246,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     const pacOutput = await this._pacWrapper?.activeOrg();
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
-      this.handleOrgChangeSuccess.call(this, pacOutput);
+      this.handleOrgChangeSuccess.call(this, pacOutput.Results);
 
       intelligenceAPIAuthentication(this.telemetry, sessionID).then(({ accessToken, user, userId }) => {
         this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId);
@@ -275,6 +278,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
   private async checkAuthentication() {
     const session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
+    console.log("session token for intelligence api", session);
     if (session) {
       intelligenceApiToken = session.accessToken;
       userName = getUserName(session.account.label);
@@ -296,7 +300,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     const fileName = IS_DESKTOP ? 'dataverseMetadata' : 'dataverseMetadataWeb.ts';
     const dataversePath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'dataverse', fileName);
     console.log("PowerPagesCopilot authenticateAndSendAPIRequest", __dirname, __filename, this._extensionUri.fsPath, dataversePath.fsPath);
-    const dataverse = await import(`${dataversePath.fsPath}`);
 
     return intelligenceAPIAuthentication(telemetry, sessionID)
       .then(async ({ accessToken, user, userId }) => {
@@ -309,14 +312,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         let entityName = "";
         let entityColumns: string[] = [];
 
-        if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+        if (IS_DESKTOP && activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+          const dataverse = await import(`${dataversePath.fsPath}`);
           entityName = dataverse.getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
           const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
 
           entityColumns = await dataverse.getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
         }
-
+        console.log("aib", this.aibEndpoint);
         return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, entityName, entityColumns, telemetry, this.aibEndpoint);
       })
       .then(apiResponse => {
@@ -326,8 +330,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   }
 
 
-  private async handleOrgChangeSuccess(pacOutput: PacActiveOrgListOutput) {
-    const activeOrg = pacOutput.Results;
+  private async handleOrgChangeSuccess(activeOrg: ActiveOrgOutput) {
     orgID = activeOrg.OrgId;
     environmentName = activeOrg.FriendlyName;
     userID = activeOrg.UserId;
