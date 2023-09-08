@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import WebExtensionContext from "../WebExtensionContext";
 
 export class TreeWebViewProvider
     implements vscode.TreeDataProvider<UserNode>, vscode.Disposable
@@ -44,18 +45,17 @@ export class TreeWebViewProvider
         if (element) {
             return [];
         } else {
-            const connectedUsers: UserNode[] = [
-                new UserNode(
-                    "test",
-                    "test discription",
+            const connectedUsersMap =
+            WebExtensionContext.connectedUsers.getUserMap;
+            const connectedUsers: UserNode[] = Array.from(
+                connectedUsersMap.entries()
+            ).map(([, value]) => {
+                return new UserNode(
+                    value._userName,
+                    value._fileName,
                     vscode.TreeItemCollapsibleState.None
-                ),
-                new UserNode (
-                    "test2",
-                    "test2 discription",
-                    vscode.TreeItemCollapsibleState.None,
-                ),
-            ];
+                );
+            });
 
             return connectedUsers;
         }

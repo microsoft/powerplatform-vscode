@@ -31,6 +31,7 @@ import {
 import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
 import { TreeWebViewProvider } from "./webViews/TreeWebViewProvider";
+import * as Constants from "./common/constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -178,7 +179,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillSaveDocument(context);
 
-    processWillStartCollaboartion();
+    processWillStartCollaboartion(context);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
@@ -257,9 +258,125 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
     );
 }
 
-export function processWillStartCollaboartion() {
+let copresenceWorker: Worker;
+export interface IContainerData {
+    containerId: string;
+}
+
+export function processWillStartCollaboartion(
+    context: vscode.ExtensionContext
+) {
     if (isCoPresenceEnabled()) {
-        new TreeWebViewProvider();
+        const treeWebView: TreeWebViewProvider = new TreeWebViewProvider();
+        processOpenActiveTextEditor(context);
+        createCopresenceWorkerInstance(context, treeWebView);
+    }
+}
+
+export function createCopresenceWorkerInstance(
+    context: vscode.ExtensionContext,
+    treeWebView: TreeWebViewProvider
+) {
+    // Create a worker for the copresence feature
+    const copresenceMain = vscode.Uri.joinPath(
+        context.extensionUri,
+        "dist/web/copresenceWorker.worker.js"
+    );
+
+    const workerUrl = new URL(copresenceMain.toString());
+    fetch(workerUrl)
+        .then((response) => response.text())
+        .then((workerScript) => {
+            const workerBlob = new Blob([workerScript], {
+                type: "application/javascript",
+            });
+
+            const workerUrl = URL.createObjectURL(workerBlob);
+
+            copresenceWorker = new Worker(workerUrl);
+
+            copresenceWorker.onmessage = (event) => {
+                const { data } = event;
+
+                WebExtensionContext.containerId = event.data.containerId;
+
+                if (data.type === "member-removed") {
+                    WebExtensionContext.removeConnectedUserInContext(
+                        data.userId
+                    );
+
+                    treeWebView.refresh();
+                }
+                if (data.type === "client-data") {
+                    WebExtensionContext.updateConnectedUsersInContext(
+                        data.containerId,
+                        data.fileName,
+                        data.filePath,
+                        data.userName,
+                        data.userId
+                    );
+
+                    treeWebView.refresh();
+                }
+            };
+        })
+        .catch((error) => console.error(error));
+}
+
+export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
+    try {
+        context.subscriptions.push(
+            vscode.window.onDidChangeTextEditorSelection(async () => {
+                const activeEditor = vscode.window.activeTextEditor;
+
+                const swpId = WebExtensionContext.sharedWorkSpaceMap.get(
+                    Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
+                ) as string;
+
+                const swptenantId = WebExtensionContext.sharedWorkSpaceMap.get(
+                    Constants.sharedWorkspaceParameters.TENANT_ID
+                ) as string;
+
+                const swpAccessToken =
+                    WebExtensionContext.sharedWorkSpaceMap.get(
+                        Constants.sharedWorkspaceParameters.ACCESS_TOKEN
+                    ) as string;
+
+                const discoveryendpoint =
+                    WebExtensionContext.sharedWorkSpaceMap.get(
+                        Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
+                    ) as string;
+
+                if (activeEditor) {
+                    const entityId =
+                        WebExtensionContext.fileDataMap.getFileMap.get(
+                            activeEditor.document.uri.fsPath
+                        )?.entityId as string;
+                    const fileName =
+                        WebExtensionContext.fileDataMap.getFileMap.get(
+                            activeEditor.document.uri.fsPath
+                        )?.fileName;
+
+                    if (entityId) {
+                        copresenceWorker.postMessage({
+                            afrConfig: {
+                                swpId,
+                                swptenantId,
+                                discoveryendpoint,
+                                swpAccessToken,
+                            },
+                            file: {
+                                fileName: fileName,
+                                filePath: activeEditor.document.uri.fsPath,
+                            },
+                            containerId: WebExtensionContext.containerId,
+                        } as IContainerData);
+                    }
+                }
+            })
+        );
+    } catch (error) {
+        console.log(error);
     }
 }
 

@@ -979,6 +979,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@fluidframework/azure-client": "^1.1.1",
     "@microsoft/generator-powerpages": "1.21.19",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
@@ -987,15 +988,19 @@
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
+    "https-browserify": "^1.0.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
     "recursive-readdir": "^2.2.3",
+    "stream-http": "^3.2.0",
+    "tty-browserify": "^0.0.1",
     "unzip-stream": "^0.3.1",
     "uuid": "^8.3.2",
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
+    "worker-loader": "^3.0.8",
     "yaml": "^2.2.2"
   },
   "__metadata": {
