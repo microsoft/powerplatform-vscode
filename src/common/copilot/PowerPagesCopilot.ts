@@ -336,7 +336,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
 
   private async handleOrgChangeSuccess(activeOrg: ActiveOrgOutput) {
-    if (orgID === activeOrg.OrgId) {
+    if (IS_DESKTOP && orgID === activeOrg.OrgId) {
       return;
     }
 
