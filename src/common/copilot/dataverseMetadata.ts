@@ -8,9 +8,9 @@ import path from "path";
 import * as vscode from "vscode";
 import * as diskRead from "fs";
 import yaml from 'yaml';
-import { ITelemetry } from "../../../client/telemetry/ITelemetry";
-import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
-import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "../telemetry/telemetryConstants";
+import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
+import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 
 interface Attribute {
     LogicalName: string;
