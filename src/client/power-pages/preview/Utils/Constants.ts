@@ -38,3 +38,5 @@ export enum ContextPropertyKey {
     WEBSITE = 'adx_websiteid',
     PAGE_TEMPLATE = 'adx_pagetemplateid',
 }
+
+export const BootstrapSiteSetting = 'Site/BootstrapV5Enabled';

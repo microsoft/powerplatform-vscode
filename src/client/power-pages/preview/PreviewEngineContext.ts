@@ -20,7 +20,7 @@ import { Website } from '@maker-studio/powerportals-preview-engine/lib/Rendering
 import { PortalWebView } from '../../PortalWebView';
 import { load } from 'js-yaml';
 import * as vscode from 'vscode';
-import { ContextProperty, ContextPropertyKey } from './Utils/Constants';
+import { BootstrapSiteSetting, ContextProperty, ContextPropertyKey } from './Utils/Constants';
 import { findObjectIndexByProperty, getFileProperties, removeExtension } from '../commonUtility';
 
 const fallbackURI = vscode.Uri.file('');
@@ -33,8 +33,10 @@ export class PreviewEngineContext {
     private previewEngineContext: IPreviewEngineContext;
     private websiteRecord: Website;
     private rootPath: vscode.Uri | null;
+    private isBootstrapV5: boolean;
 
     constructor() {
+        this.isBootstrapV5 = false;
         this.previewEngineContext = {};
         this.rootPath = PortalWebView.getPortalRootFolder();
         this.websiteRecord = {} as Website;
@@ -70,7 +72,7 @@ export class PreviewEngineContext {
                 featureConfig: new Map(),
                 entityAttributeMetadata: [] as IEntityAttributeMetadata[],
                 lcid: '' as string,
-                isBootstrapV5: false as boolean,
+                isBootstrapV5: this.isBootstrapV5,
             }
         } else return {}
     }
@@ -276,6 +278,9 @@ export class PreviewEngineContext {
         const siteSetting = await vscode.workspace.fs.readFile(this.rootPath?.with({ path: this.rootPath.path + '/sitesetting.yml' }) || fallbackURI);
         const siteSettingYaml = load(new TextDecoder().decode(siteSetting)) as SiteSetting[];
         const siteSettingRecords = siteSettingYaml.map((siteSettingRecord) => {
+            if (siteSettingRecord.adx_name === BootstrapSiteSetting) {
+                this.isBootstrapV5 = siteSettingRecord.adx_value ? String(siteSettingRecord.adx_value).toLowerCase() === 'true' : false;
+            }
             return {
                 adx_websiteid: this.websiteRecord.adx_websiteid,
                 adx_name: siteSettingRecord.adx_name,
