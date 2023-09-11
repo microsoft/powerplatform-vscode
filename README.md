@@ -19,6 +19,9 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 [Power Platform CLI Exposed](https://www.youtube.com/playlist?list=PLlrxD0HtieHhEdLHxQOU96ySSZpMCyAxf)
 
 ## Release Notes
+2.0.7:
+  - QFE for styling files load for new data model schema
+
 2.0.6:
   - QFE for styles rendering of power pages sites
 
