@@ -6,15 +6,17 @@
 import fetch, { RequestInit } from "node-fetch";
 import path from "path";
 import * as vscode from "vscode";
-import * as diskRead from "fs";
 import yaml from 'yaml';
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
+import { getFileLogicalEntityName } from "../../web/client/utilities/fileAndEntityUtil";
 
 interface Attribute {
     LogicalName: string;
 }
+
+declare const IS_DESKTOP: string | undefined;
 
 export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
     try {
@@ -63,7 +65,7 @@ function getAttributesFromResponse(jsonResponse: any): Attribute[] {
 }
 
 
-export function getEntityName(telemetry: ITelemetry, sessionID: string, dataverseEntity: string): string {
+export async function getEntityName(telemetry: ITelemetry, sessionID: string, dataverseEntity: string): Promise<string> {
     let entityName = '';
 
     try {
@@ -76,27 +78,39 @@ export function getEntityName(telemetry: ITelemetry, sessionID: string, datavers
             const activeFileName = path.basename(absoluteFilePath); //"Copilot-Student-Loan-Registration-56a4.basicform.custom_javascript.js"
             const fileNameFirstPart = activeFileName.split('.')[0]; //"Copilot-Student-Loan-Registration-56a4"
 
-            const matchingFiles = getMatchingFiles(activeFileFolderPath, fileNameFirstPart); // ["Copilot-Student-Loan-Registration-56a4.basicform.yml"]
+            const matchingFiles = await getMatchingFiles(activeFileFolderPath, fileNameFirstPart); // ["Copilot-Student-Loan-Registration-56a4.basicform.yml"]
 
-            if (matchingFiles[0]) {
+            if (IS_DESKTOP && matchingFiles[0]) {
+                const diskRead = await import('fs');
                 const yamlFilePath = path.join(activeFileFolderPath, matchingFiles[0]);
                 const yamlContent = diskRead.readFileSync(yamlFilePath, 'utf8');
                 const parsedData = parseYamlContent(yamlContent, telemetry, sessionID, dataverseEntity);
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
+            } else if (!IS_DESKTOP) {
+                entityName = getFileLogicalEntityName(document.uri.fsPath);
+                console.log('getEntityName: IS_DESKTOP is false. Got call from webview for entity name: ', dataverseEntity, " and logical entity name: ", entityName);
             }
         }
     } catch (error) {
         sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         entityName = '';
+
+        console.log('getEntityName: error while getting entity name: ', error);
     }
 
+    console.log('getEntityName: returning ', dataverseEntity, " and logical entity name: ", entityName);
     return entityName;
 }
 
-function getMatchingFiles(folderPath: string, fileNameFirstPart: string): string[] {
-    const files = diskRead.readdirSync(folderPath);
-    const pattern = new RegExp(`^${fileNameFirstPart}\\.(basicform|list|advancedformstep)\\.yml$`);
-    return files.filter((fileName) => pattern.test(fileName));
+async function getMatchingFiles(folderPath: string, fileNameFirstPart: string): Promise<string[]> {
+    if (IS_DESKTOP) {
+        const diskRead = await import('fs');
+        const files = diskRead.readdirSync(folderPath);
+        const pattern = new RegExp(`^${fileNameFirstPart}\\.(basicform|list|advancedformstep)\\.yml$`);
+        return files.filter((fileName) => pattern.test(fileName));
+    }
+
+    return [];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

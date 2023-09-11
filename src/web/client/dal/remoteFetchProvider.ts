@@ -21,6 +21,7 @@ import {
     encodeAsBase64,
     getAttributePath,
     getEntity,
+    getLogicalEntityName,
     isBase64Encoded,
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
@@ -417,6 +418,7 @@ async function createFile(
     let mappingEntityId = null
     // By default content is preloaded for all the files except for non-text webfiles for V2
     const isPreloadedContent = mappingEntityFetchQuery ? isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
+    const logicalEntityName = getLogicalEntityName(entityName);
 
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(
@@ -453,7 +455,8 @@ async function createFile(
         result[Constants.ODATA_ETAG],
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
-        mappingEntityId
+        mappingEntityId,
+        logicalEntityName ? result[logicalEntityName] : undefined
     );
 }
 
@@ -602,7 +605,8 @@ async function createVirtualFile(
     odataEtag: string,
     mimeType?: string,
     isPreloadedContent?: boolean,
-    mappingEntityId?: string
+    mappingEntityId?: string,
+    logicalEntityName?: string
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -615,7 +619,8 @@ async function createVirtualFile(
         attributePath,
         encodeAsBase64,
         mimeType,
-        isPreloadedContent
+        isPreloadedContent,
+        logicalEntityName
     );
 
     // Call file system provider write call for buffering file data in VFS

@@ -21,6 +21,7 @@ import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
+import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -317,13 +318,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         let entityName = "";
         let entityColumns: string[] = [];
 
-        if (IS_DESKTOP && activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
-          const dataverse = await import(`${dataversePath.fsPath}`);
-          entityName = dataverse.getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
+        if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+          entityName = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
           const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
 
-          entityColumns = await dataverse.getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+          entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
         }
         console.log("aib", this.aibEndpoint);
         return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, entityName, entityColumns, telemetry, this.aibEndpoint);
