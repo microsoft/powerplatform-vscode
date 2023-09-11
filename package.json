@@ -433,6 +433,11 @@
           "type": "boolean",
           "markdownDescription": "Enable multiple file view in Visual Studio Code (Web extension only)",
           "default": true
+        },
+        "powerPlatform.experimental.enableCSRPreviewFeature": {
+          "type": "boolean",
+          "markdownDescription": "Enable CSR preview in Visual Studio Code (Desktop extension only)",
+          "default": false
         }
       }
     },
@@ -967,6 +972,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@maker-studio/powerportals-preview-engine": "^3.7.20",
     "@microsoft/generator-powerpages": "1.21.19",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
