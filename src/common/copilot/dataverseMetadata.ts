@@ -20,7 +20,7 @@ declare const IS_DESKTOP: string | undefined;
 
 export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
     try {
-        const dataverseURL = `${orgUrl}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$expand=Attributes($select=LogicalName)`;
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$expand=Attributes($select=LogicalName)`;
         const requestInit: RequestInit = {
             method: "GET",
             headers: {
