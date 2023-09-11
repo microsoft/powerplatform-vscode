@@ -972,8 +972,9 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@maker-studio/powerportals-preview-engine": "^3.7.20",
+    "@maker-studio/powerportals-preview-engine": "^3.7.24",
     "@microsoft/generator-powerpages": "1.21.19",
+    "@types/js-yaml": "^4.0.5",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
