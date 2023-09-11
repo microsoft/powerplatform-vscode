@@ -398,7 +398,11 @@ export function registerCopilot(context: vscode.ExtensionContext) {
 
         context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel));
     } catch (error) {
-        console.log("registerCopilot", error);
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED,
+            registerCopilot.name,
+            (error as Error)?.message,
+            error as Error);
     }
 }
 

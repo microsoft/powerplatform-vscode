@@ -50,7 +50,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     telemetry: ITelemetry | TelemetryReporter,
     pacWrapper?: PacWrapper,
     orgInfo?: IOrgInfo) {
-    console.log("PowerPagesCopilot constructor", _extensionUri);
     this.telemetry = telemetry;
     this._extensionContext = _context;
     sessionID = uuidv4();
@@ -67,15 +66,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       )
     );
 
-    console.log("PowerPagesCopilot constructor - command registered");
-
     if (this._pacWrapper) {
-      console.log("PowerPagesCopilot constructor - pacWrapper");
       this.setupFileWatcher();
     }
 
     if (orgInfo) {
-      console.log("PowerPagesCopilot constructor - orgInfo", orgInfo);
       orgID = orgInfo.orgId;
       environmentName = orgInfo.environmentName;
       activeOrgUrl = orgInfo.activeOrgUrl;
@@ -83,7 +78,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   }
 
   public dispose(): void {
-    console.log("PowerPagesCopilot dispose");
     this._disposables.forEach(d => d.dispose());
   }
 
@@ -132,7 +126,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _token: vscode.CancellationToken
   ) {
-    console.log("PowerPagesCopilot resolveWebviewView");
     this._view = webviewView;
 
     webviewView.description = "PREVIEW"
@@ -152,12 +145,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       this.handleOrgChangeSuccess({ OrgId: orgID, UserId: userID, OrgUrl: activeOrgUrl } as ActiveOrgOutput);
     }
 
-    console.log("PowerPagesCopilot resolveWebviewView", this._view?.webview.html);
-
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
     webviewView.webview.onDidReceiveMessage(async (data) => {
-      console.log("PowerPagesCopilot onDidReceiveMessage", data.type);
       switch (data.type) {
         case "webViewLoaded": {
           sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
@@ -241,7 +231,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   }
 
   public show() {
-    console.log("PowerPagesCopilot show");
     if (this._view) {
       // Show the webview view
       this._view.show(true);
@@ -284,7 +273,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
   private async checkAuthentication() {
     const session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
-    console.log("session token for intelligence api", session);
     if (session) {
       intelligenceApiToken = session.accessToken;
       userName = getUserName(session.account.label);
@@ -298,15 +286,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
   private openWalkthrough() {
     const walkthroughUri = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'walkthrough', 'Copilot-In-PowerPages.md');
-    console.log("PowerPagesCopilot openWalkthrough", walkthroughUri);
     vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
   }
 
   private async authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
-    const fileName = IS_DESKTOP ? 'dataverseMetadata' : 'dataverseMetadataWeb.ts';
-    const dataversePath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'dataverse', fileName);
-    console.log("PowerPagesCopilot authenticateAndSendAPIRequest", __dirname, __filename, this._extensionUri.fsPath, dataversePath.fsPath);
-
     return intelligenceAPIAuthentication(telemetry, sessionID)
       .then(async ({ accessToken, user, userId }) => {
         intelligenceApiToken = accessToken;
@@ -325,7 +308,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
           entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
         }
-        console.log("aib", this.aibEndpoint);
         return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, entityName, entityColumns, telemetry, this.aibEndpoint);
       })
       .then(apiResponse => {
@@ -405,7 +387,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
-    console.log("PowerPagesCopilot _getHtmlForWebview");
     const copilotScriptPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'scripts', 'copilot.js');
     const copilotScriptUri = webview.asWebviewUri(copilotScriptPath);
 

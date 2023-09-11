@@ -88,17 +88,12 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
             } else if (!IS_DESKTOP) {
                 entityName = getFileLogicalEntityName(document.uri.fsPath);
-                console.log('getEntityName: IS_DESKTOP is false. Got call from webview for entity name: ', dataverseEntity, " and logical entity name: ", entityName);
             }
         }
     } catch (error) {
         sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         entityName = '';
-
-        console.log('getEntityName: error while getting entity name: ', error);
     }
-
-    console.log('getEntityName: returning ', dataverseEntity, " and logical entity name: ", entityName);
     return entityName;
 }
 

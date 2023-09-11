@@ -88,4 +88,5 @@ export enum telemetryEventNames {
     WEB_EXTENSION_DATAVERSE_API_CALL_FILE_FETCH_COUNT = 'webExtensionDataverseFileFetchCount',
     WEB_EXTENSION_WEBFILE_EXTENSION = 'webExtensionWebFileExtension',
     WEB_EXTENSION_FILE_NO_CONTENT = 'webExtensionFileNoContent',
+    WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED = 'webExtensionCopilotRegisterFailed',
 }
