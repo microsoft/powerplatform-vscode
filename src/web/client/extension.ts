@@ -28,7 +28,7 @@ import {
     getFileEntityId,
     getFileEntityName,
 } from "./utilities/fileAndEntityUtil";
-import { IEntityInfo } from "./common/interfaces";
+import { IContainerData ,IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
 import { TreeWebViewProvider } from "./webViews/TreeWebViewProvider";
 import * as Constants from "./common/constants";
@@ -259,9 +259,6 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 }
 
 let copresenceWorker: Worker;
-export interface IContainerData {
-    containerId: string;
-}
 
 export function processWillStartCollaboartion(
     context: vscode.ExtensionContext

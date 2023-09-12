@@ -437,7 +437,7 @@
         "powerPlatform.experimental.enableCoPresenceFeature": {
           "type": "boolean",
           "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
-          "default": true
+          "default": false
         }
       }
     },

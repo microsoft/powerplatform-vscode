@@ -23,3 +23,7 @@ export interface IFileInfo {
     entityName: string;
     fileName?: string;
 }
+
+export interface IContainerData {
+    containerId: string;
+}
