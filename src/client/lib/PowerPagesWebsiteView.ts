@@ -82,6 +82,19 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
         return [
             vscode.window.registerTreeDataProvider("powerpages.websitePanel", this),
             vscode.commands.registerCommand("powerpages.websitePanel.refresh", () => this.refresh()),
+            vscode.commands.registerCommand("powerpages.websitePanel.downloadWebsite", async () => {
+                const downloadPath = await vscode.window.showOpenDialog({
+                    canSelectFiles: false,
+                    canSelectFolders: true,
+                    canSelectMany: false,
+                    openLabel: vscode.l10n.t("Select Folder")
+                });
+                if (downloadPath && downloadPath.length > 0) {
+                    const websiteDownloadPath = this.removeLeadingSlash(downloadPath[0].path);
+                    vscode.window.showInformationMessage(vscode.l10n.t("Downloading website..."));
+                    vscode.commands.executeCommand("pacCLI.pacPaportalDownload",  '7b9d41f2-9748-ee11-be6f-6045bd072a16' , websiteDownloadPath);
+                }
+            }),
             // vscode.commands.registerCommand("pacCLI.authPanel.clearAuthProfile", async () => {
             //     const confirm = vscode.l10n.t("Confirm");
             //     const confirmResult = await vscode.window.showWarningMessage(
@@ -132,6 +145,13 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
             //     vscode.env.clipboard.writeText(item.model.User);
             // })
         ];
+    }
+
+    private removeLeadingSlash(path: string): string {
+        if (path.startsWith("/")) {
+          return path.slice(1);
+        }
+        return path;
     }
 }
 
