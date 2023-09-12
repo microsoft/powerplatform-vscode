@@ -9,6 +9,7 @@ import { AuthTreeView } from './AuthPanelView';
 import { EnvAndSolutionTreeView } from './EnvAndSolutionTreeView';
 import { PowerPagesCopilot } from '../../common/copilot/PowerPagesCopilot';
 import { ITelemetry } from '../telemetry/ITelemetry';
+import { WebsiteTreeView } from './PowerPagesWebsiteView';
 
 export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.ExtensionContext, telemetry: ITelemetry): vscode.Disposable[] {
     const authPanel = new AuthTreeView(() => pacWrapper.authList(), pacWrapper);
@@ -17,6 +18,8 @@ export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.Extension
         (environmentUrl) => pacWrapper.solutionListFromEnvironment(environmentUrl),
         authPanel.onDidChangeTreeData,
         pacWrapper);
+    
+    const websitePanel = new WebsiteTreeView(() => pacWrapper.websiteList(), pacWrapper);
 
     const copilotPanel = new PowerPagesCopilot(context.extensionUri, context, telemetry, pacWrapper);
 
@@ -26,5 +29,5 @@ export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.Extension
         },
     });
 
-    return [authPanel, envAndSolutionPanel, copilotPanel];
+    return [authPanel, envAndSolutionPanel, copilotPanel, websitePanel];
 }
