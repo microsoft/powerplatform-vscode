@@ -292,6 +292,11 @@
         "title": "%microsoft-powerapps-portals.webExtension.init.title%"
       },
       {
+        "command": "powerpages.websitePanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
         "command": "microsoft-powerapps-portals.webpage",
         "category": "Powerpages",
         "title": "New Webpage"
@@ -596,6 +601,10 @@
           "when": "never"
         },
         {
+          "command": "powerpages.websitePanel.refresh",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.authPanel.refresh",
           "when": "never"
         },
@@ -749,6 +758,11 @@
           "command": "powerpages.copilot.clearConversation",
           "when": "!virtualWorkspace && view ==  powerpages.copilot",
           "group": "navigation"
+        },
+        {
+          "command": "powerpages.websitePanel.refresh",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel",
+          "group": "navigation@1"
         }
       ],
       "view/item/context": [
@@ -838,6 +852,11 @@
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
+        },
+        {
+          "id": "powerpages.websitePanel",
+          "name": "Powerpages Websites",
+          "when": "!virtualWorkspace"
         },
         {
           "type": "webview",

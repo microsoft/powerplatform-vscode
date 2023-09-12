@@ -75,3 +75,14 @@ export type ActiveOrgOutput = {
     UserId : string,
     EnvironmentId: string,
 }
+
+export type WebsiteListOutput = PacOutput & {
+    Results: WebsiteListing[];
+}
+
+export type WebsiteListing = {
+    Index: number;
+    WebsiteId: string;
+    WebsiteName: string;
+}
+
