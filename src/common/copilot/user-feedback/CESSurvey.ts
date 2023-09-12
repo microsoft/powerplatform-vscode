@@ -87,7 +87,7 @@ function initializeFeedbackData(sessionId: string): IFeedbackData {
       },
       {
         key: 'scenario',
-        value: 'ProdDevCopilot'
+        value: 'ProDevCopilot'
       }
     ],
     Feedbacks: [
