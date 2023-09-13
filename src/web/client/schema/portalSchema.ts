@@ -217,7 +217,7 @@ export const portal_schema_V1 = {
                 _foldername: "advanced-form-steps",
                 _propextension: "",
                 _exporttype: "SubFolders",
-                _fetchQueryParameters: "?$filter=_adx_webform_value eq {entityId} &$select=adx_name,adx_registerstartupscript,adx_webformstepid,adx_targetentitylogicalname",
+                _fetchQueryParameters: "?$filter=adx_webformstepid eq {entityId} &$select=adx_name,adx_registerstartupscript,adx_webformstepid,adx_targetentitylogicalname",
                 _multiFileFetchQueryParameters: "?$filter=_adx_websiteid_value eq {websiteId} &$select=adx_name,adx_registerstartupscript,adx_webformstepid,adx_targetentitylogicalname&$count=true",
                 _attributes: "adx_registerstartupscript",
                 _attributesExtension: new Map([["adx_registerstartupscript", "advancedformstep.customjs.js"]]),

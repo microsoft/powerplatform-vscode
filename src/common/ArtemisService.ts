@@ -27,7 +27,7 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
     return COPILOT_UNAVAILABLE;
   }
 
-  const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${IS_DESKTOP ? clusterNumber : 'il001'}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
+  const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${IS_DESKTOP ? 'il' + clusterNumber : 'il001'}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
 
   return intelligenceEndpoint;
 

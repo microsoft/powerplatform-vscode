@@ -102,7 +102,6 @@ export function activate(context: vscode.ExtensionContext): void {
                     entityId,
                     queryParamsMap
                 );
-                registerCopilot(context);
                 WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
@@ -130,6 +129,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                     },
                                     async () => {
                                         await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
+                                        registerCopilot(context);
                                     }
                                 );
 
@@ -396,7 +396,13 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             undefined,
             orgInfo);
 
-        context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel));
+        context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel, {
+            webviewOptions: {
+                retainContextWhenHidden: true,
+            }
+        }));
+
+        showNotificationForCopilot(orgInfo.orgId);
     } catch (error) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED,
@@ -404,6 +410,25 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             (error as Error)?.message,
             error as Error);
     }
+}
+
+function showNotificationForCopilot(orgId: string) {
+    if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.enableWebCopilot') === false) {
+        return;
+    }
+    const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
+    const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
+
+    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
+        { orgId: orgId });
+
+    vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
+        if (selection === actionTitle) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_EVENT_CLICKED,
+                { orgId: orgId });
+            vscode.commands.executeCommand('powerpages.copilot.focus')
+        }
+    });
 }
 
 export async function deactivate(): Promise<void> {

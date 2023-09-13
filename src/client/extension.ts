@@ -161,18 +161,18 @@ export async function activate(
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
-    
+
     // TODO: Handle for VSCode.dev also
-    if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
         let telemetryData = '';
         let listOfActivePortals = [];
         try {
             listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
             telemetryData = JSON.stringify(listOfActivePortals);
-            _telemetry.sendTelemetryEvent("VscodeDesktopUsage", {listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString()});
-         }catch(exception){
-             _telemetry.sendTelemetryException(exception as Error, {eventName: 'VscodeDesktopUsage'});
-         }
+            _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
+        } catch (exception) {
+            _telemetry.sendTelemetryException(exception as Error, { eventName: 'VscodeDesktopUsage' });
+        }
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
@@ -351,19 +351,19 @@ function handleWorkspaceFolderChange() {
     }
 }
 
-function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:string, countOfActivePortals: string) {
-    if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
+function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals: string) {
+    if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
         return;
     }
     const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
     const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
 
-    telemetry.sendTelemetryEvent(CopilotNotificationShown, {listOfOrgs: telemetryData, countOfActivePortals});
+    telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
 
     vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
         if (selection === actionTitle) {
-              telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, {listOfOrgs: telemetryData, countOfActivePortals});
-              
+            telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, { listOfOrgs: telemetryData, countOfActivePortals });
+
             vscode.commands.executeCommand('powerpages.copilot.focus')
         }
     });

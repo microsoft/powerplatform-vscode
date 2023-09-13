@@ -17,13 +17,9 @@ const clientVersion = getExtensionVersion();
 
 export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null) {
 
-
   if (!aibEndpoint) {
     return NetworkError;
   }
-
-
-
 
   const requestBody = {
     "question": userPrompt,
@@ -40,8 +36,8 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         "activeFileContent": '',
         "targetEntity": entityName,
         "targetColumns": entityColumns,
-        "clientType" : clientType,
-        "clientVersion" : clientVersion,
+        "clientType": clientType,
+        "clientVersion": clientVersion,
       }
     }
   };
@@ -107,7 +103,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         }
         else if (errorCode === RELEVANCY_CHECK_FAILED || errorCode === INAPPROPRIATE_CONTENT || errorCode === INPUT_CONTENT_FILTERED) {
           return MalaciousScenerioResponse;
-        } else if(errorCode === PROMPT_LIMIT_EXCEEDED || errorCode === INVALID_INFERENCE_INPUT) {
+        } else if (errorCode === PROMPT_LIMIT_EXCEEDED || errorCode === INVALID_INFERENCE_INPUT) {
           return PromptLimitExceededResponse;
         }
         else if (errorMessage) {
