@@ -17,6 +17,7 @@ import {
     schemaKey,
 } from "../schema/constants";
 import { getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
+import { getWorkSpaceName } from "./commonUtil";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -243,7 +244,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
 
     if (getWorkspaceResult.value.length) {
         for (const workspace of await getWorkspaceResult.value) {
-            if (workspace.name === `Site-${WebExtensionContext.currentSchemaVersion === "PortalSchemaV1" ? 'v1' : 'v2'}-${config.websiteid}`) {
+            if (workspace.name === getWorkSpaceName(config.websiteid)) {
                 return workspace;
             }
         }
@@ -258,7 +259,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
             },
             method: "POST",
             body: JSON.stringify({
-                name: config.websiteid,
+                name: getWorkSpaceName(config.websiteid),
                 sharedworkspaceid: "00218f43-15d4-f87e-0e08-5dec2c4cfbaa",
             }),
         }
