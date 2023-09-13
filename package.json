@@ -433,11 +433,6 @@
           "type": "boolean",
           "markdownDescription": "Enable multiple file view in Visual Studio Code (Web extension only)",
           "default": true
-        },
-        "powerPlatform.experimental.enableCSRPreviewFeature": {
-          "type": "boolean",
-          "markdownDescription": "Enable CSR preview in Visual Studio Code (Desktop extension only)",
-          "default": false
         }
       }
     },
