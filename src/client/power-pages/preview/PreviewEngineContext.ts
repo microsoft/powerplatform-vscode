@@ -325,9 +325,17 @@ export class PreviewEngineContext {
                 this.previewEngineContext.siteSettings = await this.getSiteSetting();
                 break;
             case ContextProperty.WEBSITE:
-                // update private website record too
-                this.previewEngineContext.website = await this.getWebsite();
-                break;
+                {
+                    const websiteObj = await this.getWebsite();
+                    if (websiteObj?.adx_websiteid === this.websiteRecord?.adx_websiteid) {
+                        this.websiteRecord = websiteObj;
+                    }
+                    else {
+                        this.websiteRecord = websiteObj;
+                        this.previewEngineContext = await this.createEngineContext();
+                    }
+                    break;
+                }
             case ContextProperty.WEB_LINK:
                 this.previewEngineContext.weblinks = await this.getWeblinks();
                 break;
