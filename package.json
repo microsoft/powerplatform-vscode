@@ -326,6 +326,11 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "powerpages.websitePanel.downloadWebsite",
+        "title": "Download Website",
+        "icon": "$(arrow-down)"
+      },
+      {
         "command": "microsoft-powerapps-portals.webpage",
         "category": "Powerpages",
         "title": "New Webpage"
@@ -682,6 +687,10 @@
           "when": "never"
         },
         {
+          "command": "powerpages.websitePanel.downloadWebsite",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.authPanel.refresh",
           "when": "never"
         },
@@ -906,6 +915,11 @@
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
         },
         {
+          "command": "powerpages.websitePanel.downloadWebsite",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel",
+          "group": "inline"
+        },
+        {
           "command": "powerpages.collaboration.openTeamsChat",
           "group": "inline",
           "when": "viewItem == userNode"
@@ -950,7 +964,7 @@
         },
         {
           "id": "powerpages.websitePanel",
-          "name": "Powerpages Websites",
+          "name": "Power Pages Websites",
           "when": "!virtualWorkspace"
         },
         {
