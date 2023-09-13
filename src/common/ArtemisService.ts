@@ -9,6 +9,7 @@ import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
 
+declare const IS_DESKTOP: string | undefined;
 export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemetry, sessionID: string) {
   const { tstUrl, preprodUrl, prodUrl } = convertGuidToUrls(orgId);
   const endpoints = [tstUrl, preprodUrl, prodUrl];
@@ -19,14 +20,14 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
     return null;
   }
 
-  const { geoName, environment } = artemisResponse[0];
+  const { geoName, environment, clusterNumber } = artemisResponse[0];
   sendTelemetryEvent(telemetry, { eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
   if (geoName !== US_GEO) {
     return COPILOT_UNAVAILABLE;
   }
 
-  const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-il001.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
+  const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${IS_DESKTOP ? clusterNumber : 'il001'}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
 
   return intelligenceEndpoint;
 

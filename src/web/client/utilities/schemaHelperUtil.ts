@@ -21,7 +21,7 @@ export function getEntityFetchQuery(entity: string, useRegularFetchQuery = false
     );
 }
 
-export function getLogicalEntityName(entity: string) {
+export function getLogicalEntityParameter(entity: string) {
     return getEntity(entity)?.get(schemaEntityKey.DATAVERSE_LOGICAL_ENTITY_NAME);
 }
 

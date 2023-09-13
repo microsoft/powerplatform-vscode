@@ -140,8 +140,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
       this.handleOrgChangeSuccess(pacOutput.Results);
-    } else if (this._pacWrapper == undefined) {
-      // TODO - Do we need to add env name here for web copilot
+    } else if (!IS_DESKTOP && orgID && activeOrgUrl) {
       this.handleOrgChangeSuccess({ OrgId: orgID, UserId: userID, OrgUrl: activeOrgUrl } as ActiveOrgOutput);
     }
 
@@ -337,7 +336,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       this.sendMessageToWebview({ type: 'Available' });
     }
 
-    if (this._view?.visible) {
+    if (IS_DESKTOP && this._view?.visible) {
       showConnectedOrgMessage(environmentName, activeOrgUrl);
     }
   }
