@@ -18,6 +18,7 @@ import {
 } from "../schema/constants";
 import { getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
 import { getWorkSpaceName } from "./commonUtil";
+import { v4 as uuidv4 } from 'uuid'
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -260,7 +261,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
             method: "POST",
             body: JSON.stringify({
                 name: getWorkSpaceName(config.websiteid),
-                sharedworkspaceid: "00218f43-15d4-f87e-0e08-5dec2c4cfbaa",
+                sharedworkspaceid: uuidv4(),
             }),
         }
     );
