@@ -317,7 +317,13 @@ export function createCopresenceWorkerInstance(
                 }
             };
         })
-        .catch((error) => console.error(error));
+        .catch((error) =>
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_CO_PRESENCE_WORKER_ERROR,
+                createCopresenceWorkerInstance.name,
+                error
+            )
+        );
 }
 
 export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
@@ -373,7 +379,17 @@ export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
             })
         );
     } catch (error) {
-        console.log(error);
+        let message = "unknown error";
+
+        if (error instanceof Error) {
+            message = error.message;
+        }
+
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_PROCESS_OPEN_ACTIVE_EDITOR_ERROR,
+            processOpenActiveTextEditor.name,
+            message
+        );
     }
 }
 
