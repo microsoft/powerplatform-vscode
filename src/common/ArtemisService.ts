@@ -14,12 +14,13 @@ export async function getIntelligenceEndpoint (orgId: string, telemetry:ITelemet
     const endpoints = [tstUrl, preprodUrl, prodUrl];
 
     const artemisResponse = await fetchIslandInfo(endpoints, telemetry, sessionID);
-    
+
     if (!artemisResponse) {
         return null;
     }
-    sendTelemetryEvent(telemetry, {eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID})
+
     const { clusterNumber, geoName, environment } = artemisResponse[0];
+    sendTelemetryEvent(telemetry, {eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId})
 
     if(geoName !== US_GEO) {
         return COPILOT_UNAVAILABLE;
@@ -28,7 +29,7 @@ export async function getIntelligenceEndpoint (orgId: string, telemetry:ITelemet
     const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-il${clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
 
     return intelligenceEndpoint;
-    
+
 }
 
 async function fetchIslandInfo(endpoints: string[], telemetry: ITelemetry, sessionID: string) {
@@ -50,7 +51,7 @@ async function fetchIslandInfo(endpoints: string[], telemetry: ITelemetry, sessi
           return null;
         }
       });
-  
+
       const responses = await Promise.all(promises);
       const successfulResponses = responses.filter(response => response !== null);
       return successfulResponses;
@@ -59,15 +60,15 @@ async function fetchIslandInfo(endpoints: string[], telemetry: ITelemetry, sessi
       return null;
     }
   }
-  
+
 
 /**
- * @param orgId 
+ * @param orgId
  * @returns urls
  * ex. orgId: c7809087-d9b8-4a00-a78a-a4b901caa23f
- * TST (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.test.powerplatform.com/artemis 
- * PreProd (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.preprod.powerplatform.com/artemis 
- * Prod: https:// c7809087d9b84a00a78aa4b901caa2.3f.organization.api.powerplatform.com/artemis 
+ * TST (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.test.powerplatform.com/artemis
+ * PreProd (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.preprod.powerplatform.com/artemis
+ * Prod: https:// c7809087d9b84a00a78aa4b901caa2.3f.organization.api.powerplatform.com/artemis
  */
 export function convertGuidToUrls(orgId: string) {
     const updatedOrgId = orgId.replace(/-/g, "");

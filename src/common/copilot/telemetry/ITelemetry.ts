@@ -10,8 +10,12 @@ export interface IProDevCopilotTelemetryData {
     copilotSessionId: string,
     orgId?: string,
     FeedbackId?: string
-    error?: string | Error,
+    error?: Error,
     dataverseEntity?: string,
     feedbackType?: string,
-    responseStatus?: number,
+    responseStatus?: string,
+    codeLineCount?: string,
+    geoName?: string,
+    aibEndpoint?: string,
+    orgUrl?: string,
 }

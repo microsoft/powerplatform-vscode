@@ -21,6 +21,7 @@ Copilot in Visual Studio Code is tuned to generate code for Power Pages sites, s
 1. In the Copilot chat, describe the code behavior you want using natural language. For example, code for form validation or Ajax calls using the Power Pages Web API.
 1. Continue to repharse your questions in the Copilot chat and iterate them till you’ve got what you need.  
 1. Once you are happy with the generated code, you can easily copy and paste the code snippet or insert the code to Power Pages site and modify the code further.
+1. Use the **up/down** arrow key to navigate between recently entered prompts.
 
 Examples
 
@@ -30,7 +31,7 @@ Examples
 Note
 
 - Copilot generated code might not have the correct names for tables or columns, so it’s recommended to verify these details before using the code.
-- To generate more accurate code, make sure you open the file where you want to use the code. For example, open a Web Page where you want to add Web API code or Open Custom JavaScript file for forms where you want to add field validation.
+- To generate more accurate code, it is recommended that you open the file where you want to use the code. For example, open a web template for web API or open custom JavaScript file for forms where you want to add field validation.
 
 ![Demo File Screen](./images/contextpowerpages.svg)
 

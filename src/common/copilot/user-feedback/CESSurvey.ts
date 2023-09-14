@@ -87,7 +87,7 @@ function initializeFeedbackData(sessionId: string): IFeedbackData {
       },
       {
         key: 'scenario',
-        value: 'ProdDevCopilot'
+        value: 'ProDevCopilot'
       }
     ],
     Feedbacks: [
@@ -120,12 +120,12 @@ async function handleFeedbackSubmission(text: string, endpointUrl: string, apiTo
       sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackSuccessEvent, feedbackType:thumbType, FeedbackId: feedbackId, copilotSessionId: sessionID });
     } else {
       // Error sending feedback
-      sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, error: response.statusText });
+      const feedBackError = new Error(response.statusText);
+      sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, error: feedBackError });
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error) {
     // Network error or other exception
-    sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, exception: error.message });
+    sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, error: error as Error });
   }
 }
 

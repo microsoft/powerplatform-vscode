@@ -160,6 +160,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">File(s) already exist. No new files to add</source>
         <target state="translated">ファイルは既に存在します。追加する新しいファイルはありません</target>
       </trans-unit>
+      <trans-unit id="++CODE++6658fe1c5f8e493175e012ea4a3f7e08df6207342fba111ccc67ba8d4d91977f">
+        <source xml:lang="en">Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.</source>
+        <target state="translated">Power Pages サイトのコードを HTML、CSS、JS 言語で記述する際のヘルプを、Copilot で取得します。</target>
+      </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
         <note>{0} represents the version number</note>
@@ -289,6 +293,11 @@ URL: {1}
         <source xml:lang="en">Saving your file ...</source>
         <target state="translated">ファイルを保存しています...</target>
       </trans-unit>
+      <trans-unit id="++CODE++6e26632772595a9d2fdf17191f6d7b59983c308d884deed6ba317054f7d30688">
+        <source xml:lang="en">Select Folder for new PCF Control</source>
+        <note>Do not translate 'PCF' as it is a product name.</note>
+        <target state="translated">新しい PCF コントロールのフォルダーを選択する</target>
+      </trans-unit>
       <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
         <source xml:lang="en">Select Type</source>
         <target state="translated">種類の選択</target>
@@ -316,6 +325,10 @@ URL: {1}
       <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
         <source xml:lang="en">Thereâ€™s a problem on the back end</source>
         <target state="translated">バック エンドに問題があります</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8d6329ce370e7f2cf3a5b77a73e0100c08550628408f2763deafe57dce769719">
+        <source xml:lang="en">Try Copilot for Power Pages</source>
+        <target state="translated">Power Pages の Copilot を試す</target>
       </trans-unit>
       <trans-unit id="++CODE++d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f">
         <source xml:lang="en">Try again</source>

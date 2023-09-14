@@ -4,11 +4,11 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { InvalidResponse, MalaciousScenerioResponse, NetworkError, RELEVANCY_CHECK_FAILED } from "./constants";
+import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse } from "./constants";
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { CopilotResponseFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
+import { CopilotResponseFailureEvent, CopilotResponseFailureEventWithMessage, CopilotResponseOkFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
 import { getExtensionType, getExtensionVersion } from "../Utils";
 import { EXTENSION_NAME } from "../../client/constants";
 
@@ -72,7 +72,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         const jsonResponse = await response.json();
 
         if (jsonResponse.operationStatus === 'Success') {
-          sendTelemetryEvent(telemetry, { eventName: CopilotResponseSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime });
+          sendTelemetryEvent(telemetry, { eventName: CopilotResponseSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgId: orgID });
           if (jsonResponse.additionalData && Array.isArray(jsonResponse.additionalData) && jsonResponse.additionalData.length > 0) {
             const additionalData = jsonResponse.additionalData[0];
             if (additionalData.properties && additionalData.properties.response) {
@@ -87,29 +87,39 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         }
         throw new Error("Invalid response format");
       } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseOkFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime, orgId: orgID });
         return InvalidResponse;
       }
     } else {
       try {
         const errorResponse = await response.json();
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: errorResponse.error.messages[0], durationInMills: responseTime });
+        const errorCode = errorResponse.error && errorResponse.error.code;
+        const errorMessage = errorResponse.error && errorResponse.error.messages[0];
 
-        if (response.status >= 500 && response.status < 600) {
-          return InvalidResponse
-        } else if (errorResponse.error.code === RELEVANCY_CHECK_FAILED) {
-          return MalaciousScenerioResponse;
+        const responseError = new Error(errorMessage);
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEventWithMessage, copilotSessionId: sessionID, responseStatus: String(response.status), error: responseError, durationInMills: responseTime, orgId: orgID });
+
+        if (response.status === 429) {
+          return RateLimitingResponse
         }
-        else if (errorResponse.error && errorResponse.error.messages[0]) {
-          return [{ displayText: errorResponse.error.messages[0], code: '' }];
+        else if (response.status === 401) {
+          return UnauthorizedResponse;
+        }
+        else if (errorCode === RELEVANCY_CHECK_FAILED || errorCode === INAPPROPRIATE_CONTENT || errorCode === INPUT_CONTENT_FILTERED) {
+          return MalaciousScenerioResponse;
+        } else if(errorCode === PROMPT_LIMIT_EXCEEDED || errorCode === INVALID_INFERENCE_INPUT) {
+          return PromptLimitExceededResponse;
+        }
+        else if (errorMessage) {
+          return InvalidResponse;
         }
       } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: response.status, error: error as Error, durationInMills: responseTime });
+        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: String(response.status), error: error as Error, durationInMills: responseTime, orgId: orgID });
         return InvalidResponse;
       }
     }
   } catch (error) {
-    sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error });
+    sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error, orgId: orgID });
     return NetworkError;
   }
 

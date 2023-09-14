@@ -356,15 +356,16 @@ class WebExtensionContext implements IWebExtensionContext {
         entityName: string,
         odataEtag: string,
         attributePath: IAttributePath,
-        attributeContent: string
+        attributeContent: string,
+        mappingEntityId?: string
     ) {
         this.entityDataMap.setEntity(
             entityId,
             entityName,
             odataEtag,
             attributePath,
-            attributeContent
-        );
+            attributeContent,
+            mappingEntityId);
     }
 
     public async updateSingleFileUrisInContext(uri: vscode.Uri) {

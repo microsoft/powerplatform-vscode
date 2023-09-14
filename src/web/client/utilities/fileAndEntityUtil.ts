@@ -13,6 +13,11 @@ export function fileHasDirtyChanges(fileFsPath: string) {
         ?.hasDirtyChanges as boolean;
 }
 
+export function fileHasDiffViewTriggered(fileFsPath: string) {
+    return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
+        ?.hasDiffViewTriggered as boolean;
+}
+
 export function getFileEntityId(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
         ?.entityId as string ?? WebExtensionContext.getVscodeWorkspaceState(fileFsPath)?.entityId as string;
@@ -42,14 +47,33 @@ export function updateFileDirtyChanges(
     );
 }
 
+export function updateDiffViewTriggered(
+    fileFsPath: string,
+    hasDiffViewTriggered: boolean
+) {
+    WebExtensionContext.fileDataMap.updateDiffViewTriggered(
+        fileFsPath,
+        hasDiffViewTriggered
+    );
+}
+
 export function doesFileExist(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.has(vscode.Uri.parse(fileFsPath).fsPath);
+}
+
+export function getFileName(fsPath: string) {
+    return fsPath.split(/[\\/]/).pop();
 }
 
 // Entity utility functions
 export function getEntityEtag(entityId: string) {
     return WebExtensionContext.entityDataMap.getEntityMap.get(entityId)
         ?.entityEtag as string;
+}
+
+export function getEntityMappingEntityId(entityId: string) {
+    return WebExtensionContext.entityDataMap.getEntityMap.get(entityId)
+        ?.mappingEntityId;
 }
 
 export function updateEntityEtag(entityId: string, entityEtag: string) {
@@ -69,8 +93,4 @@ export function updateEntityColumnContent(
         attributePath,
         fileContent
     );
-}
-
-export function getFileName(fsPath: string) {
-    return fsPath.split(/[\\/]/).pop();
 }
