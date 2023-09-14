@@ -103,9 +103,6 @@ const webConfig = {
     },
     plugins: [
         new webpack.ProvidePlugin({
-            process: 'process/browser', // provide a shim for the global `process` variable
-        }),
-        new webpack.ProvidePlugin({
             Buffer: [ 'buffer', 'Buffer' ],
         }),
         new webpack.DefinePlugin({
