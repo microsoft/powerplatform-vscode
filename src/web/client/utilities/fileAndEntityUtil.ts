@@ -33,6 +33,11 @@ export function getFileEntityEtag(fileFsPath: string) {
         ?.entityEtag as string;
 }
 
+export function getFileLogicalEntityName(fileFsPath: string) {
+    return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
+        ?.logicalEntityName as string;
+}
+
 export function updateFileEntityEtag(fileFsPath: string, entityEtag: string) {
     WebExtensionContext.fileDataMap.updateEtagValue(fileFsPath, entityEtag);
 }

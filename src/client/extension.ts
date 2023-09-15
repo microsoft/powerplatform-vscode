@@ -21,7 +21,7 @@ import {
     TransportKind,
     WorkspaceFolder,
 } from "vscode-languageclient/node";
-import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
+import { getPortalsOrgURLs, workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
 import {
     activateDebugger,
     deactivateDebugger,
@@ -32,7 +32,7 @@ import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
-import { CopilotTryNotificationClickedEvent } from "../common/copilot/telemetry/telemetryConstants";
+import { CopilotNotificationShown, CopilotTryNotificationClickedEvent } from "../common/copilot/telemetry/telemetryConstants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -161,12 +161,22 @@ export async function activate(
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
-    
+
     // TODO: Handle for VSCode.dev also
-    if (workspaceContainsPortalConfigFolder(workspaceFolders)) { 
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+        let telemetryData = '';
+        let listOfActivePortals = [];
+        try {
+            listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
+            telemetryData = JSON.stringify(listOfActivePortals);
+            _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
+        } catch (exception) {
+            _telemetry.sendTelemetryException(exception as Error, { eventName: 'VscodeDesktopUsage' });
+        }
+        _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
-        showNotificationForCopilot(_telemetry);
+        showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -341,16 +351,19 @@ function handleWorkspaceFolderChange() {
     }
 }
 
-function showNotificationForCopilot(telemetry: TelemetryReporter) {
-    if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
+function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals: string) {
+    if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
         return;
     }
     const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
     const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
 
+    telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
+
     vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
         if (selection === actionTitle) {
-              telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent);
+            telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, { listOfOrgs: telemetryData, countOfActivePortals });
+
             vscode.commands.executeCommand('powerpages.copilot.focus')
         }
     });

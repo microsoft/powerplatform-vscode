@@ -22,6 +22,7 @@ export enum schemaEntityKey {
     ATTRIBUTES_EXTENSION = "_attributesExtension",
     VSCODE_ENTITY_NAME = "_vscodeentityname",
     DATAVERSE_ENTITY_NAME = "_dataverseenityname",
+    DATAVERSE_LOGICAL_ENTITY_NAME = "_dataverselogicalentityname",
     FETCH_QUERY_PARAMETERS = "_fetchQueryParameters",
     MULTI_FILE_FETCH_QUERY_PARAMETERS = "_multiFileFetchQueryParameters",
     MAPPING_ENTITY_ID = "_mappingEntityId",

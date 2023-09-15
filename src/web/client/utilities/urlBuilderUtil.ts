@@ -16,7 +16,7 @@ import {
     schemaEntityName,
     schemaKey,
 } from "../schema/constants";
-import { getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
+import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -196,6 +196,21 @@ export function getMappingEntityContent(entity: string, result: any, attribute: 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getMimeType(result: any) {
     return result[MIMETYPE];
+}
+
+// TODO - Make Json for different response type and update any here
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getLogicalEntityName(result: any, logicalEntityName?: string) {
+    let logicalEntity;
+
+    if (logicalEntityName) {
+        const attributePath = getAttributePath(logicalEntityName);
+        logicalEntity = attributePath.relativePath.length > 0 ?
+            JSON.parse(result[attributePath.source])[attributePath.relativePath] :
+            result[attributePath.source];
+    }
+
+    return logicalEntity;
 }
 
 export function pathHasEntityFolderName(uri: string): boolean {
