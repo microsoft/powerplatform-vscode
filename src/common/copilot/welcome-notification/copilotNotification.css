@@ -51,6 +51,10 @@ button {
 .walkthrough-content {
     padding: 6px 0px 6px 0px;
     margin-bottom: 68px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+
 }
 
 .checkbox-container {
@@ -59,6 +63,10 @@ button {
     justify-content: center;
     margin-bottom: 30px;
     margin-top: 180px;
+}
+
+#arrow-icon {
+    margin-right: 5px;
 }
 
 input[type="checkbox"] {

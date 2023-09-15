@@ -78,7 +78,7 @@ function createNotificationPanel(): vscode.WebviewPanel {
     const notificationJsPath = vscode.Uri.joinPath(srcPath, "copilotNotification.js");
     const notificationJsUri = NotificationPanel.webview.asWebviewUri(notificationJsPath );
 
-    const copilotImagePath = vscode.Uri.joinPath(srcPath, "copilotimage.svg");
+    const copilotImagePath = vscode.Uri.joinPath(srcPath, "notification.svg");
     const copilotImageUri = NotificationPanel.webview.asWebviewUri(copilotImagePath );
 
     const arrowImagePath = vscode.Uri.joinPath(srcPath, "arrow.svg");
@@ -105,7 +105,7 @@ function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vs
         <h1 id="heading">Let Copilot help you code</h1>
         <p id="welcome-text">Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</p>
         <button id="try-button">Try Copilot for Power Pages</button>
-        <a href="#" class="walkthrough-content" id="walkthroughLink"> <img src="${arrowImageUri}" > <span id="walk-text">Learn more about Copilot</span></a>
+        <a href="#" class="walkthrough-content" id="walkthroughLink"> <img src="${arrowImageUri}" id="arrow-icon"> <span id="walk-text">Learn more about Copilot</span></a>
         <img src="${copilotImageUri}" alt="Image">
         <div class="checkbox-container">
           <input type="checkbox" id="checkbox">
