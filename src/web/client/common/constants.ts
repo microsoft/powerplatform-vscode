@@ -89,7 +89,6 @@ export enum SurveyConstants {
     AUTHORIZATION_ENDPOINT = "https://microsoft.onmicrosoft.com/cessurvey/user",
 }
 
-
 export enum portalSchemaVersion {
     V1 = "portalschemav1",
     V2 = "portalschemav2",
