@@ -90,6 +90,9 @@ export enum telemetryEventNames {
     WEB_EXTENSION_DATAVERSE_API_CALL_FILE_FETCH_COUNT = 'webExtensionDataverseFileFetchCount',
     WEB_EXTENSION_WEBFILE_EXTENSION = 'webExtensionWebFileExtension',
     WEB_EXTENSION_FILE_NO_CONTENT = 'webExtensionFileNoContent',
+    WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED = 'webExtensionCopilotRegisterFailed',
+    WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN = 'webExtensionCopilotNotificationShown',
+    WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_EVENT_CLICKED = 'webExtensionCopilotNotificationEventClicked',
     WEB_EXTENSION_CO_PRESENCE_WORKER_ERROR = 'webExtensionCoPresenceWorkerError',
     WEB_EXTENSION_PROCESS_OPEN_ACTIVE_EDITOR_ERROR = 'webExtensionProcessOpenActiveEditorError',
 }
