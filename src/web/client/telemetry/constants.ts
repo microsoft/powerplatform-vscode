@@ -91,4 +91,5 @@ export enum telemetryEventNames {
     WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED = 'webExtensionCopilotRegisterFailed',
     WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN = 'webExtensionCopilotNotificationShown',
     WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_EVENT_CLICKED = 'webExtensionCopilotNotificationEventClicked',
+    WEB_EXTENSION_AZURE_FLUID_SERVICE_LOAD_ERROR = 'webExtensionAzureFluidServiceLoadError',
 }
