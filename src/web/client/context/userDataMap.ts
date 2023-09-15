@@ -23,10 +23,10 @@ export class UserData implements IUserData {
         return this._containerId;
     }
     public get fileName(): string {
-        return this.fileName;
+        return this._fileName;
     }
     public get filePath(): string {
-        return this.filePath;
+        return this._filePath;
     }
     public get userName(): string {
         return this._userName;
