@@ -1,0 +1,66 @@
+body {
+    font-size: 13px;
+    font-weight: var(--vscode-font-weight);
+    font-family: var(--vscode-font-family);
+    margin: 0;
+    padding: 0;
+    background-color: var(--vscode-editor-background);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 32px;
+    margin-right: 32px;
+}
+
+#welcome-text {
+    margin-top: 12px;
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+#heading {
+    margin-top: 130px;
+    text-align: center;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.text {
+    margin-top: 20px;
+}
+
+button {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+.walkthrough-content {
+    padding: 6px 0px 6px 0px;
+    margin-bottom: 68px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 180px;
+}
+
+input[type="checkbox"] {
+    margin-right: 12px;
+}

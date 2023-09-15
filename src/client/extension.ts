@@ -32,7 +32,8 @@ import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
-import { CopilotNotificationShown, CopilotTryNotificationClickedEvent } from "../common/copilot/telemetry/telemetryConstants";
+import { CopilotNotificationShown} from "../common/copilot/telemetry/telemetryConstants";
+import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -208,6 +209,7 @@ export async function deactivate(): Promise<void> {
 
     disposeDiagnostics();
     deactivateDebugger();
+    disposeNotificationPanel();
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {
@@ -355,18 +357,14 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
     if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
         return;
     }
-    const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
-    const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
 
-    telemetry.sendTelemetryEvent(CopilotNotificationShown, {listOfOrgs: telemetryData, countOfActivePortals});
+    const isCopilotNotificationDisabled = _context.globalState.get('isCopilotNotificationDisabled', false);
 
-    vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
-        if (selection === actionTitle) {
-              telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, {listOfOrgs: telemetryData, countOfActivePortals});
-              
-            vscode.commands.executeCommand('powerpages.copilot.focus')
-        }
-    });
+    if(!isCopilotNotificationDisabled) {
+        telemetry.sendTelemetryEvent(CopilotNotificationShown, {listOfOrgs: telemetryData, countOfActivePortals});
+        copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
+    }
+
 }
 
 // allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
