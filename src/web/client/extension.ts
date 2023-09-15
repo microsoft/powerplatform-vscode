@@ -18,7 +18,7 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { convertContentToString } from "./utilities/commonUtil";
+import { convertContentToString, isCoPresenceEnabled } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
@@ -177,6 +177,8 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillSaveDocument(context);
 
+    processWillStartCollaboartion();
+
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
@@ -252,6 +254,12 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
             }
         })
     );
+}
+
+export function processWillStartCollaboartion() {
+    if (isCoPresenceEnabled()) {
+        // TODO: Add copresence logic
+    }
 }
 
 export async function showSiteVisibilityDialog() {
