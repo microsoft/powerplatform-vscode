@@ -19,6 +19,10 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 [Power Platform CLI Exposed](https://www.youtube.com/playlist?list=PLlrxD0HtieHhEdLHxQOU96ySSZpMCyAxf)
 
 ## Release Notes
+
+2.0.9:
+  - pac CLI 1.27.3 (Auguest refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
 2.0.7:
   - QFE for styling files load for new data model schema
 
