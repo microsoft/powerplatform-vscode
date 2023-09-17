@@ -406,7 +406,7 @@ export class PreviewEngineContext {
                 {
                     const obj = await this.webPageHelper(fileUri?.with({ path: removeExtension(fileUri.path, entityType) }));
                     const value = obj[ContextPropertyKey.WEBPAGE as unknown as keyof Webpage];
-                    const index = findObjectIndexByProperty(this.previewEngineContext.webpages, ContextPropertyKey.WEBPAGE, value);//default-offline-page
+                    const index = findObjectIndexByProperty(this.previewEngineContext.webpages, ContextPropertyKey.WEBPAGE, value);
                     if (index != -1 && this.previewEngineContext.webpages) {
                         this.previewEngineContext.webpages[index] = obj;
                     } else {
@@ -419,7 +419,7 @@ export class PreviewEngineContext {
                 {
                     const obj = await this.webTemplateHelper(fileUri?.with({ path: removeExtension(fileUri.path, entityType) }));
                     const value = obj[ContextPropertyKey.WEB_TEMPLATE as unknown as keyof WebTemplate];
-                    const index = findObjectIndexByProperty(this.previewEngineContext.webTemplates, ContextPropertyKey.WEB_TEMPLATE, value);//breadcrumb
+                    const index = findObjectIndexByProperty(this.previewEngineContext.webTemplates, ContextPropertyKey.WEB_TEMPLATE, value);
                     if (index != -1 && this.previewEngineContext.webTemplates) {
                         this.previewEngineContext.webTemplates[index] = obj;
                     } else {
@@ -432,7 +432,7 @@ export class PreviewEngineContext {
                 {
                     const obj = await this.contentSnippetHelper(fileUri?.with({ path: removeExtension(fileUri.path, entityType) }));
                     const value = obj[ContextPropertyKey.CONTENT_SNIPPET as unknown as keyof ContentSnippet];
-                    const index = findObjectIndexByProperty(this.previewEngineContext.contentSnippets, ContextPropertyKey.CONTENT_SNIPPET, value);//confirm email - hindi
+                    const index = findObjectIndexByProperty(this.previewEngineContext.contentSnippets, ContextPropertyKey.CONTENT_SNIPPET, value);
                     if (index != -1 && this.previewEngineContext.contentSnippets) {
                         this.previewEngineContext.contentSnippets[index] = obj;
                     } else {
