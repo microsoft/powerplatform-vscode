@@ -14,6 +14,7 @@ export interface IFileData extends IFileInfo {
     encodeAsBase64: boolean | undefined;
     mimeType: string | undefined;
     isContentLoaded?: boolean;
+    logicalEntityName?: string;
 }
 
 export class FileData implements IFileData {
@@ -28,6 +29,7 @@ export class FileData implements IFileData {
     private _encodeAsBase64: boolean | undefined;
     private _mimeType: string | undefined;
     private _isContentLoaded: boolean | undefined;
+    private _logicalEntityName: string | undefined;
 
     // Getters
     public get entityName(): string {
@@ -64,6 +66,10 @@ export class FileData implements IFileData {
         return this._isContentLoaded;
     }
 
+    public get logicalEntityName(): string | undefined {
+        return this._logicalEntityName;
+    }
+
     // Setters
     public set setHasDirtyChanges(value: boolean) {
         this._hasDirtyChanges = value;
@@ -75,6 +81,10 @@ export class FileData implements IFileData {
         this._hasDiffViewTriggered = value;
     }
 
+    public set setLogicalEntityName(value: string | undefined) {
+        this._logicalEntityName = value;
+    }
+
     constructor(
         entityId: string,
         entityName: string,
@@ -84,7 +94,8 @@ export class FileData implements IFileData {
         attributePath: IAttributePath,
         encodeAsBase64?: boolean,
         mimeType?: string,
-        isContentLoaded?: boolean
+        isContentLoaded?: boolean,
+        logicalEntityName?: string
     ) {
         this._entityId = entityId;
         this._entityName = entityName;
@@ -97,5 +108,6 @@ export class FileData implements IFileData {
         this._hasDirtyChanges = false;
         this._hasDiffViewTriggered = false;
         this._isContentLoaded = isContentLoaded;
+        this._logicalEntityName = logicalEntityName;
     }
 }

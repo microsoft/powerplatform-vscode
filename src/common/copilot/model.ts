@@ -4,18 +4,24 @@
  */
 
 export interface IFeedbackData {
-    IsDismissed: boolean;
-    ProductContext: { key: string, value: string }[];
-    Feedbacks: { key: string, value: string }[];
-  }
-  
+  IsDismissed: boolean;
+  ProductContext: { key: string, value: string }[];
+  Feedbacks: { key: string, value: string }[];
+}
+
 export interface IActiveFileParams {
-    dataverseEntity: string;
-    entityField: string;
-    fieldType: string;
-  }
+  dataverseEntity: string;
+  entityField: string;
+  fieldType: string;
+}
 
 export interface IActiveFileData {
-    activeFileParams: IActiveFileParams;
-    activeFileContent: string
+  activeFileParams: IActiveFileParams;
+  activeFileContent: string
+}
+
+export interface IOrgInfo {
+  orgId: string;
+  environmentName: string;
+  activeOrgUrl: string;
 }
