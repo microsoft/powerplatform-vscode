@@ -11,88 +11,88 @@ import { COPILOT_NOTFICATION_DISABLED } from "../constants";
 
 let NotificationPanel: vscode.WebviewPanel | undefined;
 
-export async function copilotNotificationPanel(context: vscode.ExtensionContext, telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals: string) {
+export async function copilotNotificationPanel(context: vscode.ExtensionContext, telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals?: string) {
 
-    if (NotificationPanel) {
-        NotificationPanel.dispose();
-    }
+  if (NotificationPanel) {
+    NotificationPanel.dispose();
+  }
 
-    NotificationPanel = createNotificationPanel();
+  NotificationPanel = createNotificationPanel();
 
-    console.log(telemetry, telemetryData, countOfActivePortals)
+  console.log(telemetry, telemetryData, countOfActivePortals)
 
-    const { notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri } = getWebviewURIs(context, NotificationPanel);
+  const { notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri } = getWebviewURIs(context, NotificationPanel);
 
-    const nonce = getNonce();
-    const webview = NotificationPanel.webview
-    NotificationPanel.webview.html = getWebviewContent(notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri, nonce, webview);
+  const nonce = getNonce();
+  const webview = NotificationPanel.webview
+  NotificationPanel.webview.html = getWebviewContent(notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri, nonce, webview);
 
-    NotificationPanel.webview.onDidReceiveMessage(
-        async message => {
-            switch (message.command) {
-                case 'checked':
-                    telemetry.sendTelemetryEvent(CopilotNotificationDoNotShow, { listOfOrgs: telemetryData, countOfActivePortals });
-                    context.globalState.update(COPILOT_NOTFICATION_DISABLED, true);
-                    break;
-                case 'unchecked':
-                    context.globalState.update(COPILOT_NOTFICATION_DISABLED, false);
-                    break;
-                case 'tryCopilot':
-                    telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, { listOfOrgs: telemetryData, countOfActivePortals });
-                    vscode.commands.executeCommand('powerpages.copilot.focus')
-                    NotificationPanel?.dispose();
-                    break;
-                case 'learnMore':
-                    telemetry.sendTelemetryEvent(CopilotWalkthroughEvent, { listOfOrgs: telemetryData, countOfActivePortals });
-                    openWalkthrough(context.extensionUri);
-            }
-        },
-        undefined,
-        context.subscriptions
-    );
+  NotificationPanel.webview.onDidReceiveMessage(
+    async message => {
+      switch (message.command) {
+        case 'checked':
+          telemetry.sendTelemetryEvent(CopilotNotificationDoNotShow, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+          context.globalState.update(COPILOT_NOTFICATION_DISABLED, true);
+          break;
+        case 'unchecked':
+          context.globalState.update(COPILOT_NOTFICATION_DISABLED, false);
+          break;
+        case 'tryCopilot':
+          telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+          vscode.commands.executeCommand('powerpages.copilot.focus')
+          NotificationPanel?.dispose();
+          break;
+        case 'learnMore':
+          telemetry.sendTelemetryEvent(CopilotWalkthroughEvent, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+          openWalkthrough(context.extensionUri);
+      }
+    },
+    undefined,
+    context.subscriptions
+  );
 }
 
 function createNotificationPanel(): vscode.WebviewPanel {
-    const NotificationPanel = vscode.window.createWebviewPanel(
-        "CopilotNotification",
-        "Copilot in Power Pages",
-        {
-            viewColumn: vscode.ViewColumn.Beside,
-            preserveFocus: true,
-        },
-        {
-            enableScripts: true,
-        }
-    );
+  const NotificationPanel = vscode.window.createWebviewPanel(
+    "CopilotNotification",
+    "Copilot in Power Pages",
+    {
+      viewColumn: vscode.ViewColumn.Beside,
+      preserveFocus: true,
+    },
+    {
+      enableScripts: true,
+    }
+  );
 
-    // context.subscriptions.push(NotificationPanel);
+  // context.subscriptions.push(NotificationPanel);
 
-    return NotificationPanel;
+  return NotificationPanel;
 }
 
 function getWebviewURIs(context: vscode.ExtensionContext, NotificationPanel: vscode.WebviewPanel): { notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri, arrowImageUri: vscode.Uri } {
 
-    const srcPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "welcome-notification");
+  const srcPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "welcome-notification");
 
-    const notificationCssPath = vscode.Uri.joinPath(srcPath, "copilotNotification.css");
-    const notificationCssUri = NotificationPanel.webview.asWebviewUri(notificationCssPath);
+  const notificationCssPath = vscode.Uri.joinPath(srcPath, "copilotNotification.css");
+  const notificationCssUri = NotificationPanel.webview.asWebviewUri(notificationCssPath);
 
-    const notificationJsPath = vscode.Uri.joinPath(srcPath, "copilotNotification.js");
-    const notificationJsUri = NotificationPanel.webview.asWebviewUri(notificationJsPath);
+  const notificationJsPath = vscode.Uri.joinPath(srcPath, "copilotNotification.js");
+  const notificationJsUri = NotificationPanel.webview.asWebviewUri(notificationJsPath);
 
-    const copilotImagePath = vscode.Uri.joinPath(srcPath, "notification.svg");
-    const copilotImageUri = NotificationPanel.webview.asWebviewUri(copilotImagePath);
+  const copilotImagePath = vscode.Uri.joinPath(srcPath, "notification.svg");
+  const copilotImageUri = NotificationPanel.webview.asWebviewUri(copilotImagePath);
 
-    const arrowImagePath = vscode.Uri.joinPath(srcPath, "arrow.svg");
-    const arrowImageUri = NotificationPanel.webview.asWebviewUri(arrowImagePath);
+  const arrowImagePath = vscode.Uri.joinPath(srcPath, "arrow.svg");
+  const arrowImageUri = NotificationPanel.webview.asWebviewUri(arrowImagePath);
 
-    return { notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri };
+  return { notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri };
 }
 
 
 function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri, arrowImageUri: vscode.Uri, nonce: string, webview: vscode.Webview) {
 
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
       <html lang="en">
       <head>
           <meta charset="UTF-8">
@@ -123,9 +123,9 @@ function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vs
 }
 
 export function disposeNotificationPanel() {
-    if (NotificationPanel) {
-        NotificationPanel.dispose();
-        NotificationPanel = undefined;
-    }
+  if (NotificationPanel) {
+    NotificationPanel.dispose();
+    NotificationPanel = undefined;
+  }
 }
 
