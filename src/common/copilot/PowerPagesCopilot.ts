@@ -128,7 +128,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   ) {
     this._view = webviewView;
 
-    webviewView.description = "PREVIEW"
+    webviewView.title = "Copilot In Power Pages" + (IS_DESKTOP ? "" : " [PREVIEW]");
+    webviewView.description = "PREVIEW";
     webviewView.webview.options = {
       // Allow scripts in the webview
       enableScripts: true,
