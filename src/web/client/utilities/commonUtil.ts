@@ -191,11 +191,18 @@ export function isWebfileContentLoadNeeded(fileName: string, fsPath: string): bo
         doesFileExist(fsPath) : false;
 }
 
-
 export function isPortalVersionV1(): boolean {
     return WebExtensionContext.currentSchemaVersion.toLowerCase() === portalSchemaVersion.V1;
 }
 
 export function isPortalVersionV2(): boolean {
     return WebExtensionContext.currentSchemaVersion.toLowerCase() === portalSchemaVersion.V2;
+}
+
+export function getWorkSpaceName(websiteId : string) : string {
+    if (isPortalVersionV1()) {
+        return `Site-v1-${websiteId}`;
+    } else {
+        return `Site-v2-${websiteId}`;
+    }
 }
