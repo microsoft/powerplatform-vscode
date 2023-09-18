@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import { getNonce, openWalkthrough } from "../../Utils";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { CopilotNotificationDoNotShowChecked, CopilotTryNotificationClickedEvent, CopilotWalkthroughEvent, CopilotNotificationDoNotShowUnchecked } from "../telemetry/telemetryConstants";
-import { COPILOT_NOTFICATION_DISABLED } from "../constants";
+import { COPILOT_NOTIFICATION_DISABLED } from "../constants";
 
 let NotificationPanel: vscode.WebviewPanel | undefined;
 
@@ -32,11 +32,11 @@ export async function copilotNotificationPanel(context: vscode.ExtensionContext,
       switch (message.command) {
         case 'checked':
           telemetry.sendTelemetryEvent(CopilotNotificationDoNotShowChecked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
-          context.globalState.update(COPILOT_NOTFICATION_DISABLED, true);
+          context.globalState.update(COPILOT_NOTIFICATION_DISABLED, true);
           break;
         case 'unchecked':
-            telemetry.sendTelemetryEvent(CopilotNotificationDoNotShowUnchecked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
-          context.globalState.update(COPILOT_NOTFICATION_DISABLED, false);
+          telemetry.sendTelemetryEvent(CopilotNotificationDoNotShowUnchecked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+          context.globalState.update(COPILOT_NOTIFICATION_DISABLED, false);
           break;
         case 'tryCopilot':
           telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
@@ -65,8 +65,6 @@ function createNotificationPanel(): vscode.WebviewPanel {
       enableScripts: true,
     }
   );
-
-  // context.subscriptions.push(NotificationPanel);
 
   return NotificationPanel;
 }

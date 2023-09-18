@@ -32,9 +32,9 @@ import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
-import { CopilotNotificationShown} from "../common/copilot/telemetry/telemetryConstants";
+import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
-import { COPILOT_NOTFICATION_DISABLED } from "../common/copilot/constants";
+import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -354,15 +354,15 @@ function handleWorkspaceFolderChange() {
     }
 }
 
-function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:string, countOfActivePortals: string) {
-    if(vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
+function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals: string) {
+    if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
         return;
     }
 
-    const isCopilotNotificationDisabled = _context.globalState.get(COPILOT_NOTFICATION_DISABLED, false);
+    const isCopilotNotificationDisabled = _context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
 
-    if(!isCopilotNotificationDisabled) {
-        telemetry.sendTelemetryEvent(CopilotNotificationShown, {listOfOrgs: telemetryData, countOfActivePortals});
+    if (!isCopilotNotificationDisabled) {
+        telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
         copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
     }
 

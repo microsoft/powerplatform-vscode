@@ -32,7 +32,8 @@ import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
 import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
-import { copilotNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
+import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
+import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -426,11 +427,14 @@ function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: str
         return;
     }
 
-    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
-        { orgId: orgId });
+    const isCopilotNotificationDisabled = context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
+    if (!isCopilotNotificationDisabled) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
+            { orgId: orgId });
 
-    const telemetryData = JSON.stringify({ orgId: orgId });
-    copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+        const telemetryData = JSON.stringify({ orgId: orgId });
+        copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+    }
 }
 
 export async function deactivate(): Promise<void> {
@@ -438,6 +442,7 @@ export async function deactivate(): Promise<void> {
     if (telemetry) {
         telemetry.sendInfoTelemetry("End");
     }
+    disposeNotificationPanel();
 }
 
 function isActiveDocument(fileFsPath: string): boolean {
