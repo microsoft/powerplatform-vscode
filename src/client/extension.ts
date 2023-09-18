@@ -34,6 +34,7 @@ import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 import { CopilotNotificationShown} from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
+import { COPILOT_NOTFICATION_DISABLED } from "../common/copilot/constants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -358,12 +359,12 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
         return;
     }
 
-    const isCopilotNotificationDisabled = _context.globalState.get('isCopilotNotificationDisabled', false);
+    const isCopilotNotificationDisabled = _context.globalState.get(COPILOT_NOTFICATION_DISABLED, false);
 
     if(!isCopilotNotificationDisabled) {
         telemetry.sendTelemetryEvent(CopilotNotificationShown, {listOfOrgs: telemetryData, countOfActivePortals});
         copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
-    } 
+    }
 
 }
 

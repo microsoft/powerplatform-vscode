@@ -6,6 +6,8 @@
 import * as vscode from "vscode";
 import { getNonce, openWalkthrough } from "../../Utils";
 import TelemetryReporter from "@vscode/extension-telemetry";
+import { CopilotNotificationDoNotShow, CopilotTryNotificationClickedEvent, CopilotWalkthroughEvent } from "../telemetry/telemetryConstants";
+import { COPILOT_NOTFICATION_DISABLED } from "../constants";
 
 let NotificationPanel: vscode.WebviewPanel | undefined;
 
@@ -29,19 +31,19 @@ export async function copilotNotificationPanel(context: vscode.ExtensionContext,
     async message => {
       switch (message.command) {
         case 'checked':
-          //telemetry for click on do not show again checkbox
-          context.globalState.update('isCopilotNotificationDisabled', true);
+          telemetry.sendTelemetryEvent(CopilotNotificationDoNotShow, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+          context.globalState.update(COPILOT_NOTFICATION_DISABLED, true);
           break;
         case 'unchecked':
-          context.globalState.update('isCopilotNotificationDisabled', false);
+          context.globalState.update(COPILOT_NOTFICATION_DISABLED, false);
           break;
         case 'tryCopilot':
-          //telemetry for click on try copilot button
+          telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
           vscode.commands.executeCommand('powerpages.copilot.focus')
           NotificationPanel?.dispose();
           break;
         case 'learnMore':
-          //telemetry for click on learn more link
+          telemetry.sendTelemetryEvent(CopilotWalkthroughEvent, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
           openWalkthrough(context.extensionUri);
       }
     },
