@@ -283,11 +283,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
-  // private openWalkthrough() {
-  //   const walkthroughUri = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'walkthrough', 'Copilot-In-PowerPages.md');
-  //   vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
-  // }
-
   private async authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
     return intelligenceAPIAuthentication(telemetry, sessionID)
       .then(async ({ accessToken, user, userId }) => {
