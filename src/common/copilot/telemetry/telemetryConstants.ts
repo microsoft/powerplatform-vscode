@@ -30,4 +30,5 @@ export const CopilotResponseOkFailureEvent = 'CopilotResponseOkFailureEvent';
 export const CopilotResponseFailureEventWithMessage = 'CopilotResponseFailureEventWithMessage';
 export const CopilotCodeLineCountEvent = 'CopilotCodeLineCountEvent';
 export const CopilotNotificationShown = 'CopilotNotificationShown';
-export const CopilotNotificationDoNotShow = 'CopilotNotificationDoNotShow'
+export const CopilotNotificationDoNotShowChecked = 'CopilotNotificationDoNotShowChecked'
+export const CopilotNotificationDoNotShowUnchecked = 'CopilotNotificationDoNotShowUnchecked'
