@@ -41,6 +41,7 @@ body {
 #welcome-text {
     margin-top: 12px;
     margin-bottom: 32px;
+    word-wrap: break-word;
 }
 
 img {
@@ -53,11 +54,11 @@ img {
 }
 
 button {
-    background-color: #007BFF;
-    color: #fff;
-    padding: 10px 20px;
+    background-color: var(--vscode-button-background);;
+    color: var(--vscode-button-foreground);
+    padding: 8px 11px;
     border: none;
-    border-radius: 5px;
+    border-radius: 3px;
     cursor: pointer;
     margin-bottom: 16px;
 }
@@ -80,9 +81,13 @@ button {
 }
 
 #arrow-icon {
-    margin-right: 5px;
+    margin-left: 6x;
 }
 
 input[type="checkbox"] {
     margin-right: 12px;
+    background-color: var(--vscode-checkbox-background);
+    border-radius: 3px;
+    border: var(--vscode-checkbox-border);
+    cursor: pointer;
 }
