@@ -34,9 +34,10 @@ export function getCommonHeaders(
 }
 
 //Get access token for Intelligence API service
-export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string }> {
+export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string, userId: string }> {
     let accessToken = '';
     let user = '';
+    let userId = '';
     try {
         let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
         if (!session) {
@@ -45,11 +46,14 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
         }
         accessToken = session?.accessToken ?? '';
         user = session.account.label;
+        userId = session?.account.id.split("/").pop() ??
+            session?.account.id ??
+            "";
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
 
-        if(firstTimeAuth) {
+        if (firstTimeAuth) {
             sendTelemetryEvent(telemetry, { eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID });
         }
     } catch (error) {
@@ -58,7 +62,7 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
             vscode.l10n.t("There was a permissions problem with the server"));
         sendTelemetryEvent(telemetry, { eventName: CopilotLoginFailureEvent, copilotSessionId: sessionID, error: authError });
     }
-    return { accessToken, user };
+    return { accessToken, user, userId };
 }
 
 export async function dataverseAuthentication(
