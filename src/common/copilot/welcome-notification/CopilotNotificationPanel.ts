@@ -9,9 +9,9 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 
 let NotificationPanel: vscode.WebviewPanel | undefined;
 
-export async function copilotNotificationPanel(context: vscode.ExtensionContext, telemetry: TelemetryReporter, telemetryData:string, countOfActivePortals: string) {
+export async function copilotNotificationPanel(context: vscode.ExtensionContext, telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals?: string) {
 
-  if(NotificationPanel) {
+  if (NotificationPanel) {
     NotificationPanel.dispose();
   }
 
@@ -51,46 +51,46 @@ export async function copilotNotificationPanel(context: vscode.ExtensionContext,
 }
 
 function createNotificationPanel(): vscode.WebviewPanel {
-    const NotificationPanel = vscode.window.createWebviewPanel(
-      "CopilotNotification",
-      "Copilot in Power Pages",
-      {
-        viewColumn: vscode.ViewColumn.Beside,
-        preserveFocus: true,
-      },
-      {
-        enableScripts: true,
-      }
-    );
+  const NotificationPanel = vscode.window.createWebviewPanel(
+    "CopilotNotification",
+    "Copilot in Power Pages",
+    {
+      viewColumn: vscode.ViewColumn.Beside,
+      preserveFocus: true,
+    },
+    {
+      enableScripts: true,
+    }
+  );
 
-    // context.subscriptions.push(NotificationPanel);
+  // context.subscriptions.push(NotificationPanel);
 
-    return NotificationPanel;
-  }
+  return NotificationPanel;
+}
 
-  function getWebviewURIs(context: vscode.ExtensionContext, NotificationPanel: vscode.WebviewPanel): { notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri , arrowImageUri: vscode.Uri} {
+function getWebviewURIs(context: vscode.ExtensionContext, NotificationPanel: vscode.WebviewPanel): { notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri, arrowImageUri: vscode.Uri } {
 
-    const srcPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "welcome-notification");
+  const srcPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "welcome-notification");
 
-    const notificationCssPath = vscode.Uri.joinPath(srcPath, "copilotNotification.css");
-    const notificationCssUri = NotificationPanel.webview.asWebviewUri(notificationCssPath);
+  const notificationCssPath = vscode.Uri.joinPath(srcPath, "copilotNotification.css");
+  const notificationCssUri = NotificationPanel.webview.asWebviewUri(notificationCssPath);
 
-    const notificationJsPath = vscode.Uri.joinPath(srcPath, "copilotNotification.js");
-    const notificationJsUri = NotificationPanel.webview.asWebviewUri(notificationJsPath );
+  const notificationJsPath = vscode.Uri.joinPath(srcPath, "copilotNotification.js");
+  const notificationJsUri = NotificationPanel.webview.asWebviewUri(notificationJsPath);
 
-    const copilotImagePath = vscode.Uri.joinPath(srcPath, "notification.svg");
-    const copilotImageUri = NotificationPanel.webview.asWebviewUri(copilotImagePath );
+  const copilotImagePath = vscode.Uri.joinPath(srcPath, "notification.svg");
+  const copilotImageUri = NotificationPanel.webview.asWebviewUri(copilotImagePath);
 
-    const arrowImagePath = vscode.Uri.joinPath(srcPath, "arrow.svg");
-    const arrowImageUri = NotificationPanel.webview.asWebviewUri(arrowImagePath );
+  const arrowImagePath = vscode.Uri.joinPath(srcPath, "arrow.svg");
+  const arrowImageUri = NotificationPanel.webview.asWebviewUri(arrowImagePath);
 
-    return { notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri };
-  }
+  return { notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri };
+}
 
 
-function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri, arrowImageUri:vscode.Uri, nonce: string, webview: vscode.Webview) {
+function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri, arrowImageUri: vscode.Uri, nonce: string, webview: vscode.Webview) {
 
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
       <html lang="en">
       <head>
           <meta charset="UTF-8">
@@ -118,12 +118,12 @@ function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vs
       <script type="module" nonce="${nonce}" src="${notificationJsUri}"></script>
     </body>
       </html>`;
-  }
+}
 
 export function disposeNotificationPanel() {
   if (NotificationPanel) {
-      NotificationPanel.dispose();
-      NotificationPanel = undefined;
+    NotificationPanel.dispose();
+    NotificationPanel = undefined;
   }
 }
 
