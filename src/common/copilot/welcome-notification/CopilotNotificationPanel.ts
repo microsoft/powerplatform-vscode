@@ -18,7 +18,7 @@ export async function copilotNotificationPanel(context: vscode.ExtensionContext,
   NotificationPanel = createNotificationPanel();
 
   console.log(telemetry, telemetryData, countOfActivePortals)
-    
+
   const { notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri } = getWebviewURIs(context, NotificationPanel);
 
   const nonce = getNonce();
@@ -62,9 +62,9 @@ function createNotificationPanel(): vscode.WebviewPanel {
         enableScripts: true,
       }
     );
-  
+
     // context.subscriptions.push(NotificationPanel);
-  
+
     return NotificationPanel;
   }
 
@@ -74,7 +74,7 @@ function createNotificationPanel(): vscode.WebviewPanel {
 
     const notificationCssPath = vscode.Uri.joinPath(srcPath, "copilotNotification.css");
     const notificationCssUri = NotificationPanel.webview.asWebviewUri(notificationCssPath);
-  
+
     const notificationJsPath = vscode.Uri.joinPath(srcPath, "copilotNotification.js");
     const notificationJsUri = NotificationPanel.webview.asWebviewUri(notificationJsPath );
 
@@ -83,10 +83,10 @@ function createNotificationPanel(): vscode.WebviewPanel {
 
     const arrowImagePath = vscode.Uri.joinPath(srcPath, "arrow.svg");
     const arrowImageUri = NotificationPanel.webview.asWebviewUri(arrowImagePath );
-  
+
     return { notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri };
   }
-  
+
 
 function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri, arrowImageUri:vscode.Uri, nonce: string, webview: vscode.Webview) {
 
@@ -102,22 +102,24 @@ function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vs
       </head>
       <body>
       <div class="container">
+        <div class="container-text">
         <h1 id="heading">Let Copilot help you code</h1>
         <p id="welcome-text">Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</p>
         <button id="try-button">Try Copilot for Power Pages</button>
         <a href="#" class="walkthrough-content" id="walkthroughLink"> <img src="${arrowImageUri}" id="arrow-icon"> <span id="walk-text">Learn more about Copilot</span></a>
-        <img src="${copilotImageUri}" alt="Image">
-        <div class="checkbox-container">
-          <input type="checkbox" id="checkbox">
-          <label for="checkbox">Do not show again</label>
         </div>
+        <img src="${copilotImageUri}" alt="Image">
       </div>
-     
+      <div class="checkbox-container">
+      <input type="checkbox" id="checkbox">
+      <label for="checkbox">Do not show again</label>
+    </div>
+
       <script type="module" nonce="${nonce}" src="${notificationJsUri}"></script>
     </body>
       </html>`;
   }
- 
+
 export function disposeNotificationPanel() {
   if (NotificationPanel) {
       NotificationPanel.dispose();

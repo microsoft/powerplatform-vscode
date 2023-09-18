@@ -12,21 +12,35 @@ body {
 
 .container {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: center;
+    justify-content: space-between;
     margin-left: 32px;
     margin-right: 32px;
+    margin-top: 159px;
 }
+
+.container-text {
+    flex: 1;
+    margin-right: 20px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 650px) {
+    .container {
+      flex-direction: column; /* Stack elements on top of each other */
+      align-items: center;
+    }
+
+    .container-text {
+      margin-right: 0; /* Remove margin for smaller screens */
+    }
+
+  }
 
 #welcome-text {
     margin-top: 12px;
     margin-bottom: 32px;
-    text-align: center;
-}
-
-#heading {
-    margin-top: 130px;
-    text-align: center;
 }
 
 img {
@@ -52,7 +66,7 @@ button {
     padding: 6px 0px 6px 0px;
     margin-bottom: 68px;
     text-decoration: none;
-    display: inline-flex;
+    display: block;
     align-items: center;
 
 }
