@@ -12,7 +12,7 @@ import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
-import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
+import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
@@ -219,7 +219,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
         case "walkthrough": {
           sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID, orgId: orgID });
-          this.openWalkthrough();
+          openWalkthrough(this._extensionUri);
           break;
         }
         case "codeLineCount": {
@@ -282,11 +282,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       intelligenceApiToken = "";
       userName = "";
     }
-  }
-
-  private openWalkthrough() {
-    const walkthroughUri = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'walkthrough', 'Copilot-In-PowerPages.md');
-    vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
   }
 
   private async authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
