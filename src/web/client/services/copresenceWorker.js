@@ -140,10 +140,7 @@ async function loadContainer(config, id, swpId, file) {
             }
         });
     } catch (error) {
-        WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_AZURE_FLUID_SERVICE_LOAD_ERROR,
-            error
-        );
+        // TODO: add telemetry
     }
 }
 
