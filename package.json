@@ -336,6 +336,10 @@
         "icon": "$(arrow-up)"
       },
       {
+        "command": "powerpages.websitePanel.uploadWebsiteForceAll",
+        "title": "Upload Website (force all)"
+      },
+      {
         "command": "microsoft-powerapps-portals.webpage",
         "category": "Powerpages",
         "title": "New Webpage"
@@ -700,6 +704,10 @@
           "when": "never"
         },
         {
+          "command": "powerpages.websitePanel.uploadWebsiteForceAll",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.authPanel.refresh",
           "when": "never"
         },
@@ -942,13 +950,45 @@
           "command": "powerpages.collaboration.openMail",
           "group": "inline",
           "when": "viewItem == userNode"
+        },
+        {
+          "submenu": "microsoft-powerpages-download"
+        },
+        {
+          "submenu": "microsoft-powerpages-upload"
+        }
+
+      ],
+      "microsoft-powerpages-download":[
+        {
+          "command": "powerpages.websitePanel.downloadWebsite",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel"
+        }
+      ],
+      "microsoft-powerpages-upload":[
+        {
+          "command": "powerpages.websitePanel.uploadWebsite",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel"
+        },
+        {
+          "command": "powerpages.websitePanel.uploadWebsiteForceAll",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel"
         }
       ]
+
     },
     "submenus": [
       {
         "id": "microsoft-powerapps-portals.powerpages",
         "label": "Power Pages"
+      },
+      {
+        "id": "microsoft-powerpages-download",
+        "label": "Download"
+      },
+      {
+        "id": "microsoft-powerpages-upload",
+        "label": "Upload"
       },
       {
         "id": "microsoft-powerapps-portals.powerpages-copilot",
