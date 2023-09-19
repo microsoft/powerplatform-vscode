@@ -17,8 +17,6 @@ import {
     schemaKey,
 } from "../schema/constants";
 import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
-import { getWorkSpaceName } from "./commonUtil";
-import { v4 as uuidv4 } from 'uuid'
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -244,42 +242,4 @@ export function isWebFileWithLazyLoad(fsPath: string): boolean {
         fsPath.includes(WebExtensionContext.rootDirectory.fsPath) &&
         fsPath.includes(SCHEMA_WEBFILE_FOLDER_NAME) &&
         !isPreloadedContent;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getOrCreateSharedWorkspace(config: any) {
-    const getWorkspaceResponse = await fetch(
-        `${config.dataverseOrgUrl}/api/data/v9.2/sharedworkspaces`,
-        {
-            headers: config.headers,
-            method: "GET",
-        }
-    );
-
-    const getWorkspaceResult = await getWorkspaceResponse.json();
-
-    if (getWorkspaceResult.value.length) {
-        for (const workspace of await getWorkspaceResult.value) {
-            if (workspace.name === getWorkSpaceName(config.websiteid)) {
-                return workspace;
-            }
-        }
-    }
-
-    const createWorkspaceResponse = await fetch(
-        `${config.dataverseOrgUrl}/api/data/v9.2/sharedworkspaces`,
-        {
-            headers: {
-                ...config.headers,
-                Prefer: "return=representation",
-            },
-            method: "POST",
-            body: JSON.stringify({
-                name: getWorkSpaceName(config.websiteid),
-                sharedworkspaceid: uuidv4(),
-            }),
-        }
-    );
-
-    return await createWorkspaceResponse.json();
 }

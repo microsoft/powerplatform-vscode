@@ -21,7 +21,7 @@ import {
     getWebsiteIdToLcidMap,
     getWebsiteLanguageIdToPortalLanguageIdMap,
 } from "./utilities/schemaHelperUtil";
-import { getCustomRequestURL, getOrCreateSharedWorkspace } from "./utilities/urlBuilderUtil";
+import { getCustomRequestURL } from "./utilities/urlBuilderUtil";
 import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
@@ -29,8 +29,6 @@ import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 import { isMultifileEnabled } from "./utilities/commonUtil";
-import { TreeWebViewProvider } from "./webViews/TreeWebViewProvider";
-import { UserDataMap } from "./context/userDataMap";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -58,8 +56,6 @@ export interface IWebExtensionContext {
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
     showMultifileInVSCode: boolean;
     extensionActivationTime: number;
-    treeWebView: TreeWebViewProvider;
-    containerId: string;
 
     // Org specific details
     dataverseAccessToken: string;
@@ -85,7 +81,6 @@ class WebExtensionContext implements IWebExtensionContext {
     private _vscodeWorkspaceState: Map<string, IEntityInfo>;
     private _languageIdCodeMap: Map<string, string>;
     private _portalLanguageIdCodeMap: Map<string, string>;
-    private _sharedWorkSpaceMap: Map<string, string>;
     private _websiteLanguageIdToPortalLanguageMap: Map<string, string>;
     private _websiteIdToLanguage: Map<string, string>;
     private _rootDirectory: vscode.Uri;
@@ -95,9 +90,6 @@ class WebExtensionContext implements IWebExtensionContext {
     private _defaultFileUri: vscode.Uri;
     private _showMultifileInVSCode: boolean;
     private _extensionActivationTime: number;
-    private _treeWebView: TreeWebViewProvider;
-    private _containerId: string;
-    private _connectedUsers: UserDataMap;
     private _dataverseAccessToken: string;
     private _entityDataMap: EntityDataMap;
     private _isContextSet: boolean;
@@ -120,9 +112,6 @@ class WebExtensionContext implements IWebExtensionContext {
     }
     public get urlParametersMap() {
         return this._urlParametersMap;
-    }
-    public get sharedWorkSpaceMap() {
-        return this._sharedWorkSpaceMap;
     }
     public get vscodeWorkspaceState() {
         return this._vscodeWorkspaceState;
@@ -156,21 +145,6 @@ class WebExtensionContext implements IWebExtensionContext {
     }
     public get showMultifileInVSCode() {
         return this._showMultifileInVSCode;
-    }
-    public get treeWebView() {
-        return this._treeWebView;
-    }
-    public set treeWebView(treeWebView: TreeWebViewProvider) {
-        this._treeWebView = treeWebView;
-    }
-    public get containerId() {
-        return this._containerId;
-    }
-    public set containerId(containerId: string) {
-        this._containerId = containerId;
-    }
-    public get connectedUsers() {
-        return this._connectedUsers;
     }
     public get extensionActivationTime() {
         return this._extensionActivationTime
@@ -214,7 +188,6 @@ class WebExtensionContext implements IWebExtensionContext {
         this._websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
         this._websiteIdToLanguage = new Map<string, string>();
         this._urlParametersMap = new Map<string, string>();
-        this._sharedWorkSpaceMap = new Map<string, string>();
         this._vscodeWorkspaceState = new Map<string, IEntityInfo>();
         this._entitiesFolderNameMap = new Map<string, string>();
         this._defaultEntityType = "";
@@ -226,9 +199,6 @@ class WebExtensionContext implements IWebExtensionContext {
         this._defaultFileUri = vscode.Uri.parse(``);
         this._showMultifileInVSCode = false;
         this._extensionActivationTime = new Date().getTime();
-        this._treeWebView = new TreeWebViewProvider();
-        this._containerId = "";
-        this._connectedUsers = new UserDataMap();
         this._isContextSet = false;
         this._currentSchemaVersion = "";
         this._websiteLanguageCode = "";
@@ -353,14 +323,6 @@ class WebExtensionContext implements IWebExtensionContext {
         }
 
         this._dataverseAccessToken = accessToken;
-
-        const websiteid = this.urlParametersMap.get(
-            Constants.queryParameters.WEBSITE_ID
-        ) as string;
-
-        const headers = getCommonHeaders(accessToken);
-
-        await this.populateSharedworkspace(headers, dataverseOrgUrl, websiteid);
     }
 
     public async updateFileDetailsInContext(
@@ -602,49 +564,6 @@ class WebExtensionContext implements IWebExtensionContext {
         }
     }
 
-    private async populateSharedworkspace(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        headers: any,
-        dataverseOrgUrl: string,
-        websiteid: string
-    ) {
-        const sharedworkspace = await getOrCreateSharedWorkspace({
-            headers,
-            dataverseOrgUrl,
-            websiteid,
-        });
-
-        const sharedWorkSpaceParamsMap = new Map<string, string>();
-        for (const key in sharedworkspace) {
-            sharedWorkSpaceParamsMap.set(
-                String(key).trim().toLocaleLowerCase(),
-                String(sharedworkspace[key]).trim()
-            );
-        }
-
-        this._sharedWorkSpaceMap = sharedWorkSpaceParamsMap;
-    }
-
-    public async updateConnectedUsersInContext(
-        containerId: string,
-        fileName: string,
-        filePath: string,
-        userName: string,
-        userId: string
-    ) {
-        this.connectedUsers.setUserData(
-            containerId,
-            fileName,
-            filePath,
-            userName,
-            userId
-        );
-    }
-
-    public async removeConnectedUserInContext(userId: string) {
-        this.connectedUsers.removeUser(userId);
-    }
-
     private async setWebsiteLanguageCode() {
         const lcid =
             this.websiteIdToLanguage.get(
@@ -679,7 +598,7 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     /**
-    * Store a value maintained in Extension context workspaceState.
+    * Store a value maintained in Extension context workspaceState. 
     *
     * *Note* that using `undefined` as value removes the key from the underlying
     * storage.
