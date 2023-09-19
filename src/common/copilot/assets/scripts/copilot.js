@@ -260,10 +260,10 @@
     const suggestedPrompt = document.createElement("div");
     suggestedPrompt.classList.add("suggested-prompts");
 
-    const formPrompt = 'How do I write custom validation in table form?';
-    const webApiPrompt = 'How do I create a web API?';
-    const listPrompt = 'How can I customize a table list with custom Js?';
-    
+    const formPrompt = 'Write JavaScript code for form field validation to check phone field value is in the valid format.';
+    const webApiPrompt = 'Write web API code to query active contact records.';
+    const listPrompt = 'Write JavaScript code to highlight the row where email field is empty in table list.';
+
     suggestedPrompt.innerHTML = `<p class="suggested-title">Here are a few suggestions to get you started</p>
                                 <a href='#' class="suggested-prompt">
                                     ${starIconSvg}
@@ -434,7 +434,7 @@
 
         welcomeScreen = setWelcomeScreen();
         break;
-      } 
+      }
       case "isLoggedIn": {
         isLoggedIn = message.value;
         break;

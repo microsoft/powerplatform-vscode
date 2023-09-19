@@ -48,6 +48,9 @@ export const VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME =
 // Multi-file feature constants
 export const MULTI_FILE_FEATURE_SETTING_NAME = "enableMultiFileFeature";
 
+// Co-presence feature constants
+export const CO_PRESENCE_FEATURE_SETTING_NAME = "enableCoPresenceFeature";
+
 export enum initializationEntityName {
     WEBSITE = "websites",
     WEBSITELANGUAGE = "websitelanguages",
