@@ -21,6 +21,10 @@ export function getEntityFetchQuery(entity: string, useRegularFetchQuery = false
     );
 }
 
+export function getLogicalEntityParameter(entity: string) {
+    return getEntity(entity)?.get(schemaEntityKey.DATAVERSE_LOGICAL_ENTITY_NAME);
+}
+
 export function getPortalSchema(schema: string) {
     if (
         schema.toLowerCase() ===

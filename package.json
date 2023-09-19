@@ -441,6 +441,16 @@
           "type": "boolean",
           "markdownDescription": "Enable multiple file view in Visual Studio Code (Web extension only)",
           "default": true
+        },
+        "powerPlatform.experimental.enableWebCopilot": {
+          "type": "boolean",
+          "markdownDescription": "Enable copilot in Visual Studio Code (Web extension)",
+          "default": true
+        },
+        "powerPlatform.experimental.enableCoPresenceFeature": {
+          "type": "boolean",
+          "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
+          "default": false
         }
       }
     },
@@ -755,7 +765,7 @@
         },
         {
           "command": "powerpages.copilot.clearConversation",
-          "when": "!virtualWorkspace && view ==  powerpages.copilot",
+          "when": "view == powerpages.copilot",
           "group": "navigation"
         }
       ],
@@ -853,7 +863,14 @@
           "name": "Copilot In Power Pages",
           "initialSize": 6,
           "visibility": "visible",
-          "when": "!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled"
+          "when": "(!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot)"
+        }
+      ],
+      "explorer": [
+        {
+          "id": "powerpages.treeWebView",
+          "name": "Power Pages Actions",
+          "when": "isWeb && config.powerPlatform.experimental.enableCoPresenceFeature"
         }
       ],
       "explorer": [

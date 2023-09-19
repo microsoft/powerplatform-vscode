@@ -18,7 +18,7 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { convertContentToString } from "./utilities/commonUtil";
+import { convertContentToString, isCoPresenceEnabled } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
@@ -31,6 +31,10 @@ import {
 import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
 import { PowerPagesNavigationProvider } from "./webViews/powerPagesNavigationProvider";
+import * as copilot from "../../common/copilot/PowerPagesCopilot";
+import { IOrgInfo } from "../../common/copilot/model";
+import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
+import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -130,6 +134,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                     },
                                     async () => {
                                         await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
+                                        registerCopilot(context);
                                     }
                                 );
 
@@ -179,6 +184,8 @@ export function activate(context: vscode.ExtensionContext): void {
     processWorkspaceStateChanges(context);
 
     processWillSaveDocument(context);
+
+    processWillStartCollaboartion();
 
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
@@ -262,6 +269,12 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
             }
         })
     );
+}
+
+export function processWillStartCollaboartion() {
+    if (isCoPresenceEnabled()) {
+        // TODO: Add copresence logic
+    }
 }
 
 export async function showSiteVisibilityDialog() {
@@ -387,11 +400,59 @@ export function showWalkthrough(
     );
 }
 
+export function registerCopilot(context: vscode.ExtensionContext) {
+    try {
+        const orgInfo = {
+            orgId: WebExtensionContext.urlParametersMap.get(
+                queryParameters.ORG_ID
+            ) as string,
+            environmentName: "",
+            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string
+        } as IOrgInfo;
+
+        const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
+            context,
+            WebExtensionContext.telemetry.getTelemetryReporter(),
+            undefined,
+            orgInfo);
+
+        context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel, {
+            webviewOptions: {
+                retainContextWhenHidden: true,
+            }
+        }));
+
+        showNotificationForCopilot(context, orgInfo.orgId);
+    } catch (error) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED,
+            registerCopilot.name,
+            (error as Error)?.message,
+            error as Error);
+    }
+}
+
+function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: string) {
+    if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.enableWebCopilot') === false) {
+        return;
+    }
+
+    const isCopilotNotificationDisabled = context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
+    if (!isCopilotNotificationDisabled) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
+            { orgId: orgId });
+
+        const telemetryData = JSON.stringify({ orgId: orgId });
+        copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+    }
+}
+
 export async function deactivate(): Promise<void> {
     const telemetry = WebExtensionContext.telemetry;
     if (telemetry) {
         telemetry.sendInfoTelemetry("End");
     }
+    disposeNotificationPanel();
 }
 
 function isActiveDocument(fileFsPath: string): boolean {
