@@ -93,6 +93,18 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
                     vscode.commands.executeCommand("pacCLI.pacPaportalDownload",  '7b9d41f2-9748-ee11-be6f-6045bd072a16' , websiteDownloadPath);
                 }
             }),
+            vscode.commands.registerCommand("powerpages.websitePanel.uploadWebsite", async () => {
+                let uploadPath: string | undefined;
+                const modelVersion = 1 // get model version from
+                if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+                    uploadPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+                }
+                if (uploadPath && uploadPath.length > 0) {
+                    const websiteUploadPath = this.removeLeadingSlash(uploadPath);
+                    vscode.window.showInformationMessage(vscode.l10n.t("Uploading website..."));
+                    vscode.commands.executeCommand("pacCLI.pacPaportalDownload", websiteUploadPath, modelVersion);
+                }
+            }),
             // vscode.commands.registerCommand("pacCLI.authPanel.clearAuthProfile", async () => {
             //     const confirm = vscode.l10n.t("Confirm");
             //     const confirmResult = await vscode.window.showWarningMessage(

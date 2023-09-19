@@ -302,6 +302,11 @@
         "icon": "$(arrow-down)"
       },
       {
+        "command": "powerpages.websitePanel.uploadWebsite",
+        "title": "Upload Website",
+        "icon": "$(arrow-up)"
+      },
+      {
         "command": "microsoft-powerapps-portals.webpage",
         "category": "Powerpages",
         "title": "New Webpage"
@@ -614,6 +619,10 @@
           "when": "never"
         },
         {
+          "command": "powerpages.websitePanel.uploadWebsite",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.authPanel.refresh",
           "when": "never"
         },
@@ -835,6 +844,11 @@
         },
         {
           "command": "powerpages.websitePanel.downloadWebsite",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel",
+          "group": "inline"
+        },
+        {
+          "command": "powerpages.websitePanel.uploadWebsite",
           "when": "!virtualWorkspace && view == powerpages.websitePanel",
           "group": "inline"
         }
