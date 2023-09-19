@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import {
     dataverseAuthentication,
     getCommonHeaders,
+    graphClientAuthentication,
 } from "./common/authenticationProvider";
 import * as Constants from "./common/constants";
 import {
@@ -303,6 +304,9 @@ class WebExtensionContext implements IWebExtensionContext {
             dataverseOrgUrl,
             firstTimeAuth
         );
+
+        const graphToken = await graphClientAuthentication(firstTimeAuth);
+        console.log("graphToken: ", graphToken);
 
         if (accessToken.length === 0) {
             // re-set all properties to default values
