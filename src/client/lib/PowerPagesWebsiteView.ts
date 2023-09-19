@@ -83,10 +83,7 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
             vscode.window.registerTreeDataProvider("powerpages.websitePanel", this),
             vscode.commands.registerCommand("powerpages.websitePanel.refresh", () => this.refresh()),
             vscode.commands.registerCommand("powerpages.websitePanel.downloadWebsite", async () => {
-                let downloadPath: string | undefined;
-                if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-                    downloadPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-                }
+                const downloadPath: string | undefined = this.getCurrentWorkspacePath();
                 if (downloadPath && downloadPath.length > 0) {
                     const websiteDownloadPath = this.removeLeadingSlash(downloadPath);
                     vscode.window.showInformationMessage(vscode.l10n.t("Downloading website..."));
@@ -94,11 +91,9 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
                 }
             }),
             vscode.commands.registerCommand("powerpages.websitePanel.uploadWebsite", async () => {
-                let uploadPath: string | undefined;
+                const uploadPath: string | undefined = this.getCurrentWorkspacePath();
                 const modelVersion = 1 // get model version from
-                if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-                    uploadPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-                }
+            
                 if (uploadPath && uploadPath.length > 0) {
                     const websiteUploadPath = this.removeLeadingSlash(uploadPath);
                     vscode.window.showInformationMessage(vscode.l10n.t("Uploading website..."));
@@ -106,17 +101,22 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
                 }
             }),
             vscode.commands.registerCommand("powerpages.websitePanel.uploadWebsiteForceAll", async () => {
-                let uploadPath: string | undefined;
+                const uploadPath: string | undefined = this.getCurrentWorkspacePath();
                 const modelVersion = 1 // get model version from
-                if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-                    uploadPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-                }
                 if (uploadPath && uploadPath.length > 0) {
                     const websiteUploadPath = this.removeLeadingSlash(uploadPath);
                     vscode.window.showInformationMessage(vscode.l10n.t("Uploading website (force all)..."));
                     vscode.commands.executeCommand("pacCLI.pacPaportalUploadForce", websiteUploadPath, modelVersion);
                 }
             }),
+            vscode.commands.registerCommand("powerpages.websitePanel.bootstrap-migration", async () => {
+                const uploadPath: string | undefined = this.getCurrentWorkspacePath();
+                if (uploadPath && uploadPath.length > 0) {
+                    const websiteUploadPath = this.removeLeadingSlash(uploadPath);
+                    vscode.window.showInformationMessage(vscode.l10n.t("Bootstrap Migration..."));
+                    vscode.commands.executeCommand("pacCLI.pacPaportalBootstrapMigration", websiteUploadPath);
+                }
+            })
             // vscode.commands.registerCommand("pacCLI.authPanel.clearAuthProfile", async () => {
             //     const confirm = vscode.l10n.t("Confirm");
             //     const confirmResult = await vscode.window.showWarningMessage(
@@ -175,6 +175,13 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
         }
         return path;
     }
+
+    private getCurrentWorkspacePath(): string | undefined {
+        if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+          return vscode.workspace.workspaceFolders[0].uri.fsPath;
+        }
+        return undefined;
+      }
 }
 
 class AuthProfileTreeItem extends vscode.TreeItem {

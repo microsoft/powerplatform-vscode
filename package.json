@@ -311,6 +311,10 @@
         "title": "Upload Website (force all)"
       },
       {
+        "command": "powerpages.websitePanel.bootstrap-migration",
+        "title": "Bootstrap Migration"
+      },
+      {
         "command": "microsoft-powerapps-portals.webpage",
         "category": "Powerpages",
         "title": "New Webpage"
@@ -627,6 +631,10 @@
           "when": "never"
         },
         {
+          "command": "powerpages.websitePanel.bootstrap-migration",
+          "when": "never"
+        },
+        {
           "command": "powerpages.websitePanel.uploadWebsiteForceAll",
           "when": "never"
         },
@@ -859,6 +867,10 @@
           "command": "powerpages.websitePanel.uploadWebsite",
           "when": "!virtualWorkspace && view == powerpages.websitePanel",
           "group": "inline"
+        },
+        {
+          "command": "powerpages.websitePanel.bootstrap-migration",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel"
         },
         {
           "submenu": "microsoft-powerpages-download"
