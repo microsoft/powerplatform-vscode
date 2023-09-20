@@ -93,3 +93,8 @@ export function getExtensionVersion(): string {
 export function getExtensionType(): string {
   return vscode.env.uiKind === vscode.UIKind.Desktop ? "Desktop" : "Web";
 }
+
+export function openWalkthrough(extensionUri: vscode.Uri) {
+  const walkthroughUri = vscode.Uri.joinPath(extensionUri, 'src', 'common', 'copilot', 'assets', 'walkthrough', 'Copilot-In-PowerPages.md');
+  vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
+}

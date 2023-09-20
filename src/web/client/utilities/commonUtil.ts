@@ -6,6 +6,7 @@
 import * as vscode from "vscode";
 import {
     BASE_64,
+    CO_PRESENCE_FEATURE_SETTING_NAME,
     DATA,
     MULTI_FILE_FEATURE_SETTING_NAME,
     NO_CONTENT,
@@ -130,6 +131,25 @@ export function isMultifileEnabled() {
     return isMultifileEnabled as boolean;
 }
 
+export function isCoPresenceEnabled() {
+    const isCoPresenceEnabled = vscode.workspace
+        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
+        .get(CO_PRESENCE_FEATURE_SETTING_NAME);
+
+    if (!isCoPresenceEnabled) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED
+        );
+    }
+    else {
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED
+        );
+    }
+
+    return isCoPresenceEnabled as boolean;
+}
+
 /**
  * Utility function. Check if it's Null Or Undefined
  * @param object object to be validated
@@ -177,4 +197,12 @@ export function isPortalVersionV1(): boolean {
 
 export function isPortalVersionV2(): boolean {
     return WebExtensionContext.currentSchemaVersion.toLowerCase() === portalSchemaVersion.V2;
+}
+
+export function getWorkSpaceName(websiteId : string) : string {
+    if (isPortalVersionV1()) {
+        return `Site-v1-${websiteId}`;
+    } else {
+        return `Site-v2-${websiteId}`;
+    }
 }
