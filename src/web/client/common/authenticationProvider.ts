@@ -34,7 +34,7 @@ export function getCommonHeaders(
 }
 
 //Get access token for Intelligence API service
-export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string, userId: string }> {
+export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string, orgId: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string, userId: string }> {
     let accessToken = '';
     let user = '';
     let userId = '';
@@ -54,13 +54,13 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
         }
 
         if (firstTimeAuth) {
-            sendTelemetryEvent(telemetry, { eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID });
+            sendTelemetryEvent(telemetry, { eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID, orgId: orgId });
         }
     } catch (error) {
         const authError = (error as Error)
         showErrorDialog(vscode.l10n.t("Authorization Failed. Please run again to authorize it"),
             vscode.l10n.t("There was a permissions problem with the server"));
-        sendTelemetryEvent(telemetry, { eventName: CopilotLoginFailureEvent, copilotSessionId: sessionID, error: authError });
+        sendTelemetryEvent(telemetry, { eventName: CopilotLoginFailureEvent, copilotSessionId: sessionID, orgId: orgId, error: authError });
     }
     return { accessToken, user, userId };
 }
