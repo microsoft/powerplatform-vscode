@@ -16,7 +16,7 @@ import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, o
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
@@ -327,6 +327,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+      sendTelemetryEvent(this.telemetry, {eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID});
       this.sendMessageToWebview({ type: 'Unavailable' });
     } else {
       this.sendMessageToWebview({ type: 'Available' });
