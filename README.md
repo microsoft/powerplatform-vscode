@@ -20,8 +20,8 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Release Notes
 
-2.0.10:
-  - pac CLI 1.27.5 (Auguest refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+2.0.11:
+  - pac CLI 1.27.6 (Auguest refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - (Preview) Added 'Copilot in Power Pages' to Web Extension
 
 2.0.7:
