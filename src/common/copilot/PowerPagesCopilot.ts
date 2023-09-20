@@ -43,6 +43,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   private loginButtonRendered = false;
   private telemetry: ITelemetry;
   private aibEndpoint: string | null = null;
+  private environment  = '';
 
   constructor(
     private readonly _extensionUri: vscode.Uri,
@@ -209,11 +210,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           if (data.value === "thumbsUp") {
 
             sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
-            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry)
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.environment)
           } else if (data.value === "thumbsDown") {
 
             sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
-            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry)
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.environment)
           }
           break;
         }
@@ -325,13 +326,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     sessionID = uuidv4(); // Generate a new session ID on org change
     sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
-    this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
-    if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+    const result = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
+    if (result === COPILOT_UNAVAILABLE) {
       this.sendMessageToWebview({ type: 'Unavailable' });
     } else {
-      this.sendMessageToWebview({ type: 'Available' });
+        const { intelligenceEndpoint, environment } = result;
+        this.aibEndpoint = intelligenceEndpoint;
+        this.environment = environment;
     }
-
+  
     if (IS_DESKTOP && this._view?.visible) {
       showConnectedOrgMessage(environmentName, activeOrgUrl);
     }

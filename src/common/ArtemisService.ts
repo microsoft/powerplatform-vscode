@@ -16,7 +16,7 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
   const artemisResponse = await fetchIslandInfo(endpoints, telemetry, sessionID);
 
   if (!artemisResponse) {
-    return null;
+    return COPILOT_UNAVAILABLE;
   }
 
   const { geoName, environment, clusterNumber } = artemisResponse[0];
@@ -28,7 +28,7 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
 
   const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${'il' + clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
 
-  return intelligenceEndpoint;
+  return {intelligenceEndpoint, environment};
 
 }
 
