@@ -243,7 +243,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
       this.handleOrgChangeSuccess.call(this, pacOutput.Results);
 
-      intelligenceAPIAuthentication(this.telemetry, sessionID).then(({ accessToken, user, userId }) => {
+      intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) => {
         this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId);
       });
 
@@ -262,7 +262,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       }
       const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
       pacAuthCreateOutput && pacAuthCreateOutput.Status === PAC_SUCCESS
-        ? intelligenceAPIAuthentication(this.telemetry, sessionID).then(({ accessToken, user, userId }) =>
+        ? intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) =>
           this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId)
         )
         : vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
@@ -285,7 +285,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   }
 
   private async authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
-    return intelligenceAPIAuthentication(telemetry, sessionID)
+    return intelligenceAPIAuthentication(telemetry, sessionID, orgID)
       .then(async ({ accessToken, user, userId }) => {
         intelligenceApiToken = accessToken;
         userName = getUserName(user);
