@@ -266,17 +266,23 @@
 
     suggestedPrompt.innerHTML = `<p class="suggested-title">Here are a few suggestions to get you started</p>
                                 <a href='#' class="suggested-prompt">
+                                <span class="icon-container">
                                     ${starIconSvg}
+                                </span>
                                     ${formPrompt}
                                 </a>
                                 <br>
                                 <a href='#' class="suggested-prompt">
+                                <span class="icon-container">
                                     ${starIconSvg}
+                                </span>
                                     ${webApiPrompt}
                                 </a>
                                 <br>
                                 <a href='#' class="suggested-prompt">
+                                <span class="icon-container">
                                     ${starIconSvg}
+                                </span>
                                     ${listPrompt}
                                 </a>`;
 

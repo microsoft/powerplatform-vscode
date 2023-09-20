@@ -16,7 +16,7 @@ import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, o
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
@@ -243,7 +243,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
       this.handleOrgChangeSuccess.call(this, pacOutput.Results);
 
-      intelligenceAPIAuthentication(this.telemetry, sessionID).then(({ accessToken, user, userId }) => {
+      intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) => {
         this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId);
       });
 
@@ -262,7 +262,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       }
       const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
       pacAuthCreateOutput && pacAuthCreateOutput.Status === PAC_SUCCESS
-        ? intelligenceAPIAuthentication(this.telemetry, sessionID).then(({ accessToken, user, userId }) =>
+        ? intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) =>
           this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId)
         )
         : vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
@@ -285,7 +285,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   }
 
   private async authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
-    return intelligenceAPIAuthentication(telemetry, sessionID)
+    return intelligenceAPIAuthentication(telemetry, sessionID, orgID)
       .then(async ({ accessToken, user, userId }) => {
         intelligenceApiToken = accessToken;
         userName = getUserName(user);
@@ -327,6 +327,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+      sendTelemetryEvent(this.telemetry, {eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID});
       this.sendMessageToWebview({ type: 'Unavailable' });
     } else {
       this.sendMessageToWebview({ type: 'Available' });
