@@ -305,6 +305,8 @@ hr {
   margin: 16px 0px;
 }
 
-.star-icon {
-  margin-right: 4px;
+
+.icon-container {
+  width: 14px; /* Set a fixed width for the icon */
+  margin-right: 4px; /* Add some spacing between icon and text */
 }
