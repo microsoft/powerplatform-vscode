@@ -156,7 +156,7 @@ body {
   margin: 10px 0px;
   border-radius: 4px;
   background-color: var(--vscode-sideBar-background)
-  
+
 }
 
 .code-pre {
@@ -236,7 +236,7 @@ li:before {
   align-items: center;
   justify-content: space-between;
   padding: 6px 20px 12px 20px;
-  background-color: var(--vscode-sideBar-background);
+  background-color: var(--vscode-editor-background);
 }
 
 .feedback-statement {
