@@ -12,7 +12,7 @@ import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
-import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
+import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
@@ -65,6 +65,25 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       }
       )
     );
+
+    this._disposables.push(
+        vscode.window.onDidChangeTextEditorSelection(async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                return;
+            }
+            const selectedCode = getSelectedCode(editor);
+            const selectedCodeLineRange = getSelectedCodeLineRange(editor);
+            if(selectedCodeLineRange.start === 0) {
+                return;
+            }
+            console.log(selectedCode);
+            vscode.window.showInformationMessage("selectedCodeLineRange: " + selectedCodeLineRange.start + " " + selectedCodeLineRange.end);
+            this.sendMessageToWebview({ type: "selectedCodeInfo", value: {start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode} });
+
+        })
+    );
+
 
     if (this._pacWrapper) {
       this.setupFileWatcher();
