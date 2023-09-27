@@ -331,6 +331,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     if (result === COPILOT_UNAVAILABLE) {
       this.sendMessageToWebview({ type: 'Unavailable' });
     } else {
+        this.sendMessageToWebview({type: 'Available'})
         const { intelligenceEndpoint, environment, geoName } = result;
         this.aibEndpoint = intelligenceEndpoint;
         this.environment = environment;
