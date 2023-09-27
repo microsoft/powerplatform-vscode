@@ -16,7 +16,7 @@ import { IFeedbackData } from "../model";
 let feedbackPanel: vscode.WebviewPanel | undefined;
 
 
-export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, environment: string) {
+export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, environment: string, geo: string) {
 
     if (feedbackPanel) {
         feedbackPanel.dispose();
@@ -36,7 +36,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
 
     const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
-    const endpointBaseUrl = getCesSurveyEndpoint(environment);
+    const endpointBaseUrl = getCesSurveyEndpoint(environment, geo);
 
     const endpointUrl = `${endpointBaseUrl}/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`
 
@@ -159,19 +159,31 @@ function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri
     </html>`;
 }
 
-function getCesSurveyEndpoint(environment: string): string {
-    // const endpointUrl = `https://world.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
+function getCesSurveyEndpoint(environment: string, geo: string): string {
     const region = environment.toLowerCase();
+    const dataBoundary = geo.toLowerCase();
     let cesSurveyEndpoint = '';
     switch (region) {
         case 'tie':
         case 'test':
         case 'preprod':
-            cesSurveyEndpoint = 'https://world.tip1.ces.microsoftcloud.com';
+            switch (dataBoundary) {
+                case 'eu':
+                    cesSurveyEndpoint = 'https://europe.tip1.ces.microsoftcloud.com';
+                    break;
+                default:
+                    cesSurveyEndpoint = 'https://world.tip1.ces.microsoftcloud.com';
+            }
             break;
         case 'prod':
         case 'preview':
-            cesSurveyEndpoint = 'https://world.ces.microsoftcloud.com';
+            switch (dataBoundary) {
+                case 'eu':
+                    cesSurveyEndpoint = 'https://europe.ces.microsoftcloud.com';
+                    break;
+                default:
+                    cesSurveyEndpoint = 'https://world.ces.microsoftcloud.com';
+            }
             break;
         case 'gov':
         case 'high':

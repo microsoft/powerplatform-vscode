@@ -44,6 +44,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   private telemetry: ITelemetry;
   private aibEndpoint: string | null = null;
   private environment  = '';
+  private geo = '';
 
   constructor(
     private readonly _extensionUri: vscode.Uri,
@@ -210,11 +211,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           if (data.value === "thumbsUp") {
 
             sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
-            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.environment)
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.environment, this.geo)
           } else if (data.value === "thumbsDown") {
 
             sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
-            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.environment)
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.environment, this.geo)
           }
           break;
         }
@@ -330,11 +331,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     if (result === COPILOT_UNAVAILABLE) {
       this.sendMessageToWebview({ type: 'Unavailable' });
     } else {
-        const { intelligenceEndpoint, environment } = result;
+        const { intelligenceEndpoint, environment, geoName } = result;
         this.aibEndpoint = intelligenceEndpoint;
         this.environment = environment;
+        this.geo = geoName;
     }
-  
+
     if (IS_DESKTOP && this._view?.visible) {
       showConnectedOrgMessage(environmentName, activeOrgUrl);
     }

@@ -28,7 +28,7 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
 
   const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${'il' + clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
 
-  return {intelligenceEndpoint, environment};
+  return {intelligenceEndpoint, environment, geoName};
 
 }
 
