@@ -62,6 +62,23 @@ export function activate(context: vscode.ExtensionContext): void {
         )
     );
 
+    const workerPath = vscode.Uri.joinPath(context.extensionUri, 'dist/worker.worker.js');
+
+    const workerUrl  = new URL(workerPath.toString());
+
+    fetch(workerUrl)
+        .then(response => response.text())
+        .then((workerScript) => {
+            const workerBlob = new Blob([workerScript], { type: 'application/javascript' });
+            const workerUrl = URL.createObjectURL(workerBlob);
+            const worker = new Worker(workerUrl);
+            worker.postMessage({ type: 'start', value: 'hello' });
+            console.log('worker started');
+        }
+        )
+
+
+
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",

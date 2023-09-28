@@ -993,9 +993,9 @@
     "jwt-decode": "2.2.0",
     "mocha": "^9.2.2",
     "moment": "^2.29.4",
+    "nanoid": "^3.1.31",
     "node-fetch": "^2.6.7",
     "nyc": "^15.1.0",
-    "nanoid": "^3.1.31",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
@@ -1008,6 +1008,7 @@
     "webpack": "^5.76.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
+    "worker-loader": "^3.0.8",
     "yargs": "^16.2.0"
   },
   "dependencies": {
