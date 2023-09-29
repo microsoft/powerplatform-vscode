@@ -103,7 +103,8 @@ export function activate(context: vscode.ExtensionContext): void {
                 WebExtensionContext.setWebExtensionContext(
                     entity,
                     entityId,
-                    queryParamsMap
+                    queryParamsMap,
+                    context.extensionUri
                 );
                 WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
@@ -192,9 +193,9 @@ export function activate(context: vscode.ExtensionContext): void {
 
 export function powerPagesNavigation() {
     const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
-    vscode.window.registerTreeDataProvider('powerPagesFileExplorer', powerPagesNavigationProvider);
-    vscode.commands.registerCommand('powerPagesFileExplorer.previewPowerPages', () => powerPagesNavigationProvider.previewPowerPageSite());
-    vscode.commands.registerCommand('powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
+    vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
 }
 
 export function processWalkthroughFirstRunExperience(context: vscode.ExtensionContext) {

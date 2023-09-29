@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import WebExtensionContext from "../WebExtensionContext";
 import { httpMethod, queryParameters } from '../common/constants';
-//import { getCommonHeaders } from '../common/authenticationProvider';
+import { getBackToStudioURL } from '../utilities/commonUtil';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -32,20 +32,20 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
     getNodes(label?: string): PowerPagesNode[] {
         const nodes: PowerPagesNode[] = [];
-        const previewPowerPage = new PowerPagesNode('Show site in new tab',
+        const previewPowerPage = new PowerPagesNode('Preview site',
             {
-                command: 'powerPagesFileExplorer.previewPowerPages',
+                command: 'powerpages.powerPagesFileExplorer.powerPagesRuntimePreview',
                 title: '',
                 arguments: []
-            });
-        const backToStudio = new PowerPagesNode('Open powerpages',
+            },
+            'powerPages.svg');
+        const backToStudio = new PowerPagesNode('Open in Power Pages',
             {
-                command: 'powerPagesFileExplorer.backToStudio',
+                command: 'powerpages.powerPagesFileExplorer.backToStudio',
                 title: '',
                 arguments: []
-            });
-
-        console.log(path.join(__filename, '..', '..', 'src', 'web', 'client', 'assets', 'backToStudio.svg'));
+            },
+            'backToStudio.svg');
 
         if (label && label === previewPowerPage.label) {
             nodes.push(previewPowerPage);
@@ -61,70 +61,65 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
     async previewPowerPageSite(): Promise<void> {
         let requestSentAtTime = new Date().getTime();
-        // TODO: implement
-        console.log("Execute preview power pages site", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string);
-
+        const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
         // Runtime clear cache call
-        //const requestUrl = "https://site-npeby.powerappsportals.com/_services/portal/547f0b36-0ad2-446f-9543-99effc6fce8e/invalidate-cache-maker";
-        const requestUrl = "https://site-npeby.powerappsportals.com/_services/cache/config";
+        const requestUrl = `${websitePreviewUrl.endsWith('/') ? websitePreviewUrl : websitePreviewUrl.concat('/')}_services/cache/config`;
 
         WebExtensionContext.telemetry.sendAPITelemetry(
             requestUrl,
             "Preview power pages site",
-            //httpMethod.POST,
             httpMethod.DELETE,
             this.previewPowerPageSite.name
         );
         requestSentAtTime = new Date().getTime();
         WebExtensionContext.dataverseAuthentication();
 
-        const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
-            // headers: getCommonHeaders(WebExtensionContext.dataverseAccessToken),
-            headers: {
-                authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
-                'Accept': '*/*',
-                'Content-Type': 'text/plain',
-                //'orgId': WebExtensionContext.urlParametersMap.get(queryParameters.ORG_ID),
-                //'referrer-policy': 'strict-origin-when-cross-origin',
-                //'origin': 'https://v--1p5gunfsmqb4gsdpnrjapmdv61ofml3sahb9pd8de82ruqv7m773.vscode-cdn.net/'
-                // 'Access-Control-Allow-Origin': '*',
-                // 'Access-Control-Allow-Headers': 'access-control-allow-origin,authorization,content-type,referrer-policy'
+        await vscode.window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                cancellable: true,
+                title: vscode.l10n.t("Opening preview site..."),
             },
-            method: 'DELETE',
-            // body: JSON.stringify({
-            //     runtimeInvalidationRequest: "{\"entities\":[{\"entityName\":\"*\"}],\"source\":\"\"}"
-            // })
-        });
+            async () => {
+                const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
+                    headers: {
+                        authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
+                        'Accept': '*/*',
+                        'Content-Type': 'text/plain',
+                    },
+                    method: 'DELETE',
+                });
 
-        if (response.ok) {
-            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-                requestUrl,
-                "Preview power pages site",
-                httpMethod.DELETE,
-                new Date().getTime() - requestSentAtTime,
-                this.previewPowerPageSite.name
-            );
-        } else {
-            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                "Preview power pages site",
-                httpMethod.DELETE,
-                new Date().getTime() - requestSentAtTime,
-                this.previewPowerPageSite.name,
-                JSON.stringify(response),
-                '',
-                response?.status.toString()
-            );
-        }
+                if (response.ok) {
+                    WebExtensionContext.telemetry.sendAPISuccessTelemetry(
+                        requestUrl,
+                        "Preview power pages site",
+                        httpMethod.DELETE,
+                        new Date().getTime() - requestSentAtTime,
+                        this.previewPowerPageSite.name
+                    );
+                } else {
+                    WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                        requestUrl,
+                        "Preview power pages site",
+                        httpMethod.DELETE,
+                        new Date().getTime() - requestSentAtTime,
+                        this.previewPowerPageSite.name,
+                        JSON.stringify(response),
+                        '',
+                        response?.status.toString()
+                    );
+                }
 
 
-        vscode.env.openExternal(vscode.Uri.parse(WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string));
+            }
+        );
+
+        vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
     }
 
     backToStudio(): void {
-        // TODO: implement
-        console.log("Execute back to studio");
-        vscode.env.openExternal(vscode.Uri.parse("https://make.test.powerpages.microsoft.com/e/5b6338ff-aa3e-ecd4-a8ab-1d48fda1e109/sites/b17443f1-f825-ee11-bdf4-0022481d5eb9/pages"));
+        vscode.env.openExternal(vscode.Uri.parse(getBackToStudioURL()));
     }
 }
 
@@ -133,16 +128,21 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 export class PowerPagesNode extends vscode.TreeItem {
     constructor(
         public readonly label: string,
-        public readonly command?: vscode.Command
+        public readonly command: vscode.Command,
+        public readonly svgFileName: string
     ) {
         super(label, vscode.TreeItemCollapsibleState.None);
 
         this.tooltip = this.label;
         this.command = command;
+        this.iconPath = this.getIconPath(svgFileName);
     }
 
-    iconPath = {
-        light: path.join(__filename, '..', '..', 'src', 'web', 'client', 'assets', 'backToStudio.svg'),
-        dark: path.join(__filename, '..', '..', 'src', 'web', 'client', 'assets', 'powerPages.svg')
-    };
+    getIconPath(svgFileName: string) {
+        console.log(WebExtensionContext.extensionUri, vscode.Uri.joinPath(WebExtensionContext.extensionUri, '..', '..', 'src', 'web', 'client', 'assets', svgFileName));
+        return {
+            light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, '..', '..', 'src', 'web', 'client', 'assets', svgFileName),
+            dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, '..', '..', 'src', 'web', 'client', 'assets', svgFileName)
+        };
+    }
 }

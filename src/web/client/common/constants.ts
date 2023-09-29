@@ -26,6 +26,8 @@ export const MAX_ENTITY_FETCH_COUNT = 100;
 export const MAX_CONCURRENT_REQUEST_COUNT = 50;
 export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 1000;
 export const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default";
+export const BACK_TO_STUDIO_URL_TEMPLATE = "https://make{.region}.powerpages.microsoft.com/e/{environmentId}/sites/{webSiteId}/pages";
+export const STUDIO_PROD_REGION = "prod";
 
 // Web extension constants
 export const BASE_64 = 'base64';
