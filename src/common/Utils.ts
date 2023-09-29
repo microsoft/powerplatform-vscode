@@ -25,11 +25,10 @@ export function getSelectedCodeLineRange(editor: vscode.TextEditor): { start: nu
 
     const startLine = selection.start.line;
     const endLine = selection.end.line;
-    console.log(`Selected lines: ${startLine + 1}-${endLine + 1}`);
 
     return { start: startLine, end: endLine };
-
 }
+
 // Get the organization ID from the user during login
 export async function getOrgID(): Promise<string> {
     const orgID = await vscode.window.showInputBox({
