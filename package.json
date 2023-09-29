@@ -334,6 +334,11 @@
         "category": "Copilot In Power Pages",
         "title": "Clear Conversation",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "powerpages.copilot.explain",
+        "category": "Copilot In Power Pages",
+        "title": "Explain"
       }
     ],
     "configuration": {
@@ -567,6 +572,19 @@
       }
     ],
     "menus": {
+      "editor/context": [
+        {
+          "submenu": "microsoft-powerapps-portals.powerpages-copilot",
+          "group": "0_powerpages-copilot",
+          "when": "never"
+        }
+      ],
+      "microsoft-powerapps-portals.powerpages-copilot": [
+        {
+          "command": "powerpages.copilot.explain",
+          "group": "0_powerpages-copilot@1"
+        }
+      ],
       "explorer/context": [
         {
           "submenu": "microsoft-powerapps-portals.powerpages",
@@ -722,6 +740,10 @@
           "when": "never"
         },
         {
+          "command": "powerpages.copilot.explain",
+          "when": "never"
+        },
+        {
           "command": "microsoft-powerapps-portals.webpage",
           "when": "config.powerPlatform.generatorInstalled"
         },
@@ -834,6 +856,10 @@
       {
         "id": "microsoft-powerapps-portals.powerpages",
         "label": "Power Pages"
+      },
+      {
+        "id": "microsoft-powerapps-portals.powerpages-copilot",
+        "label": "Copilot In Power Pages"
       }
     ],
     "viewsContainers": {
