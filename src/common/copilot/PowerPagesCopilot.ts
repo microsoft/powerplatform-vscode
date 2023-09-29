@@ -81,8 +81,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         );
     }
 
-
-
     if (this._pacWrapper) {
       this.setupFileWatcher();
     }

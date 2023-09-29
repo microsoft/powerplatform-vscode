@@ -48,8 +48,6 @@ body {
   background-color: var(--vscode-interactiveEditorInput-background);
 }
 
-
-
 .input-container:focus-within {
   box-shadow: 0 0 0 1px var(--vscode-focusBorder);
 }
@@ -168,7 +166,6 @@ body {
   margin: 10px 0px;
   border-radius: 4px;
   background-color: var(--vscode-sideBar-background)
-
 }
 
 .code-pre {
@@ -299,7 +296,8 @@ hr {
   color: var(--vscode-input-placeholderForeground);
 }
 
-.walkthrough-content, .suggested-prompt {
+.walkthrough-content,
+.suggested-prompt {
   display: inline-flex;
   align-items: center;
 }
@@ -322,6 +320,8 @@ hr {
 
 
 .icon-container {
-  width: 14px; /* Set a fixed width for the icon */
-  margin-right: 4px; /* Add some spacing between icon and text */
+  width: 14px;
+  /* Set a fixed width for the icon */
+  margin-right: 4px;
+  /* Add some spacing between icon and text */
 }
