@@ -8,6 +8,7 @@ import * as path from 'path';
 import WebExtensionContext from "../WebExtensionContext";
 import { httpMethod, queryParameters } from '../common/constants';
 import { getBackToStudioURL } from '../utilities/commonUtil';
+import { telemetryEventNames } from '../telemetry/constants';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -116,14 +117,18 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         );
 
         vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
     }
 
     backToStudio(): void {
-        vscode.env.openExternal(vscode.Uri.parse(getBackToStudioURL()));
+        const backToStudioUrl = getBackToStudioURL();
+        vscode.env.openExternal(vscode.Uri.parse(backToStudioUrl));
+
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
+            backToStudioUrl: backToStudioUrl
+        });
     }
 }
-
-
 
 export class PowerPagesNode extends vscode.TreeItem {
     constructor(
