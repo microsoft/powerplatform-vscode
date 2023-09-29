@@ -13,9 +13,14 @@ export function getSelectedCode(editor: vscode.TextEditor): string {
     }
     const selection = editor.selection;
     const text = editor.document.getText(selection);
-    return text;
+    return text.trim(); //handles empty selection
 }
 
+/**
+ * Returns the start and end line numbers of the selected code in the editor.
+ * @param editor The vscode TextEditor object.
+ * @returns An object with start and end line numbers.
+ */
 export function getSelectedCodeLineRange(editor: vscode.TextEditor): { start: number, end: number } {
     if (!editor) {
         return { start: 0, end: 0 };
