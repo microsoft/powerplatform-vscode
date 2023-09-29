@@ -74,11 +74,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             }
             const selectedCode = getSelectedCode(editor);
             const selectedCodeLineRange = getSelectedCodeLineRange(editor);
-            if(selectedCodeLineRange.start === 0) {
-                return;
-            }
+            // if(selectedCodeLineRange.start === 0) {
+            //     return;
+            // }
             console.log(selectedCode);
-            vscode.window.showInformationMessage("selectedCodeLineRange: " + selectedCodeLineRange.start + " " + selectedCodeLineRange.end);
+            // vscode.window.showInformationMessage("selectedCodeLineRange: " + selectedCodeLineRange.start + " " + selectedCodeLineRange.end);
             this.sendMessageToWebview({ type: "selectedCodeInfo", value: {start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode} });
 
         })
@@ -436,6 +436,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             </div>
 
             <div class="chat-input" id="input-component">
+              <label for="chat-input" class="input-label hide" id="input-label-id"></label>
               <div class="input-container">
                 <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
                 <button aria-label="Match Case" id="send-button" class="send-button">

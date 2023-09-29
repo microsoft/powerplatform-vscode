@@ -27,6 +27,16 @@ body {
   padding: 12px;
 }
 
+.input-label {
+  margin-bottom: 1px;
+  color: var(--vscode-input-placeholderForeground);
+  font-size: 12px;
+  background: var(--vscode-panelSectionHeader-background);
+  padding: 5px 205px 5px 10px;
+  height: 24px;
+  box-sizing: border-box;
+}
+
 .input-container {
   display: flex;
   align-items: center;
@@ -37,6 +47,8 @@ body {
   height: 38px;
   background-color: var(--vscode-interactiveEditorInput-background);
 }
+
+
 
 .input-container:focus-within {
   box-shadow: 0 0 0 1px var(--vscode-focusBorder);
