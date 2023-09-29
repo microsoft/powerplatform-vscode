@@ -68,16 +68,28 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
 
     if (SELECTED_CODE_INFO_ENABLED) { //TODO: Remove this check once the feature is ready
+
+        const handleSelectionChange = async (commandType: string) => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                return;
+            }
+            const selectedCode = getSelectedCode(editor);
+            const selectedCodeLineRange = getSelectedCodeLineRange(editor);
+            if(commandType === "explainCode" && selectedCode.length === 0) {
+                // Show a message if the selection is empty and don't send the message to webview
+                vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty!'));
+                return;
+            }
+            this.sendMessageToWebview({ type: commandType, value: { start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode } });
+        };
+
         this._disposables.push(
-            vscode.window.onDidChangeTextEditorSelection(async () => {
-                const editor = vscode.window.activeTextEditor;
-                if (!editor) {
-                    return;
-                }
-                const selectedCode = getSelectedCode(editor);
-                const selectedCodeLineRange = getSelectedCodeLineRange(editor);
-                this.sendMessageToWebview({ type: "selectedCodeInfo", value: {start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode} });
-            })
+           vscode.window.onDidChangeTextEditorSelection(() => handleSelectionChange("selectedCodeInfo"))
+        );
+
+        this._disposables.push(
+            vscode.commands.registerCommand("powerpages.copilot.explain", () => handleSelectionChange("explainCode"))
         );
     }
 

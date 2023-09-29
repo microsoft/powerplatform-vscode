@@ -165,6 +165,13 @@ body {
   padding: 20px 5px 1px 10px;
   margin: 10px 0px;
   border-radius: 4px;
+}
+
+.user-code {
+  background-color: var(--vscode-editor-background);
+}
+
+.copilot-code {
   background-color: var(--vscode-sideBar-background)
 }
 
