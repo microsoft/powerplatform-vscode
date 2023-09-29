@@ -32,8 +32,8 @@ body {
   color: var(--vscode-input-placeholderForeground);
   font-size: 12px;
   background: var(--vscode-panelSectionHeader-background);
-  padding: 5px 205px 5px 10px;
-  height: 24px;
+  padding: 5px 0px 5px 10px;
+  height: auto;
   box-sizing: border-box;
 }
 
