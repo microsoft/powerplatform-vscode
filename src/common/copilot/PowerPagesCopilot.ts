@@ -155,9 +155,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     const pacOutput = await this._pacWrapper?.activeOrg();
 
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
-      this.handleOrgChangeSuccess(pacOutput.Results);
+      await this.handleOrgChangeSuccess(pacOutput.Results);
     } else if (!IS_DESKTOP && orgID && activeOrgUrl) {
-      this.handleOrgChangeSuccess({ OrgId: orgID, UserId: userID, OrgUrl: activeOrgUrl } as ActiveOrgOutput);
+      await this.handleOrgChangeSuccess({ OrgId: orgID, UserId: userID, OrgUrl: activeOrgUrl } as ActiveOrgOutput);
     }
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
@@ -165,6 +165,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
         case "webViewLoaded": {
+          if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+            this.sendMessageToWebview({ type: 'Unavailable' });
+            return;
+          }
+
           sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
           this.sendMessageToWebview({ type: 'env' }); //TODO Use IS_DESKTOP
           await this.checkAuthentication();
@@ -342,7 +347,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
-      sendTelemetryEvent(this.telemetry, {eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID});
+      sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
       this.sendMessageToWebview({ type: 'Unavailable' });
     } else {
       this.sendMessageToWebview({ type: 'Available' });
