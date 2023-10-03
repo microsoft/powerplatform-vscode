@@ -33,17 +33,17 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
     getNodes(label?: string): PowerPagesNode[] {
         const nodes: PowerPagesNode[] = [];
-        const previewPowerPage = new PowerPagesNode('Preview site',
+        const previewPowerPage = new PowerPagesNode(vscode.l10n.t("Preview site"),
             {
                 command: 'powerpages.powerPagesFileExplorer.powerPagesRuntimePreview',
-                title: '',
+                title: vscode.l10n.t("Preview site"),
                 arguments: []
             },
             'powerPages.svg');
-        const backToStudio = new PowerPagesNode('Open in Power Pages',
+        const backToStudio = new PowerPagesNode(vscode.l10n.t("Open in Power Pages"),
             {
                 command: 'powerpages.powerPagesFileExplorer.backToStudio',
-                title: '',
+                title: vscode.l10n.t("Open in Power Pages"),
                 arguments: []
             },
             'backToStudio.svg');

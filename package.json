@@ -155,12 +155,12 @@
     "commands": [
       {
         "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
-        "title": "%microsoft-powerplatform-portals.navigation-loop.previewSite.title%",
+        "title": "Preview site",
         "when": "never"
       },
       {
         "command": "powerpages.powerPagesFileExplorer.backToStudio",
-        "title": "%microsoft-powerplatform-portals.navigation-loop.backToStudio.title%",
+        "title": "Open in Power Pages",
         "when": "never"
       },
       {

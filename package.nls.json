@@ -94,7 +94,5 @@
       "The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified"
     ]
   },
-  "microsoft-powerplatform-portals.navigation-loop.backToStudio.title": "Back to Studio",
-  "microsoft-powerplatform-portals.navigation-loop.previewSite.title": "Preview Power Pages site",
   "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "POWER PAGES ACTIONS"
 }
