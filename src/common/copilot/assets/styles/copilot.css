@@ -27,6 +27,16 @@ body {
   padding: 12px;
 }
 
+.input-label {
+  margin-bottom: 1px;
+  color: var(--vscode-input-placeholderForeground);
+  font-size: 12px;
+  background: var(--vscode-panelSectionHeader-background);
+  padding: 5px 0px 5px 10px;
+  height: auto;
+  box-sizing: border-box;
+}
+
 .input-container {
   display: flex;
   align-items: center;
@@ -156,7 +166,6 @@ body {
   margin: 10px 0px;
   border-radius: 4px;
   background-color: var(--vscode-sideBar-background)
-
 }
 
 .code-pre {
@@ -287,7 +296,8 @@ hr {
   color: var(--vscode-input-placeholderForeground);
 }
 
-.walkthrough-content, .suggested-prompt {
+.walkthrough-content,
+.suggested-prompt {
   display: inline-flex;
   align-items: center;
 }
@@ -310,6 +320,8 @@ hr {
 
 
 .icon-container {
-  width: 14px; /* Set a fixed width for the icon */
-  margin-right: 4px; /* Add some spacing between icon and text */
+  width: 14px;
+  /* Set a fixed width for the icon */
+  margin-right: 4px;
+  /* Add some spacing between icon and text */
 }

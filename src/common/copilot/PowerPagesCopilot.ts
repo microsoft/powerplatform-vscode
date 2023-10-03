@@ -10,9 +10,9 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, WebViewMessage, sendIconSvg } from "./constants";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO_ENABLED, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
-import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
+import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
@@ -65,6 +65,21 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       }
       )
     );
+
+
+    if (SELECTED_CODE_INFO_ENABLED) { //TODO: Remove this check once the feature is ready
+        this._disposables.push(
+            vscode.window.onDidChangeTextEditorSelection(async () => {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor) {
+                    return;
+                }
+                const selectedCode = getSelectedCode(editor);
+                const selectedCodeLineRange = getSelectedCodeLineRange(editor);
+                this.sendMessageToWebview({ type: "selectedCodeInfo", value: {start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode} });
+            })
+        );
+    }
 
     if (this._pacWrapper) {
       this.setupFileWatcher();
@@ -422,6 +437,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             </div>
 
             <div class="chat-input" id="input-component">
+              <label for="chat-input" class="input-label hide" id="input-label-id"></label>
               <div class="input-container">
                 <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
                 <button aria-label="Match Case" id="send-button" class="send-button">
