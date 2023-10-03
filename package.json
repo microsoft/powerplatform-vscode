@@ -155,12 +155,12 @@
     "commands": [
       {
         "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
-        "title": "Preview Power Pages site",
+        "title": "%microsoft-powerplatform-portals.navigation-loop.previewSite.title%",
         "when": "never"
       },
       {
         "command": "powerpages.powerPagesFileExplorer.backToStudio",
-        "title": "Back to Studio",
+        "title": "%microsoft-powerplatform-portals.navigation-loop.backToStudio.title%",
         "when": "never"
       },
       {
@@ -897,10 +897,10 @@
       "explorer": [
         {
           "id": "powerpages.powerPagesFileExplorer",
-          "name": "POWER PAGES ACTIONS",
+          "name": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
           "when": "isWeb && virtualWorkspace",
           "icon": "./src/web/client/assets/powerPages.svg",
-          "contextualTitle": "Power Pages Actions",
+          "contextualTitle": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
           "visibility": "visible"
         }
       ]
