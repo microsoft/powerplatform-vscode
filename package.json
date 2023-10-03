@@ -154,6 +154,16 @@
     ],
     "commands": [
       {
+        "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
+        "title": "Preview site",
+        "when": "never"
+      },
+      {
+        "command": "powerpages.powerPagesFileExplorer.backToStudio",
+        "title": "Open in Power Pages",
+        "when": "never"
+      },
+      {
         "command": "extension.createChatView",
         "title": "Create Chat View"
       },
@@ -886,9 +896,12 @@
       ],
       "explorer": [
         {
-          "id": "powerpages.treeWebView",
-          "name": "Power Pages Actions",
-          "when": "isWeb && config.powerPlatform.experimental.enableCoPresenceFeature"
+          "id": "powerpages.powerPagesFileExplorer",
+          "name": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
+          "when": "isWeb && virtualWorkspace",
+          "icon": "./src/web/client/assets/powerPages.svg",
+          "contextualTitle": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
+          "visibility": "visible"
         }
       ]
     },
@@ -994,9 +1007,9 @@
     "jwt-decode": "2.2.0",
     "mocha": "^9.2.2",
     "moment": "^2.29.4",
+    "nanoid": "^3.1.31",
     "node-fetch": "^2.6.7",
     "nyc": "^15.1.0",
-    "nanoid": "^3.1.31",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
