@@ -30,6 +30,7 @@ import {
 } from "./utilities/fileAndEntityUtil";
 import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
+import { PowerPagesNavigationProvider } from "./webViews/powerPagesNavigationProvider";
 import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
@@ -102,7 +103,8 @@ export function activate(context: vscode.ExtensionContext): void {
                 WebExtensionContext.setWebExtensionContext(
                     entity,
                     entityId,
-                    queryParamsMap
+                    queryParamsMap,
+                    context.extensionUri
                 );
                 WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
@@ -122,6 +124,8 @@ export function activate(context: vscode.ExtensionContext): void {
                                 );
 
                                 processWalkthroughFirstRunExperience(context);
+
+                                powerPagesNavigation();
 
                                 await vscode.window.withProgress(
                                     {
@@ -185,6 +189,14 @@ export function activate(context: vscode.ExtensionContext): void {
     processWillStartCollaboartion();
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function powerPagesNavigation() {
+    const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
+    vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
+    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
 }
 
 export function processWalkthroughFirstRunExperience(context: vscode.ExtensionContext) {
