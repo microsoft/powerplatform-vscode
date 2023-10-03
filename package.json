@@ -155,11 +155,13 @@
     "commands": [
       {
         "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
-        "title": "Preview Power Pages site"
+        "title": "Preview Power Pages site",
+        "when": "never"
       },
       {
         "command": "powerpages.powerPagesFileExplorer.backToStudio",
-        "title": "Back to Studio"
+        "title": "Back to Studio",
+        "when": "never"
       },
       {
         "command": "extension.createChatView",
