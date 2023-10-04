@@ -154,6 +154,16 @@
     ],
     "commands": [
       {
+        "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
+        "title": "Preview site",
+        "when": "never"
+      },
+      {
+        "command": "powerpages.powerPagesFileExplorer.backToStudio",
+        "title": "Open in Power Pages",
+        "when": "never"
+      },
+      {
         "command": "extension.createChatView",
         "title": "Create Chat View"
       },
@@ -326,6 +336,11 @@
         "category": "Copilot In Power Pages",
         "title": "Clear Conversation",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "powerpages.copilot.explain",
+        "category": "Copilot In Power Pages",
+        "title": "Explain"
       }
     ],
     "configuration": {
@@ -442,7 +457,7 @@
         "powerPlatform.experimental.enableCoPresenceFeature": {
           "type": "boolean",
           "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
-          "default": true
+          "default": false
         }
       }
     },
@@ -559,6 +574,19 @@
       }
     ],
     "menus": {
+      "editor/context": [
+        {
+          "submenu": "microsoft-powerapps-portals.powerpages-copilot",
+          "group": "0_powerpages-copilot",
+          "when": "never"
+        }
+      ],
+      "microsoft-powerapps-portals.powerpages-copilot": [
+        {
+          "command": "powerpages.copilot.explain",
+          "group": "0_powerpages-copilot@1"
+        }
+      ],
       "explorer/context": [
         {
           "submenu": "microsoft-powerapps-portals.powerpages",
@@ -714,6 +742,10 @@
           "when": "never"
         },
         {
+          "command": "powerpages.copilot.explain",
+          "when": "never"
+        },
+        {
           "command": "microsoft-powerapps-portals.webpage",
           "when": "config.powerPlatform.generatorInstalled"
         },
@@ -826,6 +858,10 @@
       {
         "id": "microsoft-powerapps-portals.powerpages",
         "label": "Power Pages"
+      },
+      {
+        "id": "microsoft-powerapps-portals.powerpages-copilot",
+        "label": "Copilot In Power Pages"
       }
     ],
     "viewsContainers": {
@@ -856,6 +892,16 @@
           "initialSize": 6,
           "visibility": "visible",
           "when": "(!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot)"
+        }
+      ],
+      "explorer": [
+        {
+          "id": "powerpages.powerPagesFileExplorer",
+          "name": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
+          "when": "isWeb && virtualWorkspace",
+          "icon": "./src/web/client/assets/powerPages.svg",
+          "contextualTitle": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
+          "visibility": "visible"
         }
       ]
     },
@@ -949,6 +995,7 @@
     "eslint-plugin-header": "^3.1.1",
     "fancy-log": "^1.3.3",
     "fs-extra": "^9.0.1",
+    "get-func-name": "^2.0.2",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
     "gulp-filter": "^7.0.0",
@@ -960,6 +1007,7 @@
     "jwt-decode": "2.2.0",
     "mocha": "^9.2.2",
     "moment": "^2.29.4",
+    "nanoid": "^3.1.31",
     "node-fetch": "^2.6.7",
     "nyc": "^15.1.0",
     "os-browserify": "^0.3.0",

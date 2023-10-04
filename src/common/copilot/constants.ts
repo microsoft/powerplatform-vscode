@@ -25,6 +25,8 @@ export const INAPPROPRIATE_CONTENT = 'InappropriateContentDetected';
 export const INPUT_CONTENT_FILTERED = 'InputContentFiltered';
 export const PROMPT_LIMIT_EXCEEDED = 'PromptLimitExceeded';
 export const INVALID_INFERENCE_INPUT = 'InvalidInferenceInput';
+export const COPILOT_NOTIFICATION_DISABLED = 'isCopilotNotificationDisabled'
+export const SELECTED_CODE_INFO_ENABLED = false;
 
 export type WebViewMessage = {
   type: string;

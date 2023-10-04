@@ -30,8 +30,11 @@ import {
 } from "./utilities/fileAndEntityUtil";
 import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
+import { PowerPagesNavigationProvider } from "./webViews/powerPagesNavigationProvider";
 import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
+import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
+import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -100,7 +103,8 @@ export function activate(context: vscode.ExtensionContext): void {
                 WebExtensionContext.setWebExtensionContext(
                     entity,
                     entityId,
-                    queryParamsMap
+                    queryParamsMap,
+                    context.extensionUri
                 );
                 WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
@@ -120,6 +124,8 @@ export function activate(context: vscode.ExtensionContext): void {
                                 );
 
                                 processWalkthroughFirstRunExperience(context);
+
+                                powerPagesNavigation();
 
                                 await vscode.window.withProgress(
                                     {
@@ -183,6 +189,14 @@ export function activate(context: vscode.ExtensionContext): void {
     processWillStartCollaboartion();
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function powerPagesNavigation() {
+    const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
+    vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
+    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
 }
 
 export function processWalkthroughFirstRunExperience(context: vscode.ExtensionContext) {
@@ -410,7 +424,7 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             }
         }));
 
-        showNotificationForCopilot(orgInfo.orgId);
+        showNotificationForCopilot(context, orgInfo.orgId);
     } catch (error) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED,
@@ -420,23 +434,19 @@ export function registerCopilot(context: vscode.ExtensionContext) {
     }
 }
 
-function showNotificationForCopilot(orgId: string) {
+function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: string) {
     if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.enableWebCopilot') === false) {
         return;
     }
-    const message = vscode.l10n.t('Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.');
-    const actionTitle = vscode.l10n.t('Try Copilot for Power Pages');
 
-    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
-        { orgId: orgId });
+    const isCopilotNotificationDisabled = context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
+    if (!isCopilotNotificationDisabled) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
+            { orgId: orgId });
 
-    vscode.window.showInformationMessage(message, actionTitle).then((selection) => {
-        if (selection === actionTitle) {
-            WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_EVENT_CLICKED,
-                { orgId: orgId });
-            vscode.commands.executeCommand('powerpages.copilot.focus')
-        }
-    });
+        const telemetryData = JSON.stringify({ orgId: orgId });
+        copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+    }
 }
 
 export async function deactivate(): Promise<void> {
@@ -444,6 +454,7 @@ export async function deactivate(): Promise<void> {
     if (telemetry) {
         telemetry.sendInfoTelemetry("End");
     }
+    disposeNotificationPanel();
 }
 
 function isActiveDocument(fileFsPath: string): boolean {

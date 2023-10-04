@@ -10,13 +10,13 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, WebViewMessage, sendIconSvg } from "./constants";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO_ENABLED, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
-import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getUserName, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
+import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
@@ -65,6 +65,21 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       }
       )
     );
+
+
+    if (SELECTED_CODE_INFO_ENABLED) { //TODO: Remove this check once the feature is ready
+        this._disposables.push(
+            vscode.window.onDidChangeTextEditorSelection(async () => {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor) {
+                    return;
+                }
+                const selectedCode = getSelectedCode(editor);
+                const selectedCodeLineRange = getSelectedCodeLineRange(editor);
+                this.sendMessageToWebview({ type: "selectedCodeInfo", value: {start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode} });
+            })
+        );
+    }
 
     if (this._pacWrapper) {
       this.setupFileWatcher();
@@ -128,7 +143,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
   ) {
     this._view = webviewView;
 
-    webviewView.description = "PREVIEW"
+    webviewView.title = "Copilot In Power Pages" + (IS_DESKTOP ? "" : " [PREVIEW]");
+    webviewView.description = "PREVIEW";
     webviewView.webview.options = {
       // Allow scripts in the webview
       enableScripts: true,
@@ -139,9 +155,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     const pacOutput = await this._pacWrapper?.activeOrg();
 
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
-      this.handleOrgChangeSuccess(pacOutput.Results);
+      await this.handleOrgChangeSuccess(pacOutput.Results);
     } else if (!IS_DESKTOP && orgID && activeOrgUrl) {
-      this.handleOrgChangeSuccess({ OrgId: orgID, UserId: userID, OrgUrl: activeOrgUrl } as ActiveOrgOutput);
+      await this.handleOrgChangeSuccess({ OrgId: orgID, UserId: userID, OrgUrl: activeOrgUrl } as ActiveOrgOutput);
     }
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
@@ -149,6 +165,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
         case "webViewLoaded": {
+          if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+            this.sendMessageToWebview({ type: 'Unavailable' });
+            return;
+          }
+
           sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
           this.sendMessageToWebview({ type: 'env' }); //TODO Use IS_DESKTOP
           await this.checkAuthentication();
@@ -218,7 +239,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
         case "walkthrough": {
           sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID, orgId: orgID });
-          this.openWalkthrough();
+          openWalkthrough(this._extensionUri);
           break;
         }
         case "codeLineCount": {
@@ -242,7 +263,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
       this.handleOrgChangeSuccess.call(this, pacOutput.Results);
 
-      intelligenceAPIAuthentication(this.telemetry, sessionID).then(({ accessToken, user, userId }) => {
+      intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) => {
         this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId);
       });
 
@@ -261,7 +282,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       }
       const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
       pacAuthCreateOutput && pacAuthCreateOutput.Status === PAC_SUCCESS
-        ? intelligenceAPIAuthentication(this.telemetry, sessionID).then(({ accessToken, user, userId }) =>
+        ? intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) =>
           this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId)
         )
         : vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
@@ -283,13 +304,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
-  private openWalkthrough() {
-    const walkthroughUri = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'walkthrough', 'Copilot-In-PowerPages.md');
-    vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
-  }
-
   private async authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
-    return intelligenceAPIAuthentication(telemetry, sessionID)
+    return intelligenceAPIAuthentication(telemetry, sessionID, orgID)
       .then(async ({ accessToken, user, userId }) => {
         intelligenceApiToken = accessToken;
         userName = getUserName(user);
@@ -331,6 +347,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+      sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
       this.sendMessageToWebview({ type: 'Unavailable' });
     } else {
       this.sendMessageToWebview({ type: 'Available' });
@@ -420,6 +437,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             </div>
 
             <div class="chat-input" id="input-component">
+              <label for="chat-input" class="input-label hide" id="input-label-id"></label>
               <div class="input-container">
                 <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
                 <button aria-label="Match Case" id="send-button" class="send-button">

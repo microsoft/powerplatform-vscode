@@ -5,13 +5,16 @@
 
 import * as vscode from "vscode";
 import {
+    BACK_TO_STUDIO_URL_TEMPLATE,
     BASE_64,
     CO_PRESENCE_FEATURE_SETTING_NAME,
     DATA,
     MULTI_FILE_FEATURE_SETTING_NAME,
     NO_CONTENT,
+    STUDIO_PROD_REGION,
     VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
-    portalSchemaVersion
+    portalSchemaVersion,
+    queryParameters
 } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { schemaEntityName } from "../schema/constants";
@@ -191,11 +194,32 @@ export function isWebfileContentLoadNeeded(fileName: string, fsPath: string): bo
         doesFileExist(fsPath) : false;
 }
 
-
 export function isPortalVersionV1(): boolean {
     return WebExtensionContext.currentSchemaVersion.toLowerCase() === portalSchemaVersion.V1;
 }
 
 export function isPortalVersionV2(): boolean {
     return WebExtensionContext.currentSchemaVersion.toLowerCase() === portalSchemaVersion.V2;
+}
+
+export function getWorkSpaceName(websiteId: string): string {
+    if (isPortalVersionV1()) {
+        return `Site-v1-${websiteId}`;
+    } else {
+        return `Site-v2-${websiteId}`;
+    }
+}
+
+// ENV_ID is the last part of the parameter value sent in the vscode URL from studio
+export function getEnvironmentIdFromUrl() {
+    return (WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID) as string).split("/")?.pop() as string;
+}
+
+export function getBackToStudioURL() {
+    const region = WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string;
+
+    return BACK_TO_STUDIO_URL_TEMPLATE
+        .replace("{environmentId}", getEnvironmentIdFromUrl())
+        .replace("{.region}", region.toLowerCase() === STUDIO_PROD_REGION ? "" : `.${WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string}`)
+        .replace("{webSiteId}", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID) as string);
 }
