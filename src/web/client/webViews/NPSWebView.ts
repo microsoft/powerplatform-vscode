@@ -8,6 +8,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import { queryParameters } from "../common/constants";
 import { getDeviceType } from "../utilities/deviceType";
 import { telemetryEventNames } from "../telemetry/constants";
+import { getEnvironmentIdFromUrl } from "../utilities/commonUtil";
 
 export class NPSWebView {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -27,9 +28,7 @@ export class NPSWebView {
             const tid = WebExtensionContext.urlParametersMap?.get(
                 queryParameters.TENANT_ID
             );
-            const envId = WebExtensionContext.urlParametersMap
-                ?.get(queryParameters.ENV_ID)
-                ?.split("/")[4];
+            const envId = getEnvironmentIdFromUrl();
             const geo = WebExtensionContext.urlParametersMap?.get(
                 queryParameters.GEO
             );
