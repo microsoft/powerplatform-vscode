@@ -114,35 +114,6 @@
     return lines.length;
   }
 
-//   function formatCodeBlocks(responseText) {
-//     const blocks = responseText.split("```");
-//     const resultDiv = document.createElement("div");
-
-//     for (let i = 0; i < blocks.length; i++) {
-//       if (i % 2 === 0) {
-//         // Handle text blocks
-//         const textDiv = document.createElement("div");
-//         textDiv.innerText = blocks[i];
-//         resultDiv.appendChild(textDiv);
-//       } else {
-//         // Handle code blocks
-//         const codeDiv = document.createElement("div");
-//         codeDiv.classList.add("code-division");
-//         codeDiv.appendChild(createActionWrapper(blocks[i]));
-
-//         const preFormatted = document.createElement("pre");
-//         const codeSnip = document.createElement("code");
-//         codeSnip.innerText = blocks[i];
-//         preFormatted.appendChild(codeSnip);
-
-//         codeDiv.appendChild(preFormatted);
-//         resultDiv.appendChild(codeDiv);
-//       }
-//     }
-//     resultDiv.classList.add("result-div");
-//     return resultDiv;
-//   }
-
   function createActionWrapper(code) {
     const actionWrapper = document.createElement("div");
     actionWrapper.classList.add("action-wrapper");
