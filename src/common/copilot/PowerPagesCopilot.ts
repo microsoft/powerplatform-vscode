@@ -10,7 +10,7 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO_ENABLED, WebViewMessage, sendIconSvg } from "./constants";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO_ENABLED, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -76,7 +76,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             }
             const selectedCode = getSelectedCode(editor);
             const selectedCodeLineRange = getSelectedCodeLineRange(editor);
-            if(commandType === "explainCode" && selectedCode.length === 0) {
+            if(commandType === EXPLAIN_CODE && selectedCode.length === 0) {
                 // Show a message if the selection is empty and don't send the message to webview
                 vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty!'));
                 return;
@@ -89,7 +89,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         );
 
         this._disposables.push(
-            vscode.commands.registerCommand("powerpages.copilot.explain", () => handleSelectionChange("explainCode"))
+            vscode.commands.registerCommand("powerpages.copilot.explain", () => handleSelectionChange(EXPLAIN_CODE))
         );
     }
 
