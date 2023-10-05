@@ -9,6 +9,7 @@ export interface IEntityData extends IEntityInfo {
     entityEtag: string;
     entityColumn: Map<string, string>;
     mappingEntityId?: string;
+    filePath?: string[]
 }
 
 export class EntityData implements IEntityData {
@@ -17,6 +18,7 @@ export class EntityData implements IEntityData {
     private _entityEtag!: string;
     private _entityColumn!: Map<string, string>;
     private _mappingEntityId?: string;
+    private _filePath?: string[];
 
     public get entityName(): string {
         return this._entityName;
@@ -33,10 +35,16 @@ export class EntityData implements IEntityData {
     public get mappingEntityId(): string | undefined {
         return this._mappingEntityId;
     }
+    public get filePath(): string[] | undefined {
+        return this._filePath;
+    }
 
     // Setters
     public set setEntityEtag(value: string) {
         this._entityEtag = value;
+    }
+    public set setFilePath(value: string[] | undefined) {
+        this._filePath = value;
     }
 
     constructor(
@@ -44,12 +52,14 @@ export class EntityData implements IEntityData {
         entityName: string,
         entityEtag: string,
         entityColumn: Map<string, string>,
-        mappingEntityId?: string
+        mappingEntityId?: string,
+        filePath?: string[]
     ) {
         this._entityId = entityId;
         this._entityName = entityName;
         this._entityEtag = entityEtag;
         this._entityColumn = entityColumn;
         this._mappingEntityId = mappingEntityId;
+        this._filePath = filePath;
     }
 }

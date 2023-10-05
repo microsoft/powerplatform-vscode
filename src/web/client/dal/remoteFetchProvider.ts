@@ -443,6 +443,14 @@ async function createFile(
         fileContent = GetFileContent(result, attributePath, entityName, entityId);
     }
 
+    const filePath : string[] = [];
+
+    Array.from(WebExtensionContext.fileDataMap.getFileMap.entries()).forEach(([fileUri, data]) => {
+        if (data.entityId === entityId) {
+            filePath.push(fileUri);
+        }
+    });
+
     await createVirtualFile(
         portalsFS,
         fileUri,
@@ -458,7 +466,8 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        getLogicalEntityName(result, logicalEntityName)
+        getLogicalEntityName(result, logicalEntityName),
+        filePath
     );
 }
 
@@ -608,7 +617,8 @@ async function createVirtualFile(
     mimeType?: string,
     isPreloadedContent?: boolean,
     mappingEntityId?: string,
-    logicalEntityName?: string
+    logicalEntityName?: string,
+    filePath?: string[]
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -639,6 +649,7 @@ async function createVirtualFile(
         odataEtag,
         attributePath,
         originalAttributeContent,
-        mappingEntityId
+        mappingEntityId,
+        filePath,
     );
 }
