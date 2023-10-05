@@ -10,7 +10,7 @@ const fluid = require("fluid-framework");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { AzureClient } = require("@fluidframework/azure-client");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const DataverseTokenProvider = require("../common/DataverseTokenProvider");
+const DataverseTokenProvider = require("../DataverseTokenProvider");
 
 const { SharedMap, ConnectionState } = fluid;
 
@@ -90,7 +90,6 @@ async function loadContainer(config, id, swpId) {
         // TODO: insert user with entity id in container
 
         audience.on("memberRemoved", (clientId, member) => {
-
             if (!existingMembers.get(member.userId)) {
                 self.postMessage({
                     type: "member-removed",
