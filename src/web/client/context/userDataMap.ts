@@ -5,28 +5,19 @@
 
 export interface IUserData {
     containerId: string;
-    fileName: string;
-    filePath: string;
     userName: string;
     userId: string;
 }
 
 export class UserData implements IUserData {
     _containerId: string;
-    _fileName: string;
-    _filePath: string;
     _userName: string;
     _userId: string;
+    _entityId: string[];
 
     // Getters
     public get containerId(): string {
         return this._containerId;
-    }
-    public get fileName(): string {
-        return this._fileName;
-    }
-    public get filePath(): string {
-        return this._filePath;
     }
     public get userName(): string {
         return this._userName;
@@ -34,19 +25,20 @@ export class UserData implements IUserData {
     public get userId(): string {
         return this._userId;
     }
+    public get entityId(): string[] {
+        return this._entityId;
+    }
 
     constructor(
         containerId: string,
-        fileName: string,
-        filePath: string,
         userName: string,
-        userId: string
+        userId: string,
+        entityId: string[]
     ) {
-        this._fileName = fileName;
         this._containerId = containerId;
-        this._filePath = filePath;
         this._userName = userName;
         this._userId = userId;
+        this._entityId = entityId;
     }
 }
 
@@ -59,17 +51,15 @@ export class UserDataMap {
 
     public setUserData(
         containerId: string,
-        fileName: string,
-        filePath: string,
         userName: string,
-        userId: string
+        userId: string,
+        entityId: string[]
     ) {
         const userData = new UserData(
             containerId,
-            fileName,
-            filePath,
             userName,
-            userId
+            userId,
+            entityId
         );
 
         this.usersMap.set(userId, userData);
