@@ -21,6 +21,7 @@
   let isLoggedIn = false;
   let apiResponseInProgress = false;
   let selectedCode = "";
+  let copilotStrings = {};
 
 
   const inputHistory = [];
@@ -404,6 +405,10 @@
     const message = event.data; // The JSON data our extension sent
 
     switch (message.type) {
+      case "copilotStrings": {
+        copilotStrings = message.value; //Localized string values object
+        break;
+      }
       case "apiResponse": {
         apiResponseHandler.updateResponse(message.value);
         apiResponseInProgress = false;
@@ -472,7 +477,7 @@
         }
         case "explainCode": {
             selectedCode = message.value.selectedCode;
-            const explainPrompt = 'Explain the following code:';
+            const explainPrompt = copilotStrings.EXPLAIN_CODE_PROMPT;
             processUserInput(explainPrompt);
         }
 

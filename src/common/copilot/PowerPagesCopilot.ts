@@ -22,6 +22,7 @@ import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common
 import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
+import { COPILOT_STRINGS } from "./assets/copilotStrings";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -177,6 +178,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
         case "webViewLoaded": {
+          // Send the localized strings to the copilot webview
+          this.sendMessageToWebview({type: 'copilotStrings', value: COPILOT_STRINGS})
           if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
             this.sendMessageToWebview({ type: 'Unavailable' });
             return;
