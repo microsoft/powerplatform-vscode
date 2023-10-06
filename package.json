@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
-  "version": "1.0.1-dev",
+  "version": "22.2.22",
   "scripts": {
     "clean": "scorch",
     "build": "node node_modules/gulp/bin/gulp.js",
@@ -577,8 +577,7 @@
       "editor/context": [
         {
           "submenu": "microsoft-powerapps-portals.powerpages-copilot",
-          "group": "0_powerpages-copilot",
-          "when": "never"
+          "group": "0_powerpages-copilot"
         }
       ],
       "microsoft-powerapps-portals.powerpages-copilot": [
@@ -1033,6 +1032,7 @@
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
+    "gpt-tokenizer": "^2.1.1",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",

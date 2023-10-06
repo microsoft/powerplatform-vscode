@@ -472,6 +472,11 @@
                 break;
             }
             chatInputLabel.classList.remove("hide");
+            if(message.value.tokenSize == false){
+                chatInputLabel.innerText = `Selection is too large!`;
+                selectedCode = "";
+                break;
+            }
             chatInputLabel.innerText = `Lines: ${message.value.start + 1} - ${message.value.end + 1} selected`;
             break;
         }

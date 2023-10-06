@@ -23,6 +23,7 @@ import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
+import { isWithinTokenLimit } from "gpt-tokenizer";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -79,14 +80,21 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             const selectedCodeLineRange = getSelectedCodeLineRange(editor);
             if(commandType === EXPLAIN_CODE && selectedCode.length === 0) {
                 // Show a message if the selection is empty and don't send the message to webview
+                console.log("Selection is empty!");
                 vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty!'));
                 return;
             }
-            this.sendMessageToWebview({ type: commandType, value: { start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode } });
+            const withinTokenLimit = isWithinTokenLimit(selectedCode, 1000);
+            if(withinTokenLimit === false && commandType === EXPLAIN_CODE) {
+              console.log("Selection is too long! Please select a smaller portion of code.");
+              vscode.window.showInformationMessage(vscode.l10n.t('Selection is too long! Please select a smaller portion of code.'));
+              return;
+            }
+            this.sendMessageToWebview({ type: commandType, value: { start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode, tokenSize: withinTokenLimit } });
         };
 
         this._disposables.push(
-           vscode.window.onDidChangeTextEditorSelection(() => handleSelectionChange("selectedCodeInfo"))
+           vscode.window.onDidChangeTextEditorSelection(() => handleSelectionChange("selectedCodeInfo")), vscode.window.onDidChangeActiveTextEditor(() => handleSelectionChange("selectedCodeInfo"))
         );
 
         this._disposables.push(
