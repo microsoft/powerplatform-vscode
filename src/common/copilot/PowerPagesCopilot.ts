@@ -10,7 +10,7 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO_ENABLED, WebViewMessage, sendIconSvg } from "./constants";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO_ENABLED, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -22,6 +22,7 @@ import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common
 import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
+import { COPILOT_STRINGS } from "./assets/copilotStrings";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -68,16 +69,28 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
 
     if (SELECTED_CODE_INFO_ENABLED) { //TODO: Remove this check once the feature is ready
+
+        const handleSelectionChange = async (commandType: string) => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                return;
+            }
+            const selectedCode = getSelectedCode(editor);
+            const selectedCodeLineRange = getSelectedCodeLineRange(editor);
+            if(commandType === EXPLAIN_CODE && selectedCode.length === 0) {
+                // Show a message if the selection is empty and don't send the message to webview
+                vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty!'));
+                return;
+            }
+            this.sendMessageToWebview({ type: commandType, value: { start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode } });
+        };
+
         this._disposables.push(
-            vscode.window.onDidChangeTextEditorSelection(async () => {
-                const editor = vscode.window.activeTextEditor;
-                if (!editor) {
-                    return;
-                }
-                const selectedCode = getSelectedCode(editor);
-                const selectedCodeLineRange = getSelectedCodeLineRange(editor);
-                this.sendMessageToWebview({ type: "selectedCodeInfo", value: {start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode} });
-            })
+           vscode.window.onDidChangeTextEditorSelection(() => handleSelectionChange("selectedCodeInfo"))
+        );
+
+        this._disposables.push(
+            vscode.commands.registerCommand("powerpages.copilot.explain", () => handleSelectionChange(EXPLAIN_CODE))
         );
     }
 
@@ -165,6 +178,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
         case "webViewLoaded": {
+          // Send the localized strings to the copilot webview
+          this.sendMessageToWebview({type: 'copilotStrings', value: COPILOT_STRINGS})
           if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
             this.sendMessageToWebview({ type: 'Unavailable' });
             return;

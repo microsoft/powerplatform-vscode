@@ -160,10 +160,6 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">File(s) already exist. No new files to add</source>
         <target state="translated">ファイルは既に存在します。追加する新しいファイルはありません</target>
       </trans-unit>
-      <trans-unit id="++CODE++6658fe1c5f8e493175e012ea4a3f7e08df6207342fba111ccc67ba8d4d91977f">
-        <source xml:lang="en">Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.</source>
-        <target state="translated">Power Pages サイトのコードを HTML、CSS、JS 言語で記述する際のヘルプを、Copilot で取得します。</target>
-      </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
         <note>{0} represents the version number</note>
@@ -241,6 +237,14 @@ URL: {1}
         <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
         <target state="translated">1 つ以上の属性名が変更または削除されています。管理者にお問い合わせください。</target>
       </trans-unit>
+      <trans-unit id="++CODE++9c1a3ec7947746271d8596f2a428139e20ff14d48e87d4631a3fc17004c170f9">
+        <source xml:lang="en">Open in Power Pages</source>
+        <target state="translated">Power Pages で開く</target>
+      </trans-unit>
+      <trans-unit id="++CODE++dac0ee62a5197a3722a9e7e9e851e80504cced8a13ce8b17842d78e8313578c2">
+        <source xml:lang="en">Opening preview site...</source>
+        <target state="translated">プレビュー サイトを開いています...</target>
+      </trans-unit>
       <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
         <source xml:lang="en">PAC Telemetry disabled</source>
         <target state="translated">PAC テレメトリが無効になりました</target>
@@ -278,6 +282,10 @@ URL: {1}
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
         <note>{0} represents the version number</note>
         <target state="translated">pac CLI (v{0}) を準備しています...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
+        <source xml:lang="en">Preview site</source>
+        <target state="translated">プレビュー サイト</target>
       </trans-unit>
       <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
         <source xml:lang="en">Profile Kind: {0}</source>
@@ -325,10 +333,6 @@ URL: {1}
       <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
         <source xml:lang="en">Thereâ€™s a problem on the back end</source>
         <target state="translated">バック エンドに問題があります</target>
-      </trans-unit>
-      <trans-unit id="++CODE++8d6329ce370e7f2cf3a5b77a73e0100c08550628408f2763deafe57dce769719">
-        <source xml:lang="en">Try Copilot for Power Pages</source>
-        <target state="translated">Power Pages の Copilot を試す</target>
       </trans-unit>
       <trans-unit id="++CODE++d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f">
         <source xml:lang="en">Try again</source>
@@ -543,6 +547,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
         <source xml:lang="en">Overview</source>
         <target state="translated">概要</target>
+      </trans-unit>
+      <trans-unit id="microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title">
+        <source xml:lang="en">POWER PAGES ACTIONS</source>
+        <target state="translated">POWER PAGES アクション</target>
       </trans-unit>
       <trans-unit id="power-platform-activitybar.title">
         <source xml:lang="en">Power Platform</source>
