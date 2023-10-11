@@ -225,7 +225,7 @@ export function getBackToStudioURL() {
         .replace("{webSiteId}", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID) as string);
 }
 export function getSupportedImageFileExtensionsForEdit() {
-    return ['png', 'jpg', 'webp', 'bmp', 'tga', 'ico', 'jpeg']; // Luna paint supported image file extensions
+    return ['png', 'jpg', 'webp', 'bmp', 'tga', 'ico', 'jpeg', 'bmp', 'dib', 'jif', 'jpe', 'tpic']; // Luna paint supported image file extensions
 }
 
 export function isImageFileSupportedForEdit(fileName: string): boolean {
