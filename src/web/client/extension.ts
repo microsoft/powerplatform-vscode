@@ -18,13 +18,11 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { convertContentToString, isCoPresenceEnabled } from "./utilities/commonUtil";
+import { isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
 import {
-    updateFileDirtyChanges,
-    updateEntityColumnContent,
     getFileEntityId,
     getFileEntityName,
 } from "./utilities/fileAndEntityUtil";
@@ -246,6 +244,8 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
     );
 }
 
+// This function will not be triggered for image file content update
+// Image file content write to images needs to be handled in writeFile call directly
 export function processWillSaveDocument(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onWillSaveTextDocument(async (e) => {
@@ -254,20 +254,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
             if (vscode.window.activeTextEditor === undefined) {
                 return;
             } else if (isActiveDocument(fileFsPath)) {
-                const fileData =
-                    WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath);
-
-                // Update the latest content in context
-                if (fileData?.entityId && fileData.attributePath) {
-                    let fileContent = e.document.getText();
-                    fileContent = convertContentToString(fileContent, fileData.encodeAsBase64 as boolean);
-                    updateEntityColumnContent(
-                        fileData?.entityId,
-                        fileData.attributePath,
-                        fileContent
-                    );
-                    updateFileDirtyChanges(fileFsPath, true);
-                }
+                updateFileContentInFileDataMap(fileFsPath, e.document.getText());
             }
         })
     );

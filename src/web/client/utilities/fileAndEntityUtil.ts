@@ -28,6 +28,11 @@ export function getFileEntityName(fileFsPath: string) {
         ?.entityName as string ?? WebExtensionContext.getVscodeWorkspaceState(fileFsPath)?.entityName as string;
 }
 
+export function getFileAttributePath(fileFsPath: string) {
+    return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
+        ?.attributePath as IAttributePath;
+}
+
 export function getFileEntityEtag(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
         ?.entityEtag as string;
@@ -91,7 +96,7 @@ export function updateEntityEtag(entityId: string, entityEtag: string) {
 export function updateEntityColumnContent(
     entityId: string,
     attributePath: IAttributePath,
-    fileContent: string
+    fileContent: string | Uint8Array
 ) {
     WebExtensionContext.entityDataMap.updateEntityColumnContent(
         entityId,
