@@ -20,7 +20,8 @@
   let isCopilotEnabled = true;
   let isLoggedIn = false;
   let apiResponseInProgress = false;
-
+  let selectedCode = "";
+  let copilotStrings = {};
 
 
   const inputHistory = [];
@@ -62,7 +63,7 @@
 
   vscode.postMessage({ type: "webViewLoaded" });
 
-  function parseCodeBlocks(responseText) {
+  function parseCodeBlocks(responseText, isUserCode) {
     const resultDiv = document.createElement("div");
     let codeLineCount = 0;
 
@@ -84,6 +85,9 @@
 
       const codeDiv = document.createElement("div");
       codeDiv.classList.add("code-division");
+
+      isUserCode ? codeDiv.classList.add("user-code") : codeDiv.classList.add("copilot-code");
+
       let codeBlock = responseText[i].code;
 
       codeLineCount += countLines(codeBlock);
@@ -109,35 +113,6 @@
   function countLines(str) {
     const lines = str.split('\n');
     return lines.length;
-  }
-
-  function formatCodeBlocks(responseText) {
-    const blocks = responseText.split("```");
-    const resultDiv = document.createElement("div");
-
-    for (let i = 0; i < blocks.length; i++) {
-      if (i % 2 === 0) {
-        // Handle text blocks
-        const textDiv = document.createElement("div");
-        textDiv.innerText = blocks[i];
-        resultDiv.appendChild(textDiv);
-      } else {
-        // Handle code blocks
-        const codeDiv = document.createElement("div");
-        codeDiv.classList.add("code-division");
-        codeDiv.appendChild(createActionWrapper(blocks[i]));
-
-        const preFormatted = document.createElement("pre");
-        const codeSnip = document.createElement("code");
-        codeSnip.innerText = blocks[i];
-        preFormatted.appendChild(codeSnip);
-
-        codeDiv.appendChild(preFormatted);
-        resultDiv.appendChild(codeDiv);
-      }
-    }
-    resultDiv.classList.add("result-div");
-    return resultDiv;
   }
 
   function createActionWrapper(code) {
@@ -195,7 +170,7 @@
     makerElement.appendChild(user);
     messageElement.appendChild(makerElement);
     makerElement.appendChild(document.createElement("br"));
-    messageElement.appendChild(formatCodeBlocks(message));
+    messageElement.appendChild(parseCodeBlocks(message, true));
 
     messageElement.classList.add("message", "user-message");
 
@@ -430,6 +405,10 @@
     const message = event.data; // The JSON data our extension sent
 
     switch (message.type) {
+      case "copilotStrings": {
+        copilotStrings = message.value; //Localized string values object
+        break;
+      }
       case "apiResponse": {
         apiResponseHandler.updateResponse(message.value);
         apiResponseInProgress = false;
@@ -487,13 +466,21 @@
     }
         case "selectedCodeInfo": {
             const chatInputLabel = document.getElementById("input-label-id");
-            if (message.value.start == message.value.end && message.value.selectedCode.length == 0) {
+            selectedCode = message.value.selectedCode;
+            if (message.value.start == message.value.end && selectedCode.length == 0) {
                 chatInputLabel.classList.add("hide");
                 break;
             }
             chatInputLabel.classList.remove("hide");
             chatInputLabel.innerText = `Lines: ${message.value.start + 1} - ${message.value.end + 1} selected`;
+            break;
         }
+        case "explainCode": {
+            selectedCode = message.value.selectedCode;
+            const explainPrompt = copilotStrings.EXPLAIN_CODE_PROMPT;
+            processUserInput(explainPrompt);
+        }
+
     }
   });
 
@@ -523,35 +510,36 @@
     vscode.postMessage({ type: "walkthrough" });
   }
 
-
-  SendButton?.addEventListener("click", () => {
-    if(apiResponseInProgress) {
+  function processUserInput(input) {
+    if (apiResponseInProgress) {
       return;
     }
-    if ((chatInput).value.trim()) {
-      handleUserMessage((chatInput).value);
+    if (input) {
+      const userPrompt = [{ displayText: input, code: selectedCode }];
+      handleUserMessage(userPrompt);
       chatInput.disabled = true;
-      saveInputToHistory(chatInput.value);
+      saveInputToHistory(input);
       apiResponseInProgress = true;
-      getApiResponse((chatInput).value);
-      (chatInput).value = "";
-      (chatInput).focus();
+      getApiResponse(input + ': ' + selectedCode); //TODO: userPrompt object should be passed
+      chatInput.value = "";
+      chatInput.focus();
     }
+  }
+
+
+  SendButton?.addEventListener("click", () => {
+    processUserInput(chatInput.value.trim());
   });
 
   chatInput.addEventListener("keydown", (event) => {
-    if(apiResponseInProgress) {
+    if(apiResponseInProgress && event.key !== "Enter") {
       return;
     }
-    if (event.key === "Enter" && (chatInput).value.trim()) {
-      handleUserMessage((chatInput).value);
-      chatInput.disabled = true;
-      saveInputToHistory(chatInput.value);
-      apiResponseInProgress = true;
-      getApiResponse((chatInput).value);
-      (chatInput).value = "";
+    if (event.key === "Enter") {
+      processUserInput(chatInput.value.trim());
     }
   });
+
   chatMessages.addEventListener("click", handleFeedbackClick);
 
   function handleFeedbackClick(event) {
@@ -596,15 +584,8 @@
   }
 
   function handleSuggestionsClick() {
-    if(apiResponseInProgress) {
-      return;
-    }
-    const userPrompt = this.textContent.trim();
-    handleUserMessage(userPrompt);
-    chatInput.disabled = true;
-    saveInputToHistory(userPrompt);
-    apiResponseInProgress = true;
-    getApiResponse(userPrompt);
+    const suggestedPrompt = this.innerText.trim();
+    processUserInput(suggestedPrompt);
   }
 
   chatInput.addEventListener('keydown', handleArrowKeys);
