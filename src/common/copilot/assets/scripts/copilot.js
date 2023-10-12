@@ -79,7 +79,7 @@
         return resultDiv;
       }
 
-      if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined || responseText[i].code === "violation" || responseText[i].code === "unclear") {
+      if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined || responseText[i].code === "violation" || responseText[i].code === "unclear" || responseText[i].code === "explain") {
         continue;
       }
 
@@ -525,7 +525,7 @@
       chatInput.disabled = true;
       saveInputToHistory(input);
       apiResponseInProgress = true;
-      getApiResponse(input + ': ' + selectedCode); //TODO: userPrompt object should be passed
+      getApiResponse(userPrompt); //TODO: userPrompt object should be passed
       chatInput.value = "";
       chatInput.focus();
     }
