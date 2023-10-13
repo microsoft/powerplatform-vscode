@@ -577,7 +577,8 @@
       "editor/context": [
         {
           "submenu": "microsoft-powerapps-portals.powerpages-copilot",
-          "group": "0_powerpages-copilot"
+          "group": "0_powerpages-copilot",
+          "when": "powerpages.copilot.isVisible"
         }
       ],
       "microsoft-powerapps-portals.powerpages-copilot": [

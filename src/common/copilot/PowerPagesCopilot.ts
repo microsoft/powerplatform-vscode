@@ -80,13 +80,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             const selectedCodeLineRange = getSelectedCodeLineRange(editor);
             if(commandType === EXPLAIN_CODE && selectedCode.length === 0) {
                 // Show a message if the selection is empty and don't send the message to webview
-                console.log("Selection is empty!");
                 vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty!'));
                 return;
             }
             const withinTokenLimit = isWithinTokenLimit(selectedCode, 1000);
             if(withinTokenLimit === false && commandType === EXPLAIN_CODE) {
-              console.log("Selection is too long! Please select a smaller portion of code.");
               vscode.window.showInformationMessage(vscode.l10n.t('Selection is too long! Please select a smaller portion of code.'));
               return;
             }
@@ -98,7 +96,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         );
 
         this._disposables.push(
-            vscode.commands.registerCommand("powerpages.copilot.explain", () => handleSelectionChange(EXPLAIN_CODE))
+            vscode.commands.registerCommand("powerpages.copilot.explain", () => { this.show(); handleSelectionChange(EXPLAIN_CODE)})
         );
     }
 
@@ -174,6 +172,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     };
 
     const pacOutput = await this._pacWrapper?.activeOrg();
+
+    if(SELECTED_CODE_INFO_ENABLED){
+        vscode.commands.executeCommand('setContext', 'powerpages.copilot.isVisible', true);
+    }
 
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
       await this.handleOrgChangeSuccess(pacOutput.Results);

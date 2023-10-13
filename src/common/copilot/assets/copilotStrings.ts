@@ -7,5 +7,5 @@
 import vscode from "vscode";
 
 export const COPILOT_STRINGS = {
-    EXPLAIN_CODE_PROMPT: vscode.l10n.t('Explain the following code:'),
+    EXPLAIN_CODE_PROMPT: vscode.l10n.t('Explain the following code snippet:'),
 }
