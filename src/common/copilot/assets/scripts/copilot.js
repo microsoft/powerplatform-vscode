@@ -455,7 +455,7 @@
         break;
       }
       case "Available": {
-        if(isCopilotEnabled== false) {
+        if(isCopilotEnabled === false) {
           isCopilotEnabled = true;
           chatInputComponent.classList.remove("hide");
           chatMessages.innerHTML = "";
@@ -467,12 +467,12 @@
         case "selectedCodeInfo": {
             const chatInputLabel = document.getElementById("input-label-id");
             selectedCode = message.value.selectedCode;
-            if (message.value.start == message.value.end && selectedCode.length == 0) {
+            if (selectedCode.length === 0) {
                 chatInputLabel.classList.add("hide");
                 break;
             }
             chatInputLabel.classList.remove("hide");
-            if(message.value.tokenSize == false){
+            if(message.value.tokenSize === false){
                 chatInputLabel.innerText = `Selection is too large!`;
                 selectedCode = "";
                 break;
