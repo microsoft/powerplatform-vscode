@@ -33,7 +33,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         "dataverseEntity": activeFileParams.dataverseEntity,
         "entityField": activeFileParams.entityField,
         "fieldType": activeFileParams.fieldType,
-        "activeFileContent": '',
+        "activeFileContent": '', //TODO: Add active file content (selected code)
         "targetEntity": entityName,
         "targetColumns": entityColumns,
         "clientType": clientType,

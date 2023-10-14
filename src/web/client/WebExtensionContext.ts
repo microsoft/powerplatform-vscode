@@ -256,7 +256,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._isContextSet = true;
     }
 
-    public async setVscodeWorkspaceState(workspaceState: vscode.Memento) {
+    public setVscodeWorkspaceState(workspaceState: vscode.Memento) {
         try {
             workspaceState.keys().forEach((key) => {
                 const entityInfo = workspaceState.get(key) as IEntityInfo;
