@@ -319,6 +319,7 @@ async function processDataAndCreateFile(
     >;
     let counter = 0;
     let fileUri = "";
+    const entityFileMap = new Map<string, string[]>();
 
     for (counter; counter < attributeArray.length; counter++) {
         const fileExtension = attributeExtensionMap?.get(
@@ -345,6 +346,10 @@ async function processDataAndCreateFile(
             let fileCreationValid = true;
             let fileNameWithExtension = GetFileNameWithExtension(entityName, fileName, languageCode, fileExtension);
 
+            const filePath = entityFileMap.get(entityId) ?? [];
+            filePath.push(fileNameWithExtension);
+            entityFileMap.set(entityId, filePath);
+
             if (defaultFileInfo?.fileName) {
                 fileCreationValid = defaultFileInfo?.fileName === fileNameWithExtension ||
                     (defaultFileInfo?.fileName.startsWith(fileName) && defaultFileInfo?.fileName.endsWith(fileExtension));
@@ -363,7 +368,8 @@ async function processDataAndCreateFile(
                     mappingEntityFetchQuery,
                     entityId,
                     dataverseOrgUrl,
-                    portalsFS
+                    portalsFS,
+                    entityFileMap
                 );
             }
         }
@@ -409,7 +415,8 @@ async function createFile(
     mappingEntityFetchQuery: string | undefined,
     entityId: string,
     dataverseOrgUrl: string,
-    portalsFS: PortalsFS
+    portalsFS: PortalsFS,
+    entityFileMap: Map<string, string[]>
 ) {
     const base64Encoded: boolean = isBase64Encoded(
         entityName,
@@ -443,13 +450,7 @@ async function createFile(
         fileContent = GetFileContent(result, attributePath, entityName, entityId);
     }
 
-    const filePath : string[] = [];
-
-    Array.from(WebExtensionContext.fileDataMap.getFileMap.entries()).forEach(([fileUri, data]) => {
-        if (data.entityId === entityId) {
-            filePath.push(fileUri);
-        }
-    });
+    const filePath : string[] = entityFileMap.get(entityId) ?? [];
 
     await createVirtualFile(
         portalsFS,
