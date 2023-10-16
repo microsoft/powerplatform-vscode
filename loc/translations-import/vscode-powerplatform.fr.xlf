@@ -310,6 +310,10 @@ ID d’organisation : {3}</target>
         <source xml:lang="en">Select Type</source>
         <target state="translated">Sélectionner le type</target>
       </trans-unit>
+      <trans-unit id="++CODE++65345605126fab2b832c3abd5196372353a1bda6ac67337a11d6bffcf2dc83cd">
+        <source xml:lang="en">Selection is empty!</source>
+        <target state="translated">La sélection est vide !</target>
+      </trans-unit>
       <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
         <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
         <target state="translated">Le générateur Power Pages est prêt à être utilisé dans votre extension VS Code !</target>
