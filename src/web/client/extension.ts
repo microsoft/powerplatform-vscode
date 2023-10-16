@@ -18,13 +18,11 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { convertContentToString, isCoPresenceEnabled } from "./utilities/commonUtil";
+import { isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
 import {
-    updateFileDirtyChanges,
-    updateEntityColumnContent,
     getFileEntityId,
     getFileEntityName,
 } from "./utilities/fileAndEntityUtil";
@@ -44,6 +42,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             dataBoundary
         );
+    WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
     WebExtensionContext.telemetry.setTelemetryReporter(
         context.extension.id,
         context.extension.packageJSON.version,
@@ -106,7 +105,6 @@ export function activate(context: vscode.ExtensionContext): void {
                     queryParamsMap,
                     context.extensionUri
                 );
-                WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
                     entity,
@@ -228,24 +226,34 @@ export function processWalkthroughFirstRunExperience(context: vscode.ExtensionCo
 
 export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
     context.subscriptions.push(
-        vscode.workspace.onDidOpenTextDocument((textDocument) => {
-            const entityInfo: IEntityInfo = {
-                entityId: getFileEntityId(textDocument.uri.fsPath),
-                entityName: getFileEntityName(textDocument.uri.fsPath)
-            };
-            context.workspaceState.update(textDocument.uri.fsPath, entityInfo);
-            WebExtensionContext.updateVscodeWorkspaceState(textDocument.uri.fsPath, entityInfo);
-        })
-    );
+        vscode.window.tabGroups.onDidChangeTabs((event) => {
+            event.opened.concat(event.changed).forEach(tab => {
+                if (tab.input instanceof vscode.TabInputCustom || tab.input instanceof vscode.TabInputText) {
+                    const document = tab.input;
+                    const entityInfo: IEntityInfo = {
+                        entityId: getFileEntityId(document.uri.fsPath),
+                        entityName: getFileEntityName(document.uri.fsPath)
+                    };
+                    if (entityInfo.entityId && entityInfo.entityName) {
+                        context.workspaceState.update(document.uri.fsPath, entityInfo);
+                        WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, entityInfo);
+                    }
+                }
+            });
 
-    context.subscriptions.push(
-        vscode.workspace.onDidCloseTextDocument((textDocument) => {
-            context.workspaceState.update(textDocument.uri.fsPath, undefined);
-            WebExtensionContext.updateVscodeWorkspaceState(textDocument.uri.fsPath, undefined);
+            event.closed.forEach(tab => {
+                if (tab.input instanceof vscode.TabInputCustom || tab.input instanceof vscode.TabInputText) {
+                    const document = tab.input;
+                    context.workspaceState.update(document.uri.fsPath, undefined);
+                    WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, undefined);
+                }
+            });
         })
     );
 }
 
+// This function will not be triggered for image file content update
+// Image file content write to images needs to be handled in writeFile call directly
 export function processWillSaveDocument(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onWillSaveTextDocument(async (e) => {
@@ -254,20 +262,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
             if (vscode.window.activeTextEditor === undefined) {
                 return;
             } else if (isActiveDocument(fileFsPath)) {
-                const fileData =
-                    WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath);
-
-                // Update the latest content in context
-                if (fileData?.entityId && fileData.attributePath) {
-                    let fileContent = e.document.getText();
-                    fileContent = convertContentToString(fileContent, fileData.encodeAsBase64 as boolean);
-                    updateEntityColumnContent(
-                        fileData?.entityId,
-                        fileData.attributePath,
-                        fileContent
-                    );
-                    updateFileDirtyChanges(fileFsPath, true);
-                }
+                updateFileContentInFileDataMap(fileFsPath, e.document.getText());
             }
         })
     );

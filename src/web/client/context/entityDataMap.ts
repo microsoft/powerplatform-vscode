@@ -12,7 +12,7 @@ export class EntityDataMap {
     private updateEntityContent(
         entityId: string,
         columnName: string,
-        columnContent: string
+        columnContent: string | Uint8Array
     ) {
         const existingEntity = this.entityMap.get(entityId);
 
@@ -36,7 +36,7 @@ export class EntityDataMap {
         attributeContent: string,
         mappingEntityId?: string
     ) {
-        let entityColumnMap = new Map<string, string>();
+        let entityColumnMap = new Map<string, string | Uint8Array>();
         const existingEntity = this.entityMap.get(entityId);
 
         if (existingEntity) {
@@ -84,7 +84,7 @@ export class EntityDataMap {
     public updateEntityColumnContent(
         entityId: string,
         columnName: IAttributePath,
-        columnAttributeContent: string
+        columnAttributeContent: string | Uint8Array
     ) {
         const existingEntity = this.entityMap.get(entityId);
 

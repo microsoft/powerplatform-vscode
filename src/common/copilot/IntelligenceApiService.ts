@@ -33,7 +33,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
         "dataverseEntity": activeFileParams.dataverseEntity,
         "entityField": activeFileParams.entityField,
         "fieldType": activeFileParams.fieldType,
-        "activeFileContent": userPrompt[0].code, //TODO: Add active file content (selected code)
+        "activeFileContent": userPrompt[0].code, //Active file content (selected code)
         "targetEntity": entityName,
         "targetColumns": entityColumns,
         "clientType": clientType,

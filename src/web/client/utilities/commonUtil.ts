@@ -21,7 +21,8 @@ import { schemaEntityName } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
-import { doesFileExist } from "./fileAndEntityUtil";
+import { doesFileExist, getFileAttributePath, getFileEntityName, updateEntityColumnContent, updateFileDirtyChanges } from "./fileAndEntityUtil";
+import { isWebFileV2 } from "./schemaHelperUtil";
 
 // decodes file content to UTF-8
 export function convertContentToUint8Array(content: string, isBase64Encoded: boolean): Uint8Array {
@@ -30,7 +31,7 @@ export function convertContentToUint8Array(content: string, isBase64Encoded: boo
 }
 
 // encodes file content to base64 or returns the content as is
-export function convertContentToString(content: string, isBase64Encoded: boolean): string {
+export function convertContentToString(content: string | Uint8Array, isBase64Encoded: boolean): string | Uint8Array {
     return isBase64Encoded ? Buffer.from(content).toString(BASE_64) : content;
 }
 
@@ -222,4 +223,44 @@ export function getBackToStudioURL() {
         .replace("{environmentId}", getEnvironmentIdFromUrl())
         .replace("{.region}", region.toLowerCase() === STUDIO_PROD_REGION ? "" : `.${WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string}`)
         .replace("{webSiteId}", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID) as string);
+}
+export function getSupportedImageFileExtensionsForEdit() {
+    return ['png', 'jpg', 'webp', 'bmp', 'tga', 'ico', 'jpeg', 'bmp', 'dib', 'jif', 'jpe', 'tpic']; // Luna paint supported image file extensions
+}
+
+export function isImageFileSupportedForEdit(fileName: string): boolean {
+    const fileExtension = getFileExtension(fileName) as string;
+    const supportedImageFileExtensions = getSupportedImageFileExtensionsForEdit();
+    const isSupported = fileExtension !== undefined ?
+        supportedImageFileExtensions.includes(fileExtension.toLowerCase()) : false;
+
+    if (isSupported) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION,
+            { fileExtension: fileExtension });
+    }
+
+    return isSupported;
+}
+
+export function updateFileContentInFileDataMap(fileFsPath: string, fileContent: string | Uint8Array, isFileContentBase64Encoded = false) {
+    const fileData =
+        WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath);
+
+    // Update the latest content in context
+    if (fileData?.entityId && fileData.attributePath) {
+        fileContent = convertContentToString(fileContent, isFileContentBase64Encoded ? false : fileData.encodeAsBase64 as boolean);
+
+        updateEntityColumnContent(
+            fileData?.entityId,
+            fileData.attributePath,
+            fileContent
+        );
+        updateFileDirtyChanges(fileFsPath, true);
+    }
+}
+
+export function getImageFileContent(fileFsPath: string, fileContent: Uint8Array) {
+    const webFileV2 = isWebFileV2(getFileEntityName(fileFsPath), getFileAttributePath(fileFsPath)?.source);
+
+    return webFileV2 ? fileContent : Buffer.from(fileContent).toString(BASE_64);
 }
