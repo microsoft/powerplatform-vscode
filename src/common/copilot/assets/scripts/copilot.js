@@ -22,8 +22,7 @@
   let apiResponseInProgress = false;
   let selectedCode = "";
   let copilotStrings = {};
-  let selectedCode = "";
-  let copilotStrings = {};
+
 
 
   const inputHistory = [];

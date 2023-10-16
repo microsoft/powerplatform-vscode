@@ -27,7 +27,7 @@ export const PROMPT_LIMIT_EXCEEDED = 'PromptLimitExceeded';
 export const INVALID_INFERENCE_INPUT = 'InvalidInferenceInput';
 export const COPILOT_NOTIFICATION_DISABLED = 'isCopilotNotificationDisabled'
 export const EXPLAIN_CODE = 'explainCode';
-export const SELECTED_CODE_INFO_ENABLED = true;
+export const SELECTED_CODE_INFO_ENABLED = false;
 
 export type WebViewMessage = {
   type: string;
