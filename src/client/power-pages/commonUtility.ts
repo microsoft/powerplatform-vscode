@@ -197,3 +197,23 @@ export function getRegExPattern(fileNameArray: string[]): RegExp[] {
 
     return patterns;
 }
+
+export const findObjectIndexByProperty = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    array: any,
+    key: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: any
+): number => {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i][key] === value) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+export const removeExtension = (fileName: string, extn: string): string => {
+    // Using slice to remove the extension from the end
+    return fileName.slice(0, -extn.length);
+}
