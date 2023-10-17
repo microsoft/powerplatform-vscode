@@ -20,14 +20,14 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Release Notes
 
-2.0.11:
+2.0.12:
   - pac CLI 1.28.2 (September refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - Web Extension updates:
     - Now Supporting image edit capability using Vscode extensions for Image editing (supported file extensions are png, jpg, webp, bmp, tga, ico, dib, jif, jpe, tpic, jpe, jpeg) #733
     - File explorer now supports Power Pages actions for "Going back to Power pages Studio" and "Preview" of site's runtime instance. #697
     - On browser refresh, Improved support for pre-emptive loading of image files active in editor. #736
 
-2.0.10:
+2.0.11:
   - pac CLI 1.27.5 (August refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - (Preview) Added 'Copilot in Power Pages' to Web Extension
 
