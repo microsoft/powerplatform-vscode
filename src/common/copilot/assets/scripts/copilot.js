@@ -13,6 +13,7 @@
   const chatMessages = document.getElementById("chat-messages");
   const chatInput = document.getElementById("chat-input");
   const chatInputComponent = document.getElementById("input-component");
+  const skipCodes = ["", null, undefined, "violation", "unclear", "explain"];
 
   let userName;
   let apiResponseHandler;
@@ -22,6 +23,7 @@
   let apiResponseInProgress = false;
   let selectedCode = "";
   let copilotStrings = {};
+
 
 
   const inputHistory = [];
@@ -79,7 +81,7 @@
         return resultDiv;
       }
 
-      if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined || responseText[i].code === "violation" || responseText[i].code === "unclear") {
+      if (skipCodes.includes(responseText[i].code)) {
         continue;
       }
 
@@ -147,7 +149,7 @@
     const nameArray = name.split(" ");
     const initials = nameArray.map((word) => word.charAt(0));
     const truncatedInitials = initials.slice(0, 2);
-    return truncatedInitials.join("");
+    return truncatedInitials.join("").toUpperCase();
   }
 
 
@@ -455,7 +457,7 @@
         break;
       }
       case "Available": {
-        if(isCopilotEnabled== false) {
+        if(isCopilotEnabled === false) {
           isCopilotEnabled = true;
           chatInputComponent.classList.remove("hide");
           chatMessages.innerHTML = "";
@@ -467,12 +469,17 @@
         case "selectedCodeInfo": {
             const chatInputLabel = document.getElementById("input-label-id");
             selectedCode = message.value.selectedCode;
-            if (message.value.start == message.value.end && selectedCode.length == 0) {
+            if (selectedCode.length === 0) {
                 chatInputLabel.classList.add("hide");
                 break;
             }
             chatInputLabel.classList.remove("hide");
-            chatInputLabel.innerText = `Lines: ${message.value.start + 1} - ${message.value.end + 1} selected`;
+            if(message.value.tokenSize === false){
+                chatInputLabel.innerText = copilotStrings.LARGE_SELECTION;
+                selectedCode = "";
+                break;
+            }
+            chatInputLabel.innerText = `Lines ${message.value.start + 1} - ${message.value.end + 1} selected`;
             break;
         }
         case "explainCode": {
@@ -520,7 +527,7 @@
       chatInput.disabled = true;
       saveInputToHistory(input);
       apiResponseInProgress = true;
-      getApiResponse(input + ': ' + selectedCode); //TODO: userPrompt object should be passed
+      getApiResponse(userPrompt); //TODO: userPrompt object should be passed
       chatInput.value = "";
       chatInput.focus();
     }

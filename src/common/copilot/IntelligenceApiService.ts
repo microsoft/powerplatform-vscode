@@ -4,7 +4,7 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse } from "./constants";
+import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse, UserPrompt } from "./constants";
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
@@ -15,14 +15,14 @@ import { EXTENSION_NAME } from "../../client/constants";
 const clientType = EXTENSION_NAME + '-' + getExtensionType();
 const clientVersion = getExtensionVersion();
 
-export async function sendApiRequest(userPrompt: string, activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null) {
+export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null) {
 
   if (!aibEndpoint) {
     return NetworkError;
   }
 
   const requestBody = {
-    "question": userPrompt,
+    "question": userPrompt[0].displayText,
     "top": 1,
     "context": {
       "sessionId": sessionID,
@@ -33,7 +33,7 @@ export async function sendApiRequest(userPrompt: string, activeFileParams: IActi
         "dataverseEntity": activeFileParams.dataverseEntity,
         "entityField": activeFileParams.entityField,
         "fieldType": activeFileParams.fieldType,
-        "activeFileContent": '', //TODO: Add active file content (selected code)
+        "activeFileContent": userPrompt[0].code, //Active file content (selected code)
         "targetEntity": entityName,
         "targetColumns": entityColumns,
         "clientType": clientType,
