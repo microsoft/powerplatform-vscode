@@ -319,7 +319,6 @@ async function processDataAndCreateFile(
     >;
     let counter = 0;
     let fileUri = "";
-    const entityFileMap = new Map<string, string[]>();
 
     for (counter; counter < attributeArray.length; counter++) {
         const fileExtension = attributeExtensionMap?.get(
@@ -346,10 +345,6 @@ async function processDataAndCreateFile(
             let fileCreationValid = true;
             let fileNameWithExtension = GetFileNameWithExtension(entityName, fileName, languageCode, fileExtension);
 
-            const filePath = entityFileMap.get(entityId) ?? [];
-            filePath.push(fileNameWithExtension);
-            entityFileMap.set(entityId, filePath);
-
             if (defaultFileInfo?.fileName) {
                 fileCreationValid = defaultFileInfo?.fileName === fileNameWithExtension ||
                     (defaultFileInfo?.fileName.startsWith(fileName) && defaultFileInfo?.fileName.endsWith(fileExtension));
@@ -368,8 +363,7 @@ async function processDataAndCreateFile(
                     mappingEntityFetchQuery,
                     entityId,
                     dataverseOrgUrl,
-                    portalsFS,
-                    entityFileMap
+                    portalsFS
                 );
             }
         }
@@ -415,8 +409,7 @@ async function createFile(
     mappingEntityFetchQuery: string | undefined,
     entityId: string,
     dataverseOrgUrl: string,
-    portalsFS: PortalsFS,
-    entityFileMap: Map<string, string[]>
+    portalsFS: PortalsFS
 ) {
     const base64Encoded: boolean = isBase64Encoded(
         entityName,
@@ -450,8 +443,6 @@ async function createFile(
         fileContent = GetFileContent(result, attributePath, entityName, entityId);
     }
 
-    const filePath : string[] = entityFileMap.get(entityId) ?? [];
-
     await createVirtualFile(
         portalsFS,
         fileUri,
@@ -467,8 +458,7 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        getLogicalEntityName(result, logicalEntityName),
-        filePath
+        getLogicalEntityName(result, logicalEntityName)
     );
 }
 
@@ -618,8 +608,7 @@ async function createVirtualFile(
     mimeType?: string,
     isPreloadedContent?: boolean,
     mappingEntityId?: string,
-    logicalEntityName?: string,
-    filePath?: string[]
+    logicalEntityName?: string
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -652,6 +641,6 @@ async function createVirtualFile(
         attributePath,
         originalAttributeContent,
         mappingEntityId,
-        filePath,
+        fileUri,
     );
 }
