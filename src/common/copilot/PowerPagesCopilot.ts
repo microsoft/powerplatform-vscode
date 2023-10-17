@@ -10,19 +10,20 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO_ENABLED, WebViewMessage, sendIconSvg } from "./constants";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
+import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -79,18 +80,26 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             const selectedCodeLineRange = getSelectedCodeLineRange(editor);
             if(commandType === EXPLAIN_CODE && selectedCode.length === 0) {
                 // Show a message if the selection is empty and don't send the message to webview
-                vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty!'));
+                vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty.'));
                 return;
             }
-            this.sendMessageToWebview({ type: commandType, value: { start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode } });
+            const withinTokenLimit = isWithinTokenLimit(selectedCode, 1000);
+            if(commandType === EXPLAIN_CODE) {
+                const tokenSize = encode(selectedCode).length;
+                sendTelemetryEvent(this.telemetry, { eventName: CopilotExplainCodeSize, copilotSessionId: sessionID, orgId: orgID, codeLineCount: String(selectedCodeLineRange.end - selectedCodeLineRange.start), tokenSize: String(tokenSize) });
+                if(withinTokenLimit === false) {
+                    return;
+                }
+            }
+            this.sendMessageToWebview({ type: commandType, value: { start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode, tokenSize: withinTokenLimit } });
         };
 
         this._disposables.push(
-           vscode.window.onDidChangeTextEditorSelection(() => handleSelectionChange("selectedCodeInfo"))
+           vscode.window.onDidChangeTextEditorSelection(() => handleSelectionChange(SELECTED_CODE_INFO)), vscode.window.onDidChangeActiveTextEditor(() => handleSelectionChange(SELECTED_CODE_INFO))
         );
 
         this._disposables.push(
-            vscode.commands.registerCommand("powerpages.copilot.explain", () => handleSelectionChange(EXPLAIN_CODE))
+            vscode.commands.registerCommand("powerpages.copilot.explain", () => {sendTelemetryEvent(this.telemetry, { eventName: CopilotExplainCode, copilotSessionId: sessionID, orgId: orgID }); this.show(); handleSelectionChange(EXPLAIN_CODE)})
         );
     }
 
@@ -166,6 +175,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     };
 
     const pacOutput = await this._pacWrapper?.activeOrg();
+
+    if(SELECTED_CODE_INFO_ENABLED){
+        vscode.commands.executeCommand('setContext', 'powerpages.copilot.isVisible', true);
+    }
 
     if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
       await this.handleOrgChangeSuccess(pacOutput.Results);
@@ -319,7 +332,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
   }
 
-  private async authenticateAndSendAPIRequest(data: string, activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
+  private async authenticateAndSendAPIRequest(data: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
     return intelligenceAPIAuthentication(telemetry, sessionID, orgID)
       .then(async ({ accessToken, user, userId }) => {
         intelligenceApiToken = accessToken;

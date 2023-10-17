@@ -578,7 +578,7 @@
         {
           "submenu": "microsoft-powerapps-portals.powerpages-copilot",
           "group": "0_powerpages-copilot",
-          "when": "never"
+          "when": "(powerpages.copilot.isVisible) && ((!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot))"
         }
       ],
       "microsoft-powerapps-portals.powerpages-copilot": [
@@ -1033,6 +1033,7 @@
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
     "glob": "^7.1.7",
+    "gpt-tokenizer": "^2.1.1",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
