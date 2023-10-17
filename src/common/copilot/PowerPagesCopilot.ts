@@ -217,11 +217,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
           break;
         }
         case "newUserPrompt": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID }); //TODO: Add active Editor info
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, isSuggestedPrompt: String(data.value.isSuggestedPrompt) }); //TODO: Add active Editor info
           orgID
             ? (async () => {
               const { activeFileParams } = this.getActiveEditorContent();
-              await this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID, this.telemetry);
+              await this.authenticateAndSendAPIRequest(data.value.userPrompt, activeFileParams, orgID, this.telemetry);
             })()
             : (() => {
               this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
