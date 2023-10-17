@@ -13,6 +13,7 @@
   const chatMessages = document.getElementById("chat-messages");
   const chatInput = document.getElementById("chat-input");
   const chatInputComponent = document.getElementById("input-component");
+  const skipCodes = ["", null, undefined, "violation", "unclear", "explain"];
 
   let userName;
   let apiResponseHandler;
@@ -80,7 +81,7 @@
         return resultDiv;
       }
 
-      if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined || responseText[i].code === "violation" || responseText[i].code === "unclear" || responseText[i].code === "explain") {
+      if (skipCodes.includes(responseText[i].code)) {
         continue;
       }
 
