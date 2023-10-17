@@ -4,6 +4,17 @@
 #
 # Official build to produce versioned and signed VSIX
 
+parameters:
+  - name: isPreRelease
+    displayName: 'Build as pre-release extension'
+    type: boolean
+    default: true
+
+  - name: versionNumber
+    displayName: 'VSIX Version Number'
+    type: string
+    default: '2.0.0'
+
 variables:
   # https://aka.ms/gdn-injection
   GDN_CODESIGN_TARGETDIRECTORY: "$(Build.SourcesDirectory)\\package"
@@ -15,7 +26,6 @@ variables:
   # set the following in the pipeline's web UI editor:
   # GITHUB_TOKEN        # GitHub PAT with scopes: repo; must have SSO enabled for GH org 'microsoft' for corp user
   # AZ_DevOps_Read_PAT  # PAT to read from AzDO feed in msazure
-  # VSIX_VERSION        # VSIX package/release version; must be manually managed for now!
 
 # trigger:
 #   - release/*
@@ -27,10 +37,10 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-- script: echo "##vso[build.updatebuildnumber]$(VSIX_VERSION)
+- script: echo "##vso[build.updatebuildnumber]${{ parameter.versionNumber }}
   displayName: Set Job version
 
-- script: mkdir package && echo $(VSIX_VERSION),$(Build.SourceVersion) > package/version.csv
+- script: mkdir package && echo ${{ parameter.versionNumber }},$(Build.SourceVersion) > package/version.csv
   displayName: Capture build version in package/version.csv
 
 - task: NodeTool@0
@@ -63,16 +73,10 @@ steps:
 #     customCommand: run increment-version
 
 - task: Npm@1
-  displayName: 'Official Build and Package VSIX'
+  displayName: 'Build and Package VSIX'
   inputs:
     command: custom
-    customCommand: run dist -- --feedPAT $(AZ_DevOps_Read_PAT) --isOfficialBuild true
-
-- task: Npm@1
-  displayName: 'Preview Build and Package VSIX'
-  inputs:
-    command: custom
-    customCommand: run dist -- --feedPAT $(AZ_DevOps_Read_PAT) --isPreviewBuild true
+    customCommand: run dist -- --feedPAT $(AZ_DevOps_Read_PAT) --isOfficialBuild true --isPreviewBuild ${{ parameter.isPreRelease }}
 
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Generating%20Signing%20JSON.aspx
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Selecting%20CodeSign%20Certificates.aspx
