@@ -259,12 +259,6 @@ async function git(args) {
     return { stdout: stdout, stderr: stderr };
 }
 
-async function npm(args) {
-    args.unshift('npm');
-    const {stdout, stderr } = await exec(args.join(' '));
-    return {stdout: stdout, stderr: stderr};
-}
-
 async function npx(args) {
     args.unshift('npx');
     const {stdout, stderr } = await exec(args.join(' '));
