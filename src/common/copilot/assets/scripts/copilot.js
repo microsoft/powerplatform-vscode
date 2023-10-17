@@ -475,11 +475,11 @@
             }
             chatInputLabel.classList.remove("hide");
             if(message.value.tokenSize === false){
-                chatInputLabel.innerText = `Selection is too large!`;
+                chatInputLabel.innerText = copilotStrings.LARGE_SELECTION;
                 selectedCode = "";
                 break;
             }
-            chatInputLabel.innerText = `Lines: ${message.value.start + 1} - ${message.value.end + 1} selected`;
+            chatInputLabel.innerText = `Lines ${message.value.start + 1} - ${message.value.end + 1} selected`;
             break;
         }
         case "explainCode": {
