@@ -16,14 +16,14 @@ import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCod
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
-import { isWithinTokenLimit } from "gpt-tokenizer";
+import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -84,9 +84,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 return;
             }
             const withinTokenLimit = isWithinTokenLimit(selectedCode, 1000);
-            if(withinTokenLimit === false && commandType === EXPLAIN_CODE) {
-              vscode.window.showInformationMessage(vscode.l10n.t('Selection is too long! Please select a smaller portion of code.'));
-              return;
+            if(commandType === EXPLAIN_CODE) {
+                const tokenSize = encode(selectedCode).length;
+                sendTelemetryEvent(this.telemetry, { eventName: CopilotExplainCodeSize, copilotSessionId: sessionID, orgId: orgID, codeLineCount: String(selectedCodeLineRange.end - selectedCodeLineRange.start), tokenSize: String(tokenSize) });
+                if(withinTokenLimit === false) {
+                    vscode.window.showInformationMessage(vscode.l10n.t('Selection is too long! Please select a smaller portion of code.'));
+                    return;
+                }
             }
             this.sendMessageToWebview({ type: commandType, value: { start: selectedCodeLineRange.start, end: selectedCodeLineRange.end, selectedCode: selectedCode, tokenSize: withinTokenLimit } });
         };
@@ -96,7 +100,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         );
 
         this._disposables.push(
-            vscode.commands.registerCommand("powerpages.copilot.explain", () => { this.show(); handleSelectionChange(EXPLAIN_CODE)})
+            vscode.commands.registerCommand("powerpages.copilot.explain", () => {sendTelemetryEvent(this.telemetry, { eventName: CopilotExplainCode, copilotSessionId: sessionID, orgId: orgID }); this.show(); handleSelectionChange(EXPLAIN_CODE)})
         );
     }
 
