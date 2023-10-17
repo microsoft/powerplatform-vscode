@@ -67,6 +67,7 @@
   "Saving your file ...": "Datei wird gespeichert ...",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": "Ordner für neues PCF-Steuerelement auswählen",
   "Select Type": "Typ auswählen",
+  "Selection is empty!": "Auswahl ist leer!",
   "The Power Pages generator is ready for use in your VS Code extension!": "Der Power Pages-Generator ist in Ihrer VS Code-Erweiterung zur Verwendung bereit!",
   "The name you want to give to this authentication profile": "Der Name, den Sie diesem Authentifizierungsprofil geben möchten",
   "The pac CLI is ready for use in your VS Code terminal!": "Die pac CLI ist in Ihrem VS-Code-Terminal zur Verwendung bereit!",
