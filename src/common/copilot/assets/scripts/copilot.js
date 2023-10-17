@@ -149,7 +149,7 @@
     const nameArray = name.split(" ");
     const initials = nameArray.map((word) => word.charAt(0));
     const truncatedInitials = initials.slice(0, 2);
-    return truncatedInitials.join("");
+    return truncatedInitials.join("").toUpperCase();
   }
 
 
