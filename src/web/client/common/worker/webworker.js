@@ -87,7 +87,7 @@ async function loadContainer(config, id, swpId) {
 
         const existingMembers = audience.getMembers();
 
-        // TODO: insert user with entity id in container
+        // TODO: yet to be decided how entity id will be passed in container from vscode side
 
         audience.on("memberRemoved", (clientId, member) => {
             if (!existingMembers.get(member.userId)) {
@@ -103,35 +103,39 @@ async function loadContainer(config, id, swpId) {
                 const otherUser = value;
                 const connectionArray = otherUser.connections;
 
-                const EntityID = [];
+                const entityId = [];
 
-                for (let i = 0; i < connectionArray.length; i++) {
-                    const connection = connectionArray[i]?.id;
-                    EntityID.push((await container.initialObjects.sharedState.get('selection').get()).get(connection));
-                }
+                const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
+
+                connectionArray.forEach((connectionId) => {
+                    entityId.push(connectionIdInContainer.get(connectionId));
+                });
 
                 self.postMessage({
                     type: "client-data",
                     userName: otherUser.userName,
                     userId: key,
                     containerId: swpId,
-                    entityId: EntityID,
+                    entityId: entityId,
                 });
             });
             initial = true;
         }
 
         map.on("valueChanged", async (changed, local) => {
-            if (!local) {
+            if (local) {
+                return;
+            } else {
                 const otherUser = map.get(changed.key);
                 const connectionArray = otherUser.connections;
 
-                const EntityID = [];
+                const entityId = [];
 
-                for (let i = 0; i < connectionArray.length; i++) {
-                    const connection = connectionArray[i]?.id;
-                    EntityID.push((await container.initialObjects.sharedState.get('selection').get()).get(connection));
-                }
+                const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
+
+                connectionArray.forEach((connectionId) => {
+                    entityId.push(connectionIdInContainer.get(connectionId));
+                });
 
                 // eslint-disable-next-line no-undef
                 await self.postMessage({
@@ -139,7 +143,7 @@ async function loadContainer(config, id, swpId) {
                     userId: changed.key,
                     userName: otherUser.userName,
                     containerId: swpId,
-                    entityId: EntityID,
+                    entityId: entityId,
                 });
             }
         });
