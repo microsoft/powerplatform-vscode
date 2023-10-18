@@ -10,7 +10,7 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO_ENABLED, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, UserPrompt, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -80,7 +80,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             const selectedCodeLineRange = getSelectedCodeLineRange(editor);
             if(commandType === EXPLAIN_CODE && selectedCode.length === 0) {
                 // Show a message if the selection is empty and don't send the message to webview
-                vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty!'));
+                vscode.window.showInformationMessage(vscode.l10n.t('Selection is empty.'));
                 return;
             }
             const withinTokenLimit = isWithinTokenLimit(selectedCode, 1000);
@@ -88,7 +88,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 const tokenSize = encode(selectedCode).length;
                 sendTelemetryEvent(this.telemetry, { eventName: CopilotExplainCodeSize, copilotSessionId: sessionID, orgId: orgID, codeLineCount: String(selectedCodeLineRange.end - selectedCodeLineRange.start), tokenSize: String(tokenSize) });
                 if(withinTokenLimit === false) {
-                    vscode.window.showInformationMessage(vscode.l10n.t('Selection is too long! Please select a smaller portion of code.'));
                     return;
                 }
             }
@@ -96,7 +95,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         };
 
         this._disposables.push(
-           vscode.window.onDidChangeTextEditorSelection(() => handleSelectionChange("selectedCodeInfo")), vscode.window.onDidChangeActiveTextEditor(() => handleSelectionChange("selectedCodeInfo"))
+           vscode.window.onDidChangeTextEditorSelection(() => handleSelectionChange(SELECTED_CODE_INFO)), vscode.window.onDidChangeActiveTextEditor(() => handleSelectionChange(SELECTED_CODE_INFO))
         );
 
         this._disposables.push(

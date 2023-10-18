@@ -640,6 +640,7 @@ async function createVirtualFile(
         odataEtag,
         attributePath,
         originalAttributeContent,
-        mappingEntityId
+        mappingEntityId,
+        fileUri,
     );
 }
