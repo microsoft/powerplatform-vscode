@@ -527,7 +527,7 @@
       chatInput.disabled = true;
       saveInputToHistory(input);
       apiResponseInProgress = true;
-      getApiResponse(userPrompt, isSuggestedPrompt); //TODO: userPrompt object should be passed
+      getApiResponse(userPrompt, isSuggestedPrompt);
       chatInput.value = "";
       chatInput.focus();
     }
