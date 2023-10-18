@@ -84,6 +84,8 @@ export async function activate(
         );
     }
 
+
+
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
     vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 

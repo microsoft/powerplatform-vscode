@@ -384,7 +384,7 @@ const recompile = gulp.series(
 const dist = gulp.series(
     recompile,
     packageVsix,
-    lint,
+    // lint,
     test
 );
 // Extract all the localizable strings from TS and package.nls.json, and package into

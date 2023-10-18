@@ -51,7 +51,7 @@
     "email": "PPTools@microsoft.com"
   },
   "engines": {
-    "vscode": "^1.73.0"
+    "vscode": "^1.83.0-20230923"
   },
   "extensionKind": [
     "workspace"
@@ -79,6 +79,16 @@
       "url": "https://dev.azure.com/dynamicscrm/OneCRM/_apis/build/status/DPX-Tools/powerplatform-vscode%20Official%20Build?branchName=release/stable",
       "href": "https://dev.azure.com/dynamicscrm/OneCRM/_build/latest?definitionId=12152"
     }
+  ],
+  "extensionDependencies": [
+    "github.copilot-chat"
+  ],
+  "enabledApiProposals": [
+    "chatAgents2",
+    "chatRequestAccess",
+    "interactive",
+    "readonlyMessage",
+    "chatVariables"
   ],
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
@@ -978,7 +988,7 @@
     "@types/sinon": "^10.0.12",
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
-    "@types/vscode": "^1.73.0",
+    "@types/vscode": "1.82.0",
     "@types/vscode-webview": "^1.57.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.17.0",
