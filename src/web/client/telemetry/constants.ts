@@ -93,4 +93,10 @@ export enum telemetryEventNames {
     WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED = 'webExtensionCopilotRegisterFailed',
     WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN = 'webExtensionCopilotNotificationShown',
     WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_EVENT_CLICKED = 'webExtensionCopilotNotificationEventClicked',
+    WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED = 'webExtensionPowerPagesWebViewRegistered',
+    WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTER_FAILED = 'webExtensionPowerPagesWebViewRegisterFailed',
+    WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED = 'webExtensionBackToStudioTriggered',
+    WEB_EXTENSION_PREVIEW_SITE_TRIGGERED = 'webExtensionPreviewSiteTriggered',
+    WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION = 'webExtensionImageEditSupportedFileExtension',
+    WEB_EXTENSION_SAVE_IMAGE_FILE_TRIGGERED = 'webExtensionSaveImageFileTriggered'
 }

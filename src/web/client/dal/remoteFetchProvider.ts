@@ -629,7 +629,8 @@ async function createVirtualFile(
     await portalsFS.writeFile(
         vscode.Uri.parse(fileUri),
         fileContent,
-        { create: true, overwrite: true }
+        { create: true, overwrite: true },
+        true
     );
 
     // Maintain entity details in context
@@ -639,6 +640,7 @@ async function createVirtualFile(
         odataEtag,
         attributePath,
         originalAttributeContent,
-        mappingEntityId
+        mappingEntityId,
+        fileUri,
     );
 }

@@ -13,6 +13,7 @@
   const chatMessages = document.getElementById("chat-messages");
   const chatInput = document.getElementById("chat-input");
   const chatInputComponent = document.getElementById("input-component");
+  const skipCodes = ["", null, undefined, "violation", "unclear", "explain"];
 
   let userName;
   let apiResponseHandler;
@@ -20,6 +21,8 @@
   let isCopilotEnabled = true;
   let isLoggedIn = false;
   let apiResponseInProgress = false;
+  let selectedCode = "";
+  let copilotStrings = {};
 
 
 
@@ -62,7 +65,7 @@
 
   vscode.postMessage({ type: "webViewLoaded" });
 
-  function parseCodeBlocks(responseText) {
+  function parseCodeBlocks(responseText, isUserCode) {
     const resultDiv = document.createElement("div");
     let codeLineCount = 0;
 
@@ -78,12 +81,15 @@
         return resultDiv;
       }
 
-      if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined || responseText[i].code === "violation" || responseText[i].code === "unclear") {
+      if (skipCodes.includes(responseText[i].code)) {
         continue;
       }
 
       const codeDiv = document.createElement("div");
       codeDiv.classList.add("code-division");
+
+      isUserCode ? codeDiv.classList.add("user-code") : codeDiv.classList.add("copilot-code");
+
       let codeBlock = responseText[i].code;
 
       codeLineCount += countLines(codeBlock);
@@ -109,35 +115,6 @@
   function countLines(str) {
     const lines = str.split('\n');
     return lines.length;
-  }
-
-  function formatCodeBlocks(responseText) {
-    const blocks = responseText.split("```");
-    const resultDiv = document.createElement("div");
-
-    for (let i = 0; i < blocks.length; i++) {
-      if (i % 2 === 0) {
-        // Handle text blocks
-        const textDiv = document.createElement("div");
-        textDiv.innerText = blocks[i];
-        resultDiv.appendChild(textDiv);
-      } else {
-        // Handle code blocks
-        const codeDiv = document.createElement("div");
-        codeDiv.classList.add("code-division");
-        codeDiv.appendChild(createActionWrapper(blocks[i]));
-
-        const preFormatted = document.createElement("pre");
-        const codeSnip = document.createElement("code");
-        codeSnip.innerText = blocks[i];
-        preFormatted.appendChild(codeSnip);
-
-        codeDiv.appendChild(preFormatted);
-        resultDiv.appendChild(codeDiv);
-      }
-    }
-    resultDiv.classList.add("result-div");
-    return resultDiv;
   }
 
   function createActionWrapper(code) {
@@ -172,7 +149,7 @@
     const nameArray = name.split(" ");
     const initials = nameArray.map((word) => word.charAt(0));
     const truncatedInitials = initials.slice(0, 2);
-    return truncatedInitials.join("");
+    return truncatedInitials.join("").toUpperCase();
   }
 
 
@@ -195,7 +172,7 @@
     makerElement.appendChild(user);
     messageElement.appendChild(makerElement);
     makerElement.appendChild(document.createElement("br"));
-    messageElement.appendChild(formatCodeBlocks(message));
+    messageElement.appendChild(parseCodeBlocks(message, true));
 
     messageElement.classList.add("message", "user-message");
 
@@ -242,7 +219,6 @@
         <path d="M14.3051 16.6203C14.4828 16.6203 14.6073 16.5314 14.6784 16.3536C15.0695 15.2514 15.8517 13.5092 17.0251 11.127C17.0606 10.9847 17.0428 10.8603 16.9717 10.7536C16.9006 10.6114 16.7762 10.5581 16.5984 10.5936H13.3451L12.8117 9.95363V9.47363L13.8784 7.0203C13.914 6.94919 13.914 6.87808 13.8784 6.80697C13.8784 6.7003 13.8428 6.62919 13.7717 6.59363C13.7006 6.52252 13.6117 6.48697 13.5051 6.48697C13.434 6.48697 13.3628 6.52252 13.2917 6.59363L7.21172 12.1403L6.73172 12.3003H5.39839C5.29172 12.3003 5.18506 12.3359 5.07839 12.407C5.00728 12.4781 4.9895 12.567 5.02506 12.6736V16.1936C4.9895 16.3003 5.00728 16.407 5.07839 16.5136C5.18506 16.5847 5.29172 16.6203 5.39839 16.6203H14.3051Z" fill="none" id="thumbsup-path"/>
       </svg>
 
-      
       <svg class="thumbsdown" cursor="pointer" width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
         <title>Thumbs Down</title>
         <path d="M8.48 17.6336C8.19556 17.6336 7.92889 17.5447 7.68 17.367C7.43111 17.1536 7.25333 16.9047 7.14667 16.6203C7.07556 16.3003 7.11111 15.9803 7.25333 15.6603L8.21333 13.4736H5.44C5.19111 13.5092 4.96 13.4736 4.74667 13.367C4.53333 13.2603 4.35556 13.1181 4.21333 12.9403C4.10667 12.727 4.03556 12.4959 4 12.247C4 11.9981 4.05333 11.767 4.16 11.5536C5.40444 8.92252 6.16889 7.19808 6.45333 6.3803C6.56 6.13141 6.72 5.93586 6.93333 5.79363C7.18222 5.61586 7.44889 5.50919 7.73333 5.47363H16.64C17.0311 5.50919 17.3511 5.66919 17.6 5.95363C17.8844 6.20252 18.0267 6.52252 18.0267 6.91363V10.4336C18.0267 10.7892 17.8844 11.1092 17.6 11.3936C17.3511 11.6425 17.0311 11.767 16.64 11.767H15.3067L9.44 17.2603C9.15556 17.5092 8.83556 17.6336 8.48 17.6336ZM7.73333 6.48697C7.55556 6.48697 7.43111 6.57586 7.36 6.75363C6.96889 7.85586 6.20444 9.59808 5.06667 11.9803C4.99556 12.1225 4.99556 12.2647 5.06667 12.407C5.13778 12.5136 5.26222 12.5492 5.44 12.5136H8.74667L9.22667 13.1536V13.6336L8.16 16.087C8.12444 16.1581 8.10667 16.247 8.10667 16.3536C8.14222 16.4247 8.19556 16.4959 8.26667 16.567C8.33778 16.6025 8.40889 16.6203 8.48 16.6203C8.58667 16.6203 8.67556 16.5847 8.74667 16.5136L14.8267 10.967L15.3067 10.807H16.64C16.7467 10.807 16.8356 10.7714 16.9067 10.7003C17.0133 10.6292 17.0667 10.5403 17.0667 10.4336V6.91363C17.0667 6.80697 17.0133 6.71808 16.9067 6.64697C16.8356 6.5403 16.7467 6.48697 16.64 6.48697H7.73333Z" class = "thumbsdown-clicked"/>
@@ -266,17 +242,23 @@
 
     suggestedPrompt.innerHTML = `<p class="suggested-title">Here are a few suggestions to get you started</p>
                                 <a href='#' class="suggested-prompt">
+                                <span class="icon-container">
                                     ${starIconSvg}
+                                </span>
                                     ${formPrompt}
                                 </a>
                                 <br>
                                 <a href='#' class="suggested-prompt">
+                                <span class="icon-container">
                                     ${starIconSvg}
+                                </span>
                                     ${webApiPrompt}
                                 </a>
                                 <br>
                                 <a href='#' class="suggested-prompt">
+                                <span class="icon-container">
                                     ${starIconSvg}
+                                </span>
                                     ${listPrompt}
                                 </a>`;
 
@@ -425,6 +407,10 @@
     const message = event.data; // The JSON data our extension sent
 
     switch (message.type) {
+      case "copilotStrings": {
+        copilotStrings = message.value; //Localized string values object
+        break;
+      }
       case "apiResponse": {
         apiResponseHandler.updateResponse(message.value);
         apiResponseInProgress = false;
@@ -471,7 +457,7 @@
         break;
       }
       case "Available": {
-        if(isCopilotEnabled== false) {
+        if(isCopilotEnabled === false) {
           isCopilotEnabled = true;
           chatInputComponent.classList.remove("hide");
           chatMessages.innerHTML = "";
@@ -479,7 +465,30 @@
           welcomeScreen.userLoggedIn();
         }
         break;
-    }}
+    }
+        case "selectedCodeInfo": {
+            const chatInputLabel = document.getElementById("input-label-id");
+            selectedCode = message.value.selectedCode;
+            if (selectedCode.length === 0) {
+                chatInputLabel.classList.add("hide");
+                break;
+            }
+            chatInputLabel.classList.remove("hide");
+            if(message.value.tokenSize === false){
+                chatInputLabel.innerText = copilotStrings.LARGE_SELECTION;
+                selectedCode = "";
+                break;
+            }
+            chatInputLabel.innerText = `Lines ${message.value.start + 1} - ${message.value.end + 1} selected`;
+            break;
+        }
+        case "explainCode": {
+            selectedCode = message.value.selectedCode;
+            const explainPrompt = copilotStrings.EXPLAIN_CODE_PROMPT;
+            processUserInput(explainPrompt);
+        }
+
+    }
   });
 
   function handleLoginButtonClick() {
@@ -508,35 +517,36 @@
     vscode.postMessage({ type: "walkthrough" });
   }
 
-
-  SendButton?.addEventListener("click", () => {
-    if(apiResponseInProgress) {
+  function processUserInput(input) {
+    if (apiResponseInProgress) {
       return;
     }
-    if ((chatInput).value.trim()) {
-      handleUserMessage((chatInput).value);
+    if (input) {
+      const userPrompt = [{ displayText: input, code: selectedCode }];
+      handleUserMessage(userPrompt);
       chatInput.disabled = true;
-      saveInputToHistory(chatInput.value);
+      saveInputToHistory(input);
       apiResponseInProgress = true;
-      getApiResponse((chatInput).value);
-      (chatInput).value = "";
-      (chatInput).focus();
+      getApiResponse(userPrompt); //TODO: userPrompt object should be passed
+      chatInput.value = "";
+      chatInput.focus();
     }
+  }
+
+
+  SendButton?.addEventListener("click", () => {
+    processUserInput(chatInput.value.trim());
   });
 
   chatInput.addEventListener("keydown", (event) => {
-    if(apiResponseInProgress) {
+    if(apiResponseInProgress && event.key !== "Enter") {
       return;
     }
-    if (event.key === "Enter" && (chatInput).value.trim()) {
-      handleUserMessage((chatInput).value);
-      chatInput.disabled = true;
-      saveInputToHistory(chatInput.value);
-      apiResponseInProgress = true;
-      getApiResponse((chatInput).value);
-      (chatInput).value = "";
+    if (event.key === "Enter") {
+      processUserInput(chatInput.value.trim());
     }
   });
+
   chatMessages.addEventListener("click", handleFeedbackClick);
 
   function handleFeedbackClick(event) {
@@ -581,15 +591,8 @@
   }
 
   function handleSuggestionsClick() {
-    if(apiResponseInProgress) {
-      return;
-    }
-    const userPrompt = this.textContent.trim();
-    handleUserMessage(userPrompt);
-    chatInput.disabled = true;
-    saveInputToHistory(userPrompt);
-    apiResponseInProgress = true;
-    getApiResponse(userPrompt);
+    const suggestedPrompt = this.innerText.trim();
+    processUserInput(suggestedPrompt);
   }
 
   chatInput.addEventListener('keydown', handleArrowKeys);

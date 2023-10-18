@@ -5,6 +5,9 @@
   "Edit the site": "Edit the site",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.",
   "You are editing a live, public site ": "You are editing a live, public site ",
+  "Preview site": "Preview site",
+  "Open in Power Pages": "Open in Power Pages",
+  "Opening preview site...": "Opening preview site...",
   "Microsoft wants your feeback": "Microsoft wants your feeback",
   "Check the URL and verify the parameters are correct": "Check the URL and verify the parameters are correct",
   "Unable to complete the request": "Unable to complete the request",
@@ -26,6 +29,7 @@
   },
   "Enter the environment URL": "Enter the environment URL",
   "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.": "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.",
+  "Selection is empty!": "Selection is empty!",
   "Copied to clipboard!": "Copied to clipboard!",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
@@ -33,8 +37,6 @@
       "Do not translate 'PCF' as it is a product name."
     ]
   },
-  "Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.": "Get help writing code in HTML, CSS, and JS languages for Power Pages sites with Copilot.",
-  "Try Copilot for Power Pages": "Try Copilot for Power Pages",
   "Preparing pac CLI (v{0}).../{0} represents the version number": {
     "message": "Preparing pac CLI (v{0})...",
     "comment": [
