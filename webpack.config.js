@@ -123,11 +123,11 @@ const webConfig = {
 };
 
 /** @type fluent container scripts web worker config */
-const copresenceWorkerConfig = {
+const webWorkerConfig = {
     mode: "none",
     target: "webworker", // web extensions run in a webworker context
     entry: {
-        main: "./src/web/client/services/copresenceWorker.js",
+        main: "./src/web/client/common/worker/webworker.js",
     },
     output: {
         filename: "[name].js",
@@ -159,7 +159,7 @@ const copresenceWorkerConfig = {
                 ],
             },
             {
-                test: /copresenceWorker\.js$/,
+                test: /webworker\.js$/,
                 use: {
                     loader: "worker-loader",
                     options: { inline: "fallback" },
@@ -176,4 +176,4 @@ const copresenceWorkerConfig = {
     devtool: "source-map",
 };
 
-module.exports = [nodeConfig, webConfig, copresenceWorkerConfig];
+module.exports = [nodeConfig, webConfig, webWorkerConfig];

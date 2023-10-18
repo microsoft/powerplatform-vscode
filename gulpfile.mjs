@@ -34,7 +34,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 
 import webpackConfig from './webpack.config.js';
-const [nodeConfig, webConfig, copresenceWorkerConfig] = webpackConfig;
+const [nodeConfig, webConfig, webWorkerConfig] = webpackConfig;
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
@@ -81,11 +81,11 @@ function compileWeb() {
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
 
-// compile the web worker for copresence
+// compile the web worker for vscode for web
 function compileWorker() {
     return gulp
         .src(["src/web/**/*.ts"])
-        .pipe(gulpWebpack(copresenceWorkerConfig, webpack))
+        .pipe(gulpWebpack(webWorkerConfig, webpack))
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
 
