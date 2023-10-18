@@ -366,7 +366,8 @@ class WebExtensionContext implements IWebExtensionContext {
         odataEtag: string,
         attributePath: IAttributePath,
         attributeContent: string,
-        mappingEntityId?: string
+        mappingEntityId?: string,
+        fileUri?: string
     ) {
         this.entityDataMap.setEntity(
             entityId,
@@ -374,7 +375,8 @@ class WebExtensionContext implements IWebExtensionContext {
             odataEtag,
             attributePath,
             attributeContent,
-            mappingEntityId);
+            mappingEntityId,
+            fileUri);
     }
 
     public async updateSingleFileUrisInContext(uri: vscode.Uri) {
@@ -606,7 +608,7 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     /**
-    * Store a value maintained in Extension context workspaceState. 
+    * Store a value maintained in Extension context workspaceState.
     *
     * *Note* that using `undefined` as value removes the key from the underlying
     * storage.
