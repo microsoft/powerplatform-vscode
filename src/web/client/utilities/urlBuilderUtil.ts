@@ -17,6 +17,7 @@ import {
     schemaKey,
 } from "../schema/constants";
 import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
+import { getWorkSpaceName } from "./commonUtil";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -242,4 +243,25 @@ export function isWebFileWithLazyLoad(fsPath: string): boolean {
         fsPath.includes(WebExtensionContext.rootDirectory.fsPath) &&
         fsPath.includes(SCHEMA_WEBFILE_FOLDER_NAME) &&
         !isPreloadedContent;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getOrCreateSharedWorkspace(config: any) {
+
+    const createWorkspaceResponse = await fetch(
+        `${config.dataverseOrgUrl}/api/data/v9.2/GetOrCreateSharedWorkspace`,
+        {
+            headers: {
+                ...config.headers,
+            },
+            method: "POST",
+            body: JSON.stringify({
+                target: {
+                    name: getWorkSpaceName(config.websiteid),
+                }
+            }),
+        }
+    );
+
+    return await createWorkspaceResponse.json();
 }

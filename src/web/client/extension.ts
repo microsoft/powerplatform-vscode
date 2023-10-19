@@ -33,6 +33,7 @@ import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
+import * as Constants from "./common/constants"
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -184,7 +185,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillSaveDocument(context);
 
-    processWillStartCollaboartion();
+    processWillStartCollaboartion(context);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
@@ -268,10 +269,106 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
     );
 }
 
-export function processWillStartCollaboartion() {
+export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
     if (isCoPresenceEnabled()) {
-        // TODO: Add copresence logic
+        processOpenActiveTextEditor(context);
+        createWebWorkerInstance(context);
     }
+}
+
+let worker: Worker;
+
+export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
+    try {
+        context.subscriptions.push(
+            vscode.window.onDidChangeTextEditorSelection(async () => {
+                const activeEditor = vscode.window.activeTextEditor;
+
+                const swpId = WebExtensionContext.sharedWorkSpaceMap.get(
+                    Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
+                ) as string;
+
+                const swptenantId = WebExtensionContext.sharedWorkSpaceMap.get(
+                    Constants.sharedWorkspaceParameters.TENANT_ID
+                ) as string;
+
+                const swpAccessToken =
+                    WebExtensionContext.sharedWorkSpaceMap.get(
+                        Constants.sharedWorkspaceParameters.ACCESS_TOKEN
+                    ) as string;
+
+                const discoveryendpoint =
+                    WebExtensionContext.sharedWorkSpaceMap.get(
+                        Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
+                    ) as string;
+
+                if (activeEditor) {
+                    const entityId =
+                        WebExtensionContext.fileDataMap.getFileMap.get(
+                            activeEditor.document.uri.fsPath
+                        )?.entityId as string;
+
+                    if (entityId) {
+                        worker.postMessage({
+                            afrConfig: {
+                                swpId,
+                                swptenantId,
+                                discoveryendpoint,
+                                swpAccessToken,
+                            },
+                            entityId,
+                        });
+                    }
+                }
+            })
+        );
+    } catch (error) {
+        // TODO: add Telemetry
+    }
+}
+
+export function createWebWorkerInstance(
+    context: vscode.ExtensionContext
+) {
+    const webworkerMain = vscode.Uri.joinPath(
+        context.extensionUri,
+        "dist/web/webworker.worker.js"
+    );
+
+    const workerUrl = new URL(webworkerMain.toString());
+
+    fetch(workerUrl)
+        .then((response) => response.text())
+        .then((workerScript) => {
+            const workerBlob = new Blob([workerScript], {
+                type: "application/javascript",
+            });
+
+            const workerUrl = URL.createObjectURL(workerBlob);
+
+            worker = new Worker(workerUrl);
+
+            worker.onmessage = (event) => {
+                const { data } = event;
+
+                WebExtensionContext.containerId = event.data.containerId;
+
+                if (data.type === "member-removed") {
+                    WebExtensionContext.removeConnectedUserInContext(
+                        data.userId
+                    );
+                }
+                if (data.type === "client-data") {
+                    WebExtensionContext.updateConnectedUsersInContext(
+                        data.containerId,
+                        data.userName,
+                        data.userId,
+                        data.entityId
+                    );
+                }
+            };
+        })
+        // TODO: add Telemetry
 }
 
 export async function showSiteVisibilityDialog() {
