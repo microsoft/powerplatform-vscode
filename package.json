@@ -164,6 +164,11 @@
         "when": "never"
       },
       {
+        "command": "powerpages.powerPagesFileExplorer.openUsers",
+        "title": "Users Present",
+        "when": "never"
+      },
+      {
         "command": "extension.createChatView",
         "title": "Create Chat View"
       },

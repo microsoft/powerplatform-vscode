@@ -10,10 +10,15 @@ import { httpMethod, queryParameters } from '../common/constants';
 import { getBackToStudioURL } from '../utilities/commonUtil';
 import { telemetryEventNames } from '../telemetry/constants';
 
-export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
-
-    private _onDidChangeTreeData: vscode.EventEmitter<PowerPagesNode | undefined | void> = new vscode.EventEmitter<PowerPagesNode | undefined | void>();
-    readonly onDidChangeTreeData: vscode.Event<PowerPagesNode | undefined | void> = this._onDidChangeTreeData.event;
+export class PowerPagesNavigationProvider
+    implements vscode.TreeDataProvider<PowerPagesNode | UserNode>
+{
+    private _onDidChangeTreeData: vscode.EventEmitter<
+        PowerPagesNode | undefined | void
+    > = new vscode.EventEmitter<PowerPagesNode | undefined | void>();
+    readonly onDidChangeTreeData: vscode.Event<
+        PowerPagesNode | undefined | void
+    > = this._onDidChangeTreeData.event;
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
@@ -23,30 +28,61 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         return element;
     }
 
-    getChildren(element?: PowerPagesNode): Thenable<PowerPagesNode[]> {
+    getChildren(
+        element?: PowerPagesNode
+    ): Thenable<PowerPagesNode[] | UserNode[]> {
         if (element) {
-            return Promise.resolve(this.getNodes(path.join(element.label)));
+            if (element.label === "Users Present") {
+                return Promise.resolve(this.getConnectedUsers());
+            } else {
+                return Promise.resolve(this.getNodes(path.join(element.label)));
+            }
         } else {
             return Promise.resolve(this.getNodes());
         }
     }
 
+    getConnectedUsers(): UserNode[] {
+        return [
+            new UserNode("Ritik", vscode.TreeItemCollapsibleState.None),
+            new UserNode("Nidhi", vscode.TreeItemCollapsibleState.None),
+            new UserNode("Amit", vscode.TreeItemCollapsibleState.None),
+        ];
+    }
+
     getNodes(label?: string): PowerPagesNode[] {
         const nodes: PowerPagesNode[] = [];
-        const previewPowerPage = new PowerPagesNode(vscode.l10n.t("Preview site"),
+        const previewPowerPage = new PowerPagesNode(
+            vscode.l10n.t("Preview site"),
             {
-                command: 'powerpages.powerPagesFileExplorer.powerPagesRuntimePreview',
+                command:
+                    "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
                 title: vscode.l10n.t("Preview site"),
-                arguments: []
+                arguments: [],
             },
-            'powerPages.svg');
-        const backToStudio = new PowerPagesNode(vscode.l10n.t("Open in Power Pages"),
+            "powerPages.svg",
+            vscode.TreeItemCollapsibleState.None
+        );
+        const backToStudio = new PowerPagesNode(
+            vscode.l10n.t("Open in Power Pages"),
             {
-                command: 'powerpages.powerPagesFileExplorer.backToStudio',
+                command: "powerpages.powerPagesFileExplorer.backToStudio",
                 title: vscode.l10n.t("Open in Power Pages"),
-                arguments: []
+                arguments: [],
             },
-            'backToStudio.svg');
+            "backToStudio.svg",
+            vscode.TreeItemCollapsibleState.None
+        );
+        const usersPresent = new PowerPagesNode(
+            "Users Present",
+            {
+                command: "powerpages.powerPagesFileExplorer.openUsers",
+                title: "Users Present",
+                arguments: [],
+            },
+            "",
+            vscode.TreeItemCollapsibleState.Collapsed
+        );
 
         if (label && label === previewPowerPage.label) {
             nodes.push(previewPowerPage);
@@ -57,14 +93,22 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             nodes.push(backToStudio);
         }
 
+        nodes.push(usersPresent);
+
         return nodes;
     }
 
     async previewPowerPageSite(): Promise<void> {
         let requestSentAtTime = new Date().getTime();
-        const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
+        const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(
+            queryParameters.WEBSITE_PREVIEW_URL
+        ) as string;
         // Runtime clear cache call
-        const requestUrl = `${websitePreviewUrl.endsWith('/') ? websitePreviewUrl : websitePreviewUrl.concat('/')}_services/cache/config`;
+        const requestUrl = `${
+            websitePreviewUrl.endsWith("/")
+                ? websitePreviewUrl
+                : websitePreviewUrl.concat("/")
+        }_services/cache/config`;
 
         WebExtensionContext.telemetry.sendAPITelemetry(
             requestUrl,
@@ -82,14 +126,20 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                 title: vscode.l10n.t("Opening preview site..."),
             },
             async () => {
-                const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
-                    headers: {
-                        authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
-                        'Accept': '*/*',
-                        'Content-Type': 'text/plain',
-                    },
-                    method: 'DELETE',
-                });
+                const response =
+                    await WebExtensionContext.concurrencyHandler.handleRequest(
+                        requestUrl,
+                        {
+                            headers: {
+                                authorization:
+                                    "Bearer " +
+                                    WebExtensionContext.dataverseAccessToken,
+                                Accept: "*/*",
+                                "Content-Type": "text/plain",
+                            },
+                            method: "DELETE",
+                        }
+                    );
 
                 if (response.ok) {
                     WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -107,26 +157,33 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                         new Date().getTime() - requestSentAtTime,
                         this.previewPowerPageSite.name,
                         JSON.stringify(response),
-                        '',
+                        "",
                         response?.status.toString()
                     );
                 }
-
-
             }
         );
 
         vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED
+        );
     }
 
     backToStudio(): void {
         const backToStudioUrl = getBackToStudioURL();
         vscode.env.openExternal(vscode.Uri.parse(backToStudioUrl));
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
-            backToStudioUrl: backToStudioUrl
-        });
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED,
+            {
+                backToStudioUrl: backToStudioUrl,
+            }
+        );
+    }
+
+    usersPresent(): void {
+        console.log("Users Present");
     }
 }
 
@@ -134,9 +191,10 @@ export class PowerPagesNode extends vscode.TreeItem {
     constructor(
         public readonly label: string,
         public readonly command: vscode.Command,
-        public readonly svgFileName: string
+        public readonly svgFileName: string,
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState
     ) {
-        super(label, vscode.TreeItemCollapsibleState.None);
+        super(label, collapsibleState);
 
         this.tooltip = this.label;
         this.command = command;
@@ -148,5 +206,16 @@ export class PowerPagesNode extends vscode.TreeItem {
             light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, '..', '..', 'src', 'web', 'client', 'assets', svgFileName),
             dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, '..', '..', 'src', 'web', 'client', 'assets', svgFileName)
         };
+    }
+}
+
+export class UserNode extends vscode.TreeItem {
+    constructor(
+        public readonly label: string,
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState
+    ) {
+        super(label, collapsibleState);
+        this.tooltip = this.label;
+        this.iconPath = "$(account)";
     }
 }
