@@ -495,10 +495,10 @@
     vscode.postMessage({ type: "login" });
   }
 
-  function getApiResponse(userPrompt) {
+  function getApiResponse(userPrompt, isSuggestedPrompt) {
     apiResponseHandler = handleAPIResponse();
     apiResponseHandler.updateThinking("Working on it...");
-    vscode.postMessage({ type: "newUserPrompt", value: userPrompt });
+    vscode.postMessage({ type: "newUserPrompt", value: {userPrompt: userPrompt, isSuggestedPrompt: isSuggestedPrompt}  });
   }
 
   function insertCode(code) {
@@ -517,7 +517,7 @@
     vscode.postMessage({ type: "walkthrough" });
   }
 
-  function processUserInput(input) {
+  function processUserInput(input, isSuggestedPrompt = false) {
     if (apiResponseInProgress) {
       return;
     }
@@ -527,7 +527,7 @@
       chatInput.disabled = true;
       saveInputToHistory(input);
       apiResponseInProgress = true;
-      getApiResponse(userPrompt); //TODO: userPrompt object should be passed
+      getApiResponse(userPrompt, isSuggestedPrompt);
       chatInput.value = "";
       chatInput.focus();
     }
@@ -592,7 +592,7 @@
 
   function handleSuggestionsClick() {
     const suggestedPrompt = this.innerText.trim();
-    processUserInput(suggestedPrompt);
+    processUserInput(suggestedPrompt, true);
   }
 
   chatInput.addEventListener('keydown', handleArrowKeys);
