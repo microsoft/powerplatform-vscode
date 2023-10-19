@@ -80,7 +80,7 @@ class AzureFluidClient {
     }
 }
 
-async function loadContainer(config, id, swpId) {
+async function loadContainer(config, swpId, entityId) {
     try {
         const { container, audience, map } =
             await AzureFluidClient.fetchContainerAndService(config, swpId);
@@ -101,14 +101,15 @@ async function loadContainer(config, id, swpId) {
         if (!initial) {
             existingMembers.forEach(async (value, key) => {
                 const otherUser = value;
-                const connectionArray = otherUser.connections;
 
-                const entityId = [];
+                const userConnections = otherUser.connections;
+
+                const userEntityIdArray = [];
 
                 const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
 
-                connectionArray.forEach((connectionId) => {
-                    entityId.push(connectionIdInContainer.get(connectionId));
+                userConnections.forEach((connection) => {
+                    userEntityIdArray.push(connectionIdInContainer.get(connection.id));
                 });
 
                 self.postMessage({
@@ -116,7 +117,7 @@ async function loadContainer(config, id, swpId) {
                     userName: otherUser.userName,
                     userId: key,
                     containerId: swpId,
-                    entityId: entityId,
+                    entityId: userEntityIdArray,
                 });
             });
             initial = true;
@@ -127,14 +128,14 @@ async function loadContainer(config, id, swpId) {
                 return;
             } else {
                 const otherUser = map.get(changed.key);
-                const connectionArray = otherUser.connections;
+                const userConnections = otherUser.connections;
 
-                const entityId = [];
+                const userEntityIdArray = [];
 
                 const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
 
-                connectionArray.forEach((connectionId) => {
-                    entityId.push(connectionIdInContainer.get(connectionId));
+                userConnections.forEach((connection) => {
+                    userEntityIdArray.push(connectionIdInContainer.get(connection.id));
                 });
 
                 // eslint-disable-next-line no-undef
@@ -143,7 +144,7 @@ async function loadContainer(config, id, swpId) {
                     userId: changed.key,
                     userName: otherUser.userName,
                     containerId: swpId,
-                    entityId: entityId,
+                    entityId: userEntityIdArray,
                 });
             }
         });
@@ -160,8 +161,8 @@ function runFluidApp() {
 
         await loadContainer(
             message.afrConfig,
-            message.containerId,
             message.afrConfig.swpId,
+            message.entityId
         );
     });
 }
