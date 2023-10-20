@@ -202,8 +202,8 @@ export class PowerPagesNode extends vscode.TreeItem {
 
     getIconPath(svgFileName: string) {
         return {
-            light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, '..', '..', 'src', 'web', 'client', 'assets', svgFileName),
-            dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, '..', '..', 'src', 'web', 'client', 'assets', svgFileName)
+            light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', svgFileName),
+            dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', svgFileName)
         };
     }
 }
