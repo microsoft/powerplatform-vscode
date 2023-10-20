@@ -14,17 +14,17 @@ export class PowerPagesNavigationProvider
     implements vscode.TreeDataProvider<PowerPagesNode | UserNode>
 {
     private _onDidChangeTreeData: vscode.EventEmitter<
-        PowerPagesNode | undefined | void
-    > = new vscode.EventEmitter<PowerPagesNode | undefined | void>();
+        PowerPagesNode | UserNode | undefined | void
+    > = new vscode.EventEmitter<PowerPagesNode | UserNode |undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<
-        PowerPagesNode | undefined | void
+        PowerPagesNode | UserNode | undefined | void
     > = this._onDidChangeTreeData.event;
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
     }
 
-    getTreeItem(element: PowerPagesNode): vscode.TreeItem {
+    getTreeItem(element: PowerPagesNode | UserNode): vscode.TreeItem {
         return element;
     }
 
@@ -54,32 +54,27 @@ export class PowerPagesNavigationProvider
         const nodes: PowerPagesNode[] = [];
         const previewPowerPage = new PowerPagesNode(
             vscode.l10n.t("Preview site"),
+            "powerPages.svg",
+            vscode.TreeItemCollapsibleState.None,
             {
                 command:
                     "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
                 title: vscode.l10n.t("Preview site"),
                 arguments: [],
-            },
-            "powerPages.svg",
-            vscode.TreeItemCollapsibleState.None
+            }
         );
         const backToStudio = new PowerPagesNode(
             vscode.l10n.t("Open in Power Pages"),
+            "backToStudio.svg",
+            vscode.TreeItemCollapsibleState.None,
             {
                 command: "powerpages.powerPagesFileExplorer.backToStudio",
                 title: vscode.l10n.t("Open in Power Pages"),
                 arguments: [],
-            },
-            "backToStudio.svg",
-            vscode.TreeItemCollapsibleState.None
+            }
         );
         const usersPresent = new PowerPagesNode(
             "Users Present",
-            {
-                command: "powerpages.powerPagesFileExplorer.openUsers",
-                title: "Users Present",
-                arguments: [],
-            },
             "",
             vscode.TreeItemCollapsibleState.Collapsed
         );
@@ -182,17 +177,21 @@ export class PowerPagesNavigationProvider
         );
     }
 
-    usersPresent(): void {
-        console.log("Users Present");
+    openTeamsChat(): void {
+        console.log("Open Teams chat");
+    }
+
+    openMail(): void {
+        console.log("Open mail");
     }
 }
 
 export class PowerPagesNode extends vscode.TreeItem {
     constructor(
         public readonly label: string,
-        public readonly command: vscode.Command,
         public readonly svgFileName: string,
-        public readonly collapsibleState: vscode.TreeItemCollapsibleState
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        public readonly command?: vscode.Command
     ) {
         super(label, collapsibleState);
 
@@ -215,7 +214,10 @@ export class UserNode extends vscode.TreeItem {
         public readonly collapsibleState: vscode.TreeItemCollapsibleState
     ) {
         super(label, collapsibleState);
+
         this.tooltip = this.label;
-        this.iconPath = "$(account)";
+        this.iconPath = new vscode.ThemeIcon("account");
     }
+
+    contextValue = "userNode"
 }

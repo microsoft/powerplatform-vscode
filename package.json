@@ -154,6 +154,16 @@
     ],
     "commands": [
       {
+        "command": "powerpages.powerPagesFileExplorer.openTeamsChat",
+        "title": "Open Teams Chat",
+        "icon": "$(person)"
+      },
+      {
+        "command": "powerpages.powerPagesFileExplorer.openMail",
+        "title": "Open Mail",
+        "icon": "$(mail)"
+      },
+      {
         "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
         "title": "Preview site",
         "when": "never"
@@ -161,11 +171,6 @@
       {
         "command": "powerpages.powerPagesFileExplorer.backToStudio",
         "title": "Open in Power Pages",
-        "when": "never"
-      },
-      {
-        "command": "powerpages.powerPagesFileExplorer.openUsers",
-        "title": "Users Present",
         "when": "never"
       },
       {
@@ -856,6 +861,18 @@
         {
           "command": "pacCLI.envAndSolutionsPanel.copyOrganizationId",
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
+        },
+        {
+          "command": "powerpages.powerPagesFileExplorer.openTeamsChat",
+          "group": "inline",
+          "when": "viewItem == userNode",
+          "workbench.view.alwaysShowHeaderActions": "true"
+        },
+        {
+          "command": "powerpages.powerPagesFileExplorer.openMail",
+          "group": "inline",
+          "when": "viewItem == userNode",
+          "workbench.view.alwaysShowHeaderActions": "true"
         }
       ]
     },
