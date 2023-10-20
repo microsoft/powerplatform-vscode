@@ -109,7 +109,9 @@ function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vs
         <button id="try-button">Try Copilot for Power Pages</button>
         <a href="#" class="walkthrough-content" id="walkthroughLink"> <span id="walk-text">Learn more about Copilot </span> <img src="${arrowImageUri}" id="arrow-icon"> </a>
         </div>
+        <div>
         <img src="${copilotImageUri}" alt="Image">
+        </div>
       </div>
       <div class="checkbox-container">
       <input type="checkbox" id="checkbox">

@@ -27,6 +27,16 @@ body {
   padding: 12px;
 }
 
+.input-label {
+  margin-bottom: 1px;
+  color: var(--vscode-input-placeholderForeground);
+  font-size: 12px;
+  background: var(--vscode-panelSectionHeader-background);
+  padding: 5px 0px 5px 10px;
+  height: auto;
+  box-sizing: border-box;
+}
+
 .input-container {
   display: flex;
   align-items: center;
@@ -76,6 +86,8 @@ body {
 .disclaimer {
   margin: 0px;
   margin-top: 12px;
+  color: var(--vscode-titleBar-inactiveForeground);
+  font-size: 12px;
 }
 
 .send-icon,
@@ -96,12 +108,12 @@ body {
 
 .user-message {
   padding: 12px;
-  background-color: var(--vscode-editor-background);
+  background-color: var(--vscode-sideBar-background);
 }
 
 .api-response {
   padding: 12px;
-  background-color: var(--vscode-sideBar-background);
+  background-color: var(--vscode-editor-background);
 }
 
 .message {
@@ -153,8 +165,16 @@ body {
   padding: 20px 5px 1px 10px;
   margin: 10px 0px;
   border-radius: 4px;
-  background-color: var(--vscode-editor-background);
+}
 
+.user-code {
+  background-color: var(--vscode-editor-background);
+  max-height: 200px;
+  overflow: scroll;
+}
+
+.copilot-code {
+  background-color: var(--vscode-sideBar-background)
 }
 
 .code-pre {
@@ -234,11 +254,12 @@ li:before {
   align-items: center;
   justify-content: space-between;
   padding: 6px 20px 12px 20px;
-  background-color: var(--vscode-sideBar-background);
+  background-color: var(--vscode-editor-background);
 }
 
 .feedback-statement {
   margin: 0 10px 0 0;
+  font-size: 11px;
 }
 
 .feedback-icons {
@@ -284,7 +305,8 @@ hr {
   color: var(--vscode-input-placeholderForeground);
 }
 
-.walkthrough-content, .suggested-prompt {
+.walkthrough-content,
+.suggested-prompt {
   display: inline-flex;
   align-items: center;
 }
@@ -305,6 +327,10 @@ hr {
   margin: 16px 0px;
 }
 
-.star-icon {
+
+.icon-container {
+  width: 14px;
+  /* Set a fixed width for the icon */
   margin-right: 4px;
+  /* Add some spacing between icon and text */
 }

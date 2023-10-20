@@ -57,6 +57,7 @@ export interface IWebExtensionContext {
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
     showMultifileInVSCode: boolean;
     extensionActivationTime: number;
+    extensionUri: vscode.Uri
 
     // Org specific details
     dataverseAccessToken: string;
@@ -91,6 +92,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _defaultFileUri: vscode.Uri;
     private _showMultifileInVSCode: boolean;
     private _extensionActivationTime: number;
+    private _extensionUri: vscode.Uri;
     private _dataverseAccessToken: string;
     private _entityDataMap: EntityDataMap;
     private _isContextSet: boolean;
@@ -150,6 +152,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get extensionActivationTime() {
         return this._extensionActivationTime
     }
+    public get extensionUri() {
+        return this._extensionUri
+    }
     public get dataverseAccessToken() {
         return this._dataverseAccessToken;
     }
@@ -200,6 +205,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._defaultFileUri = vscode.Uri.parse(``);
         this._showMultifileInVSCode = false;
         this._extensionActivationTime = new Date().getTime();
+        this._extensionUri = vscode.Uri.parse("");
         this._isContextSet = false;
         this._currentSchemaVersion = "";
         this._websiteLanguageCode = "";
@@ -213,7 +219,8 @@ class WebExtensionContext implements IWebExtensionContext {
     public setWebExtensionContext(
         entityName: string,
         entityId: string,
-        queryParamsMap: Map<string, string>
+        queryParamsMap: Map<string, string>,
+        extensionUri?: vscode.Uri
     ) {
         const schema = queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string;
         // Initialize context from URL params
@@ -228,6 +235,7 @@ class WebExtensionContext implements IWebExtensionContext {
             }/`,
             true
         );
+        this._extensionUri = extensionUri as vscode.Uri;
 
         // Initialize multifile FF here
         const enableMultifile = queryParamsMap?.get(Constants.queryParameters.ENABLE_MULTIFILE);
@@ -249,7 +257,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._isContextSet = true;
     }
 
-    public async setVscodeWorkspaceState(workspaceState: vscode.Memento) {
+    public setVscodeWorkspaceState(workspaceState: vscode.Memento) {
         try {
             workspaceState.keys().forEach((key) => {
                 const entityInfo = workspaceState.get(key) as IEntityInfo;
@@ -362,7 +370,8 @@ class WebExtensionContext implements IWebExtensionContext {
         odataEtag: string,
         attributePath: IAttributePath,
         attributeContent: string,
-        mappingEntityId?: string
+        mappingEntityId?: string,
+        fileUri?: string
     ) {
         this.entityDataMap.setEntity(
             entityId,
@@ -370,7 +379,8 @@ class WebExtensionContext implements IWebExtensionContext {
             odataEtag,
             attributePath,
             attributeContent,
-            mappingEntityId);
+            mappingEntityId,
+            fileUri);
     }
 
     public async updateSingleFileUrisInContext(uri: vscode.Uri) {
@@ -602,7 +612,7 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     /**
-    * Store a value maintained in Extension context workspaceState. 
+    * Store a value maintained in Extension context workspaceState.
     *
     * *Note* that using `undefined` as value removes the key from the underlying
     * storage.

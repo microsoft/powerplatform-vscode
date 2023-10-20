@@ -30,7 +30,7 @@ import {
     updateFileDirtyChanges,
     updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
-import { isVersionControlEnabled } from "../utilities/commonUtil";
+import { getImageFileContent, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo } from "../common/interfaces";
 
 export class File implements vscode.FileStat {
@@ -158,11 +158,13 @@ export class PortalsFS implements vscode.FileSystemProvider {
     async writeFile(
         uri: vscode.Uri,
         content: Uint8Array,
-        options: { create: boolean; overwrite: boolean }
+        options: { create: boolean; overwrite: boolean },
+        isFirstTimeWrite = false
     ): Promise<void> {
         const basename = path.posix.basename(uri.path);
         const parent = await this._lookupParentDirectory(uri);
         let entry = parent.entries.get(basename);
+        const isImageEdit = isImageFileSupportedForEdit(basename);
 
         if (entry instanceof Directory) {
             throw vscode.FileSystemError.FileIsADirectory(uri);
@@ -180,10 +182,21 @@ export class PortalsFS implements vscode.FileSystemProvider {
             entry = new File(basename);
             parent.entries.set(basename, entry);
             this._fireSoon({ type: vscode.FileChangeType.Created, uri });
-        } else if (
-            WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
+        }
+
+        if (!isFirstTimeWrite &&
+            (WebExtensionContext.fileDataMap.getFileMap.get(uri.fsPath)
                 ?.hasDirtyChanges
+                || isImageEdit)
         ) {
+            if (isImageEdit) {
+                WebExtensionContext.telemetry.sendInfoTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_SAVE_IMAGE_FILE_TRIGGERED
+                );
+
+                updateFileContentInFileDataMap(uri.fsPath, getImageFileContent(uri.fsPath, content), true);
+            }
+
             // Save data to dataverse
             await vscode.window.withProgress(
                 {
