@@ -865,14 +865,12 @@
         {
           "command": "powerpages.powerPagesFileExplorer.openTeamsChat",
           "group": "inline",
-          "when": "viewItem == userNode",
-          "workbench.view.alwaysShowHeaderActions": "true"
+          "when": "viewItem == userNode"
         },
         {
           "command": "powerpages.powerPagesFileExplorer.openMail",
           "group": "inline",
-          "when": "viewItem == userNode",
-          "workbench.view.alwaysShowHeaderActions": "true"
+          "when": "viewItem == userNode"
         }
       ]
     },
