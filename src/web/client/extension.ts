@@ -271,55 +271,42 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 
 export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
     if (isCoPresenceEnabled()) {
-        processOpenActiveTextEditor(context);
+        processOnTabChange(context);
         createWebWorkerInstance(context);
     }
 }
 
 let worker: Worker;
 
-export function processOpenActiveTextEditor(context: vscode.ExtensionContext) {
+export function processOnTabChange(context: vscode.ExtensionContext) {
     try {
         context.subscriptions.push(
-            vscode.window.onDidChangeTextEditorSelection(async () => {
-                const activeEditor = vscode.window.activeTextEditor;
-
-                const swpId = WebExtensionContext.sharedWorkSpaceMap.get(
-                    Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
-                ) as string;
-
-                const swptenantId = WebExtensionContext.sharedWorkSpaceMap.get(
-                    Constants.sharedWorkspaceParameters.TENANT_ID
-                ) as string;
-
-                const swpAccessToken =
-                    WebExtensionContext.sharedWorkSpaceMap.get(
-                        Constants.sharedWorkspaceParameters.ACCESS_TOKEN
-                    ) as string;
-
-                const discoveryendpoint =
-                    WebExtensionContext.sharedWorkSpaceMap.get(
-                        Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
-                    ) as string;
-
-                if (activeEditor) {
-                    const entityId =
-                        WebExtensionContext.fileDataMap.getFileMap.get(
-                            activeEditor.document.uri.fsPath
-                        )?.entityId as string;
-
-                    if (entityId) {
-                        worker.postMessage({
-                            afrConfig: {
-                                swpId,
-                                swptenantId,
-                                discoveryendpoint,
-                                swpAccessToken,
-                            },
-                            entityId,
-                        });
+            vscode.window.tabGroups.onDidChangeTabs((event) => {
+                event.opened.concat(event.changed).forEach(tab => {
+                    if (tab.input instanceof vscode.TabInputCustom || tab.input instanceof vscode.TabInputText) {
+                        const document = tab.input;
+                        const entityId = getFileEntityId(document.uri.fsPath);
+                        if (entityId) {
+                            worker.postMessage({
+                                afrConfig: {
+                                    swpId: WebExtensionContext.sharedWorkSpaceMap.get(
+                                        Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
+                                    ) as string,
+                                    swptenantId: WebExtensionContext.sharedWorkSpaceMap.get(
+                                        Constants.sharedWorkspaceParameters.TENANT_ID
+                                    ) as string,
+                                    discoveryendpoint: WebExtensionContext.sharedWorkSpaceMap.get(
+                                        Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
+                                    ) as string,
+                                    swpAccessToken: WebExtensionContext.sharedWorkSpaceMap.get(
+                                        Constants.sharedWorkspaceParameters.ACCESS_TOKEN
+                                    ) as string,
+                                },
+                                entityId,
+                            });
+                        }
                     }
-                }
+                });
             })
         );
     } catch (error) {
