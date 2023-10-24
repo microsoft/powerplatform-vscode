@@ -19,4 +19,5 @@ export interface IProDevCopilotTelemetryData {
     aibEndpoint?: string,
     orgUrl?: string,
     tokenSize?: string
+    isSuggestedPrompt?: string;
 }
