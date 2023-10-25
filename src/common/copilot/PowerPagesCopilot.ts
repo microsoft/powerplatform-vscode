@@ -25,7 +25,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
-import { FORM_VALIDATION_PROMPT, WEB_API_PROMPT } from "../../client/powerpages-constants";
+import { FORM_VALIDATION_PROMPT, PAC_CLI_PROMPT, WEB_API_PROMPT } from "../../client/powerpages-constants";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -117,7 +117,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     private githubCopilot() {
         // Define a Teams chat agent handler.
-        const handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.InteractiveProgress>, token: vscode.CancellationToken) => {
+        const generateResult = {};
+        const pacResult = {};
+        const handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken) => {
             // To talk to an LLM in your slash command handler implementation, your
             // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
             // The pre-release of the GitHub Copilot Chat extension implements this provider.
@@ -141,37 +143,68 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     const incomingText = fragment.replace('[RESPONSE END]', '');
                     progress.report({ content: incomingText });
                 }
-                return {};
+                const activeEditor = vscode.window.activeTextEditor;
+
+                if (activeEditor) {
+                    const document = activeEditor.document;
+                    const uri = document.uri;
+                    progress.report({ reference: uri,/// <reference path="src/common" />
+                    });
+                }
+
+                return generateResult;
                 // return {
                 //     followUp: [{ message: vscode.l10n.t('@teams /generate a Teams project'), metadata: {} }]
                 // };
+            }
+            else if (request.slashCommand?.name == 'pac') {
+                const access = await vscode.chat.requestChatAccess('copilot');
+
+                const messages = [
+                    {
+                        role: vscode.ChatMessageRole.System,
+                        content: PAC_CLI_PROMPT
+                    },
+                    {
+                        role: vscode.ChatMessageRole.User,
+                        content: userPrompt
+                    }
+                ];
+
+                const request = access.makeRequest(messages, {}, token);
+                for await (const fragment of request.response) {
+                    const incomingText = fragment.replace('[RESPONSE END]', '');
+                    progress.report({ content: incomingText });
+                }
+
+                return pacResult;
             }
         };
 
         const customVariableResolver: vscode.ChatVariableResolver = {
             resolve(name, context, token) {
-              // Implement your variable resolution logic here
-              // You should return an array of ChatVariableValue objects
-              // based on the provided 'name', 'context', and 'token'.
+                // Implement your variable resolution logic here
+                // You should return an array of ChatVariableValue objects
+                // based on the provided 'name', 'context', and 'token'.
 
-              const values: vscode.ChatVariableValue[] = [
-                {
-                  level: vscode.ChatVariableLevel.Full,
-                  value: 'Your variable value (required)',
-                  description: 'Your variable description (optional)',
-                },
-                // Add more values if needed
-              ];
+                const values: vscode.ChatVariableValue[] = [
+                    {
+                        level: vscode.ChatVariableLevel.Full,
+                        value: 'Your variable value (required)',
+                        description: 'Your variable description (optional)',
+                    },
+                    // Add more values if needed
+                ];
 
-              return values;
+                return values;
             },
-          };
+        };
 
-          // Register the custom variable
-          const variableName = 'yourVariableName';
-          const variableDescription = 'Your variable description';
+        // Register the custom variable
+        const variableName = 'yourVariableName';
+        const variableDescription = 'Your variable description';
 
-          const ctxTest = vscode.chat.registerVariable(variableName, variableDescription, customVariableResolver);
+        const ctxTest = vscode.chat.registerVariable(variableName, variableDescription, customVariableResolver);
 
 
         // Agents appear as top-level options in the chat input
@@ -186,18 +219,29 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 return [
                     { name: 'form-validation', description: 'Adds form validation' },
                     { name: 'web-api', description: 'WebApi to perform CRUD operations' },
-                    { name: 'create-webpage', description: 'Create a webpage'}
+                    { name: 'create-webpage', description: 'Create a webpage' },
+                    { name: 'pac', description: 'Helps in "pac paportal" operations'}
                 ];
             }
         };
         agent.followupProvider = {
             provideFollowups(result, token) {
 
-                return [{
-                    title: vscode.l10n.t('Create webpage'),
-                  //  commandId: TEAMS_PROJECT_COMMAND_ID,
-                    message: '@powerpages /create-webpage',
-                }];
+                if (result === generateResult) {
+                    return [{
+                        message: '@powerpages /create-webpage landing page for world-cup',
+                        title: vscode.l10n.t('Create Web-page'),
+                    }];
+                } else if(result === pacResult) {
+                    return [{
+                        message: '@powerpages /pac How to list available websites',
+                        title: vscode.l10n.t('How to list available websites'),
+                    },
+                    {
+                        message: '@powerpages /pac How to upload website',
+                        title: vscode.l10n.t('How to upload website'),
+                    },];
+                }
             }
         };
 
