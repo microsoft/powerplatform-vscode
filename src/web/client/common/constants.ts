@@ -61,7 +61,7 @@ export enum sharedWorkspaceParameters {
     DISCOVERY_ENDPOINT = "discoveryendpoint",
 }
 
-export enum workerMessage {
+export enum workerEventMessages {
     UPDATE_CONNECTED_USERS = "client-data",
     REMOVE_CONNECTED_USER = "member-removed",
 }
