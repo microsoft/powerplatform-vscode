@@ -270,7 +270,9 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 }
 
 export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
-    if (isCoPresenceEnabled()) {
+    // feature in progress, hence disabling it
+    // eslint-disable-next-line no-constant-condition
+    if (false && isCoPresenceEnabled()) {
         processOnTabChange(context);
         createWebWorkerInstance(context);
     }
