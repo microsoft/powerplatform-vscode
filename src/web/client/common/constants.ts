@@ -53,11 +53,17 @@ export const MULTI_FILE_FEATURE_SETTING_NAME = "enableMultiFileFeature";
 // Co-presence feature constants
 export const CO_PRESENCE_FEATURE_SETTING_NAME = "enableCoPresenceFeature";
 
+// Co-presence constants
 export enum sharedWorkspaceParameters {
     SHAREWORKSPACE_ID = "sharedworkspaceid",
     TENANT_ID = "tenantid",
     ACCESS_TOKEN = "accesstoken",
     DISCOVERY_ENDPOINT = "discoveryendpoint",
+}
+
+export enum workerMessage {
+    UPDATE_CONNECTED_USERS = "client-data",
+    REMOVE_CONNECTED_USER = "member-removed",
 }
 
 export enum initializationEntityName {

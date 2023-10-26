@@ -344,12 +344,12 @@ export function createWebWorkerInstance(
 
                 WebExtensionContext.containerId = event.data.containerId;
 
-                if (data.type === "member-removed") {
+                if (data.type === Constants.workerMessage.REMOVE_CONNECTED_USER) {
                     WebExtensionContext.removeConnectedUserInContext(
                         data.userId
                     );
                 }
-                if (data.type === "client-data") {
+                if (data.type === Constants.workerMessage.UPDATE_CONNECTED_USERS) {
                     WebExtensionContext.updateConnectedUsersInContext(
                         data.containerId,
                         data.userName,
