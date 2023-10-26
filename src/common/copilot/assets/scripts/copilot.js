@@ -94,7 +94,9 @@
 
       codeLineCount += countLines(codeBlock);
 
-      codeDiv.appendChild(createActionWrapper(codeBlock));
+      if(!isUserCode) {
+        codeDiv.appendChild(createActionWrapper(codeBlock));
+      }
 
       const preFormatted = document.createElement("pre");
       const codeSnip = document.createElement("code");
