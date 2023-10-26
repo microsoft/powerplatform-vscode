@@ -321,7 +321,9 @@ export function createWebWorkerInstance(
 ) {
     const webworkerMain = vscode.Uri.joinPath(
         context.extensionUri,
-        "dist/web/webworker.worker.js"
+        "dist",
+        "web",
+        "webworker.worker.js"
     );
 
     const workerUrl = new URL(webworkerMain.toString());
