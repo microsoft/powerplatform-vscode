@@ -13,6 +13,7 @@
   const chatMessages = document.getElementById("chat-messages");
   const chatInput = document.getElementById("chat-input");
   const chatInputComponent = document.getElementById("input-component");
+  const skipCodes = ["", null, undefined, "violation", "unclear", "explain"];
 
   let userName;
   let apiResponseHandler;
@@ -22,6 +23,7 @@
   let apiResponseInProgress = false;
   let selectedCode = "";
   let copilotStrings = {};
+
 
 
   const inputHistory = [];
@@ -46,7 +48,7 @@
     </defs>
     </svg>`;
 
-  const copilotSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <rect width="24" height="24" rx="12" fill="white"/> <path d="M10.1959 3.92188L5.49974 6.63385C4.57168 7.16979 4 8.16009 4 9.23178V14.7682C4 15.8398 4.57164 16.8301 5.49965 17.366L7.76712 18.6756L7.99007 18L12.2373 15.4567L10.4996 14.4531C9.57164 13.9172 9 12.9269 9 11.8553V10.2734L9.46563 9.67953L11 8.49176V5L10.3242 4.01172L9.58517 4.53879C9.75624 4.30668 9.96137 4.09837 10.1959 3.92188Z" fill="url(#paint0_linear_3893_124825)"/> <path d="M10.1959 3.92188L5.49974 6.63385C4.57168 7.16979 4 8.16009 4 9.23178V14.7682C4 15.8398 4.57164 16.8301 5.49965 17.366L7.76712 18.6756L7.99007 18L12.2373 15.4567L10.4996 14.4531C9.57164 13.9172 9 12.9269 9 11.8553V10.2734L9.46563 9.67953L11 8.49176V5L10.3242 4.01172L9.58517 4.53879C9.75624 4.30668 9.96137 4.09837 10.1959 3.92188Z" fill="url(#paint1_linear_3893_124825)"/> <path d="M14.9988 9.61523V11.8559C14.9988 12.9276 14.4271 13.9179 13.4991 14.4538L8.49914 17.3415C7.57076 17.8776 6.42682 17.8776 5.49844 17.3415L5.19531 17.1664C5.29151 17.2387 5.39266 17.3057 5.49844 17.3668L10.4984 20.2545C11.4268 20.7906 12.5708 20.7906 13.4991 20.2545L18.4991 17.3668C19.4271 16.8309 19.9988 15.8406 19.9988 14.769V12.6879L14.9988 9.61523Z" fill="url(#paint2_radial_3893_124825)"/> <path d="M14.9988 9.61523V11.8559C14.9988 12.9276 14.4271 13.9179 13.4991 14.4538L8.49914 17.3415C7.57076 17.8776 6.42682 17.8776 5.49844 17.3415L5.19531 17.1664C5.29151 17.2387 5.39266 17.3057 5.49844 17.3668L10.4984 20.2545C11.4268 20.7906 12.5708 20.7906 13.4991 20.2545L18.4991 17.3668C19.4271 16.8309 19.9988 15.8406 19.9988 14.769V12.6879L14.9988 9.61523Z" fill="url(#paint3_linear_3893_124825)"/> <path d="M10.1952 3.92167L10.4997 3.74582C11.4281 3.20972 12.5719 3.20973 13.5003 3.74582L18.5003 6.63324C19.4283 7.16918 20 8.15948 20 9.23117V14.7675C20 14.7881 19.9998 14.8087 19.9994 14.8293C19.9779 13.7814 19.4105 12.8187 18.5003 12.2931L13.5003 9.40565C12.5719 8.86955 11.4281 8.86954 10.4997 9.40564L9 10.2717V6.31815C9 5.36919 9.44824 4.48405 10.1952 3.92167Z" fill="url(#paint4_radial_3893_124825)"/> <path d="M10.1952 3.92167L10.4997 3.74582C11.4281 3.20972 12.5719 3.20973 13.5003 3.74582L18.5003 6.63324C19.4283 7.16918 20 8.15948 20 9.23117V14.7675C20 14.7881 19.9998 14.8087 19.9994 14.8293C19.9779 13.7814 19.4105 12.8187 18.5003 12.2931L13.5003 9.40565C12.5719 8.86955 11.4281 8.86954 10.4997 9.40564L9 10.2717V6.31815C9 5.36919 9.44824 4.48405 10.1952 3.92167Z" fill="url(#paint5_linear_3893_124825)"/> <path d="M4.00063 14.8293C4.00063 14.8293 4.00063 14.8292 4.00063 14.8293V14.8293Z" fill="url(#paint6_radial_3893_124825)"/> <path d="M4.00063 14.8293C4.00063 14.8293 4.00063 14.8292 4.00063 14.8293V14.8293Z" fill="url(#paint7_linear_3893_124825)"/> <defs> <linearGradient id="paint0_linear_3893_124825" x1="11.0932" y1="7.8282" x2="6.74492" y2="20.4869" gradientUnits="userSpaceOnUse"> <stop stop-color="#AE7FE2"/> <stop offset="1" stop-color="#0078D4"/> </linearGradient> <linearGradient id="paint1_linear_3893_124825" x1="9.44306" y1="17.2211" x2="8.6907" y2="15.8939" gradientUnits="userSpaceOnUse"> <stop offset="0.9999" stop-color="#114A8B"/> <stop offset="1" stop-color="#0078D4" stop-opacity="0"/> </linearGradient> <radialGradient id="paint2_radial_3893_124825" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(7.14608 16.7577) rotate(-13.0688) scale(12.7772 9.84272)"> <stop offset="0.140029" stop-color="#D59DFF"/> <stop offset="1" stop-color="#5E438F"/> </radialGradient> <linearGradient id="paint3_linear_3893_124825" x1="17.826" y1="11.8471" x2="17.1058" y2="13.0024" gradientUnits="userSpaceOnUse"> <stop offset="0.9999" stop-color="#493474"/> <stop offset="1" stop-color="#8C66BA" stop-opacity="0"/> </linearGradient> <radialGradient id="paint4_radial_3893_124825" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(18.5411 12.3179) rotate(-143.083) scale(11.412)"> <stop stop-color="#50E6FF"/> <stop offset="1" stop-color="#436DCD"/> </radialGradient> <linearGradient id="paint5_linear_3893_124825" x1="9.0174" y1="7.56496" x2="10.1821" y2="7.56496" gradientUnits="userSpaceOnUse"> <stop offset="0.9999" stop-color="#114A8B"/> <stop offset="1" stop-color="#0078D4" stop-opacity="0"/> </linearGradient> <radialGradient id="paint6_radial_3893_124825" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(18.5411 12.3179) rotate(-143.083) scale(11.412)"> <stop stop-color="#50E6FF"/> <stop offset="1" stop-color="#436DCD"/> </radialGradient> <linearGradient id="paint7_linear_3893_124825" x1="9.0174" y1="7.56496" x2="10.1821" y2="7.56496" gradientUnits="userSpaceOnUse"> <stop offset="0.9999" stop-color="#114A8B"/> <stop offset="1" stop-color="#0078D4" stop-opacity="0"/> </linearGradient> </defs> </svg>'
+  const copilotSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <rect width="24" height="24" rx="12" fill="white"/> <path d="M16.1442 5.34932C15.9106 4.54966 15.1775 4 14.3444 4L13.7432 4C12.8472 4 12.0763 4.634 11.9034 5.51321L10.854 10.8501L11.1514 9.89102C11.3948 9.1063 12.1207 8.57143 12.9423 8.57143L16.2356 8.57143L17.6357 9.74347L18.8823 8.57143H18.491C17.6579 8.57143 16.9247 8.02177 16.6912 7.22211L16.1442 5.34932Z" fill="url(#paint0_radial_7700_35114)"/> <path d="M8.0492 18.6427C8.28017 19.4462 9.01519 19.9997 9.85121 19.9997H11.075C12.0844 19.9997 12.9126 19.2006 12.9488 18.1918L13.1295 13.1426L12.842 14.0951C12.6031 14.8867 11.8738 15.4283 11.047 15.4283L7.73383 15.4283L6.34959 14.5431L5.32812 15.4283H5.71324C6.54926 15.4283 7.28427 15.9818 7.51524 16.7853L8.0492 18.6427Z" fill="url(#paint1_radial_7700_35114)"/> <path d="M14.25 4H7.6876C5.81262 4 4.68763 6.39748 3.93763 8.79497C3.04909 11.6354 1.8864 15.4342 5.25012 15.4342H8.11121C8.94326 15.4342 9.67523 14.8878 9.911 14.0899C10.4044 12.4199 11.2647 9.52162 11.9408 7.31373C12.2855 6.18837 12.5726 5.22188 13.0131 4.62001C13.2601 4.28258 13.6718 4 14.25 4Z" fill="url(#paint2_linear_7700_35114)"/> <path d="M14.25 4H7.6876C5.81262 4 4.68763 6.39748 3.93763 8.79497C3.04909 11.6354 1.8864 15.4342 5.25012 15.4342H8.11121C8.94326 15.4342 9.67523 14.8878 9.911 14.0899C10.4044 12.4199 11.2647 9.52162 11.9408 7.31373C12.2855 6.18837 12.5726 5.22188 13.0131 4.62001C13.2601 4.28258 13.6718 4 14.25 4Z" fill="url(#paint3_linear_7700_35114)" fill-opacity="0.4"/> <path d="M9.74878 20.0006H16.3112C18.1862 20.0006 19.3112 17.6039 20.0612 15.2073C20.9497 12.3678 22.1124 8.57031 18.7487 8.57031H15.8875C15.0555 8.57031 14.3236 9.11657 14.0877 9.91444C13.5943 11.5839 12.7341 14.481 12.058 16.688C11.7133 17.813 11.4263 18.7792 10.9857 19.3808C10.7387 19.7181 10.327 20.0006 9.74878 20.0006Z" fill="url(#paint4_radial_7700_35114)"/> <path d="M9.74878 20.0006H16.3112C18.1862 20.0006 19.3112 17.6039 20.0612 15.2073C20.9497 12.3678 22.1124 8.57031 18.7487 8.57031H15.8875C15.0555 8.57031 14.3236 9.11657 14.0877 9.91444C13.5943 11.5839 12.7341 14.481 12.058 16.688C11.7133 17.813 11.4263 18.7792 10.9857 19.3808C10.7387 19.7181 10.327 20.0006 9.74878 20.0006Z" fill="url(#paint5_linear_7700_35114)"/> <defs> <radialGradient id="paint0_radial_7700_35114" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(16.8577 8.74671) rotate(-134.481) scale(5.88527 5.79516)"> <stop stop-color="#7D7DF2"/> <stop offset="0.633728" stop-color="#4A40D4"/> <stop offset="0.923392" stop-color="#2F27A5"/> </radialGradient> <radialGradient id="paint1_radial_7700_35114" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(6.74347 15.4005) rotate(51.7328) scale(6.58647 6.39483)"> <stop stop-color="#A072EE"/> <stop offset="0.633728" stop-color="#6C31D3"/> <stop offset="0.923392" stop-color="#491D9F"/> </radialGradient> <linearGradient id="paint2_linear_7700_35114" x1="7.59011" y1="17.8763" x2="8.50426" y2="2.96646" gradientUnits="userSpaceOnUse"> <stop offset="0.0499437" stop-color="#00CCF9"/> <stop offset="0.415501" stop-color="#4A94FC"/> <stop offset="0.764894" stop-color="#7D7DF2"/> <stop offset="1" stop-color="#A071EE"/> </linearGradient> <linearGradient id="paint3_linear_7700_35114" x1="8.11312" y1="4" x2="8.59177" y2="15.4355" gradientUnits="userSpaceOnUse"> <stop stop-color="#B5BCFD"/> <stop offset="0.246674" stop-color="#9B9FF8" stop-opacity="0"/> </linearGradient> <radialGradient id="paint4_radial_7700_35114" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(19.2001 7.91153) rotate(116.336) scale(13.4892 16.5648)"> <stop stop-color="#6462E4"/> <stop offset="0.554591" stop-color="#6462E4"/> <stop offset="1" stop-color="#A071EE"/> </radialGradient> <linearGradient id="paint5_linear_7700_35114" x1="18.0639" y1="8.02199" x2="17.3559" y2="11.8607" gradientUnits="userSpaceOnUse"> <stop stop-color="#B791F7"/> <stop offset="1" stop-color="#A071EE" stop-opacity="0"/> </linearGradient> </defs> </svg>'
 
   const bookIconSvg = '<svg class="play-icon" width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5067 0.973333L13.9867 1.50667V11.48L13.5067 12.0133H8.22667L7.37333 12.8667H6.62667L5.77333 12.0133H0.493333L0.0133333 11.48V1.50667L0.493333 0.973333H5.98667L6.36 1.13333L7 1.77333L7.64 1.13333L8.01333 0.973333H13.5067ZM6.52 11.32V2.73333L5.77333 1.98667H1.02667V11H5.98667L6.30667 11.16L6.52 11.32ZM13.0267 11V1.98667H8.22667L7.53333 2.68V11.2667L7.64 11.16L8.01333 11H13.0267ZM5.02667 4.01333V4.97333H1.98667V4.01333H5.02667ZM5.02667 8.01333V8.97333H1.98667V8.01333H5.02667ZM1.98667 5.98667V7H5.02667V5.98667H1.98667ZM12.0133 4.01333V4.97333H9.02667V4.01333H12.0133ZM9.02667 5.98667V7H12.0133V5.98667H9.02667ZM9.02667 8.01333V8.97333H12.0133V8.01333H9.02667Z" class="play-icon-path"/></svg>';
 
@@ -79,7 +81,7 @@
         return resultDiv;
       }
 
-      if (responseText[i].code === "" || responseText[i].code === null || responseText[i].code === undefined || responseText[i].code === "violation" || responseText[i].code === "unclear") {
+      if (skipCodes.includes(responseText[i].code)) {
         continue;
       }
 
@@ -92,7 +94,9 @@
 
       codeLineCount += countLines(codeBlock);
 
-      codeDiv.appendChild(createActionWrapper(codeBlock));
+      if(!isUserCode) {
+        codeDiv.appendChild(createActionWrapper(codeBlock));
+      }
 
       const preFormatted = document.createElement("pre");
       const codeSnip = document.createElement("code");
@@ -147,7 +151,7 @@
     const nameArray = name.split(" ");
     const initials = nameArray.map((word) => word.charAt(0));
     const truncatedInitials = initials.slice(0, 2);
-    return truncatedInitials.join("");
+    return truncatedInitials.join("").toUpperCase();
   }
 
 
@@ -455,7 +459,7 @@
         break;
       }
       case "Available": {
-        if(isCopilotEnabled== false) {
+        if(isCopilotEnabled === false) {
           isCopilotEnabled = true;
           chatInputComponent.classList.remove("hide");
           chatMessages.innerHTML = "";
@@ -467,12 +471,17 @@
         case "selectedCodeInfo": {
             const chatInputLabel = document.getElementById("input-label-id");
             selectedCode = message.value.selectedCode;
-            if (message.value.start == message.value.end && selectedCode.length == 0) {
+            if (selectedCode.length === 0) {
                 chatInputLabel.classList.add("hide");
                 break;
             }
             chatInputLabel.classList.remove("hide");
-            chatInputLabel.innerText = `Lines: ${message.value.start + 1} - ${message.value.end + 1} selected`;
+            if(message.value.tokenSize === false){
+                chatInputLabel.innerText = copilotStrings.LARGE_SELECTION;
+                selectedCode = "";
+                break;
+            }
+            chatInputLabel.innerText = `Lines ${message.value.start + 1} - ${message.value.end + 1} selected`;
             break;
         }
         case "explainCode": {
@@ -488,10 +497,10 @@
     vscode.postMessage({ type: "login" });
   }
 
-  function getApiResponse(userPrompt) {
+  function getApiResponse(userPrompt, isSuggestedPrompt) {
     apiResponseHandler = handleAPIResponse();
     apiResponseHandler.updateThinking("Working on it...");
-    vscode.postMessage({ type: "newUserPrompt", value: userPrompt });
+    vscode.postMessage({ type: "newUserPrompt", value: {userPrompt: userPrompt, isSuggestedPrompt: isSuggestedPrompt}  });
   }
 
   function insertCode(code) {
@@ -510,7 +519,7 @@
     vscode.postMessage({ type: "walkthrough" });
   }
 
-  function processUserInput(input) {
+  function processUserInput(input, isSuggestedPrompt = false) {
     if (apiResponseInProgress) {
       return;
     }
@@ -520,7 +529,7 @@
       chatInput.disabled = true;
       saveInputToHistory(input);
       apiResponseInProgress = true;
-      getApiResponse(input + ': ' + selectedCode); //TODO: userPrompt object should be passed
+      getApiResponse(userPrompt, isSuggestedPrompt);
       chatInput.value = "";
       chatInput.focus();
     }
@@ -585,7 +594,7 @@
 
   function handleSuggestionsClick() {
     const suggestedPrompt = this.innerText.trim();
-    processUserInput(suggestedPrompt);
+    processUserInput(suggestedPrompt, true);
   }
 
   chatInput.addEventListener('keydown', handleArrowKeys);

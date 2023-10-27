@@ -578,7 +578,7 @@
         {
           "submenu": "microsoft-powerapps-portals.powerpages-copilot",
           "group": "0_powerpages-copilot",
-          "when": "never"
+          "when": "(powerpages.copilot.isVisible) && ((!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot))"
         }
       ],
       "microsoft-powerapps-portals.powerpages-copilot": [
@@ -968,6 +968,7 @@
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@types/chai": "^4.2.14",
     "@types/command-exists": "^1.2.0",
+    "@types/debug": "^4.1.9",
     "@types/fs-extra": "^9.0.11",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.3",
@@ -1025,6 +1026,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@fluidframework/azure-client": "^1.1.1",
     "@microsoft/generator-powerpages": "1.21.19",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
@@ -1032,16 +1034,22 @@
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
+    "fluid-framework": "^1.3.7",
     "glob": "^7.1.7",
+    "gpt-tokenizer": "^2.1.1",
+    "https-browserify": "^1.0.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
     "recursive-readdir": "^2.2.3",
+    "stream-http": "^3.2.0",
+    "tty-browserify": "^0.0.1",
     "unzip-stream": "^0.3.1",
     "uuid": "^8.3.2",
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
+    "worker-loader": "^3.0.8",
     "yaml": "^2.2.2"
   },
   "__metadata": {

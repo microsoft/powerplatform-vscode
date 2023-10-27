@@ -25,7 +25,9 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDev
     telemetryDataProperties.FeedbackId = telemetryData.FeedbackId ? telemetryData.FeedbackId : '';
     telemetryDataProperties.dataverseEntity = telemetryData.dataverseEntity ? telemetryData.dataverseEntity : '';
     telemetryDataProperties.responseStatus = telemetryData.responseStatus ? telemetryData.responseStatus : '';
-    
+    telemetryDataProperties.tokenSize = telemetryData.tokenSize ? telemetryData.tokenSize : '';
+    telemetryDataProperties.isSuggestedPrompt = telemetryData.isSuggestedPrompt ? telemetryData.isSuggestedPrompt : '';
+
     if (telemetryData.error) {
         telemetryDataProperties.eventName = telemetryData.eventName;
         telemetry.sendTelemetryException(telemetryData.error, telemetryDataProperties, telemetryDataMeasurements);

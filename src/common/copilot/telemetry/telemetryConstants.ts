@@ -33,3 +33,5 @@ export const CopilotNotificationShown = 'CopilotNotificationShown';
 export const CopilotNotificationDoNotShowChecked = 'CopilotNotificationDoNotShowChecked';
 export const CopilotNotificationDoNotShowUnchecked = 'CopilotNotificationDoNotShowUnchecked';
 export const CopilotNotAvailable = 'CopilotNotAvailable';
+export const CopilotExplainCode = 'CopilotExplainCode';
+export const CopilotExplainCodeSize = 'CopilotExplainCodeSize';
