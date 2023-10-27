@@ -311,40 +311,38 @@ export function createWebWorkerInstance(
 
     const workerUrl = new URL(webworkerMain.toString());
 
-    fetch(workerUrl)
-        .then((response) => response.text())
-        .then((workerScript) => {
-            const workerBlob = new Blob([workerScript], {
-                type: "application/javascript",
-            });
+    WebExtensionContext.getWorkerScript(workerUrl)
+    .then((workerScript) => {
+        const workerBlob = new Blob([workerScript], {
+            type: "application/javascript",
+        });
 
-            const workerUrl = URL.createObjectURL(workerBlob);
+        const urlObj = URL.createObjectURL(workerBlob);
 
-            WebExtensionContext.setWorker(new Worker(workerUrl));
+        WebExtensionContext.setWorker(new Worker(urlObj));
 
-            if (WebExtensionContext.worker !== undefined) {
-                WebExtensionContext.worker.onmessage = (event) => {
-                    const { data } = event;
+        if (WebExtensionContext.worker !== undefined) {
+            WebExtensionContext.worker.onmessage = (event) => {
+                const { data } = event;
 
-                    WebExtensionContext.containerId = event.data.containerId;
+                WebExtensionContext.containerId = event.data.containerId;
 
-                    if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
-                        WebExtensionContext.removeConnectedUserInContext(
-                            data.userId
-                        );
-                    }
-                    if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
-                        WebExtensionContext.updateConnectedUsersInContext(
-                            data.containerId,
-                            data.userName,
-                            data.userId,
-                            data.entityId
-                        );
-                    }
-                };
-            }
-        })
-        // TODO: add Telemetry
+                if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
+                    WebExtensionContext.removeConnectedUserInContext(
+                        data.userId
+                    );
+                }
+                if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
+                    WebExtensionContext.updateConnectedUsersInContext(
+                        data.containerId,
+                        data.userName,
+                        data.userId,
+                        data.entityId
+                    );
+                }
+            };
+        }
+    });
 }
 
 export async function showSiteVisibilityDialog() {

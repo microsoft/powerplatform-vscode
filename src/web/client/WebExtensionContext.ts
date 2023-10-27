@@ -674,6 +674,39 @@ class WebExtensionContext implements IWebExtensionContext {
         return this._vscodeWorkspaceState.get(key);
     }
 
+    public async getWorkerScript(workerUrl : URL) : Promise<any> {
+        try {
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT,
+                { workerUrl: workerUrl.toString() }
+            );
+
+            const response = await this.concurrencyHandler.handleRequest(
+                workerUrl
+            )
+
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to fetch worker script '${workerUrl.toString()}': ${response.statusText}`
+                );
+            }
+
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_SUCCESS,
+                { workerUrl: workerUrl.toString() }
+            );
+
+            return await response.text();
+        } catch (error) {
+            this.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
+                this.getWorkerScript.name,
+                (error as Error)?.message,
+                error as Error
+            );
+        }
+    }
+
     public setWorker(worker: Worker) {
         this._worker = worker;
     }
