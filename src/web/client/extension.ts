@@ -240,25 +240,26 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                         WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, entityInfo);
 
                         // sending message to webworker event listener for Co-Presence feature
-                        // eslint-disable-next-line no-constant-condition
-                        if (false && isCoPresenceEnabled()) {
-                            worker.postMessage({
-                                afrConfig: {
-                                    swpId: WebExtensionContext.sharedWorkSpaceMap.get(
-                                        Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
-                                    ) as string,
-                                    swptenantId: WebExtensionContext.sharedWorkSpaceMap.get(
-                                        Constants.sharedWorkspaceParameters.TENANT_ID
-                                    ) as string,
-                                    discoveryendpoint: WebExtensionContext.sharedWorkSpaceMap.get(
-                                        Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
-                                    ) as string,
-                                    swpAccessToken: WebExtensionContext.sharedWorkSpaceMap.get(
-                                        Constants.sharedWorkspaceParameters.ACCESS_TOKEN
-                                    ) as string,
-                                },
-                                entityInfo
-                            });
+                        if (isCoPresenceEnabled()) {
+                            if (WebExtensionContext.worker !== undefined) {
+                                WebExtensionContext.worker.postMessage({
+                                    afrConfig: {
+                                        swpId: WebExtensionContext.sharedWorkSpaceMap.get(
+                                            Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
+                                        ) as string,
+                                        swptenantId: WebExtensionContext.sharedWorkSpaceMap.get(
+                                            Constants.sharedWorkspaceParameters.TENANT_ID
+                                        ) as string,
+                                        discoveryendpoint: WebExtensionContext.sharedWorkSpaceMap.get(
+                                            Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
+                                        ) as string,
+                                        swpAccessToken: WebExtensionContext.sharedWorkSpaceMap.get(
+                                            Constants.sharedWorkspaceParameters.ACCESS_TOKEN
+                                        ) as string,
+                                    },
+                                    entityInfo
+                                });
+                            }
                         }
                     }
                 }
@@ -293,13 +294,10 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 
 export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
     // feature in progress, hence disabling it
-    // eslint-disable-next-line no-constant-condition
-    if (false && isCoPresenceEnabled()) {
+    if (isCoPresenceEnabled()) {
         createWebWorkerInstance(context);
     }
 }
-
-let worker: Worker;
 
 export function createWebWorkerInstance(
     context: vscode.ExtensionContext
@@ -322,27 +320,29 @@ export function createWebWorkerInstance(
 
             const workerUrl = URL.createObjectURL(workerBlob);
 
-            worker = new Worker(workerUrl);
+            WebExtensionContext.setWorker(new Worker(workerUrl));
 
-            worker.onmessage = (event) => {
-                const { data } = event;
+            if (WebExtensionContext.worker !== undefined) {
+                WebExtensionContext.worker.onmessage = (event) => {
+                    const { data } = event;
 
-                WebExtensionContext.containerId = event.data.containerId;
+                    WebExtensionContext.containerId = event.data.containerId;
 
-                if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
-                    WebExtensionContext.removeConnectedUserInContext(
-                        data.userId
-                    );
-                }
-                if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
-                    WebExtensionContext.updateConnectedUsersInContext(
-                        data.containerId,
-                        data.userName,
-                        data.userId,
-                        data.entityId
-                    );
-                }
-            };
+                    if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
+                        WebExtensionContext.removeConnectedUserInContext(
+                            data.userId
+                        );
+                    }
+                    if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
+                        WebExtensionContext.updateConnectedUsersInContext(
+                            data.containerId,
+                            data.userName,
+                            data.userId,
+                            data.entityId
+                        );
+                    }
+                };
+            }
         })
         // TODO: add Telemetry
 }

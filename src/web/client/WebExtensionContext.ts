@@ -104,6 +104,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _formsProEligibilityId: string;
     private _concurrencyHandler: ConcurrencyHandler
     // Co-Presence for Power Pages Vscode for web
+    private _worker: Worker | undefined;
     private _sharedWorkSpaceMap: Map<string, string>;
     private _containerId: string;
     private _connectedUsers: UserDataMap;
@@ -188,6 +189,9 @@ class WebExtensionContext implements IWebExtensionContext {
     }
     public get concurrencyHandler() {
         return this._concurrencyHandler;
+    }
+    public get worker() {
+        return this._worker;
     }
     public get sharedWorkSpaceMap() {
         return this._sharedWorkSpaceMap;
@@ -668,6 +672,10 @@ class WebExtensionContext implements IWebExtensionContext {
 
     public getVscodeWorkspaceState(key: string): IEntityInfo | undefined {
         return this._vscodeWorkspaceState.get(key);
+    }
+
+    public setWorker(worker: Worker) {
+        this._worker = worker;
     }
 
     private async populateSharedworkspace(
