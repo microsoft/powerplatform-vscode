@@ -18,6 +18,8 @@ import {
 } from "../schema/constants";
 import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
 import { getWorkSpaceName } from "./commonUtil";
+import * as Constants from "../common/constants";
+import { telemetryEventNames } from "../telemetry/constants";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -247,21 +249,67 @@ export function isWebFileWithLazyLoad(fsPath: string): boolean {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getOrCreateSharedWorkspace(config: any) {
+    let requestSentAtTime = new Date().getTime();
+    const requestUrl = `${config.dataverseOrgUrl}/api/data/v9.2/GetOrCreateSharedWorkspace`;
 
-    const createWorkspaceResponse = await fetch(
-        `${config.dataverseOrgUrl}/api/data/v9.2/GetOrCreateSharedWorkspace`,
-        {
-            headers: {
-                ...config.headers,
-            },
-            method: "POST",
-            body: JSON.stringify({
-                target: {
-                    name: getWorkSpaceName(config.websiteid),
-                }
-            }),
+    try {
+        WebExtensionContext.telemetry.sendAPITelemetry(
+            requestUrl,
+            config.entityName,
+            Constants.httpMethod.POST,
+            getOrCreateSharedWorkspace.name,
+        );
+
+        requestSentAtTime = new Date().getTime();
+
+        const createWorkspaceResponse = await WebExtensionContext.concurrencyHandler.handleRequest(
+            requestUrl,
+            {
+                headers: {
+                    ...config.headers,
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    target: {
+                        name: getWorkSpaceName(config.websiteid),
+                    }
+                }),
+            }
+        )
+
+        if (!createWorkspaceResponse.ok) {
+            throw new Error(JSON.stringify(createWorkspaceResponse));
         }
-    );
 
-    return await createWorkspaceResponse.json();
+        WebExtensionContext.telemetry.sendAPISuccessTelemetry(
+            requestUrl,
+            config.entityName,
+            Constants.httpMethod.POST,
+            new Date().getTime() - requestSentAtTime,
+            getOrCreateSharedWorkspace.name
+        );
+
+        return await createWorkspaceResponse.json();
+    } catch (error) {
+        const errorMsg = (error as Error)?.message;
+        if ((error as Response)?.status > 0) {
+            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                requestUrl,
+                config.entityName,
+                Constants.httpMethod.GET,
+                new Date().getTime() - requestSentAtTime,
+                getOrCreateSharedWorkspace.name,
+                errorMsg,
+                '',
+                (error as Response)?.status.toString()
+            );
+        } else {
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
+                getOrCreateSharedWorkspace.name,
+                (error as Error)?.message,
+                error as Error
+            );
+        }
+    }
 }

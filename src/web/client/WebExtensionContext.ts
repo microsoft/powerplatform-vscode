@@ -321,6 +321,28 @@ class WebExtensionContext implements IWebExtensionContext {
         );
 
         await this.setWebsiteLanguageCode();
+
+        // Getting website Id to populate shared workspace for Co-Presence
+        const websiteid = this.urlParametersMap.get(
+            Constants.queryParameters.WEBSITE_ID
+        ) as string;
+
+        const headers = getCommonHeaders(this._dataverseAccessToken);
+
+        // Populate shared workspace for Co-Presence
+        try {
+            await this.populateSharedworkspace(headers, dataverseOrgUrl, websiteid);
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SUCCESS
+            );
+        } catch (error) {
+            this.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
+                this.populateSharedworkspace.name,
+                (error as Error)?.message,
+                error as Error
+            );
+        }
     }
 
     public async dataverseAuthentication(firstTimeAuth = false) {
@@ -351,14 +373,6 @@ class WebExtensionContext implements IWebExtensionContext {
         }
 
         this._dataverseAccessToken = accessToken;
-
-        const websiteid = this.urlParametersMap.get(
-            Constants.queryParameters.WEBSITE_ID
-        ) as string;
-
-        const headers = getCommonHeaders(accessToken);
-
-        await this.populateSharedworkspace(headers, dataverseOrgUrl, websiteid);
     }
 
     public async updateFileDetailsInContext(
