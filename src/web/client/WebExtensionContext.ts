@@ -674,6 +674,7 @@ class WebExtensionContext implements IWebExtensionContext {
         return this._vscodeWorkspaceState.get(key);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public async getWorkerScript(workerUrl : URL) : Promise<any> {
         try {
             this.telemetry.sendInfoTelemetry(
