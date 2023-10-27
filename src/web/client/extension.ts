@@ -238,6 +238,28 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     if (entityInfo.entityId && entityInfo.entityName) {
                         context.workspaceState.update(document.uri.fsPath, entityInfo);
                         WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, entityInfo);
+
+                        // sending message to webworker event listener for Co-Presence feature
+                        // eslint-disable-next-line no-constant-condition
+                        if (false && isCoPresenceEnabled()) {
+                            worker.postMessage({
+                                afrConfig: {
+                                    swpId: WebExtensionContext.sharedWorkSpaceMap.get(
+                                        Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
+                                    ) as string,
+                                    swptenantId: WebExtensionContext.sharedWorkSpaceMap.get(
+                                        Constants.sharedWorkspaceParameters.TENANT_ID
+                                    ) as string,
+                                    discoveryendpoint: WebExtensionContext.sharedWorkSpaceMap.get(
+                                        Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
+                                    ) as string,
+                                    swpAccessToken: WebExtensionContext.sharedWorkSpaceMap.get(
+                                        Constants.sharedWorkspaceParameters.ACCESS_TOKEN
+                                    ) as string,
+                                },
+                                entityInfo
+                            });
+                        }
                     }
                 }
             });
@@ -273,48 +295,11 @@ export function processWillStartCollaboartion(context: vscode.ExtensionContext) 
     // feature in progress, hence disabling it
     // eslint-disable-next-line no-constant-condition
     if (false && isCoPresenceEnabled()) {
-        processOnTabChange(context);
         createWebWorkerInstance(context);
     }
 }
 
 let worker: Worker;
-
-export function processOnTabChange(context: vscode.ExtensionContext) {
-    try {
-        context.subscriptions.push(
-            vscode.window.tabGroups.onDidChangeTabs((event) => {
-                event.opened.concat(event.changed).forEach(tab => {
-                    if (tab.input instanceof vscode.TabInputCustom || tab.input instanceof vscode.TabInputText) {
-                        const document = tab.input;
-                        const entityId = getFileEntityId(document.uri.fsPath);
-                        if (entityId) {
-                            worker.postMessage({
-                                afrConfig: {
-                                    swpId: WebExtensionContext.sharedWorkSpaceMap.get(
-                                        Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
-                                    ) as string,
-                                    swptenantId: WebExtensionContext.sharedWorkSpaceMap.get(
-                                        Constants.sharedWorkspaceParameters.TENANT_ID
-                                    ) as string,
-                                    discoveryendpoint: WebExtensionContext.sharedWorkSpaceMap.get(
-                                        Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
-                                    ) as string,
-                                    swpAccessToken: WebExtensionContext.sharedWorkSpaceMap.get(
-                                        Constants.sharedWorkspaceParameters.ACCESS_TOKEN
-                                    ) as string,
-                                },
-                                entityId,
-                            });
-                        }
-                    }
-                });
-            })
-        );
-    } catch (error) {
-        // TODO: add Telemetry
-    }
-}
 
 export function createWebWorkerInstance(
     context: vscode.ExtensionContext

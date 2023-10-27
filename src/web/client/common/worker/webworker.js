@@ -80,7 +80,7 @@ class AzureFluidClient {
     }
 }
 
-async function loadContainer(config, swpId, entityId) {
+async function loadContainer(config, swpId, entityInfo) {
     try {
         const { container, audience, map } =
             await AzureFluidClient.fetchContainerAndService(config, swpId);
@@ -162,7 +162,7 @@ function runFluidApp() {
         await loadContainer(
             message.afrConfig,
             message.afrConfig.swpId,
-            message.entityId
+            message.entityInfo
         );
     });
 }
