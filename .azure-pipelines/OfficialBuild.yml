@@ -37,12 +37,6 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-- script: echo "##vso[build.updatebuildnumber]${{ parameter.versionNumber }}
-  displayName: Set Job version
-
-- script: mkdir package && echo ${{ parameter.versionNumber }},$(Build.SourceVersion) > package/version.csv
-  displayName: Capture build version in package/version.csv
-
 - task: NodeTool@0
   displayName: 'Use nodejs 18.x'
   inputs:
@@ -61,16 +55,16 @@ steps:
     customCommand: run set-git-authn -- --repoToken $(GITHUB_TOKEN)
 
 - task: Npm@1
-  displayName: 'set version via npm'
+  displayName: 'increment version'
   inputs:
     command: custom
-    customCommand: run increment-version-npm
+    customCommand: run increment-version
 
-# - task: Npm@1
-#   displayName: 'increment version'
-#   inputs:
-#     command: custom
-#     customCommand: run increment-version
+- script: echo "##vso[build.updatebuildnumber]${{ parameter.versionNumber }}
+  displayName: Set Job version
+
+- script: mkdir package && echo ${{ parameter.versionNumber }},$(Build.SourceVersion) > package/version.csv
+  displayName: Capture build version in package/version.csv
 
 - task: Npm@1
   displayName: 'Build and Package VSIX'
