@@ -10,11 +10,6 @@ parameters:
     type: boolean
     default: true
 
-  - name: versionNumber
-    displayName: 'VSIX Version Number'
-    type: string
-    default: '2.0.0'
-
 variables:
   # https://aka.ms/gdn-injection
   GDN_CODESIGN_TARGETDIRECTORY: "$(Build.SourcesDirectory)\\package"
@@ -60,11 +55,18 @@ steps:
     command: custom
     customCommand: run increment-version
 
-- script: echo "##vso[build.updatebuildnumber]${{ parameter.versionNumber }}
-  displayName: Set Job version
+- task: PowerShell@2
+  displayName: 'Record build version'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $version = npm pkg get version
 
-- script: mkdir package && echo ${{ parameter.versionNumber }},$(Build.SourceVersion) > package/version.csv
-  displayName: Capture build version in package/version.csv
+      # Set the ADO Build number
+      Write-Host "##vso[build.updatebuildnumber]$version"
+
+      mkdir package
+      echo $version,$(Build.SourceVersion) > package/version.csv
 
 - task: Npm@1
   displayName: 'Build and Package VSIX'
