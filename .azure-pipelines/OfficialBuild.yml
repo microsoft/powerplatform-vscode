@@ -22,8 +22,8 @@ variables:
   # GITHUB_TOKEN        # GitHub PAT with scopes: repo; must have SSO enabled for GH org 'microsoft' for corp user
   # AZ_DevOps_Read_PAT  # PAT to read from AzDO feed in msazure
 
-# trigger:
-#   - release/*
+trigger:
+  - release/stable
 
 # PR loops only via GH workflows
 pr: none
@@ -60,7 +60,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $version = npm pkg get version
+      $version = (npm pkg get version) -replace '"', ''
 
       # Set the ADO Build number
       Write-Host "##vso[build.updatebuildnumber]$version"
