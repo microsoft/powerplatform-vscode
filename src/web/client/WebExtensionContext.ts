@@ -666,8 +666,7 @@ class WebExtensionContext implements IWebExtensionContext {
     public async getWorkerScript(workerUrl : URL) : Promise<any> {
         try {
             this.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT,
-                { workerUrl: workerUrl.toString() }
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT
             );
 
             const response = await this.concurrencyHandler.handleRequest(
