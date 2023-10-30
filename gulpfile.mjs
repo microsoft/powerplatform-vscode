@@ -54,7 +54,7 @@ async function clean() {
 }
 
 function setTelemetryTarget() {
-    const telemetryConfigurationSource = isOfficialBuild && !isPreviewBuild
+    const telemetryConfigurationSource = isOfficialBuild
         ? 'src/common/telemetry/telemetryConfigurationProd.ts'
         : 'src/common/telemetry/telemetryConfigurationDev.ts';
 
@@ -254,57 +254,17 @@ const testDesktopIntegration = gulp.series(compileIntegrationTests, async () => 
 const testDesktopInt = gulp.series(testDesktopIntegration);
 
 async function packageVsix() {
-    const standardHeader = '# Power Platform Extension';
-    const previewHeader = '# Power Platform Tools [PREVIEW]\n\n## This extension is used for internal testing against targets such as vscode.dev which require Marketplace published extensions, and is not supported.';
-    const standardPackageOptions = {
-        name: 'powerplatform-vscode',
-        displayName: 'Power Platform Tools',
-        description: 'Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals',
-        readmeHeader: standardHeader,
-        readmeReplacementTarget: previewHeader,
-    };
-    const previewPackageOptions = {
-        name: 'powerplatform-vscode-preview',
-        displayName: 'Power Platform Tools [PREVIEW]',
-        description: 'Unsupported extension for testing Power Platform Tools',
-        readmeHeader: previewHeader,
-        readmeReplacementTarget: standardHeader,
-     };
-
-    const setPackageInfo = async function(pkgOptions) {
-        await npm(['pkg', 'set', `name=${pkgOptions.name}`]);
-        await npm(['pkg', 'set', `displayName="${pkgOptions.displayName}"`]);
-        await npm(['pkg', 'set', `description="${pkgOptions.description}"`]);
-
-        gulp.src('README.md')
-            .pipe(replace(pkgOptions.readmeReplacementTarget, pkgOptions.readmeHeader))
-            .pipe(gulp.dest('./'));
-    }
-
-    await setPackageInfo(isPreviewBuild ? previewPackageOptions : standardPackageOptions);
-
     fs.ensureDirSync(packagedir);
     await vsce.createVSIX({
         packagePath: packagedir,
         preRelease: isPreviewBuild,
     });
-
-    // Reset to non-preview settings to prevent polluting git diffs
-    if (isPreviewBuild) {
-        await setPackageInfo(standardPackageOptions);
-    }
 }
 
 async function git(args) {
     args.unshift('git');
     const { stdout, stderr } = await exec(args.join(' '));
     return { stdout: stdout, stderr: stderr };
-}
-
-async function npm(args) {
-    args.unshift('npm');
-    const {stdout, stderr } = await exec(args.join(' '));
-    return {stdout: stdout, stderr: stderr};
 }
 
 async function npx(args) {
