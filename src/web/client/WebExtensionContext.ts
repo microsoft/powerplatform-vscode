@@ -334,19 +334,7 @@ class WebExtensionContext implements IWebExtensionContext {
         const headers = getCommonHeaders(this._dataverseAccessToken);
 
         // Populate shared workspace for Co-Presence
-        try {
-            await this.populateSharedworkspace(headers, dataverseOrgUrl, websiteid);
-            this.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SUCCESS
-            );
-        } catch (error) {
-            this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
-                this.populateSharedworkspace.name,
-                (error as Error)?.message,
-                error as Error
-            );
-        }
+        await this.populateSharedworkspace(headers, dataverseOrgUrl, websiteid);
     }
 
     public async dataverseAuthentication(firstTimeAuth = false) {
@@ -718,21 +706,35 @@ class WebExtensionContext implements IWebExtensionContext {
         dataverseOrgUrl: string,
         websiteid: string
     ) {
-        const sharedworkspace = await getOrCreateSharedWorkspace({
-            headers,
-            dataverseOrgUrl,
-            websiteid,
-        });
+        try {
+            const sharedworkspace = await getOrCreateSharedWorkspace({
+                headers,
+                dataverseOrgUrl,
+                websiteid,
+            });
 
-        const sharedWorkSpaceParamsMap = new Map<string, string>();
-        for (const key in sharedworkspace) {
-            sharedWorkSpaceParamsMap.set(
-                String(key).trim().toLocaleLowerCase(),
-                String(sharedworkspace[key]).trim()
+            const sharedWorkSpaceParamsMap = new Map<string, string>();
+            for (const key in sharedworkspace) {
+                sharedWorkSpaceParamsMap.set(
+                    String(key).trim().toLocaleLowerCase(),
+                    String(sharedworkspace[key]).trim()
+                );
+            }
+
+            this._sharedWorkSpaceMap = sharedWorkSpaceParamsMap;
+
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SUCCESS,
+                { count: this._sharedWorkSpaceMap.size.toString() }
+            );
+        } catch (error) {
+            this.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
+                this.populateSharedworkspace.name,
+                (error as Error)?.message,
+                error as Error
             );
         }
-
-        this._sharedWorkSpaceMap = sharedWorkSpaceParamsMap;
     }
 
     public async updateConnectedUsersInContext(

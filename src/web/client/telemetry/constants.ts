@@ -105,4 +105,6 @@ export enum telemetryEventNames {
     WEB_EXTENSION_FETCH_WORKER_SCRIPT = 'webExtensionFetchWorkerScript',
     WEB_EXTENSION_FETCH_WORKER_SCRIPT_SUCCESS = 'webExtensionFetchWorkerScriptSuccess',
     WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED = 'webExtensionFetchWorkerScriptFailed',
+    WEB_EXTENSION_WEB_WORKER_REGISTERED = 'webExtensionWebWorkerRegistered',
+    WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED = 'webExtensionWebWorkerRegistrationFailed',
 }

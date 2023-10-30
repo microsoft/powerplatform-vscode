@@ -302,47 +302,57 @@ export function processWillStartCollaboartion(context: vscode.ExtensionContext) 
 export function createWebWorkerInstance(
     context: vscode.ExtensionContext
 ) {
-    const webworkerMain = vscode.Uri.joinPath(
-        context.extensionUri,
-        "dist",
-        "web",
-        "webworker.worker.js"
-    );
+    try {
+        const webworkerMain = vscode.Uri.joinPath(
+            context.extensionUri,
+            "dist",
+            "web",
+            "webworker.worker.js"
+        );
 
-    const workerUrl = new URL(webworkerMain.toString());
+        const workerUrl = new URL(webworkerMain.toString());
 
-    WebExtensionContext.getWorkerScript(workerUrl)
-    .then((workerScript) => {
-        const workerBlob = new Blob([workerScript], {
-            type: "application/javascript",
-        });
+        WebExtensionContext.getWorkerScript(workerUrl)
+        .then((workerScript) => {
+            const workerBlob = new Blob([workerScript], {
+                type: "application/javascript",
+            });
 
-        const urlObj = URL.createObjectURL(workerBlob);
+            const urlObj = URL.createObjectURL(workerBlob);
 
-        WebExtensionContext.setWorker(new Worker(urlObj));
+            WebExtensionContext.setWorker(new Worker(urlObj));
 
-        if (WebExtensionContext.worker !== undefined) {
-            WebExtensionContext.worker.onmessage = (event) => {
-                const { data } = event;
+            if (WebExtensionContext.worker !== undefined) {
+                WebExtensionContext.worker.onmessage = (event) => {
+                    const { data } = event;
 
-                WebExtensionContext.containerId = event.data.containerId;
+                    WebExtensionContext.containerId = event.data.containerId;
 
-                if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
-                    WebExtensionContext.removeConnectedUserInContext(
-                        data.userId
-                    );
-                }
-                if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
-                    WebExtensionContext.updateConnectedUsersInContext(
-                        data.containerId,
-                        data.userName,
-                        data.userId,
-                        data.entityId
-                    );
-                }
-            };
-        }
-    });
+                    if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
+                        WebExtensionContext.removeConnectedUserInContext(
+                            data.userId
+                        );
+                    }
+                    if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
+                        WebExtensionContext.updateConnectedUsersInContext(
+                            data.containerId,
+                            data.userName,
+                            data.userId,
+                            data.entityId
+                        );
+                    }
+                };
+            }
+        })
+
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTERED);
+    } catch(error) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED,
+            createWebWorkerInstance.name,
+            (error as Error)?.message,
+            error as Error);
+    }
 }
 
 export async function showSiteVisibilityDialog() {

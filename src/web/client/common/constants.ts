@@ -54,6 +54,8 @@ export const MULTI_FILE_FEATURE_SETTING_NAME = "enableMultiFileFeature";
 export const CO_PRESENCE_FEATURE_SETTING_NAME = "enableCoPresenceFeature";
 
 // Co-presence constants
+export const GET_OR_CREATE_SHARED_WORK_SPACE = "/api/data/v9.2/GetOrCreateSharedWorkspace";
+
 export enum sharedWorkspaceParameters {
     SHAREWORKSPACE_ID = "sharedworkspaceid",
     TENANT_ID = "tenantid",

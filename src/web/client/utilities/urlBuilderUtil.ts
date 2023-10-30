@@ -20,6 +20,7 @@ import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelper
 import { getWorkSpaceName } from "./commonUtil";
 import * as Constants from "../common/constants";
 import { telemetryEventNames } from "../telemetry/constants";
+import path from "path";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -250,7 +251,9 @@ export function isWebFileWithLazyLoad(fsPath: string): boolean {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getOrCreateSharedWorkspace(config: any) {
     let requestSentAtTime = new Date().getTime();
-    const requestUrl = `${config.dataverseOrgUrl}/api/data/v9.2/GetOrCreateSharedWorkspace`;
+    const requestUrl = path.join(config.dataverseOrgUrl, Constants.GET_OR_CREATE_SHARED_WORK_SPACE);
+
+    console.log("requestUrl: ", requestUrl);
 
     try {
         WebExtensionContext.telemetry.sendAPITelemetry(
