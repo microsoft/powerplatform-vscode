@@ -253,8 +253,6 @@ export async function getOrCreateSharedWorkspace(config: any) {
     let requestSentAtTime = new Date().getTime();
     const requestUrl = path.join(config.dataverseOrgUrl, Constants.GET_OR_CREATE_SHARED_WORK_SPACE);
 
-    console.log("requestUrl: ", requestUrl);
-
     try {
         WebExtensionContext.telemetry.sendAPITelemetry(
             requestUrl,
