@@ -253,6 +253,7 @@ export const portal_schema_V2 = {
                 _exporttype: "SingleFolder",
                 _fetchQueryParameters: "?$select=name,powerpagesiteid,content",
                 _multiFileFetchQueryParameters: "?$select=name,powerpagesiteid,content",
+                _content: "content",
             },
             {
                 relationships: "",
@@ -268,6 +269,7 @@ export const portal_schema_V2 = {
                     "?$select=powerpagesitelanguageid,languagecode,lcid",
                 _multiFileFetchQueryParameters:
                     "?$select=powerpagesitelanguageid,languagecode,lcid",
+                _content: "content",
             },
             {
                 relationships: "",
@@ -283,6 +285,7 @@ export const portal_schema_V2 = {
                     "?$select=powerpagesitelanguageid,languagecode,lcid",
                 _multiFileFetchQueryParameters:
                     "?$select=powerpagesitelanguageid,languagecode,lcid",
+                _content: "content",
             },
             {
                 relationships: "",
@@ -307,6 +310,7 @@ export const portal_schema_V2 = {
                     ["content.customjavascript", "customjs.js"],
                     ["content.copy", "webpage.copy.html"],
                 ]),
+                _content: "content",
             },
             {
                 relationships: "",
@@ -328,6 +332,7 @@ export const portal_schema_V2 = {
                 _mappingEntityFetchQuery: new Map([
                     ["filecontent", "({entityId})/filecontent"],
                 ]),
+                _content: "content",
             },
             {
                 relationships: "",
@@ -346,6 +351,7 @@ export const portal_schema_V2 = {
                     "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 7 and _powerpagesitelanguageid_value ne null &$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "content.value",
                 _attributesExtension: new Map([["content.value", "html"]]),
+                _content: "content",
             },
             {
                 relationships: "",
@@ -364,6 +370,7 @@ export const portal_schema_V2 = {
                     "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 8 &$select=name,content,_powerpagesitelanguageid_value&$count=true",
                 _attributes: "content.source",
                 _attributesExtension: new Map([["content.source", "html"]]),
+                _content: "content",
             },
             {
                 relationships: "",
@@ -383,6 +390,7 @@ export const portal_schema_V2 = {
                     "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 17 &$select=name,content&$count=true",
                 _attributes: "content.registerstartupscript",
                 _attributesExtension: new Map([["content.registerstartupscript", "list.customjs.js"]]),
+                _content: "content",
             },
             {
                 relationships: "",
@@ -402,6 +410,7 @@ export const portal_schema_V2 = {
                     "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 15 &$select=name,content&$count=true",
                 _attributes: "content.registerstartupscript",
                 _attributesExtension: new Map([["content.registerstartupscript", "basicform.customjs.js"]]),
+                _content: "content",
             },
             {
                 relationships: "",
@@ -420,6 +429,7 @@ export const portal_schema_V2 = {
                     "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 19 &$select=name,content &$count=true",
                 _attributes: "content.webFormSteps",
                 _attributesExtension: new Map([]),
+                _content: "content",
             },
             {
                 relationships: "",
@@ -438,6 +448,7 @@ export const portal_schema_V2 = {
                 _multiFileFetchQueryParameters: "?$filter=_powerpagesiteid_value eq {websiteId} and powerpagecomponenttype eq 20 &$select=name,content &$count=true",
                 _attributes: "content.registerstartupscript",
                 _attributesExtension: new Map([["content.registerstartupscript", "advancedformstep.customjs.js"]]),
+                _content: "content",
             },
         ],
     },

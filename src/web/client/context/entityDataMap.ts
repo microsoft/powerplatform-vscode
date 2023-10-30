@@ -35,7 +35,8 @@ export class EntityDataMap {
         attributePath: IAttributePath,
         attributeContent: string,
         mappingEntityId?: string,
-        fileUri?: string
+        fileUri?: string,
+        rootpageid?: string
     ) {
         let entityColumnMap = new Map<string, string | Uint8Array>();
         const existingEntity = this.entityMap.get(entityId);
@@ -56,7 +57,8 @@ export class EntityDataMap {
             odataEtag,
             entityColumnMap,
             mappingEntityId,
-            filePath
+            filePath,
+            rootpageid
         );
         this.entityMap.set(entityId, entityData);
     }
