@@ -7,7 +7,6 @@ import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from "../telemetry/constants";
 import {
-    GRAPH_CLIENT_ENDPOINT,
     INTELLIGENCE_SCOPE_DEFAULT,
     PROVIDER_ID,
     SCOPE_OPTION_DEFAULT,
@@ -133,7 +132,8 @@ export async function graphClientAuthentication(
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
             [
-                `offline_access%20user.read%20mail.read`,
+                `Contacts.Read`,
+                `User.ReadBasic.All`,
             ],
             { silent: true }
         );
@@ -141,7 +141,8 @@ export async function graphClientAuthentication(
             session = await vscode.authentication.getSession(
                 PROVIDER_ID,
                 [
-                    `offline_access%20user.read%20mail.read`,
+                    `Contacts.Read`,
+                    `User.ReadBasic.All`,
                 ],
                 { createIfNone: true }
             );

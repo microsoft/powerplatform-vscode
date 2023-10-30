@@ -302,6 +302,30 @@ class WebExtensionContext implements IWebExtensionContext {
         );
 
         await this.setWebsiteLanguageCode();
+
+        // verify graph client authentication
+        const graphToken = await graphClientAuthentication(true);
+        console.log("graphToken: ", graphToken);
+
+        let response = await this.concurrencyHandler.handleRequest("https://graph.microsoft.com/v1.0/users/{e49ac092-df39-4e92-b3af-42f37b2354fb}", {
+            headers: {
+                ...getCommonHeaders(
+                    graphToken
+                ),
+            },
+        });
+        let result = await response.json();
+        console.log("response: ", result['mail']);
+
+        response = await this.concurrencyHandler.handleRequest("https://graph.microsoft.com/v1.0/users/{e49ac092-df39-4e92-b3af-42f37b2354fb}/photo/$value", {
+            headers: {
+                ...getCommonHeaders(
+                    graphToken
+                ),
+            },
+        });
+        result = await response.json();
+        console.log("response: ", result);
     }
 
     public async dataverseAuthentication(firstTimeAuth = false) {
@@ -312,9 +336,6 @@ class WebExtensionContext implements IWebExtensionContext {
             dataverseOrgUrl,
             firstTimeAuth
         );
-
-        const graphToken = await graphClientAuthentication(firstTimeAuth);
-        console.log("graphToken: ", graphToken);
 
         if (accessToken.length === 0) {
             // re-set all properties to default values
