@@ -10,10 +10,8 @@ import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
 
 export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemetry, sessionID: string) {
-  const { tstUrl, preprodUrl, prodUrl } = convertGuidToUrls(orgId);
-  const endpoints = [tstUrl, preprodUrl, prodUrl];
 
-  const artemisResponse = await fetchIslandInfo(endpoints, telemetry, sessionID);
+  const artemisResponse = await fetchArtemisResponse(orgId, telemetry, sessionID);
 
   if (!artemisResponse) {
     return null;
@@ -31,6 +29,16 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
   return intelligenceEndpoint;
 
 }
+
+// Function to fetch Artemis response
+export async function fetchArtemisResponse(orgId: string, telemetry: ITelemetry, sessionID = '') {
+    const { tstUrl, preprodUrl, prodUrl } = convertGuidToUrls(orgId);
+    const endpoints = [tstUrl, preprodUrl, prodUrl];
+
+    const artemisResponse = await fetchIslandInfo(endpoints, telemetry, sessionID);
+
+    return artemisResponse;
+  }
 
 async function fetchIslandInfo(endpoints: string[], telemetry: ITelemetry, sessionID: string) {
 
@@ -69,6 +77,7 @@ async function fetchIslandInfo(endpoints: string[], telemetry: ITelemetry, sessi
  * TST (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.test.powerplatform.com/artemis
  * PreProd (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.preprod.powerplatform.com/artemis
  * Prod: https:// c7809087d9b84a00a78aa4b901caa2.3f.organization.api.powerplatform.com/artemis
+ * 4ace7364571aee1197800022486f7041
  */
 export function convertGuidToUrls(orgId: string) {
   const updatedOrgId = orgId.replace(/-/g, "");
