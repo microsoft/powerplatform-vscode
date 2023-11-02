@@ -17,6 +17,8 @@ export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWe
         'referrer'?: string;
         'siteVisibility'?: string;
         'region'?: string;
+        'geo'?: string;
+        'envId'?: string;
     }
 }
 
@@ -37,8 +39,8 @@ export interface IWebExtensionAPITelemetryData extends IWebExtensionTelemetryDat
         'httpMethod': string;
         'entityFileExtensionType'?: string;
         'isSuccessful'?: string;
-        'status'?:string;
-        'methodName'?:string;
+        'status'?: string;
+        'methodName'?: string;
     },
     measurements: {
         'durationInMillis': number;
@@ -51,7 +53,7 @@ export interface IWebExtensionExceptionTelemetryData extends IWebExtensionTeleme
         'methodName': string;
         'errorMessage'?: string;
         'errorName'?: string;
-        'stack'?:string
+        'stack'?: string
     }
 }
 
