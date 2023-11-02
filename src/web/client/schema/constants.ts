@@ -31,6 +31,7 @@ export enum schemaEntityKey {
     EXPORT_TYPE = "_exporttype",
     ATTRIBUTES = "_attributes",
     CONTENT = "_content",
+    ROOT_WEB_PAGE_ID = "_rootwebpageid",
 }
 
 export enum schemaEntityName {

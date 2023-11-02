@@ -273,13 +273,28 @@ async function createContentFiles(
         const attributeArray = attributes.split(",");
 
         // Get rootpage id
-        const content = entityDetails?.get(schemaEntityKey.CONTENT);
+        let rootWebPageId = undefined;
 
-        const contentValue = content ? result[content] : null;
-        if (contentValue === null) {
-            throw new Error(ERRORS.CONTENT_EMPTY);
+        if (isPortalVersionV2()) {
+            const content = entityDetails?.get(schemaEntityKey.CONTENT);
+
+            if (content) {
+                const contentValue = content ? result[content] : null;
+                if (contentValue === null) {
+                    throw new Error(ERRORS.CONTENT_EMPTY);
+                }
+                rootWebPageId = getRootPageId(contentValue);
+            }
+        } else if (isPortalVersionV1()) {
+            const rootpageidAttribute = entityDetails?.get(schemaEntityKey.ROOT_WEB_PAGE_ID);
+
+            if (rootpageidAttribute) {
+                rootWebPageId = rootpageidAttribute ? result[rootpageidAttribute] : null;
+                if (rootWebPageId === null) {
+                    throw new Error(ERRORS.ROOT_WEB_PAGE_ID_EMPTY);
+                }
+            }
         }
-        const rootpageid = getRootPageId(contentValue);
 
         await processDataAndCreateFile(attributeArray,
             attributeExtension,
@@ -293,7 +308,7 @@ async function createContentFiles(
             filePathInPortalFS,
             portalsFS,
             defaultFileInfo,
-            rootpageid)
+            rootWebPageId)
 
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -328,7 +343,7 @@ async function processDataAndCreateFile(
     filePathInPortalFS: string,
     portalsFS: PortalsFS,
     defaultFileInfo?: IFileInfo,
-    rootpageid?: string
+    rootWebPageId?: string
 ) {
     const attributeExtensionMap = attributeExtension as unknown as Map<
         string,
@@ -381,7 +396,7 @@ async function processDataAndCreateFile(
                     entityId,
                     dataverseOrgUrl,
                     portalsFS,
-                    rootpageid,
+                    rootWebPageId,
                 );
             }
         }
@@ -428,7 +443,7 @@ async function createFile(
     entityId: string,
     dataverseOrgUrl: string,
     portalsFS: PortalsFS,
-    rootpageid?: string
+    rootWebPageId?: string
 ) {
     const base64Encoded: boolean = isBase64Encoded(
         entityName,
@@ -478,7 +493,7 @@ async function createFile(
         isPreloadedContent,
         mappingEntityId,
         getLogicalEntityName(result, logicalEntityName),
-        rootpageid,
+        rootWebPageId,
     );
 }
 
@@ -629,7 +644,7 @@ async function createVirtualFile(
     isPreloadedContent?: boolean,
     mappingEntityId?: string,
     logicalEntityName?: string,
-    rootpageid?: string,
+    rootWebPageId?: string,
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -663,6 +678,6 @@ async function createVirtualFile(
         originalAttributeContent,
         mappingEntityId,
         fileUri,
-        rootpageid,
+        rootWebPageId,
     );
 }

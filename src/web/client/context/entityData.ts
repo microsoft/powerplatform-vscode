@@ -19,7 +19,7 @@ export class EntityData implements IEntityData {
     private _entityColumn!: Map<string, string | Uint8Array>;
     private _mappingEntityId?: string;
     private _filePath?: Set<string>;
-    private _rootpageid?: string;
+    private _rootWebPageId?: string;
 
     public get entityName(): string {
         return this._entityName;
@@ -39,8 +39,8 @@ export class EntityData implements IEntityData {
     public get filePath(): Set<string> | undefined {
         return this._filePath;
     }
-    public get rootpageid(): string | undefined {
-        return this._rootpageid;
+    public get rootWebPageId(): string | undefined {
+        return this._rootWebPageId;
     }
 
     // Setters
@@ -55,7 +55,7 @@ export class EntityData implements IEntityData {
         entityColumn: Map<string, string | Uint8Array>,
         mappingEntityId?: string,
         filePath?: Set<string>,
-        rootpageid?: string
+        rootWebPageId?: string
     ) {
         this._entityId = entityId;
         this._entityName = entityName;
@@ -63,6 +63,6 @@ export class EntityData implements IEntityData {
         this._entityColumn = entityColumn;
         this._mappingEntityId = mappingEntityId;
         this._filePath = filePath;
-        this._rootpageid = rootpageid;
+        this._rootWebPageId = rootWebPageId;
     }
 }

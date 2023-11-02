@@ -36,7 +36,7 @@ export class EntityDataMap {
         attributeContent: string,
         mappingEntityId?: string,
         fileUri?: string,
-        rootpageid?: string
+        rootWebPageId?: string
     ) {
         let entityColumnMap = new Map<string, string | Uint8Array>();
         const existingEntity = this.entityMap.get(entityId);
@@ -58,7 +58,7 @@ export class EntityDataMap {
             entityColumnMap,
             mappingEntityId,
             filePath,
-            rootpageid
+            rootWebPageId
         );
         this.entityMap.set(entityId, entityData);
     }
