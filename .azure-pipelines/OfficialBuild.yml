@@ -22,8 +22,8 @@ variables:
   # GITHUB_TOKEN        # GitHub PAT with scopes: repo; must have SSO enabled for GH org 'microsoft' for corp user
   # AZ_DevOps_Read_PAT  # PAT to read from AzDO feed in msazure
 
-# trigger:
-#   - release/*
+trigger:
+  - release/stable
 
 # PR loops only via GH workflows
 pr: none
@@ -60,7 +60,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $version = npm pkg get version
+      $version = (npm pkg get version) -replace '"', ''
 
       # Set the ADO Build number
       Write-Host "##vso[build.updatebuildnumber]$version"
@@ -72,7 +72,7 @@ steps:
   displayName: 'Build and Package VSIX'
   inputs:
     command: custom
-    customCommand: run dist -- --feedPAT $(AZ_DevOps_Read_PAT) --isOfficialBuild true --isPreviewBuild ${{ parameter.isPreRelease }}
+    customCommand: run dist -- --feedPAT $(AZ_DevOps_Read_PAT) --isOfficialBuild true --isPreviewBuild ${{ parameters.isPreRelease }}
 
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Generating%20Signing%20JSON.aspx
 # https://microsoft.sharepoint.com/teams/prss/esrp/info/ESRP%20Onboarding%20Wiki/Selecting%20CodeSign%20Certificates.aspx
