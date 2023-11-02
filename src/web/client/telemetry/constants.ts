@@ -100,4 +100,5 @@ export enum telemetryEventNames {
     WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION = 'webExtensionImageEditSupportedFileExtension',
     WEB_EXTENSION_SAVE_IMAGE_FILE_TRIGGERED = 'webExtensionSaveImageFileTriggered',
     WEB_EXTENSION_ARTEMIS_RESPONSE = 'webExtensionArtemisResponse',
+    WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED = 'webExtensionArtemisResponseFailed',
 }

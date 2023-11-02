@@ -464,17 +464,26 @@ function isActiveDocument(fileFsPath: string): boolean {
 }
 
 async function logArtemisTelemetry() {
-    const orgId =  WebExtensionContext.urlParametersMap.get(
-        queryParameters.ORG_ID
-    ) as string
 
-    const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+    try {
+        const orgId = WebExtensionContext.urlParametersMap.get(
+            queryParameters.ORG_ID
+        ) as string
 
-    if (!artemisResponse) {
-        return;
+        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+
+        if (!artemisResponse) {
+            return;
+        }
+
+        const { geoName } = artemisResponse[0];
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
+            { orgId: orgId, geoName: String(geoName) });
+    } catch (error) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
+            logArtemisTelemetry.name,
+            (error as Error)?.message,
+            error as Error);
     }
-
-    const { geoName } = artemisResponse[0];
-    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
-        { orgId: orgId, geoName: String(geoName) });
 }
