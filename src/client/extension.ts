@@ -191,7 +191,30 @@ export async function activate(
         activateDebugger(context, _telemetry);
     }
 
+    await fetchECSConfig();
+
     _telemetry.sendTelemetryEvent("activated");
+
+}
+
+export async function fetchECSConfig() {
+    const requestURL = "https://ecs.office.com/config/v1/PortalsMakerExperiences/1.0.0.0?EnvironmentID=c4dc3686-1e6b-e428-b886-16cd0b9f4918&Locale=en-US&AppName=powerpages-microsoft-com&UserID=b9298493-f260-4bea-ac1a-ecb5fad8a891&TenantID=72f988bf-86f1-41af-91ab-2d7cd011db47";
+
+    const requestInit: RequestInit = {
+        method: 'GET'
+    };
+
+    try {
+        const response = await fetch(requestURL, requestInit);
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+        const result = await response.json();
+        console.log(result);
+        return result;
+    } catch (error) {
+        return null;
+    }
 
 }
 
