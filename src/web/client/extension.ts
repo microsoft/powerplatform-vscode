@@ -18,7 +18,7 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
+import { getEnvironmentIdFromUrl, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
@@ -144,6 +144,8 @@ export function activate(context: vscode.ExtensionContext): void {
                                         context.extensionUri
                                     );
                                 }
+
+                                await fetchECSConfig();
                             }
                             break;
                         default:
@@ -188,6 +190,31 @@ export function activate(context: vscode.ExtensionContext): void {
     processWillStartCollaboartion();
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+
+
+export async function fetchECSConfig() {
+    const requestURL = `https://ecs.office.com/config/v1/PortalsMakerExperiences/1.0.0.0?EnvironmentID=${getEnvironmentIdFromUrl()}&AppName=powerpages-microsoft-com&UserID=${WebExtensionContext.userId}&TenantID=${WebExtensionContext.urlParametersMap?.get(
+        queryParameters.TENANT_ID
+    )}`;
+
+    const requestInit: RequestInit = {
+        method: 'GET'
+    };
+
+    try {
+        const response = await fetch(requestURL, requestInit);
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+        const result = await response.json();
+        console.log(result);
+        return result;
+    } catch (error) {
+        return null;
+    }
+
 }
 
 export function powerPagesNavigation() {
