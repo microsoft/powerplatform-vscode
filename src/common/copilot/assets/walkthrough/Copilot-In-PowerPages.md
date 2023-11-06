@@ -29,6 +29,8 @@ Examples
 - `Write code for Web API to fetch active contacts`
 - `Write code in JavaScript to make sure that submitted value for phone number field is in valid format`
 
+## Explaining code
+
 Note
 
 - Copilot generated code might not have the correct names for tables or columns, so it’s recommended to verify these details before using the code.
