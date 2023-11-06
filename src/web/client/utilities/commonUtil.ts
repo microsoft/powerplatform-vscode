@@ -264,3 +264,22 @@ export function getImageFileContent(fileFsPath: string, fileContent: Uint8Array)
 
     return webFileV2 ? fileContent : Buffer.from(fileContent).toString(BASE_64);
 }
+
+export function getRootWebPageId(result: any, attributePath: IAttributePath, entityName: string, entityId: string) {
+    let rootWebPageId = result[attributePath.source] ?? NO_CONTENT;
+
+    try {
+        if (result[attributePath.source] && attributePath.relativePath.length) {
+            rootWebPageId =
+                JSON.parse(result[attributePath.source])[attributePath.relativePath] ?? NO_CONTENT;
+        }
+    }
+    catch (error) {
+        const errorMsg = (error as Error)?.message;
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_GET_ROOT_PAGE_ID_ERROR,
+            getRootWebPageId.name,
+            `For ${entityName} with entityId ${entityId} and attributePath ${JSON.stringify(attributePath)} error: ${errorMsg}`);
+    }
+
+    return rootWebPageId;
+}

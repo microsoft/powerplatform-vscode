@@ -8,6 +8,7 @@ import {
     convertContentToUint8Array,
     GetFileContent,
     GetFileNameWithExtension,
+    getRootWebPageId,
     getSanitizedFileName,
     isPortalVersionV1,
     isPortalVersionV2,
@@ -272,29 +273,8 @@ async function createContentFiles(
 
         const attributeArray = attributes.split(",");
 
-        // Get rootpage id
-        let rootWebPageId = undefined;
-
-        if (isPortalVersionV2()) {
-            const content = entityDetails?.get(schemaEntityKey.CONTENT);
-
-            if (content) {
-                const contentValue = content ? result[content] : null;
-                if (contentValue === null) {
-                    throw new Error(ERRORS.CONTENT_EMPTY);
-                }
-                rootWebPageId = getRootPageId(contentValue);
-            }
-        } else if (isPortalVersionV1()) {
-            const rootpageidAttribute = entityDetails?.get(schemaEntityKey.ROOT_WEB_PAGE_ID);
-
-            if (rootpageidAttribute) {
-                rootWebPageId = rootpageidAttribute ? result[rootpageidAttribute] : null;
-                if (rootWebPageId === null) {
-                    throw new Error(ERRORS.ROOT_WEB_PAGE_ID_EMPTY);
-                }
-            }
-        }
+        // Get rootpage id Attribute
+        const rootWebPageIdAttribute = entityDetails?.get(schemaEntityKey.ROOT_WEB_PAGE_ID);
 
         await processDataAndCreateFile(attributeArray,
             attributeExtension,
@@ -308,7 +288,7 @@ async function createContentFiles(
             filePathInPortalFS,
             portalsFS,
             defaultFileInfo,
-            rootWebPageId)
+            rootWebPageIdAttribute)
 
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -322,11 +302,6 @@ async function createContentFiles(
             error as Error
         );
     }
-}
-
-function getRootPageId(contentValue: string) : string {
-    const contentValueJson = JSON.parse(contentValue);
-    return contentValueJson.rootwebpageid;
 }
 
 async function processDataAndCreateFile(
@@ -343,7 +318,7 @@ async function processDataAndCreateFile(
     filePathInPortalFS: string,
     portalsFS: PortalsFS,
     defaultFileInfo?: IFileInfo,
-    rootWebPageId?: string
+    rootWebPageIdAttribute?: string
 ) {
     const attributeExtensionMap = attributeExtension as unknown as Map<
         string,
@@ -381,6 +356,14 @@ async function processDataAndCreateFile(
                 fileCreationValid = defaultFileInfo?.fileName === fileNameWithExtension ||
                     (defaultFileInfo?.fileName.startsWith(fileName) && defaultFileInfo?.fileName.endsWith(fileExtension));
                 fileNameWithExtension = defaultFileInfo?.fileName;
+            }
+
+            // Get rootpage id
+            let rootWebPageId = undefined;
+            
+            if (rootWebPageIdAttribute) {
+                const rootWebPageIdPath : IAttributePath = getAttributePath(rootWebPageIdAttribute);
+                rootWebPageId = getRootWebPageId(result, rootWebPageIdPath, entityName, entityId);
             }
 
             if (fileCreationValid) {

@@ -78,7 +78,7 @@ export const portal_schema_V1 = {
                 _languagefield: "_adx_webpagelanguageid_value",
                 _languagegroupby: "adx_rootwebpageid",
                 _fetchQueryParameters:
-                    "?$filter=adx_webpageid eq {entityId} &$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl,_adx_webpagelanguageid_value&$count=true",
+                    "?$filter=adx_webpageid eq {entityId} &$select=adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl,_adx_webpagelanguageid_value,_adx_rootwebpageid_value&$count=true",
                 _multiFileFetchQueryParameters:
                     "?$filter=_adx_websiteid_value eq {websiteId} and _adx_webpagelanguageid_value ne null &$select=adx_webpageid,_adx_webpagelanguageid_value,adx_name,adx_copy,adx_customcss,adx_customjavascript,adx_partialurl,_adx_rootwebpageid_value&$count=true",
                 _attributes: "adx_customcss,adx_customjavascript,adx_copy",
@@ -308,7 +308,7 @@ export const portal_schema_V2 = {
                     ["content.customjavascript", "customjs.js"],
                     ["content.copy", "webpage.copy.html"],
                 ]),
-                _content: "content",
+                _rootwebpageid: "content.rootwebpageid"
             },
             {
                 relationships: "",
