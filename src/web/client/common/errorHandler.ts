@@ -57,8 +57,6 @@ export const ERRORS = {
     LANGUAGE_CODE_ID_VALUE_NULL: "Language code ID is empty",
     LANGUAGE_CODE_EMPTY: "Language code is empty",
     BULKHEAD_LIMITS_EXCEEDED: "Bulkhead queue limits exceeded",
-    CONTENT_EMPTY: "Content is empty",
-    ROOT_WEB_PAGE_ID_EMPTY: "Root web page ID is empty",
 };
 
 export function showErrorDialog(errorString: string, detailMessage?: string) {
