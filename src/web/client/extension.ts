@@ -144,6 +144,8 @@ export function activate(context: vscode.ExtensionContext): void {
                                         context.extensionUri
                                     );
                                 }
+
+                                await logArtemisTelemetry();
                             }
                             break;
                         default:
@@ -188,8 +190,6 @@ export function activate(context: vscode.ExtensionContext): void {
     processWillStartCollaboartion();
 
     showWalkthrough(context, WebExtensionContext.telemetry);
-
-    logArtemisTelemetry();
 }
 
 export function powerPagesNavigation() {
@@ -470,7 +470,7 @@ async function logArtemisTelemetry() {
             queryParameters.ORG_ID
         ) as string
 
-        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+                const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
 
         if (!artemisResponse) {
             return;
