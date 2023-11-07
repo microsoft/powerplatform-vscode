@@ -30,6 +30,7 @@ export enum schemaEntityKey {
     MAPPING_ENTITY_FETCH_QUERY = "_mappingEntityFetchQuery",
     EXPORT_TYPE = "_exporttype",
     ATTRIBUTES = "_attributes",
+    ROOT_WEB_PAGE_ID = "_rootwebpageid",
 }
 
 export enum schemaEntityName {
