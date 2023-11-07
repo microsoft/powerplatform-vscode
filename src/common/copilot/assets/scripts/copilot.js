@@ -127,7 +127,7 @@
     copyButton.innerHTML = clipboardSvg;
     copyButton.classList.add("action-button");
     copyButton.classList.add("copy-button");
-    copyButton.title = copilotStrings. COPY_TO_CLIPBOARD_MESSAGE;
+    copyButton.title = copilotStrings.COPY_TO_CLIPBOARD_MESSAGE;
     copyButton.addEventListener("click", () => {
       copyCodeToClipboard(code);
     });
