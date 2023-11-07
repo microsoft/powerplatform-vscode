@@ -77,7 +77,6 @@ async function fetchIslandInfo(endpoints: string[], telemetry: ITelemetry, sessi
  * TST (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.test.powerplatform.com/artemis
  * PreProd (note single character zone):  https://c7809087d9b84a00a78aa4b901caa23.f.organization.api.preprod.powerplatform.com/artemis
  * Prod: https:// c7809087d9b84a00a78aa4b901caa2.3f.organization.api.powerplatform.com/artemis
- * 4ace7364571aee1197800022486f7041
  */
 export function convertGuidToUrls(orgId: string) {
   const updatedOrgId = orgId.replace(/-/g, "");
