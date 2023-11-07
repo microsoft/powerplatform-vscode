@@ -6,9 +6,8 @@
 import * as vscode from "vscode";
 import {
     convertContentToUint8Array,
-    GetFileContent,
     GetFileNameWithExtension,
-    getRootWebPageId,
+    getAttributeContent,
     getSanitizedFileName,
     isPortalVersionV1,
     isPortalVersionV2,
@@ -337,7 +336,7 @@ async function processDataAndCreateFile(
         );
 
         if (fileExtension === undefined) {
-            const expandedContent = GetFileContent(result, attributePath, entityName, entityId);
+            const expandedContent = getAttributeContent(result, attributePath, entityName, entityId);
 
             if (expandedContent !== Constants.NO_CONTENT) {
                 await processExpandedData(
@@ -360,10 +359,10 @@ async function processDataAndCreateFile(
 
             // Get rootpage id
             let rootWebPageId = undefined;
-            
+
             if (rootWebPageIdAttribute) {
                 const rootWebPageIdPath : IAttributePath = getAttributePath(rootWebPageIdAttribute);
-                rootWebPageId = getRootWebPageId(result, rootWebPageIdPath, entityName, entityId);
+                rootWebPageId = getAttributeContent(result, rootWebPageIdPath, entityName, entityId);
             }
 
             if (fileCreationValid) {
@@ -457,7 +456,7 @@ async function createFile(
         mimeType = getMimeType(mappingContent);
         fileContent = getMappingEntityContent(entityName, mappingContent, attribute);
     } else {
-        fileContent = GetFileContent(result, attributePath, entityName, entityId);
+        fileContent = getAttributeContent(result, attributePath, entityName, entityId);
     }
 
     await createVirtualFile(
@@ -580,7 +579,7 @@ export async function preprocessData(
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data?.forEach((dataItem: any) => {
-                const webFormSteps = GetFileContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
+                const webFormSteps = getAttributeContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const steps: any[] = [];
