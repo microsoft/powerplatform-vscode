@@ -367,7 +367,8 @@ class WebExtensionContext implements IWebExtensionContext {
         attributePath: IAttributePath,
         attributeContent: string,
         mappingEntityId?: string,
-        fileUri?: string
+        fileUri?: string,
+        rootWebPageId?: string,
     ) {
         this.entityDataMap.setEntity(
             entityId,
@@ -376,7 +377,8 @@ class WebExtensionContext implements IWebExtensionContext {
             attributePath,
             attributeContent,
             mappingEntityId,
-            fileUri);
+            fileUri,
+            rootWebPageId);
     }
 
     public async updateSingleFileUrisInContext(uri: vscode.Uri) {

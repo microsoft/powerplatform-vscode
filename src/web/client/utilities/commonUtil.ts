@@ -62,23 +62,23 @@ export function isExtensionNeededInFileName(entity: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function GetFileContent(result: any, attributePath: IAttributePath, entityName: string, entityId: string) {
-    let fileContent = result[attributePath.source] ?? NO_CONTENT;
+export function getAttributeContent(result: any, attributePath: IAttributePath, entityName: string, entityId: string) {
+    let value = result[attributePath.source] ?? NO_CONTENT;
 
     try {
         if (result[attributePath.source] && attributePath.relativePath.length) {
-            fileContent =
+            value =
                 JSON.parse(result[attributePath.source])[attributePath.relativePath] ?? NO_CONTENT;
         }
     }
     catch (error) {
         const errorMsg = (error as Error)?.message;
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_GET_FILE_CONTENT_ERROR,
-            GetFileContent.name,
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR,
+            getAttributeContent.name,
             `For ${entityName} with entityId ${entityId} and attributePath ${JSON.stringify(attributePath)} error: ${errorMsg}`);
     }
 
-    return fileContent;
+    return value;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
