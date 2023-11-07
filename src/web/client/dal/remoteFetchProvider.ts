@@ -6,8 +6,8 @@
 import * as vscode from "vscode";
 import {
     convertContentToUint8Array,
-    GetFileContent,
     GetFileNameWithExtension,
+    getAttributeContent,
     getSanitizedFileName,
     isPortalVersionV1,
     isPortalVersionV2,
@@ -271,6 +271,10 @@ async function createContentFiles(
         }
 
         const attributeArray = attributes.split(",");
+
+        // Get rootpage id Attribute
+        const rootWebPageIdAttribute = entityDetails?.get(schemaEntityKey.ROOT_WEB_PAGE_ID);
+
         await processDataAndCreateFile(attributeArray,
             attributeExtension,
             entityName,
@@ -282,7 +286,8 @@ async function createContentFiles(
             languageCode,
             filePathInPortalFS,
             portalsFS,
-            defaultFileInfo)
+            defaultFileInfo,
+            rootWebPageIdAttribute)
 
     } catch (error) {
         const errorMsg = (error as Error)?.message;
@@ -312,6 +317,7 @@ async function processDataAndCreateFile(
     filePathInPortalFS: string,
     portalsFS: PortalsFS,
     defaultFileInfo?: IFileInfo,
+    rootWebPageIdAttribute?: string
 ) {
     const attributeExtensionMap = attributeExtension as unknown as Map<
         string,
@@ -330,7 +336,7 @@ async function processDataAndCreateFile(
         );
 
         if (fileExtension === undefined) {
-            const expandedContent = GetFileContent(result, attributePath, entityName, entityId);
+            const expandedContent = getAttributeContent(result, attributePath, entityName, entityId);
 
             if (expandedContent !== Constants.NO_CONTENT) {
                 await processExpandedData(
@@ -351,6 +357,14 @@ async function processDataAndCreateFile(
                 fileNameWithExtension = defaultFileInfo?.fileName;
             }
 
+            // Get rootpage id
+            let rootWebPageId = undefined;
+
+            if (rootWebPageIdAttribute) {
+                const rootWebPageIdPath : IAttributePath = getAttributePath(rootWebPageIdAttribute);
+                rootWebPageId = getAttributeContent(result, rootWebPageIdPath, entityName, entityId);
+            }
+
             if (fileCreationValid) {
                 fileUri = filePathInPortalFS + fileNameWithExtension;
                 await createFile(
@@ -363,7 +377,8 @@ async function processDataAndCreateFile(
                     mappingEntityFetchQuery,
                     entityId,
                     dataverseOrgUrl,
-                    portalsFS
+                    portalsFS,
+                    rootWebPageId,
                 );
             }
         }
@@ -409,7 +424,8 @@ async function createFile(
     mappingEntityFetchQuery: string | undefined,
     entityId: string,
     dataverseOrgUrl: string,
-    portalsFS: PortalsFS
+    portalsFS: PortalsFS,
+    rootWebPageId?: string
 ) {
     const base64Encoded: boolean = isBase64Encoded(
         entityName,
@@ -440,7 +456,7 @@ async function createFile(
         mimeType = getMimeType(mappingContent);
         fileContent = getMappingEntityContent(entityName, mappingContent, attribute);
     } else {
-        fileContent = GetFileContent(result, attributePath, entityName, entityId);
+        fileContent = getAttributeContent(result, attributePath, entityName, entityId);
     }
 
     await createVirtualFile(
@@ -458,7 +474,8 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        getLogicalEntityName(result, logicalEntityName)
+        getLogicalEntityName(result, logicalEntityName),
+        rootWebPageId,
     );
 }
 
@@ -562,7 +579,7 @@ export async function preprocessData(
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data?.forEach((dataItem: any) => {
-                const webFormSteps = GetFileContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
+                const webFormSteps = getAttributeContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
 
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const steps: any[] = [];
@@ -608,7 +625,8 @@ async function createVirtualFile(
     mimeType?: string,
     isPreloadedContent?: boolean,
     mappingEntityId?: string,
-    logicalEntityName?: string
+    logicalEntityName?: string,
+    rootWebPageId?: string,
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -642,5 +660,6 @@ async function createVirtualFile(
         originalAttributeContent,
         mappingEntityId,
         fileUri,
+        rootWebPageId,
     );
 }
