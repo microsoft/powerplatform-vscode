@@ -58,7 +58,6 @@ describe("commonUtil", async () => {
         //Action
         const uint8 = convertContentToString(data, false);
         //Assert
-        console.log(typeof (uint8))
         expect(uint8).instanceOf(Uint8Array);
         expect(uint8).eq(data);
     });
