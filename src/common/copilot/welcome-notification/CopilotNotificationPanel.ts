@@ -104,10 +104,10 @@ function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vs
       <body>
       <div class="container">
         <div class="container-text">
-        <h1 id="heading">Let Copilot help you code</h1>
-        <p id="welcome-text">Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</p>
-        <button id="try-button">Try Copilot for Power Pages</button>
-        <a href="#" class="walkthrough-content" id="walkthroughLink"> <span id="walk-text">Learn more about Copilot </span> <img src="${arrowImageUri}" id="arrow-icon"> </a>
+        <h1 id="heading">${vscode.l10n.t("Let Copilot help you code")}</h1>
+        <p id="welcome-text">${vscode.l10n.t("Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.")}</p>
+        <button id="try-button">${vscode.l10n.t("Try Copilot for Power Pages")}</button>
+        <a href="#" class="walkthrough-content" id="walkthroughLink"> <span id="walk-text">${vscode.l10n.t("Learn more about Copilot")} </span> <img src="${arrowImageUri}" id="arrow-icon"> </a>
         </div>
         <div>
         <img src="${copilotImageUri}" alt="Image">
@@ -115,7 +115,7 @@ function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vs
       </div>
       <div class="checkbox-container">
       <input type="checkbox" id="checkbox">
-      <label for="checkbox">Do not show again</label>
+      <label for="checkbox">${vscode.l10n.t("Do not show again")}</label>
     </div>
 
       <script type="module" nonce="${nonce}" src="${notificationJsUri}"></script>
