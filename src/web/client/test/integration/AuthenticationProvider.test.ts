@@ -86,9 +86,9 @@ describe("Authentication Provider", () => {
         expect(result).empty;
     });
 
-    it("dataverseAuthentication_return_blank_if_excetion_thrown", async () => {
+    it("dataverseAuthentication_return_blank_if_exception_thrown", async () => {
         //Action
-        const errorMessage = "access token not fount";
+        const errorMessage = "access token not found";
         const dataverseOrgURL = "f068ee9f-a010-47b9-b1e1-7e6353730e7d";
         const _mockgetSession = sinon
             .stub(await vscode.authentication, "getSession")
@@ -98,8 +98,8 @@ describe("Authentication Provider", () => {
             WebExtensionContext.telemetry,
             "sendErrorTelemetry"
         );
-        // Act
 
+        // Act
         const result = await dataverseAuthentication(dataverseOrgURL);
 
         //Assert
@@ -107,6 +107,7 @@ describe("Authentication Provider", () => {
         sinon.assert.calledWith(
             sendError,
             telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
+            dataverseAuthentication.name,
             errorMessage
         );
         sinon.assert.calledOnce(_mockgetSession);
