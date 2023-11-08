@@ -662,4 +662,22 @@ async function createVirtualFile(
         fileUri,
         rootWebPageId,
     );
+
+    // Maintain foreign key details in context
+    if (rootWebPageId) {
+        try {
+            await WebExtensionContext.updateForeignKeyDetailsInContext(
+                rootWebPageId,
+                entityId,
+            );
+        } catch (error) {
+            const errorMsg = (error as Error)?.message;
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FAILED_TO_UPDATE_FOREIGN_KEY_DETAILS,
+                createVirtualFile.name,
+                errorMsg,
+                error as Error
+            );
+        }
+    }
 }
