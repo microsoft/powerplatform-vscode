@@ -49,7 +49,7 @@ export enum telemetryEventNames {
     WEB_EXTENSION_CREATE_ENTITY_FOLDER_FAILED = "webExtensionCreateEntityFolderFailed",
     WEB_EXTENSION_PREPROCESS_DATA_FAILED = "webExtensionPreprocessDataFailed",
     WEB_EXTENSION_PREPROCESS_DATA_SUCCESS = "webExtensionPreprocessDataSuccess",
-    WEB_EXTENSION_GET_FILE_CONTENT_ERROR = "webExtensionGetFileContentError",
+    WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR = "webExtensionAttributeContentError",
     WEB_EXTENSION_SET_FILE_CONTENT_ERROR = "webExtensionSetFileContentError",
     WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE = "webExtensionFailedToPrepareWorkspace",
     WEB_EXTENSION_BULKHEAD_QUEUE_FULL = "webExtensionBulkheadQueueFull",
@@ -98,5 +98,5 @@ export enum telemetryEventNames {
     WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED = 'webExtensionBackToStudioTriggered',
     WEB_EXTENSION_PREVIEW_SITE_TRIGGERED = 'webExtensionPreviewSiteTriggered',
     WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION = 'webExtensionImageEditSupportedFileExtension',
-    WEB_EXTENSION_SAVE_IMAGE_FILE_TRIGGERED = 'webExtensionSaveImageFileTriggered'
+    WEB_EXTENSION_SAVE_IMAGE_FILE_TRIGGERED = 'webExtensionSaveImageFileTriggered',
 }

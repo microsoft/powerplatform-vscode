@@ -122,4 +122,58 @@ const webConfig = {
     },
 };
 
-module.exports = [nodeConfig, webConfig];
+/** @type fluent container scripts web worker config */
+const webWorkerConfig = {
+    mode: "none",
+    target: "webworker", // web extensions run in a webworker context
+    entry: {
+        main: "./src/web/client/common/worker/webworker.js",
+    },
+    output: {
+        filename: "[name].js",
+        path: path.join(__dirname, "./dist/web"),
+        libraryTarget: "self",
+    },
+    resolve: {
+        extensions: [".ts", ".js"], // support ts-files and js-files
+        alias: {},
+        fallback: {
+            path: require.resolve("path-browserify"),
+            tty: require.resolve("tty-browserify"),
+            os: require.resolve("os-browserify/browser"),
+            stream: require.resolve("stream-browserify"),
+            http: require.resolve("stream-http"),
+            zlib: require.resolve("browserify-zlib"),
+            https: require.resolve("https-browserify"),
+        },
+    },
+    module: {
+        rules: [
+            {
+                test: /\.ts$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: "ts-loader",
+                    },
+                ],
+            },
+            {
+                test: /webworker\.js$/,
+                use: {
+                    loader: "worker-loader",
+                    options: { inline: "fallback" },
+                },
+            },
+        ],
+    },
+    externals: {
+        vscode: "commonjs vscode", // ignored because it doesn't exist
+    },
+    performance: {
+        hints: false,
+    },
+    devtool: "source-map",
+};
+
+module.exports = [nodeConfig, webConfig, webWorkerConfig];

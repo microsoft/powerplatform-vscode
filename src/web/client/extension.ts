@@ -116,6 +116,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (appName) {
                     switch (appName) {
                         case "portal":
+                        case "pages":
                             {
                                 WebExtensionContext.telemetry.sendExtensionInitQueryParametersTelemetry(
                                     queryParamsMap
