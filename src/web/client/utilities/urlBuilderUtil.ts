@@ -20,7 +20,6 @@ import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelper
 import { getWorkSpaceName } from "./commonUtil";
 import * as Constants from "../common/constants";
 import { telemetryEventNames } from "../telemetry/constants";
-import path from "path";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -251,11 +250,14 @@ export function isWebFileWithLazyLoad(fsPath: string): boolean {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getOrCreateSharedWorkspace(config: any) {
     let requestSentAtTime = new Date().getTime();
-    const requestUrl = path.join(config.dataverseOrgUrl, Constants.GET_OR_CREATE_SHARED_WORK_SPACE);
+
+    const origin = config.dataverseOrgUrl;
+    const apiName = Constants.GET_OR_CREATE_SHARED_WORK_SPACE;
+    const requestUrl = new URL(apiName, origin);
 
     try {
         WebExtensionContext.telemetry.sendAPITelemetry(
-            requestUrl,
+            requestUrl.href,
             config.entityName,
             Constants.httpMethod.POST,
             getOrCreateSharedWorkspace.name,
@@ -283,7 +285,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
         }
 
         WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-            requestUrl,
+            requestUrl.href,
             config.entityName,
             Constants.httpMethod.POST,
             new Date().getTime() - requestSentAtTime,
@@ -295,7 +297,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
         const errorMsg = (error as Error)?.message;
         if ((error as Response)?.status > 0) {
             WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
+                requestUrl.href,
                 config.entityName,
                 Constants.httpMethod.GET,
                 new Date().getTime() - requestSentAtTime,

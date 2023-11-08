@@ -12,17 +12,37 @@ import {
 } from "../../utilities/commonUtil";
 
 describe("commonUtil", async () => {
-    it("convertfromBase64ToString_shouldConvertBase64ToString", () => {
+    it("convertContentToUint8Array_shouldReturnBase64AsUint8Output", () => {
         //Act
-        const data = "this is test case";
-        const encodedString = "dGhpcyBpcyB0ZXN0IGNhc2U=";
+        const encodedString = "dGhpcyBpcyB0ZXN0IGNhc2U="; // "this is test case"
         //Action
-        const base64totext = convertContentToUint8Array(encodedString, true);
+        const base64toUint8Array = convertContentToUint8Array(encodedString, true);
+
         //Assert
-        expect(base64totext).eq(data);
+        expect(base64toUint8Array).instanceOf(Uint8Array);
     });
 
-    it("convertStringtoBase64_shouldConvertStringToBase64", () => {
+    it("convertContentToUint8Array_shouldReturnStringAsUint8Output", () => {
+        //Act
+        const encodedString = "this is test case=";
+        //Action
+        const base64toUint8Array = convertContentToUint8Array(encodedString, false);
+
+        //Assert
+        expect(base64toUint8Array).instanceOf(Uint8Array);
+    });
+
+    it("shouldConvertBase64ToString", () => {
+        //Act
+        const encodedString = "dGhpcyBpcyB0ZXN0IGNhc2U="; // "this is test case"
+        //Action
+        const base64toUint8Array = convertContentToUint8Array(encodedString, true);
+        const unit8ArrayToBase64 = convertContentToString(base64toUint8Array, true);
+        //Assert
+        expect(unit8ArrayToBase64).eq(encodedString);
+    });
+
+    it("convertContentToString_shouldConvertBase64ToString", () => {
         //Act
         const data = "this is test case";
         const encodedString = "dGhpcyBpcyB0ZXN0IGNhc2U=";
@@ -30,6 +50,16 @@ describe("commonUtil", async () => {
         const base64 = convertContentToString(data, true);
         //Assert
         expect(base64).eq(encodedString);
+    });
+
+    it("convertContentToString_shouldReturnUint8ArrayAsUint8Array", () => {
+        //Act
+        const data = new Uint8Array(Buffer.from("this is test case"));
+        //Action
+        const uint8 = convertContentToString(data, false);
+        //Assert
+        expect(uint8).instanceOf(Uint8Array);
+        expect(uint8).eq(data);
     });
 
     it("GetFileNameWithExtension_withEntityWebpages_shouldAddFileNameWithExtension", () => {
