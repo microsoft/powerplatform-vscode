@@ -29,6 +29,7 @@ import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 import { isMultifileEnabled } from "./utilities/commonUtil";
+import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -94,6 +95,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _extensionUri: vscode.Uri;
     private _dataverseAccessToken: string;
     private _entityDataMap: EntityDataMap;
+    private _entityForeignKeyDataMap: EntityForeignKeyDataMap;
     private _isContextSet: boolean;
     private _currentSchemaVersion: string;
     private _websiteLanguageCode: string;
@@ -160,6 +162,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get entityDataMap() {
         return this._entityDataMap;
     }
+    public get entityForeignKeyDataMap() {
+        return this._entityForeignKeyDataMap;
+    }
     public get isContextSet() {
         return this._isContextSet;
     }
@@ -201,6 +206,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._rootDirectory = vscode.Uri.parse("");
         this._fileDataMap = new FileDataMap();
         this._entityDataMap = new EntityDataMap();
+        this._entityForeignKeyDataMap = new EntityForeignKeyDataMap();
         this._defaultFileUri = vscode.Uri.parse(``);
         this._showMultifileInVSCode = false;
         this._extensionActivationTime = new Date().getTime();
@@ -379,6 +385,16 @@ class WebExtensionContext implements IWebExtensionContext {
             mappingEntityId,
             fileUri,
             rootWebPageId);
+    }
+
+    public async updateForeignKeyDetailsInContext(
+        rootWebPageId: string,
+        entityId: string,
+    ) {
+        this.entityForeignKeyDataMap.setEntityForeignKey(
+            rootWebPageId,
+            entityId
+        );
     }
 
     public async updateSingleFileUrisInContext(uri: vscode.Uri) {
