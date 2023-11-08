@@ -42,11 +42,18 @@ export class PowerPagesNavigationProvider
     }
 
     getConnectedUsers(): UserNode[] {
-        return [
-            new UserNode("Ritik", vscode.TreeItemCollapsibleState.None),
-            new UserNode("Nidhi", vscode.TreeItemCollapsibleState.None),
-            new UserNode("Amit", vscode.TreeItemCollapsibleState.None),
-        ];
+        const connectedUsersMap =
+        WebExtensionContext.connectedUsers.getUserMap;
+        const connectedUsers: UserNode[] = Array.from(
+            connectedUsersMap.entries()
+        ).map(([, value]) => {
+            return new UserNode(
+                value._userName,
+                vscode.TreeItemCollapsibleState.None
+            );
+        });
+
+        return connectedUsers;
     }
 
     getNodes(label?: string): PowerPagesNode[] {

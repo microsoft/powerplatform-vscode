@@ -63,6 +63,8 @@ export function activate(context: vscode.ExtensionContext): void {
         )
     );
 
+    const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
+
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.webExtension.init",
@@ -125,7 +127,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
                                 processWalkthroughFirstRunExperience(context);
 
-                                powerPagesNavigation();
+                                powerPagesNavigation(powerPagesNavigationProvider);
 
                                 await vscode.window.withProgress(
                                     {
@@ -186,13 +188,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillSaveDocument(context);
 
-    processWillStartCollaboartion(context);
+    processWillStartCollaboartion(context, powerPagesNavigationProvider);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
-export function powerPagesNavigation() {
-    const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
+export function powerPagesNavigation(powerPagesNavigationProvider: PowerPagesNavigationProvider) {
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
@@ -295,15 +296,16 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
     );
 }
 
-export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
+export function processWillStartCollaboartion(context: vscode.ExtensionContext, powerPagesNavigationProvider: PowerPagesNavigationProvider) {
     // feature in progress, hence disabling it
     if (isCoPresenceEnabled()) {
-        createWebWorkerInstance(context);
+        createWebWorkerInstance(context, powerPagesNavigationProvider);
     }
 }
 
 export function createWebWorkerInstance(
-    context: vscode.ExtensionContext
+    context: vscode.ExtensionContext,
+    powerPagesNavigationProvider: PowerPagesNavigationProvider
 ) {
     try {
         const webworkerMain = vscode.Uri.joinPath(
@@ -335,6 +337,8 @@ export function createWebWorkerInstance(
                         WebExtensionContext.removeConnectedUserInContext(
                             data.userId
                         );
+
+                        powerPagesNavigationProvider.refresh();
                     }
                     if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
                         WebExtensionContext.updateConnectedUsersInContext(
@@ -343,6 +347,7 @@ export function createWebWorkerInstance(
                             data.userId,
                             data.entityId
                         );
+                        powerPagesNavigationProvider.refresh();
                     }
                 };
             }
