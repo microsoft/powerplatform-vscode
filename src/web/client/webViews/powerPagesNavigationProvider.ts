@@ -9,7 +9,6 @@ import WebExtensionContext from "../WebExtensionContext";
 import { httpMethod, queryParameters } from '../common/constants';
 import { getBackToStudioURL } from '../utilities/commonUtil';
 import { telemetryEventNames } from '../telemetry/constants';
-
 export class PowerPagesNavigationProvider
     implements vscode.TreeDataProvider<PowerPagesNode | UserNode>
 {
@@ -207,7 +206,6 @@ export class PowerPagesNode extends vscode.TreeItem {
         };
     }
 }
-
 
 export class UserNode extends vscode.TreeItem {
     constructor(
