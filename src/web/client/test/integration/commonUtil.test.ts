@@ -19,7 +19,7 @@ describe("commonUtil", async () => {
         const base64toUint8Array = convertContentToUint8Array(encodedString, true);
 
         //Assert
-        expect(typeof (base64toUint8Array)).eq(Uint8Array);
+        expect(base64toUint8Array).instanceOf(Uint8Array);
     });
 
     it("convertContentToUint8Array_shouldReturnStringAsUint8Output", () => {
@@ -29,7 +29,7 @@ describe("commonUtil", async () => {
         const base64toUint8Array = convertContentToUint8Array(encodedString, false);
 
         //Assert
-        expect(typeof (base64toUint8Array)).eq(Uint8Array);
+        expect(base64toUint8Array).instanceOf(Uint8Array);
     });
 
     it("shouldConvertBase64ToString", () => {
@@ -58,7 +58,8 @@ describe("commonUtil", async () => {
         //Action
         const uint8 = convertContentToString(data, false);
         //Assert
-        expect(typeof (uint8)).eq(Uint8Array);
+        console.log(typeof (uint8))
+        expect(uint8).instanceOf(Uint8Array);
         expect(uint8).eq(data);
     });
 
