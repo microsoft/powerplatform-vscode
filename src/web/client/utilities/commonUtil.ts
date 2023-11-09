@@ -172,7 +172,7 @@ export function getSanitizedFileName(fileName: string): string {
 
 // Get the file's extension
 export function getFileExtension(fileName: string): string | undefined {
-    return fileName.split('.').pop();
+    return fileName.toString().split('.').pop();
 }
 
 export function getFileExtensionForPreload() {
