@@ -184,11 +184,11 @@ export function activate(context: vscode.ExtensionContext): void {
         )
     );
 
+    processWillStartCollaboartion(context, powerPagesNavigationProvider);
+
     processWorkspaceStateChanges(context);
 
     processWillSaveDocument(context);
-
-    processWillStartCollaboartion(context, powerPagesNavigationProvider);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
