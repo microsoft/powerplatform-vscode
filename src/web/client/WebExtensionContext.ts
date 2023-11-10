@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import fetch from "node-fetch";
 import * as vscode from "vscode";
 import {
     dataverseAuthentication,
@@ -27,7 +26,9 @@ import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
-import { IAttributePath } from "./common/interfaces";
+import { IAttributePath, IEntityInfo } from "./common/interfaces";
+import { ConcurrencyHandler } from "./dal/concurrencyHandler";
+import { isMultifileEnabled } from "./utilities/commonUtil";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -37,6 +38,9 @@ export interface IWebExtensionContext {
 
     // Passed from Vscode URL call
     urlParametersMap: Map<string, string>;
+
+    // VScode workspace state
+    vscodeWorkspaceState: Map<string, IEntityInfo>;
 
     // Language maps from dataverse
     languageIdCodeMap: Map<string, string>;
@@ -50,17 +54,24 @@ export interface IWebExtensionContext {
     defaultEntityId: string;
     defaultEntityType: string;
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
+    showMultifileInVSCode: boolean;
+    extensionActivationTime: number;
+    extensionUri: vscode.Uri
 
     // Org specific details
     dataverseAccessToken: string;
     entityDataMap: EntityDataMap;
     isContextSet: boolean;
     currentSchemaVersion: string;
+    websiteLanguageCode: string;
 
     // Telemetry and survey
     telemetry: WebExtensionTelemetry;
     npsEligibility: boolean;
     userId: string;
+
+    // Error handling
+    concurrencyHandler: ConcurrencyHandler;
 }
 
 class WebExtensionContext implements IWebExtensionContext {
@@ -68,6 +79,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _schemaEntitiesMap: Map<string, Map<string, string>>;
     private _entitiesFolderNameMap: Map<string, string>;
     private _urlParametersMap: Map<string, string>;
+    private _vscodeWorkspaceState: Map<string, IEntityInfo>;
     private _languageIdCodeMap: Map<string, string>;
     private _portalLanguageIdCodeMap: Map<string, string>;
     private _websiteLanguageIdToPortalLanguageMap: Map<string, string>;
@@ -77,14 +89,19 @@ class WebExtensionContext implements IWebExtensionContext {
     private _defaultEntityId: string;
     private _defaultEntityType: string;
     private _defaultFileUri: vscode.Uri;
+    private _showMultifileInVSCode: boolean;
+    private _extensionActivationTime: number;
+    private _extensionUri: vscode.Uri;
     private _dataverseAccessToken: string;
     private _entityDataMap: EntityDataMap;
     private _isContextSet: boolean;
     private _currentSchemaVersion: string;
+    private _websiteLanguageCode: string;
     private _telemetry: WebExtensionTelemetry;
     private _npsEligibility: boolean;
     private _userId: string;
     private _formsProEligibilityId: string;
+    private _concurrencyHandler: ConcurrencyHandler
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -97,6 +114,9 @@ class WebExtensionContext implements IWebExtensionContext {
     }
     public get urlParametersMap() {
         return this._urlParametersMap;
+    }
+    public get vscodeWorkspaceState() {
+        return this._vscodeWorkspaceState;
     }
     public get languageIdCodeMap() {
         return this._languageIdCodeMap;
@@ -125,6 +145,15 @@ class WebExtensionContext implements IWebExtensionContext {
     public get defaultFileUri() {
         return this._defaultFileUri;
     }
+    public get showMultifileInVSCode() {
+        return this._showMultifileInVSCode;
+    }
+    public get extensionActivationTime() {
+        return this._extensionActivationTime
+    }
+    public get extensionUri() {
+        return this._extensionUri
+    }
     public get dataverseAccessToken() {
         return this._dataverseAccessToken;
     }
@@ -136,6 +165,9 @@ class WebExtensionContext implements IWebExtensionContext {
     }
     public get currentSchemaVersion() {
         return this._currentSchemaVersion;
+    }
+    public get websiteLanguageCode() {
+        return this._websiteLanguageCode;
     }
     public get telemetry() {
         return this._telemetry;
@@ -149,6 +181,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get formsProEligibilityId() {
         return this._formsProEligibilityId;
     }
+    public get concurrencyHandler() {
+        return this._concurrencyHandler;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -158,6 +193,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._websiteLanguageIdToPortalLanguageMap = new Map<string, string>();
         this._websiteIdToLanguage = new Map<string, string>();
         this._urlParametersMap = new Map<string, string>();
+        this._vscodeWorkspaceState = new Map<string, IEntityInfo>();
         this._entitiesFolderNameMap = new Map<string, string>();
         this._defaultEntityType = "";
         this._defaultEntityId = "";
@@ -166,18 +202,24 @@ class WebExtensionContext implements IWebExtensionContext {
         this._fileDataMap = new FileDataMap();
         this._entityDataMap = new EntityDataMap();
         this._defaultFileUri = vscode.Uri.parse(``);
+        this._showMultifileInVSCode = false;
+        this._extensionActivationTime = new Date().getTime();
+        this._extensionUri = vscode.Uri.parse("");
         this._isContextSet = false;
         this._currentSchemaVersion = "";
+        this._websiteLanguageCode = "";
         this._telemetry = new WebExtensionTelemetry();
         this._npsEligibility = false;
         this._userId = "";
         this._formsProEligibilityId = "";
+        this._concurrencyHandler = new ConcurrencyHandler();
     }
 
     public setWebExtensionContext(
         entityName: string,
         entityId: string,
-        queryParamsMap: Map<string, string>
+        queryParamsMap: Map<string, string>,
+        extensionUri?: vscode.Uri
     ) {
         const schema = queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string;
         // Initialize context from URL params
@@ -186,12 +228,22 @@ class WebExtensionContext implements IWebExtensionContext {
         this._defaultEntityId = entityId;
         this._urlParametersMap = queryParamsMap;
         this._rootDirectory = vscode.Uri.parse(
-            `${Constants.PORTALS_URI_SCHEME}:/${
-                queryParamsMap.get(
-                    Constants.queryParameters.WEBSITE_NAME
-                ) as string
+            `${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(
+                Constants.queryParameters.WEBSITE_NAME
+            ) as string
             }/`,
             true
+        );
+        this._extensionUri = extensionUri as vscode.Uri;
+
+        // Initialize multifile FF here
+        const enableMultifile = queryParamsMap?.get(Constants.queryParameters.ENABLE_MULTIFILE);
+        const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
+        this._showMultifileInVSCode = isMultifileEnabled() && isEnableMultifile;
+
+        this.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_AVAILABILITY,
+            { showMultifileInVSCode: this._showMultifileInVSCode.toString() }
         );
 
         // Initialize context from schema values
@@ -204,59 +256,60 @@ class WebExtensionContext implements IWebExtensionContext {
         this._isContextSet = true;
     }
 
+    public setVscodeWorkspaceState(workspaceState: vscode.Memento) {
+        try {
+            workspaceState.keys().forEach((key) => {
+                const entityInfo = workspaceState.get(key) as IEntityInfo;
+                this._vscodeWorkspaceState.set(key, entityInfo);
+            });
+            this.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_SUCCESS,
+                { count: this._vscodeWorkspaceState.size.toString() });
+        } catch (error) {
+            this.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_FAILED,
+                this.setVscodeWorkspaceState.name,
+                error as string
+            );
+        }
+    }
+
     public async authenticateAndUpdateDataverseProperties() {
+        await this.dataverseAuthentication(true);
+
         const dataverseOrgUrl = this.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
-        const accessToken: string = await dataverseAuthentication(
-            dataverseOrgUrl
-        );
         const schema = this.urlParametersMap
             .get(schemaKey.SCHEMA_VERSION)
             ?.toLowerCase() as string;
 
-        if (accessToken.length === 0) {
-            // re-set all properties to default values
-            this._dataverseAccessToken = "";
-            this._websiteIdToLanguage = new Map<string, string>();
-            this._websiteLanguageIdToPortalLanguageMap = new Map<
-                string,
-                string
-            >();
-            this._portalLanguageIdCodeMap = new Map<string, string>();
-            this._languageIdCodeMap = new Map<string, string>();
-
-            this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING
-            );
-            throw vscode.FileSystemError.NoPermissions();
-        }
-
-        this._dataverseAccessToken = accessToken;
         await this.populateWebsiteIdToLanguageMap(
-            accessToken,
+            this._dataverseAccessToken,
             dataverseOrgUrl,
             schema
         );
 
         await this.populateWebsiteLanguageIdToPortalLanguageMap(
-            accessToken,
+            this._dataverseAccessToken,
             dataverseOrgUrl,
             schema
         );
         await this.populateLanguageIdToCode(
-            accessToken,
+            this._dataverseAccessToken,
             dataverseOrgUrl,
             schema
         );
+
+        await this.setWebsiteLanguageCode();
     }
 
-    public async reAuthenticate() {
+    public async dataverseAuthentication(firstTimeAuth = false) {
         const dataverseOrgUrl = this.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
         const accessToken: string = await dataverseAuthentication(
-            dataverseOrgUrl
+            dataverseOrgUrl,
+            firstTimeAuth
         );
 
         if (accessToken.length === 0) {
@@ -271,7 +324,8 @@ class WebExtensionContext implements IWebExtensionContext {
             this._languageIdCodeMap = new Map<string, string>();
 
             this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                dataverseAuthentication.name
             );
             throw vscode.FileSystemError.NoPermissions();
         }
@@ -288,7 +342,9 @@ class WebExtensionContext implements IWebExtensionContext {
         fileExtension: string,
         attributePath: IAttributePath,
         encodeAsBase64: boolean,
-        mimeType?: string
+        mimeType?: string,
+        isContentLoaded?: boolean,
+        logicalEntityName?: string
     ) {
         this.fileDataMap.setEntity(
             fileUri,
@@ -299,8 +355,9 @@ class WebExtensionContext implements IWebExtensionContext {
             fileExtension,
             attributePath,
             encodeAsBase64,
-            mimeType
-        );
+            mimeType,
+            isContentLoaded,
+            logicalEntityName);
     }
 
     public async updateEntityDetailsInContext(
@@ -308,15 +365,20 @@ class WebExtensionContext implements IWebExtensionContext {
         entityName: string,
         odataEtag: string,
         attributePath: IAttributePath,
-        attributeContent: string
+        attributeContent: string,
+        mappingEntityId?: string,
+        fileUri?: string,
+        rootWebPageId?: string,
     ) {
         this.entityDataMap.setEntity(
             entityId,
             entityName,
             odataEtag,
             attributePath,
-            attributeContent
-        );
+            attributeContent,
+            mappingEntityId,
+            fileUri,
+            rootWebPageId);
     }
 
     public async updateSingleFileUrisInContext(uri: vscode.Uri) {
@@ -341,27 +403,23 @@ class WebExtensionContext implements IWebExtensionContext {
             this.telemetry.sendAPITelemetry(
                 requestUrl,
                 languageEntityName,
-                Constants.httpMethod.GET
+                Constants.httpMethod.GET,
+                this.populateLanguageIdToCode.name
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(requestUrl, {
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
                 headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
-                this.telemetry.sendAPIFailureTelemetry(
-                    requestUrl,
-                    languageEntityName,
-                    Constants.httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    response?.statusText
-                );
+                throw new Error(JSON.stringify(response));
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
                 languageEntityName,
                 Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                this.populateLanguageIdToCode.name
             );
             const result = await response?.json();
             this._languageIdCodeMap = getLcidCodeMap(result, schema);
@@ -370,14 +428,26 @@ class WebExtensionContext implements IWebExtensionContext {
                 schema
             );
         } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            this.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                languageEntityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
-            );
+            if ((error as Response)?.status > 0) {
+                const errorMsg = (error as Error)?.message;
+                this.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    languageEntityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    this.populateLanguageIdToCode.name,
+                    errorMsg,
+                    '',
+                    (error as Response)?.status.toString(),
+                );
+            } else {
+                this.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_LANGUAGE_ID_TO_CODE_SYSTEM_ERROR,
+                    this.populateLanguageIdToCode.name,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }
 
@@ -399,40 +469,48 @@ class WebExtensionContext implements IWebExtensionContext {
             this.telemetry.sendAPITelemetry(
                 requestUrl,
                 languageEntityName,
-                Constants.httpMethod.GET
+                Constants.httpMethod.GET,
+                this.populateWebsiteLanguageIdToPortalLanguageMap.name
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(requestUrl, {
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
                 headers: getCommonHeaders(accessToken),
             });
             if (!response?.ok) {
-                this.telemetry.sendAPIFailureTelemetry(
-                    requestUrl,
-                    languageEntityName,
-                    Constants.httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    response?.statusText
-                );
+                throw new Error(JSON.stringify(response));
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
                 languageEntityName,
                 Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                this.populateWebsiteLanguageIdToPortalLanguageMap.name
             );
             const result = await response?.json();
             this._websiteLanguageIdToPortalLanguageMap =
                 getWebsiteLanguageIdToPortalLanguageIdMap(result, schema);
         } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            this.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                languageEntityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
-            );
+            if ((error as Response)?.status > 0) {
+                const errorMsg = (error as Error)?.message;
+                this.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    languageEntityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    this.populateWebsiteLanguageIdToPortalLanguageMap.name,
+                    errorMsg,
+                    '',
+                    (error as Response)?.status.toString()
+                );
+            } else {
+                this.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_LANGUAGE_ID_TO_PORTALLANGUAGE_SYSTEM_ERROR,
+                    this.populateWebsiteLanguageIdToPortalLanguageMap.name,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
     }
 
@@ -453,51 +531,103 @@ class WebExtensionContext implements IWebExtensionContext {
             this.telemetry.sendAPITelemetry(
                 requestUrl,
                 websiteEntityName,
-                Constants.httpMethod.GET
+                Constants.httpMethod.GET,
+                this.populateWebsiteIdToLanguageMap.name
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await fetch(requestUrl, {
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
                 headers: getCommonHeaders(accessToken),
             });
 
             if (!response?.ok) {
-                this.telemetry.sendAPIFailureTelemetry(
-                    requestUrl,
-                    websiteEntityName,
-                    Constants.httpMethod.GET,
-                    new Date().getTime() - requestSentAtTime,
-                    response?.statusText
-                );
+                throw new Error(JSON.stringify(response));
             }
             this.telemetry.sendAPISuccessTelemetry(
                 requestUrl,
                 websiteEntityName,
                 Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime
+                new Date().getTime() - requestSentAtTime,
+                this.populateWebsiteIdToLanguageMap.name
             );
             const result = await response?.json();
             this._websiteIdToLanguage = getWebsiteIdToLcidMap(result, schema);
         } catch (error) {
-            const errorMsg = (error as Error)?.message;
-            this.telemetry.sendAPIFailureTelemetry(
-                requestUrl,
-                websiteEntityName,
-                Constants.httpMethod.GET,
-                new Date().getTime() - requestSentAtTime,
-                errorMsg
-            );
+            if ((error as Response)?.status > 0) {
+                const errorMsg = (error as Error)?.message;
+                this.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    websiteEntityName,
+                    Constants.httpMethod.GET,
+                    new Date().getTime() - requestSentAtTime,
+                    this.populateWebsiteIdToLanguageMap.name,
+                    errorMsg,
+                    '',
+                    (error as Response)?.status.toString()
+                );
+            } else {
+                this.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_POPULATE_WEBSITE_ID_TO_LANGUAGE_SYSTEM_ERROR,
+                    this.populateWebsiteIdToLanguageMap.name,
+                    (error as Error)?.message,
+                    error as Error
+                );
+            }
         }
+    }
+
+    private async setWebsiteLanguageCode() {
+        const lcid =
+            this.websiteIdToLanguage.get(
+                this.urlParametersMap.get(
+                    Constants.queryParameters.WEBSITE_ID
+                ) as string
+            ) ?? "";
+        this.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_EDIT_LCID,
+            { lcid: lcid ? lcid.toString() : "" }
+        );
+
+        this._websiteLanguageCode = this.languageIdCodeMap.get(
+            lcid
+        ) as string;
+        this.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_WEBSITE_LANGUAGE_CODE,
+            { languageCode: this._websiteLanguageCode }
+        );
     }
 
     public setNPSEligibility(eligibility: boolean) {
         this._npsEligibility = eligibility;
     }
+
     public setUserId(uid: string) {
         this._userId = uid;
     }
+
     public setFormsProEligibilityId(formsProEligibilityId: string) {
         this._formsProEligibilityId = formsProEligibilityId;
+    }
+
+    /**
+    * Store a value maintained in Extension context workspaceState.
+    *
+    * *Note* that using `undefined` as value removes the key from the underlying
+    * storage.
+    *
+    * @param key A string.
+    * @param value A value.
+    */
+    public updateVscodeWorkspaceState(key: string, value?: IEntityInfo) {
+        if (value === undefined) {
+            this._vscodeWorkspaceState.delete(key);
+            return;
+        }
+        this._vscodeWorkspaceState.set(key, value);
+    }
+
+    public getVscodeWorkspaceState(key: string): IEntityInfo | undefined {
+        return this._vscodeWorkspaceState.get(key);
     }
 }
 

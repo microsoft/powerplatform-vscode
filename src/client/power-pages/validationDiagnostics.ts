@@ -45,7 +45,7 @@ export async function validateTextDocument(uri: vscode.Uri,
         connection.set(uri, diagnostics.concat(vscode.languages.getDiagnostics(uri)));
     }
     catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: ValidateTextDocumentEvent, exception: error as Error });
+        sendTelemetryEvent(telemetry, { methodName:validateTextDocument.name,eventName: ValidateTextDocumentEvent, exception: error as Error });
     }
 }
 

@@ -13,10 +13,10 @@
 
   "pacCLI.authPanel.title": "Auth Profiles",
   "pacCLI.authPanel.welcome.whenInteractiveSupported": {
-     "message": "No auth profiles found on this computer.\n[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)",
-     "comment": [
-       "This is a Markdown formatted string, and the formatting must persist across translations.",
-       "The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified"
+    "message": "No auth profiles found on this computer.\n[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)",
+    "comment": [
+      "This is a Markdown formatted string, and the formatting must persist across translations.",
+      "The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthProfile)', keeping brackets and the text in the parentheses unmodified"
     ]
   },
   "pacCLI.authPanel.welcome.whenInteractiveNotSupported": {
@@ -25,8 +25,7 @@
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The second line should not translate the argument `--deviceCode`",
       "The third line should be '[TRANSLATION HERE](command:pacCLI.pacAuthHelp)', keeping brackets and the text in the parentheses unmodified"
-
-   ]
+    ]
   },
   "pacCLI.authPanel.clearAuthProfile.title": "Clear Auth Profiles",
   "pacCLI.authPanel.refresh.title": "Refresh",
@@ -39,6 +38,7 @@
 
   "pacCLI.envAndSolutionsPanel.title": "Environments & Solutions",
   "pacCLI.envAndSolutionsPanel.refresh.title": "Refresh",
+  "pacCLI.envAndSolutionsPanel.selectEnvironment.title": "Select Environment",
   "pacCLI.envAndSolutionsPanel.copyDisplayName.title": "Copy Display Name",
   "pacCLI.envAndSolutionsPanel.copyEnvironmentId.title": "Copy Environment Id",
   "pacCLI.envAndSolutionsPanel.copyEnvironmentUrl.title": "Copy Environment Url",
@@ -48,26 +48,34 @@
   "pacCLI.envAndSolutionsPanel.copyUniqueName.title": "Copy Unique Name",
   "pacCLI.envAndSolutionsPanel.copyVersionNumber.title": "Copy Version Number",
 
+  "powerPlatform.auth.cloud.description": "Which Azure Cloud Power Platform Tools should use for authentication.",
+  "powerPlatform.experimental.auth.testCloudOverride.description": {
+    "message": "Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.",
+    "comment": [
+      "This is a Markdown formatted string, and `#powerPlatform.auth.cloud#` must remain unmodified."
+    ]
+  },
+
   "microsoft-powerapps-portals.preview-show.title": "PowerApps Portal -> Show preview",
   "microsoft-powerapps-portals.webExtension.init.title": "Initialize Web Extension",
   "microsoft-powerapps-portals.walkthrough.title": "Edit Power Pages code",
-  "microsoft-powerapps-portals.walkthrough.description": "Discover how you can make complete, modern websites right in VS Code",
+  "microsoft-powerapps-portals.walkthrough.description": "Discover how you can make complete, modern websites right in Visual Studio Code",
   "microsoft-powerapps-portals.walkthrough.overview.title": "Overview",
   "microsoft-powerapps-portals.walkthrough.overview.description": {
-    "message": "Power Pages extension enables a customized file system which is synced with the project structure of the Power Pages studio.\n[Learn More](command:powerplatform-walkthrough.overview-learn-more)",
+    "message": "Now easily edit code of your Power Pages site. Access code from supported site components like forms, content snippets, lists, and more from within Visual Studio Code.\n \n To learn more, visit [Edit Power Pages code in VS Code](command:powerplatform-walkthrough.overview-learn-more).",
     "comment": [
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified"
-   ]
+    ]
   },
-  "microsoft-powerapps-portals.walkthrough.fileSystem.title": "File system",
+  "microsoft-powerapps-portals.walkthrough.fileSystem.title": "File explorer",
   "microsoft-powerapps-portals.walkthrough.fileSystem.description": {
-    "message": "Your files are stored in nested folders under your site name. \n \n The individual page files can be found in the web-pages folder under your site name. \n \n All of your pages are arranged into HTML, CSS and JS files inside the folder with the respective page name. \n \n To learn more about the Power Pages file system in VS Code for Web, visit our [documentation](command:powerplatform-walkthrough.fileSystem-documentation). \n[Open site folder](command:powerplatform-walkthrough.fileSystem-open-folder)",
+    "message": "Find your page files organized in folders under your site name. All your pages are arranged into HTML, CSS, and JS files within the respective site component folders. \n \n You can find site components like forms, content snippets, lists, and more to edit. \n \n To learn more, visit [Power Pages file structure in VS Code](command:powerplatform-walkthrough.fileSystem-documentation). \n \n[Visit site folder](command:powerplatform-walkthrough.fileSystem-open-folder)",
     "comment": [
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-documentation).', keeping brackets and the text in the parentheses unmodified",
       "The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.fileSystem-open-folder)', keeping brackets and the text in the parentheses unmodified"
-   ]
+    ]
   },
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.title": "Advanced capabilities",
   "microsoft-powerapps-portals.walkthrough.advancedCapabilities.description": {
@@ -76,7 +84,15 @@
       "This is a Markdown formatted string, and the formatting must persist across translations.",
       "The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-learn-more) TRANSLATION', keeping brackets and the text in the parentheses unmodified",
       "The seventh line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.advancedCapabilities-start-coding)', keeping brackets and the text in the parentheses unmodified"
-   ]
-  }
-
+    ]
+  },
+  "microsoft-powerapps-portals.walkthrough.saveConflict.title": "Save conflict",
+  "microsoft-powerapps-portals.walkthrough.saveConflict.description": {
+    "message": "Avoid accidental overwrites when you try to save outdated code in VS Code for the Web. You can compare the changes side-by-side and decide to accept or revert the changes. \n \nTo learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more).",
+    "comment": [
+      "This is a Markdown formatted string, and the formatting must persist across translations.",
+      "The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified"
+    ]
+  },
+  "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "POWER PAGES ACTIONS"
 }

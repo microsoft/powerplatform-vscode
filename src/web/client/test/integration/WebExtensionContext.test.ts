@@ -112,13 +112,14 @@ describe("WebExtensionContext", () => {
         );
         //Action
         try {
-            await WebExtensionContext.reAuthenticate();
+            await WebExtensionContext.dataverseAuthentication();
         } catch {
             assert.calledOnce(noPermissions);
             expect(WebExtensionContext.dataverseAccessToken).eq("");
             assert.calledOnceWithExactly(
                 sendErrorTelemetry,
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                'triggeredMethod'
             );
             expect(WebExtensionContext.websiteIdToLanguage).empty;
             expect(WebExtensionContext.languageIdCodeMap).empty;
@@ -152,7 +153,7 @@ describe("WebExtensionContext", () => {
             queryParamsMap
         );
         //Action
-        await WebExtensionContext.reAuthenticate();
+        await WebExtensionContext.dataverseAuthentication();
 
         //Assert
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
@@ -332,7 +333,8 @@ describe("WebExtensionContext", () => {
             expect(WebExtensionContext.dataverseAccessToken).eq("");
             assert.calledOnceWithExactly(
                 sendErrorTelemetry,
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                'triggeredMethod'
             );
             expect(WebExtensionContext.websiteIdToLanguage).length(0);
             expect(WebExtensionContext.languageIdCodeMap).length(0);

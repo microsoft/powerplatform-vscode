@@ -8,8 +8,8 @@ import WebExtensionContext from "./WebExtensionContext";
 import {
     PORTALS_URI_SCHEME,
     PUBLIC,
-    IS_FIRST_RUN_EXPERIENCE,
     queryParameters,
+    IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
 } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
 import {
@@ -18,14 +18,21 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { convertStringtoBase64 as convertStringToBase64 } from "./utilities/commonUtil";
+import { isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
 import {
-    updateFileDirtyChanges,
-    updateEntityColumnContent,
+    getFileEntityId,
+    getFileEntityName,
 } from "./utilities/fileAndEntityUtil";
+import { IEntityInfo } from "./common/interfaces";
+import { telemetryEventNames } from "./telemetry/constants";
+import { PowerPagesNavigationProvider } from "./webViews/powerPagesNavigationProvider";
+import * as copilot from "../../common/copilot/PowerPagesCopilot";
+import { IOrgInfo } from "../../common/copilot/model";
+import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
+import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -35,6 +42,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             dataBoundary
         );
+    WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
     WebExtensionContext.telemetry.setTelemetryReporter(
         context.extension.id,
         context.extension.packageJSON.version,
@@ -86,14 +94,16 @@ export function activate(context: vscode.ExtensionContext): void {
                         entityId,
                         queryParamsMap
                     )
-                )
+                ) {
                     return;
+                }
 
                 removeEncodingFromParameters(queryParamsMap);
                 WebExtensionContext.setWebExtensionContext(
                     entity,
                     entityId,
-                    queryParamsMap
+                    queryParamsMap,
+                    context.extensionUri
                 );
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
@@ -106,51 +116,28 @@ export function activate(context: vscode.ExtensionContext): void {
                 if (appName) {
                     switch (appName) {
                         case "portal":
+                        case "pages":
                             {
                                 WebExtensionContext.telemetry.sendExtensionInitQueryParametersTelemetry(
                                     queryParamsMap
                                 );
 
-                                const isFirstRun = context.globalState.get(
-                                    IS_FIRST_RUN_EXPERIENCE,
-                                    true
-                                );
-                                if (isFirstRun) {
-                                    vscode.commands.executeCommand(
-                                        `workbench.action.openWalkthrough`,
-                                        `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted`,
-                                        false
-                                    );
-                                    context.globalState.update(
-                                        IS_FIRST_RUN_EXPERIENCE,
-                                        false
-                                    );
-                                    WebExtensionContext.telemetry.sendInfoTelemetry(
-                                        "StartCommand",
-                                        {
-                                            commandId:
-                                                "workbench.action.openWalkthrough",
-                                            walkthroughId:
-                                                "microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted",
-                                        }
-                                    );
-                                }
+                                processWalkthroughFirstRunExperience(context);
+
+                                powerPagesNavigation();
+
                                 await vscode.window.withProgress(
                                     {
-                                        location:
-                                            vscode.ProgressLocation
-                                                .Notification,
+                                        location: vscode.ProgressLocation.Notification,
                                         cancellable: true,
-                                        title: vscode.l10n.t(
-                                            "Fetching your file ..."
-                                        ),
+                                        title: vscode.l10n.t("Fetching your file ..."),
                                     },
                                     async () => {
-                                        await portalsFS.readDirectory(
-                                            WebExtensionContext.rootDirectory
-                                        );
+                                        await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
+                                        registerCopilot(context);
                                     }
                                 );
+
                                 await NPSService.setEligibility();
                                 if (WebExtensionContext.npsEligibility) {
                                     NPSWebView.createOrShow(
@@ -160,12 +147,20 @@ export function activate(context: vscode.ExtensionContext): void {
                             }
                             break;
                         default:
-                            showErrorDialog(
-                                vscode.l10n.t(
-                                    "There was a problem opening the workspace"
-                                ),
-                                vscode.l10n.t("Unable to find that app")
-                            );
+                            {
+                                showErrorDialog(
+                                    vscode.l10n.t(
+                                        "There was a problem opening the workspace"
+                                    ),
+                                    vscode.l10n.t("Unable to find that app")
+                                );
+
+                                WebExtensionContext.telemetry.sendErrorTelemetry(
+                                    telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                                    activate.name,
+                                    `appName:${appName}`
+                                );
+                            }
                     }
                 } else {
                     showErrorDialog(
@@ -174,17 +169,92 @@ export function activate(context: vscode.ExtensionContext): void {
                         ),
                         vscode.l10n.t("Unable to find that app")
                     );
+
+                    WebExtensionContext.telemetry.sendErrorTelemetry(
+                        telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                        activate.name,
+                        `appName:${appName}`
+                    );
                     return;
                 }
             }
         )
     );
 
+    processWorkspaceStateChanges(context);
+
     processWillSaveDocument(context);
+
+    processWillStartCollaboartion();
 
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
+export function powerPagesNavigation() {
+    const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
+    vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
+    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
+}
+
+export function processWalkthroughFirstRunExperience(context: vscode.ExtensionContext) {
+    const isMultifileFirstRun = context.globalState.get(
+        IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
+        true
+    );
+    if (isMultifileFirstRun && WebExtensionContext.showMultifileInVSCode) {
+        vscode.commands.executeCommand(
+            `workbench.action.openWalkthrough`,
+            `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted-multiFile`,
+            false
+        );
+        context.globalState.update(
+            IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
+            false
+        );
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            "StartCommand",
+            {
+                commandId:
+                    "workbench.action.openWalkthrough",
+                walkthroughId:
+                    "microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted-multiFile",
+            }
+        );
+    }
+}
+
+export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.window.tabGroups.onDidChangeTabs((event) => {
+            event.opened.concat(event.changed).forEach(tab => {
+                if (tab.input instanceof vscode.TabInputCustom || tab.input instanceof vscode.TabInputText) {
+                    const document = tab.input;
+                    const entityInfo: IEntityInfo = {
+                        entityId: getFileEntityId(document.uri.fsPath),
+                        entityName: getFileEntityName(document.uri.fsPath)
+                    };
+                    if (entityInfo.entityId && entityInfo.entityName) {
+                        context.workspaceState.update(document.uri.fsPath, entityInfo);
+                        WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, entityInfo);
+                    }
+                }
+            });
+
+            event.closed.forEach(tab => {
+                if (tab.input instanceof vscode.TabInputCustom || tab.input instanceof vscode.TabInputText) {
+                    const document = tab.input;
+                    context.workspaceState.update(document.uri.fsPath, undefined);
+                    WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, undefined);
+                }
+            });
+        })
+    );
+}
+
+// This function will not be triggered for image file content update
+// Image file content write to images needs to be handled in writeFile call directly
 export function processWillSaveDocument(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.workspace.onWillSaveTextDocument(async (e) => {
@@ -193,25 +263,16 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
             if (vscode.window.activeTextEditor === undefined) {
                 return;
             } else if (isActiveDocument(fileFsPath)) {
-                const fileData =
-                    WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath);
-
-                // Update the latest content in context
-                if (fileData?.entityId && fileData.attributePath) {
-                    let fileContent = e.document.getText();
-                    if (fileData.encodeAsBase64 as boolean) {
-                        fileContent = convertStringToBase64(fileContent);
-                    }
-                    updateEntityColumnContent(
-                        fileData?.entityId,
-                        fileData.attributePath,
-                        fileContent
-                    );
-                    updateFileDirtyChanges(fileFsPath, true);
-                }
+                updateFileContentInFileDataMap(fileFsPath, e.document.getText());
             }
         })
     );
+}
+
+export function processWillStartCollaboartion() {
+    if (isCoPresenceEnabled()) {
+        // TODO: Add copresence logic
+    }
 }
 
 export async function showSiteVisibilityDialog() {
@@ -286,6 +347,24 @@ export function showWalkthrough(
         )
     );
 
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            "powerplatform-walkthrough.saveConflict-learn-more",
+            async () => {
+                telemetry.sendInfoTelemetry("StartCommand", {
+                    commandId:
+                        "powerplatform-walkthrough.saveConflict-learn-more",
+                });
+                vscode.env.openExternal(
+                    vscode.Uri.parse(
+                        "https://go.microsoft.com/fwlink/?linkid=2241221"
+                    )
+                );
+            }
+        )
+    );
+
     context.subscriptions.push(
         vscode.commands.registerCommand(
             "powerplatform-walkthrough.advancedCapabilities-learn-more",
@@ -319,11 +398,59 @@ export function showWalkthrough(
     );
 }
 
+export function registerCopilot(context: vscode.ExtensionContext) {
+    try {
+        const orgInfo = {
+            orgId: WebExtensionContext.urlParametersMap.get(
+                queryParameters.ORG_ID
+            ) as string,
+            environmentName: "",
+            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string
+        } as IOrgInfo;
+
+        const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
+            context,
+            WebExtensionContext.telemetry.getTelemetryReporter(),
+            undefined,
+            orgInfo);
+
+        context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel, {
+            webviewOptions: {
+                retainContextWhenHidden: true,
+            }
+        }));
+
+        showNotificationForCopilot(context, orgInfo.orgId);
+    } catch (error) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED,
+            registerCopilot.name,
+            (error as Error)?.message,
+            error as Error);
+    }
+}
+
+function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: string) {
+    if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.enableWebCopilot') === false) {
+        return;
+    }
+
+    const isCopilotNotificationDisabled = context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
+    if (!isCopilotNotificationDisabled) {
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
+            { orgId: orgId });
+
+        const telemetryData = JSON.stringify({ orgId: orgId });
+        copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+    }
+}
+
 export async function deactivate(): Promise<void> {
     const telemetry = WebExtensionContext.telemetry;
     if (telemetry) {
         telemetry.sendInfoTelemetry("End");
     }
+    disposeNotificationPanel();
 }
 
 function isActiveDocument(fileFsPath: string): boolean {

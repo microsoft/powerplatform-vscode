@@ -23,7 +23,9 @@ export class FileDataMap {
         fileExtension: string,
         attributePath: IAttributePath,
         isBase64Encoded: boolean,
-        mimeType?: string
+        mimeType?: string,
+        isContentLoaded?: boolean,
+        logicalEntityName?: string
     ) {
         const fileData = new FileData(
             entityId,
@@ -33,7 +35,9 @@ export class FileDataMap {
             fileExtension,
             attributePath,
             isBase64Encoded,
-            mimeType
+            mimeType,
+            isContentLoaded,
+            logicalEntityName
         );
         this.fileMap.set(vscode.Uri.parse(fileUri).fsPath, fileData);
     }
@@ -43,6 +47,16 @@ export class FileDataMap {
 
         if (existingEntity) {
             existingEntity.setHasDirtyChanges = dirtyFlagValue;
+            return;
+        }
+        throw Error("File does not exist in the map"); // TODO - Revisit errors and dialog experience here
+    }
+
+    public updateDiffViewTriggered(fileFsPath: string, diffViewTriggerValue: boolean) {
+        const existingEntity = this.fileMap.get(fileFsPath);
+
+        if (existingEntity) {
+            existingEntity.setHasDiffViewTriggered = diffViewTriggerValue;
             return;
         }
         throw Error("File does not exist in the map"); // TODO - Revisit errors and dialog experience here

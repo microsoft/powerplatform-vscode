@@ -7,11 +7,11 @@ import sinon from "sinon";
 import {
     getParameterizedRequestUrlTemplate,
     sanitizeURL,
-    updateEntityId,
     pathHasEntityFolderName,
     getRequestURL,
     getCustomRequestURL,
     getPatchRequestUrl,
+    getMappingEntityId,
 } from "../../utilities/urlBuilderUtil";
 import { expect } from "chai";
 import {
@@ -84,7 +84,8 @@ describe("URLBuilder", () => {
         expect(result).to.be.empty;
     });
 
-    it("updateEntityId_should_return_entityid_when_entity_is_not_found", async () => {
+    it("getMappingEntityId_should_return_mappingEntityid_when_entity_is_not_found", async () => {
+        const entity = "entity";
         sinon
             .stub(schemaHelper, "getEntity")
             .returns(
@@ -93,14 +94,13 @@ describe("URLBuilder", () => {
                 ])
             );
 
-        const entity = "entity";
-        const entityId = "1";
         const result = "ff";
-        const res = updateEntityId(entity, entityId, result);
-        expect(res).eq(entityId);
+        const res = getMappingEntityId(entity, result);
+        expect(res).null;
     });
 
-    it("updateEntityId_should_return_entityid_when_entity_is_found", async () => {
+    it("getMappingEntityId_should_return_mappingEntityid_when_entity_is_found", async () => {
+        const entity = "webpages";
         sinon
             .stub(schemaHelper, "getEntity")
             .returns(
@@ -108,12 +108,9 @@ describe("URLBuilder", () => {
                     [schemaEntityKey.MAPPING_ENTITY_ID, "MAPPING_ENTITY_ID"],
                 ])
             );
-
-        const entity = "webpages";
-        const entityId = "1";
-        const result = { MAPPING_ENTITY_ID: "MAPPING_ENTITY_ID" };
-        const res = updateEntityId(entity, entityId, result);
-        expect(res).eq("MAPPING_ENTITY_ID");
+        const result = { MAPPING_ENTITY_ID: "1" };
+        const res = getMappingEntityId(entity, result);
+        expect(res).eq("1");
     });
 
     it("pathHasEntityFolderName_should_return_true", async () => {

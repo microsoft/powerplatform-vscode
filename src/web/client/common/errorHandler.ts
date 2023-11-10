@@ -8,6 +8,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import { schemaKey } from "../schema/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 import { PORTALS_FOLDER_NAME_DEFAULT, queryParameters } from "./constants";
+import { isMultifileEnabled } from "../utilities/commonUtil";
 
 export const ERRORS = {
     SUBURI_EMPTY: "SubURI value for entity file is empty",
@@ -55,6 +56,7 @@ export const ERRORS = {
     FILE_ID_EMPTY: "File ID is empty",
     LANGUAGE_CODE_ID_VALUE_NULL: "Language code ID is empty",
     LANGUAGE_CODE_EMPTY: "Language code is empty",
+    BULKHEAD_LIMITS_EXCEEDED: "Bulkhead queue limits exceeded",
 };
 
 export function showErrorDialog(errorString: string, detailMessage?: string) {
@@ -87,7 +89,8 @@ export function checkMandatoryParameters(
 ): boolean {
     return (
         checkMandatoryPathParameters(appName, entity, entityId) &&
-        checkMandatoryQueryParameters(appName, queryParamsMap)
+        checkMandatoryQueryParameters(appName, queryParamsMap) &&
+        checkMandatoryMultifileParameters(appName, queryParamsMap)
     );
 }
 
@@ -97,7 +100,7 @@ export function checkMandatoryPathParameters(
     entityId: string
 ): boolean {
     switch (
-        appName // remove switch cases and use polymorphism
+    appName // remove switch cases and use polymorphism
     ) {
         case "portal":
             if (entity && entityId) {
@@ -105,7 +108,9 @@ export function checkMandatoryPathParameters(
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING
+                    telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING,
+                    checkMandatoryPathParameters.name,
+                    `entity:${entity}, entityId:${entityId}`
                 );
                 showErrorDialog(
                     vscode.l10n.t("There was a problem opening the workspace"),
@@ -129,7 +134,7 @@ export function checkMandatoryQueryParameters(
     queryParamsMap: Map<string, string>
 ): boolean {
     switch (
-        appName // remove switch cases and use polymorphism
+    appName // remove switch cases and use polymorphism
     ) {
         case "portal": {
             const orgURL = queryParamsMap?.get(queryParameters.ORG_URL);
@@ -140,7 +145,48 @@ export function checkMandatoryQueryParameters(
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
+                    telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+                    checkMandatoryQueryParameters.name,
+                    `orgURL:${orgURL}, dataSource:${dataSource}, schemaName:${schemaName} ,websiteId:${websiteId}`
+                );
+                showErrorDialog(
+                    vscode.l10n.t("There was a problem opening the workspace"),
+                    vscode.l10n.t(
+                        "Check the URL and verify the parameters are correct"
+                    )
+                );
+                return false;
+            }
+        }
+        default:
+            showErrorDialog(
+                vscode.l10n.t("There was a problem opening the workspace"),
+                vscode.l10n.t("Unable to find that app")
+            );
+            return false;
+    }
+}
+
+export function checkMandatoryMultifileParameters(
+    appName: string,
+    queryParametersMap: Map<string, string>
+): boolean {
+    switch (
+    appName // remove switch cases and use polymorphism
+    ) {
+        case "portal": {
+            const enableMultifile = queryParametersMap?.get(queryParameters.ENABLE_MULTIFILE);
+            const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
+            const websiteId = queryParametersMap.get(queryParameters.WEBSITE_ID);
+            if ((isMultifileEnabled() && isEnableMultifile && websiteId)
+                || (isMultifileEnabled() && !isEnableMultifile)
+                || !isMultifileEnabled()) {
+                return true;
+            } else {
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_MULTI_FILE_MANDATORY_PARAMETERS_MISSING,
+                    checkMandatoryMultifileParameters.name,
+                    `enableMultifile:${enableMultifile}, websiteId:${websiteId}`
                 );
                 showErrorDialog(
                     vscode.l10n.t("There was a problem opening the workspace"),

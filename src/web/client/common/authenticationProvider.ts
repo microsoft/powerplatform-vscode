@@ -7,11 +7,16 @@ import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from "../telemetry/constants";
 import {
+    INTELLIGENCE_SCOPE_DEFAULT,
     PROVIDER_ID,
     SCOPE_OPTION_DEFAULT,
     SCOPE_OPTION_OFFLINE_ACCESS,
 } from "./constants";
 import { ERRORS, showErrorDialog } from "./errorHandler";
+import { ITelemetry } from "../../../client/telemetry/ITelemetry";
+import { sendTelemetryEvent } from "../../../common/copilot/telemetry/copilotTelemetry";
+import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../../../common/copilot/telemetry/telemetryConstants";
+
 
 export function getCommonHeaders(
     accessToken: string,
@@ -28,13 +33,43 @@ export function getCommonHeaders(
     };
 }
 
+//Get access token for Intelligence API service
+export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string, orgId: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string, userId: string }> {
+    let accessToken = '';
+    let user = '';
+    let userId = '';
+    try {
+        let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
+        if (!session) {
+            session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { createIfNone: true });
+            firstTimeAuth = true;
+        }
+        accessToken = session?.accessToken ?? '';
+        user = session.account.label;
+        userId = session?.account.id.split("/").pop() ??
+            session?.account.id ??
+            "";
+        if (!accessToken) {
+            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+        }
+
+        if (firstTimeAuth) {
+            sendTelemetryEvent(telemetry, { eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID, orgId: orgId });
+        }
+    } catch (error) {
+        const authError = (error as Error)
+        showErrorDialog(vscode.l10n.t("Authorization Failed. Please run again to authorize it"),
+            vscode.l10n.t("There was a permissions problem with the server"));
+        sendTelemetryEvent(telemetry, { eventName: CopilotLoginFailureEvent, copilotSessionId: sessionID, orgId: orgId, error: authError });
+    }
+    return { accessToken, user, userId };
+}
+
 export async function dataverseAuthentication(
-    dataverseOrgURL: string
+    dataverseOrgURL: string,
+    firstTimeAuth = false
 ): Promise<string> {
     let accessToken = "";
-    WebExtensionContext.telemetry.sendInfoTelemetry(
-        telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_STARTED
-    );
     try {
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
@@ -60,15 +95,17 @@ export async function dataverseAuthentication(
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
-            {
-                userId:
-                    session?.account.id.split("/").pop() ??
-                    session?.account.id ??
-                    "",
-            }
-        );
+        if (firstTimeAuth) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+                {
+                    userId:
+                        session?.account.id.split("/").pop() ??
+                        session?.account.id ??
+                        "",
+                }
+            );
+        }
     } catch (error) {
         const authError = (error as Error)?.message;
         showErrorDialog(
@@ -79,6 +116,7 @@ export async function dataverseAuthentication(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
+            dataverseAuthentication.name,
             authError
         );
     }
@@ -116,6 +154,7 @@ export async function npsAuthentication(
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.NPS_AUTHENTICATION_FAILED,
+            npsAuthentication.name,
             authError
         );
     }

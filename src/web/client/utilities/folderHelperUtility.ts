@@ -5,38 +5,38 @@
 
 import WebExtensionContext from "../WebExtensionContext";
 import {
-    ENABLE_MULTI_FILE_FEATURE,
     httpMethod,
     queryParameters,
 } from "../common/constants";
 import { IEntityRequestUrl } from "../common/interfaces";
-import { schemaEntityKey } from "../schema/constants";
+import { MultiFileSupportedEntityName, schemaEntityKey, schemaEntityName } from "../schema/constants";
 import { getEntity } from "./schemaHelperUtil";
 import { getRequestURL } from "./urlBuilderUtil";
 
 export function getFolderSubUris(): string[] {
     const subUris: string[] = [];
 
-    if (!ENABLE_MULTI_FILE_FEATURE) {
+    if (!WebExtensionContext.showMultifileInVSCode) {
         const entityDetails = getEntity(WebExtensionContext.defaultEntityType);
         const subUri = entityDetails?.get(schemaEntityKey.FILE_FOLDER_NAME);
         return [subUri as string];
     }
 
-    WebExtensionContext.schemaEntitiesMap.forEach((entityDetails) => {
+    for (const entry of Object.entries(MultiFileSupportedEntityName)) {
+        const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);
         const subUri = entityDetails?.get(
             schemaEntityKey.FILE_FOLDER_NAME
         ) as string;
 
         subUris.push(subUri);
-    });
+    }
 
     return subUris;
 }
 
 export function getRequestUrlForEntities(
-    entityId: string,
-    entityType: string
+    entityId?: string,
+    entityName?: string
 ): IEntityRequestUrl[] {
     const entityRequestURLs: IEntityRequestUrl[] = [];
     const dataverseOrgUrl = WebExtensionContext.urlParametersMap.get(
@@ -44,15 +44,16 @@ export function getRequestUrlForEntities(
     ) as string;
 
     if (
-        !ENABLE_MULTI_FILE_FEATURE ||
-        (entityId.length > 0 && entityType.length > 0)
+        !WebExtensionContext.showMultifileInVSCode ||
+        (entityId && entityName && entityId.length > 0 && entityName.length > 0)
     ) {
+        entityName = entityName && entityName.length > 0
+            ? entityName
+            : WebExtensionContext.defaultEntityType;
         const requestURL = getRequestURL(
             dataverseOrgUrl,
-            entityType.length > 0
-                ? entityType
-                : WebExtensionContext.defaultEntityType,
-            entityId.length > 0
+            entityName,
+            entityId && entityId.length > 0
                 ? entityId
                 : WebExtensionContext.defaultEntityId,
             httpMethod.GET
@@ -60,33 +61,41 @@ export function getRequestUrlForEntities(
         return [
             {
                 requestUrl: requestURL,
-                entityName: WebExtensionContext.defaultEntityType,
+                entityName: entityName,
             },
         ];
     }
 
-    WebExtensionContext.schemaEntitiesMap.forEach(
-        (entityDetails, entityName) => {
-            const folderName = entityDetails?.get(
-                schemaEntityKey.FILE_FOLDER_NAME
-            );
-            if (folderName && folderName?.length > 0) {
-                const requestURL = getRequestURL(
-                    dataverseOrgUrl,
-                    entityDetails?.get(
-                        schemaEntityKey.VSCODE_ENTITY_NAME
-                    ) as string,
-                    "",
-                    httpMethod.GET
-                );
+    for (const entry of Object.entries(MultiFileSupportedEntityName)) {
+        const entityDetails = WebExtensionContext.schemaEntitiesMap.get(entry[1]);
 
-                entityRequestURLs.push({
-                    requestUrl: requestURL,
-                    entityName: entityName,
-                });
-            }
+        const folderName = entityDetails?.get(
+            schemaEntityKey.FILE_FOLDER_NAME
+        );
+        if (folderName && folderName?.length > 0) {
+            const requestURL = getRequestURL(
+                dataverseOrgUrl,
+                entityDetails?.get(
+                    schemaEntityKey.VSCODE_ENTITY_NAME
+                ) as string,
+                "",
+                httpMethod.GET
+            );
+
+            entityRequestURLs.push({
+                requestUrl: requestURL,
+                entityName: entry[1],
+            });
         }
-    );
+    }
 
     return entityRequestURLs;
+}
+
+export function getEntityNameForExpandedEntityContent(entityName: string): string {
+    if (entityName === schemaEntityName.ADVANCEDFORMS) {
+        return schemaEntityName.ADVANCEDFORMSTEPS;
+    }
+
+    return entityName;
 }

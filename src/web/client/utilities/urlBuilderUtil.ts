@@ -4,18 +4,19 @@
  */
 
 import {
-    ENABLE_MULTI_FILE_FEATURE,
+    MIMETYPE,
     httpMethod,
     queryParameters,
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import {
+    SCHEMA_WEBFILE_FOLDER_NAME,
     entityAttributesWithBase64Encoding,
     schemaEntityKey,
     schemaEntityName,
     schemaKey,
 } from "../schema/constants";
-import { getEntity } from "./schemaHelperUtil";
+import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -38,7 +39,8 @@ export function getRequestURL(
     method: string,
     useSingleEntityUrl = false,
     applyFilter = true,
-    attributeQueryParameters?: string
+    attributeQueryParameters?: string,
+    mappingEntityName?: string
 ): string {
     let parameterizedUrlTemplate =
         getParameterizedRequestUrlTemplate(useSingleEntityUrl);
@@ -49,11 +51,7 @@ export function getRequestURL(
                 parameterizedUrlTemplate =
                     parameterizedUrlTemplate +
                     (attributeQueryParameters ??
-                        getEntity(entity)?.get(
-                            ENABLE_MULTI_FILE_FEATURE
-                                ? schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS
-                                : schemaEntityKey.FETCH_QUERY_PARAMETERS
-                        ));
+                        getEntityFetchQuery(entity, entityId.length > 0 && entity.length > 0));
                 break;
             default:
                 break;
@@ -64,7 +62,7 @@ export function getRequestURL(
         .replace("{dataverseOrgUrl}", dataverseOrgUrl)
         .replace(
             "{entity}",
-            getEntity(entity)?.get(
+            mappingEntityName ?? getEntity(entity)?.get(
                 schemaEntityKey.DATAVERSE_ENTITY_NAME
             ) as string
         )
@@ -93,12 +91,6 @@ export function getRequestURL(
                 queryParameters.WEBSITE_ID
             ) as string
         )
-        .replace(
-            "{entity}",
-            getEntity(entity)?.get(
-                schemaEntityKey.DATAVERSE_ENTITY_NAME
-            ) as string
-        )
         .replace("{entityId}", entityId);
 }
 
@@ -110,10 +102,8 @@ export function getCustomRequestURL(
     const parameterizedUrl =
         WebExtensionContext.schemaDataSourcePropertiesMap.get(
             urlQueryKey
-        ) as string;
-    const fetchQueryParameters = getEntity(entity)?.get(
-        "_fetchQueryParameters"
-    );
+        ) as string + getEntityFetchQuery(entity);
+
     const requestUrl = parameterizedUrl
         .replace("{dataverseOrgUrl}", dataverseOrgUrl)
         .replace(
@@ -139,9 +129,15 @@ export function getCustomRequestURL(
             WebExtensionContext.schemaDataSourcePropertiesMap.get(
                 schemaKey.DATAVERSE_API_VERSION
             ) as string
+        )
+        .replace(
+            "{websiteId}",
+            WebExtensionContext.urlParametersMap.get(
+                queryParameters.WEBSITE_ID
+            ) as string
         );
 
-    return requestUrl + fetchQueryParameters;
+    return requestUrl;
 }
 
 export function getPatchRequestUrl(
@@ -170,7 +166,7 @@ export function sanitizeURL(url: string): string {
 
 // TODO - Make Json for different response type and update any here
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function updateEntityId(entity: string, entityId: string, result: any) {
+export function getMappingEntityId(entity: string, result: any) {
     const mappedEntityId = getEntity(entity)?.get(
         schemaEntityKey.MAPPING_ENTITY_ID
     );
@@ -179,7 +175,42 @@ export function updateEntityId(entity: string, entityId: string, result: any) {
         return result[mappedEntityId];
     }
 
-    return entityId;
+    return null;
+}
+
+// TODO - Make Json for different response type and update any here
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getMappingEntityContent(entity: string, result: any, attribute: string) {
+    const mappedEntity = getEntity(entity)?.get(
+        schemaEntityKey.MAPPING_ENTITY
+    );
+
+    if (mappedEntity) {
+        return result[attribute];
+    }
+
+    return result;
+}
+
+// TODO - Make Json for different response type and update any here
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getMimeType(result: any) {
+    return result[MIMETYPE];
+}
+
+// TODO - Make Json for different response type and update any here
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getLogicalEntityName(result: any, logicalEntityName?: string) {
+    let logicalEntity;
+
+    if (logicalEntityName) {
+        const attributePath = getAttributePath(logicalEntityName);
+        logicalEntity = attributePath.relativePath.length > 0 ?
+            JSON.parse(result[attributePath.source])[attributePath.relativePath] :
+            result[attributePath.source];
+    }
+
+    return logicalEntity;
 }
 
 export function pathHasEntityFolderName(uri: string): boolean {
@@ -190,4 +221,25 @@ export function pathHasEntityFolderName(uri: string): boolean {
     }
 
     return false;
+}
+
+export function isValidFilePath(fsPath: string): boolean {
+    return WebExtensionContext.isContextSet &&
+        fsPath.includes(WebExtensionContext.rootDirectory.fsPath) &&
+        pathHasEntityFolderName(fsPath);
+}
+
+export function isValidDirectoryPath(fsPath: string): boolean {
+    return WebExtensionContext.isContextSet &&
+        fsPath.toLowerCase() === WebExtensionContext.rootDirectory.fsPath.toLowerCase();
+}
+
+export function isWebFileWithLazyLoad(fsPath: string): boolean {
+    const isPreloadedContent = WebExtensionContext.fileDataMap.getFileMap.get(fsPath)
+        ?.isContentLoaded;
+
+    return WebExtensionContext.isContextSet &&
+        fsPath.includes(WebExtensionContext.rootDirectory.fsPath) &&
+        fsPath.includes(SCHEMA_WEBFILE_FOLDER_NAME) &&
+        !isPreloadedContent;
 }

@@ -13,6 +13,7 @@
     "translations-import": "node node_modules/gulp/bin/gulp.js translationsImport",
     "set-git-authn": "node node_modules/gulp/bin/gulp.js setGitAuthN",
     "increment-version-npm": "npm --no-git-tag-version version %VSIX_VERSION%",
+    "increment-version": "node node_modules/release-it/bin/release-it --increment patch --ci -VV",
     "compile-web": "webpack",
     "watch-web": "webpack --watch",
     "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. .",
@@ -86,6 +87,8 @@
     "onCommand:powerplatform-walkthrough.overview-learn-more",
     "onCommand:powerplatform-walkthrough.fileSystem-documentation",
     "onCommand:powerplatform-walkthrough.fileSystem-open-folder",
+    "onCommand:powerplatform-walkthrough.saveConflict-learn-more",
+    "onCommand:powerplatform-walkthrough.saveConflict-start-folder",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
     "onStartupFinished",
@@ -151,6 +154,20 @@
       }
     ],
     "commands": [
+      {
+        "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
+        "title": "Preview site",
+        "when": "never"
+      },
+      {
+        "command": "powerpages.powerPagesFileExplorer.backToStudio",
+        "title": "Open in Power Pages",
+        "when": "never"
+      },
+      {
+        "command": "extension.createChatView",
+        "title": "Create Chat View"
+      },
       {
         "command": "pacCLI.openDocumentation",
         "category": "Power Platform CLI",
@@ -236,6 +253,11 @@
         "title": "%pacCLI.authPanel.copyUser.title%"
       },
       {
+        "command": "pacCLI.envAndSolutionsPanel.selectEnvironment",
+        "title": "%pacCLI.envAndSolutionsPanel.selectEnvironment.title%",
+        "icon": "$(star-empty)"
+      },
+      {
         "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",
         "title": "%pacCLI.envAndSolutionsPanel.copyFriendlyName.title%"
       },
@@ -309,6 +331,17 @@
         "command": "microsoft-powerapps-portals.bootstrap-diff",
         "category": "Powerpages",
         "title": "Bootstrap Diff"
+      },
+      {
+        "command": "powerpages.copilot.clearConversation",
+        "category": "Copilot In Power Pages",
+        "title": "Clear Conversation",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "powerpages.copilot.explain",
+        "category": "Copilot In Power Pages",
+        "title": "Explain"
       }
     ],
     "configuration": {
@@ -318,6 +351,28 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Whether the generator installation is complete."
+        },
+        "powerPlatform.experimental.copilotEnabled": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Whether the Power Platform Copilot is enabled."
+        },
+        "powerPlatform.auth.cloud": {
+          "type": "string",
+          "default": "Public",
+          "enum": [
+            "Public",
+            "USGov",
+            "USGovHigh",
+            "USGovDoD",
+            "China"
+          ],
+          "description": "%powerPlatform.auth.cloud.description%"
+        },
+        "powerPlatform.experimental.auth.testCloudOverride": {
+          "type": "string",
+          "default": null,
+          "markdownDescription": "%powerPlatform.experimental.auth.testCloudOverride.description%"
         },
         "powerPlatform.experimental.disableActivityBarPanels": {
           "type": "boolean",
@@ -389,6 +444,21 @@
           "type": "boolean",
           "markdownDescription": "Enable version control on file save (Web extension only)",
           "default": true
+        },
+        "powerPlatform.experimental.enableMultiFileFeature": {
+          "type": "boolean",
+          "markdownDescription": "Enable multiple file view in Visual Studio Code (Web extension only)",
+          "default": true
+        },
+        "powerPlatform.experimental.enableWebCopilot": {
+          "type": "boolean",
+          "markdownDescription": "Enable copilot in Visual Studio Code (Web extension)",
+          "default": true
+        },
+        "powerPlatform.experimental.enableCoPresenceFeature": {
+          "type": "boolean",
+          "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
+          "default": false
         }
       }
     },
@@ -505,11 +575,24 @@
       }
     ],
     "menus": {
+      "editor/context": [
+        {
+          "submenu": "microsoft-powerapps-portals.powerpages-copilot",
+          "group": "0_powerpages-copilot",
+          "when": "(powerpages.copilot.isVisible) && ((!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot))"
+        }
+      ],
+      "microsoft-powerapps-portals.powerpages-copilot": [
+        {
+          "command": "powerpages.copilot.explain",
+          "group": "0_powerpages-copilot@1"
+        }
+      ],
       "explorer/context": [
         {
           "submenu": "microsoft-powerapps-portals.powerpages",
           "group": "1_powerpages",
-          "when": "config.powerPlatform.generatorInstalled"
+          "when": "!virtualWorkspace && powerpages.websiteYmlExists"
         }
       ],
       "microsoft-powerapps-portals.powerpages": [
@@ -592,6 +675,10 @@
           "when": "never"
         },
         {
+          "command": "pacCLI.envAndSolutionsPanel.selectEnvironment",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.authPanel.selectAuthProfile",
           "when": "never"
         },
@@ -652,6 +739,14 @@
           "when": "!virtualWorkspace"
         },
         {
+          "command": "powerpages.copilot.clearConversation",
+          "when": "never"
+        },
+        {
+          "command": "powerpages.copilot.explain",
+          "when": "never"
+        },
+        {
           "command": "microsoft-powerapps-portals.webpage",
           "when": "config.powerPlatform.generatorInstalled"
         },
@@ -692,6 +787,11 @@
           "command": "pacCLI.envAndSolutionsPanel.refresh",
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel",
           "group": "navigation"
+        },
+        {
+          "command": "powerpages.copilot.clearConversation",
+          "when": "view == powerpages.copilot",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -730,6 +830,11 @@
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == SOLUTION"
         },
         {
+          "command": "pacCLI.envAndSolutionsPanel.selectEnvironment",
+          "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
+          "group": "inline"
+        },
+        {
           "command": "pacCLI.envAndSolutionsPanel.copyDisplayName",
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT",
           "group": "displayName@0"
@@ -754,6 +859,10 @@
       {
         "id": "microsoft-powerapps-portals.powerpages",
         "label": "Power Pages"
+      },
+      {
+        "id": "microsoft-powerapps-portals.powerpages-copilot",
+        "label": "Copilot In Power Pages"
       }
     ],
     "viewsContainers": {
@@ -776,12 +885,30 @@
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
+        },
+        {
+          "type": "webview",
+          "id": "powerpages.copilot",
+          "name": "Copilot In Power Pages",
+          "initialSize": 6,
+          "visibility": "visible",
+          "when": "(!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot)"
+        }
+      ],
+      "explorer": [
+        {
+          "id": "powerpages.powerPagesFileExplorer",
+          "name": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
+          "when": "isWeb && virtualWorkspace",
+          "icon": "./src/web/client/assets/powerPages.svg",
+          "contextualTitle": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
+          "visibility": "visible"
         }
       ]
     },
     "walkthroughs": [
       {
-        "id": "PowerPage-gettingStarted",
+        "id": "PowerPage-gettingStarted-multiFile",
         "title": "%microsoft-powerapps-portals.walkthrough.title%",
         "description": "%microsoft-powerapps-portals.walkthrough.description%",
         "when": "isWeb && virtualWorkspace",
@@ -811,6 +938,18 @@
             ]
           },
           {
+            "id": "saveConflict",
+            "title": "%microsoft-powerapps-portals.walkthrough.saveConflict.title%",
+            "description": "%microsoft-powerapps-portals.walkthrough.saveConflict.description%",
+            "media": {
+              "svg": "./src/web/client/assets/saveConflict.svg",
+              "altText": "%microsoft-powerapps-portals.walkthrough.saveConflict.title%"
+            },
+            "completionEvents": [
+              "onCommand:powerplatform-walkthrough.saveConflict-start-coding"
+            ]
+          },
+          {
             "id": "advancedCapabilities",
             "title": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.title%",
             "description": "%microsoft-powerapps-portals.walkthrough.advancedCapabilities.description%",
@@ -830,6 +969,7 @@
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@types/chai": "^4.2.14",
     "@types/command-exists": "^1.2.0",
+    "@types/debug": "^4.1.9",
     "@types/fs-extra": "^9.0.11",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.3",
@@ -841,13 +981,14 @@
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
     "@types/vscode": "^1.73.0",
+    "@types/vscode-webview": "^1.57.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.17.0",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
     "@vscode/l10n-dev": "^0.0.24",
-    "@vscode/test-electron": "^2.3.0",
-    "@vscode/test-web": "^0.0.24",
+    "@vscode/test-electron": "^2.3.3",
+    "@vscode/test-web": "^0.0.44",
     "@vscode/vsce": "^2.19.0",
     "assert": "^2.0.0",
     "chai": "^4.3.6",
@@ -856,6 +997,7 @@
     "eslint-plugin-header": "^3.1.1",
     "fancy-log": "^1.3.3",
     "fs-extra": "^9.0.1",
+    "get-func-name": "^2.0.2",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
     "gulp-filter": "^7.0.0",
@@ -867,12 +1009,14 @@
     "jwt-decode": "2.2.0",
     "mocha": "^9.2.2",
     "moment": "^2.29.4",
+    "nanoid": "^3.1.31",
     "node-fetch": "^2.6.7",
     "nyc": "^15.1.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "ps-list": "^7.2.0",
+    "release-it": "^16.2.1",
     "sinon": "^14.0.0",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.2.8",
@@ -884,22 +1028,30 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@fluidframework/azure-client": "^1.1.1",
     "@microsoft/generator-powerpages": "1.21.19",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
+    "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
+    "fluid-framework": "^1.3.7",
     "glob": "^7.1.7",
+    "gpt-tokenizer": "^2.1.1",
+    "https-browserify": "^1.0.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
     "recursive-readdir": "^2.2.3",
+    "stream-http": "^3.2.0",
+    "tty-browserify": "^0.0.1",
     "unzip-stream": "^0.3.1",
     "uuid": "^8.3.2",
     "vscode-languageclient": "^7.0.0",
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
+    "worker-loader": "^3.0.8",
     "yaml": "^2.2.2"
   },
   "__metadata": {

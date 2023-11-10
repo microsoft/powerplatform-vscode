@@ -3,18 +3,18 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { IAttributePath } from "../common/interfaces";
+import { IAttributePath, IFileInfo } from "../common/interfaces";
 
-export interface IFileData {
-    entityName: string;
-    fileName: string;
-    entityId: string;
+export interface IFileData extends IFileInfo {
     entityEtag: string;
     entityFileExtensionType: string;
     attributePath: IAttributePath;
     hasDirtyChanges: boolean;
+    hasDiffViewTriggered: boolean;
     encodeAsBase64: boolean | undefined;
     mimeType: string | undefined;
+    isContentLoaded?: boolean;
+    logicalEntityName?: string;
 }
 
 export class FileData implements IFileData {
@@ -25,8 +25,11 @@ export class FileData implements IFileData {
     private _entityFileExtensionType: string;
     private _attributePath: IAttributePath;
     private _hasDirtyChanges!: boolean;
+    private _hasDiffViewTriggered!: boolean;
     private _encodeAsBase64: boolean | undefined;
     private _mimeType: string | undefined;
+    private _isContentLoaded: boolean | undefined;
+    private _logicalEntityName: string | undefined;
 
     // Getters
     public get entityName(): string {
@@ -56,6 +59,16 @@ export class FileData implements IFileData {
     public get hasDirtyChanges(): boolean {
         return this._hasDirtyChanges;
     }
+    public get hasDiffViewTriggered(): boolean {
+        return this._hasDiffViewTriggered;
+    }
+    public get isContentLoaded(): boolean | undefined {
+        return this._isContentLoaded;
+    }
+
+    public get logicalEntityName(): string | undefined {
+        return this._logicalEntityName;
+    }
 
     // Setters
     public set setHasDirtyChanges(value: boolean) {
@@ -63,6 +76,13 @@ export class FileData implements IFileData {
     }
     public set setEntityEtag(value: string) {
         this._entityEtag = value;
+    }
+    public set setHasDiffViewTriggered(value: boolean) {
+        this._hasDiffViewTriggered = value;
+    }
+
+    public set setLogicalEntityName(value: string | undefined) {
+        this._logicalEntityName = value;
     }
 
     constructor(
@@ -73,7 +93,9 @@ export class FileData implements IFileData {
         entityFileExtensionType: string,
         attributePath: IAttributePath,
         encodeAsBase64?: boolean,
-        mimeType?: string
+        mimeType?: string,
+        isContentLoaded?: boolean,
+        logicalEntityName?: string
     ) {
         this._entityId = entityId;
         this._entityName = entityName;
@@ -84,5 +106,8 @@ export class FileData implements IFileData {
         this._encodeAsBase64 = encodeAsBase64;
         this._mimeType = mimeType;
         this._hasDirtyChanges = false;
+        this._hasDiffViewTriggered = false;
+        this._isContentLoaded = isContentLoaded;
+        this._logicalEntityName = logicalEntityName;
     }
 }

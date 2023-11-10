@@ -1,0 +1,94 @@
+body {
+    font-size: 13px;
+    font-weight: var(--vscode-font-weight);
+    font-family: var(--vscode-font-family);
+    margin: 0;
+    padding: 0;
+    background-color: var(--vscode-editor-background);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    /* flex-direction: column; */
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    margin-top: 2rem;
+}
+
+.container-text {
+    flex: 1;
+    margin-right: 20px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 450px) {
+    .container {
+      flex-direction: column; /* Stack elements on top of each other */
+      align-items: center;
+      margin-top: 3rem;
+    }
+
+    .container-text {
+      margin: 0rem 3rem;
+    }
+
+  }
+
+#welcome-text {
+    margin-top: 12px;
+    margin-bottom: 32px;
+    word-wrap: break-word;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.text {
+    margin-top: 20px;
+}
+
+button {
+    background-color: var(--vscode-button-background);;
+    color: var(--vscode-button-foreground);
+    padding: 8px 11px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+.walkthrough-content {
+    padding: 6px 0px 6px 0px;
+    margin-bottom: 0px;
+    text-decoration: none;
+    display: block;
+    align-items: center;
+
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 3rem;
+}
+
+#arrow-icon {
+    margin-left: 6x;
+}
+
+input[type="checkbox"] {
+    margin-right: 12px;
+    background-color: var(--vscode-checkbox-background);
+    border-radius: 3px;
+    border: var(--vscode-checkbox-border);
+    cursor: pointer;
+}

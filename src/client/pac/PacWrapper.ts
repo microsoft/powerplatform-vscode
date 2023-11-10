@@ -10,7 +10,7 @@ import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacActiveOrgListOutput } from "./PacTypes";
 import { v4 } from "uuid";
 
 export interface IPacWrapperContext {
@@ -18,6 +18,7 @@ export interface IPacWrapperContext {
     readonly telemetry: ITelemetry;
     readonly automationAgent: string;
     IsTelemetryEnabled(): boolean;
+    GetCloudSetting(): string;
 }
 
 export interface IPacInterop {
@@ -118,7 +119,12 @@ export class PacWrapper {
 
     public async authCreateNewAuthProfile(): Promise<PacAuthListOutput> {
         return this.executeCommandAndParseResults<PacAuthListOutput>(
-            new PacArguments("auth", "create"));
+            new PacArguments("auth", "create", "--cloud", this.context.GetCloudSetting()));
+    }
+
+    public async authCreateNewAuthProfileForOrg(orgUrl: string): Promise<PacAuthListOutput> {
+        return this.executeCommandAndParseResults<PacAuthListOutput>(
+            new PacArguments("auth", "create", "--url", orgUrl));
     }
 
     public async authSelectByIndex(index: number): Promise<PacOutput>{
@@ -147,8 +153,20 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacSolutionListOutput>(new PacArguments("solution", "list", "--environment", environmentUrl));
     }
 
+    public async orgSelect(orgUrl: string): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("org", "select", "--environment", orgUrl));
+    }
+
     public async orgList(): Promise<PacOrgListOutput> {
         return this.executeCommandAndParseResults<PacOrgListOutput>(new PacArguments("org", "list"));
+    }
+
+    public async activeOrg(): Promise <PacActiveOrgListOutput> {
+        return this.executeCommandAndParseResults<PacActiveOrgListOutput>(new PacArguments("org", "who"));
+    }
+
+    public async pcfInit(outputDirectory : string): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pcf", "init", "--outputDirectory", outputDirectory));
     }
 
     public async enableTelemetry(): Promise<PacOutput> {

@@ -185,7 +185,7 @@ class AuthProfileTreeItem extends vscode.TreeItem {
     }
 }
 
-function GetAuthProfileWatchPattern(): vscode.RelativePattern | undefined {
+export function GetAuthProfileWatchPattern(): vscode.RelativePattern | undefined {
     if (os.platform() === 'win32') {
         return process.env.LOCALAPPDATA
             ? new vscode.RelativePattern(path.join(process.env.LOCALAPPDATA, "Microsoft", "PowerAppsCli"), "authprofiles*.json")

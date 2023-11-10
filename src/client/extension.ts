@@ -21,7 +21,7 @@ import {
     TransportKind,
     WorkspaceFolder,
 } from "vscode-languageclient/node";
-import { workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
+import { getPortalsOrgURLs, workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
 import {
     activateDebugger,
     deactivateDebugger,
@@ -32,6 +32,9 @@ import { readUserSettings } from "./telemetry/localfileusersettings";
 import { initializeGenerator } from "./power-pages/create/CreateCommandWrapper";
 import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
+import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
+import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
+import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -99,12 +102,12 @@ export async function activate(
 
     // registering bootstrapdiff command
     _context.subscriptions.push(
-        vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async() => {
-                _telemetry.sendTelemetryEvent("StartCommand", {
-                    commandId: "microsoft-powerapps-portals.bootstrap-diff",
-                });
-                bootstrapDiff();
-            }
+        vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async () => {
+            _telemetry.sendTelemetryEvent("StartCommand", {
+                commandId: "microsoft-powerapps-portals.bootstrap-diff",
+            });
+            bootstrapDiff();
+        }
         )
     );
 
@@ -160,15 +163,36 @@ export async function activate(
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
+
+    // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-        initializeGenerator(_context, cliContext, _telemetry);
+        let telemetryData = '';
+        let listOfActivePortals = [];
+        try {
+            listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
+            telemetryData = JSON.stringify(listOfActivePortals);
+            _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
+        } catch (exception) {
+            _telemetry.sendTelemetryException(exception as Error, { eventName: 'VscodeDesktopUsage' });
+        }
+        _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
+        initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
+        showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
     }
+    else {
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
+    }
+
+    const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
+    _context.subscriptions.push(workspaceFolderWatcher);
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
     }
 
     _telemetry.sendTelemetryEvent("activated");
+
 }
 
 export async function deactivate(): Promise<void> {
@@ -186,6 +210,7 @@ export async function deactivate(): Promise<void> {
 
     disposeDiagnostics();
     deactivateDebugger();
+    disposeNotificationPanel();
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {
@@ -300,6 +325,7 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
     });
 }
 
+
 function isCurrentDocumentEdited(): boolean {
     const workspaceFolderExists =
         vscode.workspace.workspaceFolders !== undefined;
@@ -313,6 +339,33 @@ function isCurrentDocumentEdited(): boolean {
         PortalWebView.currentDocument ===
         vscode?.window?.activeTextEditor?.document?.fileName
     );
+}
+
+function handleWorkspaceFolderChange() {
+    const workspaceFolders =
+        vscode.workspace.workspaceFolders?.map(
+            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+        ) || [];
+    if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
+    }
+    else {
+        vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
+    }
+}
+
+function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals: string) {
+    if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
+        return;
+    }
+
+    const isCopilotNotificationDisabled = _context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
+
+    if (!isCopilotNotificationDisabled) {
+        telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
+        copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
+    }
+
 }
 
 // allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime

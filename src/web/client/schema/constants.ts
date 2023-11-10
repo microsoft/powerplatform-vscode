@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+export const SCHEMA_WEBFILE_FOLDER_NAME = "web-files";
+
 export enum schemaKey {
     SINGLE_ENTITY_URL = "singleEntityURL",
     MULTI_ENTITY_URL = "multiEntityURL",
@@ -20,12 +22,15 @@ export enum schemaEntityKey {
     ATTRIBUTES_EXTENSION = "_attributesExtension",
     VSCODE_ENTITY_NAME = "_vscodeentityname",
     DATAVERSE_ENTITY_NAME = "_dataverseenityname",
+    DATAVERSE_LOGICAL_ENTITY_NAME = "_dataverselogicalentityname",
     FETCH_QUERY_PARAMETERS = "_fetchQueryParameters",
     MULTI_FILE_FETCH_QUERY_PARAMETERS = "_multiFileFetchQueryParameters",
     MAPPING_ENTITY_ID = "_mappingEntityId",
-    MAPPING_ATTRIBUTE_FETCH_QUERY = "_mappingAttributeFetchQuery",
+    MAPPING_ENTITY = "_mappingEntity",
+    MAPPING_ENTITY_FETCH_QUERY = "_mappingEntityFetchQuery",
     EXPORT_TYPE = "_exporttype",
     ATTRIBUTES = "_attributes",
+    ROOT_WEB_PAGE_ID = "_rootwebpageid",
 }
 
 export enum schemaEntityName {
@@ -33,6 +38,20 @@ export enum schemaEntityName {
     WEBPAGES = "webpages",
     WEBTEMPLATES = "webtemplates",
     CONTENTSNIPPETS = "contentsnippet",
+    LISTS = "lists",
+    BASICFORMS = "basicforms",
+    ADVANCEDFORMS = "advancedforms",
+    ADVANCEDFORMSTEPS = "advancedformsteps",
+}
+
+export enum MultiFileSupportedEntityName {
+    WEBFILES = "webfiles",
+    WEBPAGES = "webpages",
+    WEBTEMPLATES = "webtemplates",
+    CONTENTSNIPPETS = "contentsnippet",
+    LISTS = "lists",
+    BASICFORMS = "basicforms",
+    ADVANCEDFORMS = "advancedforms",
 }
 
 // This decides the folder hierarchy a file being displayed in File explorer will follow.
@@ -47,4 +66,8 @@ export enum folderExportType {
 export enum entityAttributesWithBase64Encoding {
     documentbody = "documentbody",
     filecontent = "filecontent",
+}
+
+export enum entityAttributeNeedMapping {
+    webformsteps = "content.webFormSteps"
 }

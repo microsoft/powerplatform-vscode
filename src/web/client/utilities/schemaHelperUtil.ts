@@ -8,9 +8,22 @@ import * as Constants from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import {
     entityAttributesWithBase64Encoding,
+    schemaEntityKey,
     schemaEntityName,
 } from "../schema/constants";
 import { IAttributePath } from "../common/interfaces";
+
+export function getEntityFetchQuery(entity: string, useRegularFetchQuery = false) {
+    return getEntity(entity)?.get(
+        WebExtensionContext.showMultifileInVSCode && !useRegularFetchQuery
+            ? schemaEntityKey.MULTI_FILE_FETCH_QUERY_PARAMETERS
+            : schemaEntityKey.FETCH_QUERY_PARAMETERS
+    );
+}
+
+export function getLogicalEntityParameter(entity: string) {
+    return getEntity(entity)?.get(schemaEntityKey.DATAVERSE_LOGICAL_ENTITY_NAME);
+}
 
 export function getPortalSchema(schema: string) {
     if (

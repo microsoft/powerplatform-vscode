@@ -75,6 +75,7 @@ export const createWebfile = async (
 
     } catch (error: any) {
         sendTelemetryEvent(telemetry, {
+            methodName: createWebfile.name,
             eventName: UserFileCreateEvent,
             fileEntityType: WEBFILE,
             exception: error as Error,
@@ -179,7 +180,7 @@ const addWebfiles = async (
             });
           });
           await Promise.all(promises);
-          sendTelemetryEvent(telemetry, { eventName: FileCreateEvent, fileEntityType: WEBFILE, numberOfFiles: webfileCount.toString(), durationInMills: (performance.now() - startTime) })
+          sendTelemetryEvent(telemetry, { methodName: addWebfiles.name, eventName: FileCreateEvent, fileEntityType: WEBFILE, numberOfFiles: webfileCount.toString(), durationInMills: (performance.now() - startTime) })
           vscode.window.showInformationMessage(
             vscode.l10n.t("Webfile(s) added successfully")
           );
@@ -188,6 +189,7 @@ const addWebfiles = async (
     } catch (error: any) {
         logErrorAndNotifyUser(error);
         sendTelemetryEvent(telemetry, {
+          methodName: addWebfiles.name,
           eventName: FileCreateEvent,
           fileEntityType: WEBFILE,
           exception: error as Error,
