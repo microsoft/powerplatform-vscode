@@ -100,4 +100,9 @@ export enum telemetryEventNames {
     WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION = 'webExtensionImageEditSupportedFileExtension',
     WEB_EXTENSION_SAVE_IMAGE_FILE_TRIGGERED = 'webExtensionSaveImageFileTriggered',
     WEB_EXTENSION_FAILED_TO_UPDATE_FOREIGN_KEY_DETAILS = 'webExtensionFailedToUpdateForeignKeyDetails',
+    WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED = "WebExtensionGraphClientAuthenticationFailed",
+    WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED = "WebExtensionGraphClientAuthenticationCompleted",
+    WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED = "WebExtensionGetFromGraphClientFailed",
+    WEB_EXTENSION_GET_EMAIL_FROM_GRAPH_CLIENT_FAILED = "WebExtensionGetEmailFromGraphClientFailed",
+    WEB_EXTENSION_GET_PROFILE_PICTURE_FROM_GRAPH_CLIENT_FAILED = "WebExtensionGetProfilePictureFromGraphClientFailed",
 }

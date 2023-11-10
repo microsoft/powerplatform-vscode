@@ -97,3 +97,12 @@ export enum portalSchemaVersion {
     V1 = "portalschemav1",
     V2 = "portalschemav2",
 }
+
+export const MICROSOFT_GRAPH_USERS_BASE_URL = "https://graph.microsoft.com/v1.0/users/";
+
+export enum GraphClientService {
+    MAIL = "mail",
+    PROFILE_PICTURE = "profilePicture",
+}
+
+export const MICROSOFT_GRAPH_PROFILE_PICTURE_SERVICE_CALL = "/photo/$value";

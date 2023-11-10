@@ -161,3 +161,62 @@ export async function npsAuthentication(
 
     return accessToken;
 }
+
+export async function graphClientAuthentication(
+    firstTimeAuth = false
+): Promise<string> {
+    let accessToken = "";
+    try {
+        let session = await vscode.authentication.getSession(
+            PROVIDER_ID,
+            [
+                `Contacts.Read`,
+                `User.ReadBasic.All`,
+            ],
+            { silent: true }
+        );
+
+        if (!session) {
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [
+                    `Contacts.Read`,
+                    `User.ReadBasic.All`,
+                ],
+                { createIfNone: true }
+            );
+        }
+
+        accessToken = session?.accessToken ?? "";
+        if (!accessToken) {
+            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+        }
+
+        if (firstTimeAuth) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
+                {
+                    userId:
+                        session?.account.id.split("/").pop() ??
+                        session?.account.id ??
+                        "",
+                }
+            );
+        }
+    } catch (error) {
+        const authError = (error as Error)?.message;
+        showErrorDialog(
+            vscode.l10n.t(
+                "Authorization Failed. Please run again to authorize it"
+            ),
+            vscode.l10n.t("There was a permissions problem with the server")
+        );
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
+            graphClientAuthentication.name,
+            authError
+        );
+    }
+
+    return accessToken;
+}
