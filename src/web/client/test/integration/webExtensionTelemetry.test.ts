@@ -482,7 +482,6 @@ describe("webExtensionTelemetry", () => {
         const measurements = {
             durationInMillis: duration,
         };
-        console.log("sendAPISuccessTelemetry_whenCall_shouldCallSendAPITelemetryWithoutErrorMessage", sanitizeURL(URL));
         //Action
         webExtensionTelemetry.sendAPISuccessTelemetry(
             URL,
