@@ -113,7 +113,6 @@ export class WebExtensionTelemetry {
             const error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, { ...telemetryData.properties, eventName: eventName }, telemetryData.measurements);
         } else {
-            console.log("Might be a test run: ", telemetryData);
             this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
         }
     }
