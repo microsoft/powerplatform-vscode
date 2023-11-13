@@ -7,7 +7,6 @@ import * as vscode from "vscode";
 import {
     dataverseAuthentication,
     getCommonHeaders,
-    graphClientAuthentication,
 } from "./common/authenticationProvider";
 import * as Constants from "./common/constants";
 import {
@@ -31,7 +30,6 @@ import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 import { isMultifileEnabled } from "./utilities/commonUtil";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
-import { requestGraphClient } from "./utilities/graphClientUtils";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -75,9 +73,6 @@ export interface IWebExtensionContext {
 
     // Error handling
     concurrencyHandler: ConcurrencyHandler;
-
-    // Graph client
-    graphToken: string;
 }
 
 class WebExtensionContext implements IWebExtensionContext {
@@ -109,7 +104,6 @@ class WebExtensionContext implements IWebExtensionContext {
     private _userId: string;
     private _formsProEligibilityId: string;
     private _concurrencyHandler: ConcurrencyHandler;
-    private _graphToken: string;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -195,10 +189,6 @@ class WebExtensionContext implements IWebExtensionContext {
     public get concurrencyHandler() {
         return this._concurrencyHandler;
     }
-    public get graphToken() {
-        return this._graphToken;
-    }
-
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
         this._schemaEntitiesMap = new Map<string, Map<string, string>>();
@@ -228,7 +218,6 @@ class WebExtensionContext implements IWebExtensionContext {
         this._userId = "";
         this._formsProEligibilityId = "";
         this._concurrencyHandler = new ConcurrencyHandler();
-        this._graphToken = "";
     }
 
     public setWebExtensionContext(
@@ -317,8 +306,6 @@ class WebExtensionContext implements IWebExtensionContext {
         );
 
         await this.setWebsiteLanguageCode();
-
-        await this.graphClientAuthentication(true);
     }
 
     public async dataverseAuthentication(firstTimeAuth = false) {
@@ -657,47 +644,6 @@ class WebExtensionContext implements IWebExtensionContext {
     public getVscodeWorkspaceState(key: string): IEntityInfo | undefined {
         return this._vscodeWorkspaceState.get(key);
     }
-
-    // Graph client
-    public async graphClientAuthentication(firstTimeAuth = false) {
-        const accessToken = await graphClientAuthentication(firstTimeAuth);
-        this.setGraphToken(accessToken);
-    }
-
-    public setGraphToken(graphToken: string) {
-        this._graphToken = graphToken;
-    }
-
-    private async getUserEmail(userId: string) {
-        try {
-            const response = await requestGraphClient(this.graphToken, Constants.GraphClientService.MAIL, userId);
-            return await response.mail;
-        }
-        catch (error) {
-            this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_GET_EMAIL_FROM_GRAPH_CLIENT_FAILED,
-                this.getUserEmail.name,
-                (error as Error)?.message,
-                error as Error
-            );
-        }
-    }
-
-    private async getUserProfilePicture(userId: string) {
-        try {
-            const response = await requestGraphClient(this.graphToken, Constants.GraphClientService.PROFILE_PICTURE, userId);
-            return await response;
-        }
-        catch (error) {
-            this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_GET_PROFILE_PICTURE_FROM_GRAPH_CLIENT_FAILED,
-                this.getUserProfilePicture.name,
-                (error as Error)?.message,
-                error as Error
-            );
-        }
-    }
-
 }
 
 export default new WebExtensionContext();

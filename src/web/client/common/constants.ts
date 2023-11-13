@@ -100,9 +100,9 @@ export enum portalSchemaVersion {
 
 export const MICROSOFT_GRAPH_USERS_BASE_URL = "https://graph.microsoft.com/v1.0/users/";
 
-export enum GraphClientService {
-    MAIL = "mail",
-    PROFILE_PICTURE = "profilePicture",
+export enum GraphService {
+    GRAPH_MAIL = "mail",
+    GRAPH_PROFILE_PICTURE = "profilePicture",
 }
 
 export const MICROSOFT_GRAPH_PROFILE_PICTURE_SERVICE_CALL = "/photo/$value";
