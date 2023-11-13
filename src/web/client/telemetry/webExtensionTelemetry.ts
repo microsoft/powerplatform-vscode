@@ -113,6 +113,7 @@ export class WebExtensionTelemetry {
             const error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, { ...telemetryData.properties, eventName: eventName }, telemetryData.measurements);
         } else {
+            console.log("Might be a test run: ", telemetryData);
             this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
         }
     }
@@ -124,7 +125,8 @@ export class WebExtensionTelemetry {
         duration: number,
         methodName: string,
         eventName?: string,
-        entityFileExtensionType?: string
+        entityFileExtensionType?: string,
+        status?: string
     ) {
         this.sendAPITelemetry(
             URL,
@@ -135,7 +137,8 @@ export class WebExtensionTelemetry {
             true,
             duration,
             undefined,
-            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
+            status);
     }
 
     public sendAPIFailureTelemetry(
