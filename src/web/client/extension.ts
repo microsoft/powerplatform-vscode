@@ -10,6 +10,7 @@ import {
     PUBLIC,
     queryParameters,
     IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
+    ARTEMIS_RESPONSE_FAILED,
 } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
 import {
@@ -484,7 +485,6 @@ async function logArtemisTelemetry() {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
             logArtemisTelemetry.name,
-            (error as Error)?.message,
-            error as Error);
+            ARTEMIS_RESPONSE_FAILED);
     }
 }
