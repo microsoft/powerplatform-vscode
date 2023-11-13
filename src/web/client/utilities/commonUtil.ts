@@ -262,5 +262,5 @@ export function updateFileContentInFileDataMap(fileFsPath: string, fileContent: 
 export function getImageFileContent(fileFsPath: string, fileContent: Uint8Array) {
     const webFileV2 = isWebFileV2(getFileEntityName(fileFsPath), getFileAttributePath(fileFsPath)?.source);
 
-    return webFileV2 ? fileContent : Buffer.from(fileContent).toString(BASE_64);
+    return webFileV2 ? fileContent : convertContentToString(fileContent, true);
 }
