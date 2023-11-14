@@ -189,6 +189,7 @@ class WebExtensionContext implements IWebExtensionContext {
     public get concurrencyHandler() {
         return this._concurrencyHandler;
     }
+    
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
         this._schemaEntitiesMap = new Map<string, Map<string, string>>();
