@@ -10,10 +10,8 @@ import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
 
 export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemetry, sessionID: string) {
-  const { tstUrl, preprodUrl, prodUrl } = convertGuidToUrls(orgId);
-  const endpoints = [tstUrl, preprodUrl, prodUrl];
 
-  const artemisResponse = await fetchIslandInfo(endpoints, telemetry, sessionID);
+  const artemisResponse = await fetchArtemisResponse(orgId, telemetry, sessionID);
 
   if (!artemisResponse) {
     return null;
@@ -31,6 +29,16 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
   return intelligenceEndpoint;
 
 }
+
+// Function to fetch Artemis response
+export async function fetchArtemisResponse(orgId: string, telemetry: ITelemetry, sessionID = '') {
+    const { tstUrl, preprodUrl, prodUrl } = convertGuidToUrls(orgId);
+    const endpoints = [tstUrl, preprodUrl, prodUrl];
+
+    const artemisResponse = await fetchIslandInfo(endpoints, telemetry, sessionID);
+
+    return artemisResponse;
+  }
 
 async function fetchIslandInfo(endpoints: string[], telemetry: ITelemetry, sessionID: string) {
 

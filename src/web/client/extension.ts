@@ -10,6 +10,7 @@ import {
     PUBLIC,
     queryParameters,
     IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
+    ARTEMIS_RESPONSE_FAILED,
 } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
 import {
@@ -33,6 +34,7 @@ import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
+import { fetchArtemisResponse } from "../../common/ArtemisService";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -144,6 +146,8 @@ export function activate(context: vscode.ExtensionContext): void {
                                         context.extensionUri
                                     );
                                 }
+
+                                await logArtemisTelemetry();
                             }
                             break;
                         default:
@@ -459,4 +463,28 @@ function isActiveDocument(fileFsPath: string): boolean {
         WebExtensionContext.isContextSet &&
         WebExtensionContext.fileDataMap.getFileMap.has(fileFsPath)
     );
+}
+
+async function logArtemisTelemetry() {
+
+    try {
+        const orgId = WebExtensionContext.urlParametersMap.get(
+            queryParameters.ORG_ID
+        ) as string
+
+                const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+
+        if (!artemisResponse) {
+            return;
+        }
+
+        const { geoName } = artemisResponse[0];
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
+            { orgId: orgId, geoName: String(geoName) });
+    } catch (error) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
+            logArtemisTelemetry.name,
+            ARTEMIS_RESPONSE_FAILED);
+    }
 }
