@@ -9,8 +9,10 @@ import { telemetryEventNames } from "../telemetry/constants";
 import {
     INTELLIGENCE_SCOPE_DEFAULT,
     PROVIDER_ID,
+    SCOPE_OPTION_CONTACTS_READ,
     SCOPE_OPTION_DEFAULT,
     SCOPE_OPTION_OFFLINE_ACCESS,
+    SCOPE_OPTION_USERS_READ_BASIC_ALL,
 } from "./constants";
 import { ERRORS, showErrorDialog } from "./errorHandler";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
@@ -170,8 +172,8 @@ export async function graphClientAuthentication(
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
             [
-                `Contacts.Read`,
-                `User.ReadBasic.All`,
+                SCOPE_OPTION_CONTACTS_READ,
+                SCOPE_OPTION_USERS_READ_BASIC_ALL,
             ],
             { silent: true }
         );
@@ -180,8 +182,8 @@ export async function graphClientAuthentication(
             session = await vscode.authentication.getSession(
                 PROVIDER_ID,
                 [
-                    `Contacts.Read`,
-                    `User.ReadBasic.All`,
+                    SCOPE_OPTION_CONTACTS_READ,
+                    SCOPE_OPTION_USERS_READ_BASIC_ALL,
                 ],
                 { createIfNone: true }
             );

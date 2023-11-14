@@ -98,6 +98,10 @@ export enum portalSchemaVersion {
     V2 = "portalschemav2",
 }
 
+// Microsoft Graph Client constants
+export const SCOPE_OPTION_CONTACTS_READ = "Contacts.Read";
+export const SCOPE_OPTION_USERS_READ_BASIC_ALL = "User.ReadBasic.All";
+
 export const MICROSOFT_GRAPH_USERS_BASE_URL = "https://graph.microsoft.com/v1.0/users/";
 
 export enum GraphService {
