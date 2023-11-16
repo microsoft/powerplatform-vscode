@@ -101,7 +101,7 @@ export class GraphClientService {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     telemetryEventNames.WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED,
                     this.requestGraphClient.name,
-                    (error as Error)?.message,
+                    Constants.WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED,
                     error as Error
                 );
             }
