@@ -707,7 +707,7 @@ class WebExtensionContext implements IWebExtensionContext {
             this.telemetry.sendErrorTelemetry(
                 telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
                 this.getWorkerScript.name,
-                (error as Error)?.message,
+                Constants.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
                 error as Error
             );
         }
@@ -748,7 +748,7 @@ class WebExtensionContext implements IWebExtensionContext {
             this.telemetry.sendErrorTelemetry(
                 telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
                 this.populateSharedworkspace.name,
-                (error as Error)?.message,
+                Constants.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
                 error as Error
             );
         }

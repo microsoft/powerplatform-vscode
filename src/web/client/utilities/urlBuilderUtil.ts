@@ -310,7 +310,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 telemetryEventNames.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
                 getOrCreateSharedWorkspace.name,
-                (error as Error)?.message,
+                Constants.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
                 error as Error
             );
         }

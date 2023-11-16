@@ -355,7 +355,7 @@ export function createWebWorkerInstance(
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED,
             createWebWorkerInstance.name,
-            (error as Error)?.message,
+            Constants.WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED,
             error as Error);
     }
 }
