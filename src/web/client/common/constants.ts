@@ -28,6 +28,7 @@ export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 1000;
 export const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default";
 export const BACK_TO_STUDIO_URL_TEMPLATE = "https://make{.region}.powerpages.microsoft.com/e/{environmentId}/sites/{webSiteId}/pages";
 export const STUDIO_PROD_REGION = "prod";
+export const ARTEMIS_RESPONSE_FAILED = "Artemis response failed"
 
 // Web extension constants
 export const BASE_64 = 'base64';
