@@ -265,6 +265,8 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                                     entityInfo
                                 });
                             }
+
+                            WebExtensionContext.quickPickProvider.updateQuickPickItems(entityInfo);
                         }
                     }
                 }
@@ -300,6 +302,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
     // feature in progress, hence disabling it
     if (isCoPresenceEnabled()) {
+        vscode.commands.registerCommand('powerPlatform.previewCurrentActiveUsers', () => WebExtensionContext.quickPickProvider.showQuickPick());
         createWebWorkerInstance(context);
     }
 }

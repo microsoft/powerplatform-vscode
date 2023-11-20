@@ -31,6 +31,7 @@ import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 import { isMultifileEnabled } from "./utilities/commonUtil";
 import { UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
+import { QuickPickProvider } from "./webViews/QuickPickProvider";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -110,6 +111,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _sharedWorkSpaceMap: Map<string, string>;
     private _containerId: string;
     private _connectedUsers: UserDataMap;
+    private _quickPickProvider: QuickPickProvider;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -210,6 +212,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public set containerId(containerId: string) {
         this._containerId = containerId;
     }
+    public get quickPickProvider() {
+        return this._quickPickProvider;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -243,6 +248,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._sharedWorkSpaceMap = new Map<string, string>();
         this._containerId = "";
         this._connectedUsers = new UserDataMap();
+        this._quickPickProvider = new QuickPickProvider();
     }
 
     public setWebExtensionContext(
