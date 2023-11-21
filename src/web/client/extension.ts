@@ -265,7 +265,6 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                                     entityInfo
                                 });
                             }
-
                             WebExtensionContext.quickPickProvider.updateQuickPickItems(entityInfo);
                         }
                     }

@@ -105,7 +105,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _npsEligibility: boolean;
     private _userId: string;
     private _formsProEligibilityId: string;
-    private _concurrencyHandler: ConcurrencyHandler
+    private _concurrencyHandler: ConcurrencyHandler;
     // Co-Presence for Power Pages Vscode for web
     private _worker: Worker | undefined;
     private _sharedWorkSpaceMap: Map<string, string>;
@@ -215,7 +215,7 @@ class WebExtensionContext implements IWebExtensionContext {
     public get quickPickProvider() {
         return this._quickPickProvider;
     }
-
+  
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
         this._schemaEntitiesMap = new Map<string, Map<string, string>>();
