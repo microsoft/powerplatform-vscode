@@ -21,7 +21,7 @@ import {
     getWebsiteIdToLcidMap,
     getWebsiteLanguageIdToPortalLanguageIdMap,
 } from "./utilities/schemaHelperUtil";
-import { getCustomRequestURL } from "./utilities/urlBuilderUtil";
+import { getCustomRequestURL, getOrCreateSharedWorkspace } from "./utilities/urlBuilderUtil";
 import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
@@ -29,6 +29,7 @@ import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 import { isMultifileEnabled } from "./utilities/commonUtil";
+import { UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 
 export interface IWebExtensionContext {
@@ -104,6 +105,11 @@ class WebExtensionContext implements IWebExtensionContext {
     private _userId: string;
     private _formsProEligibilityId: string;
     private _concurrencyHandler: ConcurrencyHandler
+    // Co-Presence for Power Pages Vscode for web
+    private _worker: Worker | undefined;
+    private _sharedWorkSpaceMap: Map<string, string>;
+    private _containerId: string;
+    private _connectedUsers: UserDataMap;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -189,6 +195,21 @@ class WebExtensionContext implements IWebExtensionContext {
     public get concurrencyHandler() {
         return this._concurrencyHandler;
     }
+    public get worker() {
+        return this._worker;
+    }
+    public get sharedWorkSpaceMap() {
+        return this._sharedWorkSpaceMap;
+    }
+    public get connectedUsers() {
+        return this._connectedUsers;
+    }
+    public get containerId() {
+        return this._containerId;
+    }
+    public set containerId(containerId: string) {
+        this._containerId = containerId;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -219,6 +240,9 @@ class WebExtensionContext implements IWebExtensionContext {
         this._userId = "";
         this._formsProEligibilityId = "";
         this._concurrencyHandler = new ConcurrencyHandler();
+        this._sharedWorkSpaceMap = new Map<string, string>();
+        this._containerId = "";
+        this._connectedUsers = new UserDataMap();
     }
 
     public setWebExtensionContext(
@@ -307,6 +331,16 @@ class WebExtensionContext implements IWebExtensionContext {
         );
 
         await this.setWebsiteLanguageCode();
+
+        // Getting website Id to populate shared workspace for Co-Presence
+        const websiteid = this.urlParametersMap.get(
+            Constants.queryParameters.WEBSITE_ID
+        ) as string;
+
+        const headers = getCommonHeaders(this._dataverseAccessToken);
+
+        // Populate shared workspace for Co-Presence
+        await this.populateSharedworkspace(headers, dataverseOrgUrl, websiteid);
     }
 
     public async dataverseAuthentication(firstTimeAuth = false) {
@@ -644,6 +678,98 @@ class WebExtensionContext implements IWebExtensionContext {
 
     public getVscodeWorkspaceState(key: string): IEntityInfo | undefined {
         return this._vscodeWorkspaceState.get(key);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public async getWorkerScript(workerUrl : URL) : Promise<any> {
+        try {
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT
+            );
+
+            const response = await this.concurrencyHandler.handleRequest(
+                workerUrl
+            )
+
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to fetch worker script '${workerUrl.toString()}': ${response.statusText}`
+                );
+            }
+
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_SUCCESS,
+                { workerUrl: workerUrl.toString() }
+            );
+
+            return await response.text();
+        } catch (error) {
+            this.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
+                this.getWorkerScript.name,
+                Constants.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
+                error as Error
+            );
+        }
+    }
+
+    public setWorker(worker: Worker) {
+        this._worker = worker;
+    }
+
+    private async populateSharedworkspace(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        headers: any,
+        dataverseOrgUrl: string,
+        websiteid: string
+    ) {
+        try {
+            const sharedworkspace = await getOrCreateSharedWorkspace({
+                headers,
+                dataverseOrgUrl,
+                websiteid,
+            });
+
+            const sharedWorkSpaceParamsMap = new Map<string, string>();
+            for (const key in sharedworkspace) {
+                sharedWorkSpaceParamsMap.set(
+                    String(key).trim().toLocaleLowerCase(),
+                    String(sharedworkspace[key]).trim()
+                );
+            }
+
+            this._sharedWorkSpaceMap = sharedWorkSpaceParamsMap;
+
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SUCCESS,
+                { count: this._sharedWorkSpaceMap.size.toString() }
+            );
+        } catch (error) {
+            this.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
+                this.populateSharedworkspace.name,
+                Constants.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
+                error as Error
+            );
+        }
+    }
+
+    public async updateConnectedUsersInContext(
+        containerId: string,
+        userName: string,
+        userId: string,
+        entityId: string[]
+    ) {
+        this.connectedUsers.setUserData(
+            containerId,
+            userName,
+            userId,
+            entityId
+        );
+    }
+
+    public async removeConnectedUserInContext(userId: string) {
+        this.connectedUsers.removeUser(userId);
     }
 }
 

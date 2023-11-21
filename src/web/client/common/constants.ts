@@ -29,6 +29,10 @@ export const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.defaul
 export const BACK_TO_STUDIO_URL_TEMPLATE = "https://make{.region}.powerpages.microsoft.com/e/{environmentId}/sites/{webSiteId}/pages";
 export const STUDIO_PROD_REGION = "prod";
 export const ARTEMIS_RESPONSE_FAILED = "Artemis response failed"
+export const WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED = "Web extension fetch worker script failed"
+export const WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR = "Web extension populate shared workspace system error"
+export const WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED = "Web extension web worker registration failed"
+export const WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR = "Web extension fetch get or create shared workspace error"
 
 // Web extension constants
 export const BASE_64 = 'base64';
@@ -53,6 +57,21 @@ export const MULTI_FILE_FEATURE_SETTING_NAME = "enableMultiFileFeature";
 
 // Co-presence feature constants
 export const CO_PRESENCE_FEATURE_SETTING_NAME = "enableCoPresenceFeature";
+
+// Co-presence constants
+export const GET_OR_CREATE_SHARED_WORK_SPACE = "/api/data/v9.2/GetOrCreateSharedWorkspace";
+
+export enum sharedWorkspaceParameters {
+    SHAREWORKSPACE_ID = "sharedworkspaceid",
+    TENANT_ID = "tenantid",
+    ACCESS_TOKEN = "accesstoken",
+    DISCOVERY_ENDPOINT = "discoveryendpoint",
+}
+
+export enum workerEventMessages {
+    UPDATE_CONNECTED_USERS = "client-data",
+    REMOVE_CONNECTED_USER = "member-removed",
+}
 
 export enum initializationEntityName {
     WEBSITE = "websites",
