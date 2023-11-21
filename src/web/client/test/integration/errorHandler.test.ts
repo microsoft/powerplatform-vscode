@@ -358,8 +358,10 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            'triggeredMethod',
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING
+            telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING,
+            checkMandatoryPathParameters.name,
+            `entity:, entityId:512e50bd-a9d1-44c0-ba3f-5dc7f46e7216`,
+
         );
     });
 
@@ -386,8 +388,9 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            'triggeredMethod',
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING
+            telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING,
+            checkMandatoryPathParameters.name,
+            `entity:entity, entityId:`
         );
     });
 
@@ -425,7 +428,7 @@ describe("errorHandler", () => {
         expect(result).true;
     });
 
-    it("checkMandatoryQueryParameters_whenORGURLIsBlank_shouldReturnFalse", () => {
+    it("checkMandatoryQueryParameters_whenOrgUrlIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -459,12 +462,13 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            'triggeredMethod',
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
+            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+            checkMandatoryQueryParameters.name,
+            `orgURL:, dataSource:SQL, schemaName:1.0.0.0 ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
         );
     });
 
-    it("checkMandatoryQueryParameters_whenDATASOURCEIsBlank_shouldReturnFalse", () => {
+    it("checkMandatoryQueryParameters_whenDataSourceIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -497,12 +501,13 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            'triggeredMethod',
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
+            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+            checkMandatoryQueryParameters.name,
+            `orgURL:ORG_URL, dataSource:, schemaName:1.0.0.0 ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
         );
     });
 
-    it("checkMandatoryQueryParameters_whenSCHEMAVERSIONIsBlank_shouldReturnFalse", () => {
+    it("checkMandatoryQueryParameters_whenSchemaVersionIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -535,12 +540,13 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            'triggeredMethod',
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
+            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+            checkMandatoryQueryParameters.name,
+            `orgURL:ORG_URL, dataSource:SQL, schemaName: ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
         );
     });
 
-    it("checkMandatoryQueryParameters_whenWEBSITEIDIsBlank_shouldReturnFalse", () => {
+    it("checkMandatoryQueryParameters_whenWebsiteIdIsBlank_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = spy(vscode.window, "showErrorMessage");
         const _mockSendErrorTelemetry = spy(
@@ -570,8 +576,9 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            'triggeredMethod',
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING
+            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+            checkMandatoryQueryParameters.name,
+            `orgURL:ORG_URL, dataSource:SQL, schemaName:1.0.0.0 ,websiteId:`
         );
     });
 
