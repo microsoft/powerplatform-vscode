@@ -9,8 +9,10 @@ import { telemetryEventNames } from "../telemetry/constants";
 import {
     INTELLIGENCE_SCOPE_DEFAULT,
     PROVIDER_ID,
+    SCOPE_OPTION_CONTACTS_READ,
     SCOPE_OPTION_DEFAULT,
     SCOPE_OPTION_OFFLINE_ACCESS,
+    SCOPE_OPTION_USERS_READ_BASIC_ALL,
 } from "./constants";
 import { ERRORS, showErrorDialog } from "./errorHandler";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
@@ -155,6 +157,65 @@ export async function npsAuthentication(
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.NPS_AUTHENTICATION_FAILED,
             npsAuthentication.name,
+            authError
+        );
+    }
+
+    return accessToken;
+}
+
+export async function graphClientAuthentication(
+    firstTimeAuth = false
+): Promise<string> {
+    let accessToken = "";
+    try {
+        let session = await vscode.authentication.getSession(
+            PROVIDER_ID,
+            [
+                SCOPE_OPTION_CONTACTS_READ,
+                SCOPE_OPTION_USERS_READ_BASIC_ALL,
+            ],
+            { silent: true }
+        );
+
+        if (!session) {
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [
+                    SCOPE_OPTION_CONTACTS_READ,
+                    SCOPE_OPTION_USERS_READ_BASIC_ALL,
+                ],
+                { createIfNone: true }
+            );
+        }
+
+        accessToken = session?.accessToken ?? "";
+        if (!accessToken) {
+            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+        }
+
+        if (firstTimeAuth) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
+                {
+                    userId:
+                        session?.account.id.split("/").pop() ??
+                        session?.account.id ??
+                        "",
+                }
+            );
+        }
+    } catch (error) {
+        const authError = (error as Error)?.message;
+        showErrorDialog(
+            vscode.l10n.t(
+                "Authorization Failed. Please run again to authorize it"
+            ),
+            vscode.l10n.t("There was a permissions problem with the server")
+        );
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
+            graphClientAuthentication.name,
             authError
         );
     }
