@@ -151,7 +151,9 @@ export function isCoPresenceEnabled() {
         );
     }
 
-    return isCoPresenceEnabled as boolean;
+    // return isCoPresenceEnabled as boolean;
+    // this feature is under development and will be enabled in future
+    return false;
 }
 
 /**
@@ -172,7 +174,7 @@ export function getSanitizedFileName(fileName: string): string {
 
 // Get the file's extension
 export function getFileExtension(fileName: string): string | undefined {
-    return fileName.split('.').pop();
+    return fileName.toString().split('.').pop();
 }
 
 export function getFileExtensionForPreload() {
