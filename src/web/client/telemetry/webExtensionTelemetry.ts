@@ -124,7 +124,8 @@ export class WebExtensionTelemetry {
         duration: number,
         methodName: string,
         eventName?: string,
-        entityFileExtensionType?: string
+        entityFileExtensionType?: string,
+        status?: string
     ) {
         this.sendAPITelemetry(
             URL,
@@ -135,7 +136,8 @@ export class WebExtensionTelemetry {
             true,
             duration,
             undefined,
-            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
+            status);
     }
 
     public sendAPIFailureTelemetry(
