@@ -12,7 +12,7 @@ export abstract class ECSFeaturesClient {
     private static _ecsConfig: Record<string, string | boolean>;
     private static _featuresConfig = {};
 
-    // Initialize ECSFeatureCLient and reference this for accessing any client config like below
+    // Initialize ECSFeatureClient and reference this for accessing any client config like below
     // ECSFeaturesClient.getConfig(EnableMultifileVscodeWeb).enableMultifileVscodeWeb
     public static async init(telemetry: ITelemetry | TelemetryReporter, envId?: string, userId?: string, tenantId?: string, region?: string) {
         if (!this._ecsConfig) {
