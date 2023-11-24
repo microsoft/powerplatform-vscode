@@ -7,6 +7,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { getECSRequestURL } from "./ecsFeatureUtil";
 import { Feature } from "./feature";
+import { StandardFeatureFilters } from "./standardFeatureFilters";
 
 export abstract class ECSFeaturesClient {
     private static _ecsConfig: Record<string, string | boolean>;
@@ -14,9 +15,9 @@ export abstract class ECSFeaturesClient {
 
     // Initialize ECSFeatureClient and reference this for accessing any client config like below
     // ECSFeaturesClient.getConfig(EnableMultifileVscodeWeb).enableMultifileVscodeWeb
-    public static async init(telemetry: ITelemetry | TelemetryReporter, envId?: string, userId?: string, tenantId?: string, region?: string) {
+    public static async init(telemetry: ITelemetry | TelemetryReporter, filters: StandardFeatureFilters, clientName?: string) {
         if (!this._ecsConfig) {
-            const requestURL = getECSRequestURL(envId, userId, tenantId, region);
+            const requestURL = getECSRequestURL(filters, clientName);
             try {
                 const response = await fetch(requestURL, {
                     method: 'GET'

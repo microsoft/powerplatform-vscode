@@ -3,13 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ECS_REQUEST_URL_TEMPLATE } from "./constants";
+import { ClientName, ECS_REQUEST_URL_TEMPLATE } from "./constants";
+import { StandardFeatureFilters } from "./standardFeatureFilters";
 
-export function getECSRequestURL(envId?: string, userId?: string, tenantId?: string, region?: string) {
+export function getECSRequestURL(filters: StandardFeatureFilters, clientName = ClientName): string {
     return ECS_REQUEST_URL_TEMPLATE
-        .replace("{EnvironmentId}", envId ?? "")
-        .replace("{UserId}", userId ?? "")
-        .replace("{TenantId}", tenantId ?? "")
-        .replace("{Region}", region ?? "");
+        .replace("{EnvironmentId}", filters.EnvID)
+        .replace("{UserId}", filters.UserID)
+        .replace("{TenantId}", filters.TenantID)
+        .replace("{Region}", filters.Region)
+        .replace("{clientName}", clientName);
 }
-
