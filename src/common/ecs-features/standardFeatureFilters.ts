@@ -4,6 +4,12 @@
  */
 
 export interface StandardFeatureFilters {
+    /**
+     * The name of the application
+     * @example make-powerapps-com
+     */
+    AppName: string;
+
     /** The AAD user object ID or MSA. */
     UserID: string;
 
@@ -51,10 +57,4 @@ export interface StandardFeatureFilters {
      * @example 0.0.20220205.11-master-ci
      */
     BuildNumber?: string;
-
-    /**
-     * The name of the application
-     * @example make-powerapps-com
-     */
-    AppName?: string;
 }

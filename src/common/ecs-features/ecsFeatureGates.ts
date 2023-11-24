@@ -3,13 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ClientName } from './constants';
+import { PowerPagesClientName } from './constants';
 import { powerPagesFeatureClient } from './powerPagesFeatureClient';
 
 export const {
     feature: EnableMultifileVscodeWeb
 } = powerPagesFeatureClient({
-    teamName: ClientName,
+    teamName: PowerPagesClientName,
     owners: ['nityagi'],
     description: 'Enable multiple file view in Visual Studio Code Web',
     createdOn: '06/23/2023',
