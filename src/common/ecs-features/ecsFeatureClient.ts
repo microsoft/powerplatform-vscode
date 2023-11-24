@@ -26,8 +26,8 @@ export abstract class ECSFeaturesClient {
                     throw new Error('Request failed');
                 }
                 const result = await response.json();
-                // Update telemetry
-                telemetry.sendTelemetryEvent('ECSConfig', {});
+                // Update telemetry in other PR
+                // telemetry.sendTelemetryEvent('ECSConfig', {});
                 // Initialize ECS config
                 return result;
             } catch (error) {
