@@ -342,6 +342,11 @@
         "command": "powerpages.copilot.explain",
         "category": "Copilot In Power Pages",
         "title": "Explain"
+      },
+      {
+        "command": "powerPlatform.previewCurrentActiveUsers",
+        "title": "Current Active Users",
+        "icon": "$(person)"
       }
     ],
     "configuration": {
@@ -622,6 +627,11 @@
           "when": "resourceLangId == html && !virtualWorkspace",
           "command": "microsoft-powerapps-portals.preview-show",
           "alt": "microsoft-powerapps-portals.preview-show",
+          "group": "navigation"
+        },
+        {
+          "command": "powerPlatform.previewCurrentActiveUsers",
+          "alt": "current active users",
           "group": "navigation"
         }
       ],
