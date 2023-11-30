@@ -318,40 +318,40 @@ export function createWebWorkerInstance(
         const workerUrl = new URL(webworkerMain.toString());
 
         WebExtensionContext.getWorkerScript(workerUrl)
-        .then((workerScript) => {
-            const workerBlob = new Blob([workerScript], {
-                type: "application/javascript",
-            });
+            .then((workerScript) => {
+                const workerBlob = new Blob([workerScript], {
+                    type: "application/javascript",
+                });
 
-            const urlObj = URL.createObjectURL(workerBlob);
+                const urlObj = URL.createObjectURL(workerBlob);
 
-            WebExtensionContext.setWorker(new Worker(urlObj));
+                WebExtensionContext.setWorker(new Worker(urlObj));
 
-            if (WebExtensionContext.worker !== undefined) {
-                WebExtensionContext.worker.onmessage = (event) => {
-                    const { data } = event;
+                if (WebExtensionContext.worker !== undefined) {
+                    WebExtensionContext.worker.onmessage = (event) => {
+                        const { data } = event;
 
-                    WebExtensionContext.containerId = event.data.containerId;
+                        WebExtensionContext.containerId = event.data.containerId;
 
-                    if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
-                        WebExtensionContext.removeConnectedUserInContext(
-                            data.userId
-                        );
-                    }
-                    if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
-                        WebExtensionContext.updateConnectedUsersInContext(
-                            data.containerId,
-                            data.userName,
-                            data.userId,
-                            data.entityId
-                        );
-                    }
-                };
-            }
-        })
+                        if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
+                            WebExtensionContext.removeConnectedUserInContext(
+                                data.userId
+                            );
+                        }
+                        if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
+                            WebExtensionContext.updateConnectedUsersInContext(
+                                data.containerId,
+                                data.userName,
+                                data.userId,
+                                data.entityId
+                            );
+                        }
+                    };
+                }
+            })
 
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTERED);
-    } catch(error) {
+    } catch (error) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED,
             createWebWorkerInstance.name,
@@ -490,7 +490,8 @@ export function registerCopilot(context: vscode.ExtensionContext) {
                 queryParameters.ORG_ID
             ) as string,
             environmentName: "",
-            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string
+            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string,
+            tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,
         } as IOrgInfo;
 
         const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
@@ -553,7 +554,7 @@ async function logArtemisTelemetry() {
             queryParameters.ORG_ID
         ) as string
 
-                const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
 
         if (!artemisResponse) {
             return;
