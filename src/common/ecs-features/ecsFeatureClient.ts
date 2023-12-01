@@ -6,7 +6,7 @@
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { getECSRequestURL } from "./ecsFeatureUtil";
-import { IECSFeature } from "./IECSFeature";
+import { ECSFeatureDefinition as ECSFeatureProperties } from "./ecsFeatureProperties";
 import { ECSAPIFeatureFlagFilters } from "./ecsFeatureFlagFilters";
 
 export abstract class ECSFeaturesClient {
@@ -37,10 +37,10 @@ export abstract class ECSFeaturesClient {
     }
 
     public static getConfig<TConfig extends Record<string, boolean | string>, TeamName extends string>(
-        feature: IECSFeature<TConfig, TeamName>
+        feature: ECSFeatureProperties<TConfig, TeamName>
     ) {
         if (Object.keys(this._featuresConfig).length === 0) {
-            this._featuresConfig = this._ecsConfig && feature.extractConfig ? feature.extractConfig(this._ecsConfig as TConfig) : {};
+            this._featuresConfig = this._ecsConfig && feature.extractECSFeatureFlagConfig ? feature.extractECSFeatureFlagConfig(this._ecsConfig as TConfig) : {};
         }
 
         return Object.keys(this._featuresConfig).length === 0 ? feature.fallback : this._featuresConfig;

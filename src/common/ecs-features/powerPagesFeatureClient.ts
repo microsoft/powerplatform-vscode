@@ -4,15 +4,15 @@
  */
 
 import { ECSFeaturesClient } from "./ecsFeatureClient";
-import { IECSFeature, FeatureInfo, createFeature } from "./IECSFeature";
+import { ECSFeatureDefinition, ECSFeatureInfo, createECSFeatureDefinition } from "./ecsFeatureProperties";
 
-export function powerPagesFeatureClient<TConfig extends Record<string, string | boolean>, TeamName extends string>(featureInfo: FeatureInfo<TConfig, TeamName>) {
-    type EnhancedFeature = IECSFeature<TConfig, TeamName> & {
+export function powerPagesFeatureClient<TConfig extends Record<string, string | boolean>, TeamName extends string>(featureInfo: ECSFeatureInfo<TConfig, TeamName>) {
+    type EnhancedFeature = ECSFeatureDefinition<TConfig, TeamName> & {
         getConfig: () => Partial<TConfig>;
         isLoaded: () => boolean;
     };
 
-    const feature = createFeature(featureInfo) as EnhancedFeature;
+    const feature = createECSFeatureDefinition(featureInfo) as EnhancedFeature;
     feature.getConfig = () => ECSFeaturesClient.getConfig(feature);
 
     return {

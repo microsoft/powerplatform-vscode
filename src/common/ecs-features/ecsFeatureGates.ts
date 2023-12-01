@@ -10,9 +10,7 @@ export const {
     feature: EnableMultifileVscodeWeb
 } = powerPagesFeatureClient({
     teamName: PowerPagesClientName,
-    owners: ['nityagi'],
     description: 'Enable multiple file view in Visual Studio Code Web',
-    createdOn: '06/23/2023',
     fallback: {
         enableMultifileVscodeWeb: false,
     },
