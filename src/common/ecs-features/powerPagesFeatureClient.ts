@@ -9,7 +9,6 @@ import { ECSFeatureDefinition, ECSFeatureInfo, createECSFeatureDefinition } from
 export function powerPagesFeatureClient<TConfig extends Record<string, string | boolean>, TeamName extends string>(featureInfo: ECSFeatureInfo<TConfig, TeamName>) {
     type EnhancedFeature = ECSFeatureDefinition<TConfig, TeamName> & {
         getConfig: () => Partial<TConfig>;
-        isLoaded: () => boolean;
     };
 
     const feature = createECSFeatureDefinition(featureInfo) as EnhancedFeature;
