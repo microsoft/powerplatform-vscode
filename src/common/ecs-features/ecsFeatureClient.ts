@@ -6,8 +6,8 @@
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { getECSRequestURL } from "./ecsFeatureUtil";
-import { Feature } from "./feature";
-import { StandardFeatureFilters } from "./standardFeatureFilters";
+import { IECSFeature } from "./IECSFeature";
+import { ECSAPIFeatureFlagFilters } from "./ecsFeatureFlagFilters";
 
 export abstract class ECSFeaturesClient {
     private static _ecsConfig: Record<string, string | boolean>;
@@ -15,7 +15,7 @@ export abstract class ECSFeaturesClient {
 
     // Initialize ECSFeatureClient and reference this for accessing any client config like below
     // ECSFeaturesClient.getConfig(EnableMultifileVscodeWeb).enableMultifileVscodeWeb
-    public static async init(telemetry: ITelemetry | TelemetryReporter, filters: StandardFeatureFilters, clientName?: string) {
+    public static async init(telemetry: ITelemetry | TelemetryReporter, filters: ECSAPIFeatureFlagFilters, clientName?: string) {
         if (!this._ecsConfig) {
             const requestURL = getECSRequestURL(filters, clientName);
             try {
@@ -37,7 +37,7 @@ export abstract class ECSFeaturesClient {
     }
 
     public static getConfig<TConfig extends Record<string, boolean | string>, TeamName extends string>(
-        feature: Feature<TConfig, TeamName>
+        feature: IECSFeature<TConfig, TeamName>
     ) {
         if (Object.keys(this._featuresConfig).length === 0) {
             this._featuresConfig = this._ecsConfig && feature.extractConfig ? feature.extractConfig(this._ecsConfig as TConfig) : {};

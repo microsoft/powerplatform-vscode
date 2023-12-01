@@ -4,9 +4,9 @@
  */
 
 /**
- * Interface representing a Feature.
+ * Interface representing a Feature config in ECS.
  */
-export interface Feature<TConfig extends Record<string, string | boolean>, TeamName extends string> {
+export interface IECSFeature<TConfig extends Record<string, string | boolean>, TeamName extends string> {
     /**
      * Name of the Team owning the feature. Must match the "clientTeam" name configured in ECS.
      */
@@ -33,11 +33,6 @@ export interface Feature<TConfig extends Record<string, string | boolean>, TeamN
     createdOn?: string;
 
     /**
-     * URL for the corresponding rollout or experiment in ECS.
-     */
-    ecsURL?: string;
-
-    /**
      * Callback to extract the Feature-specific config from the Team config.
      * @param config overall config for the Team.
      */
@@ -45,18 +40,17 @@ export interface Feature<TConfig extends Record<string, string | boolean>, TeamN
 }
 
 export type FeatureInfo<TConfig extends Record<string, boolean | string>, TeamName extends string> = Omit<
-    Feature<TConfig, TeamName>,
+    IECSFeature<TConfig, TeamName>,
     'extractConfig'
 >;
 
 /**
- * Creates a Feature object based on the provided teamName and default config
- * @param teamName Name of the team owning the feature.
- * @param fallback Fallback config to be used while loading or if configs are unavailable.
+ * Creates a Feature object based on the feature definition that includes fallback flags and the team owning the feature.
+ * @param featureInfo Feature definition specifying the fallback flags and the team owning the feature.
  */
 export function createFeature<TConfig extends Record<string, boolean | string>, TeamName extends string>(
     featureInfo: FeatureInfo<TConfig, TeamName>
-): Feature<TConfig, TeamName> {
+): IECSFeature<TConfig, TeamName> {
     return {
         ...featureInfo,
         extractConfig: (config) => extractFeatureConfig(config, Object.keys(featureInfo.fallback)),

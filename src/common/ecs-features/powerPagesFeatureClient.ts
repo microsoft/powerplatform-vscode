@@ -4,10 +4,10 @@
  */
 
 import { ECSFeaturesClient } from "./ecsFeatureClient";
-import { Feature, FeatureInfo, createFeature } from "./feature";
+import { IECSFeature, FeatureInfo, createFeature } from "./IECSFeature";
 
 export function powerPagesFeatureClient<TConfig extends Record<string, string | boolean>, TeamName extends string>(featureInfo: FeatureInfo<TConfig, TeamName>) {
-    type EnhancedFeature = Feature<TConfig, TeamName> & {
+    type EnhancedFeature = IECSFeature<TConfig, TeamName> & {
         getConfig: () => Partial<TConfig>;
         isLoaded: () => boolean;
     };

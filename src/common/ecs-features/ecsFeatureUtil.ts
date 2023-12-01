@@ -4,9 +4,9 @@
  */
 
 import { PowerPagesClientName, ECS_REQUEST_URL_TEMPLATE } from "./constants";
-import { StandardFeatureFilters } from "./standardFeatureFilters";
+import { ECSAPIFeatureFlagFilters } from "./ecsFeatureFlagFilters";
 
-export function getECSRequestURL(filters: StandardFeatureFilters, clientName = PowerPagesClientName): string {
+export function getECSRequestURL(filters: ECSAPIFeatureFlagFilters, clientName = PowerPagesClientName): string {
     return ECS_REQUEST_URL_TEMPLATE
         .replace("{ClientName}", clientName)
         .replace("{AppName}", filters.AppName)
