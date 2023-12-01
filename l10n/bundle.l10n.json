@@ -73,9 +73,6 @@
       "{0} represents the name of the file"
     ]
   },
-  "Enter the name of the web template": "Enter the name of the web template",
-  "Please enter a name for the web template.": "Please enter a name for the web template.",
-  "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
   "No page templates found": "No page templates found",
   "No webpages found": "No webpages found",
   "New Webpage": "New Webpage",
@@ -88,6 +85,9 @@
   "File(s) already exist. No new files to add": "File(s) already exist. No new files to add",
   "Web files": "Web files",
   "Webfile(s) added successfully": "Webfile(s) added successfully",
+  "Enter the name of the web template": "Enter the name of the web template",
+  "Please enter a name for the web template.": "Please enter a name for the web template.",
+  "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
   "Page Template name cannot be empty.": "Page Template name cannot be empty.",
   "New Page Template": "New Page Template",
   "Choose web template": "Choose web template",
