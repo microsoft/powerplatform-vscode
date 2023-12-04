@@ -12,6 +12,7 @@ import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
+import { EUROPE_GEO, UK_GEO } from "../constants";
 
 let feedbackPanel: vscode.WebviewPanel | undefined;
 
@@ -36,7 +37,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
 
     const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
-    const endpointUrl = geoName === "eu" || geoName === "au" || geoName === "uk" ? `https://europe.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}` :
+    const endpointUrl = useEUEndpoint(geoName) ? `https://europe.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}` :
         `https://world.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
 
     feedbackPanel.webview.onDidReceiveMessage(
@@ -161,3 +162,8 @@ function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri
   </body>
     </html>`;
 }
+
+function useEUEndpoint(geoName: string): boolean {
+    return geoName === EUROPE_GEO || geoName === UK_GEO;
+}
+
