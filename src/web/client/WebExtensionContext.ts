@@ -21,7 +21,10 @@ import {
     getWebsiteIdToLcidMap,
     getWebsiteLanguageIdToPortalLanguageIdMap,
 } from "./utilities/schemaHelperUtil";
-import { getCustomRequestURL, getOrCreateSharedWorkspace } from "./utilities/urlBuilderUtil";
+import {
+    getCustomRequestURL,
+    getOrCreateSharedWorkspace,
+} from "./utilities/urlBuilderUtil";
 import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
@@ -32,7 +35,7 @@ import { isMultifileEnabled } from "./utilities/commonUtil";
 import { UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
-import { PowerPagesPeopleOnTheSiteProvider } from "./webViews/powerPagesPeopleOnTheSiteProvider";
+import { PowerPagesUserCollaborationProvider } from "./webViews/powerPagesUserCollaborationProvider";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -60,7 +63,7 @@ export interface IWebExtensionContext {
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
     showMultifileInVSCode: boolean;
     extensionActivationTime: number;
-    extensionUri: vscode.Uri
+    extensionUri: vscode.Uri;
 
     // Org specific details
     dataverseAccessToken: string;
@@ -113,7 +116,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _containerId: string;
     private _connectedUsers: UserDataMap;
     private _quickPickProvider: QuickPickProvider;
-    private _powerPagesPeopleOnTheSiteProvider: PowerPagesPeopleOnTheSiteProvider;
+    private _powerPagesUserCollaborationProvider: PowerPagesUserCollaborationProvider;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -218,7 +221,7 @@ class WebExtensionContext implements IWebExtensionContext {
         return this._quickPickProvider;
     }
     public get powerPagesPeopleOnTheSiteProvider() {
-        return this._powerPagesPeopleOnTheSiteProvider;
+        return this._powerPagesUserCollaborationProvider;
     }
 
     constructor() {
@@ -254,7 +257,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._containerId = "";
         this._connectedUsers = new UserDataMap();
         this._quickPickProvider = new QuickPickProvider();
-        this._powerPagesPeopleOnTheSiteProvider = new PowerPagesPeopleOnTheSiteProvider();
+        this._powerPagesUserCollaborationProvider = new PowerPagesUserCollaborationProvider();
     }
 
     public setWebExtensionContext(
