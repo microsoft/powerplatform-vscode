@@ -872,6 +872,16 @@
         {
           "command": "pacCLI.envAndSolutionsPanel.copyOrganizationId",
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
+        },
+        {
+          "command": "powerpages.powerPagesPeopleOnTheSite.openTeamsChat",
+          "group": "inline",
+          "when": "viewItem == userNode"
+        },
+        {
+          "command": "powerpages.powerPagesPeopleOnTheSite.openMail",
+          "group": "inline",
+          "when": "viewItem == userNode"
         }
       ]
     },
