@@ -220,7 +220,7 @@ class WebExtensionContext implements IWebExtensionContext {
     public get quickPickProvider() {
         return this._quickPickProvider;
     }
-    public get powerPagesPeopleOnTheSiteProvider() {
+    public get powerPagesUserCollaborationProvider() {
         return this._powerPagesUserCollaborationProvider;
     }
 

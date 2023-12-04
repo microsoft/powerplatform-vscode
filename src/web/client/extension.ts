@@ -196,17 +196,17 @@ export function activate(context: vscode.ExtensionContext): void {
 }
 
 export function powerPagesOnTheSite() {
-    vscode.window.registerTreeDataProvider('powerpages.powerPagesPeopleOnTheSite', WebExtensionContext.powerPagesPeopleOnTheSiteProvider);
+    vscode.window.registerTreeDataProvider('powerpages.powerPagesPeopleOnTheSite', WebExtensionContext.powerPagesUserCollaborationProvider);
     vscode.commands.registerCommand(
         "powerpages.powerPagesPeopleOnTheSite.openTeamsChat",
         (event) => {
-            WebExtensionContext.powerPagesPeopleOnTheSiteProvider.openTeamsChat(event.id)
+            WebExtensionContext.powerPagesUserCollaborationProvider.openTeamsChat(event.id)
         }
     );
     vscode.commands.registerCommand(
         "powerpages.powerPagesPeopleOnTheSite.openMail",
         (event) => {
-            WebExtensionContext.powerPagesPeopleOnTheSiteProvider.openMail(event.id)
+            WebExtensionContext.powerPagesUserCollaborationProvider.openMail(event.id)
         }
     );
 }
@@ -356,7 +356,7 @@ export function createWebWorkerInstance(
                         WebExtensionContext.removeConnectedUserInContext(
                             data.userId
                         );
-                        WebExtensionContext.powerPagesPeopleOnTheSiteProvider.refresh();
+                        WebExtensionContext.powerPagesUserCollaborationProvider.refresh();
                     }
                     if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
                         WebExtensionContext.updateConnectedUsersInContext(
@@ -365,7 +365,7 @@ export function createWebWorkerInstance(
                             data.userId,
                             data.entityId
                         );
-                        WebExtensionContext.powerPagesPeopleOnTheSiteProvider.refresh();
+                        WebExtensionContext.powerPagesUserCollaborationProvider.refresh();
                     }
                 };
             }
