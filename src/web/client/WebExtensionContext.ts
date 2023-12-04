@@ -32,6 +32,7 @@ import { isMultifileEnabled } from "./utilities/commonUtil";
 import { UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
+import { PowerPagesPeopleOnTheSiteProvider } from "./webViews/powerPagesPeopleOnTheSiteProvider";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -112,6 +113,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _containerId: string;
     private _connectedUsers: UserDataMap;
     private _quickPickProvider: QuickPickProvider;
+    private _powerPagesPeopleOnTheSiteProvider: PowerPagesPeopleOnTheSiteProvider;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -159,10 +161,10 @@ class WebExtensionContext implements IWebExtensionContext {
         return this._showMultifileInVSCode;
     }
     public get extensionActivationTime() {
-        return this._extensionActivationTime
+        return this._extensionActivationTime;
     }
     public get extensionUri() {
-        return this._extensionUri
+        return this._extensionUri;
     }
     public get dataverseAccessToken() {
         return this._dataverseAccessToken;
@@ -215,7 +217,10 @@ class WebExtensionContext implements IWebExtensionContext {
     public get quickPickProvider() {
         return this._quickPickProvider;
     }
-  
+    public get powerPagesPeopleOnTheSiteProvider() {
+        return this._powerPagesPeopleOnTheSiteProvider;
+    }
+
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
         this._schemaEntitiesMap = new Map<string, Map<string, string>>();
@@ -249,6 +254,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._containerId = "";
         this._connectedUsers = new UserDataMap();
         this._quickPickProvider = new QuickPickProvider();
+        this._powerPagesPeopleOnTheSiteProvider = new PowerPagesPeopleOnTheSiteProvider();
     }
 
     public setWebExtensionContext(
@@ -264,17 +270,21 @@ class WebExtensionContext implements IWebExtensionContext {
         this._defaultEntityId = entityId;
         this._urlParametersMap = queryParamsMap;
         this._rootDirectory = vscode.Uri.parse(
-            `${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(
-                Constants.queryParameters.WEBSITE_NAME
-            ) as string
+            `${Constants.PORTALS_URI_SCHEME}:/${
+                queryParamsMap.get(
+                    Constants.queryParameters.WEBSITE_NAME
+                ) as string
             }/`,
             true
         );
         this._extensionUri = extensionUri as vscode.Uri;
 
         // Initialize multifile FF here
-        const enableMultifile = queryParamsMap?.get(Constants.queryParameters.ENABLE_MULTIFILE);
-        const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
+        const enableMultifile = queryParamsMap?.get(
+            Constants.queryParameters.ENABLE_MULTIFILE
+        );
+        const isEnableMultifile =
+            String(enableMultifile).toLowerCase() === "true";
         this._showMultifileInVSCode = isMultifileEnabled() && isEnableMultifile;
 
         this.telemetry.sendInfoTelemetry(
@@ -298,8 +308,10 @@ class WebExtensionContext implements IWebExtensionContext {
                 const entityInfo = workspaceState.get(key) as IEntityInfo;
                 this._vscodeWorkspaceState.set(key, entityInfo);
             });
-            this.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_SUCCESS,
-                { count: this._vscodeWorkspaceState.size.toString() });
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_SUCCESS,
+                { count: this._vscodeWorkspaceState.size.toString() }
+            );
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
                 telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_FAILED,
@@ -403,7 +415,8 @@ class WebExtensionContext implements IWebExtensionContext {
             encodeAsBase64,
             mimeType,
             isContentLoaded,
-            logicalEntityName);
+            logicalEntityName
+        );
     }
 
     public async updateEntityDetailsInContext(
@@ -414,7 +427,7 @@ class WebExtensionContext implements IWebExtensionContext {
         attributeContent: string,
         mappingEntityId?: string,
         fileUri?: string,
-        rootWebPageId?: string,
+        rootWebPageId?: string
     ) {
         this.entityDataMap.setEntity(
             entityId,
@@ -424,12 +437,13 @@ class WebExtensionContext implements IWebExtensionContext {
             attributeContent,
             mappingEntityId,
             fileUri,
-            rootWebPageId);
+            rootWebPageId
+        );
     }
 
     public async updateForeignKeyDetailsInContext(
         rootWebPageId: string,
-        entityId: string,
+        entityId: string
     ) {
         this.entityForeignKeyDataMap.setEntityForeignKey(
             rootWebPageId,
@@ -464,9 +478,12 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
-            });
+            const response = await this._concurrencyHandler.handleRequest(
+                requestUrl,
+                {
+                    headers: getCommonHeaders(accessToken),
+                }
+            );
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
             }
@@ -493,8 +510,8 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     this.populateLanguageIdToCode.name,
                     errorMsg,
-                    '',
-                    (error as Response)?.status.toString(),
+                    "",
+                    (error as Response)?.status.toString()
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
@@ -530,9 +547,12 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
-            });
+            const response = await this._concurrencyHandler.handleRequest(
+                requestUrl,
+                {
+                    headers: getCommonHeaders(accessToken),
+                }
+            );
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
             }
@@ -556,7 +576,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     this.populateWebsiteLanguageIdToPortalLanguageMap.name,
                     errorMsg,
-                    '',
+                    "",
                     (error as Response)?.status.toString()
                 );
             } else {
@@ -592,9 +612,12 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
-            });
+            const response = await this._concurrencyHandler.handleRequest(
+                requestUrl,
+                {
+                    headers: getCommonHeaders(accessToken),
+                }
+            );
 
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
@@ -618,7 +641,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     this.populateWebsiteIdToLanguageMap.name,
                     errorMsg,
-                    '',
+                    "",
                     (error as Response)?.status.toString()
                 );
             } else {
@@ -644,9 +667,7 @@ class WebExtensionContext implements IWebExtensionContext {
             { lcid: lcid ? lcid.toString() : "" }
         );
 
-        this._websiteLanguageCode = this.languageIdCodeMap.get(
-            lcid
-        ) as string;
+        this._websiteLanguageCode = this.languageIdCodeMap.get(lcid) as string;
         this.telemetry.sendInfoTelemetry(
             telemetryEventNames.WEB_EXTENSION_WEBSITE_LANGUAGE_CODE,
             { languageCode: this._websiteLanguageCode }
@@ -666,14 +687,14 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     /**
-    * Store a value maintained in Extension context workspaceState.
-    *
-    * *Note* that using `undefined` as value removes the key from the underlying
-    * storage.
-    *
-    * @param key A string.
-    * @param value A value.
-    */
+     * Store a value maintained in Extension context workspaceState.
+     *
+     * *Note* that using `undefined` as value removes the key from the underlying
+     * storage.
+     *
+     * @param key A string.
+     * @param value A value.
+     */
     public updateVscodeWorkspaceState(key: string, value?: IEntityInfo) {
         if (value === undefined) {
             this._vscodeWorkspaceState.delete(key);
@@ -687,7 +708,7 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public async getWorkerScript(workerUrl : URL) : Promise<any> {
+    public async getWorkerScript(workerUrl: URL): Promise<any> {
         try {
             this.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT
@@ -695,11 +716,13 @@ class WebExtensionContext implements IWebExtensionContext {
 
             const response = await this.concurrencyHandler.handleRequest(
                 workerUrl
-            )
+            );
 
             if (!response.ok) {
                 throw new Error(
-                    `Failed to fetch worker script '${workerUrl.toString()}': ${response.statusText}`
+                    `Failed to fetch worker script '${workerUrl.toString()}': ${
+                        response.statusText
+                    }`
                 );
             }
 

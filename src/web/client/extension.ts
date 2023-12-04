@@ -195,6 +195,19 @@ export function activate(context: vscode.ExtensionContext): void {
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
+export function powerPagesOnTheSite() {
+    vscode.window.registerTreeDataProvider('powerpages.powerPagesPeopleOnTheSite', WebExtensionContext.powerPagesPeopleOnTheSiteProvider);
+    vscode.commands.registerCommand(
+        "powerpages.powerPagesPeopleOnTheSite.openTeamsChat",
+        () =>
+            WebExtensionContext.powerPagesPeopleOnTheSiteProvider.openTeamsChat()
+    );
+    vscode.commands.registerCommand(
+        "powerpages.powerPagesPeopleOnTheSite.openMail",
+        () => WebExtensionContext.powerPagesPeopleOnTheSiteProvider.openMail()
+    );
+}
+
 export function powerPagesNavigation() {
     const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
@@ -301,6 +314,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
     // feature in progress, hence disabling it
     if (isCoPresenceEnabled()) {
+        powerPagesOnTheSite();
         vscode.commands.registerCommand('powerPlatform.previewCurrentActiveUsers', () => WebExtensionContext.quickPickProvider.showQuickPick());
         createWebWorkerInstance(context);
     }
@@ -339,6 +353,7 @@ export function createWebWorkerInstance(
                         WebExtensionContext.removeConnectedUserInContext(
                             data.userId
                         );
+                        WebExtensionContext.powerPagesPeopleOnTheSiteProvider.refresh();
                     }
                     if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
                         WebExtensionContext.updateConnectedUsersInContext(
@@ -347,6 +362,7 @@ export function createWebWorkerInstance(
                             data.userId,
                             data.entityId
                         );
+                        WebExtensionContext.powerPagesPeopleOnTheSiteProvider.refresh();
                     }
                 };
             }

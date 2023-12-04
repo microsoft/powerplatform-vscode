@@ -155,6 +155,16 @@
     ],
     "commands": [
       {
+        "command": "powerpages.powerPagesPeopleOnTheSite.openTeamsChat",
+        "title": "Open Teams Chat",
+        "icon": "$(person)"
+      },
+      {
+        "command": "powerpages.powerPagesPeopleOnTheSite.openMail",
+        "title": "Open Mail",
+        "icon": "$(mail)"
+      },
+      {
         "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
         "title": "Preview site",
         "when": "never"
@@ -912,6 +922,13 @@
           "when": "isWeb && virtualWorkspace",
           "icon": "./src/web/client/assets/powerPages.svg",
           "contextualTitle": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
+          "visibility": "visible"
+        },
+        {
+          "id": "powerpages.powerPagesPeopleOnTheSite",
+          "name": "People On The Site",
+          "when": "isWeb && virtualWorkspace",
+          "contextualTitle": "People On The Site",
           "visibility": "visible"
         }
       ]
