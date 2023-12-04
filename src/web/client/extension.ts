@@ -199,12 +199,15 @@ export function powerPagesOnTheSite() {
     vscode.window.registerTreeDataProvider('powerpages.powerPagesPeopleOnTheSite', WebExtensionContext.powerPagesPeopleOnTheSiteProvider);
     vscode.commands.registerCommand(
         "powerpages.powerPagesPeopleOnTheSite.openTeamsChat",
-        () =>
-            WebExtensionContext.powerPagesPeopleOnTheSiteProvider.openTeamsChat()
+        (event) => {
+            WebExtensionContext.powerPagesPeopleOnTheSiteProvider.openTeamsChat(event.id)
+        }
     );
     vscode.commands.registerCommand(
         "powerpages.powerPagesPeopleOnTheSite.openMail",
-        () => WebExtensionContext.powerPagesPeopleOnTheSiteProvider.openMail()
+        (event) => {
+            WebExtensionContext.powerPagesPeopleOnTheSiteProvider.openMail(event.id)
+        }
     );
 }
 

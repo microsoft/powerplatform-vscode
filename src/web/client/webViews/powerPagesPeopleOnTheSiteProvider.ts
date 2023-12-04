@@ -5,15 +5,22 @@
 
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
+import { GraphClientService } from "../services/graphClientService";
+import { getMailToPath, getTeamChatURL } from "../utilities/commonUtil";
 
 export class PowerPagesPeopleOnTheSiteProvider
     implements vscode.TreeDataProvider<UserNode>
 {
+    private graphClientService: GraphClientService;
     private _onDidChangeTreeData: vscode.EventEmitter<
         UserNode | undefined | void
     > = new vscode.EventEmitter<UserNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<UserNode | undefined | void> =
         this._onDidChangeTreeData.event;
+
+    constructor() {
+        this.graphClientService = new GraphClientService();
+    }
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
@@ -34,6 +41,7 @@ export class PowerPagesPeopleOnTheSiteProvider
         ).map(([, value]) => {
             return new UserNode(
                 value._userName,
+                value._userId,
                 vscode.TreeItemCollapsibleState.None
             );
         });
@@ -41,18 +49,23 @@ export class PowerPagesPeopleOnTheSiteProvider
         return connectedUsers;
     }
 
-    openTeamsChat(): void {
-        console.log("Open Teams chat");
+    async openTeamsChat(userId: string): Promise<void> {
+        const mail = await this.graphClientService.getUserEmail(userId);
+        const teamsChatLink = getTeamChatURL(mail);
+        vscode.env.openExternal(vscode.Uri.parse(teamsChatLink.href));
     }
 
-    openMail(): void {
-        console.log("Open mail");
+    async openMail(userId: string): Promise<void> {
+        const mail = await this.graphClientService.getUserEmail(userId);
+        const mailToPath = getMailToPath(mail);
+        vscode.env.openExternal(vscode.Uri.parse(mailToPath));
     }
 }
 
 export class UserNode extends vscode.TreeItem {
     constructor(
         public readonly label: string,
+        public readonly id: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState
     ) {
         super(label, collapsibleState);
