@@ -8,7 +8,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import { GraphClientService } from "../services/graphClientService";
 import { getMailToPath, getTeamChatURL } from "../utilities/commonUtil";
 
-export class PowerPagesPeopleOnTheSiteProvider
+export class PowerPagesUserCollaborationProvider
     implements vscode.TreeDataProvider<UserNode>
 {
     private graphClientService: GraphClientService;
