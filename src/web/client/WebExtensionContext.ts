@@ -21,10 +21,7 @@ import {
     getWebsiteIdToLcidMap,
     getWebsiteLanguageIdToPortalLanguageIdMap,
 } from "./utilities/schemaHelperUtil";
-import {
-    getCustomRequestURL,
-    getOrCreateSharedWorkspace,
-} from "./utilities/urlBuilderUtil";
+import { getCustomRequestURL, getOrCreateSharedWorkspace } from "./utilities/urlBuilderUtil";
 import { schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
@@ -63,7 +60,7 @@ export interface IWebExtensionContext {
     defaultFileUri: vscode.Uri; // This will default to home page or current page in multifile scenario
     showMultifileInVSCode: boolean;
     extensionActivationTime: number;
-    extensionUri: vscode.Uri;
+    extensionUri: vscode.Uri
 
     // Org specific details
     dataverseAccessToken: string;
@@ -164,10 +161,10 @@ class WebExtensionContext implements IWebExtensionContext {
         return this._showMultifileInVSCode;
     }
     public get extensionActivationTime() {
-        return this._extensionActivationTime;
+        return this._extensionActivationTime
     }
     public get extensionUri() {
-        return this._extensionUri;
+        return this._extensionUri
     }
     public get dataverseAccessToken() {
         return this._dataverseAccessToken;
@@ -273,21 +270,17 @@ class WebExtensionContext implements IWebExtensionContext {
         this._defaultEntityId = entityId;
         this._urlParametersMap = queryParamsMap;
         this._rootDirectory = vscode.Uri.parse(
-            `${Constants.PORTALS_URI_SCHEME}:/${
-                queryParamsMap.get(
-                    Constants.queryParameters.WEBSITE_NAME
-                ) as string
+            `${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(
+                Constants.queryParameters.WEBSITE_NAME
+            ) as string
             }/`,
             true
         );
         this._extensionUri = extensionUri as vscode.Uri;
 
         // Initialize multifile FF here
-        const enableMultifile = queryParamsMap?.get(
-            Constants.queryParameters.ENABLE_MULTIFILE
-        );
-        const isEnableMultifile =
-            String(enableMultifile).toLowerCase() === "true";
+        const enableMultifile = queryParamsMap?.get(Constants.queryParameters.ENABLE_MULTIFILE);
+        const isEnableMultifile = (String(enableMultifile).toLowerCase() === 'true');
         this._showMultifileInVSCode = isMultifileEnabled() && isEnableMultifile;
 
         this.telemetry.sendInfoTelemetry(
@@ -311,10 +304,8 @@ class WebExtensionContext implements IWebExtensionContext {
                 const entityInfo = workspaceState.get(key) as IEntityInfo;
                 this._vscodeWorkspaceState.set(key, entityInfo);
             });
-            this.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_SUCCESS,
-                { count: this._vscodeWorkspaceState.size.toString() }
-            );
+            this.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_SUCCESS,
+                { count: this._vscodeWorkspaceState.size.toString() });
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
                 telemetryEventNames.WEB_EXTENSION_SET_VSCODE_WORKSPACE_STATE_FAILED,
@@ -418,8 +409,7 @@ class WebExtensionContext implements IWebExtensionContext {
             encodeAsBase64,
             mimeType,
             isContentLoaded,
-            logicalEntityName
-        );
+            logicalEntityName);
     }
 
     public async updateEntityDetailsInContext(
@@ -430,7 +420,7 @@ class WebExtensionContext implements IWebExtensionContext {
         attributeContent: string,
         mappingEntityId?: string,
         fileUri?: string,
-        rootWebPageId?: string
+        rootWebPageId?: string,
     ) {
         this.entityDataMap.setEntity(
             entityId,
@@ -440,13 +430,12 @@ class WebExtensionContext implements IWebExtensionContext {
             attributeContent,
             mappingEntityId,
             fileUri,
-            rootWebPageId
-        );
+            rootWebPageId);
     }
 
     public async updateForeignKeyDetailsInContext(
         rootWebPageId: string,
-        entityId: string
+        entityId: string,
     ) {
         this.entityForeignKeyDataMap.setEntityForeignKey(
             rootWebPageId,
@@ -481,12 +470,9 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await this._concurrencyHandler.handleRequest(
-                requestUrl,
-                {
-                    headers: getCommonHeaders(accessToken),
-                }
-            );
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
+                headers: getCommonHeaders(accessToken),
+            });
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
             }
@@ -513,8 +499,8 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     this.populateLanguageIdToCode.name,
                     errorMsg,
-                    "",
-                    (error as Response)?.status.toString()
+                    '',
+                    (error as Response)?.status.toString(),
                 );
             } else {
                 this.telemetry.sendErrorTelemetry(
@@ -550,12 +536,9 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await this._concurrencyHandler.handleRequest(
-                requestUrl,
-                {
-                    headers: getCommonHeaders(accessToken),
-                }
-            );
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
+                headers: getCommonHeaders(accessToken),
+            });
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
             }
@@ -579,7 +562,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     this.populateWebsiteLanguageIdToPortalLanguageMap.name,
                     errorMsg,
-                    "",
+                    '',
                     (error as Response)?.status.toString()
                 );
             } else {
@@ -615,12 +598,9 @@ class WebExtensionContext implements IWebExtensionContext {
             );
 
             requestSentAtTime = new Date().getTime();
-            const response = await this._concurrencyHandler.handleRequest(
-                requestUrl,
-                {
-                    headers: getCommonHeaders(accessToken),
-                }
-            );
+            const response = await this._concurrencyHandler.handleRequest(requestUrl, {
+                headers: getCommonHeaders(accessToken),
+            });
 
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
@@ -644,7 +624,7 @@ class WebExtensionContext implements IWebExtensionContext {
                     new Date().getTime() - requestSentAtTime,
                     this.populateWebsiteIdToLanguageMap.name,
                     errorMsg,
-                    "",
+                    '',
                     (error as Response)?.status.toString()
                 );
             } else {
@@ -670,7 +650,9 @@ class WebExtensionContext implements IWebExtensionContext {
             { lcid: lcid ? lcid.toString() : "" }
         );
 
-        this._websiteLanguageCode = this.languageIdCodeMap.get(lcid) as string;
+        this._websiteLanguageCode = this.languageIdCodeMap.get(
+            lcid
+        ) as string;
         this.telemetry.sendInfoTelemetry(
             telemetryEventNames.WEB_EXTENSION_WEBSITE_LANGUAGE_CODE,
             { languageCode: this._websiteLanguageCode }
@@ -690,14 +672,14 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     /**
-     * Store a value maintained in Extension context workspaceState.
-     *
-     * *Note* that using `undefined` as value removes the key from the underlying
-     * storage.
-     *
-     * @param key A string.
-     * @param value A value.
-     */
+    * Store a value maintained in Extension context workspaceState.
+    *
+    * *Note* that using `undefined` as value removes the key from the underlying
+    * storage.
+    *
+    * @param key A string.
+    * @param value A value.
+    */
     public updateVscodeWorkspaceState(key: string, value?: IEntityInfo) {
         if (value === undefined) {
             this._vscodeWorkspaceState.delete(key);
@@ -719,13 +701,11 @@ class WebExtensionContext implements IWebExtensionContext {
 
             const response = await this.concurrencyHandler.handleRequest(
                 workerUrl
-            );
+            )
 
             if (!response.ok) {
                 throw new Error(
-                    `Failed to fetch worker script '${workerUrl.toString()}': ${
-                        response.statusText
-                    }`
+                    `Failed to fetch worker script '${workerUrl.toString()}': ${response.statusText}`
                 );
             }
 
