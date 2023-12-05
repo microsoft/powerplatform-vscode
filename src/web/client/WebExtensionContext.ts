@@ -687,7 +687,7 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public async getWorkerScript(workerUrl : URL) : Promise<any> {
+    public async getWorkerScript(workerUrl: URL): Promise<any> {
         try {
             this.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT
