@@ -511,7 +511,8 @@ export function registerCopilot(context: vscode.ExtensionContext) {
                 queryParameters.ORG_ID
             ) as string,
             environmentName: "",
-            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string
+            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string,
+            tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,
         } as IOrgInfo;
 
         const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
@@ -574,7 +575,7 @@ async function logArtemisTelemetry() {
             queryParameters.ORG_ID
         ) as string
 
-                const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
 
         if (!artemisResponse) {
             return;
