@@ -157,7 +157,10 @@
       {
         "command": "powerpages.powerPagesPeopleOnTheSite.openTeamsChat",
         "title": "Open Teams Chat",
-        "icon": "$(person)"
+        "icon": {
+          "light": "src/web/client/assets/microsoftTeamsIcon/light/microsoftTeams.svg",
+          "dark": "src/web/client/assets/microsoftTeamsIcon/dark/microsoftTeams.svg"
+        }
       },
       {
         "command": "powerpages.powerPagesPeopleOnTheSite.openMail",
