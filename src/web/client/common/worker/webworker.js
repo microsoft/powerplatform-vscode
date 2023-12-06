@@ -87,7 +87,13 @@ async function loadContainer(config, swpId, entityInfo) {
 
         const existingMembers = audience.getMembers();
 
-        // TODO: yet to be decided how entity id will be passed in container from vscode side
+        const myself = audience.getMyself();
+
+        if (audience && myself) {
+            const myConnectionId = audience['container'].clientId;
+            const entityIdObj = new Array(entityInfo.rootWebPageId);
+            (await container.initialObjects.sharedState.get('selection').get()).set(myConnectionId, entityIdObj);
+        }
 
         audience.on("memberRemoved", (clientId, member) => {
             if (!existingMembers.get(member.userId)) {
