@@ -7,8 +7,9 @@ import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { GraphClientService } from "../services/graphClientService";
 import { getMailToPath, getTeamChatURL } from "../utilities/commonUtil";
+import * as Constants from "../common/constants";
 
-export class PowerPagesUserCollaborationProvider
+export class UserCollaborationProvider
     implements vscode.TreeDataProvider<UserNode>
 {
     private graphClientService: GraphClientService;
@@ -71,8 +72,8 @@ export class UserNode extends vscode.TreeItem {
         super(label, collapsibleState);
 
         this.tooltip = this.label;
-        this.iconPath = new vscode.ThemeIcon("account");
+        this.iconPath = new vscode.ThemeIcon(Constants.THEME_ICON_ACCOUNT);
     }
 
-    contextValue = "userNode";
+    contextValue = Constants.USER_COLLABORATION_CONTEXT_VALUE;
 }

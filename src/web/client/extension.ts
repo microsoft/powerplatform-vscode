@@ -195,18 +195,18 @@ export function activate(context: vscode.ExtensionContext): void {
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
-export function powerPagesOnTheSite() {
-    vscode.window.registerTreeDataProvider('powerpages.powerPagesPeopleOnTheSite', WebExtensionContext.powerPagesUserCollaborationProvider);
+export function registerCollaborationView() {
+    vscode.window.registerTreeDataProvider('powerpages.collaborationView', WebExtensionContext.userCollaborationProvider);
     vscode.commands.registerCommand(
-        "powerpages.powerPagesPeopleOnTheSite.openTeamsChat",
+        "powerpages.collaboration.openTeamsChat",
         (event) => {
-            WebExtensionContext.powerPagesUserCollaborationProvider.openTeamsChat(event.id)
+            WebExtensionContext.userCollaborationProvider.openTeamsChat(event.id)
         }
     );
     vscode.commands.registerCommand(
-        "powerpages.powerPagesPeopleOnTheSite.openMail",
+        "powerpages.collaboration.openMail",
         (event) => {
-            WebExtensionContext.powerPagesUserCollaborationProvider.openMail(event.id)
+            WebExtensionContext.userCollaborationProvider.openMail(event.id)
         }
     );
 }
@@ -317,7 +317,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
     // feature in progress, hence disabling it
     if (isCoPresenceEnabled()) {
-        powerPagesOnTheSite();
+        registerCollaborationView();
         vscode.commands.registerCommand('powerPlatform.previewCurrentActiveUsers', () => WebExtensionContext.quickPickProvider.showQuickPick());
         createWebWorkerInstance(context);
     }
@@ -356,7 +356,7 @@ export function createWebWorkerInstance(
                             WebExtensionContext.removeConnectedUserInContext(
                                 data.userId
                             );
-                            WebExtensionContext.powerPagesUserCollaborationProvider.refresh();
+                            WebExtensionContext.userCollaborationProvider.refresh();
                         }
                         if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
                             WebExtensionContext.updateConnectedUsersInContext(
@@ -365,7 +365,7 @@ export function createWebWorkerInstance(
                                 data.userId,
                                 data.entityId
                             );
-                            WebExtensionContext.powerPagesUserCollaborationProvider.refresh();
+                            WebExtensionContext.userCollaborationProvider.refresh();
                         }
                     };
                 }

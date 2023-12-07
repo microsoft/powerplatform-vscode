@@ -32,7 +32,7 @@ import { isMultifileEnabled } from "./utilities/commonUtil";
 import { UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
-import { PowerPagesUserCollaborationProvider } from "./webViews/powerPagesUserCollaborationProvider";
+import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -113,7 +113,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _containerId: string;
     private _connectedUsers: UserDataMap;
     private _quickPickProvider: QuickPickProvider;
-    private _powerPagesUserCollaborationProvider: PowerPagesUserCollaborationProvider;
+    private _userCollaborationProvider: UserCollaborationProvider;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -217,8 +217,8 @@ class WebExtensionContext implements IWebExtensionContext {
     public get quickPickProvider() {
         return this._quickPickProvider;
     }
-    public get powerPagesUserCollaborationProvider() {
-        return this._powerPagesUserCollaborationProvider;
+    public get userCollaborationProvider() {
+        return this._userCollaborationProvider;
     }
 
     constructor() {
@@ -254,7 +254,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._containerId = "";
         this._connectedUsers = new UserDataMap();
         this._quickPickProvider = new QuickPickProvider();
-        this._powerPagesUserCollaborationProvider = new PowerPagesUserCollaborationProvider();
+        this._userCollaborationProvider = new UserCollaborationProvider();
     }
 
     public setWebExtensionContext(

@@ -132,3 +132,7 @@ export enum GraphService {
 }
 
 export const MICROSOFT_GRAPH_PROFILE_PICTURE_SERVICE_CALL = "/photo/$value";
+
+// User collaboration constants
+export const USER_COLLABORATION_CONTEXT_VALUE = "userNode";
+export const THEME_ICON_ACCOUNT = "account";

@@ -155,7 +155,7 @@
     ],
     "commands": [
       {
-        "command": "powerpages.powerPagesPeopleOnTheSite.openTeamsChat",
+        "command": "powerpages.collaboration.openTeamsChat",
         "title": "Open Teams Chat",
         "icon": {
           "light": "src/web/client/assets/microsoftTeamsIcon/light/microsoftTeams.svg",
@@ -163,7 +163,7 @@
         }
       },
       {
-        "command": "powerpages.powerPagesPeopleOnTheSite.openMail",
+        "command": "powerpages.collaboration.openMail",
         "title": "Open Mail",
         "icon": "$(mail)"
       },
@@ -877,12 +877,12 @@
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
         },
         {
-          "command": "powerpages.powerPagesPeopleOnTheSite.openTeamsChat",
+          "command": "powerpages.collaboration.openTeamsChat",
           "group": "inline",
           "when": "viewItem == userNode"
         },
         {
-          "command": "powerpages.powerPagesPeopleOnTheSite.openMail",
+          "command": "powerpages.collaboration.openMail",
           "group": "inline",
           "when": "viewItem == userNode"
         }
@@ -938,7 +938,7 @@
           "visibility": "visible"
         },
         {
-          "id": "powerpages.powerPagesPeopleOnTheSite",
+          "id": "powerpages.collaborationView",
           "name": "People On The Site",
           "when": "isWeb && virtualWorkspace",
           "contextualTitle": "People On The Site",
