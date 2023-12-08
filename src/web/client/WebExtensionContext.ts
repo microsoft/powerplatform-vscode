@@ -31,6 +31,8 @@ import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 import { isMultifileEnabled } from "./utilities/commonUtil";
 import { UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
+import { QuickPickProvider } from "./webViews/QuickPickProvider";
+import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -110,6 +112,8 @@ class WebExtensionContext implements IWebExtensionContext {
     private _sharedWorkSpaceMap: Map<string, string>;
     private _containerId: string;
     private _connectedUsers: UserDataMap;
+    private _quickPickProvider: QuickPickProvider;
+    private _userCollaborationProvider: UserCollaborationProvider;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -210,6 +214,12 @@ class WebExtensionContext implements IWebExtensionContext {
     public set containerId(containerId: string) {
         this._containerId = containerId;
     }
+    public get quickPickProvider() {
+        return this._quickPickProvider;
+    }
+    public get userCollaborationProvider() {
+        return this._userCollaborationProvider;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -243,6 +253,8 @@ class WebExtensionContext implements IWebExtensionContext {
         this._sharedWorkSpaceMap = new Map<string, string>();
         this._containerId = "";
         this._connectedUsers = new UserDataMap();
+        this._quickPickProvider = new QuickPickProvider();
+        this._userCollaborationProvider = new UserCollaborationProvider();
     }
 
     public setWebExtensionContext(
@@ -681,7 +693,7 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public async getWorkerScript(workerUrl : URL) : Promise<any> {
+    public async getWorkerScript(workerUrl: URL): Promise<any> {
         try {
             this.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT

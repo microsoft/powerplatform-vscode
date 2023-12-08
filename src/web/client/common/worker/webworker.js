@@ -87,7 +87,13 @@ async function loadContainer(config, swpId, entityInfo) {
 
         const existingMembers = audience.getMembers();
 
-        // TODO: yet to be decided how entity id will be passed in container from vscode side
+        const myself = audience.getMyself();
+
+        if (audience && myself) {
+            const myConnectionId = audience['container'].clientId;
+            const entityIdObj = new Array(entityInfo.rootWebPageId);
+            (await container.initialObjects.sharedState.get('selection').get()).set(myConnectionId, entityIdObj);
+        }
 
         audience.on("memberRemoved", (clientId, member) => {
             if (!existingMembers.get(member.userId)) {
@@ -115,7 +121,7 @@ async function loadContainer(config, swpId, entityInfo) {
                 self.postMessage({
                     type: "client-data",
                     userName: otherUser.userName,
-                    userId: key,
+                    userId: otherUser.additionalDetails.AadObjectId,
                     containerId: swpId,
                     entityId: userEntityIdArray,
                 });
@@ -141,7 +147,7 @@ async function loadContainer(config, swpId, entityInfo) {
                 // eslint-disable-next-line no-undef
                 await self.postMessage({
                     type: "client-data",
-                    userId: changed.key,
+                    userId: otherUser.additionalDetails.AadObjectId,
                     userName: otherUser.userName,
                     containerId: swpId,
                     entityId: userEntityIdArray,

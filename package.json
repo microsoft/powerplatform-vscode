@@ -155,6 +155,19 @@
     ],
     "commands": [
       {
+        "command": "powerpages.collaboration.openTeamsChat",
+        "title": "Open Teams Chat",
+        "icon": {
+          "light": "src/web/client/assets/microsoftTeamsIcon/light/microsoftTeams.svg",
+          "dark": "src/web/client/assets/microsoftTeamsIcon/dark/microsoftTeams.svg"
+        }
+      },
+      {
+        "command": "powerpages.collaboration.openMail",
+        "title": "Open Mail",
+        "icon": "$(mail)"
+      },
+      {
         "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
         "title": "Preview site",
         "when": "never"
@@ -342,6 +355,11 @@
         "command": "powerpages.copilot.explain",
         "category": "Copilot In Power Pages",
         "title": "Explain"
+      },
+      {
+        "command": "powerPlatform.previewCurrentActiveUsers",
+        "title": "Current Active Users",
+        "icon": "$(person)"
       }
     ],
     "configuration": {
@@ -623,6 +641,11 @@
           "command": "microsoft-powerapps-portals.preview-show",
           "alt": "microsoft-powerapps-portals.preview-show",
           "group": "navigation"
+        },
+        {
+          "command": "powerPlatform.previewCurrentActiveUsers",
+          "alt": "current active users",
+          "group": "navigation"
         }
       ],
       "commandPalette": [
@@ -852,6 +875,16 @@
         {
           "command": "pacCLI.envAndSolutionsPanel.copyOrganizationId",
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
+        },
+        {
+          "command": "powerpages.collaboration.openTeamsChat",
+          "group": "inline",
+          "when": "viewItem == userNode"
+        },
+        {
+          "command": "powerpages.collaboration.openMail",
+          "group": "inline",
+          "when": "viewItem == userNode"
         }
       ]
     },
@@ -902,6 +935,13 @@
           "when": "isWeb && virtualWorkspace",
           "icon": "./src/web/client/assets/powerPages.svg",
           "contextualTitle": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
+          "visibility": "visible"
+        },
+        {
+          "id": "powerpages.collaborationView",
+          "name": "People On The Site",
+          "when": "isWeb && virtualWorkspace",
+          "contextualTitle": "People On The Site",
           "visibility": "visible"
         }
       ]

@@ -4,7 +4,7 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { AUSTRALIA_GEO, COPILOT_UNAVAILABLE, EUROPE_GEO, UK_GEO, US_GEO } from "./copilot/constants";
+import { AUSTRALIA_GEO, COPILOT_UNAVAILABLE, EUROPE_GEO, SUPPORTED_GEO, UK_GEO, US_GEO } from "./copilot/constants";
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
@@ -14,19 +14,19 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
     const artemisResponse = await fetchArtemisResponse(orgId, telemetry, sessionID);
 
     if (!artemisResponse) {
-        return null;
+        return { intelligenceEndpoint: null, geoName: null };
     }
 
     const { geoName, environment, clusterNumber } = artemisResponse[0];
     sendTelemetryEvent(telemetry, { eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
-    if (!isGeoSupported(geoName)) {
-        return COPILOT_UNAVAILABLE;
+    if (!SUPPORTED_GEO.includes(geoName)) {
+        return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName };
     }
 
     const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${'il' + clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
 
-    return intelligenceEndpoint;
+    return { intelligenceEndpoint: intelligenceEndpoint, geoName: geoName };
 
 }
 
@@ -93,8 +93,4 @@ export function convertGuidToUrls(orgId: string) {
         preprodUrl,
         prodUrl
     };
-}
-
-export function isGeoSupported(geoName: string) {
-    return geoName === US_GEO || geoName === AUSTRALIA_GEO || geoName === EUROPE_GEO || geoName === UK_GEO;
 }

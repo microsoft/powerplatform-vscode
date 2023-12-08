@@ -34,6 +34,7 @@ export const WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED = "Web extension fetch wor
 export const WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR = "Web extension populate shared workspace system error";
 export const WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED = "Web extension web worker registration failed";
 export const WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR = "Web extension fetch get or create shared workspace error";
+export const WEB_EXTENSION_QUICK_PICK_DEFAULT_STRING = "No users are currently viewing this page";
 
 // Web extension constants
 export const BASE_64 = 'base64';
@@ -131,3 +132,7 @@ export enum GraphService {
 }
 
 export const MICROSOFT_GRAPH_PROFILE_PICTURE_SERVICE_CALL = "/photo/$value";
+
+// User collaboration constants
+export const USER_COLLABORATION_CONTEXT_VALUE = "userNode";
+export const THEME_ICON_ACCOUNT = "account";
