@@ -71,4 +71,19 @@ export class FileDataMap {
         }
         throw Error("File does not exist in the map"); // TODO - Revisit errors and dialog experience here
     }
+
+    searchFiles(pattern: string) {
+        // create case sensitive regex
+        const regex = new RegExp(pattern, "i");
+
+        const files: FileData[] = [];
+        this.fileMap.forEach((fileData) => {
+            const isMatch = regex.test(fileData.fileName);
+            if (isMatch) {
+                files.push(fileData);
+            }
+        });
+
+        return files;
+    }
 }

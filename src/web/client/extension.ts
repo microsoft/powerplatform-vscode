@@ -192,7 +192,24 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillStartCollaboartion(context);
 
+    enableFileSearchFunctionality();
+
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function enableFileSearchFunctionality() {
+    vscode.workspace.registerFileSearchProvider(PORTALS_URI_SCHEME, {
+        provideFileSearchResults: async (query) => {
+            const results: vscode.ProviderResult<vscode.Uri[]> = [];
+
+            const searchResults = await WebExtensionContext.fileDataMap.searchFiles(query.pattern);
+            searchResults.forEach((value) => {
+                results.push(vscode.Uri.parse(value.fileName));
+            });
+
+            return results;
+        },
+    });
 }
 
 export function registerCollaborationView() {
