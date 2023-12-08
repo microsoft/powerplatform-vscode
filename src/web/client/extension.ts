@@ -195,6 +195,22 @@ export function activate(context: vscode.ExtensionContext): void {
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
+export function registerCollaborationView() {
+    vscode.window.registerTreeDataProvider('powerpages.collaborationView', WebExtensionContext.userCollaborationProvider);
+    vscode.commands.registerCommand(
+        "powerpages.collaboration.openTeamsChat",
+        (event) => {
+            WebExtensionContext.userCollaborationProvider.openTeamsChat(event.id)
+        }
+    );
+    vscode.commands.registerCommand(
+        "powerpages.collaboration.openMail",
+        (event) => {
+            WebExtensionContext.userCollaborationProvider.openMail(event.id)
+        }
+    );
+}
+
 export function powerPagesNavigation() {
     const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
@@ -302,6 +318,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
     // feature in progress, hence disabling it
     if (isCoPresenceEnabled()) {
+        registerCollaborationView();
         vscode.commands.registerCommand('powerPlatform.previewCurrentActiveUsers', () => WebExtensionContext.quickPickProvider.showQuickPick());
         createWebWorkerInstance(context);
     }
@@ -340,6 +357,7 @@ export function createWebWorkerInstance(
                             WebExtensionContext.removeConnectedUserInContext(
                                 data.userId
                             );
+                            WebExtensionContext.userCollaborationProvider.refresh();
                         }
                         if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
                             WebExtensionContext.updateConnectedUsersInContext(
@@ -348,6 +366,7 @@ export function createWebWorkerInstance(
                                 data.userId,
                                 data.entityId
                             );
+                            WebExtensionContext.userCollaborationProvider.refresh();
                         }
                     };
                 }
