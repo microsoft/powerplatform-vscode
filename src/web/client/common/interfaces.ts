@@ -16,6 +16,7 @@ export interface IAttributePath {
 export interface IEntityInfo {
     entityId: string;
     entityName: string;
+    rootWebPageId?: string;
 }
 
 export interface IFileInfo {

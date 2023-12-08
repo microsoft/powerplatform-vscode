@@ -254,7 +254,8 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     const document = tab.input;
                     const entityInfo: IEntityInfo = {
                         entityId: getFileEntityId(document.uri.fsPath),
-                        entityName: getFileEntityName(document.uri.fsPath)
+                        entityName: getFileEntityName(document.uri.fsPath),
+                        rootWebPageId: WebExtensionContext.entityDataMap.getEntityMap.get(getFileEntityId(document.uri.fsPath))?.rootWebPageId as string
                     };
                     if (entityInfo.entityId && entityInfo.entityName) {
                         context.workspaceState.update(document.uri.fsPath, entityInfo);
