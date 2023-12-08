@@ -4,7 +4,8 @@
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
   "version": "1.0.1-dev",
   "enabledApiProposals": [
-    "fileSearchProvider"
+    "fileSearchProvider",
+    "textSearchProvider"
   ],
   "scripts": {
     "clean": "scorch",
