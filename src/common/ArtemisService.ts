@@ -4,7 +4,7 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { AUSTRALIA_GEO, COPILOT_UNAVAILABLE, EUROPE_GEO, SUPPORTED_GEO, UK_GEO, US_GEO } from "./copilot/constants";
+import { COPILOT_UNAVAILABLE, SUPPORTED_GEO } from "./copilot/constants";
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
