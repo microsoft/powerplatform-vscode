@@ -60,9 +60,9 @@ export class QuickPickProvider {
     }
 
     public async showQuickPick() {
-        const selectedUSer = await vscode.window.showQuickPick(this.items);
-        if (selectedUSer) {
-            this.handleSelectedOption(selectedUSer);
+        const selectedUser = await vscode.window.showQuickPick(this.items);
+        if (selectedUser) {
+            this.handleSelectedOption(selectedUser);
         }
     }
 
