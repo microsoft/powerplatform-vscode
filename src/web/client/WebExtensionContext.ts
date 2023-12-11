@@ -28,11 +28,12 @@ import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
-import { isMultifileEnabled } from "./utilities/commonUtil";
+import { getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
 import { UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
 import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
+import { GraphClientService } from "./services/graphClientService";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -114,6 +115,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _connectedUsers: UserDataMap;
     private _quickPickProvider: QuickPickProvider;
     private _userCollaborationProvider: UserCollaborationProvider;
+    private _graphClientService: GraphClientService;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -220,6 +222,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get userCollaborationProvider() {
         return this._userCollaborationProvider;
     }
+    public get graphClientService() {
+        return this._graphClientService;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -255,6 +260,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._connectedUsers = new UserDataMap();
         this._quickPickProvider = new QuickPickProvider();
         this._userCollaborationProvider = new UserCollaborationProvider();
+        this._graphClientService = new GraphClientService();
     }
 
     public setWebExtensionContext(
@@ -782,6 +788,18 @@ class WebExtensionContext implements IWebExtensionContext {
 
     public async removeConnectedUserInContext(userId: string) {
         this.connectedUsers.removeUser(userId);
+    }
+
+    public async openTeamsChat(userId: string): Promise<void> {
+        const mail = await this.graphClientService.getUserEmail(userId);
+        const teamsChatLink = getTeamChatURL(mail);
+        vscode.env.openExternal(vscode.Uri.parse(teamsChatLink.href));
+    }
+
+    public async openMail(userId: string): Promise<void> {
+        const mail = await this.graphClientService.getUserEmail(userId);
+        const mailToPath = getMailToPath(mail);
+        vscode.env.openExternal(vscode.Uri.parse(mailToPath));
     }
 }
 
