@@ -81,7 +81,7 @@ export class QuickPickProvider {
             },
             {
                 label: Constants.SEND_AN_EMAIL,
-                iconPath: Constants.THEME_ICON_MAIL
+                iconPath: new vscode.ThemeIcon(Constants.THEME_ICON_MAIL),
             },
         ];
 
