@@ -7,7 +7,6 @@ import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { IEntityInfo } from "../common/interfaces";
 import * as Constants from "../common/constants";
-import { GraphClientService } from "../services/graphClientService";
 
 interface IQuickPickItem extends vscode.QuickPickItem {
     label: string;
@@ -17,11 +16,9 @@ interface IQuickPickItem extends vscode.QuickPickItem {
 
 export class QuickPickProvider {
     private items: IQuickPickItem[] = [];
-    graphClientService: GraphClientService;
 
     constructor() {
         this.items = new Array<IQuickPickItem>();
-        this.graphClientService = new GraphClientService();
     }
 
     public async updateQuickPickItems(entityInfo: IEntityInfo) {
@@ -85,7 +82,9 @@ export class QuickPickProvider {
             },
         ];
 
-        const collaborationOptionsSelected = await vscode.window.showQuickPick(collaborationOptions);
+        const collaborationOptionsSelected = await vscode.window.showQuickPick(collaborationOptions, {
+            title: `CONTACT ${selectedOption.label.toUpperCase()}`,
+        });
 
         if (collaborationOptionsSelected) {
             if (collaborationOptionsSelected.label === Constants.START_TEAMS_CHAT) {
