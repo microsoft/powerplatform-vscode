@@ -62,23 +62,23 @@ export function isExtensionNeededInFileName(entity: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function GetFileContent(result: any, attributePath: IAttributePath, entityName: string, entityId: string) {
-    let fileContent = result[attributePath.source] ?? NO_CONTENT;
+export function getAttributeContent(result: any, attributePath: IAttributePath, entityName: string, entityId: string) {
+    let value = result[attributePath.source] ?? NO_CONTENT;
 
     try {
         if (result[attributePath.source] && attributePath.relativePath.length) {
-            fileContent =
+            value =
                 JSON.parse(result[attributePath.source])[attributePath.relativePath] ?? NO_CONTENT;
         }
     }
     catch (error) {
         const errorMsg = (error as Error)?.message;
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_GET_FILE_CONTENT_ERROR,
-            GetFileContent.name,
+        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR,
+            getAttributeContent.name,
             `For ${entityName} with entityId ${entityId} and attributePath ${JSON.stringify(attributePath)} error: ${errorMsg}`);
     }
 
-    return fileContent;
+    return value;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -151,7 +151,9 @@ export function isCoPresenceEnabled() {
         );
     }
 
-    return isCoPresenceEnabled as boolean;
+    // return isCoPresenceEnabled as boolean;
+    // this feature is under development and will be enabled in future
+    return false;
 }
 
 /**
@@ -172,7 +174,7 @@ export function getSanitizedFileName(fileName: string): string {
 
 // Get the file's extension
 export function getFileExtension(fileName: string): string | undefined {
-    return fileName.split('.').pop();
+    return fileName.toString().split('.').pop();
 }
 
 export function getFileExtensionForPreload() {
@@ -262,5 +264,13 @@ export function updateFileContentInFileDataMap(fileFsPath: string, fileContent: 
 export function getImageFileContent(fileFsPath: string, fileContent: Uint8Array) {
     const webFileV2 = isWebFileV2(getFileEntityName(fileFsPath), getFileAttributePath(fileFsPath)?.source);
 
-    return webFileV2 ? fileContent : Buffer.from(fileContent).toString(BASE_64);
+    return webFileV2 ? fileContent : convertContentToString(fileContent, true);
+}
+
+export function getTeamChatURL (mail: string) {
+    return new URL(mail, "https://teams.microsoft.com/l/chat/0/0?users=");
+}
+
+export function getMailToPath (mail: string) {
+    return `mailto:${mail}`;
 }
