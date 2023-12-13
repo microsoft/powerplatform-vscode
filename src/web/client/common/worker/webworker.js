@@ -80,14 +80,20 @@ class AzureFluidClient {
     }
 }
 
-async function loadContainer(config, id, swpId) {
+async function loadContainer(config, swpId, entityInfo) {
     try {
         const { container, audience, map } =
             await AzureFluidClient.fetchContainerAndService(config, swpId);
 
         const existingMembers = audience.getMembers();
 
-        // TODO: yet to be decided how entity id will be passed in container from vscode side
+        const myself = audience.getMyself();
+
+        if (audience && myself) {
+            const myConnectionId = audience['container'].clientId;
+            const entityIdObj = new Array(entityInfo.rootWebPageId);
+            (await container.initialObjects.sharedState.get('selection').get()).set(myConnectionId, entityIdObj);
+        }
 
         audience.on("memberRemoved", (clientId, member) => {
             if (!existingMembers.get(member.userId)) {
@@ -101,22 +107,23 @@ async function loadContainer(config, id, swpId) {
         if (!initial) {
             existingMembers.forEach(async (value, key) => {
                 const otherUser = value;
-                const connectionArray = otherUser.connections;
 
-                const entityId = [];
+                const userConnections = otherUser.connections;
+
+                const userEntityIdArray = [];
 
                 const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
 
-                connectionArray.forEach((connectionId) => {
-                    entityId.push(connectionIdInContainer.get(connectionId));
+                userConnections.forEach((connection) => {
+                    userEntityIdArray.push(connectionIdInContainer.get(connection.id));
                 });
 
                 self.postMessage({
                     type: "client-data",
                     userName: otherUser.userName,
-                    userId: key,
+                    userId: otherUser.additionalDetails.AadObjectId,
                     containerId: swpId,
-                    entityId: entityId,
+                    entityId: userEntityIdArray,
                 });
             });
             initial = true;
@@ -127,23 +134,23 @@ async function loadContainer(config, id, swpId) {
                 return;
             } else {
                 const otherUser = map.get(changed.key);
-                const connectionArray = otherUser.connections;
+                const userConnections = otherUser.connections;
 
-                const entityId = [];
+                const userEntityIdArray = [];
 
                 const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
 
-                connectionArray.forEach((connectionId) => {
-                    entityId.push(connectionIdInContainer.get(connectionId));
+                userConnections.forEach((connection) => {
+                    userEntityIdArray.push(connectionIdInContainer.get(connection.id));
                 });
 
                 // eslint-disable-next-line no-undef
                 await self.postMessage({
                     type: "client-data",
-                    userId: changed.key,
+                    userId: otherUser.additionalDetails.AadObjectId,
                     userName: otherUser.userName,
                     containerId: swpId,
-                    entityId: entityId,
+                    entityId: userEntityIdArray,
                 });
             }
         });
@@ -160,8 +167,8 @@ function runFluidApp() {
 
         await loadContainer(
             message.afrConfig,
-            message.containerId,
             message.afrConfig.swpId,
+            message.entityInfo
         );
     });
 }

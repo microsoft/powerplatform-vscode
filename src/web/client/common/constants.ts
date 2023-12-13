@@ -28,6 +28,13 @@ export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 1000;
 export const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default";
 export const BACK_TO_STUDIO_URL_TEMPLATE = "https://make{.region}.powerpages.microsoft.com/e/{environmentId}/sites/{webSiteId}/pages";
 export const STUDIO_PROD_REGION = "prod";
+export const ARTEMIS_RESPONSE_FAILED = "Artemis response failed";
+export const WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED = "Web extension get from graph client failed";
+export const WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED = "Web extension fetch worker script failed";
+export const WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR = "Web extension populate shared workspace system error";
+export const WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED = "Web extension web worker registration failed";
+export const WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR = "Web extension fetch get or create shared workspace error";
+export const WEB_EXTENSION_QUICK_PICK_DEFAULT_STRING = "No users are currently viewing this page";
 
 // Web extension constants
 export const BASE_64 = 'base64';
@@ -52,6 +59,21 @@ export const MULTI_FILE_FEATURE_SETTING_NAME = "enableMultiFileFeature";
 
 // Co-presence feature constants
 export const CO_PRESENCE_FEATURE_SETTING_NAME = "enableCoPresenceFeature";
+
+// Co-presence constants
+export const GET_OR_CREATE_SHARED_WORK_SPACE = "/api/data/v9.2/GetOrCreateSharedWorkspace";
+
+export enum sharedWorkspaceParameters {
+    SHAREWORKSPACE_ID = "sharedworkspaceid",
+    TENANT_ID = "tenantid",
+    ACCESS_TOKEN = "accesstoken",
+    DISCOVERY_ENDPOINT = "discoveryendpoint",
+}
+
+export enum workerEventMessages {
+    UPDATE_CONNECTED_USERS = "client-data",
+    REMOVE_CONNECTED_USER = "member-removed",
+}
 
 export enum initializationEntityName {
     WEBSITE = "websites",
@@ -97,3 +119,20 @@ export enum portalSchemaVersion {
     V1 = "portalschemav1",
     V2 = "portalschemav2",
 }
+
+// Microsoft Graph Client constants
+export const SCOPE_OPTION_CONTACTS_READ = "Contacts.Read";
+export const SCOPE_OPTION_USERS_READ_BASIC_ALL = "User.ReadBasic.All";
+
+export const MICROSOFT_GRAPH_USERS_BASE_URL = "https://graph.microsoft.com/v1.0/users/";
+
+export enum GraphService {
+    GRAPH_MAIL = "mail",
+    GRAPH_PROFILE_PICTURE = "profilePicture",
+}
+
+export const MICROSOFT_GRAPH_PROFILE_PICTURE_SERVICE_CALL = "/photo/$value";
+
+// User collaboration constants
+export const USER_COLLABORATION_CONTEXT_VALUE = "userNode";
+export const THEME_ICON_ACCOUNT = "account";

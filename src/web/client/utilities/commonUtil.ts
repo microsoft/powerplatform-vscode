@@ -151,7 +151,9 @@ export function isCoPresenceEnabled() {
         );
     }
 
-    return isCoPresenceEnabled as boolean;
+    // return isCoPresenceEnabled as boolean;
+    // this feature is under development and will be enabled in future
+    return false;
 }
 
 /**
@@ -172,7 +174,7 @@ export function getSanitizedFileName(fileName: string): string {
 
 // Get the file's extension
 export function getFileExtension(fileName: string): string | undefined {
-    return fileName.split('.').pop();
+    return fileName.toString().split('.').pop();
 }
 
 export function getFileExtensionForPreload() {
@@ -263,4 +265,12 @@ export function getImageFileContent(fileFsPath: string, fileContent: Uint8Array)
     const webFileV2 = isWebFileV2(getFileEntityName(fileFsPath), getFileAttributePath(fileFsPath)?.source);
 
     return webFileV2 ? fileContent : convertContentToString(fileContent, true);
+}
+
+export function getTeamChatURL (mail: string) {
+    return new URL(mail, "https://teams.microsoft.com/l/chat/0/0?users=");
+}
+
+export function getMailToPath (mail: string) {
+    return `mailto:${mail}`;
 }
