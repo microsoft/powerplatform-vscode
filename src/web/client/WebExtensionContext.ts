@@ -790,16 +790,33 @@ class WebExtensionContext implements IWebExtensionContext {
         this.connectedUsers.removeUser(userId);
     }
 
-    public async openTeamsChat(userId: string): Promise<void> {
+    public async getMail(userId: string): Promise<string> {
         const mail = await this.graphClientService.getUserEmail(userId);
-        const teamsChatLink = getTeamChatURL(mail);
-        vscode.env.openExternal(vscode.Uri.parse(teamsChatLink.href));
+        return mail;
+    }
+
+    public openTeamsChat(userId: string) {
+        this.getMail(userId).then((mail) => {
+            if (mail === undefined) {
+                vscode.window.showErrorMessage(Constants.WEB_EXTENSION_TEAMS_CHAT_NOT_AVAILABLE);
+                return;
+            } else {
+                const teamsChatLink = getTeamChatURL(mail);
+                vscode.env.openExternal(vscode.Uri.parse(teamsChatLink.href));
+            }
+        });
     }
 
     public async openMail(userId: string): Promise<void> {
-        const mail = await this.graphClientService.getUserEmail(userId);
-        const mailToPath = getMailToPath(mail);
-        vscode.env.openExternal(vscode.Uri.parse(mailToPath));
+        this.getMail(userId).then((mail) => {
+            if (mail === undefined) {
+                vscode.window.showErrorMessage(Constants.WEB_EXTENSION_SEND_EMAIL_NOT_AVAILABLE);
+                return;
+            } else {
+                const mailToPath = getMailToPath(mail);
+                vscode.env.openExternal(vscode.Uri.parse(mailToPath));
+            }
+        });
     }
 }
 

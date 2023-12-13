@@ -72,8 +72,8 @@ export class QuickPickProvider {
             {
                 label: Constants.START_TEAMS_CHAT,
                 iconPath: {
-                    light: '../assets/microsoftTeamsIcon/light/microsoftTeams.svg',
-                    dark: '../assets/microsoftTeamsIcon/dark/microsoftTeams.svg',
+                    light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', 'microsoftTeamsIcon', 'light', 'microsoftTeams.svg'),
+                    dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', 'microsoftTeamsIcon', 'dark', 'microsoftTeams.svg'),
                 }
             },
             {
@@ -90,10 +90,14 @@ export class QuickPickProvider {
             if (collaborationOptionsSelected.label === Constants.START_TEAMS_CHAT) {
                 if (selectedOption.id) {
                     WebExtensionContext.openTeamsChat(selectedOption.id);
+                } else {
+                    vscode.window.showInformationMessage(Constants.WEB_EXTENSION_TEAMS_CHAT_NOT_AVAILABLE);
                 }
             } else if (collaborationOptionsSelected.label === Constants.SEND_AN_EMAIL) {
                 if (selectedOption.id) {
                     WebExtensionContext.openMail(selectedOption.id);
+                } else {
+                    vscode.window.showInformationMessage(Constants.WEB_EXTENSION_SEND_EMAIL_NOT_AVAILABLE);
                 }
             }
         }

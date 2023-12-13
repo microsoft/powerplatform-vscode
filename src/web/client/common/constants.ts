@@ -139,3 +139,5 @@ export const THEME_ICON_ACCOUNT = "account";
 export const THEME_ICON_MAIL = "mail";
 export const START_TEAMS_CHAT = "Start Teams Chat";
 export const SEND_AN_EMAIL = "Send an email";
+export const WEB_EXTENSION_TEAMS_CHAT_NOT_AVAILABLE = "Teams chat is not available for this user";
+export const WEB_EXTENSION_SEND_EMAIL_NOT_AVAILABLE = "Send email is not available for this user";
