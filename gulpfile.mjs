@@ -205,7 +205,7 @@ function testWeb() {
 }
 
 // unit tests without special test runner
-const test = gulp.series(testUnitTests, testWeb);
+const test = async() => await gulp.series(testUnitTests, testWeb);
 
 /**
  * Compiles the integration tests and transpiles the results to /out
@@ -223,35 +223,35 @@ function compileIntegrationTests() {
 /**
  * Tests the debugger integration tests after transpiling the source files to /out
  */
-const testDebugger = gulp.series(compileIntegrationTests, async () => {
+const testDebugger = async() => await gulp.series(compileIntegrationTests, async () => {
     const testRunner = require("./out/debugger/test/runTest");
     await testRunner.main();
 });
 
 // tests that require vscode-electron (which requires a display or xvfb)
-const testInt = gulp.series(testDebugger);
+const testInt = async() => await gulp.series(testDebugger);
 
 /**
  * Tests the debugger integration tests after transpiling the source files to /out
  */
-const testWebIntegration = gulp.series(compileIntegrationTests, async () => {
+const testWebIntegration = async() => await gulp.series(compileIntegrationTests, async () => {
     const testRunner = require("./out/web/client/test/runTest");
     await testRunner.main();
 });
 
 // tests that require vscode-electron (which requires a display or xvfb)
-const testWebInt = gulp.series(testWebIntegration);
+const testWebInt = async() => await gulp.series(testWebIntegration);
 
 /**
  * Tests the power-pages integration tests after transpiling the source files to /out
  */
-const testDesktopIntegration = gulp.series(compileIntegrationTests, async () => {
+const testDesktopIntegration = async() => await gulp.series(compileIntegrationTests, async () => {
     const testRunner = require("./out/client/test/runTest");
     await testRunner.main();
 });
 
 // tests that require vscode-electron (which requires a display or xvfb)
-const testDesktopInt = gulp.series(testDesktopIntegration);
+const testDesktopInt = async() => await gulp.series(testDesktopIntegration);
 
 async function packageVsix() {
     fs.ensureDirSync(packagedir);
@@ -338,7 +338,7 @@ async function snapshot() {
 const feedName = 'CAP_ISVExp_Tools_Stable';
 const cliVersion = '1.29.11';
 
-const recompile = gulp.series(
+const recompile = async() => await gulp.series(
     clean,
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI', cliVersion, path.resolve(distdir, 'pac')),
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Tool', cliVersion, path.resolve(distdir, 'pac')),
@@ -350,7 +350,7 @@ const recompile = gulp.series(
     compileWorker,
 );
 
-const dist = gulp.series(
+const dist = async() => await gulp.series(
     recompile,
     packageVsix,
     lint,
