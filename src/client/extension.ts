@@ -35,6 +35,7 @@ import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
+import { exec } from "child_process";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -154,6 +155,41 @@ export async function activate(
     // Add CRUD related callback subscription here
     await handleFileSystemCallbacks(_context, _telemetry);
 
+    vscode.commands.registerCommand('microsoft-powerapps-portals.codeQlDatabase', () => {
+
+        const extension = vscode.extensions.getExtension('GitHub.vscode-codeql'); // Replace with the ID of the extension that contains the CLI tool
+        //Checks for extension installed or not and prompts to install if not installed
+        if (!extension) {
+            vscode.window.showErrorMessage('CodeQL extension is not installed', 'Install Now')
+                .then(selection => {
+                    if (selection === 'Install Now') {
+                        vscode.commands.executeCommand('workbench.extensions.installExtension', 'GitHub.vscode-codeql');
+                    }
+                });
+            return;
+        }
+        vscode.commands.executeCommand('codeQLDatabases.chooseDatabaseFolder'); // invoking other extension command
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const globalStorageLocalPath = context.globalStorageUri.fsPath;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const parentDirectoryPath = path.dirname(globalStorageLocalPath);
+
+        if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+            const codeQlDbPath = vscode.workspace.workspaceFolders[0].uri.fsPath + '\\codeql-database'; // Replace with user input
+            const cliPath = extension ? path.join(parentDirectoryPath, 'github.vscode-codeql', 'distribution1', 'codeql', 'codeql.exe') : ''; // Replace with the path to your CLI tool relative to the extension root
+            exec(`${cliPath} database create ${codeQlDbPath} --language=javascript`, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`exec error: ${error}`);
+                    return;
+                }
+                vscode.window.showInformationMessage(`stdout: ${stdout}`);
+                console.error(`stderr: ${stderr}`);
+            });
+        } else {
+            console.error('No workspace folders found');
+        }
+    });
+
     const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
@@ -166,6 +202,9 @@ export async function activate(
 
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+
+
+
         let telemetryData = '';
         let listOfActivePortals = [];
         try {
@@ -179,6 +218,8 @@ export async function activate(
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
+
+
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);

@@ -155,6 +155,10 @@
     ],
     "commands": [
       {
+        "command": "microsoft-powerapps-portals.codeQlDatabase",
+        "title": "Create CodeQl Database"
+      },
+      {
         "command": "powerpages.collaboration.openTeamsChat",
         "title": "Open Teams Chat",
         "icon": {
