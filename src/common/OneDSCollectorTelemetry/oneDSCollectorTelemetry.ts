@@ -14,7 +14,7 @@ export class OneDSCollectorTelemetry implements ITelemetryLogger{
 	private readonly postChannel: PostChannel = new PostChannel();
     
     private readonly fetchHttpXHROverride: IXHROverride = {
-        sendPOST: (payload, oncomplete, sync) => {
+        sendPOST: (payload, oncomplete) => {
             const telemetryRequestData =
                 typeof payload.data === "string"
                     ? payload.data
@@ -42,6 +42,7 @@ export class OneDSCollectorTelemetry implements ITelemetryLogger{
                             .catch((error) => {
                                 // Something wrong with the response body? Play it safe by passing the response status; don't try to
                                 // explicitly re-send the telemetry events by specifying status 0.
+                                console.error("Error inside telemetry request body:", error);
                                 oncomplete(response.status, headerMap, "");
                             });
                     } else {
@@ -88,7 +89,7 @@ export class OneDSCollectorTelemetry implements ITelemetryLogger{
     
 	/// Trace info log
 	public traceInfo(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
-		var event = {
+		const event = {
 			name: "CustomEvent",
 			data: {
                 eventName: eventName,
@@ -104,7 +105,7 @@ export class OneDSCollectorTelemetry implements ITelemetryLogger{
 
 	/// Trace warning log
 	public traceWarning(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
-		var event = {
+		const event = {
 			name: "CustomEvent",
 			data: {
                 eventName: eventName,
@@ -120,7 +121,7 @@ export class OneDSCollectorTelemetry implements ITelemetryLogger{
 
     // Trace error log
 	public traceError(eventName: string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) {
-		var event = {
+		const event = {
 			name: "CustomEvent",
 			data: {
                 eventName: eventName,
