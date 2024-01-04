@@ -8,7 +8,7 @@ import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@mic
 import { ITelemetryLogger } from "./ITelemetryLogger";
 import { EventType } from "./telemetryConstants";
 
-export class OneDSCollectorTelemetry implements ITelemetryLogger{
+export class OneDSLogger implements ITelemetryLogger{
 
     private readonly appInsightsCore = new AppInsightsCore();
 	private readonly postChannel: PostChannel = new PostChannel();
