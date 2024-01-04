@@ -9,7 +9,7 @@ import { ITelemetryLogger } from "./ITelemetryLogger";
 import { EventType } from "./telemetryConstants";
 
 
-export class OneDSLogger implements ITelemetryLogger{
+class OneDSLogger implements ITelemetryLogger{
 
     private readonly appInsightsCore = new AppInsightsCore();
 	private readonly postChannel: PostChannel = new PostChannel();
@@ -57,15 +57,18 @@ export class OneDSLogger implements ITelemetryLogger{
                 });
         },
     };
-    
+
     public constructor() {
+    }
+    
+    public initializeAppInsightsCore() {
 
         const channelConfig: IChannelConfiguration = {
 			alwaysUseXhrOverride: true,
 			httpXHROverride: this.fetchHttpXHROverride,
 		};
 
-		const instrumentationKey = '';
+		const instrumentationKey = 'bd47fc8d971f4283a6686ec46fd48782-bdef6c1c-75ab-417c-a1f7-8bbe21e12da6-7708';
 
 		// Configure App insights core to send to collector
 		const coreConfig: IExtendedConfiguration = {
@@ -138,3 +141,9 @@ export class OneDSLogger implements ITelemetryLogger{
 		this.appInsightsCore.track(event);
 	}
 }
+
+const oneDSLoggerInstance = new OneDSLogger();
+
+Object.freeze(oneDSLoggerInstance);
+
+export default oneDSLoggerInstance;

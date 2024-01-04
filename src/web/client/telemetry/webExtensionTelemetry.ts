@@ -10,6 +10,7 @@ import { sanitizeURL } from "../utilities/urlBuilderUtil";
 import { telemetryEventNames } from "./constants";
 import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "./webExtensionTelemetryInterface";
 import { isNullOrUndefined } from '../utilities/commonUtil';
+//import oneDSLogWrapperInstance from "../../../common/OneDSLoggerTelemetry/oneDSLogWrapper";
 
 export class WebExtensionTelemetry {
     private _telemetry: TelemetryReporter | undefined;
@@ -33,6 +34,8 @@ export class WebExtensionTelemetry {
             }
         }
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
+
+  //      oneDSLogWrapperInstance.traceInfo(telemetryData.eventName, telemetryData.properties, undefined, "Testing logging events");
     }
 
     public sendExtensionInitQueryParametersTelemetry(queryParamsMap: Map<string, string>) {
