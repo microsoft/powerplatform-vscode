@@ -8,6 +8,7 @@ import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@mic
 import { ITelemetryLogger } from "./ITelemetryLogger";
 import { EventType } from "./telemetryConstants";
 
+
 export class OneDSLogger implements ITelemetryLogger{
 
     private readonly appInsightsCore = new AppInsightsCore();
