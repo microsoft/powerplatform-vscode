@@ -73,7 +73,7 @@ export class OneDSCollectorTelemetry implements ITelemetryLogger{
 			disableDbgExt: true, // Small perf optimization
 			extensions: [
 				// Passing no channels here when the user opts out of telemetry would be ideal, completely ensuring telemetry
-				// could not be sent out at all. Could be a later improvement.
+				// could not be sent out at all.
 				this.postChannel,
 			],
 			extensionConfig: {
