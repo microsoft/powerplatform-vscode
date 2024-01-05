@@ -199,16 +199,29 @@ export async function activate(
         const parentDirectoryPath = path.dirname(globalStorageLocalPath);
 
         if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-            const codeQlDbPath = vscode.workspace.workspaceFolders[0].uri.fsPath + '\\codeql-databaseOne'; // Replace with user input
+            //const codeQlDbPath = vscode.workspace.workspaceFolders[0].uri.fsPath + '\\codeql-databaseOne'; // Replace with user input
             const cliPath = extension ? path.join(parentDirectoryPath, 'github.vscode-codeql', 'distribution1', 'codeql', 'codeql.exe') : ''; // Replace with the path to your CLI tool relative to the extension root
-            exec(`${cliPath} database create ${codeQlDbPath} --language=javascript`, (error, stdout, stderr) => {  // It should run in portal folder: exec(execCommand, { cwd: portalDirectory }, (error) => {}
+            // exec(`${cliPath} database create ${codeQlDbPath} --language=javascript`, (error, stdout, stderr) => {  // It should run in portal folder: exec(execCommand, { cwd: portalDirectory }, (error) => {}
+            //     if (error) {
+            //         console.error(`exec error: ${error}`);
+            //         return;
+            //     }
+            //     vscode.window.showInformationMessage(`stdout: ${stdout}`);
+            //     console.error(`stderr: ${stderr}`);
+            // });
+
+            const outputChannel = vscode.window.createOutputChannel('My Extension');
+
+            exec(`${cliPath} query run "C:/pac-portals/codeQlSetup/codeql/query.ql" -d "C:/pac-portals/codeQlSetup/db"`, (error, stdout, stderr) => {
                 if (error) {
-                    console.error(`exec error: ${error}`);
+                    outputChannel.appendLine(`exec error: ${error}`);
                     return;
                 }
-                vscode.window.showInformationMessage(`stdout: ${stdout}`);
-                console.error(`stderr: ${stderr}`);
+                outputChannel.appendLine(`stdout: ${stdout}`);
+                outputChannel.appendLine(`stderr: ${stderr}`);
             });
+
+            outputChannel.show();
         } else {
             console.error('No workspace folders found');
         }
