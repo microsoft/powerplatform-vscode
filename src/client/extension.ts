@@ -155,6 +155,30 @@ export async function activate(
     // Add CRUD related callback subscription here
     await handleFileSystemCallbacks(_context, _telemetry);
 
+    vscode.window.registerUriHandler({
+        handleUri(uri:vscode.Uri) {
+            const params = uri.query.split('&'); //'vscode://microsoft-IsvExpTools.powerplatform-vscode?org&siteid'
+            let org = '';
+            let siteid = '';
+            params.forEach(param => {
+                const pair = param.split('=');
+                switch (pair[0]){
+                    case 'org':{
+                        org = pair[1];
+                        break;
+                    }
+                    case 'siteid':{
+                        siteid = pair[1];
+                        break;
+                    }
+                }
+            });
+            vscode.commands.executeCommand("pacCLI.pacAuthCreate", org);
+            vscode.commands.executeCommand("pacCLI.pacPaportalDownload", siteid);
+            vscode.commands.executeCommand('microsoft-powerapps-portals.codeQlDatabase') //This should be invoked after the portal is downloaded
+        }
+    })
+
     vscode.commands.registerCommand('microsoft-powerapps-portals.codeQlDatabase', () => {
 
         const extension = vscode.extensions.getExtension('GitHub.vscode-codeql'); // Replace with the ID of the extension that contains the CLI tool
@@ -168,16 +192,16 @@ export async function activate(
                 });
             return;
         }
-        vscode.commands.executeCommand('codeQLDatabases.chooseDatabaseFolder'); // invoking other extension command
+       // vscode.commands.executeCommand('codeQLDatabases.chooseDatabaseFolder'); // invoking other extension command
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const globalStorageLocalPath = context.globalStorageUri.fsPath;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const parentDirectoryPath = path.dirname(globalStorageLocalPath);
 
         if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-            const codeQlDbPath = vscode.workspace.workspaceFolders[0].uri.fsPath + '\\codeql-database'; // Replace with user input
+            const codeQlDbPath = vscode.workspace.workspaceFolders[0].uri.fsPath + '\\codeql-databaseOne'; // Replace with user input
             const cliPath = extension ? path.join(parentDirectoryPath, 'github.vscode-codeql', 'distribution1', 'codeql', 'codeql.exe') : ''; // Replace with the path to your CLI tool relative to the extension root
-            exec(`${cliPath} database create ${codeQlDbPath} --language=javascript`, (error, stdout, stderr) => {
+            exec(`${cliPath} database create ${codeQlDbPath} --language=javascript`, (error, stdout, stderr) => {  // It should run in portal folder: exec(execCommand, { cwd: portalDirectory }, (error) => {}
                 if (error) {
                     console.error(`exec error: ${error}`);
                     return;
