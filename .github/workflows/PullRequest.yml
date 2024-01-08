@@ -45,4 +45,6 @@ jobs:
     - name: Run integration tests
       uses: coactions/setup-xvfb@v1
       with:
-        run: npm run test-integration
+        run:|
+         npm run test-integration
+         npm run test-web-integration
