@@ -9,26 +9,24 @@ import { OneDSLogger } from "./oneDSLogger";
 //// 1. Abstracting code from manual trace log APIs. 
 //// 2. Constrolling instantiation of 1ds SDK framework code in oneDSLogger.ts
 
-let instance: oneDSLoggerWrapper;
-
 export class oneDSLoggerWrapper {
+    private static instance: oneDSLoggerWrapper;
     private static oneDSLoggerIntance : OneDSLogger;
 
-    constructor(region: string, geo?: string) {
-        if(instance) {
-            return this;
-        }
+    private constructor(region: string, geo?: string) {
         oneDSLoggerWrapper.oneDSLoggerIntance = new OneDSLogger(region, geo);
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        instance = this;
     }
 
 
     static getLogger(){
-        if(!instance) {
-            throw new Error("oneDSLoggerWrapper is not initialized");
+        return this.instance;
+    }
+
+    static instantiate(region:string, geo?:string){
+        if(!oneDSLoggerWrapper.instance) {
+            oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(region, geo);
         }
-        return instance;
+        return this.instance;
     }
 
 	/// Trace info log
