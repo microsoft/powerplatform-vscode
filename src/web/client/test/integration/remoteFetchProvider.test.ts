@@ -15,14 +15,15 @@ import { schemaEntityKey, schemaKey } from "../../schema/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
-import * as errorHandler from "../../common/errorHandler";
 import * as authenticationProvider from "../../common/authenticationProvider";
+import { telemetryEventNames } from "../../telemetry/constants";
 
 describe("remoteFetchProvider", () => {
     afterEach(() => {
         sinon.restore();
     });
-    it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccess_shouldCallAllSuccessFunction", async () => {
+
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccess_forDefaultFileInfo_shouldCallAllSuccessFunction", async () => {
         //Act
         const entityName = "webpages";
         const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
@@ -77,11 +78,11 @@ describe("remoteFetchProvider", () => {
                     return resolve({
                         value: [
                             {
-                                name: "testname" ,
-                                powerpagecomponentid: entityId ,
-                                _powerpagesitelanguageid_value: "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",                                 
+                                name: "testname",
+                                powerpagecomponentid: entityId,
+                                _powerpagesitelanguageid_value: "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
                                 value: '{ "ddrive": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==", "value": "value" }',
-                        } ]
+                            }]
                     });
                 });
             },
@@ -127,7 +128,6 @@ describe("remoteFetchProvider", () => {
             path: "powerplatform-vfs:/testWebSite/web-pages/testname/",
         } as vscode.Uri;
         const parse = stub(vscode.Uri, "parse").returns(fileUri);
-        const executeCommand = stub(vscode.commands, "executeCommand");
 
         const portalFs = new PortalsFS();
         const createDirectory = stub(portalFs, "createDirectory");
@@ -140,7 +140,7 @@ describe("remoteFetchProvider", () => {
         await WebExtensionContext.authenticateAndUpdateDataverseProperties();
 
         //Action
-        await fetchDataFromDataverseAndUpdateVFS(portalFs);
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
 
         //Assert
         assert.callCount(_mockFetch, 4);
@@ -153,7 +153,7 @@ describe("remoteFetchProvider", () => {
         );
 
         assert.calledOnce(getRequestURL);
-        assert.callCount(parse, 7);
+        assert.callCount(parse, 6);
         assert.callCount(createDirectory, 1);
         const createDirectoryCalls = createDirectory.getCalls();
         expect(createDirectoryCalls[0].args[0]).deep.eq({
@@ -211,7 +211,197 @@ describe("remoteFetchProvider", () => {
 
         assert.callCount(writeFile, 3);
         assert.calledOnce(updateSingleFileUrisInContext);
-        assert.callCount(sendInfoTelemetry, 3);
+        assert.callCount(sendInfoTelemetry, 4);
+        assert.callCount(sendAPISuccessTelemetry, 4);
+    });
+
+
+
+    it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccess_forNonDefaultFile_shouldCallAllSuccessFunction", async () => {
+        //Act
+        const entityName = "webpages";
+        const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [
+                Constants.queryParameters.WEBSITE_ID,
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+            ],
+            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
+            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+        ]);
+
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
+        const websiteIdToLanguage = new Map<string, string>([
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
+        );
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
+        ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            accessToken
+        );
+
+        const _mockFetch = stub(fetch, "default").resolves({
+            ok: true,
+            statusText: "statusText",
+            json: () => {
+                return new Promise((resolve) => {
+                    return resolve({
+                        value: [
+                            {
+                                name: "testname",
+                                powerpagecomponentid: entityId,
+                                _powerpagesitelanguageid_value: "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                                value: '{ "ddrive": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==", "value": "value" }',
+                            }]
+                    });
+                });
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
+
+        const updateFileDetailsInContext = stub(
+            WebExtensionContext,
+            "updateFileDetailsInContext"
+        );
+        stub(WebExtensionContext, "updateEntityDetailsInContext");
+        const sendAPITelemetry = stub(
+            WebExtensionContext.telemetry,
+            "sendAPITelemetry"
+        );
+        const sendAPISuccessTelemetry = stub(
+            WebExtensionContext.telemetry,
+            "sendAPISuccessTelemetry"
+        );
+        const sendInfoTelemetry = stub(
+            WebExtensionContext.telemetry,
+            "sendInfoTelemetry"
+        );
+
+        const requestURL = "make.powerpgaes.com";
+        const getRequestURL = stub(urlBuilderUtil, "getRequestURL").returns(
+            requestURL
+        );
+
+        stub(urlBuilderUtil, "getCustomRequestURL").returns(requestURL);
+
+        stub(schemaHelperUtil, "isBase64Encoded").returns(true);
+        stub(commonUtil, "GetFileNameWithExtension").returns("test.txt");
+        stub(schemaHelperUtil, "getAttributePath").returns({
+            source: "value",
+            relativePath: "ddrive",
+        });
+        const fileUri: vscode.Uri = {
+            path: "powerplatform-vfs:/testWebSite/web-pages/testname/",
+        } as vscode.Uri;
+        const parse = stub(vscode.Uri, "parse").returns(fileUri);
+        const executeCommand = stub(vscode.commands, "executeCommand");
+
+        const portalFs = new PortalsFS();
+        const createDirectory = stub(portalFs, "createDirectory");
+        const writeFile = stub(portalFs, "writeFile");
+        WebExtensionContext.setWebExtensionContext(
+            entityName,
+            entityId,
+            queryParamsMap
+        );
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
+        //Action
+        await fetchDataFromDataverseAndUpdateVFS(portalFs);
+
+        //Assert
+        assert.callCount(_mockFetch, 4);
+
+        assert.calledWith(
+            sendAPITelemetry,
+            requestURL,
+            entityName,
+            Constants.httpMethod.GET
+        );
+
+        assert.calledOnce(getRequestURL);
+        assert.callCount(parse, 5);
+        assert.callCount(createDirectory, 1);
+        const createDirectoryCalls = createDirectory.getCalls();
+        expect(createDirectoryCalls[0].args[0]).deep.eq({
+            path: "powerplatform-vfs:/testWebSite/web-pages/testname/",
+        });
+
+        const updateFileDetailsInContextCalls =
+            updateFileDetailsInContext.getCalls();
+
+        assert.callCount(updateFileDetailsInContext, 3);
+        expect(
+            updateFileDetailsInContextCalls[0].args[0],
+            "powerplatform-vfs:/testWebSite/web-pages/testname/test.txt"
+        );
+        expect(updateFileDetailsInContextCalls[0].args[1], entityId);
+        expect(updateFileDetailsInContextCalls[0].args[2], "webpages");
+        expect(updateFileDetailsInContextCalls[0].args[3], "test.txt");
+        expect(updateFileDetailsInContextCalls[0].args[4], undefined);
+        expect(updateFileDetailsInContextCalls[0].args[5], "customcss.css");
+        expect(
+            updateFileDetailsInContextCalls[0].args[6],
+            "{ source: 'value', relativePath: 'ddrive' }"
+        );
+        expect(updateFileDetailsInContextCalls[0].args[7], "false");
+
+        expect(
+            updateFileDetailsInContextCalls[1].args[0],
+            "powerplatform-vfs:/testWebSite/web-pages/test Name/test.txt"
+        );
+        expect(updateFileDetailsInContextCalls[1].args[1], entityId);
+        expect(updateFileDetailsInContextCalls[1].args[2], "webpages");
+        expect(updateFileDetailsInContextCalls[1].args[3], "test.txt");
+        expect(updateFileDetailsInContextCalls[1].args[4], undefined);
+        expect(updateFileDetailsInContextCalls[1].args[5], "customcss.css");
+        expect(
+            updateFileDetailsInContextCalls[1].args[6],
+            "{ source: 'value', relativePath: 'ddrive' }"
+        );
+        expect(updateFileDetailsInContextCalls[1].args[7], "false");
+
+        expect(
+            updateFileDetailsInContextCalls[2].args[0],
+            "powerplatform-vfs:/testWebSite/web-pages/test Name/test.txt"
+        );
+        expect(updateFileDetailsInContextCalls[2].args[1], entityId);
+        expect(updateFileDetailsInContextCalls[2].args[2], "webpages");
+        expect(updateFileDetailsInContextCalls[2].args[3], "test.txt");
+        expect(updateFileDetailsInContextCalls[2].args[4], undefined);
+        expect(updateFileDetailsInContextCalls[2].args[5], "customcss.css");
+        expect(
+            updateFileDetailsInContextCalls[2].args[6],
+            "{ source: 'value', relativePath: 'ddrive' }"
+        );
+        expect(updateFileDetailsInContextCalls[1].args[7], "false");
+
+        assert.callCount(writeFile, 3);
+        assert.callCount(sendInfoTelemetry, 6);
         assert.calledOnce(executeCommand);
         assert.callCount(sendAPISuccessTelemetry, 4);
     });
@@ -278,35 +468,27 @@ describe("remoteFetchProvider", () => {
             json: () => {
                 return new Promise((resolve) => {
                     return resolve({
-                        value: null,
+                        "@odata.count": 1,
+                        "@Microsoft.Dynamics.CRM.totalrecordcount": 1,
+                        "value": null
                     });
                 });
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
-        const sendAPIFailureTelemetry = stub(
+        const sendErrorTelemetry = stub(
             WebExtensionContext.telemetry,
-            "sendAPIFailureTelemetry"
+            "sendErrorTelemetry"
         );
-
-        const showErrorDialog = stub(errorHandler, "showErrorDialog");
 
         //Action
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-
-        assert.calledOnce(showErrorDialog);
-
-        expect(showErrorDialog.getCalls()[0].args[0]).eq(
-            "There was a problem opening the workspace"
-        );
-        expect(showErrorDialog.getCalls()[0].args[1]).eq(
-            "We encountered an error preparing the file for edit."
-        );
-        assert.calledOnce(sendAPIFailureTelemetry);
-
+        assert.calledOnceWithMatch(sendErrorTelemetry,
+            telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+            "createContentFiles");
         assert.calledOnce(_mockFetch);
     });
 
@@ -373,39 +555,25 @@ describe("remoteFetchProvider", () => {
             json: () => {
                 return new Promise((resolve) => {
                     return resolve({
-                        value: null,
+                        "@odata.count": 1,
+                        "@Microsoft.Dynamics.CRM.totalrecordcount": 1,
+                        "value": null,
                     });
                 });
             },
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any);
 
-        const sendAPIFailureTelemetry = stub(
-            WebExtensionContext.telemetry,
-            "sendAPIFailureTelemetry"
-        );
-
-        const showErrorDialog = stub(errorHandler, "showErrorDialog");
-
         //Action
         await fetchDataFromDataverseAndUpdateVFS(portalFs);
 
         //Assert
-        assert.calledOnce(showErrorDialog);
-        expect(showErrorDialog.getCalls()[0].args[0]).eq(
-            "There was a problem opening the workspace"
-        );
-        expect(showErrorDialog.getCalls()[0].args[1]).eq(
-            "We encountered an error preparing the file for edit."
-        );
-        assert.calledTwice(sendAPIFailureTelemetry);
-
         assert.calledOnce(_mockFetch);
 
         assert.calledOnce(showErrorMessage);
         const showErrorMessageCalls = showErrorMessage.getCalls();
         expect(showErrorMessageCalls[0].args[0]).eq(
-            "Failed to fetch file content."
+            "Failed to fetch some files."
         );
     });
 
@@ -509,7 +677,7 @@ describe("remoteFetchProvider", () => {
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnce(showErrorMessage);
-        assert.callCount(getEntity, 4);
+        assert.callCount(getEntity, 2);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributesIsBlank_shouldThrowError", async () => {
@@ -614,7 +782,7 @@ describe("remoteFetchProvider", () => {
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnce(showErrorMessage);
-        assert.callCount(getEntity, 4);
+        assert.callCount(getEntity, 2);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndAttributeExtensionIsBlank_shouldThrowError", async () => {
@@ -720,7 +888,7 @@ describe("remoteFetchProvider", () => {
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnce(showErrorMessage);
-        assert.callCount(getEntity, 4);
+        assert.callCount(getEntity, 2);
     });
 
     it("fetchDataFromDataverseAndUpdateVFS_whenResponseSuccessAndFileNameIsDefaultFilename_shouldThrowError", async () => {
@@ -826,6 +994,6 @@ describe("remoteFetchProvider", () => {
         assert.calledTwice(sendAPITelemetry);
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnce(showErrorMessage);
-        assert.callCount(getEntity, 4);
+        assert.callCount(getEntity, 2);
     });
 });
