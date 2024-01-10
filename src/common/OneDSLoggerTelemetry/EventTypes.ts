@@ -1,0 +1,41 @@
+/*!
+ * Copyright (C) Microsoft Corporation. All rights reserved.
+ */
+
+import {CustomEventModifier, CustomEventSubType, CustomType, EventType, SeverityLevel} from './EventContants';
+
+export interface IUserInfo {
+    oid: string;
+    tid: string;
+}
+
+export interface IEvent {
+    eventName: string;
+    eventType: EventType | string;
+    eventMessage?: object;
+    customDimension?: object;
+    customMeasurements?: object;
+    eventSeverity?: SeverityLevel;
+    correlationId?: string;
+}
+
+export interface ICustomEvent {
+    customEventType: CustomType;
+    customEventId?: string;
+    customEventSubType? : CustomEventSubType;
+    customEventModifier? : CustomEventModifier;
+}
+  export interface IException {
+    exceptionName?: string;
+    exceptionStack?: string;
+    exceptionSource?: string;
+    exceptionCauseCode?: string | number;
+    exceptionDetails?: string;
+  }
+
+  export interface IPlatformInfo {
+    surface? :string;
+    dataDomain?: string;
+    cloudRoleInstance?: string;
+    cloudRoleName? :string;
+  }
