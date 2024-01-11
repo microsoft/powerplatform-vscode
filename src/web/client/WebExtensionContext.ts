@@ -28,11 +28,12 @@ import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
-import { isMultifileEnabled } from "./utilities/commonUtil";
+import { getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
 import { UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
 import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
+import { GraphClientService } from "./services/graphClientService";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -114,6 +115,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _connectedUsers: UserDataMap;
     private _quickPickProvider: QuickPickProvider;
     private _userCollaborationProvider: UserCollaborationProvider;
+    private _graphClientService: GraphClientService;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -220,6 +222,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get userCollaborationProvider() {
         return this._userCollaborationProvider;
     }
+    public get graphClientService() {
+        return this._graphClientService;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -255,6 +260,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._connectedUsers = new UserDataMap();
         this._quickPickProvider = new QuickPickProvider();
         this._userCollaborationProvider = new UserCollaborationProvider();
+        this._graphClientService = new GraphClientService();
     }
 
     public setWebExtensionContext(
@@ -345,14 +351,14 @@ class WebExtensionContext implements IWebExtensionContext {
         await this.setWebsiteLanguageCode();
 
         // Getting website Id to populate shared workspace for Co-Presence
-        const websiteid = this.urlParametersMap.get(
+        const websiteId = this.urlParametersMap.get(
             Constants.queryParameters.WEBSITE_ID
         ) as string;
 
         const headers = getCommonHeaders(this._dataverseAccessToken);
 
         // Populate shared workspace for Co-Presence
-        await this.populateSharedworkspace(headers, dataverseOrgUrl, websiteid);
+        await this.populateSharedWorkspace(headers, dataverseOrgUrl, websiteId);
     }
 
     public async dataverseAuthentication(firstTimeAuth = false) {
@@ -729,24 +735,24 @@ class WebExtensionContext implements IWebExtensionContext {
         this._worker = worker;
     }
 
-    private async populateSharedworkspace(
+    private async populateSharedWorkspace(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         headers: any,
         dataverseOrgUrl: string,
-        websiteid: string
+        websiteId: string
     ) {
         try {
-            const sharedworkspace = await getOrCreateSharedWorkspace({
+            const sharedWorkspace = await getOrCreateSharedWorkspace({
                 headers,
                 dataverseOrgUrl,
-                websiteid,
+                websiteId: websiteId,
             });
 
             const sharedWorkSpaceParamsMap = new Map<string, string>();
-            for (const key in sharedworkspace) {
+            for (const key in sharedWorkspace) {
                 sharedWorkSpaceParamsMap.set(
                     String(key).trim().toLocaleLowerCase(),
-                    String(sharedworkspace[key]).trim()
+                    String(sharedWorkspace[key]).trim()
                 );
             }
 
@@ -759,7 +765,7 @@ class WebExtensionContext implements IWebExtensionContext {
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
                 telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
-                this.populateSharedworkspace.name,
+                this.populateSharedWorkspace.name,
                 Constants.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
                 error as Error
             );
@@ -782,6 +788,35 @@ class WebExtensionContext implements IWebExtensionContext {
 
     public async removeConnectedUserInContext(userId: string) {
         this.connectedUsers.removeUser(userId);
+    }
+
+    public async getMail(userId: string): Promise<string> {
+        const mail = await this.graphClientService.getUserEmail(userId);
+        return mail;
+    }
+
+    public openTeamsChat(userId: string) {
+        this.getMail(userId).then((mail) => {
+            if (mail === undefined) {
+                vscode.window.showErrorMessage(Constants.WEB_EXTENSION_TEAMS_CHAT_NOT_AVAILABLE);
+                return;
+            } else {
+                const teamsChatLink = getTeamChatURL(mail);
+                vscode.env.openExternal(vscode.Uri.parse(teamsChatLink.href));
+            }
+        });
+    }
+
+    public async openMail(userId: string): Promise<void> {
+        this.getMail(userId).then((mail) => {
+            if (mail === undefined) {
+                vscode.window.showErrorMessage(Constants.WEB_EXTENSION_SEND_EMAIL_NOT_AVAILABLE);
+                return;
+            } else {
+                const mailToPath = getMailToPath(mail);
+                vscode.env.openExternal(vscode.Uri.parse(mailToPath));
+            }
+        });
     }
 }
 

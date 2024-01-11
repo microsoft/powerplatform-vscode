@@ -269,8 +269,8 @@ async function git(args) {
 
 async function npx(args) {
     args.unshift('npx');
-    const {stdout, stderr } = await exec(args.join(' '));
-    return {stdout: stdout, stderr: stderr};
+    const { stdout, stderr } = await exec(args.join(' '));
+    return { stdout: stdout, stderr: stderr };
 }
 
 async function setGitAuthN() {
