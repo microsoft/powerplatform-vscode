@@ -200,13 +200,13 @@ export function registerCollaborationView() {
     vscode.commands.registerCommand(
         "powerpages.collaboration.openTeamsChat",
         (event) => {
-            WebExtensionContext.userCollaborationProvider.openTeamsChat(event.id)
+            WebExtensionContext.openTeamsChat(event.id)
         }
     );
     vscode.commands.registerCommand(
         "powerpages.collaboration.openMail",
         (event) => {
-            WebExtensionContext.userCollaborationProvider.openMail(event.id)
+            WebExtensionContext.openMail(event.id)
         }
     );
 }

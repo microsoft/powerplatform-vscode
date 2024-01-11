@@ -5,23 +5,16 @@
 
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
-import { GraphClientService } from "../services/graphClientService";
-import { getMailToPath, getTeamChatURL } from "../utilities/commonUtil";
 import * as Constants from "../common/constants";
 
 export class UserCollaborationProvider
     implements vscode.TreeDataProvider<UserNode>
 {
-    private graphClientService: GraphClientService;
     private _onDidChangeTreeData: vscode.EventEmitter<
         UserNode | undefined | void
     > = new vscode.EventEmitter<UserNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<UserNode | undefined | void> =
         this._onDidChangeTreeData.event;
-
-    constructor() {
-        this.graphClientService = new GraphClientService();
-    }
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
@@ -48,18 +41,6 @@ export class UserCollaborationProvider
         });
 
         return connectedUsers;
-    }
-
-    async openTeamsChat(userId: string): Promise<void> {
-        const mail = await this.graphClientService.getUserEmail(userId);
-        const teamsChatLink = getTeamChatURL(mail);
-        vscode.env.openExternal(vscode.Uri.parse(teamsChatLink.href));
-    }
-
-    async openMail(userId: string): Promise<void> {
-        const mail = await this.graphClientService.getUserEmail(userId);
-        const mailToPath = getMailToPath(mail);
-        vscode.env.openExternal(vscode.Uri.parse(mailToPath));
     }
 }
 

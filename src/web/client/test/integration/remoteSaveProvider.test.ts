@@ -11,9 +11,10 @@ import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import WebExtensionContext from "../../../client/WebExtensionContext";
 import { expect } from "chai";
 import * as errorHandler from "../../common/errorHandler";
-import { BAD_REQUEST, httpMethod } from "../../common/constants";
+import { BAD_REQUEST } from "../../common/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import { IAttributePath } from "../../common/interfaces";
+import { telemetryEventNames } from "../../telemetry/constants";
 
 describe("remoteSaveProvider", () => {
     afterEach(() => {
@@ -100,7 +101,7 @@ describe("remoteSaveProvider", () => {
         expect(sendAPITelemetryCalls[0].args[0]).eq(requestUrl);
         expect(sendAPITelemetryCalls[0].args[1]).eq("");
         expect(sendAPITelemetryCalls[0].args[2]).eq("PATCH");
-        expect(sendAPITelemetryCalls[0].args[3]).eq("");
+        expect(sendAPITelemetryCalls[0].args[3]).eq("saveDataToDataverse");
         assert.calledOnce(sendAPISuccessTelemetry);
         assert.calledOnce(isWebFileV2);
         assert.calledOnce(vscodeParse);
@@ -108,10 +109,10 @@ describe("remoteSaveProvider", () => {
 
     it("saveData_whenFetchReturnsOKAndAttributePath2IsNull_shouldCallShowErrorDialog", async () => {
         //Act
-        const fileUri: vscode.Uri = { fsPath: "testurii" } as vscode.Uri;
+        const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
 
         const vscodeParse = stub(vscode.Uri, "parse").returns({
-            fsPath: "testurii",
+            fsPath: "testuri",
         } as vscode.Uri);
         stub(schemaHelperUtil, "isWebFileV2").returns(false);
         WebExtensionContext.fileDataMap.setEntity(
@@ -129,9 +130,9 @@ describe("remoteSaveProvider", () => {
 
         const requestUrl = "https://orgedfe4d6c.crm10.dynamics.com";
         stub(urlBuilderUtil, "getRequestURL").returns(requestUrl);
-        const sendAPIFailureTelemetry = stub(
+        const sendErrorTelemetry = stub(
             WebExtensionContext.telemetry,
-            "sendAPIFailureTelemetry"
+            "sendErrorTelemetry"
         );
 
         const showErrorDialog = stub(errorHandler, "showErrorDialog");
@@ -145,12 +146,11 @@ describe("remoteSaveProvider", () => {
             "One or more attribute names have been changed or removed. Contact your admin."
         );
         assert.calledOnce(showErrorDialog);
+        assert.calledOnce(sendErrorTelemetry);
         assert.calledOnceWithExactly(
-            sendAPIFailureTelemetry,
-            requestUrl,
-            "entityName",
-            httpMethod.PATCH,
-            0,
+            sendErrorTelemetry,
+            telemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
+            "getSaveParameters",
             BAD_REQUEST
         );
         assert.calledOnce(vscodeParse);
@@ -217,17 +217,17 @@ describe("remoteSaveProvider", () => {
             assert.calledOnce(_mockFetch);
             expect(fetchCalls[0].args[0]).eq(requestUrl);
             expect(fetchCalls[0].args[1]).deep.eq(requestInit);
-            assert.callCount(sendAPITelemetry, 3);
+            assert.callCount(sendAPITelemetry, 1);
         }
     });
 
-    it("saveData_shouldCallAllSuccessTelemetryMethods_whenFetchReturnsNotOKAndStatusCodeIs304AndIsWebFileV2IsFalse", async () => {
+    it("saveData_shouldErrorOnDataverseSaveCall_whenFetchReturnsNotOKAndStatusCodeIs304AndIsWebFileV2IsFalse", async () => {
         //Act
         const fileUri: vscode.Uri = { fsPath: "testuri" } as vscode.Uri;
         const _mockFetch = stub(fetch, "default").resolves({
             ok: false,
             statusText: "Unauthorized",
-            status: 304,
+            status: 403,
             json: () => {
                 return new Promise((resolve) => {
                     return resolve({ value: "value" });
@@ -261,9 +261,9 @@ describe("remoteSaveProvider", () => {
             "pdf"
         );
 
-        const sendAPIFailureTelemetry = stub(
+        const sendErrorTelemetry = stub(
             WebExtensionContext.telemetry,
-            "sendAPIFailureTelemetry"
+            "sendErrorTelemetry"
         );
 
         const showErrorDialog = stub(errorHandler, "showErrorDialog");
@@ -293,7 +293,7 @@ describe("remoteSaveProvider", () => {
             assert.calledOnce(getColumnContent);
             assert.calledOnce(isWebFileV2);
             assert.calledOnce(vscodeParse);
-            assert.calledTwice(sendAPIFailureTelemetry);
+            assert.calledOnce(sendErrorTelemetry);
             assert.calledOnce(showErrorDialog);
             const showErrorDialogCalls = showErrorDialog.getCalls()[0];
             expect(
@@ -387,7 +387,7 @@ describe("remoteSaveProvider", () => {
         expect(sendAPITelemetryCalls[0].args[0]).eq(requestUrl);
         expect(sendAPITelemetryCalls[0].args[1]).eq("");
         expect(sendAPITelemetryCalls[0].args[2]).eq("PATCH");
-        expect(sendAPITelemetryCalls[0].args[3]).eq("");
+        expect(sendAPITelemetryCalls[0].args[3]).eq("saveDataToDataverse");
         assert.calledOnce(sendAPISuccessTelemetry);
         assert.calledOnce(isWebFileV2);
         assert.calledOnce(vscodeParse);
