@@ -94,7 +94,8 @@ export class OneDSLogger implements ITelemetryLogger{
 	}
 
     private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
-        const region :string = 'test'; // TODO: Remove it from here and replace it with value getting from build. Check gulp.mjs (setTelemetryTarget)
+        // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+        const region:string = "test"; // TODO: Remove it from here and replace it with value getting from build. Check gulp.mjs (setTelemetryTarget)
         const instrumentationSettings:IInstrumentationSettings = {
             endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
             instrumentationKey: 'bd47fc8d971f4283a6686ec46fd48782-bdef6c1c-75ab-417c-a1f7-8bbe21e12da6-7708'

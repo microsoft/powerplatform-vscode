@@ -18,20 +18,14 @@ export const UpdateEntityNameInYmlEvent = 'UpdateEntityNameInYmlEvent';
 export const UserFileCreateEvent = 'UserFileCreateEvent';
 export const FileCreateEvent = 'FileCreateEvent';
 
-export interface IPowerPagesTelemetryData {
+interface IPowerPagesTelemetryData {
     eventName: string,
     numberOfFiles?: string,
     fileEntityType?: string,
+    durationInMills?: number,
+    exception?: Error,
     triggerPoint?: string
     methodName:string
-}
-
-export interface IPowerPagesMeasurementData {
-    durationInMills?: number,
-}
-
-export interface IPowerPagesExceptions {
-    exception?: Error,
 }
 
 export enum TriggerPoint {
@@ -39,7 +33,7 @@ export enum TriggerPoint {
     COMMAND_PALETTE = "command-palette",
 }
 
-export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerPagesTelemetryData, telemetryMeasurement? :IPowerPagesMeasurementData, telelmetryException?: IPowerPagesExceptions): void {
+export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerPagesTelemetryData): void {
     const telemetryDataProperties: Record<string, string> = {}
     const telemetryDataMeasurements: Record<string, number> = {}
 
@@ -51,8 +45,8 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerP
         telemetryDataProperties.fileEntityType = telemetryData.fileEntityType;
     }
 
-    if (telemetryMeasurement && telemetryMeasurement.durationInMills) {
-        telemetryDataMeasurements.durationInMills = telemetryMeasurement.durationInMills;
+    if (telemetryData.durationInMills) {
+        telemetryDataMeasurements.durationInMills = telemetryData.durationInMills;
     }
 
     if(telemetryData.triggerPoint) {
@@ -63,12 +57,11 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerP
         telemetryDataProperties.methodName = telemetryData.methodName;
     }
 
-    if (telelmetryException && telelmetryException.exception) {
+    if (telemetryData.exception) {
         telemetryDataProperties.eventName = telemetryData.eventName;
-        telemetryDataProperties.errorMessage = telelmetryException.exception?.message;
-        telemetry.sendTelemetryException(telelmetryException.exception, telemetryDataProperties, telemetryDataMeasurements);
+        telemetryDataProperties.errorMessage = telemetryData.exception?.message;
+        telemetry.sendTelemetryException(telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
     } else {
         telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
     }
 }
-
