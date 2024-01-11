@@ -55,6 +55,7 @@ export class WebExtensionTelemetry {
             }
         }
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
+        oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
     }
 
     public sendErrorTelemetry(eventName: string, methodName: string, errorMessage?: string, error?: Error) {

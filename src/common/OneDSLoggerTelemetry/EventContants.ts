@@ -47,3 +47,7 @@ export enum CustomType {
   Scenario = 'Scenario',
 
 }
+
+export const EventTableName {
+    CUSTOM_EVENT = 'CustomEvent',
+}

@@ -48,9 +48,9 @@ export class oneDSLoggerWrapper {
 	}
 
     /// Trace exception log
-	public traceError(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
+	public traceError(eventName:string, error?:Error, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
         try{
-            oneDSLoggerWrapper.oneDSLoggerIntance.traceError(eventName, customDimension, customMeasurement, message);
+            oneDSLoggerWrapper.oneDSLoggerIntance.traceError(eventName, error, customDimension, customMeasurement, message);
         }catch (exception) {
 			console.warn(exception);
 		}

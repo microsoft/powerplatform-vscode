@@ -10,6 +10,7 @@ import { EventType } from "./telemetryConstants";
 import * as vscode from "vscode";
 import {getExtensionType, getExtensionVersion} from "../../common/Utils";
 import { EXTENSION_ID } from "../../client/constants";
+import {EventTableName} from "./EventContants";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -92,6 +93,7 @@ export class OneDSLogger implements ITelemetryLogger{
 			extensionConfig: {
 				[this.postChannel.identifier]: channelConfig,
 			},
+
 		};
 
 		if ((coreConfig.instrumentationKey ?? "") !== "") {
@@ -144,7 +146,7 @@ export class OneDSLogger implements ITelemetryLogger{
 	/// Trace info log
 	public traceInfo(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
 		const event = {
-			name: "CustomEvent",
+			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
 				eventType: EventType.INFO,
@@ -160,7 +162,7 @@ export class OneDSLogger implements ITelemetryLogger{
 	/// Trace warning log
 	public traceWarning(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
 		const event = {
-			name: "CustomEvent",
+			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
 				eventType: EventType.WARNING,
@@ -174,9 +176,9 @@ export class OneDSLogger implements ITelemetryLogger{
 	}
 
     // Trace error log
-	public traceError(eventName: string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) {
+	public traceError(eventName: string, error?:Error, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) {
 		const event = {
-			name: "CustomEvent",
+			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
 				eventType: EventType.ERROR,

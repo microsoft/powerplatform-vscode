@@ -19,5 +19,5 @@ traceWarning(eventName:string, customDimension?:Record<string, string>, customMe
  * Send error telemetry event
  * @param eventName - Event to send
  */
-traceError(eventName: string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) : void
+traceError(eventName: string, error?:Error, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) : void
 }
