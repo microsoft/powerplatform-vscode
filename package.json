@@ -155,6 +155,19 @@
     ],
     "commands": [
       {
+        "command": "powerpages.collaboration.openTeamsChat",
+        "title": "Open Teams Chat",
+        "icon": {
+          "light": "src/web/client/assets/microsoftTeamsIcon/light/microsoftTeams.svg",
+          "dark": "src/web/client/assets/microsoftTeamsIcon/dark/microsoftTeams.svg"
+        }
+      },
+      {
+        "command": "powerpages.collaboration.openMail",
+        "title": "Open Mail",
+        "icon": "$(mail)"
+      },
+      {
         "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
         "title": "Preview site",
         "when": "never"
@@ -632,7 +645,8 @@
         {
           "command": "powerPlatform.previewCurrentActiveUsers",
           "alt": "current active users",
-          "group": "navigation"
+          "group": "navigation",
+          "when": "never"
         }
       ],
       "commandPalette": [
@@ -862,6 +876,16 @@
         {
           "command": "pacCLI.envAndSolutionsPanel.copyOrganizationId",
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
+        },
+        {
+          "command": "powerpages.collaboration.openTeamsChat",
+          "group": "inline",
+          "when": "viewItem == userNode"
+        },
+        {
+          "command": "powerpages.collaboration.openMail",
+          "group": "inline",
+          "when": "viewItem == userNode"
         }
       ]
     },
@@ -912,6 +936,13 @@
           "when": "isWeb && virtualWorkspace",
           "icon": "./src/web/client/assets/powerPages.svg",
           "contextualTitle": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
+          "visibility": "visible"
+        },
+        {
+          "id": "powerpages.collaborationView",
+          "name": "People On The Site",
+          "when": "never",
+          "contextualTitle": "People On The Site",
           "visibility": "visible"
         }
       ]
@@ -997,8 +1028,8 @@
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
     "@vscode/l10n-dev": "^0.0.24",
-    "@vscode/test-electron": "^2.3.3",
-    "@vscode/test-web": "^0.0.44",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/test-web": "^0.0.50",
     "@vscode/vsce": "^2.19.0",
     "assert": "^2.0.0",
     "chai": "^4.3.6",
