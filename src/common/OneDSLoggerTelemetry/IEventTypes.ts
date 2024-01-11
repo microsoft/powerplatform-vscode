@@ -35,10 +35,3 @@ export interface ICustomEvent {
     exceptionCauseCode?: string | number;
     exceptionDetails?: string;
   }
-
-  export interface IPlatformInfo {
-    surface? :string;
-    dataDomain?: string;
-    cloudRoleInstance?: string;
-    cloudRoleName? :string;
-  }
