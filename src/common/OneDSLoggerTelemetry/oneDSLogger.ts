@@ -7,6 +7,9 @@ import { AppInsightsCore, type IExtendedConfiguration } from "@microsoft/1ds-cor
 import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@microsoft/1ds-post-js";
 import { ITelemetryLogger } from "./ITelemetryLogger";
 import { EventType } from "./telemetryConstants";
+import * as vscode from "vscode";
+import {getExtensionType, getExtensionVersion} from "../../common/Utils";
+import { EXTENSION_ID } from "../../client/constants";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -15,8 +18,8 @@ interface IInstrumentationSettings {
 
 export class OneDSLogger implements ITelemetryLogger{
 
-    private readonly appInsightsCore = new AppInsightsCore();
-	private readonly postChannel: PostChannel = new PostChannel();
+    private readonly appInsightsCore :AppInsightsCore;
+	private readonly postChannel: PostChannel;
 
 
     private readonly fetchHttpXHROverride: IXHROverride = {
@@ -65,13 +68,16 @@ export class OneDSLogger implements ITelemetryLogger{
     
     public constructor(geo?:string ) {
 
+        this.appInsightsCore = new AppInsightsCore();
+        this.postChannel = new PostChannel();
+
         const channelConfig: IChannelConfiguration = {
 			alwaysUseXhrOverride: true,
 			httpXHROverride: this.fetchHttpXHROverride,
 		};
 
         const instrumentationSetting : IInstrumentationSettings= OneDSLogger.getInstrumentationSettings(geo); // Need to replace with actual data
-		
+
 		// Configure App insights core to send to collector
 		const coreConfig: IExtendedConfiguration = {
 			instrumentationKey: instrumentationSetting.instrumentationKey,
@@ -91,6 +97,9 @@ export class OneDSLogger implements ITelemetryLogger{
 		if ((coreConfig.instrumentationKey ?? "") !== "") {
 			this.appInsightsCore.initialize(coreConfig, []);
 		}
+        this.appInsightsCore.addTelemetryInitializer((envelope) => {
+            OneDSLogger.populateCommonAttributes(envelope);
+        });
 	}
 
     private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
@@ -181,4 +190,23 @@ export class OneDSLogger implements ITelemetryLogger{
 
 		this.appInsightsCore.track(event);
 	}
+
+    /// Populate attributes that are common to all events
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	private static populateCommonAttributes(envelope: any) {	
+		envelope.data = envelope.data || {}; // create data nested object if doesn't exist already'
+
+		envelope.data.SessionId = vscode.env.sessionId;
+        envelope.data.surface = getExtensionType();
+        envelope.data.extensionVersion = getExtensionVersion();
+        envelope.data.extensionName = EXTENSION_ID;
+        envelope.data.dataDomain = vscode.env.appHost;
+        envelope.data.cloudRoleName = vscode.env.appName;
+        envelope.data.vscodeVersion = vscode.version;
+        envelope.data.vscodeMachineId = vscode.env.machineId
+	}
+
+    public flushAndTeardown(): void {
+        this.appInsightsCore.flush();
+    }
 }
