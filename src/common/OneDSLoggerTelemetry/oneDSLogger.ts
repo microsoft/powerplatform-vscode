@@ -63,14 +63,14 @@ export class OneDSLogger implements ITelemetryLogger{
         },
     };
     
-    public constructor(region:string, geo?:string ) {
+    public constructor(geo?:string ) {
 
         const channelConfig: IChannelConfiguration = {
 			alwaysUseXhrOverride: true,
 			httpXHROverride: this.fetchHttpXHROverride,
 		};
 
-        const instrumentationSetting : IInstrumentationSettings= OneDSLogger.getInstrumentationSettings(region, geo); // Need to replace with actual data
+        const instrumentationSetting : IInstrumentationSettings= OneDSLogger.getInstrumentationSettings(geo); // Need to replace with actual data
 		
 		// Configure App insights core to send to collector
 		const coreConfig: IExtendedConfiguration = {
@@ -93,7 +93,8 @@ export class OneDSLogger implements ITelemetryLogger{
 		}
 	}
 
-    private static getInstrumentationSettings(region: string, geo?:string): IInstrumentationSettings {
+    private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
+        const region :string = 'test'; // TODO: Remove it from here and replace it with value getting from build. Check gulp.mjs (setTelemetryTarget)
         const instrumentationSettings:IInstrumentationSettings = {
             endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
             instrumentationKey: 'bd47fc8d971f4283a6686ec46fd48782-bdef6c1c-75ab-417c-a1f7-8bbe21e12da6-7708'

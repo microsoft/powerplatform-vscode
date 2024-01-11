@@ -64,11 +64,11 @@ async function processOnDidDeleteFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { methodName:processOnDidDeleteFiles.name,eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, { methodName:processOnDidDeleteFiles.name,eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString()}, {durationInMills: (performance.now() - startTime)},  {exception: error as Error });
                 }
 
                 // Performance of UserFileDeleteEvent
-                sendTelemetryEvent(telemetry, { methodName:processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent(telemetry, { methodName:processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString()}, {durationInMills: (performance.now() - startTime) });
             }
         })
     );
@@ -120,11 +120,11 @@ async function processOnDidRenameFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, {  methodName:processOnDidRenameFiles.name,eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, {  methodName:processOnDidRenameFiles.name,eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString()}, {durationInMills: (performance.now() - startTime)}, {exception: error as Error });
                 }
 
                 // Performance of UserFileRenameEvent
-                sendTelemetryEvent(telemetry, {  methodName:processOnDidRenameFiles.name,eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent(telemetry, {  methodName:processOnDidRenameFiles.name,eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString()},{durationInMills: (performance.now() - startTime) });
             }
         })
     );

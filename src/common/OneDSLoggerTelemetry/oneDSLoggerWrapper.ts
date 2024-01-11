@@ -13,8 +13,8 @@ export class oneDSLoggerWrapper {
     private static instance: oneDSLoggerWrapper;
     private static oneDSLoggerIntance : OneDSLogger;
 
-    private constructor(region: string, geo?: string) {
-        oneDSLoggerWrapper.oneDSLoggerIntance = new OneDSLogger(region, geo);
+    private constructor(geo?: string) {
+        oneDSLoggerWrapper.oneDSLoggerIntance = new OneDSLogger(geo);
     }
 
 
@@ -22,9 +22,9 @@ export class oneDSLoggerWrapper {
         return this.instance;
     }
 
-    static instantiate(region:string, geo?:string){
+    static instantiate(geo?:string){
         if(!oneDSLoggerWrapper.instance) {
-            oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(region, geo);
+            oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo);
         }
         return this.instance;
     }
