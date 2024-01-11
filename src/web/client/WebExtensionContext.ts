@@ -351,14 +351,14 @@ class WebExtensionContext implements IWebExtensionContext {
         await this.setWebsiteLanguageCode();
 
         // Getting website Id to populate shared workspace for Co-Presence
-        const websiteid = this.urlParametersMap.get(
+        const websiteId = this.urlParametersMap.get(
             Constants.queryParameters.WEBSITE_ID
         ) as string;
 
         const headers = getCommonHeaders(this._dataverseAccessToken);
 
         // Populate shared workspace for Co-Presence
-        await this.populateSharedworkspace(headers, dataverseOrgUrl, websiteid);
+        await this.populateSharedWorkspace(headers, dataverseOrgUrl, websiteId);
     }
 
     public async dataverseAuthentication(firstTimeAuth = false) {
@@ -735,24 +735,24 @@ class WebExtensionContext implements IWebExtensionContext {
         this._worker = worker;
     }
 
-    private async populateSharedworkspace(
+    private async populateSharedWorkspace(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         headers: any,
         dataverseOrgUrl: string,
-        websiteid: string
+        websiteId: string
     ) {
         try {
-            const sharedworkspace = await getOrCreateSharedWorkspace({
+            const sharedWorkspace = await getOrCreateSharedWorkspace({
                 headers,
                 dataverseOrgUrl,
-                websiteid,
+                websiteId: websiteId,
             });
 
             const sharedWorkSpaceParamsMap = new Map<string, string>();
-            for (const key in sharedworkspace) {
+            for (const key in sharedWorkspace) {
                 sharedWorkSpaceParamsMap.set(
                     String(key).trim().toLocaleLowerCase(),
-                    String(sharedworkspace[key]).trim()
+                    String(sharedWorkspace[key]).trim()
                 );
             }
 
@@ -765,7 +765,7 @@ class WebExtensionContext implements IWebExtensionContext {
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
                 telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
-                this.populateSharedworkspace.name,
+                this.populateSharedWorkspace.name,
                 Constants.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
                 error as Error
             );
