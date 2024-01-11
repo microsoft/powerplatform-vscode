@@ -180,7 +180,3 @@ export class OneDSLogger implements ITelemetryLogger{
 		this.appInsightsCore.track(event);
 	}
 }
-
-// let oneDSLoggerInstance = Object.freeze(new OneDSLogger());
-
-// export default oneDSLoggerInstance;
