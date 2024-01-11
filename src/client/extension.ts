@@ -35,7 +35,7 @@ import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
-import { exec } from "child_process";
+// import { exec } from "child_process";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -156,8 +156,8 @@ export async function activate(
     await handleFileSystemCallbacks(_context, _telemetry);
 
     vscode.window.registerUriHandler({
-        handleUri(uri:vscode.Uri) {
-            const params = uri.query.split('&'); //'vscode://microsoft-IsvExpTools.powerplatform-vscode?org&siteid'
+        async handleUri(uri:vscode.Uri) {
+            const params = uri.query.split('&'); //'vscode://microsoft-IsvExpTools.powerplatform-vscode?org=https://org948f4849.crm10.dynamics.com/&siteid=c132b2d3-f3a2-41a2-8692-adf2e192caa9'
             let org = '';
             let siteid = '';
             params.forEach(param => {
@@ -173,6 +173,9 @@ export async function activate(
                     }
                 }
             });
+
+            // const pacCliPath = path.resolve(context.globalStorageUri.fsPath, 'pac');
+            // const pacExec = path.join(pacCliPath, 'tools', 'pac.exe');
             vscode.commands.executeCommand("pacCLI.pacAuthCreate", org);
             vscode.commands.executeCommand("pacCLI.pacPaportalDownload", siteid);
             vscode.commands.executeCommand('microsoft-powerapps-portals.codeQlDatabase') //This should be invoked after the portal is downloaded
@@ -192,6 +195,11 @@ export async function activate(
                 });
             return;
         }
+
+        const terminal = vscode.window.activeTerminal ?
+            vscode.window.activeTerminal as vscode.Terminal :
+            vscode.window.createTerminal();
+
        // vscode.commands.executeCommand('codeQLDatabases.chooseDatabaseFolder'); // invoking other extension command
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const globalStorageLocalPath = context.globalStorageUri.fsPath;
@@ -210,22 +218,29 @@ export async function activate(
             //     console.error(`stderr: ${stderr}`);
             // });
 
-            const outputChannel = vscode.window.createOutputChannel('My Extension');
+            terminal.sendText(`${cliPath} database create "C:/pac-portals/codeQlSetup/db" --language=javascript --overwrite --source-root "C:/pac-portals/codeQlSetup/codeql---site-azykh"`);
 
-            exec(`${cliPath} query run "C:/pac-portals/codeQlSetup/codeql/query.ql" -d "C:/pac-portals/codeQlSetup/db"`, (error, stdout, stderr) => {
-                if (error) {
-                    outputChannel.appendLine(`exec error: ${error}`);
-                    return;
-                }
-                outputChannel.appendLine(`stdout: ${stdout}`);
-                outputChannel.appendLine(`stderr: ${stderr}`);
-            });
+            //terminal.sendText(`${cliPath} pack add --dir ./codeql codeql/javascript-all`)
 
-            outputChannel.show();
+            terminal.sendText(`${cliPath} query run "C:/pac-portals/codeQlSetup/codeql/query.ql" -d "C:/pac-portals/codeQlSetup/db"`)
+
+            // const outputChannel = vscode.window.createOutputChannel('My Extension');
+
+            // exec(`${cliPath} query run "C:/pac-portals/codeQlSetup/codeql/query.ql" -d "C:/pac-portals/codeQlSetup/db"`, (error, stdout, stderr) => {
+            //     if (error) {
+            //         outputChannel.appendLine(`exec error: ${error}`);
+            //         return;
+            //     }
+            //     outputChannel.appendLine(`stdout: ${stdout}`);
+            //     outputChannel.appendLine(`stderr: ${stderr}`);
+            // });
+
+            // outputChannel.show();
         } else {
             console.error('No workspace folders found');
         }
     });
+
 
     const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);

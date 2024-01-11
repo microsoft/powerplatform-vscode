@@ -47,7 +47,7 @@ export class PacTerminal implements vscode.Disposable {
             vscode.commands.registerCommand('pacCLI.pacPcfHelp', () => PacTerminal.getTerminal().sendText("pac pcf help")),
             vscode.commands.registerCommand('pacCLI.pacSolutionHelp', () => PacTerminal.getTerminal().sendText("pac solution help"))),
             vscode.commands.registerCommand('pacCLI.pacAuthCreate', (orgUrl) => PacTerminal.getTerminal().sendText("pac auth create -u " + orgUrl)),
-            vscode.commands.registerCommand('pacCLI.pacPaportalDownload', (websiteId) => PacTerminal.getTerminal().sendText(`pac paportal download -id ${websiteId} -p ./ -o -mv 2`));
+            vscode.commands.registerCommand('pacCLI.pacPaportalDownload', (websiteId) => PacTerminal.getTerminal().sendText(`pac paportal download -id ${websiteId} -p . -o -mv 2`));
 
         this._cmdDisposables.push(vscode.commands.registerCommand(`pacCLI.enableTelemetry`, async () => {
             const result = await this._pacWrapper.enableTelemetry();
@@ -79,7 +79,7 @@ export class PacTerminal implements vscode.Disposable {
         vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/powerplatform-vscode-lab'));
     }
 
-    private static getTerminal(): vscode.Terminal {
+private static getTerminal(): vscode.Terminal {
         const terminal = vscode.window.activeTerminal ?
             vscode.window.activeTerminal as vscode.Terminal :
             vscode.window.createTerminal();
