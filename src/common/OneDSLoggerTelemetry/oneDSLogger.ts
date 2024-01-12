@@ -8,12 +8,17 @@ import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@mic
 import { ITelemetryLogger } from "./ITelemetryLogger";
 import { EventType } from "./telemetryConstants";
 
+interface IInstrumentationSettings {
+    endpointURL: string;
+    instrumentationKey: string;
+}
 
 export class OneDSLogger implements ITelemetryLogger{
 
     private readonly appInsightsCore = new AppInsightsCore();
 	private readonly postChannel: PostChannel = new PostChannel();
-    
+
+
     private readonly fetchHttpXHROverride: IXHROverride = {
         sendPOST: (payload, oncomplete) => {
             const telemetryRequestData =
@@ -58,18 +63,18 @@ export class OneDSLogger implements ITelemetryLogger{
         },
     };
     
-    public constructor() {
+    public constructor(geo?:string ) {
 
         const channelConfig: IChannelConfiguration = {
 			alwaysUseXhrOverride: true,
 			httpXHROverride: this.fetchHttpXHROverride,
 		};
 
-		const instrumentationKey = '';
-
+        const instrumentationSetting : IInstrumentationSettings= OneDSLogger.getInstrumentationSettings(geo); // Need to replace with actual data
+		
 		// Configure App insights core to send to collector
 		const coreConfig: IExtendedConfiguration = {
-			instrumentationKey,
+			instrumentationKey: instrumentationSetting.instrumentationKey,
 			loggingLevelConsole: 0, // Do not log to console
 			disableDbgExt: true, // Small perf optimization
 			extensions: [
@@ -77,6 +82,7 @@ export class OneDSLogger implements ITelemetryLogger{
 				// could not be sent out at all.
 				this.postChannel,
 			],
+            endpointUrl: instrumentationSetting.endpointURL,
 			extensionConfig: {
 				[this.postChannel.identifier]: channelConfig,
 			},
@@ -87,6 +93,44 @@ export class OneDSLogger implements ITelemetryLogger{
 		}
 	}
 
+    private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
+        // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+        const region:string = "test"; // TODO: Remove it from here and replace it with value getting from build. Check gulp.mjs (setTelemetryTarget)
+        const instrumentationSettings:IInstrumentationSettings = {
+            endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
+            instrumentationKey: 'bd47fc8d971f4283a6686ec46fd48782-bdef6c1c-75ab-417c-a1f7-8bbe21e12da6-7708'
+        };
+        switch (region) {
+            case 'tie':
+            case 'test':
+            case 'preprod':
+                break;
+            case 'prod':
+            case 'preview':
+              switch (geo) {
+                case 'eu':
+                    instrumentationSettings.endpointURL = '' //prod endpoint;
+                    instrumentationSettings.instrumentationKey = '' //prod key;
+                  break;
+                default:
+                    instrumentationSettings.endpointURL = '' //prod endpoint;
+                    instrumentationSettings.instrumentationKey = '' //prod key;
+              }
+              break;
+            case 'gov':
+            case 'high':
+            case 'dod':
+            case 'mooncake':
+                instrumentationSettings.endpointURL = '' //prod endpoint;
+                instrumentationSettings.instrumentationKey = '' //prod key;
+              break;
+            case 'ex':
+            case 'rx':
+            default:
+              break;
+          }    
+        return instrumentationSettings;
+      }
     
 	/// Trace info log
 	public traceInfo(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
