@@ -99,7 +99,8 @@ export class OneDSLogger implements ITelemetryLogger{
 		if ((coreConfig.instrumentationKey ?? "") !== "") {
 			this.appInsightsCore.initialize(coreConfig, []);
 		}
-        this.appInsightsCore.addTelemetryInitializer((envelope) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.appInsightsCore.addTelemetryInitializer((envelope: any) => {
             OneDSLogger.populateCommonAttributes(envelope);
         });
 	}
@@ -182,7 +183,7 @@ export class OneDSLogger implements ITelemetryLogger{
 			data: {
                 eventName: eventName,
 				eventType: EventType.ERROR,
-				exceptionMessage: exceptionMessage,
+				exceptionMessage: error?.message,
                 exceptionDetails: exceptionDetails,
                 exceptionSource: exceptionSource,
                 customDimension: customDimension,

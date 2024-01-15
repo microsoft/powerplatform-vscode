@@ -48,6 +48,6 @@ export enum CustomType {
 
 }
 
-export const EventTableName {
+export enum EventTableName {
     CUSTOM_EVENT = 'CustomEvent',
 }
