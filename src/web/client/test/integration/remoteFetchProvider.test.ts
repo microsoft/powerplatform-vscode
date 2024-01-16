@@ -1115,14 +1115,23 @@ describe("remoteFetchProvider", () => {
         assert.callCount(parse, 3);
 
         assert.callCount(updateFileDetailsInContext, 1);
-        assert.calledWith(updateFileDetailsInContext,
+        assert.calledOnceWithExactly(updateFileDetailsInContext,
             "powerplatform-vfs:/testWebSite/web-files/circle-1.png",
             entityId,
             "webfiles",
-            "circle-1.png");
+            "circle-1.png",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            undefined as any as string,
+            "css",
+            { source: 'value', relativePath: '' },
+            false,
+            undefined,
+            true,
+            undefined);
 
-        assert.calledOnceWithMatch(convertContentToUint8Array,
-            'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAHCAMAAAACh/xsAAAAGFBMVEXaQivfWkb43Nf////rlYj99PL20MrtoZUWcxnPAAAAIElEQVR4nGNgwA8YmZiZQTQLKzOIwcjGDAIM7KxgmhkABHsAUGHBzX8AAAAddEVYdFNvZnR3YXJlAEBsdW5hcGFpbnQvcG5nLWNvZGVj9UMZHgAAAABJRU5ErkJggg==' as string,
+        assert.calledWith(convertContentToUint8Array,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ['iVBORw0KGgoAAAANSUhEUgAAAAgAAAAHCAMAAAACh/xsAAAAGFBMVEXaQivfWkb43Nf////rlYj99PL20MrtoZUWcxnPAAAAIElEQVR4nGNgwA8YmZiZQTQLKzOIwcjGDAIM7KxgmhkABHsAUGHBzX8AAAAddEVYdFNvZnR3YXJlAEBsdW5hcGFpbnQvcG5nLWNvZGVj9UMZHgAAAABJRU5ErkJggg=='] as any as string,
             true
         );
 
