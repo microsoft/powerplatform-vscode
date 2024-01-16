@@ -108,12 +108,10 @@ describe("remoteFetchProvider", () => {
         );
 
         const requestURL = "make.powerpgaes.com";
-        const getRequestURL = stub(urlBuilderUtil, "getRequestURL").returns(
-            requestURL
-        );
+        const getRequestURL = stub(urlBuilderUtil, "getRequestURL").returns(requestURL);
 
+        stub(commonUtil, "isWebfileContentLoadNeeded").returns(true);
         stub(urlBuilderUtil, "getCustomRequestURL").returns(requestURL);
-
         stub(schemaHelperUtil, "isBase64Encoded").returns(true);
         stub(commonUtil, "GetFileNameWithExtension").returns("test.txt");
         stub(schemaHelperUtil, "getAttributePath").returns({
@@ -995,5 +993,142 @@ describe("remoteFetchProvider", () => {
         assert.calledOnce(sendErrorTelemetry);
         assert.calledOnce(showErrorMessage);
         assert.callCount(getEntity, 2);
+    });
+
+    it("fetchDataFromDataverseAndUpdateVFS_forWebFile_whenResponseSuccess_forDefaultFileInfo_shouldCallAllSuccessFunction", async () => {
+        //Act
+        const entityName = "webfiles";
+        const entityId = "aa563be7-9a38-4a89-9216-47f9fc6a3f14";
+        const queryParamsMap = new Map<string, string>([
+            [Constants.queryParameters.ORG_URL, "powerPages.com"],
+            [
+                Constants.queryParameters.WEBSITE_ID,
+                "a58f4e1e-5fe2-45ee-a7c1-398073b40181",
+            ],
+            [Constants.queryParameters.WEBSITE_NAME, "testWebSite"],
+            [schemaKey.SCHEMA_VERSION, "portalschemav2"],
+        ]);
+
+        const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
+        stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
+
+        const websiteIdToLanguage = new Map<string, string>([
+            ["a58f4e1e-5fe2-45ee-a7c1-398073b40181", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getWebsiteIdToLcidMap").returns(
+            websiteIdToLanguage
+        );
+
+        const websiteLanguageIdToPortalLanguageMap = new Map<string, string>([
+            [
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+            ],
+        ]);
+        stub(
+            schemaHelperUtil,
+            "getWebsiteLanguageIdToPortalLanguageIdMap"
+        ).returns(websiteLanguageIdToPortalLanguageMap);
+
+        const portalLanguageIdCodeMap = new Map<string, string>([
+            ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
+        ]);
+        stub(schemaHelperUtil, "getPortalLanguageIdToLcidMap").returns(
+            portalLanguageIdCodeMap
+        );
+
+        const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
+        stub(authenticationProvider, "dataverseAuthentication").resolves(
+            accessToken
+        );
+
+        const _mockFetch = stub(fetch, 'default').callsFake((url) => {
+            // Customize the response based on input parameters (url, options, etc.)
+            if (url === 'powerPages.com/api/data/v9.2/powerpagecomponents(aa563be7-9a38-4a89-9216-47f9fc6a3f14)/filecontent') {
+                return Promise.resolve({
+                    ok: true,
+                    statusText: "statusText",
+                    json: () => {
+                        return new Promise((resolve) => {
+                            return resolve({
+                                value: [
+                                    "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAHCAMAAAACh/xsAAAAGFBMVEXaQivfWkb43Nf////rlYj99PL20MrtoZUWcxnPAAAAIElEQVR4nGNgwA8YmZiZQTQLKzOIwcjGDAIM7KxgmhkABHsAUGHBzX8AAAAddEVYdFNvZnR3YXJlAEBsdW5hcGFpbnQvcG5nLWNvZGVj9UMZHgAAAABJRU5ErkJggg=="
+                                ]
+                            });
+                        });
+                    },
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } as any);
+            } else {
+                // You can handle other cases or provide a default response
+                return Promise.resolve({
+                    ok: true,
+                    statusText: "statusText",
+                    json: () => {
+                        return new Promise((resolve) => {
+                            return resolve({
+                                value: [
+                                    {
+                                        name: "testname",
+                                        powerpagecomponentid: entityId,
+                                        _powerpagesitelanguageid_value: "d8b40829-17c8-4082-9e3f-89d60dc0ab7e",
+                                        value: '{ "ddrive": "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==", "value": "value" }',
+                                    }]
+                            });
+                        });
+                    },
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } as any);
+            }
+        });
+
+        const updateFileDetailsInContext = stub(WebExtensionContext, "updateFileDetailsInContext");
+        stub(WebExtensionContext, "updateEntityDetailsInContext");
+        const sendAPITelemetry = stub(WebExtensionContext.telemetry, "sendAPITelemetry");
+        const sendAPISuccessTelemetry = stub(WebExtensionContext.telemetry, "sendAPISuccessTelemetry");
+        const sendInfoTelemetry = stub(WebExtensionContext.telemetry, "sendInfoTelemetry");
+        const convertContentToUint8Array = stub(commonUtil, "convertContentToUint8Array");
+
+        stub(commonUtil, "isWebfileContentLoadNeeded").returns(true);
+        stub(schemaHelperUtil, "isBase64Encoded").returns(true);
+        stub(commonUtil, "GetFileNameWithExtension").returns("circle-1.png");
+        stub(schemaHelperUtil, "getAttributePath").returns({ source: "value", relativePath: "", });
+        const updateSingleFileUrisInContext = stub(WebExtensionContext, "updateSingleFileUrisInContext");
+        const fileUri: vscode.Uri = { path: "powerplatform-vfs:/testWebSite/web-files/", } as vscode.Uri;
+        const parse = stub(vscode.Uri, "parse").returns(fileUri);
+
+        const portalFs = new PortalsFS();
+        const writeFile = stub(portalFs, "writeFile");
+        WebExtensionContext.setWebExtensionContext(
+            entityName,
+            entityId,
+            queryParamsMap
+        );
+        await WebExtensionContext.authenticateAndUpdateDataverseProperties();
+
+        //Action
+        await fetchDataFromDataverseAndUpdateVFS(portalFs, { entityId: entityId, entityName: entityName });
+
+        //Assert
+        assert.callCount(_mockFetch, 5);
+        assert.callCount(sendAPITelemetry, 5);
+        assert.callCount(parse, 3);
+
+        assert.callCount(updateFileDetailsInContext, 1);
+        assert.calledWith(updateFileDetailsInContext,
+            "powerplatform-vfs:/testWebSite/web-files/circle-1.png",
+            entityId,
+            "webfiles",
+            "circle-1.png");
+
+        assert.calledOnceWithMatch(convertContentToUint8Array,
+            'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAHCAMAAAACh/xsAAAAGFBMVEXaQivfWkb43Nf////rlYj99PL20MrtoZUWcxnPAAAAIElEQVR4nGNgwA8YmZiZQTQLKzOIwcjGDAIM7KxgmhkABHsAUGHBzX8AAAAddEVYdFNvZnR3YXJlAEBsdW5hcGFpbnQvcG5nLWNvZGVj9UMZHgAAAABJRU5ErkJggg==' as string,
+            true
+        );
+
+        assert.callCount(writeFile, 1);
+        assert.calledOnce(updateSingleFileUrisInContext);
+        assert.callCount(sendInfoTelemetry, 4);
+        assert.callCount(sendAPISuccessTelemetry, 5);
     });
 });
