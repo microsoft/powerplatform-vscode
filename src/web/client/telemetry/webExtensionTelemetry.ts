@@ -74,9 +74,11 @@ export class WebExtensionTelemetry {
         if (errorMessage || error) {
             const error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, telemetryData.properties);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, error, telemetryData.properties)
         } else {
             this._telemetry?.sendTelemetryException(new Error(), telemetryData.properties);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, new Error(), telemetryData.properties)
         }
     }
@@ -118,6 +120,7 @@ export class WebExtensionTelemetry {
         if (errorMessage) {
             const error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, { ...telemetryData.properties, eventName: eventName }, telemetryData.measurements);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, error, { ...telemetryData.properties, eventName: eventName },  telemetryData.measurements)
         } else {
             this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
