@@ -23,6 +23,7 @@ export class OneDSLogger implements ITelemetryLogger{
 	private readonly postChannel: PostChannel;
 
 
+
     private readonly fetchHttpXHROverride: IXHROverride = {
         sendPOST: (payload, oncomplete) => {
             const telemetryRequestData =
@@ -78,7 +79,7 @@ export class OneDSLogger implements ITelemetryLogger{
 		};
 
         const instrumentationSetting : IInstrumentationSettings= OneDSLogger.getInstrumentationSettings(geo); // Need to replace with actual data
-
+		
 		// Configure App insights core to send to collector
 		const coreConfig: IExtendedConfiguration = {
 			instrumentationKey: instrumentationSetting.instrumentationKey,
