@@ -20,4 +20,9 @@ traceWarning(eventName:string, customDimension?:Record<string, string>, customMe
  * @param eventName - Event to send
  */
 traceError(eventName: string, error?:Error, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) : void
+/**
+ * Send featureName and eventName telemetry event
+ * @param eventName - Event to send
+ */
+featureUsage(featureName: string, eventName: string, customDimensions?: Record<string, string>) : void
 }

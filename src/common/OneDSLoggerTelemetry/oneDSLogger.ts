@@ -150,7 +150,7 @@ export class OneDSLogger implements ITelemetryLogger{
 			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
-				eventType: EventType.INFO,
+                eventType: EventType.INFO,
 				message: message,
                 customDimension: customDimension,
                 customMeasurement: customMeasurement
@@ -190,9 +190,29 @@ export class OneDSLogger implements ITelemetryLogger{
                 customMeasurement: customMeasurement
 			}
 		};
+        this.appInsightsCore.track(event);
+    }
 
-		this.appInsightsCore.track(event);
-	}
+    public  featureUsage(
+        featureName: string,
+        eventName: string,
+        customDimensions?: object
+      ) {
+
+        const event = {
+			name: EventTableName.CUSTOM_EVENT,
+			data: {
+                eventName: 'Portal_Metrics_Event',
+				eventType: EventType.INFO,
+                eventInfo: JSON.stringify({
+                    featureName: featureName,
+                    customDimensions: customDimensions,
+                    eventName: eventName
+                })
+			}
+		};
+        this.appInsightsCore.track(event);
+    }
 
     /// Populate attributes that are common to all events
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

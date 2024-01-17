@@ -58,6 +58,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
     oneDSLoggerWrapper.instantiate();   
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
+    oneDSLoggerWrapper.getLogger().featureUsage("ExtensionActivated","trace",{extensionName: vscode.env.appName, extensionVersion: vscode.version});
     const portalsFS = new PortalsFS();
     context.subscriptions.push(
         vscode.workspace.registerFileSystemProvider(

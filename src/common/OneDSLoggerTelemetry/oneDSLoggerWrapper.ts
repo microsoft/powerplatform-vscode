@@ -55,5 +55,14 @@ export class oneDSLoggerWrapper {
 			console.warn(exception);
 		}
 	}
+
+    /// Trace featureName
+	public featureUsage( featureName: string,eventName: string,customDimensions?: object) {
+        try{
+            oneDSLoggerWrapper.oneDSLoggerIntance.featureUsage(featureName, eventName, customDimensions);
+        }catch (exception) {
+			console.warn(exception);
+		}
+	}
     
 }   
