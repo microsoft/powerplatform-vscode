@@ -32,7 +32,7 @@ export const INVALID_INFERENCE_INPUT = 'InvalidInferenceInput';
 export const COPILOT_NOTIFICATION_DISABLED = 'isCopilotNotificationDisabled'
 export const EXPLAIN_CODE = 'explainCode';
 export const SELECTED_CODE_INFO = "selectedCodeInfo";
-export const SELECTED_CODE_INFO_ENABLED = false;
+export const SELECTED_CODE_INFO_ENABLED = true;
 
 export type WebViewMessage = {
     type: string;
