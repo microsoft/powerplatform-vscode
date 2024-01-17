@@ -7,6 +7,10 @@ import { AppInsightsCore, type IExtendedConfiguration } from "@microsoft/1ds-cor
 import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@microsoft/1ds-post-js";
 import { ITelemetryLogger } from "./ITelemetryLogger";
 import { EventType } from "./telemetryConstants";
+import * as vscode from "vscode";
+import {getExtensionType, getExtensionVersion} from "../../common/Utils";
+import { EXTENSION_ID } from "../../client/constants";
+import {EventTableName} from "./EventContants";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -15,8 +19,9 @@ interface IInstrumentationSettings {
 
 export class OneDSLogger implements ITelemetryLogger{
 
-    private readonly appInsightsCore = new AppInsightsCore();
-	private readonly postChannel: PostChannel = new PostChannel();
+    private readonly appInsightsCore :AppInsightsCore;
+	private readonly postChannel: PostChannel;
+
 
 
     private readonly fetchHttpXHROverride: IXHROverride = {
@@ -65,6 +70,9 @@ export class OneDSLogger implements ITelemetryLogger{
     
     public constructor(geo?:string ) {
 
+        this.appInsightsCore = new AppInsightsCore();
+        this.postChannel = new PostChannel();
+
         const channelConfig: IChannelConfiguration = {
 			alwaysUseXhrOverride: true,
 			httpXHROverride: this.fetchHttpXHROverride,
@@ -86,11 +94,16 @@ export class OneDSLogger implements ITelemetryLogger{
 			extensionConfig: {
 				[this.postChannel.identifier]: channelConfig,
 			},
+
 		};
 
 		if ((coreConfig.instrumentationKey ?? "") !== "") {
 			this.appInsightsCore.initialize(coreConfig, []);
 		}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this.appInsightsCore.addTelemetryInitializer((envelope: any) => {
+            OneDSLogger.populateCommonAttributes(envelope);
+        });
 	}
 
     private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
@@ -135,10 +148,10 @@ export class OneDSLogger implements ITelemetryLogger{
 	/// Trace info log
 	public traceInfo(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
 		const event = {
-			name: "CustomEvent",
+			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
-				eventType: EventType.INFO,
+                eventType: EventType.INFO,
 				message: message,
                 customDimension: customDimension,
                 customMeasurement: customMeasurement
@@ -151,7 +164,7 @@ export class OneDSLogger implements ITelemetryLogger{
 	/// Trace warning log
 	public traceWarning(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
 		const event = {
-			name: "CustomEvent",
+			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
 				eventType: EventType.WARNING,
@@ -165,20 +178,59 @@ export class OneDSLogger implements ITelemetryLogger{
 	}
 
     // Trace error log
-	public traceError(eventName: string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) {
+	public traceError(eventName: string, error?:Error, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) {
 		const event = {
-			name: "CustomEvent",
+			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
 				eventType: EventType.ERROR,
-				exceptionMessage: exceptionMessage,
+				exceptionMessage: error?.message,
                 exceptionDetails: exceptionDetails,
                 exceptionSource: exceptionSource,
                 customDimension: customDimension,
                 customMeasurement: customMeasurement
 			}
 		};
+        this.appInsightsCore.track(event);
+    }
 
-		this.appInsightsCore.track(event);
+    public  featureUsage(
+        featureName: string,
+        eventName: string,
+        customDimensions?: object
+      ) {
+
+        const event = {
+			name: EventTableName.CUSTOM_EVENT,
+			data: {
+                eventName: 'Portal_Metrics_Event',
+				eventType: EventType.INFO,
+                eventInfo: JSON.stringify({
+                    featureName: featureName,
+                    customDimensions: customDimensions,
+                    eventName: eventName
+                })
+			}
+		};
+        this.appInsightsCore.track(event);
+    }
+
+    /// Populate attributes that are common to all events
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	private static populateCommonAttributes(envelope: any) {	
+		envelope.data = envelope.data || {}; // create data nested object if doesn't exist already'
+
+		envelope.data.SessionId = vscode.env.sessionId;
+        envelope.data.surface = getExtensionType();
+        envelope.data.extensionVersion = getExtensionVersion();
+        envelope.data.extensionName = EXTENSION_ID;
+        envelope.data.dataDomain = vscode.env.appHost;
+        envelope.data.cloudRoleName = vscode.env.appName;
+        envelope.data.vscodeVersion = vscode.version;
+        envelope.data.vscodeMachineId = vscode.env.machineId
 	}
+
+    public flushAndTeardown(): void {
+        this.appInsightsCore.flush();
+    }
 }
