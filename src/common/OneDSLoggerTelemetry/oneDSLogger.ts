@@ -146,15 +146,22 @@ export class OneDSLogger implements ITelemetryLogger{
       }
     
 	/// Trace info log
-	public traceInfo(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
+	public traceInfo(eventName:string, eventInfo?:object, measurement?: object) {
 		const event = {
 			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
                 eventType: EventType.INFO,
-				message: message,
-                customDimension: customDimension,
-                customMeasurement: customMeasurement
+                eventInfo: JSON.stringify(
+                    {
+                        eventInfo: eventInfo
+                    }
+                ),
+                measurement:  JSON.stringify(
+                    {
+                        measurement: measurement
+                    }
+                ),
 			}
 		};
 
@@ -162,15 +169,22 @@ export class OneDSLogger implements ITelemetryLogger{
 	}
 
 	/// Trace warning log
-	public traceWarning(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
+	public traceWarning(eventName:string, eventInfo?: object, measurement?: object) {
 		const event = {
 			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
 				eventType: EventType.WARNING,
-				message: message,
-                customDimension: customDimension,
-                customMeasurement: customMeasurement
+                eventInfo: JSON.stringify(
+                    {
+                        eventInfo: eventInfo
+                    }
+                ),
+                measurement:  JSON.stringify(
+                    {
+                        measurement: measurement
+                    }
+                )
 			}
 		};
 
@@ -178,17 +192,25 @@ export class OneDSLogger implements ITelemetryLogger{
 	}
 
     // Trace error log
-	public traceError(eventName: string, error?:Error, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) {
+	public traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?:object, measurement?: object) {
 		const event = {
 			name: EventTableName.CUSTOM_EVENT,
 			data: {
                 eventName: eventName,
 				eventType: EventType.ERROR,
-				exceptionMessage: error?.message,
-                exceptionDetails: exceptionDetails,
-                exceptionSource: exceptionSource,
-                customDimension: customDimension,
-                customMeasurement: customMeasurement
+				message: errorMessage,
+                errorName: exception.name,
+                errorStack: JSON.stringify(exception),
+                eventInfo: JSON.stringify(
+                    {
+                        eventInfo: eventInfo
+                    }
+                ),
+                measurement:  JSON.stringify(
+                    {
+                        measurement: measurement
+                    }
+                )
 			}
 		};
         this.appInsightsCore.track(event);
@@ -220,14 +242,14 @@ export class OneDSLogger implements ITelemetryLogger{
 	private static populateCommonAttributes(envelope: any) {	
 		envelope.data = envelope.data || {}; // create data nested object if doesn't exist already'
 
-		envelope.data.SessionId = vscode.env.sessionId;
-        envelope.data.surface = getExtensionType();
-        envelope.data.extensionVersion = getExtensionVersion();
-        envelope.data.extensionName = EXTENSION_ID;
-        envelope.data.dataDomain = vscode.env.appHost;
-        envelope.data.cloudRoleName = vscode.env.appName;
+		envelope.data.clientSessionId = vscode.env.sessionId;
+        envelope.data.vscodeSurface = getExtensionType();
+        envelope.data.vscodeMachineId = vscode.env.machineId;
+        envelope.data.vscodeExtensionName = EXTENSION_ID;
+        envelope.data.vscodeExtensionVersion = getExtensionVersion();
         envelope.data.vscodeVersion = vscode.version;
-        envelope.data.vscodeMachineId = vscode.env.machineId
+        envelope.data.domain = vscode.env.appHost;
+        envelope.data.cloudRoleName = vscode.env.appName;
 	}
 
     public flushAndTeardown(): void {
