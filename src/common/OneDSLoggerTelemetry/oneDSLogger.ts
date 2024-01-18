@@ -249,7 +249,6 @@ export class OneDSLogger implements ITelemetryLogger{
         envelope.data.vscodeExtensionVersion = getExtensionVersion();
         envelope.data.vscodeVersion = vscode.version;
         envelope.data.domain = vscode.env.appHost;
-        envelope.data.cloudRoleName = vscode.env.appName;
 	}
 
     public flushAndTeardown(): void {
