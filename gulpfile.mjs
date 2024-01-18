@@ -34,7 +34,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 
 import webpackConfig from './webpack.config.js';
-const [nodeConfig, webConfig] = webpackConfig;
+const [nodeConfig, webConfig, webWorkerConfig] = webpackConfig;
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
@@ -54,7 +54,7 @@ async function clean() {
 }
 
 function setTelemetryTarget() {
-    const telemetryConfigurationSource = isOfficialBuild && !isPreviewBuild
+    const telemetryConfigurationSource = isOfficialBuild
         ? 'src/common/telemetry/telemetryConfigurationProd.ts'
         : 'src/common/telemetry/telemetryConfigurationDev.ts';
 
@@ -78,6 +78,14 @@ function compileWeb() {
         .src('src/web/**/*.ts')
         .pipe(gulpWebpack(webConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
+        .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
+}
+
+// compile the web worker for vscode for web
+function compileWorker() {
+    return gulp
+        .src(["src/web/**/*.ts"])
+        .pipe(gulpWebpack(webWorkerConfig, webpack))
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
 
@@ -246,45 +254,11 @@ const testDesktopIntegration = gulp.series(compileIntegrationTests, async () => 
 const testDesktopInt = gulp.series(testDesktopIntegration);
 
 async function packageVsix() {
-    const standardHeader = '# Power Platform Extension';
-    const previewHeader = '# Power Platform Tools [PREVIEW]\n\n## This extension is used for internal testing against targets such as vscode.dev which require Marketplace published extensions, and is not supported.';
-    const standardPackageOptions = {
-        name: 'powerplatform-vscode',
-        displayName: 'Power Platform Tools',
-        description: 'Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals',
-        readmeHeader: standardHeader,
-        readmeReplacementTarget: previewHeader,
-    };
-    const previewPackageOptions = {
-        name: 'powerplatform-vscode-preview',
-        displayName: 'Power Platform Tools [PREVIEW]',
-        description: 'Unsupported extension for testing Power Platform Tools',
-        readmeHeader: previewHeader,
-        readmeReplacementTarget: standardHeader,
-     };
-
-    const setPackageInfo = async function(pkgOptions) {
-        await npm(['pkg', 'set', `name=${pkgOptions.name}`]);
-        await npm(['pkg', 'set', `displayName="${pkgOptions.displayName}"`]);
-        await npm(['pkg', 'set', `description="${pkgOptions.description}"`]);
-
-        gulp.src('README.md')
-            .pipe(replace(pkgOptions.readmeReplacementTarget, pkgOptions.readmeHeader))
-            .pipe(gulp.dest('./'));
-    }
-
-    await setPackageInfo(isPreviewBuild ? previewPackageOptions : standardPackageOptions);
-
     fs.ensureDirSync(packagedir);
     await vsce.createVSIX({
         packagePath: packagedir,
         preRelease: isPreviewBuild,
     });
-
-    // Reset to non-preview settings to prevent polluting git diffs
-    if (isPreviewBuild) {
-        await setPackageInfo(standardPackageOptions);
-    }
 }
 
 async function git(args) {
@@ -293,16 +267,10 @@ async function git(args) {
     return { stdout: stdout, stderr: stderr };
 }
 
-async function npm(args) {
-    args.unshift('npm');
-    const {stdout, stderr } = await exec(args.join(' '));
-    return {stdout: stdout, stderr: stderr};
-}
-
 async function npx(args) {
     args.unshift('npx');
-    const {stdout, stderr } = await exec(args.join(' '));
-    return {stdout: stdout, stderr: stderr};
+    const { stdout, stderr } = await exec(args.join(' '));
+    return { stdout: stdout, stderr: stderr };
 }
 
 async function setGitAuthN() {
@@ -368,7 +336,7 @@ async function snapshot() {
 }
 
 const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.28.2';
+const cliVersion = '1.29.11';
 
 const recompile = gulp.series(
     clean,
@@ -378,7 +346,8 @@ const recompile = gulp.series(
     translationsImport,
     setTelemetryTarget,
     compile,
-    compileWeb
+    compileWeb,
+    compileWorker,
 );
 
 const dist = gulp.series(
@@ -440,6 +409,7 @@ export {
     clean,
     compile,
     compileWeb,
+    compileWorker,
     recompile,
     snapshot,
     lint,

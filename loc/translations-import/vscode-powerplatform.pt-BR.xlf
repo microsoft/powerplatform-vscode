@@ -106,6 +106,10 @@ Nome Exclusivo: {1}
 Versão: {2}
 Tipo: {3}</target>
       </trans-unit>
+      <trans-unit id="++CODE++183c7081100618aebb39219dd011d8d9961649aad278be8fe49c0d1a8874684f">
+        <source xml:lang="en">Do not show again</source>
+        <target state="translated">Não mostrar novamente</target>
+      </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
         <target state="translated">Editar o site</target>
@@ -164,6 +168,14 @@ Tipo: {3}</target>
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
         <note>{0} represents the version number</note>
         <target state="translated">Instalando o gerador do Power Pages(v{0})...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++c59fe0045151cddc10b8384a437337e86eab905877883c18b53e068a3d36121d">
+        <source xml:lang="en">Learn more about Copilot</source>
+        <target state="translated">Saiba mais sobre o Copilot</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8d5ff42292d46b5c6b66b7285a701ef3b8cb3a48186944d73ed6a8d5f7ca1394">
+        <source xml:lang="en">Let Copilot help you code</source>
+        <target state="translated">Permitir que o Copilot ajude você a codificar</target>
       </trans-unit>
       <trans-unit id="++CODE++8f2de600bf940a26c63a7ac23984a12ca8970fcf1a85947aa5566c34e23eea07">
         <source xml:lang="en">Managed</source>
@@ -310,9 +322,9 @@ ID da Organização: {3}</target>
         <source xml:lang="en">Select Type</source>
         <target state="translated">Selecionar Tipo</target>
       </trans-unit>
-      <trans-unit id="++CODE++65345605126fab2b832c3abd5196372353a1bda6ac67337a11d6bffcf2dc83cd">
-        <source xml:lang="en">Selection is empty!</source>
-        <target state="translated">A seleção está vazia!</target>
+      <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
+        <source xml:lang="en">Selection is empty.</source>
+        <target state="translated">A seleção está vazia.</target>
       </trans-unit>
       <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
         <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
@@ -337,6 +349,10 @@ ID da Organização: {3}</target>
       <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
         <source xml:lang="en">Thereâ€™s a problem on the back end</source>
         <target state="translated">Há um problema no back-end</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8d6329ce370e7f2cf3a5b77a73e0100c08550628408f2763deafe57dce769719">
+        <source xml:lang="en">Try Copilot for Power Pages</source>
+        <target state="translated">Testar o Copilot para Power Pages</target>
       </trans-unit>
       <trans-unit id="++CODE++d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f">
         <source xml:lang="en">Try again</source>
@@ -370,6 +386,10 @@ ID da Organização: {3}</target>
       <trans-unit id="++CODE++e433d73a7af9f003527cded50fa779687d0f923efc1beb323c3c75fd7062899f">
         <source xml:lang="en">Webfile(s) added successfully</source>
         <target state="translated">Arquivos da Web adicionados com êxito</target>
+      </trans-unit>
+      <trans-unit id="++CODE++ab06f2880f954cfbc6788988300346315e8372cc05d92ce26ff6635c607e1406">
+        <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
+        <target state="translated">Seja código HTML, CSS, JS ou Liquid, descreva apenas o que é necessário e deixe a IA criá-lo para você.</target>
       </trans-unit>
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>

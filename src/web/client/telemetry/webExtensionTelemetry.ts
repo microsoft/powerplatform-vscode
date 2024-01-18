@@ -48,13 +48,15 @@ export class WebExtensionTelemetry {
                 referrerSessionId: queryParamsMap.get(queryParameters.REFERRER_SESSION_ID),
                 referrer: queryParamsMap.get(queryParameters.REFERRER),
                 siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
-                region: queryParamsMap.get(queryParameters.REGION)
+                region: queryParamsMap.get(queryParameters.REGION),
+                geo: queryParamsMap.get(queryParameters.GEO),
+                envId: queryParamsMap.get(queryParameters.ENV_ID)
             }
         }
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
     }
 
-    public sendErrorTelemetry(eventName: string, methodName: string,errorMessage?: string, error?: Error) {
+    public sendErrorTelemetry(eventName: string, methodName: string, errorMessage?: string, error?: Error) {
         const telemetryData: IWebExtensionExceptionTelemetryData = {
             properties: {
                 eventName: eventName,
@@ -122,7 +124,8 @@ export class WebExtensionTelemetry {
         duration: number,
         methodName: string,
         eventName?: string,
-        entityFileExtensionType?: string
+        entityFileExtensionType?: string,
+        status?: string
     ) {
         this.sendAPITelemetry(
             URL,
@@ -133,7 +136,8 @@ export class WebExtensionTelemetry {
             true,
             duration,
             undefined,
-            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS);
+            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
+            status);
     }
 
     public sendAPIFailureTelemetry(

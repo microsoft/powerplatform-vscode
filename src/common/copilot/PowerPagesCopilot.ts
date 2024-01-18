@@ -35,18 +35,20 @@ let sessionID: string; // Generated per session
 let orgID: string;
 let environmentName: string;
 let activeOrgUrl: string;
+let tenantId: string | undefined;
 
 declare const IS_DESKTOP: string | undefined;
 //TODO: Check if it can be converted to singleton
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
-    public static readonly viewType = "powerpages.copilot";
-    private _view?: vscode.WebviewView;
-    private readonly _pacWrapper?: PacWrapper;
-    private _extensionContext: vscode.ExtensionContext;
-    private readonly _disposables: vscode.Disposable[] = [];
-    private loginButtonRendered = false;
-    private telemetry: ITelemetry;
-    private aibEndpoint: string | null = null;
+  public static readonly viewType = "powerpages.copilot";
+  private _view?: vscode.WebviewView;
+  private readonly _pacWrapper?: PacWrapper;
+  private _extensionContext: vscode.ExtensionContext;
+  private readonly _disposables: vscode.Disposable[] = [];
+  private loginButtonRendered = false;
+  private telemetry: ITelemetry;
+  private aibEndpoint: string | null = null;
+  private geoName: string | null = null;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
@@ -59,16 +61,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         sessionID = uuidv4();
         this._pacWrapper = pacWrapper;
 
-        this._disposables.push(
-            vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
-                if (userName && orgID) {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotClearChatEvent, copilotSessionId: sessionID, orgId: orgID });
-                    this.sendMessageToWebview({ type: "clearConversation" });
-                    sessionID = uuidv4();
-                }
-            }
-            )
-        );
+    this._disposables.push(
+      vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
+        if (userName && orgID) {
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotClearChatEvent, copilotSessionId: sessionID, orgId: orgID });
+          this.sendMessageToWebview({ type: "clearConversation" });
+          sessionID = uuidv4();
+        }
+      }
+      )
+    );
 
         if (SELECTED_CODE_INFO_ENABLED) { //TODO: Remove this check once the feature is ready
 
@@ -108,150 +110,153 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             this.setupFileWatcher();
         }
 
-        if (orgInfo) {
-            orgID = orgInfo.orgId;
-            environmentName = orgInfo.environmentName;
-            activeOrgUrl = orgInfo.activeOrgUrl;
+    if (orgInfo) {
+      orgID = orgInfo.orgId;
+      environmentName = orgInfo.environmentName;
+      activeOrgUrl = orgInfo.activeOrgUrl;
+      tenantId = orgInfo.tenantId;
+    }
+  }
+
+
+
+  private githubCopilot() {
+    // Define a Teams chat agent handler.
+    const generateResult = {};
+    const pacResult = {};
+    const handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken) => {
+        // To talk to an LLM in your slash command handler implementation, your
+        // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
+        // The pre-release of the GitHub Copilot Chat extension implements this provider.
+        const userPrompt = request.prompt;
+        const userVariables = request.variables;
+        if (request.slashCommand?.name == 'form-validation') {
+            const access = await vscode.chat.requestChatAccess('copilot');
+
+            const messages = [
+                {
+                    role: vscode.ChatMessageRole.System,
+                    content: FORM_VALIDATION_PROMPT
+                },
+                {
+                    role: vscode.ChatMessageRole.User,
+                    content: userPrompt
+                }
+            ];
+            const request = access.makeRequest(messages, {}, token);
+            for await (const fragment of request.response) {
+                const incomingText = fragment.replace('[RESPONSE END]', '');
+                progress.report({ content: incomingText });
+            }
+            const activeEditor = vscode.window.activeTextEditor;
+
+            if (activeEditor) {
+                const document = activeEditor.document;
+                const uri = document.uri;
+                progress.report({ reference: uri,/// <reference path="src/common" />
+                });
+            }
+
+            return generateResult;
+            // return {
+            //     followUp: [{ message: vscode.l10n.t('@teams /generate a Teams project'), metadata: {} }]
+            // };
         }
-    }
+        else if (request.slashCommand?.name == 'pac') {
+            const access = await vscode.chat.requestChatAccess('copilot');
 
-    private githubCopilot() {
-        // Define a Teams chat agent handler.
-        const generateResult = {};
-        const pacResult = {};
-        const handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken) => {
-            // To talk to an LLM in your slash command handler implementation, your
-            // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
-            // The pre-release of the GitHub Copilot Chat extension implements this provider.
-            const userPrompt = request.prompt;
-            const userVariables = request.variables;
-            if (request.slashCommand?.name == 'form-validation') {
-                const access = await vscode.chat.requestChatAccess('copilot');
-
-                const messages = [
-                    {
-                        role: vscode.ChatMessageRole.System,
-                        content: FORM_VALIDATION_PROMPT
-                    },
-                    {
-                        role: vscode.ChatMessageRole.User,
-                        content: userPrompt
-                    }
-                ];
-                const request = access.makeRequest(messages, {}, token);
-                for await (const fragment of request.response) {
-                    const incomingText = fragment.replace('[RESPONSE END]', '');
-                    progress.report({ content: incomingText });
+            const messages = [
+                {
+                    role: vscode.ChatMessageRole.System,
+                    content: PAC_CLI_PROMPT
+                },
+                {
+                    role: vscode.ChatMessageRole.User,
+                    content: userPrompt
                 }
-                const activeEditor = vscode.window.activeTextEditor;
+            ];
 
-                if (activeEditor) {
-                    const document = activeEditor.document;
-                    const uri = document.uri;
-                    progress.report({ reference: uri,/// <reference path="src/common" />
-                    });
-                }
-
-                return generateResult;
-                // return {
-                //     followUp: [{ message: vscode.l10n.t('@teams /generate a Teams project'), metadata: {} }]
-                // };
+            const request = access.makeRequest(messages, {}, token);
+            for await (const fragment of request.response) {
+                const incomingText = fragment.replace('[RESPONSE END]', '');
+                progress.report({ content: incomingText });
             }
-            else if (request.slashCommand?.name == 'pac') {
-                const access = await vscode.chat.requestChatAccess('copilot');
 
-                const messages = [
-                    {
-                        role: vscode.ChatMessageRole.System,
-                        content: PAC_CLI_PROMPT
-                    },
-                    {
-                        role: vscode.ChatMessageRole.User,
-                        content: userPrompt
-                    }
-                ];
+            return pacResult;
+        }
+    };
 
-                const request = access.makeRequest(messages, {}, token);
-                for await (const fragment of request.response) {
-                    const incomingText = fragment.replace('[RESPONSE END]', '');
-                    progress.report({ content: incomingText });
-                }
+    const customVariableResolver: vscode.ChatVariableResolver = {
+        resolve(name, context, token) {
+            // Implement your variable resolution logic here
+            // You should return an array of ChatVariableValue objects
+            // based on the provided 'name', 'context', and 'token'.
 
-                return pacResult;
+            const values: vscode.ChatVariableValue[] = [
+                {
+                    level: vscode.ChatVariableLevel.Full,
+                    value: 'Your variable value (required)',
+                    description: 'Your variable description (optional)',
+                },
+                // Add more values if needed
+            ];
+
+            return values;
+        },
+    };
+
+    // Register the custom variable
+    const variableName = 'yourVariableName';
+    const variableDescription = 'Your variable description';
+
+    const ctxTest = vscode.chat.registerVariable(variableName, variableDescription, customVariableResolver);
+
+
+    // Agents appear as top-level options in the chat input
+    // when you type `@`, and can contribute sub-commands in the chat input
+    // that appear when you type `/`.
+    const agent = vscode.chat.createChatAgent('powerpages', handler);
+    agent.iconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'icons', 'copilot.png');
+    agent.description = vscode.l10n.t('Generate Power Pages code and components');
+    agent.fullName = vscode.l10n.t('Copilot in Powerpages');
+    agent.slashCommandProvider = {
+        provideSlashCommands(token) {
+            return [
+                { name: 'form-validation', description: 'Adds form validation' },
+                { name: 'web-api', description: 'WebApi to perform CRUD operations' },
+                { name: 'create-webpage', description: 'Create a webpage' },
+                { name: 'pac', description: 'Helps in "pac paportal" operations'}
+            ];
+        }
+    };
+    agent.followupProvider = {
+        provideFollowups(result, token) {
+
+            if (result === generateResult) {
+                return [{
+                    message: '@powerpages /create-webpage landing page for world-cup',
+                    title: vscode.l10n.t('Create Web-page'),
+                }];
+            } else if(result === pacResult) {
+                return [{
+                    message: '@powerpages /pac How to list available websites',
+                    title: vscode.l10n.t('How to list available websites'),
+                },
+                {
+                    message: '@powerpages /pac How to upload website',
+                    title: vscode.l10n.t('How to upload website'),
+                },];
             }
-        };
+        }
+    };
 
-        const customVariableResolver: vscode.ChatVariableResolver = {
-            resolve(name, context, token) {
-                // Implement your variable resolution logic here
-                // You should return an array of ChatVariableValue objects
-                // based on the provided 'name', 'context', and 'token'.
+    this._disposables.push(
+        agent,
+        // Register the command handler for the /generate Create Project followup
 
-                const values: vscode.ChatVariableValue[] = [
-                    {
-                        level: vscode.ChatVariableLevel.Full,
-                        value: 'Your variable value (required)',
-                        description: 'Your variable description (optional)',
-                    },
-                    // Add more values if needed
-                ];
+    );
 
-                return values;
-            },
-        };
-
-        // Register the custom variable
-        const variableName = 'yourVariableName';
-        const variableDescription = 'Your variable description';
-
-        const ctxTest = vscode.chat.registerVariable(variableName, variableDescription, customVariableResolver);
-
-
-        // Agents appear as top-level options in the chat input
-        // when you type `@`, and can contribute sub-commands in the chat input
-        // that appear when you type `/`.
-        const agent = vscode.chat.createChatAgent('powerpages', handler);
-        agent.iconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'icons', 'copilot.png');
-        agent.description = vscode.l10n.t('Generate Power Pages code and components');
-        agent.fullName = vscode.l10n.t('Copilot in Powerpages');
-        agent.slashCommandProvider = {
-            provideSlashCommands(token) {
-                return [
-                    { name: 'form-validation', description: 'Adds form validation' },
-                    { name: 'web-api', description: 'WebApi to perform CRUD operations' },
-                    { name: 'create-webpage', description: 'Create a webpage' },
-                    { name: 'pac', description: 'Helps in "pac paportal" operations'}
-                ];
-            }
-        };
-        agent.followupProvider = {
-            provideFollowups(result, token) {
-
-                if (result === generateResult) {
-                    return [{
-                        message: '@powerpages /create-webpage landing page for world-cup',
-                        title: vscode.l10n.t('Create Web-page'),
-                    }];
-                } else if(result === pacResult) {
-                    return [{
-                        message: '@powerpages /pac How to list available websites',
-                        title: vscode.l10n.t('How to list available websites'),
-                    },
-                    {
-                        message: '@powerpages /pac How to upload website',
-                        title: vscode.l10n.t('How to upload website'),
-                    },];
-                }
-            }
-        };
-
-        this._disposables.push(
-            agent,
-            // Register the command handler for the /generate Create Project followup
-
-        );
-
-    }
+}
 
     public dispose(): void {
         this._disposables.forEach(d => d.dispose());
@@ -337,35 +342,35 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         return;
                     }
 
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
-                    this.sendMessageToWebview({ type: 'env' }); //TODO Use IS_DESKTOP
-                    await this.checkAuthentication();
-                    if (orgID && userName) {
-                        this.sendMessageToWebview({ type: 'isLoggedIn', value: true });
-                        this.sendMessageToWebview({ type: 'userName', value: userName });
-                    } else {
-                        this.sendMessageToWebview({ type: 'isLoggedIn', value: false });
-                        this.loginButtonRendered = true;
-                    }
-                    this.sendMessageToWebview({ type: "welcomeScreen" });
-                    break;
-                }
-                case "login": {
-                    this.handleLogin();
-                    break;
-                }
-                case "newUserPrompt": {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID }); //TODO: Add active Editor info
-                    orgID
-                        ? (async () => {
-                            const { activeFileParams } = this.getActiveEditorContent();
-                            await this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID, this.telemetry);
-                        })()
-                        : (() => {
-                            this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
-                            this.handleOrgChange();
-                            this.sendMessageToWebview({ type: 'enableInput' });
-                        })();
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
+          this.sendMessageToWebview({ type: 'env' }); //TODO Use IS_DESKTOP
+          await this.checkAuthentication();
+          if (orgID && userName) {
+            this.sendMessageToWebview({ type: 'isLoggedIn', value: true });
+            this.sendMessageToWebview({ type: 'userName', value: userName });
+          } else {
+            this.sendMessageToWebview({ type: 'isLoggedIn', value: false });
+            this.loginButtonRendered = true;
+          }
+          this.sendMessageToWebview({ type: "welcomeScreen" });
+          break;
+        }
+        case "login": {
+          this.handleLogin();
+          break;
+        }
+        case "newUserPrompt": {
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID }); //TODO: Add active Editor info
+          orgID
+            ? (async () => {
+              const { activeFileParams } = this.getActiveEditorContent();
+              await this.authenticateAndSendAPIRequest(data.value, activeFileParams, orgID, this.telemetry);
+            })()
+            : (() => {
+              this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
+              this.handleOrgChange();
+              this.sendMessageToWebview({ type: 'enableInput' });
+            })();
 
                     break;
                 }
@@ -395,27 +400,27 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                     if (data.value === "thumbsUp") {
 
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry)
-                    } else if (data.value === "thumbsDown") {
+            sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.geoName as string, tenantId)
+          } else if (data.value === "thumbsDown") {
 
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry)
-                    }
-                    break;
-                }
-                case "walkthrough": {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID, orgId: orgID });
-                    openWalkthrough(this._extensionUri);
-                    break;
-                }
-                case "codeLineCount": {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: String(data.value), orgId: orgID });
-                    break;
-                }
-            }
-        });
-    }
+            sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
+            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.geoName as string, tenantId)
+          }
+          break;
+        }
+        case "walkthrough": {
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID, orgId: orgID });
+          openWalkthrough(this._extensionUri);
+          break;
+        }
+        case "codeLineCount": {
+          sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: String(data.value), orgId: orgID });
+          break;
+        }
+      }
+    });
+  }
 
     public show() {
         if (this._view) {
@@ -512,20 +517,24 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         sessionID = uuidv4(); // Generate a new session ID on org change
         sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
+        const { intelligenceEndpoint, geoName } = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
+        this.aibEndpoint = intelligenceEndpoint;
+        this.geoName = geoName;
+
         this.aibEndpoint = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
-        if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
-            sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
-            this.sendMessageToWebview({ type: 'Unavailable' });
-        } else {
-            this.sendMessageToWebview({ type: 'Available' });
-        }
-
-        if (IS_DESKTOP && this._view?.visible) {
-            showConnectedOrgMessage(environmentName, activeOrgUrl);
-        }
-
-        this.githubCopilot();
+    if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+      sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
+      this.sendMessageToWebview({ type: 'Unavailable' });
+    } else {
+      this.sendMessageToWebview({ type: 'Available' });
     }
+
+    if (IS_DESKTOP && this._view?.visible) {
+      showConnectedOrgMessage(environmentName, activeOrgUrl);
+    }
+
+    this.githubCopilot();
+  }
 
     private async intelligenceAPIAuthenticationHandler(accessToken: string, user: string, userId: string) {
         if (accessToken && user) {

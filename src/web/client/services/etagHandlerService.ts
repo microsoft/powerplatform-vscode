@@ -10,7 +10,7 @@ import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { PortalsFS } from "../dal/fileSystemProvider";
 import { telemetryEventNames } from "../telemetry/constants";
-import { GetFileContent } from "../utilities/commonUtil";
+import { getAttributeContent } from "../utilities/commonUtil";
 import {
     getFileEntityEtag,
     getFileEntityId,
@@ -85,7 +85,7 @@ export class EtagHandlerService {
                 const currentContent = new TextDecoder().decode(
                     await portalFs.readFile(vscode.Uri.parse(fileFsPath))
                 );
-                const latestContent = GetFileContent(result, attributePath, entityName, entityId);
+                const latestContent = getAttributeContent(result, attributePath, entityName, entityId);
                 updateEntityEtag(entityId, result[ODATA_ETAG]);
 
                 if (currentContent !== latestContent) {

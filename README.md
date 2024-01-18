@@ -20,8 +20,14 @@ Installing this extension will also make the latest Power Platform CLI (aka pac)
 
 ## Release Notes
 
-2.0.12:
-  - pac CLI 1.28.2 (September refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+2.0.25:
+  - pac CLI 1.29.11, (Update to October refresh to fix data import/export and paportal upload/download commands. See release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
+2.0.21:
+  - pac CLI 1.29.6 (October refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
+2.0.13:
+  - pac CLI 1.28.3 (September refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - Web Extension updates:
     - Now Supporting image edit capability using Vscode extensions for Image editing (supported file extensions are png, jpg, webp, bmp, tga, ico, dib, jif, jpe, tpic, jpe, jpeg) #733
     - File explorer now supports Power Pages actions for "Going back to Power pages Studio" and "Preview" of site's runtime instance. #697
