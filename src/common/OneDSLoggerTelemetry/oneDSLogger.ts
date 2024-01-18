@@ -6,11 +6,11 @@
 import { AppInsightsCore, type IExtendedConfiguration } from "@microsoft/1ds-core-js";
 import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@microsoft/1ds-post-js";
 import { ITelemetryLogger } from "./ITelemetryLogger";
-import { EventType } from "./telemetryConstants";
+import { EventType, Severity } from "./telemetryConstants";
 import * as vscode from "vscode";
 import {getExtensionType, getExtensionVersion} from "../../common/Utils";
 import { EXTENSION_ID } from "../../client/constants";
-import {EventTableName} from "./EventContants";
+import {OneDSCollectorEventName} from "./EventContants";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -148,10 +148,11 @@ export class OneDSLogger implements ITelemetryLogger{
 	/// Trace info log
 	public traceInfo(eventName:string, eventInfo?:object, measurement?: object) {
 		const event = {
-			name: EventTableName.CUSTOM_EVENT,
+			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
                 eventName: eventName,
-                eventType: EventType.INFO,
+                eventType: EventType.TRACE,
+                severity: Severity.INFO,
                 eventInfo: JSON.stringify(
                     {
                         eventInfo: eventInfo
@@ -171,10 +172,11 @@ export class OneDSLogger implements ITelemetryLogger{
 	/// Trace warning log
 	public traceWarning(eventName:string, eventInfo?: object, measurement?: object) {
 		const event = {
-			name: EventTableName.CUSTOM_EVENT,
+			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
                 eventName: eventName,
-				eventType: EventType.WARNING,
+				eventType: EventType.TRACE,
+                severity: Severity.WARN,
                 eventInfo: JSON.stringify(
                     {
                         eventInfo: eventInfo
@@ -194,10 +196,11 @@ export class OneDSLogger implements ITelemetryLogger{
     // Trace error log
 	public traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?:object, measurement?: object) {
 		const event = {
-			name: EventTableName.CUSTOM_EVENT,
+			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
                 eventName: eventName,
-				eventType: EventType.ERROR,
+				eventType: EventType.TRACE,
+                severity: Severity.ERROR,
 				message: errorMessage,
                 errorName: exception.name,
                 errorStack: JSON.stringify(exception),
@@ -223,10 +226,11 @@ export class OneDSLogger implements ITelemetryLogger{
       ) {
 
         const event = {
-			name: EventTableName.CUSTOM_EVENT,
+			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
                 eventName: 'Portal_Metrics_Event',
-				eventType: EventType.INFO,
+				eventType: EventType.TRACE,
+                severity: Severity.INFO,
                 eventInfo: JSON.stringify({
                     featureName: featureName,
                     customDimensions: customDimensions,
@@ -249,6 +253,9 @@ export class OneDSLogger implements ITelemetryLogger{
         envelope.data.vscodeExtensionVersion = getExtensionVersion();
         envelope.data.vscodeVersion = vscode.version;
         envelope.data.domain = vscode.env.appHost;
+        envelope.data.userLocale = envelope.ext.user.locale;
+		envelope.data.userTimeZone = envelope.ext.loc.tz;
+		envelope.data.appLanguage = envelope.ext.app.locale;
 	}
 
     public flushAndTeardown(): void {
