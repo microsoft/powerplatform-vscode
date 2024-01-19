@@ -49,5 +49,6 @@ export enum CustomType {
 }
 
 export enum OneDSCollectorEventName {
-    VSCODE_EVENT = 'vscodeEvent',
+    VSCODE_EVENT = 'VscodeEvent',
+    REDACTED = "-REDACTED-"
 }
