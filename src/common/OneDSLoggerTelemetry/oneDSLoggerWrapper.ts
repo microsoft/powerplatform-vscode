@@ -50,13 +50,6 @@ export class oneDSLoggerWrapper {
     /// Trace exception log
 	public traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?:object, measurement?: object) {
         try{
-          //  if (eventName === 'WebExtensionSetVscodeWorkspaceStateFailed') {
-                console.log("here in onedsloggerWrapper eventName--"+eventName);
-                console.log("here in onedsloggerWrapper errorMessage--"+errorMessage);
-                console.log("here in onedsloggerWrapper exception--"+exception);
-                console.log("here in onedsloggerWrapper eventInfo--"+eventInfo);
-                console.log("here in onedsloggerWrapper measurement--"+measurement);    
-            //}
             oneDSLoggerWrapper.oneDSLoggerIntance.traceError(eventName, errorMessage, exception, eventInfo, measurement);
         }catch (exception) {
             console.warn("Caught exception processing the telemetry event: " + exception);

@@ -25,15 +25,9 @@ export class OneDSLogger implements ITelemetryLogger{
 	private readonly postChannel: PostChannel;
 
     private readonly regexPatternsToRedact = [
-        /secret["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
-        /code["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
         /key["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
         /token["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
-        /session["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
-        /password["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
-        /passwd["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
-        /connection["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
-        /sig["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm
+        /session["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm
     ]
 
     private readonly fetchHttpXHROverride: IXHROverride = {
@@ -120,8 +114,8 @@ export class OneDSLogger implements ITelemetryLogger{
         // eslint-disable-next-line @typescript-eslint/no-inferrable-types
         const region:string = "test"; // TODO: Remove it from here and replace it with value getting from build. Check gulp.mjs (setTelemetryTarget)
         const instrumentationSettings:IInstrumentationSettings = {
-            endpointURL: 'https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
-            instrumentationKey: '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+            endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
+            instrumentationKey: 'bd47fc8d971f4283a6686ec46fd48782-bdef6c1c-75ab-417c-a1f7-8bbe21e12da6-7708'
         };
         switch (region) {
             case 'tie':
@@ -189,13 +183,6 @@ export class OneDSLogger implements ITelemetryLogger{
 
     // Trace error log
 	public traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?:object, measurement?: object) {
-       // if (eventName === 'WebExtensionSetVscodeWorkspaceStateFailed') {
-            console.log("here in onedslogger eventName--"+eventName);
-            console.log("here in onedslogger errorMessage--"+errorMessage);
-            console.log("here in onedslogger exception--"+exception);
-            console.log("here in onedslogger eventInfo--"+eventInfo);
-            console.log("here in onedslogger measurement--"+measurement);    
-        //}
 		const event = {
 			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
@@ -203,7 +190,7 @@ export class OneDSLogger implements ITelemetryLogger{
 				eventType: EventType.TRACE,
                 severity: Severity.ERROR,
 				message: errorMessage!,
-                errorName: exception ? exception.name!: 'Exception',
+                errorName: exception!,
                 errorStack: JSON.stringify(exception!),
                 eventInfo: JSON.stringify(eventInfo!),
                 measurement:  JSON.stringify(measurement!)
