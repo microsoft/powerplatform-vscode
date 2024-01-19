@@ -274,7 +274,7 @@ export async function getOrCreateSharedWorkspace(config: any) {
                 method: "POST",
                 body: JSON.stringify({
                     target: {
-                        name: getWorkSpaceName(config.websiteid),
+                        name: getWorkSpaceName(config.websiteId),
                     }
                 }),
             }
