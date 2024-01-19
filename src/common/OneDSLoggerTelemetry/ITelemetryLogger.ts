@@ -8,21 +8,21 @@ export interface ITelemetryLogger {
 	 * Actual implementation that send telemetry event
 	 * @param eventName - Telemetry event to send over
 	 */
-traceInfo(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) : void
+traceInfo(eventName:string, eventInfo?:object, measurement?: object) : void
 
 /**
  * Send warning telemetry event
  * @param eventName - Event to send
  */
-traceWarning(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) : void
+traceWarning(eventName:string, eventInfo?:object, measurement?: object) : void
 /**
  * Send error telemetry event
  * @param eventName - Event to send
  */
-traceError(eventName: string, error?:Error, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) : void
+traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?:object , measurement?: object) : void
 /**
  * Send featureName and eventName telemetry event
  * @param eventName - Event to send
  */
-featureUsage(featureName: string, eventName: string, customDimensions?: Record<string, string>) : void
+featureUsage(featureName: string, eventName: string, eventInfo?:object) : void
 }
