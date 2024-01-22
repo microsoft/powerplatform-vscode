@@ -10,6 +10,7 @@ import { sanitizeURL } from "../utilities/urlBuilderUtil";
 import { telemetryEventNames } from "./constants";
 import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "./webExtensionTelemetryInterface";
 import { isNullOrUndefined } from '../utilities/commonUtil';
+import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export class WebExtensionTelemetry {
     private _telemetry: TelemetryReporter | undefined;
@@ -33,6 +34,7 @@ export class WebExtensionTelemetry {
             }
         }
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
+        oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties)
     }
 
     public sendExtensionInitQueryParametersTelemetry(queryParamsMap: Map<string, string>) {
@@ -54,6 +56,7 @@ export class WebExtensionTelemetry {
             }
         }
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
+        oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties)
     }
 
     public sendErrorTelemetry(eventName: string, methodName: string, errorMessage?: string, error?: Error) {
@@ -69,15 +72,25 @@ export class WebExtensionTelemetry {
             telemetryData.properties.stack = error.stack;
         }
         if (errorMessage || error) {
-            const error: Error = new Error(errorMessage);
+            let error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, telemetryData.properties);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            console.log("here eventName--"+eventName);
+            errorMessage = 'Exception';
+            console.log("here errorMessage--"+errorMessage);
+            error = new Error();
+            console.log("here error--"+error);
+           // oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage, error, telemetryData.properties)
         } else {
             this._telemetry?.sendTelemetryException(new Error(), telemetryData.properties);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, new Error(), telemetryData.properties)
         }
     }
 
     public sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
         this._telemetry?.sendTelemetryEvent(eventName, properties);
+        oneDSLoggerWrapper.getLogger().traceInfo(eventName, properties)
     }
 
     public sendAPITelemetry(
@@ -112,8 +125,11 @@ export class WebExtensionTelemetry {
         if (errorMessage) {
             const error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, { ...telemetryData.properties, eventName: eventName }, telemetryData.measurements);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, error, { ...telemetryData.properties, eventName: eventName },  telemetryData.measurements)
         } else {
             this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
+            oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties, telemetryData.measurements)
         }
     }
 
@@ -172,6 +188,7 @@ export class WebExtensionTelemetry {
             }
         }
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, undefined, telemetryData.measurements);
+        oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, undefined, telemetryData.measurements)
     }
 
     private getPathParameterValue(parameter: string | undefined | null): string {
