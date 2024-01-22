@@ -268,6 +268,40 @@ export class PortalsFS implements vscode.FileSystemProvider {
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
     }
 
+    async searchFiles(pattern: string) {
+        // create case sensitive regex
+        const regex = new RegExp(pattern, "i");
+        const files = await this.iterateDirectory(WebExtensionContext.rootDirectory);
+        const results: vscode.ProviderResult<vscode.Uri[]> = [];
+
+        files.forEach((fileUri) => {
+            const isMatch = regex.test(fileUri.path);
+            if (isMatch) {
+                results.push(fileUri);
+            }
+        });
+
+        return files;
+    }
+
+    private async iterateDirectory(uri: vscode.Uri) {
+        const entries = await vscode.workspace.fs.readDirectory(uri);
+        const files: vscode.Uri[] = [];
+
+        for (const [entry, type] of entries) {
+            const entryUri = vscode.Uri.joinPath(uri, entry);
+
+            if (type === vscode.FileType.Directory) {
+                const dirFiles = await this.iterateDirectory(entryUri);
+                files.push(...dirFiles);
+            } else if (type === vscode.FileType.File) {
+                files.push(entryUri);
+            }
+        }
+
+        return files;
+    }
+
     // --- lookup
 
     private async _lookup(uri: vscode.Uri, silent: false): Promise<Entry>;
