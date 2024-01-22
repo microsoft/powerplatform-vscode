@@ -4,7 +4,16 @@
  */
 
 export enum EventType {
+    CLICK = 'Click',
+    CUSTOM = 'Custom',
+    GENERAL = 'General',
+    SCENARIO = 'Scenario',
+    TRACE = 'Trace'
+}
+
+export enum Severity {
+    DEBUG = 'Debug',
     INFO = 'Info',
-    WARNING = 'Warning',
+    WARN = 'Warning',
     ERROR = 'Error'
 }

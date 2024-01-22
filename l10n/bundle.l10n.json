@@ -16,9 +16,10 @@
   "There was a permissions problem with the server": "There was a permissions problem with the server",
   "There’s a problem on the back end": "There’s a problem on the back end",
   "Try again": "Try again",
-  "We encountered an error preparing the file for edit.": "We encountered an error preparing the file for edit.",
+  "We encountered an error preparing the files for edit.": "We encountered an error preparing the files for edit.",
+  "Response data is empty": "Response data is empty",
   "Failed to fetch some files.": "Failed to fetch some files.",
-  "Failed to get file ready for edit.": "Failed to get file ready for edit.",
+  "Failed to get file ready for edit: {0}": "Failed to get file ready for edit: {0}",
   "Saving your file ...": "Saving your file ...",
   "Enter Organization ID": "Enter Organization ID",
   "Power Pages Copilot is now connected to the environment: {0} : {1}/{0} represents the environment name": {
