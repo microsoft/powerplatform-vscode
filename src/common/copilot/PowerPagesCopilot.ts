@@ -130,7 +130,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         // The pre-release of the GitHub Copilot Chat extension implements this provider.
         const userPrompt = request.prompt;
         const userVariables = request.variables;
-        if (request.slashCommand?.name == 'form-validation') {
+        if (request.subCommand == 'form-validation') {
             const access = await vscode.chat.requestChatAccess('copilot');
 
             const messages = [
@@ -219,13 +219,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     agent.iconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'icons', 'copilot.png');
     agent.description = vscode.l10n.t('Generate Power Pages code and components');
     agent.fullName = vscode.l10n.t('Copilot in Powerpages');
-    agent.slashCommandProvider = {
-        provideSlashCommands(token) {
+    agent.subCommandProvider = {
+        provideSubCommands(token) {
             return [
                 { name: 'form-validation', description: 'Adds form validation' },
                 { name: 'web-api', description: 'WebApi to perform CRUD operations' },
                 { name: 'create-webpage', description: 'Create a webpage' },
-                { name: 'pac', description: 'Helps in "pac paportal" operations'}
+                { name: 'pac', description: 'Helps in "pac paportal" operations'},
+                { name: 'add-form', description: 'Add a simple form or multi-step form to webpage'}
             ];
         }
     };
@@ -256,7 +257,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     );
 
-}
+ }
 
     public dispose(): void {
         this._disposables.forEach(d => d.dispose());
