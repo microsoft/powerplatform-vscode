@@ -235,6 +235,28 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.vscodeExtensionVersion = getExtensionVersion();
                     envelope.data.vscodeVersion = vscode.version;
                     envelope.data.domain = vscode.env.appHost;
+                    // Adding below attributes so they get populated in Geneva. 
+                    // TODO: It needs implementation for populating the actual value
+                    envelope.data.tenantId = "";
+                    envelope.data.principalObjectId = "";
+                    envelope.data.puid = "";
+                    envelope.data.eventSubType = "";
+                    envelope.data.scenarioId = "";
+                    envelope.data.eventModifier = "";
+                    envelope.data.userRegion = "";
+                    envelope.data.context = ""; 
+                    envelope.data.timestamp = "";
+                    envelope.data.country = "";
+                    envelope.data.userLocale = "";
+                    envelope.data.userDataBoundary = "";
+                    envelope.data.appLocale = "";
+                    envelope.data.userLocale = "";
+                    envelope.data.webBrowser = "";
+                    envelope.data.browserVersion = "";
+                    envelope.data.browserLanguage = "";
+                    envelope.data.screenResolution = "";
+                    envelope.data.osName = ""; 
+                    envelope.data.osVersion = "";
                     // envelope.data.timestamp = envelope.ext.user.locale;
                     // envelope.data.userLocale = envelope.ext.user.locale;
                     // envelope.data.userTimeZone = envelope.ext.loc.tz;
