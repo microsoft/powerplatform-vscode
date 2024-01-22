@@ -25,7 +25,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
-import { FORM_VALIDATION_PROMPT, PAC_CLI_PROMPT, WEB_API_PROMPT } from "../../client/powerpages-constants";
+import { FORM_VALIDATION_PROMPT, PAC_CLI_PROMPT, WEBPAGE_CREATE_PROMPT, WEB_API_PROMPT } from "../../client/powerpages-constants";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -130,59 +130,40 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         // The pre-release of the GitHub Copilot Chat extension implements this provider.
         const userPrompt = request.prompt;
         const userVariables = request.variables;
-        if (request.subCommand == 'form-validation') {
+        if (request.subCommand == 'form-validation' || request.subCommand == 'create-webpage') {
             const access = await vscode.chat.requestChatAccess('copilot');
 
             const messages = [
                 {
                     role: vscode.ChatMessageRole.System,
-                    content: FORM_VALIDATION_PROMPT
+                    content: this.getPromptMessage(request.subCommand)
                 },
                 {
                     role: vscode.ChatMessageRole.User,
                     content: userPrompt
                 }
             ];
-            const request = access.makeRequest(messages, {}, token);
-            for await (const fragment of request.response) {
+            const chatRequest = access.makeRequest(messages, {}, token);
+            for await (const fragment of chatRequest.response) {
                 const incomingText = fragment.replace('[RESPONSE END]', '');
                 progress.report({ content: incomingText });
             }
-            const activeEditor = vscode.window.activeTextEditor;
 
-            if (activeEditor) {
-                const document = activeEditor.document;
-                const uri = document.uri;
-                progress.report({ reference: uri,/// <reference path="src/common" />
-                });
+            if(this.needsActiveEditorChanges(request.subCommand)) {
+                const activeEditor = vscode.window.activeTextEditor;
+
+                if (activeEditor) {
+                    const document = activeEditor.document;
+                    const uri = document.uri;
+                    progress.report({ reference: uri,/// <reference path="src/common" />
+                    });
+                }
             }
 
-            return generateResult;
+            return getFollowUpMessage(request.subCommand);
             // return {
             //     followUp: [{ message: vscode.l10n.t('@teams /generate a Teams project'), metadata: {} }]
             // };
-        }
-        else if (request.slashCommand?.name == 'pac') {
-            const access = await vscode.chat.requestChatAccess('copilot');
-
-            const messages = [
-                {
-                    role: vscode.ChatMessageRole.System,
-                    content: PAC_CLI_PROMPT
-                },
-                {
-                    role: vscode.ChatMessageRole.User,
-                    content: userPrompt
-                }
-            ];
-
-            const request = access.makeRequest(messages, {}, token);
-            for await (const fragment of request.response) {
-                const incomingText = fragment.replace('[RESPONSE END]', '');
-                progress.report({ content: incomingText });
-            }
-
-            return pacResult;
         }
     };
 
@@ -203,6 +184,18 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
             return values;
         },
+    };
+
+    const getFollowUpMessage = (scenario: string) => {
+        switch (scenario) {
+            case 'form-validation':
+            case 'create-webpage':
+                return generateResult;
+            case 'pac':
+                return pacResult;
+            default:
+                return '';
+        }
     };
 
     // Register the custom variable
@@ -257,6 +250,23 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     );
 
+ }
+
+ private getPromptMessage(scenario: string) {
+    switch (scenario) {
+        case 'form-validation':
+            return FORM_VALIDATION_PROMPT;
+        case 'web-api':
+            return WEB_API_PROMPT;
+        case 'create-webpage':
+            return WEBPAGE_CREATE_PROMPT;
+        default:
+            return '';
+    }
+ }
+
+ private needsActiveEditorChanges(scenario: string) {
+    return scenario === 'form-validation' || scenario === 'create-webpage';
  }
 
     public dispose(): void {

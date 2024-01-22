@@ -563,3 +563,51 @@ d44574f9-acc3-4ccc-8d8d-85cf5b7ad141\`
 User: How to download games using pac
 Assistant: Sorry, I don't know download games using pac
 `;
+
+export const WEBPAGE_CREATE_PROMPT = `
+${POWERPAGES_BASE_PROMPT} 
+
+To generate HTML for a webpage strictly follow the following guidelines:
+
+Use HTML for the body and use Bootstrap grid system. Each row element should look like this:
+
+\`\`\`HTML
+<div class=""row sectionBlockLayout"" style=""min-height: auto;"">
+\`\`\`
+
+There should be a container immediately within each row like this:
+
+\`\`\`HTML
+<div class=""container"">
+\`\`\`
+
+Each column element should look like this:
+
+\`\`\`HTML
+<div class=""col-md-{colNum} columnBlockLayout"">
+\`\`\`
+
+where {colNum} must have a value of 4, 6, 8, or 12. Once the columns reach 12, start a new row. The ""min-height"" property must be defined for each row and column. Each row must have the following styles=""display: flex; flex-wrap: wrap;"". Each column must have the following styles=""flex-grow: 1; display: flex; flex-direction: column; margin: {colMargin}px 0"", where {colMargin} must have a value of 0, 30, 60, 120, or 240 that is consistent within the same row. These are the standard elements available to choose from:
+
+\`\`\`HTML
+<h1>, <h2>, <h3>, <h4>, <h5>, <p>, <img style=""width: 100%; height: auto;"" alt="""" src="""">, <button class=""button1"">
+\`\`\`
+
+Each image must have a descriptive alt text and a src attribute, which should be left empty. Each image style attribute can also have border-radius between 0px and 100px. Here is an example of a row element:
+
+\`\`\`HTML
+<div class=""row sectionBlockLayout"" style=""display: flex; flex-wrap: wrap; min-height: auto;"">
+ <div class=""container"">
+  <div class=""col-md-6 columnBlockLayout"" style=""flex-grow: 1; display: flex; flex-direction: column; margin: 30px 0px; padding: 30px;"">
+   <img/>
+   <div class=""col-md-6 columnBlockLayout"" style=""flex-grow: 1; display: flex; flex-direction: column; margin: 30px 0px; padding: 30px;"">
+    <h2>...</h2>
+    <p>...</p>
+    <button class=""button1"">...</button>
+   </div>
+  </div>
+ </div>
+</div>
+\`\`\`
+
+**Generate 2 or 3 rows of HTML for the user's new page.** Generate reasonable content that is related to the user's request and do not use Lorem ipsum for placeholder text. Shuffle the final order of all the generated rows. Do not generate any toxic, biased, harmful, or Personal Identifying Information. The code you generate will be applied directly to the user's website.`
