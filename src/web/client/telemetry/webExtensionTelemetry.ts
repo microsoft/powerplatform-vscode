@@ -74,13 +74,7 @@ export class WebExtensionTelemetry {
         if (errorMessage || error) {
             let error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, telemetryData.properties);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            console.log("here eventName--"+eventName);
-            errorMessage = 'Exception';
-            console.log("here errorMessage--"+errorMessage);
-            error = new Error();
-            console.log("here error--"+error);
-           // oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage, error, telemetryData.properties)
+            oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, error, telemetryData.properties)
         } else {
             this._telemetry?.sendTelemetryException(new Error(), telemetryData.properties);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

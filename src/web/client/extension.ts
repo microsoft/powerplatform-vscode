@@ -42,6 +42,7 @@ export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
     const dataBoundary = undefined;
+    oneDSLoggerWrapper.instantiate();
     const appInsightsResource =
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             dataBoundary
@@ -56,7 +57,6 @@ export function activate(context: vscode.ExtensionContext): void {
         WebExtensionContext.telemetry.getTelemetryReporter()
     );
 
-    oneDSLoggerWrapper.instantiate();
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
     const portalsFS = new PortalsFS();
     context.subscriptions.push(
