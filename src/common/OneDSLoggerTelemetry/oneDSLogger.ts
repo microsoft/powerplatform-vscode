@@ -3,14 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion*/
+
 import { AppInsightsCore, type IExtendedConfiguration } from "@microsoft/1ds-core-js";
 import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@microsoft/1ds-post-js";
 import { ITelemetryLogger } from "./ITelemetryLogger";
-import { EventType } from "./telemetryConstants";
+import { EventType, Severity } from "./telemetryConstants";
 import * as vscode from "vscode";
 import {getExtensionType, getExtensionVersion} from "../../common/Utils";
 import { EXTENSION_ID } from "../../client/constants";
-import {EventTableName} from "./EventContants";
+import {OneDSCollectorEventName} from "./EventContants";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -22,7 +24,11 @@ export class OneDSLogger implements ITelemetryLogger{
     private readonly appInsightsCore :AppInsightsCore;
 	private readonly postChannel: PostChannel;
 
-
+    private readonly regexPatternsToRedact = [
+        /key["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
+        /token["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
+        /session["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm
+    ]
 
     private readonly fetchHttpXHROverride: IXHROverride = {
         sendPOST: (payload, oncomplete) => {
@@ -101,9 +107,7 @@ export class OneDSLogger implements ITelemetryLogger{
 			this.appInsightsCore.initialize(coreConfig, []);
 		}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.appInsightsCore.addTelemetryInitializer((envelope: any) => {
-            OneDSLogger.populateCommonAttributes(envelope);
-        });
+        this.appInsightsCore.addTelemetryInitializer(this.populateCommonAttributes());
 	}
 
     private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
@@ -146,15 +150,15 @@ export class OneDSLogger implements ITelemetryLogger{
       }
     
 	/// Trace info log
-	public traceInfo(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
+	public traceInfo(eventName:string, eventInfo?:object, measurement?: object) {
 		const event = {
-			name: EventTableName.CUSTOM_EVENT,
+			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
                 eventName: eventName,
-                eventType: EventType.INFO,
-				message: message,
-                customDimension: customDimension,
-                customMeasurement: customMeasurement
+                eventType: EventType.TRACE,
+                severity: Severity.INFO,
+                eventInfo: JSON.stringify(eventInfo!),
+                measurement:  JSON.stringify(measurement!)
 			}
 		};
 
@@ -162,15 +166,15 @@ export class OneDSLogger implements ITelemetryLogger{
 	}
 
 	/// Trace warning log
-	public traceWarning(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
+	public traceWarning(eventName:string, eventInfo?: object, measurement?: object) {
 		const event = {
-			name: EventTableName.CUSTOM_EVENT,
+			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
                 eventName: eventName,
-				eventType: EventType.WARNING,
-				message: message,
-                customDimension: customDimension,
-                customMeasurement: customMeasurement
+				eventType: EventType.TRACE,
+                severity: Severity.WARN,
+                eventInfo: JSON.stringify(eventInfo!),
+                measurement:  JSON.stringify(measurement!)
 			}
 		};
 
@@ -178,17 +182,18 @@ export class OneDSLogger implements ITelemetryLogger{
 	}
 
     // Trace error log
-	public traceError(eventName: string, error?:Error, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, exceptionMessage?:string, exceptionSource?:string, exceptionDetails?:string) {
+	public traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?:object, measurement?: object) {
 		const event = {
-			name: EventTableName.CUSTOM_EVENT,
+			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
                 eventName: eventName,
-				eventType: EventType.ERROR,
-				exceptionMessage: error?.message,
-                exceptionDetails: exceptionDetails,
-                exceptionSource: exceptionSource,
-                customDimension: customDimension,
-                customMeasurement: customMeasurement
+				eventType: EventType.TRACE,
+                severity: Severity.ERROR,
+				message: errorMessage!,
+                errorName: exception!,
+                errorStack: JSON.stringify(exception!),
+                eventInfo: JSON.stringify(eventInfo!),
+                measurement:  JSON.stringify(measurement!)
 			}
 		};
         this.appInsightsCore.track(event);
@@ -201,10 +206,11 @@ export class OneDSLogger implements ITelemetryLogger{
       ) {
 
         const event = {
-			name: EventTableName.CUSTOM_EVENT,
+			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
                 eventName: 'Portal_Metrics_Event',
-				eventType: EventType.INFO,
+				eventType: EventType.TRACE,
+                severity: Severity.INFO,
                 eventInfo: JSON.stringify({
                     featureName: featureName,
                     customDimensions: customDimensions,
@@ -216,18 +222,112 @@ export class OneDSLogger implements ITelemetryLogger{
     }
 
     /// Populate attributes that are common to all events
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private static populateCommonAttributes(envelope: any) {	
-		envelope.data = envelope.data || {}; // create data nested object if doesn't exist already'
+	private populateCommonAttributes() {	
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (envelope:any) => {
+			try {
+                    envelope.data = envelope.data || {}; // create data nested object if doesn't exist already'
 
-		envelope.data.SessionId = vscode.env.sessionId;
-        envelope.data.surface = getExtensionType();
-        envelope.data.extensionVersion = getExtensionVersion();
-        envelope.data.extensionName = EXTENSION_ID;
-        envelope.data.dataDomain = vscode.env.appHost;
-        envelope.data.cloudRoleName = vscode.env.appName;
-        envelope.data.vscodeVersion = vscode.version;
-        envelope.data.vscodeMachineId = vscode.env.machineId
+                    envelope.data.clientSessionId = vscode.env.sessionId;
+                    envelope.data.vscodeSurface = getExtensionType();
+                    envelope.data.vscodeMachineId = vscode.env.machineId;
+                    envelope.data.vscodeExtensionName = EXTENSION_ID;
+                    envelope.data.vscodeExtensionVersion = getExtensionVersion();
+                    envelope.data.vscodeVersion = vscode.version;
+                    envelope.data.domain = vscode.env.appHost;
+                    // Adding below attributes so they get populated in Geneva. 
+                    // TODO: It needs implementation for populating the actual value
+                    envelope.data.tenantId = "test";
+                    envelope.data.principalObjectId = "test";
+                    envelope.data.puid = "test";
+                    envelope.data.eventSubType = "test";
+                    envelope.data.scenarioId = "test";
+                    envelope.data.eventModifier = "test";
+                    envelope.data.userRegion = "test";
+                    envelope.data.context = "test"; 
+                    envelope.data.timestamp = "test";
+                    envelope.data.country = "test";
+                    envelope.data.userLocale = "test";
+                    envelope.data.userDataBoundary = "test";
+                    envelope.data.appLocale = "test";
+                    envelope.data.userLocale = "test";
+                    envelope.data.webBrowser = "test";
+                    envelope.data.browserVersion = "test";
+                    envelope.data.browserLanguage = "test";
+                    envelope.data.screenResolution = "test";
+                    envelope.data.osName = "test"; 
+                    envelope.data.osVersion = "test";
+                    // envelope.data.timestamp = envelope.ext.user.locale;
+                    // envelope.data.userLocale = envelope.ext.user.locale;
+                    // envelope.data.userTimeZone = envelope.ext.loc.tz;
+                    // envelope.data.appLanguage = envelope.ext.app.locale;
+
+                    // At the end of event enrichment, redact the sensitive data for all the applicable fields
+                  //  envelope = this.redactSensitiveDataFromEvent(envelope);
+            }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            catch (exception:any) 
+			{
+				// Such exceptions are likely if we are trying to process event attributes which don't exist
+				// In such cases, only add common attributes and current exception details, and avoid processing the event attributes further
+				// However, do log the baseData of the event along with its name in the exception event that gets sent out in this scenario
+				console.warn("Caught exception processing the telemetry event: " + envelope.name);
+				console.warn(exception.message);
+
+				this.traceExceptionInEventProcessing();
+				return false;
+			}
+        }
+	}
+
+    //// Redact Sensitive data for the fields susceptible to contain codes/tokens/keys/secrets etc.
+	//// This is done post event enrichment is complete to not impact the dependencies (if any) on actual values like Uri etc.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private redactSensitiveDataFromEvent(envelope:any) {
+		//Redact sensitive information from suseptible fields
+		envelope.data.errorStack = this.getAllSensitiveRedactedFromField(envelope.data.errorStack);
+		return envelope;
+	}
+
+    //// Get redacted value after all sensitive information is redacted
+	getAllSensitiveRedactedFromField(value:string) {
+		try {
+			// Ensure the  value is of type string
+			if (value && typeof value === 'string') {
+				this.regexPatternsToRedact.forEach((pattern: RegExp) => {
+					value = this.getRedactedValueViaRegexMatch(value, pattern);
+				});
+			}
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (exception:any) {
+			console.warn("Caught exception while processing telemetry data for redaction (if any): " + value);
+			console.warn(exception.message);
+		}
+		return value;
+	}
+
+	//// Get redacted value
+	getRedactedValueViaRegexMatch(value:string, regexPattern:RegExp) {
+		let matches;
+
+		while ((matches = regexPattern.exec(value)) !== null) {
+			// This is necessary to avoid infinite loops with zero-width matches
+			if (matches.index === regexPattern.lastIndex) {
+				regexPattern.lastIndex++;
+			}
+
+			matches.forEach((match, groupIndex) => {
+				if (groupIndex == 0) { // Redact the entire matched string
+					value = value.replace(match, OneDSCollectorEventName.REDACTED); //Replace with string REDACTED
+				}
+			});
+		}
+		return value;
+	}
+
+    /// Trace exceptions in processing event attributes
+	private traceExceptionInEventProcessing() {
+		// TODO : Add exception handling
 	}
 
     public flushAndTeardown(): void {

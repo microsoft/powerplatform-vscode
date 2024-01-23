@@ -48,6 +48,7 @@ export enum CustomType {
 
 }
 
-export enum EventTableName {
-    CUSTOM_EVENT = 'CustomEvent',
+export enum OneDSCollectorEventName {
+    VSCODE_EVENT = 'VscodeEvent',
+    REDACTED = "-REDACTED-"
 }
