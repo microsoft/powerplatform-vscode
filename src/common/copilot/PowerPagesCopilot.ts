@@ -6,6 +6,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as vscode from "vscode";
+import * as fs from 'fs';
+import * as YAML from 'yaml';
 import { sendApiRequest } from "./IntelligenceApiService";
 import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
@@ -25,7 +27,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
-import { FORM_VALIDATION_PROMPT, PAC_CLI_PROMPT, WEBPAGE_CREATE_PROMPT, WEB_API_PROMPT } from "../../client/powerpages-constants";
+import { FORM_CREATE_PROMPT, FORM_VALIDATION_PROMPT, PAC_CLI_PROMPT, WEBPAGE_CREATE_PROMPT, WEB_API_PROMPT } from "../../client/powerpages-constants";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -120,7 +122,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
 
 
-  private githubCopilot() {
+  private async githubCopilot() {
     // Define a Teams chat agent handler.
     const generateResult = {};
     const pacResult = {};
@@ -149,13 +151,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             const messages = [
                 {
                     role: vscode.ChatMessageRole.System,
-                    content: this.getPromptMessage(request.subCommand ?? "")
+                    content: await this.getPromptMessage(request.subCommand ?? "")
                 },
                 {
                     role: vscode.ChatMessageRole.User,
                     content: userPrompt
                 }
             ];
+             
             const chatRequest = access.makeRequest(messages, {}, token);
             for await (const fragment of chatRequest.response) {
                 const incomingText = fragment.replace('[RESPONSE END]', '');
@@ -270,7 +273,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     return subCommand === 'form-validation' || subCommand === 'web-api' || subCommand === 'create-webpage' || subCommand === 'pac' || subCommand === 'add-form';
  }
 
- private getPromptMessage(scenario: string) {
+ private async getPromptMessage(scenario: string) {
     switch (scenario) {
         case 'form-validation':
             return FORM_VALIDATION_PROMPT;
@@ -279,11 +282,38 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         case 'create-webpage':
             return WEBPAGE_CREATE_PROMPT;
         case 'add-form':
-            return FORM_VALIDATION_PROMPT;
+            return FORM_CREATE_PROMPT.replace("{{targetEntityForm}}", await this.getEntityFormNames()).replace("{{targetAdvancedForm}}", await this.getEntityFormNames(false));
         default:
             return '';
     }
  }
+
+ private async getEntityFormNames(isEntityForm = true) {
+    const formNames: string[] = [];
+    const files = await vscode.workspace.findFiles(`**/${isEntityForm ? "basic-forms" : "advanced-forms"}/**/*.yml`);
+
+    files.forEach(file => {
+        const name = this.getEntityNameFromYml(file.path)
+        if(name) {
+            formNames.push(name);
+        }
+    });
+    return formNames.join(", ");
+   
+ }
+
+private getEntityNameFromYml(uriPath: string) : string | undefined
+{
+    try {
+        const uri = vscode.Uri.file(uriPath);
+        const fileContents = fs.readFileSync(uri.fsPath, 'utf8');
+        const parsedFileContents = YAML.parse(fileContents);
+        return parsedFileContents['adx_name'] 
+      
+    } catch (e) {
+        // Do nothing
+    }
+}
 
  private needsActiveEditorChanges(scenario: string) {
     return scenario === 'form-validation' || scenario === 'create-webpage' || scenario === 'add-form';
@@ -563,7 +593,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
       showConnectedOrgMessage(environmentName, activeOrgUrl);
     }
 
-    this.githubCopilot();
+    await this.githubCopilot();
   }
 
     private async intelligenceAPIAuthenticationHandler(accessToken: string, user: string, userId: string) {
