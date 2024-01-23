@@ -133,6 +133,19 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (request.slashCommand?.name == 'form-validation') {
             const access = await vscode.chat.requestChatAccess('copilot');
 
+            const { activeFileParams } = this.getActiveEditorContent();
+
+            let entityName = "";
+            let entityColumns: string[] = [];
+
+            if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+                entityName = await getEntityName(this.telemetry, sessionID, activeFileParams.dataverseEntity);
+
+                const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
+
+                entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, this.telemetry, sessionID);
+            }
+
             const messages = [
                 {
                     role: vscode.ChatMessageRole.System,
