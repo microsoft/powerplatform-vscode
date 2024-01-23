@@ -158,7 +158,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     content: userPrompt
                 }
             ];
-            console.log(messages);  
+             
             const chatRequest = access.makeRequest(messages, {}, token);
             for await (const fragment of chatRequest.response) {
                 const incomingText = fragment.replace('[RESPONSE END]', '');
@@ -298,7 +298,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             formNames.push(name);
         }
     });
-    console.log(formNames);
     return formNames.join(", ");
    
  }
