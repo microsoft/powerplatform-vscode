@@ -130,13 +130,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         // The pre-release of the GitHub Copilot Chat extension implements this provider.
         const userPrompt = request.prompt;
         const userVariables = request.variables;
-        if (request.subCommand == 'form-validation' || request.subCommand == 'create-webpage') {
+        if (this.isValidSubCommand(request.subCommand ?? "") ) {
             const access = await vscode.chat.requestChatAccess('copilot');
 
             const messages = [
                 {
                     role: vscode.ChatMessageRole.System,
-                    content: this.getPromptMessage(request.subCommand)
+                    content: this.getPromptMessage(request.subCommand ?? "")
                 },
                 {
                     role: vscode.ChatMessageRole.User,
@@ -149,7 +149,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 progress.report({ content: incomingText });
             }
 
-            if(this.needsActiveEditorChanges(request.subCommand)) {
+            if(this.needsActiveEditorChanges(request.subCommand ?? "")) {
                 const activeEditor = vscode.window.activeTextEditor;
 
                 if (activeEditor) {
@@ -160,7 +160,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 }
             }
 
-            return getFollowUpMessage(request.subCommand);
+            return getFollowUpMessage(request.subCommand ?? "");
             // return {
             //     followUp: [{ message: vscode.l10n.t('@teams /generate a Teams project'), metadata: {} }]
             // };
@@ -190,6 +190,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         switch (scenario) {
             case 'form-validation':
             case 'create-webpage':
+            case 'add-form':
                 return generateResult;
             case 'pac':
                 return pacResult;
@@ -252,6 +253,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
  }
 
+ private isValidSubCommand(subCommand: string) {
+    return subCommand === 'form-validation' || subCommand === 'web-api' || subCommand === 'create-webpage' || subCommand === 'pac' || subCommand === 'add-form';
+ }
+
  private getPromptMessage(scenario: string) {
     switch (scenario) {
         case 'form-validation':
@@ -260,13 +265,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             return WEB_API_PROMPT;
         case 'create-webpage':
             return WEBPAGE_CREATE_PROMPT;
+        case 'add-form':
+            return FORM_VALIDATION_PROMPT;
         default:
             return '';
     }
  }
 
  private needsActiveEditorChanges(scenario: string) {
-    return scenario === 'form-validation' || scenario === 'create-webpage';
+    return scenario === 'form-validation' || scenario === 'create-webpage' || scenario === 'add-form';
  }
 
     public dispose(): void {

@@ -134,22 +134,22 @@ As an example, the following request body posted to the **Account** table set wi
 
 \`\`\`json
 {
- "name": "Sample Account",
- "primarycontactid":
- {
-     "firstname": "Alton",
-     "lastname": "Stott"
- },
- "opportunity_customer_accounts":
- [
-  {
-      "name": "Opportunity associated to Sample Account",
-      "Opportunity_Tasks":
-      [
-       {"subject": "Task associated to opportunity"}
-      ]
-  }
- ]
+ "name": "Sample Account",
+ "primarycontactid":
+ {
+     "firstname": "Alton",
+     "lastname": "Stott"
+ },
+ "opportunity_customer_accounts":
+ [
+  {
+      "name": "Opportunity associated to Sample Account",
+      "Opportunity_Tasks":
+      [
+       {"subject": "Task associated to opportunity"}
+      ]
+  }
+ ]
 }
 \`\`\`
 
@@ -611,3 +611,22 @@ Each image must have a descriptive alt text and a src attribute, which should be
 \`\`\`
 
 **Generate 2 or 3 rows of HTML for the user's new page.** Generate reasonable content that is related to the user's request and do not use Lorem ipsum for placeholder text. Shuffle the final order of all the generated rows. Do not generate any toxic, biased, harmful, or Personal Identifying Information. The code you generate will be applied directly to the user's website.`
+
+export const FORM_CREATE_PROMPT = `
+
+- Basic Forms (also known as Entity Forms): Basic Forms in Power Pages are a key component that allows you to display, insert, or edit a record from a Microsoft Dataverse entity. They provide a way to create forms on your portal pages that interact directly with your Dataverse data. One of the features of Basic Forms is the ability to include custom JavaScript. This can be used to enhance the functionality of your forms, such as adding client-side validation, dynamically changing form behavior, or integrating with third-party services.
+
+Here is an example to add a 'basic form' to a component:
+
+\`\`\`Liquid
+{% entityform name:'Edit-contact record' %}
+\`\`\`
+
+- Advanced Forms (also known as Web Forms): Advanced Forms in Power Pages are a powerful tool that allows you to create multi-step forms or wizards, guiding users through a series of steps to create or update records in Microsoft Dataverse. They provide more complex functionality than Entity Forms, including conditional branching between steps. One of the features of Advanced Forms is the ability to include custom JavaScript. This can be used to enhance the functionality of your forms, such as adding client-side validation, dynamically changing form behavior, or integrating with third-party services.
+
+Here is an example to add an 'advanced form' to a component:
+
+\`\`\`Liquid
+{% webform name:'Create-contact record' %}
+\`\`\`
+`
