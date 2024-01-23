@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion*/
+/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-inferrable-types*/
 
 import { AppInsightsCore, type IExtendedConfiguration } from "@microsoft/1ds-core-js";
 import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@microsoft/1ds-post-js";
@@ -131,7 +131,6 @@ export class OneDSLogger implements ITelemetryLogger{
     }
 
     private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
-        // eslint-disable-next-line @typescript-eslint/no-inferrable-types
         const region:string = "test"; // TODO: Remove it from here and replace it with value getting from build. Check gulp.mjs (setTelemetryTarget)
         const instrumentationSettings:IInstrumentationSettings = {
             endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
@@ -272,25 +271,14 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.screenResolution = "test";
                     envelope.data.osName = "test"; 
                     envelope.data.osVersion = "test";
-                    if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS){
-                        OneDSLogger.userInfo.tid= JSON.parse(envelope.data.eventInfo).tenantId;
-                        OneDSLogger.userRegion = JSON.parse(envelope.data.eventInfo).geo;
-                        OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).orgId;
-                        OneDSLogger.contextInfo.portalId = JSON.parse(envelope.data.eventInfo).portalId;
-                        OneDSLogger.contextInfo.websiteId = JSON.parse(envelope.data.eventInfo).websiteId;
-                        OneDSLogger.contextInfo.dataSource = JSON.parse(envelope.data.eventInfo).dataSource;
-                        OneDSLogger.contextInfo.schema = JSON.parse(envelope.data.eventInfo).schema;
-                        OneDSLogger.contextInfo.correlationId = JSON.parse(envelope.data.eventInfo).referrerSessionId;
-                        OneDSLogger.contextInfo.referrer = JSON.parse(envelope.data.eventInfo).referrer;
-                        OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).envId;
+                    if (getExtensionType() == 'Web'){
+                        this.populateVscodeWebAttributes(envelope);
+                    }else{
+                        this.populateVscodeDesktopAttributes(envelope);
                     }
-                    if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED){
-                        
-                        OneDSLogger.userInfo.oid= JSON.parse(envelope.data.eventInfo).userId;
-                    }
-                    envelope.data.tenantId = OneDSLogger.userInfo?.tid!
-                    envelope.data.principalObjectId = OneDSLogger.userInfo?.oid!
-                    envelope.data.puid = OneDSLogger.userInfo?.puid!
+                    envelope.data.tenantId = OneDSLogger.userInfo?.tid;
+                    envelope.data.principalObjectId = OneDSLogger.userInfo?.oid;
+                    envelope.data.puid = OneDSLogger.userInfo?.puid;
                     envelope.data.context = JSON.stringify(OneDSLogger.contextInfo);
                     envelope.data.userRegion = OneDSLogger.userRegion;
                     // At the end of event enrichment, redact the sensitive data for all the applicable fields
@@ -310,6 +298,31 @@ export class OneDSLogger implements ITelemetryLogger{
 			}
         }
 	}
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private populateVscodeWebAttributes(envelope: any) {
+        if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS){
+            OneDSLogger.userInfo.tid= JSON.parse(envelope.data.eventInfo).tenantId;
+            OneDSLogger.userRegion = JSON.parse(envelope.data.eventInfo).geo;
+            OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).orgId;
+            OneDSLogger.contextInfo.portalId = JSON.parse(envelope.data.eventInfo).portalId;
+            OneDSLogger.contextInfo.websiteId = JSON.parse(envelope.data.eventInfo).websiteId;
+            OneDSLogger.contextInfo.dataSource = JSON.parse(envelope.data.eventInfo).dataSource;
+            OneDSLogger.contextInfo.schema = JSON.parse(envelope.data.eventInfo).schema;
+            OneDSLogger.contextInfo.correlationId = JSON.parse(envelope.data.eventInfo).referrerSessionId;
+            OneDSLogger.contextInfo.referrer = JSON.parse(envelope.data.eventInfo).referrer;
+            OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).envId;
+        }
+        if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED){
+            OneDSLogger.userInfo.oid= JSON.parse(envelope.data.eventInfo).userId;
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private populateVscodeDesktopAttributes(envelope: any){
+        // TODO: this method helps in populating desktop attributes.
+        console.log(envelope);
+    }
 
     //// Redact Sensitive data for the fields susceptible to contain codes/tokens/keys/secrets etc.
 	//// This is done post event enrichment is complete to not impact the dependencies (if any) on actual values like Uri etc.
