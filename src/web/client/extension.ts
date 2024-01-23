@@ -200,7 +200,6 @@ export function activate(context: vscode.ExtensionContext): void {
 export function enableFileSearchFunctionality(portalsFS: PortalsFS) {
     vscode.workspace.registerFileSearchProvider(PORTALS_URI_SCHEME, {
         provideFileSearchResults: async (query) => {
-
             return portalsFS.searchFiles(query.pattern);
         },
     });
