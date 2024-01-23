@@ -30,29 +30,30 @@ export class oneDSLoggerWrapper {
     }
 
 	/// Trace info log
-	public traceInfo(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
+	public traceInfo(eventName:string, eventInfo?: object, measurement?: object) {
         try{
-            oneDSLoggerWrapper.oneDSLoggerIntance.traceInfo(eventName, customDimension, customMeasurement, message);
+            oneDSLoggerWrapper.oneDSLoggerIntance.traceInfo(eventName, eventInfo, measurement);
         }catch (exception) {
 			console.warn(exception);
 		}
 	}
 
     /// Trace warning log
-	public traceWarning(eventName:string, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
+	public traceWarning(eventName:string, eventInfo?: object, measurement?: object) {
         try{
-            oneDSLoggerWrapper.oneDSLoggerIntance.traceWarning(eventName, customDimension, customMeasurement, message);
+            oneDSLoggerWrapper.oneDSLoggerIntance.traceWarning(eventName, eventInfo, measurement);
         }catch (exception) {
 			console.warn(exception);
 		}
 	}
 
     /// Trace exception log
-	public traceError(eventName:string, error?:Error, customDimension?:Record<string, string>, customMeasurement?: Record<string, number>, message?:string) {
+	public traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?:object, measurement?: object) {
         try{
-            oneDSLoggerWrapper.oneDSLoggerIntance.traceError(eventName, error, customDimension, customMeasurement, message);
+            oneDSLoggerWrapper.oneDSLoggerIntance.traceError(eventName, errorMessage, exception, eventInfo, measurement);
         }catch (exception) {
-			console.warn(exception);
+            console.warn("Caught exception processing the telemetry event: " + exception);
+            console.warn(exception);
 		}
 	}
 
