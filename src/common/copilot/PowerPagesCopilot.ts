@@ -135,19 +135,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (this.isValidSubCommand(request.subCommand ?? "") ) {
             const access = await vscode.chat.requestChatAccess('copilot');
 
-            const { activeFileParams } = this.getActiveEditorContent();
-
-            let entityName = "";
-            let entityColumns: string[] = [];
-
-            if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
-                entityName = await getEntityName(this.telemetry, sessionID, activeFileParams.dataverseEntity);
-
-                const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
-
-                entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, this.telemetry, sessionID);
-            }
-
             const messages = [
                 {
                     role: vscode.ChatMessageRole.System,
@@ -158,7 +145,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     content: userPrompt
                 }
             ];
-             
+
             const chatRequest = access.makeRequest(messages, {}, token);
             for await (const fragment of chatRequest.response) {
                 const incomingText = fragment.replace('[RESPONSE END]', '');
@@ -274,9 +261,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
  }
 
  private async getPromptMessage(scenario: string) {
+    let entityName = "";
+    let entityColumns: string[] = [];
+
     switch (scenario) {
         case 'form-validation':
-            return FORM_VALIDATION_PROMPT;
+            ({ entityName, entityColumns } = await this.getEntityNameAndColumns());
+            return FORM_VALIDATION_PROMPT.replace("{{targetEntity}}", entityName).replace("{{targetColumns}}", entityColumns.join(", "));
         case 'web-api':
             return WEB_API_PROMPT;
         case 'create-webpage':
@@ -287,6 +278,23 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             return '';
     }
  }
+
+ private async getEntityNameAndColumns () {
+    const { activeFileParams } = this.getActiveEditorContent();
+
+    let entityName = "";
+    let entityColumns: string[] = [];
+
+    if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+        entityName = await getEntityName(this.telemetry, sessionID, activeFileParams.dataverseEntity);
+
+        const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
+
+        entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, this.telemetry, sessionID);
+    }
+
+    return { entityName, entityColumns };
+}
 
  private async getEntityFormNames(isEntityForm = true) {
     const formNames: string[] = [];
@@ -299,7 +307,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
     });
     return formNames.join(", ");
-   
+
  }
 
 private getEntityNameFromYml(uriPath: string) : string | undefined
@@ -308,8 +316,8 @@ private getEntityNameFromYml(uriPath: string) : string | undefined
         const uri = vscode.Uri.file(uriPath);
         const fileContents = fs.readFileSync(uri.fsPath, 'utf8');
         const parsedFileContents = YAML.parse(fileContents);
-        return parsedFileContents['adx_name'] 
-      
+        return parsedFileContents['adx_name']
+
     } catch (e) {
         // Do nothing
     }
