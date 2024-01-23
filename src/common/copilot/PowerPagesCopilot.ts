@@ -298,7 +298,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
  private async getEntityFormNames(isEntityForm = true) {
     const formNames: string[] = [];
-    const files = await vscode.workspace.findFiles(`**/${isEntityForm ? "basic-forms" : "advanced-forms"}/**/*.yml`);
+    const files = await vscode.workspace.findFiles(`**/${isEntityForm ? "basic-forms" : "advanced-forms"}/**/${isEntityForm ?  "*.yml" : "*.advancedform.yml"}`);
 
     files.forEach(file => {
         const name = this.getEntityNameFromYml(file.path)

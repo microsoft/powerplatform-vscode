@@ -885,6 +885,6 @@ Here is an example to add an 'advanced form' to a component:
 \`\`\`
 
 > [!NOTE]
-> The above code is just an example for adding forms.  Attention: Entity Form name for developer's request is comma seperated list of - [{{targetEntityForm}}] and advanced form names is comma seperated list of - [{{targetAdvancedForm}}].
+> The above code is just an example for adding forms. Attention: Entity Form name for developer's request is one of the names in this comma seperated list - [{{targetEntityForm}}] and advanced form names is one of the names in this comma seperated list - [{{targetAdvancedForm}}].
  Replace these names with the real form names as requested by developer.
 `
