@@ -8,11 +8,13 @@
 import { AppInsightsCore, type IExtendedConfiguration } from "@microsoft/1ds-core-js";
 import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@microsoft/1ds-post-js";
 import { ITelemetryLogger } from "./ITelemetryLogger";
+import { IContextInfo, IUserInfo } from "./IEventTypes";
 import { EventType, Severity } from "./telemetryConstants";
 import * as vscode from "vscode";
 import {getExtensionType, getExtensionVersion} from "../../common/Utils";
 import { EXTENSION_ID } from "../../client/constants";
 import {OneDSCollectorEventName} from "./EventContants";
+import { telemetryEventNames } from "../../web/client/telemetry/constants";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -23,6 +25,10 @@ export class OneDSLogger implements ITelemetryLogger{
 
     private readonly appInsightsCore :AppInsightsCore;
 	private readonly postChannel: PostChannel;
+
+    private static userInfo: IUserInfo = {oid: "", tid: "", puid: ""};
+    private static contextInfo: IContextInfo ;
+    private static userRegion : string = "";
 
     private readonly regexPatternsToRedact = [
         /key["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
@@ -106,9 +112,23 @@ export class OneDSLogger implements ITelemetryLogger{
 		if ((coreConfig.instrumentationKey ?? "") !== "") {
 			this.appInsightsCore.initialize(coreConfig, []);
 		}
+        this.intitializeContextInfo();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.appInsightsCore.addTelemetryInitializer(this.populateCommonAttributes());
 	}
+
+    private intitializeContextInfo(){
+        OneDSLogger.contextInfo = {
+            orgId: "",
+            portalId: "",
+            websiteId: "",
+            dataSource: "",
+            schema: "",
+            correlationId: "",
+            referrer: "",
+            envId: ""
+        }
+    }
 
     private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
         // eslint-disable-next-line @typescript-eslint/no-inferrable-types
@@ -237,14 +257,9 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.domain = vscode.env.appHost;
                     // Adding below attributes so they get populated in Geneva. 
                     // TODO: It needs implementation for populating the actual value
-                    envelope.data.tenantId = "test";
-                    envelope.data.principalObjectId = "test";
-                    envelope.data.puid = "test";
                     envelope.data.eventSubType = "test";
                     envelope.data.scenarioId = "test";
                     envelope.data.eventModifier = "test";
-                    envelope.data.userRegion = "test";
-                    envelope.data.context = "test"; 
                     envelope.data.timestamp = "test";
                     envelope.data.country = "test";
                     envelope.data.userLocale = "test";
@@ -257,11 +272,27 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.screenResolution = "test";
                     envelope.data.osName = "test"; 
                     envelope.data.osVersion = "test";
-                    // envelope.data.timestamp = envelope.ext.user.locale;
-                    // envelope.data.userLocale = envelope.ext.user.locale;
-                    // envelope.data.userTimeZone = envelope.ext.loc.tz;
-                    // envelope.data.appLanguage = envelope.ext.app.locale;
-
+                    if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS){
+                        OneDSLogger.userInfo.tid= JSON.parse(envelope.data.eventInfo).tenantId;
+                        OneDSLogger.userRegion = JSON.parse(envelope.data.eventInfo).geo;
+                        OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).orgId;
+                        OneDSLogger.contextInfo.portalId = JSON.parse(envelope.data.eventInfo).portalId;
+                        OneDSLogger.contextInfo.websiteId = JSON.parse(envelope.data.eventInfo).websiteId;
+                        OneDSLogger.contextInfo.dataSource = JSON.parse(envelope.data.eventInfo).dataSource;
+                        OneDSLogger.contextInfo.schema = JSON.parse(envelope.data.eventInfo).schema;
+                        OneDSLogger.contextInfo.correlationId = JSON.parse(envelope.data.eventInfo).referrerSessionId;
+                        OneDSLogger.contextInfo.referrer = JSON.parse(envelope.data.eventInfo).referrer;
+                        OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).envId;
+                    }
+                    if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED){
+                        
+                        OneDSLogger.userInfo.oid= JSON.parse(envelope.data.eventInfo).userId;
+                    }
+                    envelope.data.tenantId = OneDSLogger.userInfo?.tid!
+                    envelope.data.principalObjectId = OneDSLogger.userInfo?.oid!
+                    envelope.data.puid = OneDSLogger.userInfo?.puid!
+                    envelope.data.context = JSON.stringify(OneDSLogger.contextInfo);
+                    envelope.data.userRegion = OneDSLogger.userRegion;
                     // At the end of event enrichment, redact the sensitive data for all the applicable fields
                   //  envelope = this.redactSensitiveDataFromEvent(envelope);
             }
