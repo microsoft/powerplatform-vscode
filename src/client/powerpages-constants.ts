@@ -565,7 +565,7 @@ Assistant: Sorry, I don't know download games using pac
 `;
 
 export const WEBPAGE_CREATE_PROMPT = `
-${POWERPAGES_BASE_PROMPT} 
+${POWERPAGES_BASE_PROMPT}
 
 Webpage component provides a way to incorporate custom HTML, Liquid, CSS, JavaScript, and other web technologies to create tailored experiences for the portal users.
 Power Pages uses Shopify Liquid and has further extended to add its own liquid tags and objects. Power Pages also uses JQuery version 3.6.2 and Bootstrap version 3.3.6, for developing responsive and mobile-first websites, so any front-end UI code **must be conformant with the Bootstrap v3.3.6 framework**. Power Pages are mostly used to create Enterprise grade websites and hence all the code **must be secure and accessible following recommendations outlined in Web Content Accessibility Guidelines (WCAG) 2.1**.
@@ -602,7 +602,7 @@ The fetchxml tag allows users to query data from Dataverse and renders the resul
 The varResults variable contains the results of the query.
 
 \`\`\`Liquid
-{% for account in varResults.results.entities %} 
+{% for account in varResults.results.entities %}
   <p>{{ account.name }}</p>
 {% endfor %}
 \`\`\`
@@ -697,8 +697,10 @@ where {colNum} must have a value of 4, 6, 8, or 12. Once the columns reach 12, s
 
 Each image must have a descriptive alt text and a src attribute, which should be left empty. Each image style attribute can also have border-radius between 0px and 100px. Here is an example of a row element:
 
+Each row element should have an attribute of ""data-component-theme"" with a value of ""portalThemeColor{{ColorNumber}}"". The value of {{ColorNumber}} must be a number between 1 and 10.
+
 \`\`\`HTML
-<div class=""row sectionBlockLayout"" style=""display: flex; flex-wrap: wrap; min-height: auto;"">
+<div class=""row sectionBlockLayout"" data-component-theme=""portalThemeColor{{ColorNumber}}"" style=""display: flex; flex-wrap: wrap; min-height: auto;"">
  <div class=""container"">
   <div class=""col-md-6 columnBlockLayout"" style=""flex-grow: 1; display: flex; flex-direction: column; margin: 30px 0px; padding: 30px;"">
    <img/>
@@ -724,7 +726,7 @@ To add CSS inline within an HTML document, you can make use of the HTML ""style"
 
 ### JavaScript
 
-To add JavaScript inline within an HTML document, you can use the HTML ""script"" tag. 
+To add JavaScript inline within an HTML document, you can use the HTML ""script"" tag.
 Here's the syntax:
 
 \`\`\`HTML
