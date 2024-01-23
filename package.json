@@ -87,9 +87,7 @@
   "enabledApiProposals": [
     "chatAgents2",
     "chatRequestAccess",
-    "interactive",
-    "readonlyMessage",
-    "chatVariables"
+    "interactive"
   ],
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
