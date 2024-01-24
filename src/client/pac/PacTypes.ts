@@ -9,23 +9,28 @@ export type PacOutput = {
     Information: string[];
 }
 
+export type PacOutputWithResult<TResults> = PacOutput & {
+    Results: TResults
+}
+
+export type PacOutputWithResultList<TListItem> = PacOutput & {
+    Results: TListItem[]
+}
+
 export type AuthProfileListing = {
     Index: number;
     IsActive: boolean;
     Kind: string;
     Name: string;
-    Resource: string;
     User: string;
     CloudInstance: string;
+    ActiveOrganization?: {
+        FriendlyName: string;
+        EnvironmentUrl: string;
+    };
 }
 
-export type PacOutputWithResultList<T> = PacOutput & {
-    Results: T[]
-}
-
-export type PacAuthListOutput = PacOutput & {
-    Results: AuthProfileListing[];
-}
+export type PacAuthListOutput = PacOutputWithResultList<AuthProfileListing>;
 
 export type AdminEnvironmentListing = {
     DisplayName: string;
@@ -35,9 +40,7 @@ export type AdminEnvironmentListing = {
     OrganizationId: string;
 }
 
-export type PacAdminListOutput = PacOutput & {
-    Results: AdminEnvironmentListing[];
-}
+export type PacAdminListOutput = PacOutputWithResultList<AdminEnvironmentListing>;
 
 export type SolutionListing = {
     SolutionUniqueName: string;
@@ -46,9 +49,7 @@ export type SolutionListing = {
     IsManaged: boolean;
 }
 
-export type PacSolutionListOutput = PacOutput & {
-    Results: SolutionListing[];
-}
+export type PacSolutionListOutput = PacOutputWithResultList<SolutionListing>;
 
 export type OrgListOutput = {
     FriendlyName: string,
@@ -58,13 +59,7 @@ export type OrgListOutput = {
     IsActive: boolean
 }
 
-export type PacOrgListOutput = PacOutput & {
-    Results: OrgListOutput[];
-}
-
-export type PacActiveOrgListOutput = PacOutput & {
-    Results: ActiveOrgOutput;
-}
+export type PacOrgListOutput = PacOutputWithResultList<OrgListOutput>;
 
 export type ActiveOrgOutput = {
     OrgId: string,
@@ -75,3 +70,5 @@ export type ActiveOrgOutput = {
     UserId : string,
     EnvironmentId: string,
 }
+
+export type PacOrgWhoOutput = PacOutputWithResult<ActiveOrgOutput>;
