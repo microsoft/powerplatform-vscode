@@ -23,10 +23,7 @@ export class oneDSLoggerWrapper {
     }
 
     static instantiate(geo?:string){
-        if(!oneDSLoggerWrapper.instance) {
-            oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo);
-        }
-        return this.instance;
+        oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo);
     }
 
 	/// Trace info log
