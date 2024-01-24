@@ -140,6 +140,16 @@ export class OneDSLogger implements ITelemetryLogger{
             case 'tie':
             case 'test':
             case 'preprod':
+                switch (geo) {
+                    case 'eu':
+                        instrumentationSettings.endpointURL =  'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
+                        instrumentationSettings.instrumentationKey = 'bd47fc8d971f4283a6686ec46fd48782-bdef6c1c-75ab-417c-a1f7-8bbe21e12da6-7708'
+                    break;
+                    case 'nam':
+                        instrumentationSettings.endpointURL = 'https://mobile.events.data.microsoft.com/OneCollector/1.0',
+                        instrumentationSettings.instrumentationKey= '1f0dfdc1c1d94c52b7f9f07818864257-6ae2ed3b-cd74-4026-b1a9-cce247ed3301-7189'
+                    break;
+                }
                 break;
             case 'prod':
             case 'preview':
