@@ -80,7 +80,7 @@ if (window.jQuery) {
               var emailValue = $("#email").val(); // Replace "email" with the actual ID or name of the email field
               
               // Check if the email address is valid
-              var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
+              var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
               if (emailValue == null || emailValue.trim() === "" || !emailPattern.test(emailValue)) {
                   return false;
               } else {
