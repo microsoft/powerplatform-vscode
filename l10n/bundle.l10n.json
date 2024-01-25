@@ -176,8 +176,8 @@
       "The {0} represents the optional name the user provided for the profile)"
     ]
   },
-  "Resource: {0}/The {0} represents profile's resource/environment URL": {
-    "message": "Resource: {0}",
+  "Default Environment: {0}/The {0} represents profile's resource/environment URL": {
+    "message": "Default Environment: {0}",
     "comment": [
       "The {0} represents profile's resource/environment URL"
     ]
