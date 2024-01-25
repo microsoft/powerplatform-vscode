@@ -36,6 +36,7 @@ import { copilotNotificationPanel, disposeNotificationPanel } from "../../common
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
 import { fetchArtemisResponse } from "../../common/ArtemisService";
+import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -45,6 +46,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             dataBoundary
         );
+    oneDSLoggerWrapper.instantiate();
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
     WebExtensionContext.telemetry.setTelemetryReporter(
         context.extension.id,
