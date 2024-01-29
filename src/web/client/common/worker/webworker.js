@@ -93,10 +93,10 @@ async function loadContainer(config, swpId, entityInfo) {
         }
 
         audience.on("memberRemoved", (clientId, member) => {
-            if (!existingMembers.get(member.userId)) {
+            if (!existingMembers.get(member.additionalDetails.AadObjectId)) {
                 self.postMessage({
                     type: "member-removed",
-                    userId: member.userId,
+                    userId: member.additionalDetails.AadObjectId,
                 });
             }
         });
@@ -106,7 +106,7 @@ async function loadContainer(config, swpId, entityInfo) {
             for (const [userId, member] of members.entries()) {
                 const connections = member.connections;
                 if (connections.some((connection) => connection.id === targetConnectionId)) {
-                    return { userId: userId, userName: member.userName };
+                    return { userId: userId, userName: member.userName, aadObjectId: member.additionalDetails.AadObjectId };
                 }
             }
 
@@ -132,9 +132,10 @@ async function loadContainer(config, swpId, entityInfo) {
                     );
                 });
 
+                // aadObjectId is the unique identifier for a user
                 await self.postMessage({
                     type: "client-data",
-                    userId: user.userId,
+                    userId: user.aadObjectId,
                     userName: user.userName,
                     containerId: swpId,
                     entityId: userEntityIdArray,
