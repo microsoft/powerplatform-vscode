@@ -368,6 +368,7 @@ export function createWebWorkerInstance(
                                 data.userId
                             );
                             WebExtensionContext.userCollaborationProvider.refresh();
+                            WebExtensionContext.quickPickProvider.refresh();
                         }
                         if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
                             WebExtensionContext.updateConnectedUsersInContext(
@@ -377,6 +378,7 @@ export function createWebWorkerInstance(
                                 data.entityId
                             );
                             WebExtensionContext.userCollaborationProvider.refresh();
+                            WebExtensionContext.quickPickProvider.refresh();
                         }
                     };
                 }
