@@ -1101,7 +1101,8 @@
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
     "worker-loader": "^3.0.8",
-    "yaml": "^2.2.2"
+    "yaml": "^2.2.2",
+    "axios": "^1.6.0"
   },
   "__metadata": {
     "id": "b8680bb6-eaa9-481a-ae0b-83574fa58620",
