@@ -47,3 +47,8 @@ export enum CustomType {
   Scenario = 'Scenario',
 
 }
+
+export enum OneDSCollectorEventName {
+    VSCODE_EVENT = 'VscodeEvent',
+    REDACTED = "-REDACTED-"
+}

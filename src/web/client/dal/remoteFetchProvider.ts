@@ -61,7 +61,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
         showErrorDialog(
             vscode.l10n.t("There was a problem opening the workspace"),
             vscode.l10n.t(
-                "We encountered an error preparing the file for edit."
+                "We encountered an error preparing the files for edit."
             )
         );
         WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, fetchDataFromDataverseAndUpdateVFS.name, errorMsg, error as Error);
@@ -116,10 +116,7 @@ async function fetchFromDataverseAndCreateFiles(
             }
 
             if (result[Constants.ODATA_COUNT] !== 0 && data.length === 0) {
-                vscode.window.showErrorMessage(
-                    "microsoft-powerapps-portals.webExtension.fetch.nocontent.error",
-                    "Response data is empty"
-                );
+                console.error(vscode.l10n.t("Response data is empty"));
                 throw new Error(ERRORS.EMPTY_RESPONSE);
             }
 
@@ -147,9 +144,7 @@ async function fetchFromDataverseAndCreateFiles(
         } catch (error) {
             makeRequestCall = false;
             const errorMsg = (error as Error)?.message;
-            vscode.window.showErrorMessage(
-                vscode.l10n.t("Failed to fetch some files.")
-            );
+            console.error(vscode.l10n.t("Failed to fetch some files."));
             if ((error as Response)?.status > 0) {
                 WebExtensionContext.telemetry.sendAPIFailureTelemetry(
                     requestUrl,
@@ -194,6 +189,7 @@ async function createContentFiles(
     filePathInPortalFS?: string,
     defaultFileInfo?: IFileInfo,
 ) {
+    let fileName = "";
     try {
         const entityDetails = getEntity(entityName);
         const attributes = entityDetails?.get(schemaEntityKey.ATTRIBUTES);
@@ -227,7 +223,7 @@ async function createContentFiles(
             throw new Error(ERRORS.FILE_ID_EMPTY);
         }
 
-        const fileName = fetchedFileName
+        fileName = fetchedFileName
             ? result[fetchedFileName]
             : Constants.EMPTY_FILE_NAME;
 
@@ -291,9 +287,7 @@ async function createContentFiles(
 
     } catch (error) {
         const errorMsg = (error as Error)?.message;
-        vscode.window.showErrorMessage(
-            vscode.l10n.t("Failed to get file ready for edit.")
-        );
+        console.error(vscode.l10n.t("Failed to get file ready for edit: {0}", fileName));
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
             createContentFiles.name,
@@ -361,7 +355,7 @@ async function processDataAndCreateFile(
             let rootWebPageId = undefined;
 
             if (rootWebPageIdAttribute) {
-                const rootWebPageIdPath : IAttributePath = getAttributePath(rootWebPageIdAttribute);
+                const rootWebPageIdPath: IAttributePath = getAttributePath(rootWebPageIdAttribute);
                 rootWebPageId = getAttributeContent(result, rootWebPageIdPath, entityName, entityId);
             }
 

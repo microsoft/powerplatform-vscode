@@ -192,7 +192,17 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillStartCollaboartion(context);
 
+    enableFileSearchFunctionality(portalsFS);
+
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function enableFileSearchFunctionality(portalsFS: PortalsFS) {
+    vscode.workspace.registerFileSearchProvider(PORTALS_URI_SCHEME, {
+        provideFileSearchResults: async (query) => {
+            return portalsFS.searchFiles(query.pattern);
+        },
+    });
 }
 
 export function registerCollaborationView() {

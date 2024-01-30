@@ -10,7 +10,7 @@ import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacActiveOrgListOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput } from "./PacTypes";
 import { v4 } from "uuid";
 
 export interface IPacWrapperContext {
@@ -161,8 +161,8 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOrgListOutput>(new PacArguments("org", "list"));
     }
 
-    public async activeOrg(): Promise <PacActiveOrgListOutput> {
-        return this.executeCommandAndParseResults<PacActiveOrgListOutput>(new PacArguments("org", "who"));
+    public async activeOrg(): Promise <PacOrgWhoOutput> {
+        return this.executeCommandAndParseResults<PacOrgWhoOutput>(new PacArguments("org", "who"));
     }
 
     public async pcfInit(outputDirectory : string): Promise<PacOutput> {
