@@ -65,45 +65,30 @@ Field validations are used to customize the validation of fields on the form. He
 \`\`\`JavaScript
 if (window.jQuery) {
   (function ($) {
-      $(document).ready(function () {
-          if (typeof (Page_Validators) == 'undefined') return;
-          
-          // Create a new validator for the email field
-          var emailValidator = document.createElement('span');
-          emailValidator.style.display = "none";
-          emailValidator.id = "emailValidator";
-          emailValidator.controltovalidate = "email"; // Replace "email" with the actual ID or name of the email field
-          emailValidator.errormessage = "Please enter a valid email address.";
-          emailValidator.validationGroup = ""; // Set this if you have set ValidationGroup on the form
-          emailValidator.initialvalue = "";
-          emailValidator.evaluationfunction = function () {
-              var emailValue = $("#email").val(); // Replace "email" with the actual ID or name of the email field
-              
-              // Check if the email address is valid
-              var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
-              if (emailValue == null || emailValue.trim() === "" || !emailPattern.test(emailValue)) {
-                  return false;
-              } else {
-                  return true;
-              }
-          };
-          
-          // Add the new validator to the page validators array
-          Page_Validators.push(emailValidator);
+     $(document).ready(function () {
+        if (typeof (Page_Validators) == 'undefined') return;
+        // Create new validator
+        var newValidator = document.createElement('span');
+        newValidator.style.display = "none";
+        newValidator.id = "emailaddress1Validator";
+        newValidator.controltovalidate = "emailaddress1";
+        newValidator.errormessage = "Email is a required field.";
+        newValidator.validationGroup = ""; // Set this if you have set ValidationGroup on the form
+        newValidator.initialvalue = "";
+        newValidator.evaluationfunction = function () {
+           // check if email address is empty
+           var value = $("#emailaddress1").val();
+           if (value == null || value == "") {
+           return false;
+           } else {
+              return true;
+           }
+        };
 
-          // Optional: Show the error message next to the email field when validation fails
-          $(emailValidator).on("blur", function () {
-              ValidatorValidate(emailValidator);
-          });
+        // Add the new validator to the page validators array:
+        Page_Validators.push(newValidator);
 
-          // Optional: Prevent form submission when validation fails
-          $("form").on("submit", function (e) {
-              if (!Page_ClientValidate()) {
-                  e.preventDefault();
-                  return false;
-              }
-          });
-      });
+     });
   }(window.jQuery));
 }
 \`\`\`
