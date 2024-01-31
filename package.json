@@ -1008,6 +1008,8 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "1.0.2",
+    "@microsoft/1ds-core-js": "4.0.5",
+    "@microsoft/1ds-post-js": "4.0.5",
     "@types/chai": "^4.2.14",
     "@types/command-exists": "^1.2.0",
     "@types/debug": "^4.1.9",
@@ -1066,17 +1068,16 @@
     "webpack": "^5.76.0",
     "webpack-cli": "^4.7.0",
     "webpack-stream": "^7.0.0",
-    "yargs": "^16.2.0",
-    "@microsoft/1ds-core-js": "4.0.5",
-    "@microsoft/1ds-post-js": "4.0.5"
+    "yargs": "^16.2.0"
   },
   "dependencies": {
     "@fluidframework/azure-client": "^1.1.1",
-    "@microsoft/generator-powerpages": "1.21.19",
-    "@types/jwt-decode": "2.2.0",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
+    "@microsoft/generator-powerpages": "1.21.19",
+    "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
+    "@types/xmldom": "^0.1.34",
     "@vscode/extension-telemetry": "^0.6.2",
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
@@ -1097,6 +1098,7 @@
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
     "worker-loader": "^3.0.8",
+    "xmldom": "^0.6.0",
     "yaml": "^2.2.2"
   },
   "__metadata": {
