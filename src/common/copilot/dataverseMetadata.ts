@@ -11,6 +11,7 @@ import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 import { getFileLogicalEntityName } from "../../web/client/utilities/fileAndEntityUtil";
+import { DOMParser } from "xmldom";
 
 interface Attribute {
     LogicalName: string;
@@ -44,6 +45,32 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
     }
 }
 
+export async function getFormXml(entityName: string, formName: string,  orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise <[string | null,  string | null ][]>{
+    try {
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/systemforms?$filter=objecttypecode eq '${entityName}' and name eq '${formName}'`;
+        const requestInit: RequestInit = {
+            method: "GET",
+            headers: {
+                'Content-Type': "application/json",
+                Authorization: `Bearer ${apiToken}`,
+            },
+        };
+
+        const startTime = performance.now();
+        const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
+        const endTime = performance.now();
+        const responseTime = endTime - startTime || 0;
+        const formxml =getFormXMLFromResponse(jsonResponse);
+
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
+        return parseXML(formxml);
+
+    } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
+        return [];
+    }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function fetchJsonResponse(url: string, requestInit: RequestInit): Promise<any> {
     const response = await fetch(url, requestInit);
@@ -64,9 +91,51 @@ function getAttributesFromResponse(jsonResponse: any): Attribute[] {
     return [];
 }
 
+function getFormXMLFromResponse(jsonResponse: any): string {
+    if (jsonResponse.value[0].formxml) {
+        return jsonResponse.value[0].formxml;
+    }
 
-export async function getEntityName(telemetry: ITelemetry, sessionID: string, dataverseEntity: string): Promise<string> {
+    return '';
+}
+
+function parseXML(formXml: string) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(formXml, "text/xml");
+
+    // Get all 'row' elements
+    const rows = xmlDoc.getElementsByTagName('row');
+
+    const result: [
+        string | null,
+        string | null
+    ][] = [];
+
+    // Iterate over all 'row' elements
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+
+        // Get the 'label' and 'control' elements within the current 'row'
+        const label = row.getElementsByTagName('label')[0];
+        const control = row.getElementsByTagName('control')[0];
+
+        // If both 'label' and 'control' elements exist, create an object and add it to the result array
+        if (label && control) {
+            const description = label.getAttribute('description');
+            const datafieldname = control.getAttribute('datafieldname');
+            //const classid = control.getAttribute('classid');
+
+            result.push([description, datafieldname]);
+        }
+    }
+
+    return result
+}
+
+
+export async function getEntityName(telemetry: ITelemetry, sessionID: string, dataverseEntity: string): Promise<{entityName: string, formName: string}> {
     let entityName = '';
+    let formName = '';
 
     try {
         const activeEditor = vscode.window.activeTextEditor;
@@ -86,6 +155,7 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
                 const yamlContent = diskRead.readFileSync(yamlFilePath, 'utf8');
                 const parsedData = parseYamlContent(yamlContent, telemetry, sessionID, dataverseEntity);
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
+                formName = parsedData['adx_name'];
             } else if (!IS_DESKTOP) {
                 entityName = getFileLogicalEntityName(document.uri.fsPath);
             }
@@ -94,7 +164,7 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
         sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         entityName = '';
     }
-    return entityName;
+    return {entityName, formName};
 }
 
 async function getMatchingFiles(folderPath: string, fileNameFirstPart: string): Promise<string[]> {
