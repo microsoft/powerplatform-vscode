@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 info:
   title: VSCode.dev API for PowerPlatform
-  version: "3.1"
+  version: "2.0"
 servers:
   - url: https://vscode.dev/
 tags:
