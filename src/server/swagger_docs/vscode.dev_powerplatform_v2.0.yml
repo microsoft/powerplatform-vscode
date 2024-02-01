@@ -3,14 +3,14 @@ info:
   title: VSCode.dev API for PowerPlatform
   version: "2.0"
 servers:
-  - url: https://vscode.dev/
+  - url: https://vscode.dev/power
 tags:
   - name: portal
     description: Everything about editing portal in vscode
   - name: default
     description: Everything about editing PowerPlatform default app in vscode
 paths:
-  /power/portal/webpages/{webpageId}:
+  /portal/webpages/{webpageId}:
     get:
       tags:
         - portal
@@ -80,7 +80,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/webpages:
+  /portal/webpages:
     get:
       tags:
         - portal
@@ -149,7 +149,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/webfiles/{webfileId}:
+  /portal/webfiles/{webfileId}:
     get:
       tags:
         - portal
@@ -225,7 +225,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/webfiles:
+  /portal/webfiles:
     get:
       tags:
         - portal
@@ -294,7 +294,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/webtemplates/{webtemplateId}:
+  /portal/webtemplates/{webtemplateId}:
     get:
       tags:
         - portal
@@ -370,7 +370,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/webtemplates:
+  /portal/webtemplates:
     get:
       tags:
         - portal
@@ -439,7 +439,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/pagetemplates/{pagetemplateId}:
+  /portal/pagetemplates/{pagetemplateId}:
     get:
       tags:
         - portal
@@ -515,7 +515,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/pagetemplates:
+  /portal/pagetemplates:
     get:
       tags:
         - portal
@@ -584,7 +584,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/contentsnippets/{contentsnippetId}:
+  /portal/contentsnippets/{contentsnippetId}:
     get:
       tags:
         - portal
@@ -660,7 +660,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/contentsnippets:
+  /portal/contentsnippets:
     get:
       tags:
         - portal
@@ -729,7 +729,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/lists/{listId}:
+  /portal/lists/{listId}:
     get:
       tags:
         - portal
@@ -805,7 +805,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/lists:
+  /portal/lists:
     get:
       tags:
         - portal
@@ -874,7 +874,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/basicforms/{basicformId}:
+  /portal/basicforms/{basicformId}:
     get:
       tags:
         - portal
@@ -950,7 +950,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/basicforms:
+  /portal/basicforms:
     get:
       tags:
         - portal
@@ -1019,7 +1019,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/advancedforms/{advancedformId}:
+  /portal/advancedforms/{advancedformId}:
     get:
       tags:
         - portal
@@ -1095,7 +1095,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal/advancedforms:
+  /portal/advancedforms:
     get:
       tags:
         - portal
@@ -1164,7 +1164,7 @@ paths:
       responses:
         "200":
           description: OK
-  /power/portal:
+  /portal:
     get:
       tags:
         - portal
