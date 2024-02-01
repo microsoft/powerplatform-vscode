@@ -86,7 +86,7 @@ export async function activate(
 
     vscode.window.registerUriHandler({
         handleUri(uri:vscode.Uri) {
-            const params = uri.query.split('&');
+            const params = uri.query.split('&'); //'vscode://microsoft-IsvExpTools.powerplatform-vscode?org&siteid'
             let org = '';
             let siteid = '';
             params.forEach(param => {
