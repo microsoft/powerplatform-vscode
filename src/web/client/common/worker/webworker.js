@@ -82,6 +82,11 @@ let intital = false;
 
 async function loadContainer(config, swpId, entityInfo) {
     try {
+        self.postMessage({
+            type: "telemetry",
+            eventName: "load-container-start",
+        });
+
         const { container, audience, map } =
             await AzureFluidClient.fetchContainerAndService(config, swpId);
         const existingMembers = audience.getMembers();
@@ -102,6 +107,17 @@ async function loadContainer(config, swpId, entityInfo) {
             if (!existingMembers.get(member.additionalDetails.AadObjectId)) {
                 self.postMessage({
                     type: "member-removed",
+                    userId: member.additionalDetails.AadObjectId,
+                });
+                self.postMessage({
+                    type: "telemetry",
+                    eventName: "member-removed success",
+                    userId: member.additionalDetails.AadObjectId,
+                });
+            } else {
+                self.postMessage({
+                    type: "telemetry",
+                    eventName: "member-removed failed",
                     userId: member.additionalDetails.AadObjectId,
                 });
             }
@@ -146,10 +162,25 @@ async function loadContainer(config, swpId, entityInfo) {
                     containerId: swpId,
                     entityId: userEntityIdArray,
                 });
+
+                await self.postMessage({
+                    type: "telemetry",
+                    eventName: "client-data success",
+                    userId: user.aadObjectId,
+                });
+            } else {
+                await self.postMessage({
+                    type: "telemetry",
+                    eventName: "client-data failed - user not found",
+                });
             }
         });
     } catch (error) {
         // TODO: add telemetry
+        self.postMessage({
+            type: "telemetry",
+            eventName: "load-container-failed",
+        });
     }
 }
 

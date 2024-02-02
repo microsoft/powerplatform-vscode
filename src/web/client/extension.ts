@@ -380,6 +380,12 @@ export function createWebWorkerInstance(
                             WebExtensionContext.userCollaborationProvider.refresh();
                             WebExtensionContext.quickPickProvider.refresh();
                         }
+                        if (data.type === Constants.workerEventMessages.TELEMETRY) {
+                            WebExtensionContext.telemetry.sendInfoTelemetry(
+                                data.eventName,
+                                data?.userId ? { userId: data.userId } : {}
+                            );
+                        }
                     };
                 }
             })
