@@ -91,6 +91,11 @@
         <note>{0} will be replaced by the entity type.</note>
         <target state="translated">正在创建 {0}...</target>
       </trans-unit>
+      <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
+        <source xml:lang="en">Default Environment: {0}</source>
+        <note>The {0} represents profile's resource/environment URL</note>
+        <target state="translated">默认环境: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++e9f79ac902b11087dd0d34e8afc1de54df4e48d45861a0c0b6e4edd3c204f314">
         <source xml:lang="en">Display Name: {0}
 Unique Name: {1}
@@ -147,9 +152,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Failed to fetch some files.</source>
         <target state="translated">无法获取部分文件。</target>
       </trans-unit>
-      <trans-unit id="++CODE++e1a694d8ed0093d17fa58ee8b44cc76f74583667ffc3511e5d8f77df7b156c41">
-        <source xml:lang="en">Failed to get file ready for edit.</source>
-        <target state="translated">无法获取可供编辑的文件。</target>
+      <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
+        <source xml:lang="en">Failed to get file ready for edit: {0}</source>
+        <target state="translated">无法获取可供编辑的文件: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
         <source xml:lang="en">Fetching your file ...</source>
@@ -304,10 +309,9 @@ URL: {1}
         <note>The {0} represents the profile type (Admin vs Dataverse)</note>
         <target state="translated">配置文件种类: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++0906cdfd1c60099397a97c4da29453b3f0cef126c408d6ba317e2d5e2d5e9e78">
-        <source xml:lang="en">Resource: {0}</source>
-        <note>The {0} represents profile's resource/environment URL</note>
-        <target state="translated">资源: {0}</target>
+      <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
+        <source xml:lang="en">Response data is empty</source>
+        <target state="translated">响应数据为空</target>
       </trans-unit>
       <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
         <source xml:lang="en">Saving your file ...</source>
@@ -375,9 +379,9 @@ URL: {1}
         <note>The {0} represents auth profile's user name (email address))</note>
         <target state="translated">用户: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++91357f5ee585bec70c13f9f0807c5a047f35066e4fc63b571f5a957a657d0262">
-        <source xml:lang="en">We encountered an error preparing the file for edit.</source>
-        <target state="translated">准备可供编辑的文件时出错。</target>
+      <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
+        <source xml:lang="en">We encountered an error preparing the files for edit.</source>
+        <target state="translated">我们在准备编辑文件时遇到错误。</target>
       </trans-unit>
       <trans-unit id="++CODE++ff174a54d200db312e20f9f72e805df5d0221070730c1d789d642185b1a3b3e5">
         <source xml:lang="en">Web files</source>
