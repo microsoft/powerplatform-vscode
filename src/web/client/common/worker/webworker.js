@@ -83,8 +83,8 @@ let intital = false;
 async function loadContainer(config, swpId, entityInfo) {
     try {
         self.postMessage({
-            type: "telemetry",
-            eventName: "load-container-start",
+            type: "telemetry-info",
+            eventName: "webExtensionWebWorkerLoadContainerStart",
         });
 
         const { container, audience, map } =
@@ -110,15 +110,15 @@ async function loadContainer(config, swpId, entityInfo) {
                     userId: member.additionalDetails.AadObjectId,
                 });
                 self.postMessage({
-                    type: "telemetry",
-                    eventName: "member-removed success",
+                    type: "telemetry-info",
+                    eventName: "webExtensionWebWorkerMemberRemovedSuccess",
                     userId: member.additionalDetails.AadObjectId,
                 });
             } else {
                 self.postMessage({
-                    type: "telemetry",
-                    eventName: "member-removed failed",
-                    userId: member.additionalDetails.AadObjectId,
+                    type: "telemetry-error",
+                    methodName: "webWorker memberRemoved",
+                    errorMessage: "Web Extension WebWorker Member Removed Failed",
                 });
             }
         });
@@ -132,12 +132,12 @@ async function loadContainer(config, swpId, entityInfo) {
                 }
             }
 
-            return null;
+            throw new Error("Web Extension WebWorker GetUserIdByConnectionId Failed");
         };
 
         selectionSharedMap.on("valueChanged", async (changed, local) => {
-            const user = getUserIdByConnectionId(changed.key);
-            if (user) {
+            try {
+                const user = getUserIdByConnectionId(changed.key);
                 const userConnections = audience
                     .getMembers()
                     .get(user.userId).connections;
@@ -164,22 +164,26 @@ async function loadContainer(config, swpId, entityInfo) {
                 });
 
                 await self.postMessage({
-                    type: "telemetry",
-                    eventName: "client-data success",
+                    type: "telemetry-info",
+                    eventName: "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
                     userId: user.aadObjectId,
                 });
-            } else {
+            } catch (error) {
                 await self.postMessage({
-                    type: "telemetry",
-                    eventName: "client-data failed - user not found",
+                    type: "telemetry-error",
+                    methodName: "webWorker valueChanged",
+                    errorMessage: error?.message,
+                    error: error,
                 });
             }
         });
     } catch (error) {
-        // TODO: add telemetry
         self.postMessage({
-            type: "telemetry",
-            eventName: "load-container-failed",
+            type: "telemetry-error",
+            eventName: "webExtensionWebWorkerLoadContainerFailed",
+            methodName: loadContainer.name,
+            errorMessage: error?.message,
+            error: error,
         });
     }
 }
