@@ -64,6 +64,17 @@ function setTelemetryTarget() {
         .pipe(gulp.dest(path.join('src', 'common', 'telemetry-generated')));
 }
 
+function setCollectorEndpoint() {
+    const collectorEndpointSource = isOfficialBuild
+        ? 'src/common/telemetry/collectorEndpointProd.ts'
+        : 'src/common/telemetry/collectorEndpointTip.ts';
+
+    return gulp
+        .src(collectorEndpointSource)
+        .pipe(rename('collectorEndpointConfiguration.ts'))
+        .pipe(gulp.dest(path.join('src', 'common', 'telemetry-generated')));
+}
+
 
 function compile() {
     return gulp
@@ -345,6 +356,7 @@ const recompile = gulp.series(
     translationsExport,
     translationsImport,
     setTelemetryTarget,
+    setCollectorEndpoint,
     compile,
     compileWeb,
     compileWorker,
