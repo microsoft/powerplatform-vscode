@@ -77,7 +77,9 @@ export function activate(context: vscode.ExtensionContext): void {
                     }
                 );
 
-                const { appName, entity, entityId, searchParams } = args;
+                const { appName, searchParams } = args;
+                let { entity, entityId } = args;
+
                 const queryParamsMap = new Map<string, string>();
 
                 if (searchParams) {
@@ -88,6 +90,14 @@ export function activate(context: vscode.ExtensionContext): void {
                             pair[1].trim()
                         );
                     }
+                }
+
+                if (entity == undefined && queryParamsMap.has(queryParameters.ENTITY)) {
+                    entity = queryParamsMap.get(queryParameters.ENTITY);
+                }
+
+                if (entityId == undefined && queryParamsMap.has(queryParameters.ENTITY_ID)) {
+                    entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
                 }
 
                 if (
