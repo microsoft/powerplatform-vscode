@@ -66,13 +66,11 @@ export async function activate(
         appInsightsResource.instrumentationKey
     );
     context.subscriptions.push(_telemetry);
+    // TODO: Need to decide on data residency part on unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
 
     _telemetry.sendTelemetryEvent("Start", {
         "pac.userId": readUserSettings().uniqueId,
-    });
-    oneDSLoggerWrapper.getLogger().traceInfo("Start", {
-        "pac.userId": readUserSettings().uniqueId
     });
 
     // Setup context switches
@@ -105,9 +103,6 @@ export async function activate(
                 _telemetry.sendTelemetryEvent("StartCommand", {
                     commandId: "microsoft-powerapps-portals.preview-show",
                 });
-                oneDSLoggerWrapper.getLogger().traceInfo("StartCommand", {
-                    commandId: "microsoft-powerapps-portals.preview-show"
-                });
                 PortalWebView.createOrShow();
             }
         )
@@ -117,9 +112,6 @@ export async function activate(
     _context.subscriptions.push(
         vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async () => {
             _telemetry.sendTelemetryEvent("StartCommand", {
-                commandId: "microsoft-powerapps-portals.bootstrap-diff",
-            });
-            oneDSLoggerWrapper.getLogger().traceInfo("StartCommand", {
                 commandId: "microsoft-powerapps-portals.bootstrap-diff",
             });
             bootstrapDiff();
@@ -139,9 +131,6 @@ export async function activate(
                     _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
                         page: "NewPage",
                     });
-                    oneDSLoggerWrapper.getLogger().traceInfo("PortalWebPagePreview", {
-                        page: "NewPage",
-                    });
                     PortalWebView?.currentPanel?._update();
                 }
             }
@@ -154,9 +143,6 @@ export async function activate(
             } else if (isCurrentDocumentEdited()) {
                 if (PortalWebView?.currentPanel) {
                     _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
-                        page: "ExistingPage",
-                    });
-                    oneDSLoggerWrapper.getLogger().traceInfo("PortalWebPagePreview", {
                         page: "ExistingPage",
                     });
                     PortalWebView?.currentPanel?._update();
@@ -194,18 +180,15 @@ export async function activate(
             listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
             telemetryData = JSON.stringify(listOfActivePortals);
             _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
-            oneDSLoggerWrapper.getLogger().traceInfo("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
         } catch (exception) {
             const exceptionError = exception as Error;
             _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
-            oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
         }
 
         handleOrgChange();
         setupAuthFileWatcher();
 
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
-        oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
@@ -222,7 +205,6 @@ export async function activate(
     }
 
     _telemetry.sendTelemetryEvent("activated");
-    oneDSLoggerWrapper.getLogger().traceInfo("activated");
 }
 
 export function setupAuthFileWatcher() {
@@ -256,7 +238,6 @@ async function handleOrgChange() {
 export async function deactivate(): Promise<void> {
     if (_telemetry) {
         _telemetry.sendTelemetryEvent("End");
-        oneDSLoggerWrapper.getLogger().traceInfo("End");
         // dispose() will flush any events not sent
         // Note, while dispose() returns a promise, we don't await it so that we can unblock the rest of unloading logic
         _telemetry.dispose();
@@ -378,11 +359,6 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
                     serverTelemetry.properties,
                     serverTelemetry.measurements
                 );
-                oneDSLoggerWrapper.getLogger().traceInfo(
-                    serverTelemetry.eventName,
-                    serverTelemetry.properties,
-                    serverTelemetry.measurements
-                );
             }
         });
     });
@@ -426,7 +402,6 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
 
     if (!isCopilotNotificationDisabled) {
         telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
-        oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
         copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
     }
 
