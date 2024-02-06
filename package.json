@@ -1112,9 +1112,5 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
     "utf-8-validate": "^5.0.9"
-  },
-  "resolutions": {
-    "axios": "0.21.4",
-    "jsrsasign": "11.0.0"
   }
 }
