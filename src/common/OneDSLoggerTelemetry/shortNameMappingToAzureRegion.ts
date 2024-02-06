@@ -143,7 +143,7 @@ const azureRegions = {
     cnn3: 'cnn3'
   };
   
-export const azureRegionsToGeoMappings = {
+export const geoMappingsToAzureRegion = {
     // Public
     [regionShortName.wus]: { geoName: 'us', azureRegion: azureRegions.USWest },
     [regionShortName.cus]: { geoName: 'us', azureRegion: azureRegions.USCentral },
