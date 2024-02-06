@@ -15,7 +15,8 @@ import {getExtensionType, getExtensionVersion} from "../../common/Utils";
 import { EXTENSION_ID } from "../../client/constants";
 import {OneDSCollectorEventName} from "./EventContants";
 import { telemetryEventNames } from "../../web/client/telemetry/constants";
-import { collectorEndpointUrl } from "../telemetry-generated/collectorEndpointConfiguration";
+import { region } from "../telemetry-generated/buildRegionConfiguration";
+import { geoMappingsToAzureRegion } from "./shortNameMappingToAzureRegion";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -132,33 +133,53 @@ export class OneDSLogger implements ITelemetryLogger{
     }
 
     private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
-        const region:string = "test"; // TODO: Remove it from here and replace it with value getting from build. Check gulp.mjs (setTelemetryTarget)
+        const buildRegion:string = region;
         const instrumentationSettings:IInstrumentationSettings = {
-            endpointURL: collectorEndpointUrl,
-            instrumentationKey: 'bd47fc8d971f4283a6686ec46fd48782-bdef6c1c-75ab-417c-a1f7-8bbe21e12da6-7708'
+            endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
+            instrumentationKey: 'ffdb4c99ca3a4ad5b8e9ffb08bf7da0d-65357ff3-efcd-47fc-b2fd-ad95a52373f4-7402'
         };
-        switch (region) {
+        const geoName = geoMappingsToAzureRegion[geo!].geoName;
+        switch (buildRegion) {
             case 'tie':
             case 'test':
             case 'preprod':
                 break;
             case 'prod':
             case 'preview':
-              switch (geo) {
+              switch (geoName) {
+                case 'us':
+                case 'br':
+                case 'jp':
+                case 'in':
+                case 'au':
+                case 'ca':
+                case 'as':
+                case 'za':
+                case 'ae':
+                case 'kr':
+                    instrumentationSettings.endpointURL ='https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
+                    instrumentationSettings.instrumentationKey =  '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                    break;
                 case 'eu':
-                    instrumentationSettings.endpointURL =collectorEndpointUrl,
-                    instrumentationSettings.instrumentationKey = '' //prod key;
-                  break;
+                case 'uk':
+                case 'de':
+                case 'fr':
+                case 'no':
+                case 'ch':
+                    instrumentationSettings.endpointURL ='https://eu-mobile.events.data.microsoft.com/OneCollector/1.0/',
+                    instrumentationSettings.instrumentationKey =  '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                    break;
                 default:
-                    instrumentationSettings.endpointURL = collectorEndpointUrl,
-                    instrumentationSettings.instrumentationKey = '' //prod key;
+                    instrumentationSettings.endpointURL ='https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
+                    instrumentationSettings.instrumentationKey =  '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                    break;
               }
               break;
             case 'gov':
             case 'high':
             case 'dod':
             case 'mooncake':
-                instrumentationSettings.endpointURL = collectorEndpointUrl,
+                instrumentationSettings.endpointURL = '',
                 instrumentationSettings.instrumentationKey = '' //prod key;
               break;
             case 'ex':

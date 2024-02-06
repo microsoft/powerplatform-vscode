@@ -181,10 +181,12 @@ export const geoMappingsToAzureRegion = {
     [regionShortName.wno]: { geoName: 'no', azureRegion: azureRegions.NorwayWest },     
     [regionShortName.ckr]: { geoName: 'kr', azureRegion: azureRegions.KoreaCentral },
     [regionShortName.skr]: { geoName: 'kr', azureRegion: azureRegions.KoreaSouth },
-    [regionShortName.ugtx]: { geoName: 'us', azureRegion: azureRegions.GovernmentUSTexas },
-    [regionShortName.ugva]: { geoName: 'us', azureRegion: azureRegions.GovernmentUSVirginia },
-    [regionShortName.udc]: { geoName: 'us', azureRegion: azureRegions.GovernmentUSDodCentral },
-    [regionShortName.ude]: { geoName: 'us', azureRegion: azureRegions.GovernmentUSDodEast },
+    // Government US.
+    [regionShortName.ugtx]: { geoName: 'usgov', azureRegion: azureRegions.GovernmentUSTexas },
+    [regionShortName.ugva]: { geoName: 'usgov', azureRegion: azureRegions.GovernmentUSVirginia },
+    [regionShortName.udc]: { geoName: 'usgov', azureRegion: azureRegions.GovernmentUSDodCentral },
+    [regionShortName.ude]: { geoName: 'usgov', azureRegion: azureRegions.GovernmentUSDodEast },
+    // Goverment China Mooncake
     [regionShortName.cne]: { geoName: 'cn', azureRegion: azureRegions.ChinaEast },
     [regionShortName.cne2]: { geoName: 'cn', azureRegion: azureRegions.ChinaEast2 },
     [regionShortName.cne3]: { geoName: 'cn', azureRegion: azureRegions.ChinaEast3 },

@@ -3,4 +3,4 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export const collectorEndpointUrl = 'https://mobile.events.data.microsoft.com/OneCollector/1.0/';
+export const region = 'prod';
