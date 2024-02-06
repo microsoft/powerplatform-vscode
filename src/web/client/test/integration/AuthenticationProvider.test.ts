@@ -15,6 +15,7 @@ import { telemetryEventNames } from "../../telemetry/constants";
 import * as errorHandler from "../../common/errorHandler";
 import {oneDSLoggerWrapper} from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let traceError: any
 
 describe("Authentication Provider", () => {
