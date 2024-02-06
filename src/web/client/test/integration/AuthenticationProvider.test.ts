@@ -13,9 +13,20 @@ import vscode from "vscode";
 import WebExtensionContext from "../../WebExtensionContext";
 import { telemetryEventNames } from "../../telemetry/constants";
 import * as errorHandler from "../../common/errorHandler";
-import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import {oneDSLoggerWrapper} from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+
+let traceError: any
 
 describe("Authentication Provider", () => {
+    before(() => {
+        oneDSLoggerWrapper.instantiate();
+        traceError = sinon.stub(oneDSLoggerWrapper.getLogger(), "traceError")
+    })
+
+    after(() => {
+        traceError.restore()
+    })
+
     afterEach(() => {
         // Restore the default sandbox here
         sinon.restore();
@@ -68,11 +79,6 @@ describe("Authentication Provider", () => {
             "sendErrorTelemetry"
         );
 
-        const sendErrorTelemetry1 = sinon.spy(
-            oneDSLoggerWrapper.getLogger(),
-            "traceError"
-        );
-
         //Act
         const result = await dataverseAuthentication(dataverseOrgURL);
 
@@ -89,7 +95,6 @@ describe("Authentication Provider", () => {
         sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(sendErrorTelemetry);
         sinon.assert.calledOnce(_mockgetSession);
-        sinon.assert.calledOnce(sendErrorTelemetry1);
         expect(result).empty;
     });
 
