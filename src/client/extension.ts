@@ -40,6 +40,7 @@ import { PacWrapperContext } from "./pac/PacWrapperContext";
 import { fetchArtemisResponse } from "../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { GetAuthProfileWatchPattern } from "./lib/AuthPanelView";
+import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -231,6 +232,7 @@ async function handleOrgChange() {
         if (artemisResponse) {
             const { geoName } = artemisResponse[0];
             oneDSLoggerWrapper.instantiate(geoName);
+            oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, pacActiveOrg.Results);
         }
     }
 }

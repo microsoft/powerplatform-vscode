@@ -17,6 +17,7 @@ import {OneDSCollectorEventName} from "./EventContants";
 import { telemetryEventNames } from "../../web/client/telemetry/constants";
 import { region } from "../telemetry-generated/buildRegionConfiguration";
 import { geoMappingsToAzureRegion } from "./shortNameMappingToAzureRegion";
+import { telemetryEventNames as desktopExtTelemetryEventNames } from "../../client/telemetry/TelemetryEventNames";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -345,8 +346,15 @@ export class OneDSLogger implements ITelemetryLogger{
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private populateVscodeDesktopAttributes(envelope: any){
-        // TODO: this method helps in populating desktop attributes.
-        console.log(envelope);
+        if (envelope.data.eventName == desktopExtTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT) {
+            OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).OrgId;
+            OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).EnvironmentId;
+            // TODO: Populate website id
+            OneDSLogger.contextInfo.websiteId = 'test'
+        }
+        envelope.data.measurements = envelope.data.measurement;
+        envelope.data.timestamp = envelope.time;
+        envelope.data.sdkVersion = envelope.ext.sdk.ver;
     }
 
     //// Redact Sensitive data for the fields susceptible to contain codes/tokens/keys/secrets etc.
