@@ -45,7 +45,7 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
     }
 }
 
-export async function getFormXml(entityName: string, formName: string,  orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise <[string | null,  string | null ][]>{
+export async function getFormXml(entityName: string, formName: string,  orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<(string [])>{
     try {
         const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/systemforms?$filter=objecttypecode eq '${entityName}' and name eq '${formName}'`;
         const requestInit: RequestInit = {
@@ -61,6 +61,8 @@ export async function getFormXml(entityName: string, formName: string,  orgUrl: 
         const endTime = performance.now();
         const responseTime = endTime - startTime || 0;
         const formxml =getFormXMLFromResponse(jsonResponse);
+
+        // console.log(formxml)
 
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return parseXML(formxml);
@@ -106,10 +108,7 @@ function parseXML(formXml: string) {
     // Get all 'row' elements
     const rows = xmlDoc.getElementsByTagName('row');
 
-    const result: [
-        string | null,
-        string | null
-    ][] = [];
+    const result = [];
 
     // Iterate over all 'row' elements
     for (let i = 0; i < rows.length; i++) {
@@ -125,7 +124,9 @@ function parseXML(formXml: string) {
             const datafieldname = control.getAttribute('datafieldname');
             //const classid = control.getAttribute('classid');
 
-            result.push([description, datafieldname]);
+            if (description && datafieldname) {
+                result.push(description, datafieldname);
+            }
         }
     }
 
@@ -155,9 +156,10 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
                 const yamlContent = diskRead.readFileSync(yamlFilePath, 'utf8');
                 const parsedData = parseYamlContent(yamlContent, telemetry, sessionID, dataverseEntity);
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
-                formName = parsedData['adx_name'];
+                formName = parsedData['adx_formname'];
             } else if (!IS_DESKTOP) {
                 entityName = getFileLogicalEntityName(document.uri.fsPath);
+                formName = ''; //TODO: get form name for web extension
             }
         }
     } catch (error) {

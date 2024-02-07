@@ -344,26 +344,28 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                 this.sendMessageToWebview({ type: 'userName', value: userName });
 
-                let metadataInfo = {entityName: '', formName: ''};
-                let entityColumns: string[] = [];
-                let formColumns: [
-                    string | null,
-                    string | null
-                ][] = [];
+                let metadataInfo = { entityName: '', formName: '' };
+                let entityInfo : string [] = [];
 
                 if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
                     metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
                     const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
 
-                    entityColumns = await getEntityColumns(metadataInfo.entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+                    // console.log(entityColumns);
 
-                    console.log(entityColumns);
+                    if (activeFileParams.dataverseEntity == "adx_entityform") {
+                        const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+                        entityInfo = formColumns;
+                    } else {
+                        const entityColumns = await getEntityColumns(metadataInfo.entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+                        entityInfo = entityColumns;
+                    }
 
-                    formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+                    console.log(entityInfo);
 
                 }
-                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, formColumns, telemetry, this.aibEndpoint, this.geoName);
+                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, entityInfo, telemetry, this.aibEndpoint, this.geoName);
             })
             .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
