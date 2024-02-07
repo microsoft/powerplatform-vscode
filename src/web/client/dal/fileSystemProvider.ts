@@ -468,29 +468,45 @@ export class PortalsFS implements vscode.FileSystemProvider {
             ) as string
         );
 
-        // Load default file first
-        await fetchDataFromDataverseAndUpdateVFS(
-            this,
-            {
-                entityId: WebExtensionContext.defaultEntityId,
-                entityName: WebExtensionContext.defaultEntityType,
-            } as IFileInfo
-        );
+        // Try Loading default file first
+        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "") {
+            await fetchDataFromDataverseAndUpdateVFS(
+                this,
+                {
+                    entityId: WebExtensionContext.defaultEntityId,
+                    entityName: WebExtensionContext.defaultEntityType,
+                } as IFileInfo
+            );
 
-        // Fire and forget
-        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
+            // Fire and forget
+            vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
-            {
-                commandId: "vscode.open",
-                type: "file",
-                entityId: WebExtensionContext.defaultEntityId,
-                entityName: WebExtensionContext.defaultEntityType,
-                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
-                duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
+                {
+                    commandId: "vscode.open",
+                    type: "file",
+                    entityId: WebExtensionContext.defaultEntityId,
+                    entityName: WebExtensionContext.defaultEntityType,
+                    isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
+                    duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
+                }
+            );
+        } else {
+            if (!WebExtensionContext.showMultifileInVSCode) {
+                WebExtensionContext.telemetry.sendErrorTelemetry(
+                    telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING_FOR_SINGLE_FILE,
+                    this._loadFromDataverseToVFS.name,
+                );
+                vscode.window.showErrorMessage(
+                    vscode.l10n.t("There was a problem opening the workspace"),
+                    vscode.l10n.t(
+                        "Check the URL and verify the parameters are correct"
+                    )
+                );
+                return;
             }
-        );
+        }
 
         if (WebExtensionContext.showMultifileInVSCode) {
             // load rest of the files

@@ -15,6 +15,7 @@ import {
 import { PortalsFS } from "./dal/fileSystemProvider";
 import {
     checkMandatoryParameters,
+    checkNewMandatoryParameters,
     removeEncodingFromParameters,
     showErrorDialog,
 } from "./common/errorHandler";
@@ -92,23 +93,29 @@ export function activate(context: vscode.ExtensionContext): void {
                     }
                 }
 
-                if (entity == undefined && queryParamsMap.has(queryParameters.ENTITY)) {
-                    entity = queryParamsMap.get(queryParameters.ENTITY);
-                }
+                if (entity && entityId) {
+                    if (
+                        !checkMandatoryParameters(
+                            appName,
+                            entity,
+                            entityId,
+                            queryParamsMap
+                        )
+                    ) {
+                        return;
+                    }
+                } else {
+                    if (
+                        !checkNewMandatoryParameters(
+                            appName,
+                            queryParamsMap
+                        )
+                    ) {
+                        return;
+                    }
 
-                if (entityId == undefined && queryParamsMap.has(queryParameters.ENTITY_ID)) {
-                    entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
-                }
-
-                if (
-                    !checkMandatoryParameters(
-                        appName,
-                        entity,
-                        entityId,
-                        queryParamsMap
-                    )
-                ) {
-                    return;
+                    entity = queryParamsMap.get(queryParameters.ENTITY) ?? "";
+                    entityId = queryParamsMap.get(queryParameters.ENTITY_ID) ?? "";
                 }
 
                 removeEncodingFromParameters(queryParamsMap);

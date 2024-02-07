@@ -205,3 +205,31 @@ export function checkMandatoryMultifileParameters(
             return false;
     }
 }
+
+export function checkNewMandatoryParameters(
+    appName: string,
+    queryParamsMap: Map<string, string>
+): boolean {
+    return (
+        checkNewMandatoryPathParameters(appName) &&
+        checkMandatoryQueryParameters(appName, queryParamsMap) &&
+        checkMandatoryMultifileParameters(appName, queryParamsMap)
+    );
+}
+
+export function checkNewMandatoryPathParameters(
+    appName: string,
+): boolean {
+    switch (
+    appName
+    ) {
+        case "portal":
+            return true;
+        default:
+            showErrorDialog(
+                vscode.l10n.t("There was a problem opening the workspace"),
+                vscode.l10n.t("Unable to find that app")
+            );
+            return false;
+    }
+}
