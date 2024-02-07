@@ -16,7 +16,7 @@ import { EXTENSION_ID } from "../../client/constants";
 import {OneDSCollectorEventName} from "./EventContants";
 import { telemetryEventNames } from "../../web/client/telemetry/constants";
 import { region } from "../telemetry-generated/buildRegionConfiguration";
-import { geoMappingsToAzureRegion, regionShortName } from "./shortNameMappingToAzureRegion";
+import { geoMappingsToAzureRegion } from "./shortNameMappingToAzureRegion";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -138,7 +138,10 @@ export class OneDSLogger implements ITelemetryLogger{
             endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
             instrumentationKey: 'ffdb4c99ca3a4ad5b8e9ffb08bf7da0d-65357ff3-efcd-47fc-b2fd-ad95a52373f4-7402'
         };
-        const geoName = geoMappingsToAzureRegion[geo ?? regionShortName.wus].geoName;
+        let geoName = 'us';
+        if(geoMappingsToAzureRegion[geo!]) {
+            geoName = geoMappingsToAzureRegion[geo!].geoName;
+        }
         switch (buildRegion) {
             case 'tie':
             case 'test':
