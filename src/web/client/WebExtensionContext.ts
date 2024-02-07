@@ -272,8 +272,8 @@ class WebExtensionContext implements IWebExtensionContext {
         const schema = queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string;
         // Initialize context from URL params
         this._currentSchemaVersion = schema;
-        this._defaultEntityType = entityName ? entityName.toLowerCase() : "";
-        this._defaultEntityId = entityId ?? "";
+        this._defaultEntityType = entityName ? entityName.toLowerCase() : queryParamsMap.has(Constants.queryParameters.ENTITY) ? queryParamsMap.get(Constants.queryParameters.ENTITY) as string : "";
+        this._defaultEntityId = entityId ? entityId : queryParamsMap.has(Constants.queryParameters.ENTITY_ID) ? queryParamsMap.get(Constants.queryParameters.ENTITY_ID) as string : "";
         this._urlParametersMap = queryParamsMap;
         this._rootDirectory = vscode.Uri.parse(
             `${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(

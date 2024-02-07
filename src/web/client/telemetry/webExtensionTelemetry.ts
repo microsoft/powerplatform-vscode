@@ -52,7 +52,9 @@ export class WebExtensionTelemetry {
                 siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
                 region: queryParamsMap.get(queryParameters.REGION),
                 geo: queryParamsMap.get(queryParameters.GEO),
-                envId: queryParamsMap.get(queryParameters.ENV_ID)
+                envId: queryParamsMap.get(queryParameters.ENV_ID),
+                entity: queryParamsMap.get(queryParameters.ENTITY),
+                entityId: queryParamsMap.get(queryParameters.ENTITY_ID),
             }
         }
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);

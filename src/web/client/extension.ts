@@ -81,8 +81,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     }
                 );
 
-                const { appName, searchParams } = args;
-                let { entity, entityId } = args;
+                const { appName, entity, entityId, searchParams } = args;
 
                 const queryParamsMap = new Map<string, string>();
 
@@ -95,7 +94,7 @@ export function activate(context: vscode.ExtensionContext): void {
                         );
                     }
                 }
-              
+
                 const geo = queryParamsMap.get('geo')?.toLowerCase();
                 // Authenticated scenario. Pass the geo to OneDSLogger for data boundary
                 if(geo){
@@ -121,11 +120,6 @@ export function activate(context: vscode.ExtensionContext): void {
                         )
                     ) {
                         return;
-                    }
-
-                    if (queryParamsMap.has(queryParameters.ENTITY) && queryParamsMap.has(queryParameters.ENTITY_ID)) {
-                        entity = queryParamsMap.get(queryParameters.ENTITY);
-                        entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
                     }
                 }
 
