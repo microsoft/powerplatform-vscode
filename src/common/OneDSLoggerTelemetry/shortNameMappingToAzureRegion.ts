@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-const azureRegions = {
+export const azureRegions = {
     // Americas
     USWest: 'westus',
     USWest2: 'westus2',
@@ -94,7 +94,7 @@ const azureRegions = {
     ChinaEast3: 'chinaeast3',
   };
   
-  const regionShortName = {
+  export const regionShortName = {
     wus: 'wus',
     cus: 'cus',
     eus: 'eus',
