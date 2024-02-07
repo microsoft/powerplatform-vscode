@@ -82,7 +82,6 @@ export function activate(context: vscode.ExtensionContext): void {
                 );
 
                 const { appName, entity, entityId, searchParams } = args;
-
                 const queryParamsMap = new Map<string, string>();
 
                 if (searchParams) {
