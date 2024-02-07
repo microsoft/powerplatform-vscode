@@ -114,8 +114,10 @@ export function activate(context: vscode.ExtensionContext): void {
                         return;
                     }
 
-                    entity = queryParamsMap.get(queryParameters.ENTITY) ?? "";
-                    entityId = queryParamsMap.get(queryParameters.ENTITY_ID) ?? "";
+                    if (queryParamsMap.has(queryParameters.ENTITY) && queryParamsMap.has(queryParameters.ENTITY_ID)) {
+                        entity = queryParamsMap.get(queryParameters.ENTITY);
+                        entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
+                    }
                 }
 
                 removeEncodingFromParameters(queryParamsMap);
