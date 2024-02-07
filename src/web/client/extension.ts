@@ -37,6 +37,7 @@ import { copilotNotificationPanel, disposeNotificationPanel } from "../../common
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
 import { fetchArtemisResponse } from "../../common/ArtemisService";
+import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -46,6 +47,8 @@ export function activate(context: vscode.ExtensionContext): void {
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             dataBoundary
         );
+    // TODO: Need to replace the geo on confirmation from our Privacy champ. Unauthenticated scenarios
+    oneDSLoggerWrapper.instantiate();
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
     WebExtensionContext.telemetry.setTelemetryReporter(
         context.extension.id,
@@ -91,6 +94,12 @@ export function activate(context: vscode.ExtensionContext): void {
                             pair[1].trim()
                         );
                     }
+                }
+              
+                const geo = queryParamsMap.get('geo')?.toLowerCase();
+                // Authenticated scenario. Pass the geo to OneDSLogger for data boundary
+                if(geo){
+                    oneDSLoggerWrapper.instantiate(geo);
                 }
 
                 if (entity && entityId) {
