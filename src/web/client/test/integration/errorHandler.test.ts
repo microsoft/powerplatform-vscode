@@ -113,8 +113,6 @@ describe("errorHandler", () => {
     it("checkMandatoryParameters_whenAppNameIsPortalAndEntityAndEntityIdHavingValues_shouldReturnTrue", () => {
         //Act
         const appName = "portal";
-        const entity = "entity";
-        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "url"],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -128,8 +126,6 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryParameters(
             appName,
-            entity,
-            entityId,
             queryParamsMap
         );
 
@@ -137,66 +133,10 @@ describe("errorHandler", () => {
         expect(result).true;
     });
 
-    it("checkMandatoryParameters_whenEntityPassedAsBlank_shouldReturnFalse", () => {
-        //Act
-        const appName = "portal";
-        const entity = "";
-        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
-        const queryParamsMap = new Map<string, string>([
-            [queryParameters.ORG_URL, "url"],
-            [queryParameters.DATA_SOURCE, "SQL"],
-            [schemaKey.SCHEMA_VERSION, "1.0.0"],
-            [
-                queryParameters.WEBSITE_ID,
-                "ed9a6c19-5ab6-4f67-8c35-2423cff958c4",
-            ],
-        ]);
-
-        //Action
-        const result = checkMandatoryParameters(
-            appName,
-            entity,
-            entityId,
-            queryParamsMap
-        );
-
-        //Assert
-        expect(result).false;
-    });
-
-    it("checkMandatoryParameters_whenEntityIdPassedAsBlank_shouldReturnFalse", () => {
-        //Act
-        const appName = "portal";
-        const entity = "entity";
-        const entityId = "";
-        const queryParamsMap = new Map<string, string>([
-            [queryParameters.ORG_URL, "url"],
-            [queryParameters.DATA_SOURCE, "SQL"],
-            [schemaKey.SCHEMA_VERSION, "1.0.0"],
-            [
-                queryParameters.WEBSITE_ID,
-                "ed9a6c19-5ab6-4f67-8c35-2423cff958c4",
-            ],
-        ]);
-
-        //Action
-        const result = checkMandatoryParameters(
-            appName,
-            entity,
-            entityId,
-            queryParamsMap
-        );
-
-        //Assert
-        expect(result).false;
-    });
-
     it("checkMandatoryParameters_whenAppNameIsDifferentFromPortal_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = stub(vscode.window, "showErrorMessage");
         const appName = "por";
-        const entity = "entity";
-        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "url"],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -209,8 +149,6 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryParameters(
             appName,
-            entity,
-            entityId,
             queryParamsMap
         );
         //Assert
@@ -224,8 +162,6 @@ describe("errorHandler", () => {
     it("checkMandatoryParameters_whenOrgURLIsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
-        const entity = "entity";
-        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, ""],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -238,8 +174,6 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryParameters(
             appName,
-            entity,
-            entityId,
             queryParamsMap
         );
         //Assert
@@ -249,8 +183,6 @@ describe("errorHandler", () => {
     it("checkMandatoryParameters_whenDATASOURCEIsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
-        const entity = "entity";
-        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "orgUrl"],
             [queryParameters.DATA_SOURCE, ""],
@@ -264,8 +196,6 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryParameters(
             appName,
-            entity,
-            entityId,
             queryParamsMap
         );
 
@@ -276,8 +206,6 @@ describe("errorHandler", () => {
     it("checkMandatoryParameters_whenSCHEMAVERSIONIsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
-        const entity = "entity";
-        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "orgUrl"],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -291,8 +219,6 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryParameters(
             appName,
-            entity,
-            entityId,
             queryParamsMap
         );
 
@@ -303,8 +229,6 @@ describe("errorHandler", () => {
     it("checkMandatoryParameters_whenWEBSITEIDIsBlank_shouldReturnFalse", () => {
         //Act
         const appName = "portal";
-        const entity = "entity";
-        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         const queryParamsMap = new Map<string, string>([
             [queryParameters.ORG_URL, "orgUrl"],
             [queryParameters.DATA_SOURCE, "SQL"],
@@ -315,8 +239,6 @@ describe("errorHandler", () => {
         //Action
         const result = checkMandatoryParameters(
             appName,
-            entity,
-            entityId,
             queryParamsMap
         );
 
@@ -327,81 +249,18 @@ describe("errorHandler", () => {
     it("checkMandatoryPathParameters_whenEveryParameterIsPassedOrValid_shouldReturnTrue", () => {
         //Act
         const appName = "portal";
-        const entity = "entity";
-        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
         //Action
-        const result = checkMandatoryPathParameters(appName, entity, entityId);
+        const result = checkMandatoryPathParameters(appName);
         //Assert
         expect(result).true;
-    });
-
-    it("checkMandatoryPathParameters_whenEntityIsBlank_shouldReturnFalse", () => {
-        //Act
-        const _mockShowErrorDialog = spy(vscode.window, "showErrorMessage");
-        const _mockSendErrorTelemetry = spy(
-            WebExtensionContext.telemetry,
-            "sendErrorTelemetry"
-        );
-        const appName = "portal";
-        const entity = "";
-        const entityId = "512e50bd-a9d1-44c0-ba3f-5dc7f46e7216";
-        //Action
-        const result = checkMandatoryPathParameters(appName, entity, entityId);
-        //Assert
-        const detailMessage = vscode.l10n.t("Check the URL and verify the parameters are correct");
-        const options = { detail: detailMessage, modal: true };
-        expect(result).false;
-        assert.calledOnceWithExactly(
-            _mockShowErrorDialog,
-            vscode.l10n.t("There was a problem opening the workspace"),
-            options
-        );
-        assert.calledOnceWithExactly(
-            _mockSendErrorTelemetry,
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING,
-            checkMandatoryPathParameters.name,
-            `entity:, entityId:512e50bd-a9d1-44c0-ba3f-5dc7f46e7216`,
-
-        );
-    });
-
-    it("checkMandatoryPathParameters_whenEntityIdIsBlank_shouldReturnFalse", () => {
-        //Act
-        const _mockShowErrorDialog = spy(vscode.window, "showErrorMessage");
-        const _mockSendErrorTelemetry = spy(
-            WebExtensionContext.telemetry,
-            "sendErrorTelemetry"
-        );
-        const appName = "portal";
-        const entity = "entity";
-        const entityId = "";
-        //Action
-        const result = checkMandatoryPathParameters(appName, entity, entityId);
-        //Assert
-        const detailMessage = vscode.l10n.t("Check the URL and verify the parameters are correct");
-        const options = { detail: detailMessage, modal: true };
-        expect(result).false;
-        assert.calledOnceWithExactly(
-            _mockShowErrorDialog,
-            vscode.l10n.t("There was a problem opening the workspace"),
-            options
-        );
-        assert.calledOnceWithExactly(
-            _mockSendErrorTelemetry,
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING,
-            checkMandatoryPathParameters.name,
-            `entity:entity, entityId:`
-        );
     });
 
     it("checkMandatoryPathParameters_whenPppNameIsDifferentFromPortal_shouldReturnFalse", () => {
         //Act
         const _mockShowErrorMessage = stub(vscode.window, "showErrorMessage");
         const appName = "por";
-        const entity = "entity";
-        const entityId = "";
         //Action
-        const result = checkMandatoryPathParameters(appName, entity, entityId);
+        const result = checkMandatoryPathParameters(appName);
         //Assert
         const detailMessage = { detail: vscode.l10n.t("Unable to find that app"), modal: true };
         const errorString = vscode.l10n.t("There was a problem opening the workspace");
