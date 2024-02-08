@@ -15,7 +15,6 @@ import {
 import { PortalsFS } from "./dal/fileSystemProvider";
 import {
     checkMandatoryParameters,
-    checkNewMandatoryParameters,
     removeEncodingFromParameters,
     showErrorDialog,
 } from "./common/errorHandler";
@@ -99,26 +98,13 @@ export function activate(context: vscode.ExtensionContext): void {
                     oneDSLoggerWrapper.instantiate(geo);
                 }
 
-                if (entity && entityId) {
-                    if (
-                        !checkMandatoryParameters(
-                            appName,
-                            entity,
-                            entityId,
-                            queryParamsMap
-                        )
-                    ) {
-                        return;
-                    }
-                } else {
-                    if (
-                        !checkNewMandatoryParameters(
-                            appName,
-                            queryParamsMap
-                        )
-                    ) {
-                        return;
-                    }
+                if (
+                    !checkMandatoryParameters(
+                        appName,
+                        queryParamsMap
+                    )
+                ) {
+                    return;
                 }
 
                 removeEncodingFromParameters(queryParamsMap);

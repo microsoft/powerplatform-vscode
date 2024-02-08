@@ -492,20 +492,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
                 }
             );
-        } else {
-            if (!WebExtensionContext.showMultifileInVSCode) {
-                WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING_FOR_SINGLE_FILE,
-                    this._loadFromDataverseToVFS.name,
-                );
-                vscode.window.showErrorMessage(
-                    vscode.l10n.t("There was a problem opening the workspace"),
-                    vscode.l10n.t(
-                        "Check the URL and verify the parameters are correct"
-                    )
-                );
-                return;
-            }
         }
 
         if (WebExtensionContext.showMultifileInVSCode) {
