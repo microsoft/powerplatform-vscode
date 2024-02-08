@@ -25,8 +25,6 @@ const containerSchema = {
     },
 };
 
-let initial = false;
-
 class AzureFluidClient {
     static _clientInstance;
     static _container;
@@ -84,71 +82,61 @@ async function loadContainer(config, swpId, entityInfo) {
     try {
         const { container, audience, map } =
             await AzureFluidClient.fetchContainerAndService(config, swpId);
-
         const existingMembers = audience.getMembers();
-
         const myself = audience.getMyself();
+        const selectionSharedMap = await (await map.get('selection')).get();
 
         if (audience && myself) {
             const myConnectionId = audience['container'].clientId;
             const entityIdObj = new Array(entityInfo.rootWebPageId);
-            (await container.initialObjects.sharedState.get('selection').get()).set(myConnectionId, entityIdObj);
+            selectionSharedMap.set(myConnectionId, entityIdObj);
         }
 
         audience.on("memberRemoved", (clientId, member) => {
-            if (!existingMembers.get(member.userId)) {
+            if (!existingMembers.get(member.additionalDetails.AadObjectId)) {
                 self.postMessage({
                     type: "member-removed",
-                    userId: member.userId,
+                    userId: member.additionalDetails.AadObjectId,
                 });
             }
         });
 
-        if (!initial) {
-            existingMembers.forEach(async (value, key) => {
-                const otherUser = value;
+        const getUserIdByConnectionId = (targetConnectionId) => {
+            const members = audience.getMembers();
+            for (const [userId, member] of members.entries()) {
+                const connections = member.connections;
+                if (connections.some((connection) => connection.id === targetConnectionId)) {
+                    return { userId: userId, userName: member.userName, aadObjectId: member.additionalDetails.AadObjectId };
+                }
+            }
 
-                const userConnections = otherUser.connections;
+            return null;
+        };
 
-                const userEntityIdArray = [];
-
-                const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
-
-                userConnections.forEach((connection) => {
-                    userEntityIdArray.push(connectionIdInContainer.get(connection.id));
-                });
-
-                self.postMessage({
-                    type: "client-data",
-                    userName: otherUser.userName,
-                    userId: otherUser.additionalDetails.AadObjectId,
-                    containerId: swpId,
-                    entityId: userEntityIdArray,
-                });
-            });
-            initial = true;
-        }
-
-        map.on("valueChanged", async (changed, local) => {
-            if (local) {
-                return;
-            } else {
-                const otherUser = map.get(changed.key);
-                const userConnections = otherUser.connections;
+        selectionSharedMap.on("valueChanged", async (changed, local) => {
+            const user = getUserIdByConnectionId(changed.key);
+            if (user) {
+                const userConnections = audience
+                    .getMembers()
+                    .get(user.userId).connections;
 
                 const userEntityIdArray = [];
 
-                const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
+                const connectionIdInContainer = await map
+                    .get("selection")
+                    .get();
 
                 userConnections.forEach((connection) => {
-                    userEntityIdArray.push(connectionIdInContainer.get(connection.id));
+                    userEntityIdArray.push(
+                        connectionIdInContainer.get(connection.id)
+                    );
                 });
 
-                // eslint-disable-next-line no-undef
+                // aadObjectId is the unique identifier for a user
                 await self.postMessage({
                     type: "client-data",
-                    userId: otherUser.additionalDetails.AadObjectId,
-                    userName: otherUser.userName,
+                    userId: user.aadObjectId,
+                    userName: user.userName,
                     containerId: swpId,
                     entityId: userEntityIdArray,
                 });
