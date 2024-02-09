@@ -64,6 +64,17 @@ function setTelemetryTarget() {
         .pipe(gulp.dest(path.join('src', 'common', 'telemetry-generated')));
 }
 
+function setBuildRegion() {
+    const buildRegion = isOfficialBuild
+        ? 'src/common/telemetry/buildRegionProd.ts'
+        : 'src/common/telemetry/buildRegionTip.ts';
+
+    return gulp
+        .src(buildRegion)
+        .pipe(rename('buildRegionConfiguration.ts'))
+        .pipe(gulp.dest(path.join('src', 'common', 'telemetry-generated')));
+}
+
 
 function compile() {
     return gulp
@@ -345,6 +356,7 @@ const recompile = gulp.series(
     translationsExport,
     translationsImport,
     setTelemetryTarget,
+    setBuildRegion,
     compile,
     compileWeb,
     compileWorker,
