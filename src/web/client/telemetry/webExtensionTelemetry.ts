@@ -29,10 +29,14 @@ export class WebExtensionTelemetry {
             eventName: telemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
             properties: {
                 appName: this.getPathParameterValue(appName),
-                entity: this.getPathParameterValue(entity),
-                entityId: this.getPathParameterValue(entityId)
             }
         }
+
+        if (entity && entityId) {
+            telemetryData.properties.entity = this.getPathParameterValue(entity),
+            telemetryData.properties.entityId = this.getPathParameterValue(entityId)
+        }
+
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
     }
@@ -55,6 +59,12 @@ export class WebExtensionTelemetry {
                 envId: queryParamsMap.get(queryParameters.ENV_ID)
             }
         }
+
+        if (queryParamsMap.has(queryParameters.ENTITY) && queryParamsMap.has(queryParameters.ENTITY_ID)) {
+            telemetryData.properties.entity = queryParamsMap.get(queryParameters.ENTITY);
+            telemetryData.properties.entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
+        }
+
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
     }
