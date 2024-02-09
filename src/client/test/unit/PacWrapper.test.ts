@@ -40,8 +40,8 @@ describe('PacWrapper', () => {
                     + "\"IsActive\":true,"
                     + "\"Kind\":\"CDS\","
                     + "\"Name\":\"cctest\","
-                    + "\"ActiveOrganization\":{\"EnvironmentUrl\":\"https://contoso-mock.crmtest.dynamics.com\",\"FriendlyName\":\"\"},"
-                    + "\"User\":\"bob@contoso.com\","
+                    + "\"ActiveOrganization\":{\"Item2\":\"https://contoso-mock.crmtest.dynamics.com\",\"Item1\":\"\"},"
+                    + "\"UserDisplayName\":\"bob@contoso.com\","
                     + "\"CloudInstance\":\"Public\""
                 + "}"
             + "]}";
@@ -51,7 +51,7 @@ describe('PacWrapper', () => {
         expect(result.Status === "Success");
         expect(result.Errors.length === 0);
         expect(result.Information.length > 0);
-        expect(result.Results && result.Results.length === 1 && result.Results[0].User === "bob@contoso.com").to.be.true;
-        expect(result.Results[0].ActiveOrganization?.EnvironmentUrl === "https://contoso-mock.crmtest.dynamics.com").to.be.true;
+        expect(result.Results && result.Results.length === 1 && result.Results[0].UserDisplayName === "bob@contoso.com").to.be.true;
+        expect(result.Results[0].ActiveOrganization?.Item2 === "https://contoso-mock.crmtest.dynamics.com").to.be.true;
     });
 });
