@@ -36,13 +36,7 @@ paths:
           required: true
           schema:
             type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
+          example: dataverse
         - name: "schema"
           in: "query"
           description: "Schema file name of the app"
@@ -51,11 +45,11 @@ paths:
             type: string
           examples:
             portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
+              value: portalSchema_v1.0
+              summary: portalSchema_v1.0
             portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
+              value: portalSchema_v2.0
+              summary: portalSchema_v2.0
         - name: "websiteId"
           in: "query"
           description: "ID of the website"
@@ -70,15 +64,15 @@ paths:
           schema:
             type: string
             default: site
-        - name: "clientSessionId"
+        - name: "referrerSessionId"
           in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
           required: false
           schema:
             type: string
-        - name: "client"
+        - name: "referrer"
           in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
           required: false
           schema:
             type: string
