@@ -137,11 +137,12 @@ export function getPortalLanguageIdToLcidMap(result: any, schema: string) {
                     counter < result.value.length;
                     counter++
                 ) {
-                    const lcid = result.value[counter].lcid
-                        ? result.value[counter].lcid
-                        : Constants.PORTAL_LANGUAGE_DEFAULT;
+                    const powerpagesitelanguageid = result.value[counter]
+                        .powerpagesitelanguageid
+                        ? result.value[counter].powerpagesitelanguageid
+                        : null;
                     const languagecode = result.value[counter].languagecode;
-                    portalLanguageIdCodeMap.set(lcid.toString(), languagecode);
+                    portalLanguageIdCodeMap.set(powerpagesitelanguageid.toString(), languagecode);
                 }
             } else {
                 for (
