@@ -275,7 +275,6 @@ export class OneDSLogger implements ITelemetryLogger{
 
                     envelope.data.clientSessionId = vscode.env.sessionId;
                     envelope.data.vscodeSurface = getExtensionType();
-                    envelope.data.vscodeMachineId = vscode.env.machineId;
                     envelope.data.vscodeExtensionName = EXTENSION_ID;
                     envelope.data.vscodeExtensionVersion = getExtensionVersion();
                     envelope.data.vscodeVersion = vscode.version;
