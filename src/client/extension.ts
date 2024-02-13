@@ -39,7 +39,7 @@ import { PacInterop, PacWrapper } from "./pac/PacWrapper";
 import { PacWrapperContext } from "./pac/PacWrapperContext";
 import { fetchArtemisResponse } from "../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { GetAuthProfileWatchPattern } from "./lib/AuthPanelView";
+import { setupFileWatcher } from "../common/copilot/Utility";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -186,7 +186,7 @@ export async function activate(
         }
 
         handleOrgChange();
-        setupAuthFileWatcher();
+        setupFileWatcher(handleOrgChange);
 
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
@@ -207,15 +207,6 @@ export async function activate(
     _telemetry.sendTelemetryEvent("activated");
 }
 
-export function setupAuthFileWatcher() {
-    const watchPath = GetAuthProfileWatchPattern();
-    if (watchPath) {
-        const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
-        watcher.onDidChange(() => handleOrgChange());
-        watcher.onDidCreate(() => handleOrgChange());
-        watcher.onDidDelete(() => handleOrgChange());
-    }
-}
 
 async function handleOrgChange() {
     const cliContext = new CliAcquisitionContext(_context, _telemetry);

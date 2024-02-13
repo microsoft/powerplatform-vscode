@@ -14,7 +14,6 @@ import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_U
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
-import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
@@ -24,6 +23,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
+import { setupFileWatcher } from "./Utility";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -106,7 +106,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
 
         if (this._pacWrapper) {
-            this.setupFileWatcher();
+            setupFileWatcher(this.handleOrgChange.bind(this), this._disposables);
         }
 
         if (orgInfo) {
@@ -119,19 +119,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
     public dispose(): void {
         this._disposables.forEach(d => d.dispose());
-    }
-
-    private setupFileWatcher() {
-        const watchPath = GetAuthProfileWatchPattern();
-        if (watchPath) {
-            const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
-            this._disposables.push(
-                watcher,
-                watcher.onDidChange(() => this.handleOrgChange()),
-                watcher.onDidCreate(() => this.handleOrgChange()),
-                watcher.onDidDelete(() => this.handleOrgChange())
-            );
-        }
     }
 
     private async handleOrgChange() {
