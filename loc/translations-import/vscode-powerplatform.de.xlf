@@ -91,6 +91,11 @@
         <note>{0} will be replaced by the entity type.</note>
         <target state="translated">"{0}" wird erstellt...</target>
       </trans-unit>
+      <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
+        <source xml:lang="en">Default Environment: {0}</source>
+        <note>The {0} represents profile's resource/environment URL</note>
+        <target state="translated">Standardumgebung: {0}</target>
+      </trans-unit>
       <trans-unit id="++CODE++e9f79ac902b11087dd0d34e8afc1de54df4e48d45861a0c0b6e4edd3c204f314">
         <source xml:lang="en">Display Name: {0}
 Unique Name: {1}
@@ -108,6 +113,7 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++183c7081100618aebb39219dd011d8d9961649aad278be8fe49c0d1a8874684f">
         <source xml:lang="en">Do not show again</source>
+        <target state="translated">Nicht mehr anzeigen</target>
       </trans-unit>
       <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
         <source xml:lang="en">Edit the site</source>
@@ -146,9 +152,9 @@ Typ: {3}</target>
         <source xml:lang="en">Failed to fetch some files.</source>
         <target state="translated">Fehler beim Abrufen einiger Dateien</target>
       </trans-unit>
-      <trans-unit id="++CODE++e1a694d8ed0093d17fa58ee8b44cc76f74583667ffc3511e5d8f77df7b156c41">
-        <source xml:lang="en">Failed to get file ready for edit.</source>
-        <target state="translated">Fehler beim Vorbereiten der Datei für die Bearbeitung.</target>
+      <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
+        <source xml:lang="en">Failed to get file ready for edit: {0}</source>
+        <target state="translated">Fehler beim Vorbereiten der Datei für die Bearbeitung: {0}</target>
       </trans-unit>
       <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
         <source xml:lang="en">Fetching your file ...</source>
@@ -170,9 +176,11 @@ Typ: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++c59fe0045151cddc10b8384a437337e86eab905877883c18b53e068a3d36121d">
         <source xml:lang="en">Learn more about Copilot</source>
+        <target state="translated">Weitere Informationen zu Copilot</target>
       </trans-unit>
       <trans-unit id="++CODE++8d5ff42292d46b5c6b66b7285a701ef3b8cb3a48186944d73ed6a8d5f7ca1394">
         <source xml:lang="en">Let Copilot help you code</source>
+        <target state="translated">Von Copilot beim Codieren helfen lassen</target>
       </trans-unit>
       <trans-unit id="++CODE++8f2de600bf940a26c63a7ac23984a12ca8970fcf1a85947aa5566c34e23eea07">
         <source xml:lang="en">Managed</source>
@@ -301,10 +309,9 @@ Organisations-ID: {3}</target>
         <note>The {0} represents the profile type (Admin vs Dataverse)</note>
         <target state="translated">Profil-Variante: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++0906cdfd1c60099397a97c4da29453b3f0cef126c408d6ba317e2d5e2d5e9e78">
-        <source xml:lang="en">Resource: {0}</source>
-        <note>The {0} represents profile's resource/environment URL</note>
-        <target state="translated">Ressource: {0}</target>
+      <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
+        <source xml:lang="en">Response data is empty</source>
+        <target state="translated">Antwortdaten sind leer</target>
       </trans-unit>
       <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
         <source xml:lang="en">Saving your file ...</source>
@@ -321,6 +328,7 @@ Organisations-ID: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
         <source xml:lang="en">Selection is empty.</source>
+        <target state="translated">Auswahl ist leer.</target>
       </trans-unit>
       <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
         <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
@@ -348,6 +356,7 @@ Organisations-ID: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++8d6329ce370e7f2cf3a5b77a73e0100c08550628408f2763deafe57dce769719">
         <source xml:lang="en">Try Copilot for Power Pages</source>
+        <target state="translated">Copilot für Power Pages testen</target>
       </trans-unit>
       <trans-unit id="++CODE++d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f">
         <source xml:lang="en">Try again</source>
@@ -370,9 +379,9 @@ Organisations-ID: {3}</target>
         <note>The {0} represents auth profile's user name (email address))</note>
         <target state="translated">Benutzer: {0}</target>
       </trans-unit>
-      <trans-unit id="++CODE++91357f5ee585bec70c13f9f0807c5a047f35066e4fc63b571f5a957a657d0262">
-        <source xml:lang="en">We encountered an error preparing the file for edit.</source>
-        <target state="translated">Beim Vorbereiten der Datei zur Bearbeitung ist ein Fehler aufgetreten.</target>
+      <trans-unit id="++CODE++d941ee96c6f480390012381f9fc0dfd961f2aa803732860e2505a8453700f458">
+        <source xml:lang="en">We encountered an error preparing the files for edit.</source>
+        <target state="translated">Beim Vorbereiten der Dateien für die Bearbeitung ist ein Fehler aufgetreten.</target>
       </trans-unit>
       <trans-unit id="++CODE++ff174a54d200db312e20f9f72e805df5d0221070730c1d789d642185b1a3b3e5">
         <source xml:lang="en">Web files</source>
@@ -384,6 +393,7 @@ Organisations-ID: {3}</target>
       </trans-unit>
       <trans-unit id="++CODE++ab06f2880f954cfbc6788988300346315e8372cc05d92ce26ff6635c607e1406">
         <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
+        <target state="translated">Ob es sich um HTML-, CSS-, JS- oder Liquid-Code handelt, beschreiben Sie einfach, was Sie benötigen, und lassen Sie es von KI für Sie erstellen.</target>
       </trans-unit>
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>
