@@ -4,7 +4,7 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { COPILOT_UNAVAILABLE, US_GEO } from "./copilot/constants";
+import { COPILOT_UNAVAILABLE, SUPPORTED_GEO } from "./copilot/constants";
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
@@ -20,7 +20,7 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
     const { geoName, environment, clusterNumber } = artemisResponse[0];
     sendTelemetryEvent(telemetry, { eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
-    if (geoName !== US_GEO) {
+    if (!SUPPORTED_GEO.includes(geoName)) {
         return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName };
     }
 
