@@ -115,4 +115,6 @@ export enum telemetryEventNames {
     WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED = "WebExtensionGetFromGraphClientFailed",
     WEB_EXTENSION_GET_EMAIL_FROM_GRAPH_CLIENT_FAILED = "WebExtensionGetEmailFromGraphClientFailed",
     WEB_EXTENSION_GET_PROFILE_PICTURE_FROM_GRAPH_CLIENT_FAILED = "WebExtensionGetProfilePictureFromGraphClientFailed",
+    WEB_EXTENSION_RENAME_NOT_SUPPORTED = "WebExtensionRenameNotSupported",
+    WEB_EXTENSION_DELETE_NOT_SUPPORTED = "WebExtensionDeleteNotSupported",
 }
