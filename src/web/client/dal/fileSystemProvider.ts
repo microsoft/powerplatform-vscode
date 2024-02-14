@@ -350,7 +350,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
             if (query.isWordMatch) {
                 regex = query.isCaseSensitive ? new RegExp(`\\b${query.pattern}\\b`) : new RegExp(`\\b${query.pattern}\\b`, "i");
             } else if (query.isRegExp) {
-                // verify this once
                 regex = new RegExp(query.pattern);
             } else {
                 regex = query.isCaseSensitive ? new RegExp(query.pattern) : new RegExp(query.pattern, "i");
