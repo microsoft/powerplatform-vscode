@@ -6,6 +6,7 @@
 
 import * as vscode from "vscode";
 import { EXTENSION_ID } from "../client/constants";
+import { GetAuthProfileWatchPattern } from "../client/lib/AuthPanelView";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -116,3 +117,22 @@ export function openWalkthrough(extensionUri: vscode.Uri) {
     vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
 }
 
+export const setupFileWatcher = (handleChangeFn: () => Promise<void>, disposables?: vscode.Disposable[]) => {
+    const watchPath = GetAuthProfileWatchPattern();
+    if (watchPath) {
+        const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
+        if(disposables){
+            disposables?.push(
+                watcher,
+                watcher.onDidChange(() => handleChangeFn()),
+                watcher.onDidCreate(() => handleChangeFn()),
+                watcher.onDidDelete(() => handleChangeFn())
+            );
+        }else{
+            watcher.onDidChange(() => handleChangeFn());
+            watcher.onDidCreate(() => handleChangeFn());
+            watcher.onDidDelete(() => handleChangeFn());
+        }
+        
+    }
+}

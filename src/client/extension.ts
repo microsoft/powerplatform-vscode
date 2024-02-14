@@ -39,7 +39,8 @@ import { PacInterop, PacWrapper } from "./pac/PacWrapper";
 import { PacWrapperContext } from "./pac/PacWrapperContext";
 import { fetchArtemisResponse } from "../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { setupFileWatcher } from "../common/copilot/Utility";
+import { setupFileWatcher } from "../common/Utils";
+
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
