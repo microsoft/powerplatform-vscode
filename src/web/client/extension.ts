@@ -201,7 +201,17 @@ export function activate(context: vscode.ExtensionContext): void {
 
     enableFileSearchFunctionality(portalsFS);
 
+    enableTextSearchFunctionality(portalsFS);
+
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function enableTextSearchFunctionality(portalsFS: PortalsFS) {
+    vscode.workspace.registerTextSearchProvider(PORTALS_URI_SCHEME, {
+        provideTextSearchResults: async (query, options, progress) => {
+            return portalsFS.searchTextResults(query, options, progress);
+        },
+    });
 }
 
 export function enableFileSearchFunctionality(portalsFS: PortalsFS) {

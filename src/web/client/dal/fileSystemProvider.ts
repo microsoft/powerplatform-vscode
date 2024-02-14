@@ -31,7 +31,7 @@ import {
     updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
 import { getImageFileContent, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
-import { IFileInfo } from "../common/interfaces";
+import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -300,6 +300,83 @@ export class PortalsFS implements vscode.FileSystemProvider {
         }
 
         return files;
+    }
+
+    async searchTextResults(query: vscode.TextSearchQuery, options: vscode.TextSearchOptions, progress: vscode.Progress<vscode.TextSearchResult>) {
+        const results = await this.searchText(
+            query,
+            { maxResults: options.maxResults, context: { before: options.beforeContext, after: options.afterContext } }
+        );
+
+        if (results === undefined) {
+            return { limitHit: true };
+        }
+
+        for (const match of results.matches) {
+            progress.report({
+                uri: match.uri,
+                ranges: match.ranges,
+                preview: {
+                    text: match.preview,
+                    matches: match.matches,
+                },
+            });
+        }
+
+        return { limitHit: false };
+    }
+
+    async searchText(query: vscode.TextSearchQuery, options: { maxResults?: number; context?: { before?: number; after?: number } }): Promise<ISearchQueryResults> {
+        const matches: ISearchQueryMatch[] = [];
+        const files = await this.iterateDirectory(WebExtensionContext.rootDirectory);
+
+        let counter = 0;
+        let match: ISearchQueryMatch;
+        for (const file of files) {
+            const content = await this.readFile(file);
+            const text = new TextDecoder().decode(content);
+
+            const lines = text.split("\n");
+
+            match = {
+                uri: file,
+                ranges: [],
+                preview: text,
+                matches: [],
+            };
+
+            let regex;
+
+            if (query.isWordMatch) {
+                regex = query.isCaseSensitive ? new RegExp(`\\b${query.pattern}\\b`) : new RegExp(`\\b${query.pattern}\\b`, "i");
+            } else if (query.isRegExp) {
+                // verify this once
+                regex = new RegExp(query.pattern);
+            } else {
+                regex = query.isCaseSensitive ? new RegExp(query.pattern) : new RegExp(query.pattern, "i");
+            }
+
+            for (let i = 0; i < lines.length; i++) {
+                if (options.maxResults !== undefined && counter > options.maxResults) {
+                    return { matches: matches, limitHit: true };
+                }
+
+                const regexMatch = lines[i].match(regex);
+
+                if (regexMatch) {
+                    counter++;
+                    regexMatch.forEach((m) => {
+                        const index = lines[i].indexOf(m);
+                        const range = new vscode.Range(i, index, i, index + m.length);
+                        match.ranges.push(range);
+                        match.matches.push(new vscode.Range(i, index, i, index + m.length));
+                        matches.push(match);
+                    });
+                }
+            }
+        }
+
+        return { matches: matches, limitHit: false };
     }
 
     // --- lookup
