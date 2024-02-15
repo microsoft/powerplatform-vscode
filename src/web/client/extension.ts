@@ -47,7 +47,7 @@ export function activate(context: vscode.ExtensionContext): void {
             dataBoundary
         );
     // TODO: Need to replace the geo on confirmation from our Privacy champ. Unauthenticated scenarios
-    oneDSLoggerWrapper.instantiate();
+    oneDSLoggerWrapper.instantiate('us');
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
     WebExtensionContext.telemetry.setTelemetryReporter(
         context.extension.id,
