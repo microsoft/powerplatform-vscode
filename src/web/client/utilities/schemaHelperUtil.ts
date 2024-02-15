@@ -24,7 +24,7 @@ export function getEntityFetchQuery(entity: string, useRegularFetchQuery = false
 
 export function getLogicalEntityParameter(entity: string) {
     const entityMetadata = getEntity(entity)?.get(schemaEntityKey.DATAVERSE_ENTITY_METADATA);
-    return (entityMetadata as unknown as Map<string, string>).get(schemaMetaDataKey.DATAVERSE_LOGICAL_ENTITY_NAME);
+    return entityMetadata ? (entityMetadata as unknown as Map<string, string>).get(schemaMetaDataKey.DATAVERSE_LOGICAL_ENTITY_NAME) : undefined;
 }
 
 export function getPortalSchema(schema: string) {
