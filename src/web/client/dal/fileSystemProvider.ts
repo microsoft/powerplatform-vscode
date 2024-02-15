@@ -8,7 +8,6 @@ import * as vscode from "vscode";
 import { isValidDirectoryPath, isValidFilePath, isWebFileWithLazyLoad } from "../utilities/urlBuilderUtil";
 import {
     PORTALS_URI_SCHEME,
-    WEB_EXTENSION_METHOD_NOT_IMPLEMENTED,
     queryParameters,
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
@@ -33,7 +32,6 @@ import {
 } from "../utilities/fileAndEntityUtil";
 import { getImageFileContent, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo } from "../common/interfaces";
-import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -244,29 +242,19 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async rename(): Promise<void> {
-        oneDSLoggerWrapper.getLogger().traceError(
-            telemetryEventNames.WEB_EXTENSION_RENAME_NOT_SUPPORTED,
-            WEB_EXTENSION_METHOD_NOT_IMPLEMENTED,
-            { name: telemetryEventNames.WEB_EXTENSION_RENAME_NOT_SUPPORTED, message: WEB_EXTENSION_METHOD_NOT_IMPLEMENTED} as Error,
-        );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_RENAME_NOT_SUPPORTED,
             this.rename.name
         );
-        throw new Error(WEB_EXTENSION_METHOD_NOT_IMPLEMENTED);
+        throw new Error("Method not implemented.");
     }
 
     async delete(): Promise<void> {
-        oneDSLoggerWrapper.getLogger().traceError(
-            telemetryEventNames.WEB_EXTENSION_DELETE_NOT_SUPPORTED,
-            WEB_EXTENSION_METHOD_NOT_IMPLEMENTED,
-            { name: telemetryEventNames.WEB_EXTENSION_DELETE_NOT_SUPPORTED, message: WEB_EXTENSION_METHOD_NOT_IMPLEMENTED} as Error
-        );
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_DELETE_NOT_SUPPORTED,
             this.delete.name
         );
-        throw new Error(WEB_EXTENSION_METHOD_NOT_IMPLEMENTED);
+        throw new Error("Method not implemented.");
     }
 
     async updateMtime(uri: vscode.Uri, latestContent: string): Promise<void> {
