@@ -78,6 +78,8 @@ class AzureFluidClient {
     }
 }
 
+let intital = false;
+
 async function loadContainer(config, swpId, entityInfo) {
     try {
         const { container, audience, map } =
@@ -88,8 +90,12 @@ async function loadContainer(config, swpId, entityInfo) {
 
         if (audience && myself) {
             const myConnectionId = audience['container'].clientId;
-            const entityIdObj = new Array(entityInfo.rootWebPageId);
-            selectionSharedMap.set(myConnectionId, entityIdObj);
+            if (intital) {
+                const entityIdObj = new Array(entityInfo.rootWebPageId);
+                selectionSharedMap.set(myConnectionId, entityIdObj);
+            } else {
+                intital = true;
+            }
         }
 
         audience.on("memberRemoved", (clientId, member) => {
