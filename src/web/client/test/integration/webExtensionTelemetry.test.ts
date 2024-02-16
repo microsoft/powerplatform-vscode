@@ -69,8 +69,6 @@ describe("webExtensionTelemetry", () => {
         //Assert
         const properties = {
             appName: "",
-            entity: "",
-            entityId: "",
         };
         assert.calledOnceWithExactly(
             sendTelemetryEvent,
