@@ -83,12 +83,10 @@ export function removeEncodingFromParameters(
 
 export function checkMandatoryParameters(
     appName: string,
-    entity: string,
-    entityId: string,
     queryParamsMap: Map<string, string>
 ): boolean {
     return (
-        checkMandatoryPathParameters(appName, entity, entityId) &&
+        checkMandatoryPathParameters(appName) &&
         checkMandatoryQueryParameters(appName, queryParamsMap) &&
         checkMandatoryMultifileParameters(appName, queryParamsMap)
     );
@@ -96,30 +94,12 @@ export function checkMandatoryParameters(
 
 export function checkMandatoryPathParameters(
     appName: string,
-    entity: string,
-    entityId: string
 ): boolean {
     switch (
     appName // remove switch cases and use polymorphism
     ) {
         case "portal":
-            if (entity && entityId) {
-                // this will change when we start supporting multi-entity edits
-                return true;
-            } else {
-                WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING,
-                    checkMandatoryPathParameters.name,
-                    `entity:${entity}, entityId:${entityId}`
-                );
-                showErrorDialog(
-                    vscode.l10n.t("There was a problem opening the workspace"),
-                    vscode.l10n.t(
-                        "Check the URL and verify the parameters are correct"
-                    )
-                );
-                return false;
-            }
+            return true;
         default:
             showErrorDialog(
                 vscode.l10n.t("There was a problem opening the workspace"),
