@@ -56,7 +56,8 @@ export class WebExtensionTelemetry {
                 siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
                 region: queryParamsMap.get(queryParameters.REGION),
                 geo: queryParamsMap.get(queryParameters.GEO),
-                envId: queryParamsMap.get(queryParameters.ENV_ID)
+                envId: queryParamsMap.get(queryParameters.ENV_ID),
+                referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE)
             }
         }
 

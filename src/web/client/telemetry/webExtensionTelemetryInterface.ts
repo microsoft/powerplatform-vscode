@@ -21,6 +21,7 @@ export interface IPortalWebExtensionInitQueryParametersTelemetryData extends IWe
         'envId'?: string;
         'entity'?: string;
         'entityId'?: string;
+        'referrerSource'?: string;
     }
 }
 

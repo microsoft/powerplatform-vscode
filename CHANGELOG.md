@@ -1,8 +1,12 @@
 # Change Log - Power Platform Extension
 
-## 2.0.28
-  - pac CLI 1.30.6, (January 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+## 2.0.31
+  - pac CLI 1.30.7, (January 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - Moved release notes to *CHANGELOG.md* file, per VS Code's [Marketplace integration](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#marketplace-integration) guidelines.
+- Web Extension updates:
+  - (Preview) Added AI Explain code assistance with Power Pages Copilot
+  - File search is now supported based on file name
+  - Power Pages - Fix for Enhanced data model multiple language webpage and content-snippet file load
 
 ## 2.0.25
   - pac CLI 1.29.11, (Update to October refresh to fix data import/export and paportal upload/download commands. See release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
