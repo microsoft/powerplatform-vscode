@@ -82,6 +82,11 @@ let intital = false;
 
 async function loadContainer(config, swpId, entityInfo) {
     try {
+        self.postMessage({
+            type: "telemetry-info",
+            eventName: "webExtensionWebWorkerLoadContainerStart",
+        });
+
         const { container, audience, map } =
             await AzureFluidClient.fetchContainerAndService(config, swpId);
         const existingMembers = audience.getMembers();
@@ -104,6 +109,17 @@ async function loadContainer(config, swpId, entityInfo) {
                     type: "member-removed",
                     userId: member.additionalDetails.AadObjectId,
                 });
+                self.postMessage({
+                    type: "telemetry-info",
+                    eventName: "webExtensionWebWorkerMemberRemovedSuccess",
+                    userId: member.additionalDetails.AadObjectId,
+                });
+            } else {
+                self.postMessage({
+                    type: "telemetry-error",
+                    methodName: "webWorker memberRemoved",
+                    errorMessage: "Web Extension WebWorker Member Removed Failed",
+                });
             }
         });
 
@@ -116,12 +132,12 @@ async function loadContainer(config, swpId, entityInfo) {
                 }
             }
 
-            return null;
+            throw new Error("Web Extension WebWorker GetUserIdByConnectionId Failed");
         };
 
         selectionSharedMap.on("valueChanged", async (changed, local) => {
-            const user = getUserIdByConnectionId(changed.key);
-            if (user) {
+            try {
+                const user = getUserIdByConnectionId(changed.key);
                 const userConnections = audience
                     .getMembers()
                     .get(user.userId).connections;
@@ -146,10 +162,29 @@ async function loadContainer(config, swpId, entityInfo) {
                     containerId: swpId,
                     entityId: userEntityIdArray,
                 });
+
+                await self.postMessage({
+                    type: "telemetry-info",
+                    eventName: "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
+                    userId: user.aadObjectId,
+                });
+            } catch (error) {
+                await self.postMessage({
+                    type: "telemetry-error",
+                    methodName: "webWorker valueChanged",
+                    errorMessage: error?.message,
+                    error: error,
+                });
             }
         });
     } catch (error) {
-        // TODO: add telemetry
+        self.postMessage({
+            type: "telemetry-error",
+            eventName: "webExtensionWebWorkerLoadContainerFailed",
+            methodName: loadContainer.name,
+            errorMessage: error?.message,
+            error: error,
+        });
     }
 }
 
