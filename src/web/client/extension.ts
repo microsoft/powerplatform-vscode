@@ -97,11 +97,10 @@ export function activate(context: vscode.ExtensionContext): void {
                 if(geo){
                     oneDSLoggerWrapper.instantiate(geo);
                 }
+
                 if (
                     !checkMandatoryParameters(
                         appName,
-                        entity,
-                        entityId,
                         queryParamsMap
                     )
                 ) {

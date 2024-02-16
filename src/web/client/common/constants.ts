@@ -99,6 +99,8 @@ export enum queryParameters {
     GEO = "geo",
     ENABLE_MULTIFILE = "enablemultifile",
     WEBSITE_PREVIEW_URL = "websitepreviewurl",
+    ENTITY = "entity",
+    ENTITY_ID = "entityid",
     REFERRER_SOURCE = "referrersource"
 }
 
