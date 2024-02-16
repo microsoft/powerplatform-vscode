@@ -544,29 +544,31 @@ export class PortalsFS implements vscode.FileSystemProvider {
             ) as string
         );
 
-        // Load default file first
-        await fetchDataFromDataverseAndUpdateVFS(
-            this,
-            {
-                entityId: WebExtensionContext.defaultEntityId,
-                entityName: WebExtensionContext.defaultEntityType,
-            } as IFileInfo
-        );
+        // Try Loading default file first
+        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "") {
+            await fetchDataFromDataverseAndUpdateVFS(
+                this,
+                {
+                    entityId: WebExtensionContext.defaultEntityId,
+                    entityName: WebExtensionContext.defaultEntityType,
+                } as IFileInfo
+            );
 
-        // Fire and forget
-        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
+            // Fire and forget
+            vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
-            {
-                commandId: "vscode.open",
-                type: "file",
-                entityId: WebExtensionContext.defaultEntityId,
-                entityName: WebExtensionContext.defaultEntityType,
-                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
-                duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
-            }
-        );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
+                {
+                    commandId: "vscode.open",
+                    type: "file",
+                    entityId: WebExtensionContext.defaultEntityId,
+                    entityName: WebExtensionContext.defaultEntityType,
+                    isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
+                    duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
+                }
+            );
+        }
 
         if (WebExtensionContext.showMultifileInVSCode) {
             // load rest of the files
