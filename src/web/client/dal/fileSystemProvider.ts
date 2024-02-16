@@ -242,10 +242,18 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async rename(): Promise<void> {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_RENAME_NOT_SUPPORTED,
+            this.rename.name
+        );
         throw new Error("Method not implemented.");
     }
 
     async delete(): Promise<void> {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_DELETE_NOT_SUPPORTED,
+            this.delete.name
+        );
         throw new Error("Method not implemented.");
     }
 

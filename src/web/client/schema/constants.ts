@@ -20,9 +20,9 @@ export enum schemaEntityKey {
     FILE_FOLDER_NAME = "_foldername",
     LANGUAGE_FIELD = "_languagefield",
     ATTRIBUTES_EXTENSION = "_attributesExtension",
+    DATAVERSE_ENTITY_METADATA = "_dataverseentitymetadata",
     VSCODE_ENTITY_NAME = "_vscodeentityname",
     DATAVERSE_ENTITY_NAME = "_dataverseenityname",
-    DATAVERSE_LOGICAL_ENTITY_NAME = "_dataverselogicalentityname",
     FETCH_QUERY_PARAMETERS = "_fetchQueryParameters",
     MULTI_FILE_FETCH_QUERY_PARAMETERS = "_multiFileFetchQueryParameters",
     MAPPING_ENTITY_ID = "_mappingEntityId",
@@ -31,6 +31,10 @@ export enum schemaEntityKey {
     EXPORT_TYPE = "_exporttype",
     ATTRIBUTES = "_attributes",
     ROOT_WEB_PAGE_ID = "_rootwebpageid",
+}
+
+export enum schemaMetaDataKey {
+    DATAVERSE_LOGICAL_ENTITY_NAME = "_dataverselogicalentityname",
 }
 
 export enum schemaEntityName {
