@@ -46,4 +46,5 @@ export interface ICustomEvent {
     correlationId?: string;
     referrer? :string;
     envId?: string;
+    referrerSource?: string;
   }
