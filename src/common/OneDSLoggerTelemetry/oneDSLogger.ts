@@ -15,6 +15,8 @@ import {getExtensionType, getExtensionVersion} from "../../common/Utils";
 import { EXTENSION_ID } from "../../client/constants";
 import {OneDSCollectorEventName} from "./EventContants";
 import { telemetryEventNames } from "../../web/client/telemetry/constants";
+import { region } from "../telemetry-generated/buildRegionConfiguration";
+import { geoMappingsToAzureRegion } from "./shortNameMappingToAzureRegion";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -42,7 +44,7 @@ export class OneDSLogger implements ITelemetryLogger{
                 typeof payload.data === "string"
                     ? payload.data
                     : new TextDecoder().decode(payload.data);
-    
+
             const requestInit: RequestInit = {
                 body: telemetryRequestData,
                 method: "POST",
@@ -55,7 +57,7 @@ export class OneDSLogger implements ITelemetryLogger{
                     response.headers.forEach((value: string, name: string) => {
                         headerMap[name] = value;
                     });
-    
+
                     if (response.body) {
                         response
                             .text()
@@ -79,7 +81,7 @@ export class OneDSLogger implements ITelemetryLogger{
                 });
         },
     };
-    
+
     public constructor(geo?:string ) {
 
         this.appInsightsCore = new AppInsightsCore();
@@ -91,7 +93,7 @@ export class OneDSLogger implements ITelemetryLogger{
 		};
 
         const instrumentationSetting : IInstrumentationSettings= OneDSLogger.getInstrumentationSettings(geo); // Need to replace with actual data
-		
+
 		// Configure App insights core to send to collector
 		const coreConfig: IExtendedConfiguration = {
 			instrumentationKey: instrumentationSetting.instrumentationKey,
@@ -126,48 +128,72 @@ export class OneDSLogger implements ITelemetryLogger{
             schema: "",
             correlationId: "",
             referrer: "",
-            envId: ""
+            envId: "",
+            referrerSource: "",
         }
     }
 
     private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
-        const region:string = "test"; // TODO: Remove it from here and replace it with value getting from build. Check gulp.mjs (setTelemetryTarget)
+        const buildRegion:string = region;
         const instrumentationSettings:IInstrumentationSettings = {
             endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
-            instrumentationKey: 'bd47fc8d971f4283a6686ec46fd48782-bdef6c1c-75ab-417c-a1f7-8bbe21e12da6-7708'
+            instrumentationKey: 'ffdb4c99ca3a4ad5b8e9ffb08bf7da0d-65357ff3-efcd-47fc-b2fd-ad95a52373f4-7402'
         };
-        switch (region) {
+        let geoName = 'us';
+        if(geoMappingsToAzureRegion[geo!]) {
+            geoName = geoMappingsToAzureRegion[geo!].geoName;
+        }
+        switch (buildRegion) {
             case 'tie':
             case 'test':
             case 'preprod':
                 break;
             case 'prod':
             case 'preview':
-              switch (geo) {
+              switch (geoName) {
+                case 'us':
+                case 'br':
+                case 'jp':
+                case 'in':
+                case 'au':
+                case 'ca':
+                case 'as':
+                case 'za':
+                case 'ae':
+                case 'kr':
+                    instrumentationSettings.endpointURL ='https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
+                    instrumentationSettings.instrumentationKey =  '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                    break;
                 case 'eu':
-                    instrumentationSettings.endpointURL = '' //prod endpoint;
-                    instrumentationSettings.instrumentationKey = '' //prod key;
-                  break;
+                case 'uk':
+                case 'de':
+                case 'fr':
+                case 'no':
+                case 'ch':
+                    instrumentationSettings.endpointURL ='https://eu-mobile.events.data.microsoft.com/OneCollector/1.0/',
+                    instrumentationSettings.instrumentationKey =  '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                    break;
                 default:
-                    instrumentationSettings.endpointURL = '' //prod endpoint;
-                    instrumentationSettings.instrumentationKey = '' //prod key;
+                    instrumentationSettings.endpointURL ='https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
+                    instrumentationSettings.instrumentationKey =  '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                    break;
               }
               break;
             case 'gov':
             case 'high':
             case 'dod':
             case 'mooncake':
-                instrumentationSettings.endpointURL = '' //prod endpoint;
+                instrumentationSettings.endpointURL = '',
                 instrumentationSettings.instrumentationKey = '' //prod key;
               break;
             case 'ex':
             case 'rx':
             default:
               break;
-          }    
+          }
         return instrumentationSettings;
       }
-    
+
 	/// Trace info log
 	public traceInfo(eventName:string, eventInfo?:object, measurement?: object) {
 		const event = {
@@ -241,7 +267,7 @@ export class OneDSLogger implements ITelemetryLogger{
     }
 
     /// Populate attributes that are common to all events
-	private populateCommonAttributes() {	
+	private populateCommonAttributes() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (envelope:any) => {
 			try {
@@ -254,7 +280,7 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.vscodeExtensionVersion = getExtensionVersion();
                     envelope.data.vscodeVersion = vscode.version;
                     envelope.data.domain = vscode.env.appHost;
-                    // Adding below attributes so they get populated in Geneva. 
+                    // Adding below attributes so they get populated in Geneva.
                     // TODO: It needs implementation for populating the actual value
                     envelope.data.eventSubType = "test";
                     envelope.data.scenarioId = "test";
@@ -269,7 +295,7 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.browserVersion = "test";
                     envelope.data.browserLanguage = "test";
                     envelope.data.screenResolution = "test";
-                    envelope.data.osName = "test"; 
+                    envelope.data.osName = "test";
                     envelope.data.osVersion = "test";
                     if (getExtensionType() == 'Web'){
                         this.populateVscodeWebAttributes(envelope);
@@ -285,7 +311,7 @@ export class OneDSLogger implements ITelemetryLogger{
                   //  envelope = this.redactSensitiveDataFromEvent(envelope);
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            catch (exception:any) 
+            catch (exception:any)
 			{
 				// Such exceptions are likely if we are trying to process event attributes which don't exist
 				// In such cases, only add common attributes and current exception details, and avoid processing the event attributes further
@@ -312,6 +338,7 @@ export class OneDSLogger implements ITelemetryLogger{
             OneDSLogger.contextInfo.correlationId = JSON.parse(envelope.data.eventInfo).referrerSessionId;
             OneDSLogger.contextInfo.referrer = JSON.parse(envelope.data.eventInfo).referrer;
             OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).envId;
+            OneDSLogger.contextInfo.referrerSource = JSON.parse(envelope.data.eventInfo).referrerSource;
         }
         if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED){
             OneDSLogger.userInfo.oid= JSON.parse(envelope.data.eventInfo).userId;
