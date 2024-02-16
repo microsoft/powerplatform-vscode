@@ -99,7 +99,8 @@ describe("webExtensionTelemetry", () => {
             [queryParameters.SITE_VISIBILITY, "false"],
             [queryParameters.REGION, "NAM"],
             [queryParameters.GEO, "US"],
-            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"]
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.REFERRER_SOURCE, "test"],
         ]);
 
         const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
@@ -118,6 +119,7 @@ describe("webExtensionTelemetry", () => {
             region: queryParamsMap.get(queryParameters.REGION),
             geo: queryParamsMap.get(queryParameters.GEO),
             envId: queryParamsMap.get(queryParameters.ENV_ID),
+            referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
 
@@ -154,6 +156,7 @@ describe("webExtensionTelemetry", () => {
             region: queryParamsMap.get(queryParameters.REGION),
             geo: queryParamsMap.get(queryParameters.GEO),
             envId: queryParamsMap.get(queryParameters.ENV_ID),
+            referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
 
