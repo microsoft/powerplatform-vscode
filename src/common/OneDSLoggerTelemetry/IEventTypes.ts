@@ -10,6 +10,7 @@ import {IProDevCopilotTelemetryData} from '../copilot/telemetry/ITelemetry';
 export interface IUserInfo {
     oid: string;
     tid: string;
+    puid ?: string;
 }
 
 export interface IEvent {
@@ -34,4 +35,16 @@ export interface ICustomEvent {
     exceptionSource?: string;
     exceptionCauseCode?: string | number;
     exceptionDetails?: string;
+  }
+
+  export interface IContextInfo {
+    orgId?: string;
+    portalId?: string;
+    websiteId?: string;
+    dataSource?: string;
+    schema?: string;
+    correlationId?: string;
+    referrer? :string;
+    envId?: string;
+    referrerSource?: string;
   }

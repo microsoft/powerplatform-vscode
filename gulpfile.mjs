@@ -64,6 +64,17 @@ function setTelemetryTarget() {
         .pipe(gulp.dest(path.join('src', 'common', 'telemetry-generated')));
 }
 
+function setBuildRegion() {
+    const buildRegion = isOfficialBuild
+        ? 'src/common/telemetry/buildRegionProd.ts'
+        : 'src/common/telemetry/buildRegionTip.ts';
+
+    return gulp
+        .src(buildRegion)
+        .pipe(rename('buildRegionConfiguration.ts'))
+        .pipe(gulp.dest(path.join('src', 'common', 'telemetry-generated')));
+}
+
 
 function compile() {
     return gulp
@@ -336,7 +347,7 @@ async function snapshot() {
 }
 
 const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.29.11';
+const cliVersion = '1.30.7';
 
 const recompile = gulp.series(
     clean,
@@ -345,6 +356,7 @@ const recompile = gulp.series(
     translationsExport,
     translationsImport,
     setTelemetryTarget,
+    setBuildRegion,
     compile,
     compileWeb,
     compileWorker,

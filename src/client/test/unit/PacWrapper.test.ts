@@ -33,13 +33,25 @@ class MockPacInterop implements IPacInterop {
 describe('PacWrapper', () => {
     it('AuthList parses correctly', async () => {
         const interop = new MockPacInterop();
-        interop.executeReturnValue = "{\"Status\":\"Success\",\"Errors\":[],\"Information\":[\"Input commands: [\\\"auth\\\",\\\"list\\\"]\",\"Profiles (* indicates active):\"],\"Results\":[{\"Index\":1,\"IsActive\":true,\"Kind\":\"CDS\",\"Name\":\"cctest\",\"Resource\":\"https://contoso.example.com\",\"User\":\"bob@contoso.com\",\"CloudInstance\":\"Public\"}]}";
+        interop.executeReturnValue = "{\"Status\":\"Success\",\"Errors\":[],\"Information\":[\"Input commands: [\\\"auth\\\",\\\"list\\\"]\",\"Profiles (* indicates active):\"],"
+            + "\"Results\":["
+                + "{"
+                    + "\"Index\":1,"
+                    + "\"IsActive\":true,"
+                    + "\"Kind\":\"CDS\","
+                    + "\"Name\":\"cctest\","
+                    + "\"ActiveOrganization\":{\"Item2\":\"https://contoso-mock.crmtest.dynamics.com\",\"Item1\":\"\"},"
+                    + "\"UserDisplayName\":\"bob@contoso.com\","
+                    + "\"CloudInstance\":\"Public\""
+                + "}"
+            + "]}";
         const wrapper = new PacWrapper(new MockContext, interop);
 
         const result = await wrapper.authList();
         expect(result.Status === "Success");
         expect(result.Errors.length === 0);
         expect(result.Information.length > 0);
-        expect(result.Results && result.Results.length === 1 && result.Results[0].User === "bob@contoso.com").to.be.true;
+        expect(result.Results && result.Results.length === 1 && result.Results[0].UserDisplayName === "bob@contoso.com").to.be.true;
+        expect(result.Results[0].ActiveOrganization?.Item2 === "https://contoso-mock.crmtest.dynamics.com").to.be.true;
     });
 });

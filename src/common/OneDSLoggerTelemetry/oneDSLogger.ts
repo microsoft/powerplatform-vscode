@@ -3,16 +3,20 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion*/
+/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-inferrable-types*/
 
 import { AppInsightsCore, type IExtendedConfiguration } from "@microsoft/1ds-core-js";
 import { PostChannel, type IChannelConfiguration, type IXHROverride } from "@microsoft/1ds-post-js";
 import { ITelemetryLogger } from "./ITelemetryLogger";
+import { IContextInfo, IUserInfo } from "./IEventTypes";
 import { EventType, Severity } from "./telemetryConstants";
 import * as vscode from "vscode";
 import {getExtensionType, getExtensionVersion} from "../../common/Utils";
 import { EXTENSION_ID } from "../../client/constants";
 import {OneDSCollectorEventName} from "./EventContants";
+import { telemetryEventNames } from "../../web/client/telemetry/constants";
+import { region } from "../telemetry-generated/buildRegionConfiguration";
+import { geoMappingsToAzureRegion } from "./shortNameMappingToAzureRegion";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -23,6 +27,10 @@ export class OneDSLogger implements ITelemetryLogger{
 
     private readonly appInsightsCore :AppInsightsCore;
 	private readonly postChannel: PostChannel;
+
+    private static userInfo: IUserInfo = {oid: "", tid: "", puid: ""};
+    private static contextInfo: IContextInfo ;
+    private static userRegion : string = "";
 
     private readonly regexPatternsToRedact = [
         /key["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
@@ -36,7 +44,7 @@ export class OneDSLogger implements ITelemetryLogger{
                 typeof payload.data === "string"
                     ? payload.data
                     : new TextDecoder().decode(payload.data);
-    
+
             const requestInit: RequestInit = {
                 body: telemetryRequestData,
                 method: "POST",
@@ -49,7 +57,7 @@ export class OneDSLogger implements ITelemetryLogger{
                     response.headers.forEach((value: string, name: string) => {
                         headerMap[name] = value;
                     });
-    
+
                     if (response.body) {
                         response
                             .text()
@@ -73,7 +81,7 @@ export class OneDSLogger implements ITelemetryLogger{
                 });
         },
     };
-    
+
     public constructor(geo?:string ) {
 
         this.appInsightsCore = new AppInsightsCore();
@@ -85,7 +93,7 @@ export class OneDSLogger implements ITelemetryLogger{
 		};
 
         const instrumentationSetting : IInstrumentationSettings= OneDSLogger.getInstrumentationSettings(geo); // Need to replace with actual data
-		
+
 		// Configure App insights core to send to collector
 		const coreConfig: IExtendedConfiguration = {
 			instrumentationKey: instrumentationSetting.instrumentationKey,
@@ -106,49 +114,86 @@ export class OneDSLogger implements ITelemetryLogger{
 		if ((coreConfig.instrumentationKey ?? "") !== "") {
 			this.appInsightsCore.initialize(coreConfig, []);
 		}
+        this.intitializeContextInfo();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.appInsightsCore.addTelemetryInitializer(this.populateCommonAttributes());
 	}
 
+    private intitializeContextInfo(){
+        OneDSLogger.contextInfo = {
+            orgId: "",
+            portalId: "",
+            websiteId: "",
+            dataSource: "",
+            schema: "",
+            correlationId: "",
+            referrer: "",
+            envId: "",
+            referrerSource: "",
+        }
+    }
+
     private static getInstrumentationSettings(geo?:string): IInstrumentationSettings {
-        // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-        const region:string = "test"; // TODO: Remove it from here and replace it with value getting from build. Check gulp.mjs (setTelemetryTarget)
+        const buildRegion:string = region;
         const instrumentationSettings:IInstrumentationSettings = {
             endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
-            instrumentationKey: 'bd47fc8d971f4283a6686ec46fd48782-bdef6c1c-75ab-417c-a1f7-8bbe21e12da6-7708'
+            instrumentationKey: 'ffdb4c99ca3a4ad5b8e9ffb08bf7da0d-65357ff3-efcd-47fc-b2fd-ad95a52373f4-7402'
         };
-        switch (region) {
+        let geoName = 'us';
+        if(geoMappingsToAzureRegion[geo!]) {
+            geoName = geoMappingsToAzureRegion[geo!].geoName;
+        }
+        switch (buildRegion) {
             case 'tie':
             case 'test':
             case 'preprod':
                 break;
             case 'prod':
             case 'preview':
-              switch (geo) {
+              switch (geoName) {
+                case 'us':
+                case 'br':
+                case 'jp':
+                case 'in':
+                case 'au':
+                case 'ca':
+                case 'as':
+                case 'za':
+                case 'ae':
+                case 'kr':
+                    instrumentationSettings.endpointURL ='https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
+                    instrumentationSettings.instrumentationKey =  '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                    break;
                 case 'eu':
-                    instrumentationSettings.endpointURL = '' //prod endpoint;
-                    instrumentationSettings.instrumentationKey = '' //prod key;
-                  break;
+                case 'uk':
+                case 'de':
+                case 'fr':
+                case 'no':
+                case 'ch':
+                    instrumentationSettings.endpointURL ='https://eu-mobile.events.data.microsoft.com/OneCollector/1.0/',
+                    instrumentationSettings.instrumentationKey =  '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                    break;
                 default:
-                    instrumentationSettings.endpointURL = '' //prod endpoint;
-                    instrumentationSettings.instrumentationKey = '' //prod key;
+                    instrumentationSettings.endpointURL ='https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
+                    instrumentationSettings.instrumentationKey =  '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                    break;
               }
               break;
             case 'gov':
             case 'high':
             case 'dod':
             case 'mooncake':
-                instrumentationSettings.endpointURL = '' //prod endpoint;
+                instrumentationSettings.endpointURL = '',
                 instrumentationSettings.instrumentationKey = '' //prod key;
               break;
             case 'ex':
             case 'rx':
             default:
               break;
-          }    
+          }
         return instrumentationSettings;
       }
-    
+
 	/// Trace info log
 	public traceInfo(eventName:string, eventInfo?:object, measurement?: object) {
 		const event = {
@@ -222,7 +267,7 @@ export class OneDSLogger implements ITelemetryLogger{
     }
 
     /// Populate attributes that are common to all events
-	private populateCommonAttributes() {	
+	private populateCommonAttributes() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (envelope:any) => {
 			try {
@@ -235,16 +280,11 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.vscodeExtensionVersion = getExtensionVersion();
                     envelope.data.vscodeVersion = vscode.version;
                     envelope.data.domain = vscode.env.appHost;
-                    // Adding below attributes so they get populated in Geneva. 
+                    // Adding below attributes so they get populated in Geneva.
                     // TODO: It needs implementation for populating the actual value
-                    envelope.data.tenantId = "test";
-                    envelope.data.principalObjectId = "test";
-                    envelope.data.puid = "test";
                     envelope.data.eventSubType = "test";
                     envelope.data.scenarioId = "test";
                     envelope.data.eventModifier = "test";
-                    envelope.data.userRegion = "test";
-                    envelope.data.context = "test"; 
                     envelope.data.timestamp = "test";
                     envelope.data.country = "test";
                     envelope.data.userLocale = "test";
@@ -255,18 +295,23 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.browserVersion = "test";
                     envelope.data.browserLanguage = "test";
                     envelope.data.screenResolution = "test";
-                    envelope.data.osName = "test"; 
+                    envelope.data.osName = "test";
                     envelope.data.osVersion = "test";
-                    // envelope.data.timestamp = envelope.ext.user.locale;
-                    // envelope.data.userLocale = envelope.ext.user.locale;
-                    // envelope.data.userTimeZone = envelope.ext.loc.tz;
-                    // envelope.data.appLanguage = envelope.ext.app.locale;
-
+                    if (getExtensionType() == 'Web'){
+                        this.populateVscodeWebAttributes(envelope);
+                    }else{
+                        this.populateVscodeDesktopAttributes(envelope);
+                    }
+                    envelope.data.tenantId = OneDSLogger.userInfo?.tid;
+                    envelope.data.principalObjectId = OneDSLogger.userInfo?.oid;
+                    envelope.data.puid = OneDSLogger.userInfo?.puid;
+                    envelope.data.context = JSON.stringify(OneDSLogger.contextInfo);
+                    envelope.data.userRegion = OneDSLogger.userRegion;
                     // At the end of event enrichment, redact the sensitive data for all the applicable fields
                   //  envelope = this.redactSensitiveDataFromEvent(envelope);
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            catch (exception:any) 
+            catch (exception:any)
 			{
 				// Such exceptions are likely if we are trying to process event attributes which don't exist
 				// In such cases, only add common attributes and current exception details, and avoid processing the event attributes further
@@ -279,6 +324,32 @@ export class OneDSLogger implements ITelemetryLogger{
 			}
         }
 	}
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private populateVscodeWebAttributes(envelope: any) {
+        if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS){
+            OneDSLogger.userInfo.tid= JSON.parse(envelope.data.eventInfo).tenantId;
+            OneDSLogger.userRegion = JSON.parse(envelope.data.eventInfo).geo;
+            OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).orgId;
+            OneDSLogger.contextInfo.portalId = JSON.parse(envelope.data.eventInfo).portalId;
+            OneDSLogger.contextInfo.websiteId = JSON.parse(envelope.data.eventInfo).websiteId;
+            OneDSLogger.contextInfo.dataSource = JSON.parse(envelope.data.eventInfo).dataSource;
+            OneDSLogger.contextInfo.schema = JSON.parse(envelope.data.eventInfo).schema;
+            OneDSLogger.contextInfo.correlationId = JSON.parse(envelope.data.eventInfo).referrerSessionId;
+            OneDSLogger.contextInfo.referrer = JSON.parse(envelope.data.eventInfo).referrer;
+            OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).envId;
+            OneDSLogger.contextInfo.referrerSource = JSON.parse(envelope.data.eventInfo).referrerSource;
+        }
+        if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED){
+            OneDSLogger.userInfo.oid= JSON.parse(envelope.data.eventInfo).userId;
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private populateVscodeDesktopAttributes(envelope: any){
+        // TODO: this method helps in populating desktop attributes.
+        console.log(envelope);
+    }
 
     //// Redact Sensitive data for the fields susceptible to contain codes/tokens/keys/secrets etc.
 	//// This is done post event enrichment is complete to not impact the dependencies (if any) on actual values like Uri etc.

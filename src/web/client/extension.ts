@@ -36,6 +36,8 @@ import { copilotNotificationPanel, disposeNotificationPanel } from "../../common
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
 import { fetchArtemisResponse } from "../../common/ArtemisService";
+import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -45,6 +47,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             dataBoundary
         );
+    oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
     WebExtensionContext.telemetry.setTelemetryReporter(
         context.extension.id,
@@ -89,12 +92,15 @@ export function activate(context: vscode.ExtensionContext): void {
                         );
                     }
                 }
+                const geo = queryParamsMap.get('geo')?.toLowerCase();
+                // Authenticated scenario. Pass the geo to OneDSLogger for data boundary
+                if(geo){
+                    oneDSLoggerWrapper.instantiate(geo);
+                }
 
                 if (
                     !checkMandatoryParameters(
                         appName,
-                        entity,
-                        entityId,
                         queryParamsMap
                     )
                 ) {
@@ -192,7 +198,17 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillStartCollaboartion(context);
 
+    enableFileSearchFunctionality(portalsFS);
+
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function enableFileSearchFunctionality(portalsFS: PortalsFS) {
+    vscode.workspace.registerFileSearchProvider(PORTALS_URI_SCHEME, {
+        provideFileSearchResults: async (query) => {
+            return portalsFS.searchFiles(query.pattern);
+        },
+    });
 }
 
 export function registerCollaborationView() {
@@ -282,7 +298,7 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                                     entityInfo
                                 });
                             }
-                            WebExtensionContext.quickPickProvider.updateQuickPickItems(entityInfo);
+                            WebExtensionContext.quickPickProvider.refresh();
                         }
                     }
                 }
@@ -358,6 +374,7 @@ export function createWebWorkerInstance(
                                 data.userId
                             );
                             WebExtensionContext.userCollaborationProvider.refresh();
+                            WebExtensionContext.quickPickProvider.refresh();
                         }
                         if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
                             WebExtensionContext.updateConnectedUsersInContext(
@@ -367,6 +384,21 @@ export function createWebWorkerInstance(
                                 data.entityId
                             );
                             WebExtensionContext.userCollaborationProvider.refresh();
+                            WebExtensionContext.quickPickProvider.refresh();
+                        }
+                        if (data.type === Constants.workerEventMessages.SEND_INFO_TELEMETRY) {
+                            WebExtensionContext.telemetry.sendInfoTelemetry(
+                                data.eventName,
+                                data?.userId ? { userId: data.userId } : {}
+                            );
+                        }
+                        if (data.type === Constants.workerEventMessages.SEND_ERROR_TELEMETRY) {
+                            WebExtensionContext.telemetry.sendErrorTelemetry(
+                                data.eventName,
+                                data.methodName,
+                                data?.errorMessage,
+                                data?.error
+                            );
                         }
                     };
                 }
