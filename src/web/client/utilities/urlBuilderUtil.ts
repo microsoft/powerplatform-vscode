@@ -232,6 +232,8 @@ export function getMetadataInfo(result: any, metadataKeys?: string[]) {
         }
     }
 
+    console.log("metadataValues: ", metadataValues);
+
     return metadataValues;
 }
 
