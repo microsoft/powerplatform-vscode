@@ -379,7 +379,7 @@ export const portal_schema_V2 = {
                 relationships: "",
                 _vscodeentityname: "basicforms",
                 _dataverseenityname: "powerpagecomponents",
-                _dataverseentitymetadata: new Map([["_dataverselogicalentityname", "content.entityname"]]),
+                _dataverseentitymetadata: new Map([["_dataverselogicalentityname", "content.entityname"], ["_dataverseformname", "content.formname"]]),
                 _displayname: "Basic Forms",
                 _etc: "10271",
                 _primaryidfield: "powerpagecomponentid",

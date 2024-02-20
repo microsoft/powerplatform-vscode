@@ -4,7 +4,7 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { GEO_REQUIRES_CROSS_GEO_OPTIONS, INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse, UserPrompt } from "./constants";
+import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse, UserPrompt } from "./constants";
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
@@ -21,6 +21,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
         return NetworkError;
     }
 
+    // eslint-disable-next-line prefer-const
     let requestBody = {
         "question": userPrompt[0].displayText,
         "top": 1,
@@ -45,14 +46,14 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
         }
     };
 
-    if (geoName && GEO_REQUIRES_CROSS_GEO_OPTIONS.includes(geoName)) {
-        requestBody = {
-            ...requestBody,
-            "crossGeoOptions": {
-                "enableCrossGeoCall": true
-            }
-        }
-    }
+    // if (geoName && GEO_REQUIRES_CROSS_GEO_OPTIONS.includes(geoName)) {
+    //     requestBody = {
+    //         ...requestBody,
+    //         "crossGeoOptions": {
+    //             "enableCrossGeoCall": true
+    //         }
+    //     }
+    // }
 
 
     const requestInit: RequestInit = {
