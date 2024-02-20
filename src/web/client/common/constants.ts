@@ -103,8 +103,7 @@ export enum queryParameters {
     WEBSITE_PREVIEW_URL = "websitepreviewurl",
     ENTITY = "entity",
     ENTITY_ID = "entityid",
-    REFERRER_SOURCE = "referrersource",
-    ORG_GEO = 'orgGeo'
+    REFERRER_SOURCE = "referrersource"
 }
 
 export enum httpMethod {
