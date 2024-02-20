@@ -131,13 +131,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
             this.handleOrgChangeSuccess(pacOutput.Results);
         } else if (this._view?.visible) {
-
-            if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
-                this.handleOrgChangeSuccess(pacOutput.Results);
-            } else if (this._view?.visible) {
-
-                await this.createAuthProfileExp();
-            }
+            await this.createAuthProfileExp();
         }
     }
 
@@ -148,7 +142,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
         const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
         if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
-            vscode.window.showErrorMessage(AUTH_CREATE_FAILED); // TODO: Provide Experience to create auth profile
+            vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
             return;
         }
     }
