@@ -116,23 +116,3 @@ export function openWalkthrough(extensionUri: vscode.Uri) {
     const walkthroughUri = vscode.Uri.joinPath(extensionUri, 'src', 'common', 'copilot', 'assets', 'walkthrough', 'Copilot-In-PowerPages.md');
     vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
 }
-
-export const setupFileWatcher = (handleChangeFn: () => Promise<void>, disposables?: vscode.Disposable[]) => {
-    const watchPath = GetAuthProfileWatchPattern();
-    if (watchPath) {
-        const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
-        if(disposables){
-            disposables?.push(
-                watcher,
-                watcher.onDidChange(() => handleChangeFn()),
-                watcher.onDidCreate(() => handleChangeFn()),
-                watcher.onDidDelete(() => handleChangeFn())
-            );
-        }else{
-            watcher.onDidChange(() => handleChangeFn());
-            watcher.onDidCreate(() => handleChangeFn());
-            watcher.onDidDelete(() => handleChangeFn());
-        }
-        
-    }
-}
