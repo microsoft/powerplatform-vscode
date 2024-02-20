@@ -24,6 +24,7 @@ import {
     getAttributePath,
     getEntity,
     getLogicalEntityParameter,
+    getLogicalFormNameParameter,
     isBase64Encoded,
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
@@ -431,7 +432,7 @@ async function createFile(
     // By default content is preloaded for all the files except for non-text webfiles for V2
     const isPreloadedContent = mappingEntityFetchQuery ? isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
     const logicalEntityName = getLogicalEntityParameter(entityName);
-    console.log("logicalEntityName ", logicalEntityName)
+    const logicalFormNameParameter = getLogicalFormNameParameter(entityName);
 
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(
@@ -454,8 +455,7 @@ async function createFile(
         fileContent = getAttributeContent(result, attributePath, entityName, entityId);
     }
 
-    const logicalFormName = 'content.formname';
-    const metadataKeys = [logicalEntityName, logicalFormName];
+    const metadataKeys = [logicalEntityName, logicalFormNameParameter];
     const metadataValues = getMetadataInfo(result, metadataKeys.filter(key => key !== undefined) as string[]);
 
     await createVirtualFile(
@@ -473,8 +473,8 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        metadataValues.logicalEntityName,
-        metadataValues.logicalFormName,
+        metadataValues[logicalEntityName ?? ''] ?? '',
+        metadataValues[logicalFormNameParameter ?? ''] ?? '',
         rootWebPageId,
     );
 }
@@ -626,10 +626,11 @@ async function createVirtualFile(
     isPreloadedContent?: boolean,
     mappingEntityId?: string,
     logicalEntityName?: string,
+    logicalFormName?: string,
     rootWebPageId?: string,
-    logicalFormName?: string
 ) {
     // Maintain file information in context
+    console.log("logicalFormName from createVirtualFile ", logicalFormName)
     await WebExtensionContext.updateFileDetailsInContext(
         fileUri,
         entityId,
