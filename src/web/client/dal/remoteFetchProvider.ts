@@ -454,7 +454,8 @@ async function createFile(
         fileContent = getAttributeContent(result, attributePath, entityName, entityId);
     }
 
-    const metadataKeys = [logicalEntityName, 'content.formname'];
+    const logicalFormName = 'content.formname';
+    const metadataKeys = [logicalEntityName, logicalFormName];
     const metadataValues = getMetadataInfo(result, metadataKeys.filter(key => key !== undefined) as string[]);
 
     await createVirtualFile(
