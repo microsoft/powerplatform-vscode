@@ -34,12 +34,11 @@ import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
-import { COPILOT_NOTIFICATION_DISABLED, PAC_SUCCESS } from "../common/copilot/constants";
-import { PacInterop, PacWrapper } from "./pac/PacWrapper";
-import { PacWrapperContext } from "./pac/PacWrapperContext";
+import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
 import { fetchArtemisResponse } from "../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { setupFileWatcher } from "../common/Utils";
+import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
+import { ActiveOrgOutput } from "./pac/PacTypes";
 
 
 let client: LanguageClient;
@@ -166,12 +165,24 @@ export async function activate(
     const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
+    const pacTerminal = new PacTerminal(_context, _telemetry, cliPath);
     _context.subscriptions.push(cli);
-    _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
+    _context.subscriptions.push(pacTerminal);
     const workspaceFolders =
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
+
+    _context.subscriptions.push(
+        orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
+            const orgID = orgDetails.OrgId;
+            const artemisResponse = await fetchArtemisResponse(orgID, _telemetry);
+            if (artemisResponse) {
+                const { geoName } = artemisResponse[0];
+                oneDSLoggerWrapper.instantiate(geoName);
+            }
+        })
+    );
 
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
@@ -185,9 +196,8 @@ export async function activate(
             const exceptionError = exception as Error;
             _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
         }
-
-        handleOrgChange();
-        setupFileWatcher(handleOrgChange);
+        // Init OrgChangeNotifier instance
+        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
 
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
@@ -208,24 +218,6 @@ export async function activate(
     _telemetry.sendTelemetryEvent("activated");
 }
 
-
-async function handleOrgChange() {
-    const cliContext = new CliAcquisitionContext(_context, _telemetry);
-    const cli = new CliAcquisition(cliContext);
-    const cliPath = await cli.ensureInstalled();
-    const pacContext = new PacWrapperContext(_context, _telemetry);
-    const interop = new PacInterop(pacContext, cliPath);
-    const pacWrapper = new PacWrapper(pacContext, interop);
-    const pacActiveOrg = await pacWrapper?.activeOrg();
-    if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
-        const orgID = pacActiveOrg.Results.OrgId;
-        const artemisResponse = await fetchArtemisResponse(orgID, _telemetry);
-        if (artemisResponse) {
-            const { geoName } = artemisResponse[0];
-            oneDSLoggerWrapper.instantiate(geoName);
-        }
-    }
-}
 
 export async function deactivate(): Promise<void> {
     if (_telemetry) {
