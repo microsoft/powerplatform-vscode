@@ -92,12 +92,14 @@ export function activate(context: vscode.ExtensionContext): void {
                         );
                     }
                 }
-                const geo = queryParamsMap.get(queryParameters.ORG_GEO)?.toLowerCase() ?? 'us';
+                let geo = queryParamsMap.get(queryParameters.ORG_GEO)?.toLowerCase();
                 // Authenticated scenario. Pass the geo to OneDSLogger for data boundary
-                if(geo){
-                    oneDSLoggerWrapper.instantiate(geo);
+                if(!geo){
+                    const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
+                    geo = await fetchArtemisData(orgId);
                 }
 
+                oneDSLoggerWrapper.instantiate(geo);
                 if (
                     !checkMandatoryParameters(
                         appName,
@@ -601,6 +603,16 @@ function isActiveDocument(fileFsPath: string): boolean {
     );
 }
 
+async function fetchArtemisData(orgId: string) : Promise<string> {
+        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+        if (!artemisResponse) {
+            // Todo: Log in error telemetry. Runtime maintains another table for this kind of failure. We should do the same.
+            return '';
+        }
+
+        return artemisResponse[0].geoName as string;
+}
+
 async function logArtemisTelemetry() {
 
     try {
@@ -608,13 +620,7 @@ async function logArtemisTelemetry() {
             queryParameters.ORG_ID
         ) as string
 
-        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
-
-        if (!artemisResponse) {
-            return;
-        }
-
-        const { geoName } = artemisResponse[0];
+        const geoName= fetchArtemisData(orgId);
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
             { orgId: orgId, geoName: String(geoName) });
     } catch (error) {
