@@ -23,7 +23,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
-import { orgChangeEvent } from "../OrgChangeNotifier";
+import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -108,6 +108,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             orgChangeEvent((orgDetails: ActiveOrgOutput) => this.handleOrgChangeSuccess(orgDetails))
         );
 
+        this._disposables.push(
+            orgChangeErrorEvent(async () => await this.createAuthProfileExp())
+        );
+
         if (orgInfo) {
             orgID = orgInfo.orgId;
             environmentName = orgInfo.environmentName;
@@ -132,16 +136,20 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 this.handleOrgChangeSuccess(pacOutput.Results);
             } else if (this._view?.visible) {
 
-                const userOrgUrl = await showInputBoxAndGetOrgUrl();
-                if (!userOrgUrl) {
-                    return;
-                }
-                const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-                if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
-                    vscode.window.showErrorMessage(AUTH_CREATE_FAILED); // TODO: Provide Experience to create auth profile
-                    return;
-                }
+                await this.createAuthProfileExp();
             }
+        }
+    }
+
+    private async createAuthProfileExp() {
+        const userOrgUrl = await showInputBoxAndGetOrgUrl();
+        if (!userOrgUrl) {
+            return;
+        }
+        const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
+        if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
+            vscode.window.showErrorMessage(AUTH_CREATE_FAILED); // TODO: Provide Experience to create auth profile
+            return;
         }
     }
 

@@ -11,6 +11,8 @@ import { ActiveOrgOutput } from "../client/pac/PacTypes";
 
 export const orgChangeEventEmitter = new vscode.EventEmitter<ActiveOrgOutput>();
 export const orgChangeEvent = orgChangeEventEmitter.event;
+export const orgChangeErrorEventEmitter = new vscode.EventEmitter<void>();
+export const orgChangeErrorEvent = orgChangeErrorEventEmitter.event;
 
 export class OrgChangeNotifier {
     private _pacWrapper: PacWrapper | undefined;
@@ -47,6 +49,8 @@ export class OrgChangeNotifier {
         if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
             this._orgDetails = pacActiveOrg.Results;
             orgChangeEventEmitter.fire(this._orgDetails);
+        } else {
+            orgChangeErrorEventEmitter.fire();
         }
     }
 }
