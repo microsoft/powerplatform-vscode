@@ -98,7 +98,7 @@ export enum queryParameters {
     ORG_URL = "orgurl",
     REGION = "region",
     ENV_ID = "envid",
-    GEO = "geo",
+    GEO = "geo", // User geo location
     ENABLE_MULTIFILE = "enablemultifile",
     WEBSITE_PREVIEW_URL = "websitepreviewurl",
     ENTITY = "entity",
