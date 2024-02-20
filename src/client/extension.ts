@@ -193,8 +193,7 @@ export async function activate(
             telemetryData = JSON.stringify(listOfActivePortals);
             _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
         } catch (exception) {
-            const exceptionError = exception as Error;
-            _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
+            _telemetry.sendTelemetryException(exception as Error, { eventName: 'VscodeDesktopUsage' });
         }
         // Init OrgChangeNotifier instance
         OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());

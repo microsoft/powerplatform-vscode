@@ -46,7 +46,6 @@ export class OrgChangeNotifier {
         const pacActiveOrg = await this._pacWrapper?.activeOrg();
         if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
             this._orgDetails = pacActiveOrg.Results;
-            console.log("Active Org Details ", this._orgDetails);
             orgChangeEventEmitter.fire(this._orgDetails);
         }
     }
