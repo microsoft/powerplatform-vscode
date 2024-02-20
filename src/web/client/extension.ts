@@ -92,13 +92,8 @@ export function activate(context: vscode.ExtensionContext): void {
                         );
                     }
                 }
-                let orgGeo = queryParamsMap.get(queryParameters.ORG_GEO)?.toLowerCase();
-                // Authenticated scenario. Pass the geo to OneDSLogger for data boundary
-                if(!orgGeo){
-                    const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
-                    orgGeo = await fetchArtemisData(orgId);
-                }
-
+                const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
+                const orgGeo = await fetchArtemisData(orgId);
                 oneDSLoggerWrapper.instantiate(orgGeo);
                 if (
                     !checkMandatoryParameters(
