@@ -92,14 +92,14 @@ export function activate(context: vscode.ExtensionContext): void {
                         );
                     }
                 }
-                let geo = queryParamsMap.get(queryParameters.ORG_GEO)?.toLowerCase();
+                let orgGeo = queryParamsMap.get(queryParameters.ORG_GEO)?.toLowerCase();
                 // Authenticated scenario. Pass the geo to OneDSLogger for data boundary
-                if(!geo){
+                if(!orgGeo){
                     const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
-                    geo = await fetchArtemisData(orgId);
+                    orgGeo = await fetchArtemisData(orgId);
                 }
 
-                oneDSLoggerWrapper.instantiate(geo);
+                oneDSLoggerWrapper.instantiate(orgGeo);
                 if (
                     !checkMandatoryParameters(
                         appName,
