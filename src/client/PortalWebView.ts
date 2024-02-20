@@ -170,7 +170,7 @@ export class PortalWebView {
         return html;
     }
 
-    private static getPortalRootFolder(): vscode.Uri | null {
+    public static getPortalRootFolder(): vscode.Uri | null {
         const fileBeingEdited = vscode.window.activeTextEditor as vscode.TextEditor;
         if (fileBeingEdited) {
             for (let i = 0; !!(vscode.workspace.workspaceFolders) && (i < vscode.workspace.workspaceFolders?.length); i++) {

@@ -11,9 +11,9 @@ import { ITelemetryLogger } from "./ITelemetryLogger";
 import { IContextInfo, IUserInfo } from "./IEventTypes";
 import { EventType, Severity } from "./telemetryConstants";
 import * as vscode from "vscode";
-import {getExtensionType, getExtensionVersion} from "../../common/Utils";
+import { getExtensionType, getExtensionVersion, getWebsiteIdFromPACData } from "../../common/Utils";
 import { EXTENSION_ID } from "../../client/constants";
-import {OneDSCollectorEventName} from "./EventContants";
+import { OneDSCollectorEventName } from "./EventContants";
 import { telemetryEventNames } from "../../web/client/telemetry/constants";
 import { region } from "../telemetry-generated/buildRegionConfiguration";
 import { geoMappingsToAzureRegion } from "./shortNameMappingToAzureRegion";
@@ -194,11 +194,14 @@ export class OneDSLogger implements ITelemetryLogger{
         return instrumentationSettings;
       }
 
-	/// Trace info log
-	public traceInfo(eventName:string, eventInfo?:object, measurement?: object) {
-		const event = {
-			name: OneDSCollectorEventName.VSCODE_EVENT,
-			data: {
+    /// Trace info log
+    public async traceInfo(eventName: string, eventInfo?: object, measurement?: object) {
+        if (getExtensionType() == 'Desktop') {
+            OneDSLogger.contextInfo.websiteId = await getWebsiteIdFromPACData();
+        }
+        const event = {
+            name: OneDSCollectorEventName.VSCODE_EVENT,
+            data: {
                 eventName: eventName,
                 eventType: EventType.TRACE,
                 severity: Severity.INFO,
@@ -210,11 +213,14 @@ export class OneDSLogger implements ITelemetryLogger{
 		this.appInsightsCore.track(event);
 	}
 
-	/// Trace warning log
-	public traceWarning(eventName:string, eventInfo?: object, measurement?: object) {
-		const event = {
-			name: OneDSCollectorEventName.VSCODE_EVENT,
-			data: {
+    /// Trace warning log
+    public async traceWarning(eventName: string, eventInfo?: object, measurement?: object) {
+        if (getExtensionType() == 'Desktop') {
+            OneDSLogger.contextInfo.websiteId = await getWebsiteIdFromPACData();
+        }
+        const event = {
+            name: OneDSCollectorEventName.VSCODE_EVENT,
+            data: {
                 eventName: eventName,
 				eventType: EventType.TRACE,
                 severity: Severity.WARN,
@@ -227,10 +233,14 @@ export class OneDSLogger implements ITelemetryLogger{
 	}
 
     // Trace error log
-	public traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?:object, measurement?: object) {
-		const event = {
-			name: OneDSCollectorEventName.VSCODE_EVENT,
-			data: {
+    public async traceError(eventName: string, errorMessage: string, exception: Error, eventInfo?: object, measurement?: object) {
+        if (getExtensionType() == 'Desktop') {
+            OneDSLogger.contextInfo.websiteId = await getWebsiteIdFromPACData();
+        }
+
+        const event = {
+            name: OneDSCollectorEventName.VSCODE_EVENT,
+            data: {
                 eventName: eventName,
 				eventType: EventType.TRACE,
                 severity: Severity.ERROR,
@@ -244,12 +254,14 @@ export class OneDSLogger implements ITelemetryLogger{
         this.appInsightsCore.track(event);
     }
 
-    public  featureUsage(
+    public async featureUsage(
         featureName: string,
         eventName: string,
         customDimensions?: object
-      ) {
-
+    ) {
+        if (getExtensionType() == 'Desktop') {
+            OneDSLogger.contextInfo.websiteId = await getWebsiteIdFromPACData();
+        }
         const event = {
 			name: OneDSCollectorEventName.VSCODE_EVENT,
 			data: {
