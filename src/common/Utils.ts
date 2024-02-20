@@ -6,7 +6,6 @@
 
 import * as vscode from "vscode";
 import { EXTENSION_ID } from "../client/constants";
-import { GetAuthProfileWatchPattern } from "../client/lib/AuthPanelView";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
