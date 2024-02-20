@@ -92,7 +92,7 @@ export function activate(context: vscode.ExtensionContext): void {
                         );
                     }
                 }
-                const geo = queryParamsMap.get('geo')?.toLowerCase();
+                const geo = queryParamsMap.get(queryParameters.ORG_GEO)?.toLowerCase() ?? 'us';
                 // Authenticated scenario. Pass the geo to OneDSLogger for data boundary
                 if(geo){
                     oneDSLoggerWrapper.instantiate(geo);
