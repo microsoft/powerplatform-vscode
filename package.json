@@ -659,7 +659,7 @@
           "command": "powerPlatform.previewCurrentActiveUsers",
           "alt": "current active users",
           "group": "navigation",
-          "when": "never"
+          "when": "isWeb && virtualWorkspace"
         }
       ],
       "commandPalette": [
@@ -954,7 +954,7 @@
         {
           "id": "powerpages.collaborationView",
           "name": "People On The Site",
-          "when": "never",
+          "when": "isWeb && virtualWorkspace",
           "contextualTitle": "People On The Site",
           "visibility": "visible"
         }
