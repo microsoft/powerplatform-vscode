@@ -73,6 +73,8 @@ export enum sharedWorkspaceParameters {
 export enum workerEventMessages {
     UPDATE_CONNECTED_USERS = "client-data",
     REMOVE_CONNECTED_USER = "member-removed",
+    SEND_INFO_TELEMETRY = "telemetry-info",
+    SEND_ERROR_TELEMETRY = "telemetry-error",
 }
 
 export enum initializationEntityName {
