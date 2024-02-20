@@ -14,7 +14,7 @@ import {
     isWebfileContentLoadNeeded,
     setFileContent,
 } from "../utilities/commonUtil";
-import { getCustomRequestURL, getLogicalEntityName, getMappingEntityContent, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
+import { getCustomRequestURL, getMappingEntityContent, getMappingEntityId, getMetadataInfo, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
 import { getCommonHeaders } from "../common/authenticationProvider";
 import * as Constants from "../common/constants";
 import { ERRORS, showErrorDialog } from "../common/errorHandler";
@@ -431,6 +431,7 @@ async function createFile(
     // By default content is preloaded for all the files except for non-text webfiles for V2
     const isPreloadedContent = mappingEntityFetchQuery ? isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
     const logicalEntityName = getLogicalEntityParameter(entityName);
+    console.log("logicalEntityName ", logicalEntityName)
 
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(
@@ -453,6 +454,9 @@ async function createFile(
         fileContent = getAttributeContent(result, attributePath, entityName, entityId);
     }
 
+    const metadataKeys = [logicalEntityName, 'content.formname'];
+    const metadataValues = getMetadataInfo(result, metadataKeys.filter(key => key !== undefined) as string[]);
+
     await createVirtualFile(
         portalsFS,
         fileUri,
@@ -468,7 +472,8 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        getLogicalEntityName(result, logicalEntityName),
+        metadataValues.logicalEntityName,
+        metadataValues.logicalFormName,
         rootWebPageId,
     );
 }
@@ -621,6 +626,7 @@ async function createVirtualFile(
     mappingEntityId?: string,
     logicalEntityName?: string,
     rootWebPageId?: string,
+    logicalFormName?: string
 ) {
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
@@ -634,7 +640,8 @@ async function createVirtualFile(
         encodeAsBase64,
         mimeType,
         isPreloadedContent,
-        logicalEntityName
+        logicalEntityName,
+        logicalFormName
     );
 
     // Call file system provider write call for buffering file data in VFS

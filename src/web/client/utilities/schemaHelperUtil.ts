@@ -27,6 +27,11 @@ export function getLogicalEntityParameter(entity: string) {
     return entityMetadata ? (entityMetadata as unknown as Map<string, string>).get(schemaMetaDataKey.DATAVERSE_LOGICAL_ENTITY_NAME) : undefined;
 }
 
+export function getLogicalFormNameParameter(entity: string) {
+    const entityMetadata = getEntity(entity)?.get(schemaEntityKey.DATAVERSE_ENTITY_METADATA);
+    return entityMetadata ? (entityMetadata as unknown as Map<string, string>).get(schemaMetaDataKey.DATAVERSE_FORM_NAME) : undefined;
+}
+
 export function getPortalSchema(schema: string) {
     if (
         schema.toLowerCase() ===
