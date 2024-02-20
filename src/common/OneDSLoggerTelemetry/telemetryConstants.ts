@@ -36,3 +36,5 @@ export enum GeoNames {
     NO = 'no',
     KR = 'kr'
 }
+// Custom telemetry feature flag
+export const CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME = 'enableTelemetry';
