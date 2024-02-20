@@ -481,6 +481,15 @@
           "type": "boolean",
           "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
           "default": false
+        },
+        "powerPlatform.experimental.enableTelemetry": {
+          "type": "boolean",
+          "markdownDescription": "Enable custom telemetry for Power Pages",
+          "default": true,
+          "tags": [
+            "telemetry",
+            "usesOnlineServices"
+          ]
         }
       }
     },
