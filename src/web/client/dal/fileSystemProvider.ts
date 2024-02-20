@@ -30,7 +30,7 @@ import {
     updateFileDirtyChanges,
     updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
-import { getImageFileContent, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
+import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
 
 export class File implements vscode.FileStat {
@@ -313,7 +313,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
     async searchTextResults(query: vscode.TextSearchQuery, options: vscode.TextSearchOptions, progress: vscode.Progress<vscode.TextSearchResult>) {
         const results = await this.searchText(
             query,
-            { maxResults: options.maxResults, context: { before: options.beforeContext, after: options.afterContext } }
+            { maxResults: options.maxResults }
         );
 
         if (results === undefined) {
@@ -334,17 +334,23 @@ export class PortalsFS implements vscode.FileSystemProvider {
         return { limitHit: false };
     }
 
-    async searchText(query: vscode.TextSearchQuery, options: { maxResults?: number; context?: { before?: number; after?: number } }): Promise<ISearchQueryResults> {
+    async searchText(query: vscode.TextSearchQuery, options: { maxResults?: number }): Promise<ISearchQueryResults> {
         const matches: ISearchQueryMatch[] = [];
         const files = await this.iterateDirectory(WebExtensionContext.rootDirectory);
 
+        // counter to keep track of the number of matches
         let counter = 0;
         let match: ISearchQueryMatch;
         for (const file of files) {
             const content = await this.readFile(file);
-            const text = new TextDecoder().decode(content);
 
-            const lines = text.split("\n");
+            // Convert buffer to string and replace windows line endings with unix line endings
+            const text = new TextDecoder().decode(content).replace(/\r\n/g, '\n');
+
+            // Convert windows line endings with unix line endings
+            const pattern = query.pattern.replace(/\r\n/g, '\n');
+
+            const lines = text.split('\n');
 
             match = {
                 uri: file,
@@ -354,31 +360,42 @@ export class PortalsFS implements vscode.FileSystemProvider {
             };
 
             let regex;
-
             if (query.isWordMatch) {
-                regex = query.isCaseSensitive ? new RegExp(`\\b${query.pattern}\\b`) : new RegExp(`\\b${query.pattern}\\b`, "i");
+                // \b is a word boundary
+                regex = query.isCaseSensitive ? new RegExp(`\\b${pattern}\\b`) : new RegExp(`\\b${pattern}\\b`, "i");
             } else if (query.isRegExp) {
-                regex = new RegExp(query.pattern);
+                regex = new RegExp(pattern);
             } else {
-                regex = query.isCaseSensitive ? new RegExp(query.pattern) : new RegExp(query.pattern, "i");
+                regex = query.isCaseSensitive ? new RegExp(pattern) : new RegExp(pattern, "i");
             }
 
-            for (let i = 0; i < lines.length; i++) {
-                if (options.maxResults !== undefined && counter > options.maxResults) {
-                    return { matches: matches, limitHit: true };
-                }
-
-                const regexMatch = lines[i].match(regex);
-
-                if (regexMatch) {
+            if (query.isMultiline) {
+                if (text.includes(pattern)) {
                     counter++;
-                    regexMatch.forEach((m) => {
-                        const index = lines[i].indexOf(m);
-                        const range = new vscode.Range(i, index, i, index + m.length);
-                        match.ranges.push(range);
-                        match.matches.push(new vscode.Range(i, index, i, index + m.length));
-                        matches.push(match);
-                    });
+                    const index = text.indexOf(pattern);
+                    const range = getRangeForMultilineMatch(text, pattern, index);
+                    match.ranges.push(range);
+                    match.matches.push(range);
+                    matches.push(match);
+                }
+            } else {
+                for (let i = 0; i < lines.length; i++) {
+                    if (options.maxResults !== undefined && counter > options.maxResults) {
+                        return { matches: matches, limitHit: true };
+                    }
+
+                    const regexMatch = lines[i].match(regex);
+
+                    if (regexMatch) {
+                        counter++;
+                        regexMatch.forEach((m) => {
+                            const index = lines[i].indexOf(m);
+                            const range = new vscode.Range(i, index, i, index + m.length);
+                            match.ranges.push(range);
+                            match.matches.push(new vscode.Range(i, index, i, index + m.length));
+                            matches.push(match);
+                        });
+                    }
                 }
             }
         }
