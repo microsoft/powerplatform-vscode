@@ -74,7 +74,7 @@ export class FileData implements IFileData {
     public get logicalFormName(): string | undefined {
         return this._logicalFormName;
     }
-    
+
 
     // Setters
     public set setHasDirtyChanges(value: boolean) {
@@ -89,6 +89,10 @@ export class FileData implements IFileData {
 
     public set setLogicalEntityName(value: string | undefined) {
         this._logicalEntityName = value;
+    }
+
+    public set setLogicalFormName(value: string | undefined) {
+        this._logicalFormName = value;
     }
 
     constructor(
