@@ -1121,5 +1121,14 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
     "utf-8-validate": "^5.0.9"
+  },
+  "overrides": {
+    "@fluidframework/azure-client": {
+      "jsrsasign": "~11.0.0",
+      "follow-redirects": "~1.15.4",
+      "axios": "~0.28.0",
+      "@fluidframework/driver-utils": "~1.3.7",
+      "@fluidframework/server-services-client": "~0.1040.1000"
+    }
   }
 }
