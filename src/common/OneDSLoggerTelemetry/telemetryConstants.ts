@@ -17,3 +17,24 @@ export enum Severity {
     WARN = 'Warning',
     ERROR = 'Error'
 }
+
+export enum GeoNames {
+    US = 'us',
+    BR = 'br',
+    UK = 'uk',
+    JP = 'jp',
+    IN = 'in',
+    DE = 'de',
+    AU = 'au',
+    EU = 'eu',
+    AS = 'as',
+    CA = 'ca',
+    ZA = 'za',
+    FR = 'fr',
+    AE = 'ae',
+    CH = 'ch',
+    NO = 'no',
+    KR = 'kr'
+}
+// Custom telemetry feature flag
+export const CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME = 'enableTelemetry';

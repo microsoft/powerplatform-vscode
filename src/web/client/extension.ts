@@ -37,6 +37,7 @@ import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
 import { fetchArtemisResponse } from "../../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -46,8 +47,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             dataBoundary
         );
-    // TODO: Need to replace the geo on confirmation from our Privacy champ. Unauthenticated scenarios
-    oneDSLoggerWrapper.instantiate();
+    oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
     WebExtensionContext.telemetry.setTelemetryReporter(
         context.extension.id,
@@ -92,16 +92,12 @@ export function activate(context: vscode.ExtensionContext): void {
                         );
                     }
                 }
-                const geo = queryParamsMap.get('geo')?.toLowerCase();
-                // Authenticated scenario. Pass the geo to OneDSLogger for data boundary
-                if(geo){
-                    oneDSLoggerWrapper.instantiate(geo);
-                }
+                const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
+                const orgGeo = await fetchArtemisData(orgId);
+                oneDSLoggerWrapper.instantiate(orgGeo);
                 if (
                     !checkMandatoryParameters(
                         appName,
-                        entity,
-                        entityId,
                         queryParamsMap
                     )
                 ) {
@@ -299,7 +295,7 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                                     entityInfo
                                 });
                             }
-                            WebExtensionContext.quickPickProvider.updateQuickPickItems(entityInfo);
+                            WebExtensionContext.quickPickProvider.refresh();
                         }
                     }
                 }
@@ -386,6 +382,20 @@ export function createWebWorkerInstance(
                             );
                             WebExtensionContext.userCollaborationProvider.refresh();
                             WebExtensionContext.quickPickProvider.refresh();
+                        }
+                        if (data.type === Constants.workerEventMessages.SEND_INFO_TELEMETRY) {
+                            WebExtensionContext.telemetry.sendInfoTelemetry(
+                                data.eventName,
+                                data?.userId ? { userId: data.userId } : {}
+                            );
+                        }
+                        if (data.type === Constants.workerEventMessages.SEND_ERROR_TELEMETRY) {
+                            WebExtensionContext.telemetry.sendErrorTelemetry(
+                                data.eventName,
+                                data.methodName,
+                                data?.errorMessage,
+                                data?.error
+                            );
                         }
                     };
                 }
@@ -588,6 +598,16 @@ function isActiveDocument(fileFsPath: string): boolean {
     );
 }
 
+async function fetchArtemisData(orgId: string) : Promise<string> {
+        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+        if (!artemisResponse) {
+            // Todo: Log in error telemetry. Runtime maintains another table for this kind of failure. We should do the same.
+            return '';
+        }
+
+        return artemisResponse[0].geoName as string;
+}
+
 async function logArtemisTelemetry() {
 
     try {
@@ -595,13 +615,7 @@ async function logArtemisTelemetry() {
             queryParameters.ORG_ID
         ) as string
 
-        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
-
-        if (!artemisResponse) {
-            return;
-        }
-
-        const { geoName } = artemisResponse[0];
+        const geoName= fetchArtemisData(orgId);
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
             { orgId: orgId, geoName: String(geoName) });
     } catch (error) {

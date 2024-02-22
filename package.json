@@ -481,6 +481,15 @@
           "type": "boolean",
           "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
           "default": false
+        },
+        "powerPlatform.experimental.enableTelemetry": {
+          "type": "boolean",
+          "markdownDescription": "Enable custom telemetry for Power Pages",
+          "default": true,
+          "tags": [
+            "telemetry",
+            "usesOnlineServices"
+          ]
         }
       }
     },
@@ -650,7 +659,7 @@
           "command": "powerPlatform.previewCurrentActiveUsers",
           "alt": "current active users",
           "group": "navigation",
-          "when": "never"
+          "when": "isWeb && virtualWorkspace"
         }
       ],
       "commandPalette": [
@@ -945,7 +954,7 @@
         {
           "id": "powerpages.collaborationView",
           "name": "People On The Site",
-          "when": "never",
+          "when": "isWeb && virtualWorkspace",
           "contextualTitle": "People On The Site",
           "visibility": "visible"
         }
