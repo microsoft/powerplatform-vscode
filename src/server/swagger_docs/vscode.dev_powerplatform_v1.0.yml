@@ -36,7 +36,7 @@ paths:
           required: true
           schema:
             type: string
-          example: dataverse
+          example: Dataverse
         - name: "schema"
           in: "query"
           description: "Schema file name of the app"
@@ -46,10 +46,10 @@ paths:
           examples:
             portal old schema:
               value: portalSchemaV1
-              summary: portalSchemaV1
+              summary: portal old schema
             portal new schema:
               value: portalSchemaV2
-              summary: portalSchemaV2
+              summary: portal new schema
         - name: "websiteId"
           in: "query"
           description: "ID of the website"
@@ -64,6 +64,18 @@ paths:
           schema:
             type: string
             default: site
+        - name: "websitePreviewUrl"
+          in: "query"
+          description: "Preview URL of the website"
+          required: false
+          schema:
+            type: string
+        - name: "websitePreviewId"
+          in: "query"
+          description: "Preview Id of the website"
+          required: false
+          schema:
+            type: string
         - name: "referrerSessionId"
           in: "query"
           description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
@@ -76,7 +88,13 @@ paths:
           required: false
           schema:
             type: string
-          example: PowerPagesStudio
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
       responses:
         "200":
           description: OK
@@ -106,13 +124,7 @@ paths:
           required: true
           schema:
             type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
+          example: Dataverse
         - name: "schema"
           in: "query"
           description: "Schema file name of the app"
@@ -121,11 +133,11 @@ paths:
             type: string
           examples:
             portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
+              value: portalSchemaV1
+              summary: portal old schema
             portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
+              value: portalSchemaV2
+              summary: portal new schema
         - name: "websiteId"
           in: "query"
           description: "ID of the website"
@@ -140,19 +152,37 @@ paths:
           schema:
             type: string
             default: site
-        - name: "clientSessionId"
+        - name: "websitePreviewUrl"
           in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
+          description: "Preview URL of the website"
           required: false
           schema:
             type: string
-        - name: "client"
+        - name: "websitePreviewId"
           in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
+          description: "Preview Id of the website"
           required: false
           schema:
             type: string
-          example: PowerPagesStudio
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
       responses:
         "200":
           description: OK
@@ -182,13 +212,7 @@ paths:
           required: true
           schema:
             type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
+          example: Dataverse
         - name: "schema"
           in: "query"
           description: "Schema file name of the app"
@@ -197,11 +221,11 @@ paths:
             type: string
           examples:
             portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
+              value: portalSchemaV1
+              summary: portal old schema
             portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
+              value: portalSchemaV2
+              summary: portal new schema
         - name: "websiteId"
           in: "query"
           description: "ID of the website"
@@ -216,19 +240,37 @@ paths:
           schema:
             type: string
             default: site
-        - name: "clientSessionId"
+        - name: "websitePreviewUrl"
           in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
+          description: "Preview URL of the website"
           required: false
           schema:
             type: string
-        - name: "client"
+        - name: "websitePreviewId"
           in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
+          description: "Preview Id of the website"
           required: false
           schema:
             type: string
-          example: PowerPagesStudio
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
       responses:
         "200":
           description: OK
@@ -258,13 +300,7 @@ paths:
           required: true
           schema:
             type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
+          example: Dataverse
         - name: "schema"
           in: "query"
           description: "Schema file name of the app"
@@ -273,11 +309,11 @@ paths:
             type: string
           examples:
             portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
+              value: portalSchemaV1
+              summary: portal old schema
             portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
+              value: portalSchemaV2
+              summary: portal new schema
         - name: "websiteId"
           in: "query"
           description: "ID of the website"
@@ -292,19 +328,37 @@ paths:
           schema:
             type: string
             default: site
-        - name: "clientSessionId"
+        - name: "websitePreviewUrl"
           in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
+          description: "Preview URL of the website"
           required: false
           schema:
             type: string
-        - name: "client"
+        - name: "websitePreviewId"
           in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
+          description: "Preview Id of the website"
           required: false
           schema:
             type: string
-          example: PowerPagesStudio
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
       responses:
         "200":
           description: OK
@@ -334,13 +388,7 @@ paths:
           required: true
           schema:
             type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
+          example: Dataverse
         - name: "schema"
           in: "query"
           description: "Schema file name of the app"
@@ -349,11 +397,11 @@ paths:
             type: string
           examples:
             portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
+              value: portalSchemaV1
+              summary: portal old schema
             portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
+              value: portalSchemaV2
+              summary: portal new schema
         - name: "websiteId"
           in: "query"
           description: "ID of the website"
@@ -368,28 +416,53 @@ paths:
           schema:
             type: string
             default: site
-        - name: "clientSessionId"
+        - name: "websitePreviewUrl"
           in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
+          description: "Preview URL of the website"
           required: false
           schema:
             type: string
-        - name: "client"
+        - name: "websitePreviewId"
           in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
+          description: "Preview Id of the website"
           required: false
           schema:
             type: string
-          example: PowerPagesStudio
+        - name: "referrerSessionId"
+          in: "query"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
+          required: false
+          schema:
+            type: string
+        - name: "referrer"
+          in: "query"
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
+          required: false
+          schema:
+            type: string
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
       responses:
         "200":
           description: OK
-  /portal:
+  /portal/basicforms/{basicformId}:
     get:
       tags:
         - portal
-      description: "Edit multiple portal entities: webpages, webfiles, webtemplates, pagetemplates and content snippets"
+      description: "Edit a specific basic form"
       parameters:
+        - name: "basicformId"
+          in: "path"
+          description: "ID of the basic form"
+          required: true
+          schema:
+            type: string
+            format: guid
         - name: "orgUrl"
           in: "query"
           description: "Dataverse OrgUrl"
@@ -403,13 +476,7 @@ paths:
           required: true
           schema:
             type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
+          example: Dataverse
         - name: "schema"
           in: "query"
           description: "Schema file name of the app"
@@ -418,11 +485,11 @@ paths:
             type: string
           examples:
             portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
+              value: portalSchemaV1
+              summary: portal old schema
             portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
+              value: portalSchemaV2
+              summary: portal new schema
         - name: "websiteId"
           in: "query"
           description: "ID of the website"
@@ -436,86 +503,38 @@ paths:
           required: false
           schema:
             type: string
-          example: site
-        - name: "clientSessionId"
+            default: site
+        - name: "websitePreviewUrl"
           in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
+          description: "Preview URL of the website"
           required: false
           schema:
             type: string
-        - name: "client"
+        - name: "websitePreviewId"
           in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
+          description: "Preview Id of the website"
           required: false
           schema:
             type: string
-          example: PowerPagesStudio
-      responses:
-        "200":
-          description: OK
-  /default/{entity}/{entityId}:
-    get:
-      tags:
-        - default
-      description: "Edit a specific entity"
-      parameters:
-        - name: "entity"
-          in: "path"
-          description: "Plural Name of the entity"
-          required: true
-          schema:
-            type: string
-          example: contacts
-        - name: "entityId"
-          in: "path"
-          description: "ID of the entity"
-          required: true
-          schema:
-            type: string
-            format: guid
-        - name: "orgUrl"
+        - name: "referrerSessionId"
           in: "query"
-          description: "Dataverse OrgUrl"
-          required: true
-          schema:
-            type: string
-          example: https://contoso.crm.dynamics.com
-        - name: "dataSource"
-          in: "query"
-          description: "Location where the app data is stored"
-          required: true
-          schema:
-            type: string
-          example: dataverse
-        - name: "columns"
-          in: "query"
-          style: form
-          explode: false
-          description: "comma separated list of columns to edit"
-          required: true
-          schema:
-            type: string
-          example: address1_addressid, address2_addressid
-        - name: "splitColumns"
-          in: "query"
-          description: "edit in a single file or multiple files"
-          required: false
-          schema:
-            type: boolean
-            default: true
-        - name: "clientSessionId"
-          in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
+          description: "Referrer SessionId - this serves as the correlationId between Referrer and VSCode extension"
           required: false
           schema:
             type: string
-        - name: "client"
+        - name: "referrer"
           in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
+          description: "Name of the referrer from where vscode is launched. This is used only for analytics."
           required: false
           schema:
             type: string
-          example: PortalManagementApp
+          examples:
+            PowerPagesStudio:
+              value: PowerPagesStudio
+              summary: Power Pages Studio
+            PowerPagesHome:
+              value: PowerPagesHome
+              summary: Power Pages Home
       responses:
         "200":
           description: OK
