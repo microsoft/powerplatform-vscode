@@ -45,11 +45,11 @@ paths:
             type: string
           examples:
             portal old schema:
-              value: portalSchema_v1.0
-              summary: portalSchema_v1.0
+              value: portalSchemaV1
+              summary: portalSchemaV1
             portal new schema:
-              value: portalSchema_v2.0
-              summary: portalSchema_v2.0
+              value: portalSchemaV2
+              summary: portalSchemaV2
         - name: "websiteId"
           in: "query"
           description: "ID of the website"
@@ -80,75 +80,6 @@ paths:
       responses:
         "200":
           description: OK
-  /portal/webpages:
-    get:
-      tags:
-        - portal
-      description: "Edit all webpages"
-      parameters:
-        - name: "orgUrl"
-          in: "query"
-          description: "Dataverse OrgUrl"
-          required: true
-          schema:
-            type: string
-          example: https://contoso.crm.dynamics.com
-        - name: "dataSource"
-          in: "query"
-          description: "Location where the portal data is saved"
-          required: true
-          schema:
-            type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
-        - name: "schema"
-          in: "query"
-          description: "Schema file name of the app"
-          required: true
-          schema:
-            type: string
-          examples:
-            portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
-            portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
-        - name: "websiteId"
-          in: "query"
-          description: "ID of the website"
-          required: true
-          schema:
-            type: string
-            format: guid
-        - name: "websiteName"
-          in: "query"
-          description: "Name of the portal you want to edit"
-          required: false
-          schema:
-            type: string
-            default: site
-        - name: "clientSessionId"
-          in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
-          required: false
-          schema:
-            type: string
-        - name: "client"
-          in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
-          required: false
-          schema:
-            type: string
-          example: PowerPagesStudio
-      responses:
-        "200":
-          description: OK
   /portal/webfiles/{webfileId}:
     get:
       tags:
@@ -162,75 +93,6 @@ paths:
           schema:
             type: string
             format: guid
-        - name: "orgUrl"
-          in: "query"
-          description: "Dataverse OrgUrl"
-          required: true
-          schema:
-            type: string
-          example: https://contoso.crm.dynamics.com
-        - name: "dataSource"
-          in: "query"
-          description: "Location where the portal data is saved"
-          required: true
-          schema:
-            type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
-        - name: "schema"
-          in: "query"
-          description: "Schema file name of the app"
-          required: true
-          schema:
-            type: string
-          examples:
-            portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
-            portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
-        - name: "websiteId"
-          in: "query"
-          description: "ID of the website"
-          required: true
-          schema:
-            type: string
-            format: guid
-        - name: "websiteName"
-          in: "query"
-          description: "Name of the portal you want to edit"
-          required: false
-          schema:
-            type: string
-            default: site
-        - name: "clientSessionId"
-          in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
-          required: false
-          schema:
-            type: string
-        - name: "client"
-          in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
-          required: false
-          schema:
-            type: string
-          example: PowerPagesStudio
-      responses:
-        "200":
-          description: OK
-  /portal/webfiles:
-    get:
-      tags:
-        - portal
-      description: "Edit all webfiles"
-      parameters:
         - name: "orgUrl"
           in: "query"
           description: "Dataverse OrgUrl"
@@ -370,75 +232,6 @@ paths:
       responses:
         "200":
           description: OK
-  /portal/webtemplates:
-    get:
-      tags:
-        - portal
-      description: "Edit all webtemplates"
-      parameters:
-        - name: "orgUrl"
-          in: "query"
-          description: "Dataverse OrgUrl"
-          required: true
-          schema:
-            type: string
-          example: https://contoso.crm.dynamics.com
-        - name: "dataSource"
-          in: "query"
-          description: "Location where the portal data is saved"
-          required: true
-          schema:
-            type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
-        - name: "schema"
-          in: "query"
-          description: "Schema file name of the app"
-          required: true
-          schema:
-            type: string
-          examples:
-            portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
-            portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
-        - name: "websiteId"
-          in: "query"
-          description: "ID of the website"
-          required: true
-          schema:
-            type: string
-            format: guid
-        - name: "websiteName"
-          in: "query"
-          description: "Name of the portal you want to edit"
-          required: false
-          schema:
-            type: string
-            default: site
-        - name: "clientSessionId"
-          in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
-          required: false
-          schema:
-            type: string
-        - name: "client"
-          in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
-          required: false
-          schema:
-            type: string
-          example: PowerPagesStudio
-      responses:
-        "200":
-          description: OK
   /portal/pagetemplates/{pagetemplateId}:
     get:
       tags:
@@ -515,75 +308,6 @@ paths:
       responses:
         "200":
           description: OK
-  /portal/pagetemplates:
-    get:
-      tags:
-        - portal
-      description: "Edit all pagetemplates"
-      parameters:
-        - name: "orgUrl"
-          in: "query"
-          description: "Dataverse OrgUrl"
-          required: true
-          schema:
-            type: string
-          example: https://contoso.crm.dynamics.com
-        - name: "dataSource"
-          in: "query"
-          description: "Location where the portal data is saved"
-          required: true
-          schema:
-            type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
-        - name: "schema"
-          in: "query"
-          description: "Schema file name of the app"
-          required: true
-          schema:
-            type: string
-          examples:
-            portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
-            portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
-        - name: "websiteId"
-          in: "query"
-          description: "ID of the website"
-          required: true
-          schema:
-            type: string
-            format: guid
-        - name: "websiteName"
-          in: "query"
-          description: "Name of the portal you want to edit"
-          required: false
-          schema:
-            type: string
-            default: site
-        - name: "clientSessionId"
-          in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
-          required: false
-          schema:
-            type: string
-        - name: "client"
-          in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
-          required: false
-          schema:
-            type: string
-          example: PowerPagesStudio
-      responses:
-        "200":
-          description: OK
   /portal/contentsnippets/{contentsnippetId}:
     get:
       tags:
@@ -597,75 +321,6 @@ paths:
           schema:
             type: string
             format: guid
-        - name: "orgUrl"
-          in: "query"
-          description: "Dataverse OrgUrl"
-          required: true
-          schema:
-            type: string
-          example: https://contoso.crm.dynamics.com
-        - name: "dataSource"
-          in: "query"
-          description: "Location where the portal data is saved"
-          required: true
-          schema:
-            type: string
-          examples:
-            dataverse:
-              value: dataverse
-              summary: if the data is saved in dataverse
-            github:
-              value: github
-              summary: if the data is saved in github
-        - name: "schema"
-          in: "query"
-          description: "Schema file name of the app"
-          required: true
-          schema:
-            type: string
-          examples:
-            portal old schema:
-              value: portalDataverseOldDataModelSchema
-              summary: old portal schema
-            portal new schema:
-              value: portalDataverseNewDataModelSchema
-              summary: new portal schema
-        - name: "websiteId"
-          in: "query"
-          description: "ID of the website"
-          required: true
-          schema:
-            type: string
-            format: guid
-        - name: "websiteName"
-          in: "query"
-          description: "Name of the portal you want to edit"
-          required: false
-          schema:
-            type: string
-            default: site
-        - name: "clientSessionId"
-          in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
-          required: false
-          schema:
-            type: string
-        - name: "client"
-          in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
-          required: false
-          schema:
-            type: string
-          example: PowerPagesStudio
-      responses:
-        "200":
-          description: OK
-  /portal/contentsnippets:
-    get:
-      tags:
-        - portal
-      description: "Edit all contentsnippets"
-      parameters:
         - name: "orgUrl"
           in: "query"
           description: "Dataverse OrgUrl"
@@ -818,65 +473,6 @@ paths:
           schema:
             type: string
             format: guid
-        - name: "orgUrl"
-          in: "query"
-          description: "Dataverse OrgUrl"
-          required: true
-          schema:
-            type: string
-          example: https://contoso.crm.dynamics.com
-        - name: "dataSource"
-          in: "query"
-          description: "Location where the app data is stored"
-          required: true
-          schema:
-            type: string
-          example: dataverse
-        - name: "columns"
-          in: "query"
-          style: form
-          explode: false
-          description: "comma separated list of columns to edit"
-          required: true
-          schema:
-            type: string
-          example: address1_addressid, address2_addressid
-        - name: "splitColumns"
-          in: "query"
-          description: "edit in a single file or multiple files"
-          required: false
-          schema:
-            type: boolean
-            default: true
-        - name: "clientSessionId"
-          in: "query"
-          description: "Studio SessionId - this serves as the correlationId between Studio and VSCode extension"
-          required: false
-          schema:
-            type: string
-        - name: "client"
-          in: "query"
-          description: "Name of the client from where vscode is launched. This is used only for analytics."
-          required: false
-          schema:
-            type: string
-          example: PortalManagementApp
-      responses:
-        "200":
-          description: OK
-  /default/{entity}:
-    get:
-      tags:
-        - default
-      description: "Edit all records of an entity"
-      parameters:
-        - name: "entity"
-          in: "path"
-          description: "Plural Name of the entity"
-          required: true
-          schema:
-            type: string
-          example: contacts
         - name: "orgUrl"
           in: "query"
           description: "Dataverse OrgUrl"
