@@ -25,7 +25,8 @@ export class FileDataMap {
         isBase64Encoded: boolean,
         mimeType?: string,
         isContentLoaded?: boolean,
-        logicalEntityName?: string
+        logicalEntityName?: string,
+        logicalFormName?: string
     ) {
         const fileData = new FileData(
             entityId,
@@ -37,7 +38,8 @@ export class FileDataMap {
             isBase64Encoded,
             mimeType,
             isContentLoaded,
-            logicalEntityName
+            logicalEntityName,
+            logicalFormName
         );
         this.fileMap.set(vscode.Uri.parse(fileUri).fsPath, fileData);
     }

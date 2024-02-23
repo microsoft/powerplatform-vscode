@@ -35,6 +35,7 @@ export enum schemaEntityKey {
 
 export enum schemaMetaDataKey {
     DATAVERSE_LOGICAL_ENTITY_NAME = "_dataverselogicalentityname",
+    DATAVERSE_FORM_NAME = "_dataverseformname",
 }
 
 export enum schemaEntityName {

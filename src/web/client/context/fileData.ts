@@ -30,6 +30,7 @@ export class FileData implements IFileData {
     private _mimeType: string | undefined;
     private _isContentLoaded: boolean | undefined;
     private _logicalEntityName: string | undefined;
+    private _logicalFormName: string | undefined;
 
     // Getters
     public get entityName(): string {
@@ -70,6 +71,11 @@ export class FileData implements IFileData {
         return this._logicalEntityName;
     }
 
+    public get logicalFormName(): string | undefined {
+        return this._logicalFormName;
+    }
+
+
     // Setters
     public set setHasDirtyChanges(value: boolean) {
         this._hasDirtyChanges = value;
@@ -85,6 +91,10 @@ export class FileData implements IFileData {
         this._logicalEntityName = value;
     }
 
+    public set setLogicalFormName(value: string | undefined) {
+        this._logicalFormName = value;
+    }
+
     constructor(
         entityId: string,
         entityName: string,
@@ -95,7 +105,8 @@ export class FileData implements IFileData {
         encodeAsBase64?: boolean,
         mimeType?: string,
         isContentLoaded?: boolean,
-        logicalEntityName?: string
+        logicalEntityName?: string,
+        logicalFormName?: string
     ) {
         this._entityId = entityId;
         this._entityName = entityName;
@@ -109,5 +120,6 @@ export class FileData implements IFileData {
         this._hasDiffViewTriggered = false;
         this._isContentLoaded = isContentLoaded;
         this._logicalEntityName = logicalEntityName;
+        this._logicalFormName = logicalFormName;
     }
 }

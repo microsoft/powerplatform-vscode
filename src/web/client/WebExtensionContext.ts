@@ -402,7 +402,8 @@ class WebExtensionContext implements IWebExtensionContext {
         encodeAsBase64: boolean,
         mimeType?: string,
         isContentLoaded?: boolean,
-        logicalEntityName?: string
+        logicalEntityName?: string,
+        logicalFormName?: string
     ) {
         this.fileDataMap.setEntity(
             fileUri,
@@ -415,7 +416,8 @@ class WebExtensionContext implements IWebExtensionContext {
             encodeAsBase64,
             mimeType,
             isContentLoaded,
-            logicalEntityName);
+            logicalEntityName,
+            logicalFormName);
     }
 
     public async updateEntityDetailsInContext(

@@ -14,7 +14,7 @@ import {
     isWebfileContentLoadNeeded,
     setFileContent,
 } from "../utilities/commonUtil";
-import { getCustomRequestURL, getLogicalEntityName, getMappingEntityContent, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
+import { getCustomRequestURL, getMappingEntityContent, getMappingEntityId, getMetadataInfo, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
 import { getCommonHeaders } from "../common/authenticationProvider";
 import * as Constants from "../common/constants";
 import { ERRORS, showErrorDialog } from "../common/errorHandler";
@@ -24,6 +24,7 @@ import {
     getAttributePath,
     getEntity,
     getLogicalEntityParameter,
+    getLogicalFormNameParameter,
     isBase64Encoded,
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
@@ -431,6 +432,7 @@ async function createFile(
     // By default content is preloaded for all the files except for non-text webfiles for V2
     const isPreloadedContent = mappingEntityFetchQuery ? isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
     const logicalEntityName = getLogicalEntityParameter(entityName);
+    const logicalFormNameParameter = getLogicalFormNameParameter(entityName);
 
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(
@@ -453,6 +455,9 @@ async function createFile(
         fileContent = getAttributeContent(result, attributePath, entityName, entityId);
     }
 
+    const metadataKeys = [logicalEntityName, logicalFormNameParameter];
+    const metadataValues = getMetadataInfo(result, metadataKeys.filter(key => key !== undefined) as string[]);
+
     await createVirtualFile(
         portalsFS,
         fileUri,
@@ -468,7 +473,8 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        getLogicalEntityName(result, logicalEntityName),
+        metadataValues[logicalEntityName ?? ''] ?? '',
+        metadataValues[logicalFormNameParameter ?? ''] ?? '',
         rootWebPageId,
     );
 }
@@ -620,6 +626,7 @@ async function createVirtualFile(
     isPreloadedContent?: boolean,
     mappingEntityId?: string,
     logicalEntityName?: string,
+    logicalFormName?: string,
     rootWebPageId?: string,
 ) {
     // Maintain file information in context
@@ -634,7 +641,8 @@ async function createVirtualFile(
         encodeAsBase64,
         mimeType,
         isPreloadedContent,
-        logicalEntityName
+        logicalEntityName,
+        logicalFormName
     );
 
     // Call file system provider write call for buffering file data in VFS
