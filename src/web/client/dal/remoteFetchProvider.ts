@@ -630,7 +630,6 @@ async function createVirtualFile(
     rootWebPageId?: string,
 ) {
     // Maintain file information in context
-    console.log("logicalFormName from createVirtualFile ", logicalFormName)
     await WebExtensionContext.updateFileDetailsInContext(
         fileUri,
         entityId,

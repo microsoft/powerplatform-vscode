@@ -352,8 +352,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                     const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
 
-                    // console.log(entityColumns);
-
                     if (activeFileParams.dataverseEntity == "adx_entityform") {
                         const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, telemetry, sessionID);
                         entityInfo = formColumns;
@@ -361,8 +359,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         const entityColumns = await getEntityColumns(metadataInfo.entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
                         entityInfo = entityColumns;
                     }
-
-                    console.log(entityInfo);
 
                 }
                 return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, entityInfo, telemetry, this.aibEndpoint, this.geoName);

@@ -10,7 +10,7 @@ import yaml from 'yaml';
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
-import { getFileEntityName, getFileLogicalEntityName, getFormLogicalName } from "../../web/client/utilities/fileAndEntityUtil";
+import { getFileLogicalEntityName, getFormLogicalName } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "xmldom";
 
 interface Attribute {
@@ -61,8 +61,6 @@ export async function getFormXml(entityName: string, formName: string,  orgUrl: 
         const endTime = performance.now();
         const responseTime = endTime - startTime || 0;
         const formxml =getFormXMLFromResponse(jsonResponse);
-
-        // console.log(formxml)
 
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return parseXML(formxml);
@@ -160,11 +158,7 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
                 formName = parsedData['adx_formname'];
             } else if (!IS_DESKTOP) {
                 entityName = getFileLogicalEntityName(document.uri.fsPath);
-                //formName = ''; //TODO: get form name for web extension
-                const entityFileName = getFileEntityName(document.uri.fsPath);
-                console.log("entityName " + entityFileName);
                 formName  = getFormLogicalName(document.uri.fsPath);
-                console.log("form name " + formName);
             }
         }
     } catch (error) {

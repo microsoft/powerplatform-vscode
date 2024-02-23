@@ -44,8 +44,6 @@ export function getFileLogicalEntityName(fileFsPath: string) {
 }
 
 export function getFormLogicalName(fileFsPath: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    console.log(WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)) as any;
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)?.logicalFormName as string;
 }
 
