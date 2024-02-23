@@ -216,6 +216,25 @@ export function getLogicalEntityName(result: any, logicalEntityName?: string) {
     return logicalEntity;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getMetadataInfo(result: any, metadataKeys?: string[]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const metadataValues: { [key: string]: any } = {};
+
+    if (metadataKeys) {
+        // eslint-disable-next-line prefer-const
+        for (let key of metadataKeys) {
+            const attributePath = getAttributePath(key);
+            const value = attributePath.relativePath.length > 0 ?
+                JSON.parse(result[attributePath.source])[attributePath.relativePath] :
+                result[attributePath.source];
+            metadataValues[key] = value;
+        }
+    }
+
+    return metadataValues;
+}
+
 export function pathHasEntityFolderName(uri: string): boolean {
     for (const entry of WebExtensionContext.entitiesFolderNameMap.entries()) {
         if (uri.includes(entry[1])) {

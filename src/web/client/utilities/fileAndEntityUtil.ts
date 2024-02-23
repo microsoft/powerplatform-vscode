@@ -43,6 +43,10 @@ export function getFileLogicalEntityName(fileFsPath: string) {
         ?.logicalEntityName as string;
 }
 
+export function getFormLogicalName(fileFsPath: string) {
+    return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)?.logicalFormName as string;
+}
+
 export function updateFileEntityEtag(fileFsPath: string, entityEtag: string) {
     WebExtensionContext.fileDataMap.updateEtagValue(fileFsPath, entityEtag);
 }
