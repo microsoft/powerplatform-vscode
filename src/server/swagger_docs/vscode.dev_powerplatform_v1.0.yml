@@ -1,17 +1,15 @@
-openapi: "3.0.2"
+openapi: "3.1.0"
 info:
   title: VSCode.dev API for PowerPlatform
   version: "1.0"
 servers:
-  - url: https://vscode.dev/powerplatform
+  - url: https://vscode.dev/power
     description: released version
-  - url: https://insiders.vscode.dev/powerplatform
+  - url: https://insiders.vscode.dev/power
     description: pre-released version
 tags:
   - name: portal
     description: Everything about editing portal in vscode
-  # - name: default
-  #   description: Everything about editing PowerPlatform default app in vscode
 paths:
   /portal/webpages/{webpageId}:
     get:
@@ -669,7 +667,7 @@ paths:
       get:
         summary: "Pre-released"
         servers:
-          - url: https://insiders.vscode.dev/powerplatform
+          - url: https://insiders.vscode.dev/power
         tags:
           - portal
         description: "Edit portal"
@@ -681,13 +679,6 @@ paths:
             schema:
               type: string
             example: https://contoso.crm.dynamics.com
-          - name: "organizationId"
-            in: "query"
-            description: "ID of the organization"
-            required: true
-            schema:
-              type: string
-              format: guid
           - name: "dataSource"
             in: "query"
             description: "Location where the portal data is saved"
@@ -761,6 +752,13 @@ paths:
               PowerPagesHome:
                 value: PowerPagesHome
                 summary: Power Pages Home
+          - name: "organizationId"
+            in: "query"
+            description: "ID of the organization"
+            required: true
+            schema:
+              type: string
+              format: guid
         responses:
           "200":
             description: OK
