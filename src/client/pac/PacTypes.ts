@@ -22,11 +22,12 @@ export type AuthProfileListing = {
     IsActive: boolean;
     Kind: string;
     Name: string;
-    User: string;
+    UserDisplayName: string;
     CloudInstance: string;
-    ActiveOrganization?: {
-        FriendlyName: string;
-        EnvironmentUrl: string;
+    ActiveOrganization?: { // Three item tuple, not serialized with item names
+        Item1: string;  // Friendly Name
+        Item2: string;  // Environment URL
+        Item3?: string; // Environment ID
     };
 }
 
