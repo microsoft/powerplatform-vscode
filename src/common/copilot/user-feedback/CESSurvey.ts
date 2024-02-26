@@ -17,7 +17,7 @@ import { EUROPE_GEO, UK_GEO } from "../constants";
 let feedbackPanel: vscode.WebviewPanel | undefined;
 
 
-export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, geoName: string, tenantId?: string) {
+export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, geoName: string,  messageScenario: string, tenantId?: string) {
 
     if (feedbackPanel) {
         feedbackPanel.dispose();
@@ -33,7 +33,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
     const webview = feedbackPanel.webview
     feedbackPanel.webview.html = getWebviewContent(feedbackCssUri, feedbackJsUri, nonce, webview);
 
-    const feedbackData = initializeFeedbackData(sessionId, vscode.env.uiKind === vscode.UIKind.Web, geoName, tenantId);
+    const feedbackData = initializeFeedbackData(sessionId, vscode.env.uiKind === vscode.UIKind.Web, geoName, messageScenario, tenantId);
 
     const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
@@ -79,7 +79,7 @@ function getWebviewURIs(context: vscode.ExtensionContext, feedbackPanel: vscode.
     return { feedbackCssUri, feedbackJsUri };
 }
 
-function initializeFeedbackData(sessionId: string, isWebExtension: boolean, geoName: string, tenantId?: string): IFeedbackData {
+function initializeFeedbackData(sessionId: string, isWebExtension: boolean, geoName: string, messageScenario: string,  tenantId?: string): IFeedbackData {
     const feedbackData: IFeedbackData = {
         TenantId: tenantId ? tenantId : '',
         Geo: geoName,
@@ -95,7 +95,7 @@ function initializeFeedbackData(sessionId: string, isWebExtension: boolean, geoN
             },
             {
                 key: 'subScenario',
-                value: isWebExtension ? 'Web' : 'Desktop'
+                value: messageScenario
             }
         ],
         Feedbacks: [

@@ -257,14 +257,17 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 }
                 case "userFeedback": {
 
-                    if (data.value === "thumbsUp") {
+                    const feedbackValue = data.value.feedbackValue;
+                    const messageScenario = data.value.messageScenario;
+
+                    if (feedbackValue === "thumbsUp") {
 
                         sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.geoName as string, tenantId)
-                    } else if (data.value === "thumbsDown") {
+                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.geoName as string, messageScenario, tenantId)
+                    } else if (feedbackValue === "thumbsDown") {
 
                         sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.geoName as string, tenantId)
+                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.geoName as string, messageScenario, tenantId)
                     }
                     break;
                 }

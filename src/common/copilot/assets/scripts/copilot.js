@@ -29,6 +29,9 @@
   const inputHistory = [];
   let currentIndex = -1;
 
+  let messages = [];
+  let messageIndex = 1;
+
 
   const clipboardSvg = `<svg  width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z"  class="copyIcon"/>
@@ -311,8 +314,21 @@
           thinkingDiv.remove();
         }
 
+
+        let message = {
+          id: messageIndex,
+          content: 'formValidation', //TODO: Fetch the scenario from the response
+          reaction: null
+        }
+
+        messages.push(message);
+
+        messageIndex++;
+
         const apiResponseElement = parseCodeBlocks(apiResponse);
         messageElement.appendChild(apiResponseElement);
+
+        messageWrapper.dataset.id = message.id;
 
         messageWrapper.appendChild(document.createElement("hr"));
 
@@ -444,6 +460,8 @@
         chatMessages.innerHTML = "";
         welcomeScreen = setWelcomeScreen();
         welcomeScreen.userLoggedIn();
+        messages = [];
+        messageIndex = 1;
         }
         break;
       }
@@ -511,8 +529,8 @@
     vscode.postMessage({ type: "copyCodeToClipboard", value: code });
   }
 
-  function sendUserFeedback(feedback) {
-    vscode.postMessage({ type: "userFeedback", value: feedback });
+  function sendUserFeedback(feedbackValue, messageScenario) {
+    vscode.postMessage({ type: "userFeedback", value: { feedbackValue: feedbackValue, messageScenario: messageScenario }});
   }
 
   function handleWalkthroughClick() {
@@ -564,8 +582,17 @@
   }
 
   function handleThumbsUpClick(element) {
+
     if (element.classList.contains("thumbsup-clicked")) {
       return; // Do nothing if it already has the class
+    }
+
+    let messageId = element.closest(".message-wrapper").dataset.id;
+
+    let message = messages.find((message) => message.id == messageId);
+
+    if(message) {
+      message.reaction = "thumbsUp";
     }
 
     const thumbsDownPath = element.parentNode.querySelector("#thumbsdown-path")
@@ -574,12 +601,20 @@
     thumpsUpPath.classList.add("thumbsup-clicked");
     thumbsDownPath.classList.remove("thumbsdown-clicked");
 
-    sendUserFeedback("thumbsUp");
+    sendUserFeedback("thumbsUp", message.content);
   }
 
   function handleThumbsDownClick(element) {
     if (element.classList.contains("thumbsdown-clicked")) {
       return; // Do nothing if it already has the class
+    }
+
+    let messageId = element.closest(".message-wrapper").dataset.id;
+
+    let message = messages.find((message) => message.id == messageId);
+
+    if(message) {
+      message.reaction = "thumbsDown";
     }
 
     const thumbsUpPath = element.parentNode.querySelector("#thumbsup-path")
@@ -589,7 +624,7 @@
     thumbsUpPath.classList.remove("thumbsup-clicked");
 
 
-    sendUserFeedback("thumbsDown");
+    sendUserFeedback("thumbsDown", message.content);
   }
 
   function handleSuggestionsClick() {
