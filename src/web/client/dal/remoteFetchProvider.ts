@@ -23,13 +23,12 @@ import {
     encodeAsBase64,
     getAttributePath,
     getEntity,
-    getLogicalEntityParameter,
-    getLogicalFormNameParameter,
+    getEntityParameters,
     isBase64Encoded,
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from "../telemetry/constants";
-import { entityAttributeNeedMapping, folderExportType, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
+import { SchemaEntityMetadata, entityAttributeNeedMapping, folderExportType, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
@@ -431,8 +430,6 @@ async function createFile(
     let mappingEntityId = null
     // By default content is preloaded for all the files except for non-text webfiles for V2
     const isPreloadedContent = mappingEntityFetchQuery ? isWebfileContentLoadNeeded(fileNameWithExtension, fileUri) : true;
-    const logicalEntityName = getLogicalEntityParameter(entityName);
-    const logicalFormNameParameter = getLogicalFormNameParameter(entityName);
 
     // update func for webfiles for V2
     const attributePath: IAttributePath = getAttributePath(
@@ -455,8 +452,9 @@ async function createFile(
         fileContent = getAttributeContent(result, attributePath, entityName, entityId);
     }
 
-    const metadataKeys = [logicalEntityName, logicalFormNameParameter];
+    const metadataKeys = getEntityParameters(entityName);
     const metadataValues = getMetadataInfo(result, metadataKeys.filter(key => key !== undefined) as string[]);
+    console.log("Metadata entity name: "+ metadataValues.logicalEntityName)
 
     await createVirtualFile(
         portalsFS,
@@ -473,8 +471,8 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        metadataValues[logicalEntityName ?? ''] ?? '',
-        metadataValues[logicalFormNameParameter ?? ''] ?? '',
+        metadataValues.logicalEntityName,
+        metadataValues,
         rootWebPageId,
     );
 }
@@ -626,9 +624,10 @@ async function createVirtualFile(
     isPreloadedContent?: boolean,
     mappingEntityId?: string,
     logicalEntityName?: string,
-    logicalFormName?: string,
+    entityMetadata?: SchemaEntityMetadata,
     rootWebPageId?: string,
 ) {
+    console.log("Metadata: "+ entityMetadata?.logicalFormName)
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
         fileUri,
@@ -642,7 +641,7 @@ async function createVirtualFile(
         mimeType,
         isPreloadedContent,
         logicalEntityName,
-        logicalFormName
+        entityMetadata
     );
 
     // Call file system provider write call for buffering file data in VFS

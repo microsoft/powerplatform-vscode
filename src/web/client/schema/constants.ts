@@ -38,6 +38,11 @@ export enum schemaMetaDataKey {
     DATAVERSE_FORM_NAME = "_dataverseformname",
 }
 
+export interface SchemaEntityMetadata {
+    logicalEntityName?: string;
+    logicalFormName?: string;
+}
+
 export enum schemaEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
@@ -75,4 +80,10 @@ export enum entityAttributesWithBase64Encoding {
 
 export enum entityAttributeNeedMapping {
     webformsteps = "content.webFormSteps"
+}
+
+export const entityParameterKeyMapping : Record<string, string> = {
+    'content.entityname': 'logicalEntityName',
+    'adx_entityname' : 'logicalEntityName',
+    'content.formname': 'logicalFormName',
 }

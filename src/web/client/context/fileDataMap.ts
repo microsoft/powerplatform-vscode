@@ -6,6 +6,7 @@
 import * as vscode from "vscode";
 import { FileData } from "./fileData";
 import { IAttributePath } from "../common/interfaces";
+import { SchemaEntityMetadata } from "../schema/constants";
 
 export class FileDataMap {
     private fileMap: Map<string, FileData> = new Map<string, FileData>();
@@ -26,7 +27,7 @@ export class FileDataMap {
         mimeType?: string,
         isContentLoaded?: boolean,
         logicalEntityName?: string,
-        logicalFormName?: string
+        entityMetadata?: SchemaEntityMetadata
     ) {
         const fileData = new FileData(
             entityId,
@@ -39,7 +40,7 @@ export class FileDataMap {
             mimeType,
             isContentLoaded,
             logicalEntityName,
-            logicalFormName
+            entityMetadata
         );
         this.fileMap.set(vscode.Uri.parse(fileUri).fsPath, fileData);
     }

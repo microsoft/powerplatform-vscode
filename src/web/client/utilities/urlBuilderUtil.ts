@@ -11,6 +11,7 @@ import {
 import WebExtensionContext from "../WebExtensionContext";
 import {
     SCHEMA_WEBFILE_FOLDER_NAME,
+    SchemaEntityMetadata,
     entityAttributesWithBase64Encoding,
     schemaEntityKey,
     schemaEntityName,
@@ -217,18 +218,27 @@ export function getLogicalEntityName(result: any, logicalEntityName?: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getMetadataInfo(result: any, metadataKeys?: string[]) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const metadataValues: { [key: string]: any } = {};
+export function getMetadataInfo(result: any, metadataKeys?: string[]): SchemaEntityMetadata {
+    const metadataValues: SchemaEntityMetadata = {};
 
     if (metadataKeys) {
-        // eslint-disable-next-line prefer-const
-        for (let key of metadataKeys) {
+        for (const key of metadataKeys) {
             const attributePath = getAttributePath(key);
-            const value = attributePath.relativePath.length > 0 ?
-                JSON.parse(result[attributePath.source])[attributePath.relativePath] :
-                result[attributePath.source];
-            metadataValues[key] = value;
+            const value = attributePath.relativePath.length > 0
+                ? JSON.parse(result[attributePath.source])[attributePath.relativePath]
+                : result[attributePath.source];
+
+            switch (key) {
+                case 'content.entityname':
+                case 'adx_entityname':
+                    metadataValues.logicalEntityName = value;
+                    break;
+                case 'content.formname':
+                    metadataValues.logicalFormName = value;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

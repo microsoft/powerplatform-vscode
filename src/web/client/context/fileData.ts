@@ -4,6 +4,7 @@
  */
 
 import { IAttributePath, IFileInfo } from "../common/interfaces";
+import { SchemaEntityMetadata } from "../schema/constants";
 
 export interface IFileData extends IFileInfo {
     entityEtag: string;
@@ -30,7 +31,7 @@ export class FileData implements IFileData {
     private _mimeType: string | undefined;
     private _isContentLoaded: boolean | undefined;
     private _logicalEntityName: string | undefined;
-    private _logicalFormName: string | undefined;
+    private _entityMetadata: SchemaEntityMetadata | undefined;
 
     // Getters
     public get entityName(): string {
@@ -71,8 +72,8 @@ export class FileData implements IFileData {
         return this._logicalEntityName;
     }
 
-    public get logicalFormName(): string | undefined {
-        return this._logicalFormName;
+    public get entityMetadata(): SchemaEntityMetadata | undefined {
+        return this._entityMetadata;
     }
 
     // Setters
@@ -90,8 +91,8 @@ export class FileData implements IFileData {
         this._logicalEntityName = value;
     }
 
-    public set setLogicalFormName(value: string | undefined) {
-        this._logicalFormName = value;
+    public set setentityMetadata(value: SchemaEntityMetadata) {
+        this._entityMetadata = value;
     }
 
     constructor(
@@ -105,7 +106,7 @@ export class FileData implements IFileData {
         mimeType?: string,
         isContentLoaded?: boolean,
         logicalEntityName?: string,
-        logicalFormName?: string
+        entityMetadata?: SchemaEntityMetadata
     ) {
         this._entityId = entityId;
         this._entityName = entityName;
@@ -119,6 +120,6 @@ export class FileData implements IFileData {
         this._hasDiffViewTriggered = false;
         this._isContentLoaded = isContentLoaded;
         this._logicalEntityName = logicalEntityName;
-        this._logicalFormName = logicalFormName;
+        this._entityMetadata = entityMetadata
     }
 }
