@@ -81,9 +81,3 @@ export enum entityAttributesWithBase64Encoding {
 export enum entityAttributeNeedMapping {
     webformsteps = "content.webFormSteps"
 }
-
-export const entityParameterKeyMapping : Record<string, string> = {
-    'content.entityname': 'logicalEntityName',
-    'adx_entityname' : 'logicalEntityName',
-    'content.formname': 'logicalFormName',
-}
