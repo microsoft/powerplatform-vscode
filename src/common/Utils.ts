@@ -5,7 +5,8 @@
 
 
 import * as vscode from "vscode";
-import { EXTENSION_ID } from "../client/constants";
+import { EXTENSION_ID, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../client/constants";
+import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "./OneDSLoggerTelemetry/telemetryConstants";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -114,4 +115,11 @@ export function getExtensionType(): string {
 export function openWalkthrough(extensionUri: vscode.Uri) {
     const walkthroughUri = vscode.Uri.joinPath(extensionUri, 'src', 'common', 'copilot', 'assets', 'walkthrough', 'Copilot-In-PowerPages.md');
     vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
+}
+
+export function isCustomTelemetryEnabled():boolean {
+    const isCustomTelemetryEnabled = vscode.workspace
+        .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
+        .get(CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME);
+    return isCustomTelemetryEnabled as boolean;
 }
