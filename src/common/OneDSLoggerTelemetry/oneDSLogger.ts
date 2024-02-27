@@ -16,6 +16,7 @@ import { EXTENSION_ID } from "../../client/constants";
 import {OneDSCollectorEventName} from "./EventContants";
 import { telemetryEventNames } from "../../web/client/telemetry/constants";
 import { region } from "../telemetry-generated/buildRegionConfiguration";
+import { telemetryEventNames as desktopExtTelemetryEventNames } from "../../client/telemetry/TelemetryEventNames";
 
 interface IInstrumentationSettings {
     endpointURL: string;
