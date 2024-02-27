@@ -9,6 +9,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import {
     entityAttributesWithBase64Encoding,
     schemaEntityKey,
+    schemaMetaDataKey,
     schemaEntityName,
 } from "../schema/constants";
 import { IAttributePath } from "../common/interfaces";
@@ -22,7 +23,8 @@ export function getEntityFetchQuery(entity: string, useRegularFetchQuery = false
 }
 
 export function getLogicalEntityParameter(entity: string) {
-    return getEntity(entity)?.get(schemaEntityKey.DATAVERSE_LOGICAL_ENTITY_NAME);
+    const entityMetadata = getEntity(entity)?.get(schemaEntityKey.DATAVERSE_ENTITY_METADATA);
+    return entityMetadata ? (entityMetadata as unknown as Map<string, string>).get(schemaMetaDataKey.DATAVERSE_LOGICAL_ENTITY_NAME) : undefined;
 }
 
 export function getPortalSchema(schema: string) {

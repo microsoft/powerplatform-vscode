@@ -35,7 +35,11 @@ import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
+import { fetchArtemisResponse } from "../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
+import { ActiveOrgOutput } from "./pac/PacTypes";
+
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -62,6 +66,7 @@ export async function activate(
         appInsightsResource.instrumentationKey
     );
     context.subscriptions.push(_telemetry);
+    // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
 
     _telemetry.sendTelemetryEvent("Start", {
@@ -175,12 +180,24 @@ export async function activate(
     const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
+    const pacTerminal = new PacTerminal(_context, _telemetry, cliPath);
     _context.subscriptions.push(cli);
-    _context.subscriptions.push(new PacTerminal(_context, _telemetry, cliPath));
+    _context.subscriptions.push(pacTerminal);
     const workspaceFolders =
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
+
+    _context.subscriptions.push(
+        orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
+            const orgID = orgDetails.OrgId;
+            const artemisResponse = await fetchArtemisResponse(orgID, _telemetry);
+            if (artemisResponse) {
+                const { geoName } = artemisResponse[0];
+                oneDSLoggerWrapper.instantiate(geoName);
+            }
+        })
+    );
 
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
@@ -196,6 +213,9 @@ export async function activate(
             _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
             oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
         }
+        // Init OrgChangeNotifier instance
+        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
+
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
