@@ -66,7 +66,7 @@ export async function activate(
         appInsightsResource.instrumentationKey
     );
     context.subscriptions.push(_telemetry);
-    // Logging telemetry in US cluster for unauthenticated scenarios
+    // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
 
     _telemetry.sendTelemetryEvent("Start", {
@@ -215,12 +215,13 @@ export async function activate(
     }
 
     _telemetry.sendTelemetryEvent("activated");
-}
 
+}
 
 export async function deactivate(): Promise<void> {
     if (_telemetry) {
         _telemetry.sendTelemetryEvent("End");
+
         // dispose() will flush any events not sent
         // Note, while dispose() returns a promise, we don't await it so that we can unblock the rest of unloading logic
         _telemetry.dispose();
