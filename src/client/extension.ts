@@ -66,7 +66,7 @@ export async function activate(
         appInsightsResource.instrumentationKey
     );
     context.subscriptions.push(_telemetry);
-    // TODO: Need to decide on data residency part on unauthenticated scenario
+    // Logging telemetry in US cluster for unauthenticated scenarios
     oneDSLoggerWrapper.instantiate("us");
 
     _telemetry.sendTelemetryEvent("Start", {
