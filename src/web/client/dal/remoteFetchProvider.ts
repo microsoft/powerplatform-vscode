@@ -454,7 +454,6 @@ async function createFile(
 
     const metadataKeys = getEntityParameters(entityName);
     const metadataValues = getMetadataInfo(result, metadataKeys.filter(key => key !== undefined) as string[]);
-    console.log("Metadata entity name: "+ metadataValues.logicalEntityName)
 
     await createVirtualFile(
         portalsFS,
@@ -627,7 +626,6 @@ async function createVirtualFile(
     entityMetadata?: SchemaEntityMetadata,
     rootWebPageId?: string,
 ) {
-    console.log("Metadata: "+ entityMetadata?.logicalFormName)
     // Maintain file information in context
     await WebExtensionContext.updateFileDetailsInContext(
         fileUri,
