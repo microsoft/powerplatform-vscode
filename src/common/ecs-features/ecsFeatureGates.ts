@@ -4,11 +4,11 @@
  */
 
 import { PowerPagesClientName } from './constants';
-import { powerPagesFeatureClient } from './powerPagesFeatureClient';
+import { getFeatureConfigs } from './ecsFeatureUtil';
 
 export const {
     feature: EnableMultifileVscodeWeb
-} = powerPagesFeatureClient({
+} = getFeatureConfigs({
     teamName: PowerPagesClientName,
     description: 'Enable multiple file view in Visual Studio Code Web',
     fallback: {

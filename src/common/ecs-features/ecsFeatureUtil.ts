@@ -18,7 +18,7 @@ export function getECSRequestURL(filters: ECSAPIFeatureFlagFilters, clientName =
         .replace("{Region}", filters.Region);
 }
 
-export function powerPagesFeatureClient<TConfig extends Record<string, string | boolean>, TeamName extends string>(featureInfo: ECSFeatureInfo<TConfig, TeamName>) {
+export function getFeatureConfigs<TConfig extends Record<string, string | boolean>, TeamName extends string>(featureInfo: ECSFeatureInfo<TConfig, TeamName>) {
     type EnhancedFeature = ECSFeatureDefinition<TConfig, TeamName> & {
         getConfig: () => Partial<TConfig>;
     };
