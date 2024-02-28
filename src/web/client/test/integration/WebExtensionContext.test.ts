@@ -207,7 +207,7 @@ describe("WebExtensionContext", () => {
             _hasDirtyChanges: false,
             _hasDiffViewTriggered: false,
             _isContentLoaded: true,
-            _logicalEntityName: undefined
+            _entityMetadata: undefined
         };
         expect(fileMap).deep.eq(expectedResult);
     });
