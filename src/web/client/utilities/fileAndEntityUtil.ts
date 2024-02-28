@@ -39,11 +39,6 @@ export function getFileEntityEtag(fileFsPath: string) {
         ?.entityEtag as string;
 }
 
-export function getFileLogicalEntityName(fileFsPath: string) {
-    return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
-        ?.logicalEntityName as string;
-}
-
 export function getEntityMetadata(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)?.entityMetadata as SchemaEntityMetadata
 }

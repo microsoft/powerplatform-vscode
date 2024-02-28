@@ -470,7 +470,6 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        entityMetadata.logicalEntityName,
         entityMetadata,
         rootWebPageId,
     );
@@ -622,7 +621,6 @@ async function createVirtualFile(
     mimeType?: string,
     isPreloadedContent?: boolean,
     mappingEntityId?: string,
-    logicalEntityName?: string,
     entityMetadata?: SchemaEntityMetadata,
     rootWebPageId?: string,
 ) {
@@ -638,7 +636,6 @@ async function createVirtualFile(
         encodeAsBase64,
         mimeType,
         isPreloadedContent,
-        logicalEntityName,
         entityMetadata
     );
 
