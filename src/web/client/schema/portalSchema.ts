@@ -416,7 +416,7 @@ export const portal_schema_V2 = {
                 relationships: "",
                 _vscodeentityname: "advancedformsteps",
                 _dataverseenityname: "powerpagecomponents",
-                _dataverseentitymetadata: new Map([["_dataverselogicalentityname", "content.targetentitylogicalname"]]),
+                _dataverseentitymetadata: new Map([["_dataverselogicalentityname", "content.targetentitylogicalname"], ["_dataverseformname", "content.formname"]]),
                 _displayname: "Advanced Form Steps",
                 _etc: "10060",
                 _primaryidfield: "powerpagecomponentid",
