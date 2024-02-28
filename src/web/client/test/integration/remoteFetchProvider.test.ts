@@ -1133,7 +1133,8 @@ describe("remoteFetchProvider", () => {
             false,
             undefined,
             true,
-            undefined);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            undefined as any);
 
         assert.calledWith(convertContentToUint8Array,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
