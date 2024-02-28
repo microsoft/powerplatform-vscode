@@ -10,6 +10,8 @@ import {
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import {
+    EntityMetadataKeyAdx,
+    EntityMetadataKeyCore,
     SCHEMA_WEBFILE_FOLDER_NAME,
     SchemaEntityMetadata,
     entityAttributesWithBase64Encoding,
@@ -229,11 +231,11 @@ export function getMetadataInfo(result: any, metadataKeys?: string[]): SchemaEnt
                 : result[attributePath.source];
 
             switch (key) {
-                case 'content.entityname':
-                case 'adx_entityname':
+                case EntityMetadataKeyCore.ENTITY_LOGICAL_NAME:
+                case EntityMetadataKeyAdx.ENTITY_LOGICAL_NAME:
                     entityMetadata.logicalEntityName = value;
                     break;
-                case 'content.formname':
+                case EntityMetadataKeyCore.FORM_LOGICAL_NAME:
                     entityMetadata.logicalFormName = value;
                     break;
                 default:
