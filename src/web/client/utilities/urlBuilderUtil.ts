@@ -234,6 +234,7 @@ export function getMetadataInfo(result: any, metadataKeys?: string[]): SchemaEnt
                     entityMetadata.logicalEntityName = value;
                     break;
                 case 'content.formname':
+                case 'adx_formname':
                     entityMetadata.logicalFormName = value;
                     break;
                 default:
