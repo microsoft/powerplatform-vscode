@@ -56,7 +56,8 @@
     "email": "PPTools@microsoft.com"
   },
   "engines": {
-    "vscode": "^1.73.0"
+    "vscode": "^1.73.0",
+    "npm": ">=8.3.0"
   },
   "extensionKind": [
     "workspace"
@@ -1121,5 +1122,9 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
     "utf-8-validate": "^5.0.9"
+  },
+  "overrides": {
+    "jsrsasign": "^11.0.0",
+    "axios": "^0.28.0"
   }
 }

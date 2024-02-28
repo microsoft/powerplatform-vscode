@@ -84,4 +84,8 @@ export class PacTerminal implements vscode.Disposable {
         terminal.show();
         return terminal;
     }
+
+    public getWrapper() {
+        return this._pacWrapper
+    }
 }
