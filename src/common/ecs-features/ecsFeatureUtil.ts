@@ -4,7 +4,9 @@
  */
 
 import { PowerPagesClientName, ECS_REQUEST_URL_TEMPLATE } from "./constants";
+import { ECSFeaturesClient } from "./ecsFeatureClient";
 import { ECSAPIFeatureFlagFilters } from "./ecsFeatureFlagFilters";
+import { ECSFeatureDefinition, ECSFeatureInfo, createECSFeatureDefinition } from "./ecsFeatureProperties";
 
 export function getECSRequestURL(filters: ECSAPIFeatureFlagFilters, clientName = PowerPagesClientName): string {
     return ECS_REQUEST_URL_TEMPLATE
@@ -14,4 +16,17 @@ export function getECSRequestURL(filters: ECSAPIFeatureFlagFilters, clientName =
         .replace("{UserId}", filters.UserID)
         .replace("{TenantId}", filters.TenantID)
         .replace("{Region}", filters.Region);
+}
+
+export function powerPagesFeatureClient<TConfig extends Record<string, string | boolean>, TeamName extends string>(featureInfo: ECSFeatureInfo<TConfig, TeamName>) {
+    type EnhancedFeature = ECSFeatureDefinition<TConfig, TeamName> & {
+        getConfig: () => Partial<TConfig>;
+    };
+
+    const feature = createECSFeatureDefinition(featureInfo) as EnhancedFeature;
+    feature.getConfig = () => ECSFeaturesClient.getConfig(feature);
+
+    return {
+        feature: feature,
+    };
 }
