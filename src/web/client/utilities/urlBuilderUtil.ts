@@ -219,7 +219,7 @@ export function getLogicalEntityName(result: any, logicalEntityName?: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getMetadataInfo(result: any, metadataKeys?: string[]): SchemaEntityMetadata {
-    const metadataValues: SchemaEntityMetadata = {};
+    const entityMetadata: SchemaEntityMetadata = {};
 
     if (metadataKeys) {
         for (const key of metadataKeys) {
@@ -231,10 +231,10 @@ export function getMetadataInfo(result: any, metadataKeys?: string[]): SchemaEnt
             switch (key) {
                 case 'content.entityname':
                 case 'adx_entityname':
-                    metadataValues.logicalEntityName = value;
+                    entityMetadata.logicalEntityName = value;
                     break;
                 case 'content.formname':
-                    metadataValues.logicalFormName = value;
+                    entityMetadata.logicalFormName = value;
                     break;
                 default:
                     break;
@@ -242,7 +242,7 @@ export function getMetadataInfo(result: any, metadataKeys?: string[]): SchemaEnt
         }
     }
 
-    return metadataValues;
+    return entityMetadata;
 }
 
 export function pathHasEntityFolderName(uri: string): boolean {

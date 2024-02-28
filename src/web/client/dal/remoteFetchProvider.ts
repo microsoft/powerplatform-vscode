@@ -453,7 +453,7 @@ async function createFile(
     }
 
     const metadataKeys = getEntityParameters(entityName);
-    const metadataValues = getMetadataInfo(result, metadataKeys.filter(key => key !== undefined) as string[]);
+    const entityMetadata = getMetadataInfo(result, metadataKeys.filter(key => key !== undefined) as string[]);
 
     await createVirtualFile(
         portalsFS,
@@ -470,8 +470,8 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        metadataValues.logicalEntityName,
-        metadataValues,
+        entityMetadata.logicalEntityName,
+        entityMetadata,
         rootWebPageId,
     );
 }
