@@ -28,7 +28,7 @@ import {
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from "../telemetry/constants";
-import { SchemaEntityMetadata, entityAttributeNeedMapping, folderExportType, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
+import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
@@ -470,7 +470,6 @@ async function createFile(
         mimeType ?? result[Constants.MIMETYPE],
         isPreloadedContent,
         mappingEntityId,
-        entityMetadata.logicalEntityName,
         entityMetadata,
         rootWebPageId,
     );
@@ -561,7 +560,7 @@ export async function preprocessData(
             const fetchedFileId = entityDetails?.get(schemaEntityKey.FILE_ID_FIELD);
             const formsData = await fetchFromDataverseAndCreateFiles(entityType, getCustomRequestURL(dataverseOrgUrl, entityType));
             const attributePath: IAttributePath = getAttributePath(
-                entityAttributeNeedMapping.webformsteps
+                EntityMetadataKeyCore.WEBFORM_STEPS
             );
 
             const advancedFormStepData = new Map();
@@ -622,7 +621,6 @@ async function createVirtualFile(
     mimeType?: string,
     isPreloadedContent?: boolean,
     mappingEntityId?: string,
-    logicalEntityName?: string,
     entityMetadata?: SchemaEntityMetadata,
     rootWebPageId?: string,
 ) {
@@ -638,7 +636,6 @@ async function createVirtualFile(
         encodeAsBase64,
         mimeType,
         isPreloadedContent,
-        logicalEntityName,
         entityMetadata
     );
 

@@ -10,7 +10,7 @@ import yaml from 'yaml';
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
-import { getFileLogicalEntityName } from "../../web/client/utilities/fileAndEntityUtil";
+import { getEntityMetadata} from "../../web/client/utilities/fileAndEntityUtil";
 
 interface Attribute {
     LogicalName: string;
@@ -87,7 +87,8 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
                 const parsedData = parseYamlContent(yamlContent, telemetry, sessionID, dataverseEntity);
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
             } else if (!IS_DESKTOP) {
-                entityName = getFileLogicalEntityName(document.uri.fsPath);
+                const entityMetadata = getEntityMetadata(document.uri.fsPath)
+                entityName = entityMetadata.logicalEntityName ?? entityMetadata.logicalEntityName ?? '';
             }
         }
     } catch (error) {

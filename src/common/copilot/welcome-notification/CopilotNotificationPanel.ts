@@ -8,6 +8,7 @@ import { getNonce, openWalkthrough } from "../../Utils";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { CopilotNotificationDoNotShowChecked, CopilotTryNotificationClickedEvent, CopilotWalkthroughEvent, CopilotNotificationDoNotShowUnchecked } from "../telemetry/telemetryConstants";
 import { COPILOT_NOTIFICATION_DISABLED } from "../constants";
+import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 let NotificationPanel: vscode.WebviewPanel | undefined;
 
@@ -32,14 +33,17 @@ export async function copilotNotificationPanel(context: vscode.ExtensionContext,
       switch (message.command) {
         case 'checked':
           telemetry.sendTelemetryEvent(CopilotNotificationDoNotShowChecked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+          oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationDoNotShowChecked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
           context.globalState.update(COPILOT_NOTIFICATION_DISABLED, true);
           break;
         case 'unchecked':
           telemetry.sendTelemetryEvent(CopilotNotificationDoNotShowUnchecked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+          oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationDoNotShowUnchecked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
           context.globalState.update(COPILOT_NOTIFICATION_DISABLED, false);
           break;
         case 'tryCopilot':
           telemetry.sendTelemetryEvent(CopilotTryNotificationClickedEvent, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+          oneDSLoggerWrapper.getLogger().traceInfo(CopilotTryNotificationClickedEvent, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
           vscode.commands.executeCommand('powerpages.copilot.focus')
           NotificationPanel?.dispose();
           break;

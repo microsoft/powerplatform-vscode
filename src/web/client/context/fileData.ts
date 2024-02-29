@@ -30,7 +30,6 @@ export class FileData implements IFileData {
     private _encodeAsBase64: boolean | undefined;
     private _mimeType: string | undefined;
     private _isContentLoaded: boolean | undefined;
-    private _logicalEntityName: string | undefined;
     private _entityMetadata: SchemaEntityMetadata | undefined;
 
     // Getters
@@ -68,10 +67,6 @@ export class FileData implements IFileData {
         return this._isContentLoaded;
     }
 
-    public get logicalEntityName(): string | undefined {
-        return this._logicalEntityName;
-    }
-
     public get entityMetadata(): SchemaEntityMetadata | undefined {
         return this._entityMetadata;
     }
@@ -85,10 +80,6 @@ export class FileData implements IFileData {
     }
     public set setHasDiffViewTriggered(value: boolean) {
         this._hasDiffViewTriggered = value;
-    }
-
-    public set setLogicalEntityName(value: string | undefined) {
-        this._logicalEntityName = value;
     }
 
     public set setentityMetadata(value: SchemaEntityMetadata) {
@@ -105,7 +96,6 @@ export class FileData implements IFileData {
         encodeAsBase64?: boolean,
         mimeType?: string,
         isContentLoaded?: boolean,
-        logicalEntityName?: string,
         entityMetadata?: SchemaEntityMetadata
     ) {
         this._entityId = entityId;
@@ -119,7 +109,6 @@ export class FileData implements IFileData {
         this._hasDirtyChanges = false;
         this._hasDiffViewTriggered = false;
         this._isContentLoaded = isContentLoaded;
-        this._logicalEntityName = logicalEntityName;
         this._entityMetadata = entityMetadata
     }
 }
