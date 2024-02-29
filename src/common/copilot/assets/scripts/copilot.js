@@ -72,7 +72,7 @@
     const resultDiv = document.createElement("div");
     let codeLineCount = 0;
 
-    for (let i = 0; i < responseText.length; i++) {
+    for (let i = 0; i < responseText.length-1; i++) {
       const textDiv = document.createElement("div");
       textDiv.innerText = responseText[i].displayText;
       resultDiv.appendChild(textDiv);
@@ -317,7 +317,8 @@
 
         let message = {
           id: messageIndex,
-          content: 'formValidation', //TODO: Fetch the scenario from the response
+          content: apiResponse,
+          scenario: apiResponse[apiResponse.length - 1],
           reaction: null
         }
 
@@ -601,7 +602,7 @@
     thumpsUpPath.classList.add("thumbsup-clicked");
     thumbsDownPath.classList.remove("thumbsdown-clicked");
 
-    sendUserFeedback("thumbsUp", message.content);
+    sendUserFeedback("thumbsUp", message.scenario);
   }
 
   function handleThumbsDownClick(element) {
@@ -624,7 +625,7 @@
     thumbsUpPath.classList.remove("thumbsup-clicked");
 
 
-    sendUserFeedback("thumbsDown", message.content);
+    sendUserFeedback("thumbsDown", message.scenario);
   }
 
   function handleSuggestionsClick() {
