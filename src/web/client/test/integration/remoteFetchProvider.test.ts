@@ -11,7 +11,7 @@ import { PortalsFS } from "../../dal/fileSystemProvider";
 import WebExtensionContext from "../../WebExtensionContext";
 import * as Constants from "../../common/constants";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
-import { SchemaEntityMetadata, schemaEntityKey, schemaKey } from "../../schema/constants";
+import { schemaEntityKey, schemaKey } from "../../schema/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
@@ -1134,7 +1134,7 @@ describe("remoteFetchProvider", () => {
             undefined,
             true,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            undefined as any as SchemaEntityMetadata
+            {}
             );
 
         assert.calledWith(convertContentToUint8Array,
