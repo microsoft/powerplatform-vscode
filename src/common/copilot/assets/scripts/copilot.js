@@ -14,6 +14,8 @@
   const chatInput = document.getElementById("chat-input");
   const chatInputComponent = document.getElementById("input-component");
   const skipCodes = ["", null, undefined, "violation", "unclear", "explain"];
+  const THUMBS_UP = "thumbsup";
+  const THUMBS_DOWN = "thumbsdown";
 
   let userName;
   let apiResponseHandler;
@@ -573,11 +575,11 @@
   function handleFeedbackClick(event) {
     const target = event.target;
 
-    if (target.classList.contains("thumbsup")) {
+    if (target.classList.contains(THUMBS_UP)) {
       handleThumbsUpClick(target);
     }
 
-    if (target.classList.contains("thumbsdown")) {
+    if (target.classList.contains(THUMBS_DOWN)) {
       handleThumbsDownClick(target);
     }
   }
@@ -593,7 +595,7 @@
     let message = messages.find((message) => message.id == messageId);
 
     if(message) {
-      message.reaction = "thumbsUp";
+      message.reaction = THUMBS_UP;
     }
 
     const thumbsDownPath = element.parentNode.querySelector("#thumbsdown-path")
@@ -602,7 +604,7 @@
     thumpsUpPath.classList.add("thumbsup-clicked");
     thumbsDownPath.classList.remove("thumbsdown-clicked");
 
-    sendUserFeedback("thumbsUp", message.scenario);
+    sendUserFeedback(THUMBS_UP, message.scenario);
   }
 
   function handleThumbsDownClick(element) {
@@ -615,7 +617,7 @@
     let message = messages.find((message) => message.id == messageId);
 
     if(message) {
-      message.reaction = "thumbsDown";
+      message.reaction = THUMBS_DOWN;
     }
 
     const thumbsUpPath = element.parentNode.querySelector("#thumbsup-path")
@@ -625,7 +627,7 @@
     thumbsUpPath.classList.remove("thumbsup-clicked");
 
 
-    sendUserFeedback("thumbsDown", message.scenario);
+    sendUserFeedback(THUMBS_DOWN, message.scenario);
   }
 
   function handleSuggestionsClick() {
