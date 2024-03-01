@@ -10,7 +10,7 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -260,14 +260,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     const feedbackValue = data.value.feedbackValue;
                     const messageScenario = data.value.messageScenario;
 
-                    if (feedbackValue === "thumbsUp") {
+                    if (feedbackValue === THUMBS_UP) {
 
                         sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.geoName as string, messageScenario, tenantId)
-                    } else if (feedbackValue === "thumbsDown") {
+                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_UP, this.telemetry, this.geoName as string, messageScenario, tenantId)
+                    } else if (feedbackValue === THUMBS_DOWN) {
 
                         sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.geoName as string, messageScenario, tenantId)
+                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_DOWN, this.telemetry, this.geoName as string, messageScenario, tenantId)
                     }
                     break;
                 }

@@ -34,6 +34,8 @@ export const COPILOT_NOTIFICATION_DISABLED = 'isCopilotNotificationDisabled'
 export const EXPLAIN_CODE = 'explainCode';
 export const SELECTED_CODE_INFO = "selectedCodeInfo";
 export const SELECTED_CODE_INFO_ENABLED = true;
+export const THUMBS_UP = 'thumbsUp';
+export const THUMBS_DOWN = 'thumbsDown';
 
 export type WebViewMessage = {
     type: string;
