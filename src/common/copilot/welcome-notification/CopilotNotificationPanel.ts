@@ -20,8 +20,6 @@ export async function copilotNotificationPanel(context: vscode.ExtensionContext,
 
   NotificationPanel = createNotificationPanel();
 
-  console.log(telemetry, telemetryData, countOfActivePortals)
-
   const { notificationCssUri, notificationJsUri, copilotImageUri, arrowImageUri } = getWebviewURIs(context, NotificationPanel);
 
   const nonce = getNonce();
