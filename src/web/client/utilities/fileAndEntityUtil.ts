@@ -43,10 +43,6 @@ export function getEntityMetadata(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)?.entityMetadata as SchemaEntityMetadata
 }
 
-export function getFormLogicalName(fileFsPath: string) {
-    return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)?.logicalFormName as string;
-}
-
 export function updateFileEntityEtag(fileFsPath: string, entityEtag: string) {
     WebExtensionContext.fileDataMap.updateEtagValue(fileFsPath, entityEtag);
 }
