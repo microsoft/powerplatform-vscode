@@ -12,6 +12,7 @@ import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "xmldom";
+import { ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, SYSTEFORMS_API_PATH } from "./constants";
 
 interface Attribute {
     LogicalName: string;
@@ -47,7 +48,13 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
 
 export async function getFormXml(entityName: string, formName: string,  orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<(string [])>{
     try {
-        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/systemforms?$filter=objecttypecode eq '${entityName}' and name eq '${formName}'`;
+        // Ensure the orgUrl ends with a '/'
+        const formattedOrgUrl = orgUrl.endsWith('/') ? orgUrl : `${orgUrl}/`;
+
+        const queryParams = `$filter=objecttypecode eq '${entityName}' and name eq '${formName}'`;
+
+        const dataverseURL = `${formattedOrgUrl}${SYSTEFORMS_API_PATH}?${queryParams}`;
+
         const requestInit: RequestInit = {
             method: "GET",
             headers: {
@@ -119,8 +126,8 @@ function parseXML(formXml: string) {
 
         // If both 'label' and 'control' elements exist, create an object and add it to the result array
         if (label && control) {
-            const description = label.getAttribute('description');
-            const datafieldname = control.getAttribute('datafieldname');
+            const description = label.getAttribute(ATTRIBUTE_DESCRIPTION);
+            const datafieldname = control.getAttribute(ATTRIBUTE_DATAFIELD_NAME);
             //const classid = control.getAttribute('classid');
 
             if (description && datafieldname) {
