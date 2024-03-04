@@ -158,7 +158,8 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
                 formName = parsedData['adx_formname'];
             } else if (!IS_DESKTOP) {
                 const entityMetadata = getEntityMetadata(document.uri.fsPath)
-                entityName = entityMetadata.logicalEntityName ?? entityMetadata.logicalEntityName ?? '';
+                entityName = entityMetadata.logicalEntityName ?? '';
+                formName = entityMetadata.logicalFormName ?? '';
             }
         }
     } catch (error) {
