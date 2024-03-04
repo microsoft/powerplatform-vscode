@@ -275,12 +275,13 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.vscodeExtensionVersion = getExtensionVersion();
                     envelope.data.vscodeVersion = vscode.version;
                     envelope.data.domain = vscode.env.appHost;
+                    envelope.data.measurements = envelope.data.measurement;
+                    envelope.data.timestamp = envelope.time;
                     // Adding below attributes so they get populated in Geneva.
                     // TODO: It needs implementation for populating the actual value
                     envelope.data.eventSubType = "test";
                     envelope.data.scenarioId = "test";
                     envelope.data.eventModifier = "test";
-                    envelope.data.timestamp = "test";
                     envelope.data.country = "test";
                     envelope.data.userLocale = "test";
                     envelope.data.userDataBoundary = "test";
@@ -348,9 +349,6 @@ export class OneDSLogger implements ITelemetryLogger{
             // TODO: Populate website id
             OneDSLogger.contextInfo.websiteId = 'test'
         }
-        envelope.data.measurements = envelope.data.measurement;
-        envelope.data.timestamp = envelope.time;
-        envelope.data.sdkVersion = envelope.ext.sdk.ver;
     }
 
     //// Redact Sensitive data for the fields susceptible to contain codes/tokens/keys/secrets etc.
