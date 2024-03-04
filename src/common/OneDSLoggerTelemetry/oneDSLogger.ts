@@ -276,7 +276,6 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.vscodeVersion = vscode.version;
                     envelope.data.domain = vscode.env.appHost;
                     envelope.data.measurements = envelope.data.measurement;
-                    envelope.data.timestamp = envelope.time;
                     // Adding below attributes so they get populated in Geneva.
                     // TODO: It needs implementation for populating the actual value
                     envelope.data.eventSubType = "test";
