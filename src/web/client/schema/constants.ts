@@ -38,6 +38,11 @@ export enum schemaMetaDataKey {
     DATAVERSE_FORM_NAME = "_dataverseformname",
 }
 
+export interface SchemaEntityMetadata {
+    logicalEntityName?: string;
+    logicalFormName?: string;
+}
+
 export enum schemaEntityName {
     WEBFILES = "webfiles",
     WEBPAGES = "webpages",
@@ -73,6 +78,13 @@ export enum entityAttributesWithBase64Encoding {
     filecontent = "filecontent",
 }
 
-export enum entityAttributeNeedMapping {
-    webformsteps = "content.webFormSteps"
+export enum EntityMetadataKeyCore {
+    ENTITY_LOGICAL_NAME = "content.entityname",
+    FORM_LOGICAL_NAME = "content.formname",
+    WEBFORM_STEPS = "content.webFormSteps",
+}
+
+export enum EntityMetadataKeyAdx {
+    ENTITY_LOGICAL_NAME = "adx_entityname",
+    FORM_LOGICAL_NAME = "adx_formname",
 }

@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { ITelemetry } from "../telemetry/ITelemetry";
 
 // Telemetry Event Names
@@ -25,7 +26,7 @@ interface IPowerPagesTelemetryData {
     durationInMills?: number,
     exception?: Error,
     triggerPoint?: string
-    methodName:string
+    methodName: string
 }
 
 export enum TriggerPoint {
@@ -49,11 +50,11 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerP
         telemetryDataMeasurements.durationInMills = telemetryData.durationInMills;
     }
 
-    if(telemetryData.triggerPoint) {
+    if (telemetryData.triggerPoint) {
         telemetryDataProperties.triggerPoint = telemetryData.triggerPoint;
     }
 
-    if(telemetryData.methodName) {
+    if (telemetryData.methodName) {
         telemetryDataProperties.methodName = telemetryData.methodName;
     }
 
@@ -61,8 +62,10 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerP
         telemetryDataProperties.eventName = telemetryData.eventName;
         telemetryDataProperties.errorMessage = telemetryData.exception?.message;
         telemetry.sendTelemetryException(telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
+        oneDSLoggerWrapper.getLogger().traceError(telemetryDataProperties.eventName, telemetryDataProperties.errorMessage, telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
     } else {
         telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
+        oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
     }
 }
 

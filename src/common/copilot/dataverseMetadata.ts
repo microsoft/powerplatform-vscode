@@ -10,7 +10,7 @@ import yaml from 'yaml';
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
-import { getFileLogicalEntityName, getFormLogicalName } from "../../web/client/utilities/fileAndEntityUtil";
+import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "xmldom";
 
 interface Attribute {
@@ -157,8 +157,8 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
                 formName = parsedData['adx_formname'];
             } else if (!IS_DESKTOP) {
-                entityName = getFileLogicalEntityName(document.uri.fsPath);
-                formName  = getFormLogicalName(document.uri.fsPath);
+                const entityMetadata = getEntityMetadata(document.uri.fsPath)
+                entityName = entityMetadata.logicalEntityName ?? entityMetadata.logicalEntityName ?? '';
             }
         }
     } catch (error) {

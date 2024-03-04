@@ -6,6 +6,7 @@
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { IAttributePath } from "../common/interfaces";
+import { SchemaEntityMetadata } from "../schema/constants";
 
 // File utility functions
 export function fileHasDirtyChanges(fileFsPath: string) {
@@ -38,9 +39,8 @@ export function getFileEntityEtag(fileFsPath: string) {
         ?.entityEtag as string;
 }
 
-export function getFileLogicalEntityName(fileFsPath: string) {
-    return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
-        ?.logicalEntityName as string;
+export function getEntityMetadata(fileFsPath: string) {
+    return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)?.entityMetadata as SchemaEntityMetadata
 }
 
 export function getFormLogicalName(fileFsPath: string) {
