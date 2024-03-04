@@ -19,7 +19,7 @@ export const US_GEO = 'us';
 export const AUSTRALIA_GEO = 'au';
 export const EUROPE_GEO = 'eu';
 export const UK_GEO = 'uk';
-export const SUPPORTED_GEO = [US_GEO, AUSTRALIA_GEO, EUROPE_GEO]; // UK, India rollout post IAPI changes
+export const SUPPORTED_GEO = [US_GEO, AUSTRALIA_GEO, EUROPE_GEO, UK_GEO]; // UK, India rollout post IAPI changes
 export const GEO_REQUIRES_CROSS_GEO_OPTIONS = [EUROPE_GEO]; // Per CAPI guidelines - remains EUDB scope only
 export const COPILOT_UNAVAILABLE = 'copilotunavailable';
 export const AUTH_CREATE_MESSAGE = vscode.l10n.t('Creating new Auth Profile');
@@ -34,6 +34,8 @@ export const COPILOT_NOTIFICATION_DISABLED = 'isCopilotNotificationDisabled'
 export const EXPLAIN_CODE = 'explainCode';
 export const SELECTED_CODE_INFO = "selectedCodeInfo";
 export const SELECTED_CODE_INFO_ENABLED = true;
+export const THUMBS_UP = 'thumbsUp';
+export const THUMBS_DOWN = 'thumbsDown';
 
 export type WebViewMessage = {
     type: string;
