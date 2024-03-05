@@ -133,16 +133,17 @@ function parseXML(formXml: string) {
             let classid = control.getAttribute('classid');
 
             let controlType = '';
-            if(classid && ControlClassIdMap.has(classid)){
+            if(classid){
 
                 // Use a regular expression to replace both '{' and '}' with an empty string
                 // Input: '{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}'
                 // Output: '5B773807-9FB2-42DB-97C3-7A91EFF8ADFF'
                 classid = classid.replace(/{|}/g, '');
+
                 controlType = ControlClassIdMap.get(classid) ?? '';
             }
 
-            if (description && datafieldname && controlType) {
+            if (description && datafieldname) {
                 result.push(description, datafieldname, controlType);
             }
         }
