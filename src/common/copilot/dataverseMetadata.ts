@@ -14,6 +14,7 @@ import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil"
 import { DOMParser } from "xmldom";
 import { ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
 
+
 interface Attribute {
     LogicalName: string;
 }
@@ -67,6 +68,7 @@ export async function getFormXml(entityName: string, formName: string,  orgUrl: 
         const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
         const endTime = performance.now();
         const responseTime = endTime - startTime || 0;
+
         const formxml = getFormXMLFromResponse(jsonResponse);
 
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
