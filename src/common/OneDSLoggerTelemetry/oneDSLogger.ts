@@ -277,21 +277,20 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.domain = vscode.env.appHost;
                     // Adding below attributes so they get populated in Geneva.
                     // TODO: It needs implementation for populating the actual value
-                    envelope.data.eventSubType = "test";
-                    envelope.data.scenarioId = "test";
-                    envelope.data.eventModifier = "test";
-                    envelope.data.timestamp = "test";
-                    envelope.data.country = "test";
-                    envelope.data.userLocale = "test";
-                    envelope.data.userDataBoundary = "test";
-                    envelope.data.appLocale = "test";
-                    envelope.data.userLocale = "test";
-                    envelope.data.webBrowser = "test";
-                    envelope.data.browserVersion = "test";
-                    envelope.data.browserLanguage = "test";
-                    envelope.data.screenResolution = "test";
-                    envelope.data.osName = "test";
-                    envelope.data.osVersion = "test";
+                    envelope.data.eventSubType = "";
+                    envelope.data.scenarioId = "";
+                    envelope.data.eventModifier = "";
+                    envelope.data.country = "";
+                    envelope.data.userLocale = "";
+                    envelope.data.userDataBoundary = "";
+                    envelope.data.appLocale = "";
+                    envelope.data.userLocale = "";
+                    envelope.data.webBrowser = "";
+                    envelope.data.browserVersion = "";
+                    envelope.data.browserLanguage = "";
+                    envelope.data.screenResolution = "";
+                    envelope.data.osName = "";
+                    envelope.data.osVersion = "";
                     if (getExtensionType() == 'Web'){
                         this.populateVscodeWebAttributes(envelope);
                     }else{
