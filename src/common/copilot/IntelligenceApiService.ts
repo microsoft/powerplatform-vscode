@@ -21,6 +21,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
         return NetworkError;
     }
 
+    // eslint-disable-next-line prefer-const
     let requestBody = {
         "question": userPrompt[0].displayText,
         "top": 1,
@@ -85,6 +86,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
                         const additionalData = jsonResponse.additionalData[0];
                         if (additionalData.properties && additionalData.properties.response) {
                             const responseMessage = additionalData.properties.response;
+                            responseMessage.push(additionalData.suggestions.subCategory ?? '');
                             return responseMessage;
                         }
                     }
