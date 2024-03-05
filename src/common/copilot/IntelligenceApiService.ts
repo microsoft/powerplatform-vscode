@@ -21,6 +21,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
         return NetworkError;
     }
 
+    // eslint-disable-next-line prefer-const
     let requestBody = {
         "question": userPrompt[0].displayText,
         "top": 1,
