@@ -16,6 +16,7 @@ import { EXTENSION_ID } from "../../client/constants";
 import {OneDSCollectorEventName} from "./EventContants";
 import { telemetryEventNames } from "../../web/client/telemetry/constants";
 import { region } from "../telemetry-generated/buildRegionConfiguration";
+import { telemetryEventNames as desktopExtTelemetryEventNames } from "../../client/telemetry/TelemetryEventNames";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -270,17 +271,16 @@ export class OneDSLogger implements ITelemetryLogger{
 
                     envelope.data.clientSessionId = vscode.env.sessionId;
                     envelope.data.vscodeSurface = getExtensionType();
-                    envelope.data.vscodeMachineId = vscode.env.machineId;
                     envelope.data.vscodeExtensionName = EXTENSION_ID;
                     envelope.data.vscodeExtensionVersion = getExtensionVersion();
                     envelope.data.vscodeVersion = vscode.version;
                     envelope.data.domain = vscode.env.appHost;
+                    envelope.data.measurements = envelope.data.measurement;
                     // Adding below attributes so they get populated in Geneva.
                     // TODO: It needs implementation for populating the actual value
                     envelope.data.eventSubType = "test";
                     envelope.data.scenarioId = "test";
                     envelope.data.eventModifier = "test";
-                    envelope.data.timestamp = "test";
                     envelope.data.country = "test";
                     envelope.data.userLocale = "test";
                     envelope.data.userDataBoundary = "test";
@@ -342,8 +342,12 @@ export class OneDSLogger implements ITelemetryLogger{
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private populateVscodeDesktopAttributes(envelope: any){
-        // TODO: this method helps in populating desktop attributes.
-        console.log(envelope);
+        if (envelope.data.eventName == desktopExtTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT) {
+            OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).OrgId;
+            OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).EnvironmentId;
+            // TODO: Populate website id
+            OneDSLogger.contextInfo.websiteId = 'test'
+        }
     }
 
     //// Redact Sensitive data for the fields susceptible to contain codes/tokens/keys/secrets etc.
