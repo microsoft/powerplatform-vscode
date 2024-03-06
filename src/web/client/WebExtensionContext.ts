@@ -22,7 +22,7 @@ import {
     getWebsiteLanguageIdToPortalLanguageIdMap,
 } from "./utilities/schemaHelperUtil";
 import { getCustomRequestURL, getOrCreateSharedWorkspace } from "./utilities/urlBuilderUtil";
-import { schemaKey } from "./schema/constants";
+import { SchemaEntityMetadata, schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
@@ -402,7 +402,7 @@ class WebExtensionContext implements IWebExtensionContext {
         encodeAsBase64: boolean,
         mimeType?: string,
         isContentLoaded?: boolean,
-        logicalEntityName?: string
+        entityMetadata?: SchemaEntityMetadata
     ) {
         this.fileDataMap.setEntity(
             fileUri,
@@ -415,7 +415,7 @@ class WebExtensionContext implements IWebExtensionContext {
             encodeAsBase64,
             mimeType,
             isContentLoaded,
-            logicalEntityName);
+            entityMetadata);
     }
 
     public async updateEntityDetailsInContext(

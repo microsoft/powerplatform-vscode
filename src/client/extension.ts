@@ -39,7 +39,7 @@ import { fetchArtemisResponse } from "../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
-
+import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -195,6 +195,7 @@ export async function activate(
             if (artemisResponse) {
                 const { geoName } = artemisResponse[0];
                 oneDSLoggerWrapper.instantiate(geoName);
+                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, orgDetails);
             }
         })
     );
