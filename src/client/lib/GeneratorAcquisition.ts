@@ -79,7 +79,7 @@ export class GeneratorAcquisition implements IDisposable {
         if (this.yoCommandPath === null || this.getInstalledVersion() !== this.generatorVersion) {
             if (!commandExists.sync('npm')) {
                 this._context.showErrorMessage(vscode.l10n.t({
-                    message: 'npm is not installed. Please install npm and try again.',
+                    message: 'Cannot install Power Pages generator. Please install npm and try again.',
                     comment: ["Do not translate 'npm'"]
                 }));
                 return null;
