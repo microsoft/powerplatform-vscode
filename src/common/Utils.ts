@@ -7,6 +7,7 @@
 import * as vscode from "vscode";
 import { EXTENSION_ID, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../client/constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "./OneDSLoggerTelemetry/telemetryConstants";
+import { PortalWebView } from "../client/PortalWebView";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -122,4 +123,19 @@ export function isCustomTelemetryEnabled():boolean {
         .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
         .get(CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME);
     return isCustomTelemetryEnabled as boolean;
+}
+
+export const getWebsiteIdFromPACData = async (): Promise<string> => {
+    const rootFolder = PortalWebView.getPortalRootFolder();
+    if (!rootFolder) return '';
+    const l = rootFolder?.with({ path: rootFolder.path + "/.portalconfig/websitebinding.yml" });
+    const websiteBindingYmlContent = new TextDecoder().decode(await vscode.workspace.fs.readFile(l));
+    const regex = /adx_websitebindingid:\s*([^\s]+)/i;
+    // Use the regular expression to find a match in the fileContent
+    const match = regex.exec(websiteBindingYmlContent);
+    // If a match is found, return the value of adx_websitebindingid
+    if (match && match[1]) {
+        return match[1];
+    }
+    return '';
 }
