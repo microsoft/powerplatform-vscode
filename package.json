@@ -85,9 +85,9 @@
     "github.copilot-chat"
   ],
   "enabledApiProposals": [
-    "chatAgents2",
-    "chatRequestAccess",
-    "interactive"
+    "chatParticipant",
+    "chatVariableResolver",
+    "languageModels"
   ],
   "activationEvents": [
     "onCommand:pacCLI.openDocumentation",
