@@ -10,20 +10,20 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../we
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
+import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
-import { GetAuthProfileWatchPattern } from "../../client/lib/AuthPanelView";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { getEntityColumns, getEntityName } from "./dataverseMetadata";
+import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
+import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -104,10 +104,13 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 vscode.commands.registerCommand("powerpages.copilot.explain", () => { sendTelemetryEvent(this.telemetry, { eventName: CopilotExplainCode, copilotSessionId: sessionID, orgId: orgID }); this.show(); handleSelectionChange(EXPLAIN_CODE) })
             );
         }
+        this._disposables.push(
+            orgChangeEvent((orgDetails: ActiveOrgOutput) => this.handleOrgChangeSuccess(orgDetails))
+        );
 
-        if (this._pacWrapper) {
-            this.setupFileWatcher();
-        }
+        this._disposables.push(
+            orgChangeErrorEvent(async () => await this.createAuthProfileExp())
+        );
 
         if (orgInfo) {
             orgID = orgInfo.orgId;
@@ -121,19 +124,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this._disposables.forEach(d => d.dispose());
     }
 
-    private setupFileWatcher() {
-        const watchPath = GetAuthProfileWatchPattern();
-        if (watchPath) {
-            const watcher = vscode.workspace.createFileSystemWatcher(watchPath);
-            this._disposables.push(
-                watcher,
-                watcher.onDidChange(() => this.handleOrgChange()),
-                watcher.onDidCreate(() => this.handleOrgChange()),
-                watcher.onDidDelete(() => this.handleOrgChange())
-            );
-        }
-    }
-
     private async handleOrgChange() {
         orgID = '';
         const pacOutput = await this._pacWrapper?.activeOrg();
@@ -141,21 +131,19 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
             this.handleOrgChangeSuccess(pacOutput.Results);
         } else if (this._view?.visible) {
+            await this.createAuthProfileExp();
+        }
+    }
 
-            if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
-                this.handleOrgChangeSuccess(pacOutput.Results);
-            } else if (this._view?.visible) {
-
-                const userOrgUrl = await showInputBoxAndGetOrgUrl();
-                if (!userOrgUrl) {
-                    return;
-                }
-                const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-                if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
-                    vscode.window.showErrorMessage(AUTH_CREATE_FAILED); // TODO: Provide Experience to create auth profile
-                    return;
-                }
-            }
+    private async createAuthProfileExp() {
+        const userOrgUrl = await showInputBoxAndGetOrgUrl();
+        if (!userOrgUrl) {
+            return;
+        }
+        const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
+        if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
+            vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
+            return;
         }
     }
 
@@ -257,14 +245,17 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 }
                 case "userFeedback": {
 
-                    if (data.value === "thumbsUp") {
+                    const feedbackValue = data.value.feedbackValue;
+                    const messageScenario = data.value.messageScenario;
+
+                    if (feedbackValue === THUMBS_UP) {
 
                         sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.geoName as string, tenantId)
-                    } else if (data.value === "thumbsDown") {
+                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_UP, this.telemetry, this.geoName as string, messageScenario, tenantId)
+                    } else if (feedbackValue === THUMBS_DOWN) {
 
                         sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.geoName as string, tenantId)
+                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_DOWN, this.telemetry, this.geoName as string, messageScenario, tenantId)
                     }
                     break;
                 }
@@ -344,17 +335,24 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                 this.sendMessageToWebview({ type: 'userName', value: userName });
 
-                let entityName = "";
-                let entityColumns: string[] = [];
+                let metadataInfo = { entityName: '', formName: '' };
+                let componentInfo : string[] = [];
 
-                if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
-                    entityName = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
+                if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
+                    metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
                     const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
 
-                    entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+                    if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
+                        const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+                        componentInfo = formColumns;
+                    } else {
+                        const entityColumns = await getEntityColumns(metadataInfo.entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+                        componentInfo = entityColumns;
+                    }
+
                 }
-                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, entityName, entityColumns, telemetry, this.aibEndpoint, this.geoName);
+                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName);
             })
             .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });

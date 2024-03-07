@@ -14,6 +14,7 @@ import { ITelemetry } from '../telemetry/ITelemetry';
 import find from 'find-process';
 import { spawnSync } from 'child_process';
 import commandExists from 'command-exists';
+import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 
 // allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
 export interface ICliAcquisitionContext {
@@ -25,7 +26,7 @@ export interface ICliAcquisitionContext {
     showCliPreparingMessage(version: string): void;
     showCliReadyMessage(): void;
     showCliInstallFailedError(err: string): void;
-    locDotnetNotInstalledOrInsufficient() : string;
+    locDotnetNotInstalledOrInsufficient(): string;
 }
 
 export interface IDisposable {
@@ -70,7 +71,7 @@ export class CliAcquisition implements IDisposable {
     async installCli(nupkgDirectory: string, packageName: string): Promise<string> {
         const useDotnetTool = packageName.endsWith('.tool');
 
-        const pacExeDirectory =  useDotnetTool
+        const pacExeDirectory = useDotnetTool
             ? this._cliPath
             : path.join(this._cliPath, 'tools');
 
@@ -97,15 +98,21 @@ export class CliAcquisition implements IDisposable {
                 const install = spawnSync(
                     "dotnet",
                     ["tool", "install", "Microsoft.PowerApps.CLI.Tool", "--tool-path", this._cliPath, "--add-source", nupkgDirectory, "--version", this.cliVersion],
-                    {encoding: "utf-8"});
+                    { encoding: "utf-8" });
 
                 if (install.status != 0) {
                     this._context.telemetry.sendTelemetryErrorEvent("PacInstallError", { "stdout": install.stdout, "stderr": install.stderr });
+                    oneDSLoggerWrapper.getLogger().traceError(
+                        'PacInstallError',
+                        'PacInstallError',
+                        { name: 'PacInstallError', message: 'PacInstallError' } as Error,
+                        { "stdout": install.stdout, "stderr": install.stderr }
+                    );
 
                     // NU1202 - dotnet is installed, but version is incommpatible with the tool
                     const dotnetIncompatible = install.stdout.includes("NU1202") || install.stderr.includes("NU1202");
 
-                    const errorMessage =  dotnetIncompatible
+                    const errorMessage = dotnetIncompatible
                         ? this._context.locDotnetNotInstalledOrInsufficient()
                         : install.stderr;
 
@@ -113,6 +120,7 @@ export class CliAcquisition implements IDisposable {
                     reject(errorMessage);
                 } else {
                     this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
+                    oneDSLoggerWrapper.getLogger().traceInfo('PacCliInstalled', { cliVersion: this.cliVersion });
                     this._context.showCliReadyMessage();
                     this.setInstalledVersion(this._cliVersion);
                     resolve(pacExeDirectory);
@@ -126,6 +134,7 @@ export class CliAcquisition implements IDisposable {
                     .pipe(Extract({ path: this._cliPath }))
                     .on('close', () => {
                         this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
+                        oneDSLoggerWrapper.getLogger().traceInfo('PacCliInstalled', { cliVersion: this.cliVersion });
                         this._context.showCliReadyMessage();
                         if (os.platform() !== 'win32') {
                             fs.chmodSync(this.cliExePath, 0o755);
@@ -153,7 +162,7 @@ export class CliAcquisition implements IDisposable {
         list.forEach(info => process.kill(info.pid));
     }
 
-    async findPacProcesses(pacInstallPath: string): Promise<{pid: number, cmd: string}[]> {
+    async findPacProcesses(pacInstallPath: string): Promise<{ pid: number, cmd: string }[]> {
         try {
             // In most cases, find-process will handle the OS specifics to find the running
             // Pac and PacTelemetryUpload processes
@@ -167,7 +176,7 @@ export class CliAcquisition implements IDisposable {
         } catch (err) {
             // find-process fails with the WSL remoting pseudo terminal, so we'll need to call 'ps' ourselves
             if (typeof err === "string" && err.includes("screen size is bogus") && os.platform() === "linux") {
-                const psResult = spawnSync("ps", ["ax","-ww","-o","pid,args"], {encoding: "utf-8"});
+                const psResult = spawnSync("ps", ["ax", "-ww", "-o", "pid,args"], { encoding: "utf-8" });
 
                 // Output is a single '\n' delimated string.  First row is a header, the rest are in
                 // the format [optional left padding spaces][PID][single space][full command line arguments of the running process]
@@ -175,7 +184,7 @@ export class CliAcquisition implements IDisposable {
                     .filter(line => line && line.includes(pacInstallPath))
                     .map(line => line.trimStart())
                     .map(line => line.split(' ', 2))
-                    .map(split => ({pid: parseInt(split[0]), cmd: split[1]}));
+                    .map(split => ({ pid: parseInt(split[0]), cmd: split[1] }));
 
                 return processes;
             }

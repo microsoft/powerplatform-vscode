@@ -69,8 +69,6 @@ describe("webExtensionTelemetry", () => {
         //Assert
         const properties = {
             appName: "",
-            entity: "",
-            entityId: "",
         };
         assert.calledOnceWithExactly(
             sendTelemetryEvent,
@@ -100,6 +98,11 @@ describe("webExtensionTelemetry", () => {
             [queryParameters.REGION, "NAM"],
             [queryParameters.GEO, "US"],
             [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
             [queryParameters.REFERRER_SOURCE, "test"],
         ]);
 
@@ -119,6 +122,8 @@ describe("webExtensionTelemetry", () => {
             region: queryParamsMap.get(queryParameters.REGION),
             geo: queryParamsMap.get(queryParameters.GEO),
             envId: queryParamsMap.get(queryParameters.ENV_ID),
+            entity: queryParamsMap.get(queryParameters.ENTITY),
+            entityId: queryParamsMap.get(queryParameters.ENTITY_ID),
             referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
