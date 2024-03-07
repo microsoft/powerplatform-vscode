@@ -14,6 +14,8 @@
   const chatInput = document.getElementById("chat-input");
   const chatInputComponent = document.getElementById("input-component");
   const skipCodes = ["", null, undefined, "violation", "unclear", "explain"];
+  const THUMBS_UP = "thumbsup";
+  const THUMBS_DOWN = "thumbsdown";
 
   let userName;
   let apiResponseHandler;
@@ -28,6 +30,9 @@
 
   const inputHistory = [];
   let currentIndex = -1;
+
+  let messages = [];
+  let messageIndex = 1;
 
 
   const clipboardSvg = `<svg  width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -69,14 +74,14 @@
     const resultDiv = document.createElement("div");
     let codeLineCount = 0;
 
-    for (let i = 0; i < responseText.length; i++) {
+    for (let i = 0; i < responseText.length-1; i++) {
       const textDiv = document.createElement("div");
       textDiv.innerText = responseText[i].displayText;
       resultDiv.appendChild(textDiv);
 
-      if (responseText[i].displayText === "Feature is not enabled for this geo.") {
+      if (responseText[i].displayText ===  copilotStrings.FEATURE_NOT_ENABLED_MESSAGE) {
         chatInputComponent.classList.add("hide")
-        textDiv.innerText = "Your Microsoft account doesn’t currently support Copilot. Contact your admin for details."
+        textDiv.innerText = copilotStrings.COPILOT_SUPPORT_MESSAGE;
         isCopilotEnabled = false;
         return resultDiv;
       }
@@ -127,7 +132,7 @@
     copyButton.innerHTML = clipboardSvg;
     copyButton.classList.add("action-button");
     copyButton.classList.add("copy-button");
-    copyButton.title = "Copy to clipboard";
+    copyButton.title = copilotStrings.COPY_TO_CLIPBOARD_MESSAGE;
     copyButton.addEventListener("click", () => {
       copyCodeToClipboard(code);
     });
@@ -137,7 +142,7 @@
     insertButton.innerHTML = insertSvg
     insertButton.classList.add("action-button");
     insertButton.classList.add("insert-button");
-    insertButton.title = "Insert code into editor";
+    insertButton.title = copilotStrings.INSERT_CODE_MESSAGE;
     insertButton.addEventListener("click", () => {
       insertCode(code);
     });
@@ -213,16 +218,16 @@
     if (!isCopilotEnabled) {
       return feedback;
     }
-    feedback.innerHTML = `<p class="feedback-statement">AI-generated content can contain mistakes</p>
+    feedback.innerHTML = `<p class="feedback-statement">${copilotStrings.AI_CONTENT_MISTAKES_MESSAGE}</p>
       <div class="feedback-icons">
       <svg class="thumbsup" cursor="pointer" width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <title>Thumbs Up</title>
+        <title>${copilotStrings.THUMBS_UP_MESSAGE}</title>
         <path d="M13.5584 5.47363C13.8428 5.50919 14.1095 5.61586 14.3584 5.79363C14.6073 5.97141 14.7673 6.2203 14.8384 6.5403C14.9451 6.82474 14.9273 7.12697 14.7851 7.44697L13.8251 9.63363H16.5984C16.8473 9.59808 17.0784 9.65141 17.2917 9.79363C17.5051 9.9003 17.6651 10.0603 17.7717 10.2736C17.914 10.4514 17.9851 10.6647 17.9851 10.9136C18.0206 11.127 17.9851 11.3403 17.8784 11.5536C16.634 14.1847 15.8695 15.9092 15.5851 16.727C15.4784 16.9759 15.3006 17.1892 15.0517 17.367C14.8384 17.5447 14.5895 17.6336 14.3051 17.6336H5.39839C5.00728 17.5981 4.6695 17.4559 4.38506 17.207C4.13617 16.9225 4.01172 16.5847 4.01172 16.1936V12.6736C4.01172 12.3181 4.13617 12.0159 4.38506 11.767C4.6695 11.4825 5.00728 11.3403 5.39839 11.3403H6.78506L12.5984 5.84697C12.8828 5.63363 13.2028 5.50919 13.5584 5.47363ZM14.3051 16.6203C14.4828 16.6203 14.6073 16.5314 14.6784 16.3536C15.0695 15.2514 15.8517 13.5092 17.0251 11.127C17.0606 10.9847 17.0428 10.8603 16.9717 10.7536C16.9006 10.6114 16.7762 10.5581 16.5984 10.5936H13.3451L12.8117 9.95363V9.47363L13.8784 7.0203C13.914 6.94919 13.914 6.87808 13.8784 6.80697C13.8784 6.7003 13.8428 6.62919 13.7717 6.59363C13.7006 6.52252 13.6117 6.48697 13.5051 6.48697C13.434 6.48697 13.3628 6.52252 13.2917 6.59363L7.21172 12.1403L6.73172 12.3003H5.39839C5.29172 12.3003 5.18506 12.3359 5.07839 12.407C5.00728 12.4781 4.9895 12.567 5.02506 12.6736V16.1936C4.9895 16.3003 5.00728 16.407 5.07839 16.5136C5.18506 16.5847 5.29172 16.6203 5.39839 16.6203H14.3051Z" class = "thumbsup-clicked" />
         <path d="M14.3051 16.6203C14.4828 16.6203 14.6073 16.5314 14.6784 16.3536C15.0695 15.2514 15.8517 13.5092 17.0251 11.127C17.0606 10.9847 17.0428 10.8603 16.9717 10.7536C16.9006 10.6114 16.7762 10.5581 16.5984 10.5936H13.3451L12.8117 9.95363V9.47363L13.8784 7.0203C13.914 6.94919 13.914 6.87808 13.8784 6.80697C13.8784 6.7003 13.8428 6.62919 13.7717 6.59363C13.7006 6.52252 13.6117 6.48697 13.5051 6.48697C13.434 6.48697 13.3628 6.52252 13.2917 6.59363L7.21172 12.1403L6.73172 12.3003H5.39839C5.29172 12.3003 5.18506 12.3359 5.07839 12.407C5.00728 12.4781 4.9895 12.567 5.02506 12.6736V16.1936C4.9895 16.3003 5.00728 16.407 5.07839 16.5136C5.18506 16.5847 5.29172 16.6203 5.39839 16.6203H14.3051Z" fill="none" id="thumbsup-path"/>
       </svg>
 
       <svg class="thumbsdown" cursor="pointer" width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <title>Thumbs Down</title>
+        <title>${copilotStrings.THUMBS_DOWN_MESSAGE}</title>
         <path d="M8.48 17.6336C8.19556 17.6336 7.92889 17.5447 7.68 17.367C7.43111 17.1536 7.25333 16.9047 7.14667 16.6203C7.07556 16.3003 7.11111 15.9803 7.25333 15.6603L8.21333 13.4736H5.44C5.19111 13.5092 4.96 13.4736 4.74667 13.367C4.53333 13.2603 4.35556 13.1181 4.21333 12.9403C4.10667 12.727 4.03556 12.4959 4 12.247C4 11.9981 4.05333 11.767 4.16 11.5536C5.40444 8.92252 6.16889 7.19808 6.45333 6.3803C6.56 6.13141 6.72 5.93586 6.93333 5.79363C7.18222 5.61586 7.44889 5.50919 7.73333 5.47363H16.64C17.0311 5.50919 17.3511 5.66919 17.6 5.95363C17.8844 6.20252 18.0267 6.52252 18.0267 6.91363V10.4336C18.0267 10.7892 17.8844 11.1092 17.6 11.3936C17.3511 11.6425 17.0311 11.767 16.64 11.767H15.3067L9.44 17.2603C9.15556 17.5092 8.83556 17.6336 8.48 17.6336ZM7.73333 6.48697C7.55556 6.48697 7.43111 6.57586 7.36 6.75363C6.96889 7.85586 6.20444 9.59808 5.06667 11.9803C4.99556 12.1225 4.99556 12.2647 5.06667 12.407C5.13778 12.5136 5.26222 12.5492 5.44 12.5136H8.74667L9.22667 13.1536V13.6336L8.16 16.087C8.12444 16.1581 8.10667 16.247 8.10667 16.3536C8.14222 16.4247 8.19556 16.4959 8.26667 16.567C8.33778 16.6025 8.40889 16.6203 8.48 16.6203C8.58667 16.6203 8.67556 16.5847 8.74667 16.5136L14.8267 10.967L15.3067 10.807H16.64C16.7467 10.807 16.8356 10.7714 16.9067 10.7003C17.0133 10.6292 17.0667 10.5403 17.0667 10.4336V6.91363C17.0667 6.80697 17.0133 6.71808 16.9067 6.64697C16.8356 6.5403 16.7467 6.48697 16.64 6.48697H7.73333Z" class = "thumbsdown-clicked"/>
         <path d="M7.73333 6.48697C7.55556 6.48697 7.43111 6.57586 7.36 6.75363C6.96889 7.85586 6.20444 9.59808 5.06667 11.9803C4.99556 12.1225 4.99556 12.2647 5.06667 12.407C5.13778 12.5136 5.26222 12.5492 5.44 12.5136H8.74667L9.22667 13.1536V13.6336L8.16 16.087C8.12444 16.1581 8.10667 16.247 8.10667 16.3536C8.14222 16.4247 8.19556 16.4959 8.26667 16.567C8.33778 16.6025 8.40889 16.6203 8.48 16.6203C8.58667 16.6203 8.67556 16.5847 8.74667 16.5136L14.8267 10.967L15.3067 10.807H16.64C16.7467 10.807 16.8356 10.7714 16.9067 10.7003C17.0133 10.6292 17.0667 10.5403 17.0667 10.4336V6.91363C17.0667 6.80697 17.0133 6.71808 16.9067 6.64697C16.8356 6.5403 16.7467 6.48697 16.64 6.48697H7.73333Z" fill="none" id="thumbsdown-path"/>
       </svg>
@@ -238,11 +243,11 @@
     const suggestedPrompt = document.createElement("div");
     suggestedPrompt.classList.add("suggested-prompts");
 
-    const formPrompt = 'Write JavaScript code for form field validation to check phone field value is in the valid format.';
-    const webApiPrompt = 'Write web API code to query active contact records.';
-    const listPrompt = 'Write JavaScript code to highlight the row where email field is empty in table list.';
+    const formPrompt = copilotStrings.FORM_PROMPT;
+    const webApiPrompt = copilotStrings.WEB_API_PROMPT;
+    const listPrompt = copilotStrings.LIST_PROMPT;
 
-    suggestedPrompt.innerHTML = `<p class="suggested-title">Here are a few suggestions to get you started</p>
+    suggestedPrompt.innerHTML = `<p class="suggested-title">${copilotStrings.SUGGESTIONS_MESSAGE}</p>
                                 <a href='#' class="suggested-prompt">
                                 <span class="icon-container">
                                     ${starIconSvg}
@@ -270,10 +275,10 @@
   function createWalkthroughDiv() {
     const walkthrough = document.createElement("div");
     walkthrough.classList.add("walkthrough-div");
-    walkthrough.innerHTML = `<p class="walkthrough-title">GETTING STARTED</p>
+    walkthrough.innerHTML = `<p class="walkthrough-title">${copilotStrings.GETTING_STARTED_MESSAGE}</p>
                             <a href="#" class="walkthrough-content">
                                 ${bookIconSvg}
-                                <span id="walk-text">Learn more about Copilot</span>
+                                <span id="walk-text">${copilotStrings.LEARN_MORE_MESSAGE}</span>
                             </a>`;
     return walkthrough;
   }
@@ -311,8 +316,22 @@
           thinkingDiv.remove();
         }
 
+
+        let message = {
+          id: messageIndex,
+          content: apiResponse,
+          scenario: apiResponse[apiResponse.length - 1],
+          reaction: null
+        }
+
+        messages.push(message);
+
+        messageIndex++;
+
         const apiResponseElement = parseCodeBlocks(apiResponse);
         messageElement.appendChild(apiResponseElement);
+
+        messageWrapper.dataset.id = message.id;
 
         messageWrapper.appendChild(document.createElement("hr"));
 
@@ -343,8 +362,8 @@
         const notLoggedIn = document.createElement("div");
         notLoggedIn.classList.add("not-loggedIn");
         notLoggedIn.innerHTML = `<p id="greeting"></p>
-        <p>Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.</p>
-        <button id="loginButton" >Login</button>`;
+        <p>${copilotStrings.LOGIN_MESSAGE}</p>
+        <button id="loginButton" >${copilotStrings.LOGIN_BUTTON}</button>`;
 
         messageElement.appendChild(notLoggedIn);
 
@@ -358,7 +377,7 @@
         }
         const loggedInDiv = document.createElement("div");
         loggedInDiv.classList.add("loggedIn");
-        loggedInDiv.innerHTML = `<p id="greeting">Hi <strong>${userName}!</strong> In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</p>
+        loggedInDiv.innerHTML = `<p id="greeting">${copilotStrings.HI} <strong>${userName}!</strong> ${copilotStrings.WELCOME_MESSAGE}</p>
                                 `;
         messageElement.appendChild(loggedInDiv);
 
@@ -397,8 +416,8 @@
     const notAvailabel = document.createElement("div");
     notAvailabel.classList.add("not-available");
     notAvailabel.innerHTML = `<p id="notAvailableGreeting"></p>
-    <p>Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details</p>
-    <p>To know more, see <a href="https://go.microsoft.com/fwlink/?linkid=2206366">Copilot in Power Pages documentation.<a></p>`;
+    <p>${copilotStrings.COPILOT_SUPPORT_MESSAGE}</p>
+    <p>${copilotStrings.DOCUMENTATION_LINK}<a></p>`;
 
     messageElement.appendChild(notAvailabel);
 
@@ -444,6 +463,8 @@
         chatMessages.innerHTML = "";
         welcomeScreen = setWelcomeScreen();
         welcomeScreen.userLoggedIn();
+        messages = [];
+        messageIndex = 1;
         }
         break;
       }
@@ -499,7 +520,7 @@
 
   function getApiResponse(userPrompt, isSuggestedPrompt) {
     apiResponseHandler = handleAPIResponse();
-    apiResponseHandler.updateThinking("Working on it...");
+    apiResponseHandler.updateThinking(copilotStrings.WORKING_ON_IT_MESSAGE);
     vscode.postMessage({ type: "newUserPrompt", value: {userPrompt: userPrompt, isSuggestedPrompt: isSuggestedPrompt}  });
   }
 
@@ -511,8 +532,8 @@
     vscode.postMessage({ type: "copyCodeToClipboard", value: code });
   }
 
-  function sendUserFeedback(feedback) {
-    vscode.postMessage({ type: "userFeedback", value: feedback });
+  function sendUserFeedback(feedbackValue, messageScenario) {
+    vscode.postMessage({ type: "userFeedback", value: { feedbackValue: feedbackValue, messageScenario: messageScenario }});
   }
 
   function handleWalkthroughClick() {
@@ -554,18 +575,27 @@
   function handleFeedbackClick(event) {
     const target = event.target;
 
-    if (target.classList.contains("thumbsup")) {
+    if (target.classList.contains(THUMBS_UP)) {
       handleThumbsUpClick(target);
     }
 
-    if (target.classList.contains("thumbsdown")) {
+    if (target.classList.contains(THUMBS_DOWN)) {
       handleThumbsDownClick(target);
     }
   }
 
   function handleThumbsUpClick(element) {
+
     if (element.classList.contains("thumbsup-clicked")) {
       return; // Do nothing if it already has the class
+    }
+
+    let messageId = element.closest(".message-wrapper").dataset.id;
+
+    let message = messages.find((message) => message.id == messageId);
+
+    if(message) {
+      message.reaction = THUMBS_UP;
     }
 
     const thumbsDownPath = element.parentNode.querySelector("#thumbsdown-path")
@@ -574,12 +604,20 @@
     thumpsUpPath.classList.add("thumbsup-clicked");
     thumbsDownPath.classList.remove("thumbsdown-clicked");
 
-    sendUserFeedback("thumbsUp");
+    sendUserFeedback(THUMBS_UP, message.scenario);
   }
 
   function handleThumbsDownClick(element) {
     if (element.classList.contains("thumbsdown-clicked")) {
       return; // Do nothing if it already has the class
+    }
+
+    let messageId = element.closest(".message-wrapper").dataset.id;
+
+    let message = messages.find((message) => message.id == messageId);
+
+    if(message) {
+      message.reaction = THUMBS_DOWN;
     }
 
     const thumbsUpPath = element.parentNode.querySelector("#thumbsup-path")
@@ -589,7 +627,7 @@
     thumbsUpPath.classList.remove("thumbsup-clicked");
 
 
-    sendUserFeedback("thumbsDown");
+    sendUserFeedback(THUMBS_DOWN, message.scenario);
   }
 
   function handleSuggestionsClick() {

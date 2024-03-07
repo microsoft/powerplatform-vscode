@@ -9,129 +9,137 @@ import { SurveyConstants } from "../../../web/client/common/constants";
 import fetch from "node-fetch";
 import { getNonce } from "../../Utils";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
-import { CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent} from "../telemetry/telemetryConstants";
+import { CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
+import { EUROPE_GEO, UK_GEO } from "../constants";
 
 let feedbackPanel: vscode.WebviewPanel | undefined;
 
 
-export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, ) {
+export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, geoName: string,  messageScenario: string, tenantId?: string) {
 
-  if(feedbackPanel) {
-    feedbackPanel.dispose();
-  }
-  
-  feedbackPanel = createFeedbackPanel(context);
+    if (feedbackPanel) {
+        feedbackPanel.dispose();
+    }
 
-  feedbackPanel.webview.postMessage({ type: "thumbType", value: thumbType });
+    feedbackPanel = createFeedbackPanel(context);
 
-  const { feedbackCssUri, feedbackJsUri } = getWebviewURIs(context, feedbackPanel);
+    feedbackPanel.webview.postMessage({ type: "thumbType", value: thumbType });
 
-  const nonce = getNonce();
-  const webview = feedbackPanel.webview
-  feedbackPanel.webview.html = getWebviewContent(feedbackCssUri, feedbackJsUri, nonce, webview);
+    const { feedbackCssUri, feedbackJsUri } = getWebviewURIs(context, feedbackPanel);
 
-  const feedbackData = initializeFeedbackData(sessionId);
+    const nonce = getNonce();
+    const webview = feedbackPanel.webview
+    feedbackPanel.webview.html = getWebviewContent(feedbackCssUri, feedbackJsUri, nonce, webview);
 
-  const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
+    const feedbackData = initializeFeedbackData(sessionId, vscode.env.uiKind === vscode.UIKind.Web, geoName, messageScenario, tenantId);
 
-  const endpointUrl = `https://world.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
+    const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
-  feedbackPanel.webview.onDidReceiveMessage(
-    async message => {
-      switch (message.command) {
-        case 'feedback':
-          await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, telemetry, thumbType, sessionId);
-          feedbackPanel?.dispose();
-          break;
-      }
-    },
-    undefined,
-    context.subscriptions
-  );
+    const endpointUrl = useEUEndpoint(geoName) ? `https://europe.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}` :
+        `https://world.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
+
+    feedbackPanel.webview.onDidReceiveMessage(
+        async message => {
+            switch (message.command) {
+                case 'feedback':
+                    await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, telemetry, thumbType, sessionId);
+                    feedbackPanel?.dispose();
+                    break;
+            }
+        },
+        undefined,
+        context.subscriptions
+    );
 }
 
 function createFeedbackPanel(context: vscode.ExtensionContext): vscode.WebviewPanel {
-  const feedbackPanel = vscode.window.createWebviewPanel(
-    "CESUserFeedback",
-    "Feedback",
-    vscode.ViewColumn.Seven,
-    {
-      enableScripts: true,
-    }
-  );
+    const feedbackPanel = vscode.window.createWebviewPanel(
+        "CESUserFeedback",
+        "Feedback",
+        vscode.ViewColumn.Seven,
+        {
+            enableScripts: true,
+        }
+    );
 
-  context.subscriptions.push(feedbackPanel);
+    context.subscriptions.push(feedbackPanel);
 
-  return feedbackPanel;
+    return feedbackPanel;
 }
 
 function getWebviewURIs(context: vscode.ExtensionContext, feedbackPanel: vscode.WebviewPanel): { feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri } {
-  const feedbackCssPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "user-feedback", "feedback.css");
-  const feedbackCssUri = feedbackPanel.webview.asWebviewUri(feedbackCssPath);
+    const feedbackCssPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "user-feedback", "feedback.css");
+    const feedbackCssUri = feedbackPanel.webview.asWebviewUri(feedbackCssPath);
 
-  const feedbackJsPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "user-feedback", "feedback.js");
-  const feedbackJsUri = feedbackPanel.webview.asWebviewUri(feedbackJsPath);
+    const feedbackJsPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'copilot', "user-feedback", "feedback.js");
+    const feedbackJsUri = feedbackPanel.webview.asWebviewUri(feedbackJsPath);
 
-  return { feedbackCssUri, feedbackJsUri };
+    return { feedbackCssUri, feedbackJsUri };
 }
 
-function initializeFeedbackData(sessionId: string): IFeedbackData {
-  const feedbackData: IFeedbackData = {
-    IsDismissed: false,
-    ProductContext: [
-      {
-        key: 'sessionId',
-        value: sessionId
-      },
-      {
-        key: 'scenario',
-        value: 'ProDevCopilot'
-      }
-    ],
-    Feedbacks: [
-      {
-        key: 'comment',
-        value: ''
-      }
-    ]
-  };
+function initializeFeedbackData(sessionId: string, isWebExtension: boolean, geoName: string, messageScenario: string,  tenantId?: string): IFeedbackData {
+    const feedbackData: IFeedbackData = {
+        TenantId: tenantId ? tenantId : '',
+        Geo: geoName,
+        IsDismissed: false,
+        ProductContext: [
+            {
+                key: 'sessionId',
+                value: sessionId
+            },
+            {
+                key: 'scenario',
+                value: 'ProDevCopilot'
+            },
+            {
+                key: 'subScenario',
+                value: messageScenario
+            }
+        ],
+        Feedbacks: [
+            {
+                key: 'comment',
+                value: ''
+            }
+        ]
+    };
 
-  return feedbackData;
+    return feedbackData;
 }
 
 async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, telemetry: ITelemetry, thumbType: string, sessionID: string) {
-  feedbackData.Feedbacks[0].value = thumbType + " " +  text;
-  try {
-    const response = await fetch(endpointUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + apiToken,
-      },
-      body: JSON.stringify(feedbackData)
-    });
+    feedbackData.Feedbacks[0].value = thumbType + " - " + text;
+    try {
+        const response = await fetch(endpointUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + apiToken,
+            },
+            body: JSON.stringify(feedbackData)
+        });
 
-    if (response.ok) {
-      // Feedback sent successfully
-      const responseJson = await response.json();
-      const feedbackId = responseJson.FeedbackId;
-      sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackSuccessEvent, feedbackType:thumbType, FeedbackId: feedbackId, copilotSessionId: sessionID });
-    } else {
-      // Error sending feedback
-      const feedBackError = new Error(response.statusText);
-      sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, error: feedBackError });
+        if (response.ok) {
+            // Feedback sent successfully
+            const responseJson = await response.json();
+            const feedbackId = responseJson.FeedbackId;
+            sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackSuccessEvent, feedbackType: thumbType, FeedbackId: feedbackId, copilotSessionId: sessionID });
+        } else {
+            // Error sending feedback
+            const feedBackError = new Error(response.statusText);
+            sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionID, error: feedBackError });
+        }
+    } catch (error) {
+        // Network error or other exception
+        sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionID, error: error as Error });
     }
-  } catch (error) {
-    // Network error or other exception
-    sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType:thumbType, copilotSessionId: sessionID, error: error as Error });
-  }
 }
 
 function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri, nonce: string, webview: vscode.Webview) {
 
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -154,3 +162,8 @@ function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri
   </body>
     </html>`;
 }
+
+function useEUEndpoint(geoName: string): boolean {
+    return geoName === EUROPE_GEO || geoName === UK_GEO;
+}
+

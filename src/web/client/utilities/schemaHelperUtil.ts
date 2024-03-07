@@ -9,6 +9,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import {
     entityAttributesWithBase64Encoding,
     schemaEntityKey,
+    schemaMetaDataKey,
     schemaEntityName,
 } from "../schema/constants";
 import { IAttributePath } from "../common/interfaces";
@@ -22,7 +23,19 @@ export function getEntityFetchQuery(entity: string, useRegularFetchQuery = false
 }
 
 export function getLogicalEntityParameter(entity: string) {
-    return getEntity(entity)?.get(schemaEntityKey.DATAVERSE_LOGICAL_ENTITY_NAME);
+    const entityMetadata = getEntity(entity)?.get(schemaEntityKey.DATAVERSE_ENTITY_METADATA);
+    return entityMetadata ? (entityMetadata as unknown as Map<string, string>).get(schemaMetaDataKey.DATAVERSE_LOGICAL_ENTITY_NAME) : undefined;
+}
+
+export function getLogicalFormNameParameter(entity: string) {
+    const entityMetadata = getEntity(entity)?.get(schemaEntityKey.DATAVERSE_ENTITY_METADATA);
+    return entityMetadata ? (entityMetadata as unknown as Map<string, string>).get(schemaMetaDataKey.DATAVERSE_FORM_NAME) : undefined;
+}
+
+export function getEntityParameters(entityName: string): Array<string | undefined> {
+    const logicalFormNameParameter = getLogicalFormNameParameter(entityName);
+    const logicalEntityName = getLogicalEntityParameter(entityName);
+    return [logicalEntityName, logicalFormNameParameter];
 }
 
 export function getPortalSchema(schema: string) {
@@ -137,11 +150,12 @@ export function getPortalLanguageIdToLcidMap(result: any, schema: string) {
                     counter < result.value.length;
                     counter++
                 ) {
-                    const lcid = result.value[counter].lcid
-                        ? result.value[counter].lcid
-                        : Constants.PORTAL_LANGUAGE_DEFAULT;
+                    const powerpagesitelanguageid = result.value[counter]
+                        .powerpagesitelanguageid
+                        ? result.value[counter].powerpagesitelanguageid
+                        : null;
                     const languagecode = result.value[counter].languagecode;
-                    portalLanguageIdCodeMap.set(lcid.toString(), languagecode);
+                    portalLanguageIdCodeMap.set(powerpagesitelanguageid.toString(), languagecode);
                 }
             } else {
                 for (

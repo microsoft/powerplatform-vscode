@@ -20,9 +20,9 @@ export enum schemaEntityKey {
     FILE_FOLDER_NAME = "_foldername",
     LANGUAGE_FIELD = "_languagefield",
     ATTRIBUTES_EXTENSION = "_attributesExtension",
+    DATAVERSE_ENTITY_METADATA = "_dataverseentitymetadata",
     VSCODE_ENTITY_NAME = "_vscodeentityname",
     DATAVERSE_ENTITY_NAME = "_dataverseenityname",
-    DATAVERSE_LOGICAL_ENTITY_NAME = "_dataverselogicalentityname",
     FETCH_QUERY_PARAMETERS = "_fetchQueryParameters",
     MULTI_FILE_FETCH_QUERY_PARAMETERS = "_multiFileFetchQueryParameters",
     MAPPING_ENTITY_ID = "_mappingEntityId",
@@ -31,6 +31,16 @@ export enum schemaEntityKey {
     EXPORT_TYPE = "_exporttype",
     ATTRIBUTES = "_attributes",
     ROOT_WEB_PAGE_ID = "_rootwebpageid",
+}
+
+export enum schemaMetaDataKey {
+    DATAVERSE_LOGICAL_ENTITY_NAME = "_dataverselogicalentityname",
+    DATAVERSE_FORM_NAME = "_dataverseformname",
+}
+
+export interface SchemaEntityMetadata {
+    logicalEntityName?: string;
+    logicalFormName?: string;
 }
 
 export enum schemaEntityName {
@@ -68,6 +78,13 @@ export enum entityAttributesWithBase64Encoding {
     filecontent = "filecontent",
 }
 
-export enum entityAttributeNeedMapping {
-    webformsteps = "content.webFormSteps"
+export enum EntityMetadataKeyCore {
+    ENTITY_LOGICAL_NAME = "content.entityname",
+    FORM_LOGICAL_NAME = "content.formname",
+    WEBFORM_STEPS = "content.webFormSteps",
+}
+
+export enum EntityMetadataKeyAdx {
+    ENTITY_LOGICAL_NAME = "adx_entityname",
+    FORM_LOGICAL_NAME = "adx_formname",
 }

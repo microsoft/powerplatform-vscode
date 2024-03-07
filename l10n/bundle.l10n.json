@@ -16,9 +16,10 @@
   "There was a permissions problem with the server": "There was a permissions problem with the server",
   "There’s a problem on the back end": "There’s a problem on the back end",
   "Try again": "Try again",
-  "We encountered an error preparing the file for edit.": "We encountered an error preparing the file for edit.",
+  "We encountered an error preparing the files for edit.": "We encountered an error preparing the files for edit.",
+  "Response data is empty": "Response data is empty",
   "Failed to fetch some files.": "Failed to fetch some files.",
-  "Failed to get file ready for edit.": "Failed to get file ready for edit.",
+  "Failed to get file ready for edit: {0}": "Failed to get file ready for edit: {0}",
   "Saving your file ...": "Saving your file ...",
   "Enter Organization ID": "Enter Organization ID",
   "Power Pages Copilot is now connected to the environment: {0} : {1}/{0} represents the environment name": {
@@ -29,8 +30,13 @@
   },
   "Enter the environment URL": "Enter the environment URL",
   "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.": "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.",
-  "Selection is empty!": "Selection is empty!",
+  "Selection is empty.": "Selection is empty.",
   "Copied to clipboard!": "Copied to clipboard!",
+  "Let Copilot help you code": "Let Copilot help you code",
+  "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.": "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.",
+  "Try Copilot for Power Pages": "Try Copilot for Power Pages",
+  "Learn more about Copilot": "Learn more about Copilot",
+  "Do not show again": "Do not show again",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [
@@ -68,6 +74,9 @@
       "{0} represents the name of the file"
     ]
   },
+  "Enter the name of the web template": "Enter the name of the web template",
+  "Please enter a name for the web template.": "Please enter a name for the web template.",
+  "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
   "No page templates found": "No page templates found",
   "No webpages found": "No webpages found",
   "New Webpage": "New Webpage",
@@ -80,9 +89,6 @@
   "File(s) already exist. No new files to add": "File(s) already exist. No new files to add",
   "Web files": "Web files",
   "Webfile(s) added successfully": "Webfile(s) added successfully",
-  "Enter the name of the web template": "Enter the name of the web template",
-  "Please enter a name for the web template.": "Please enter a name for the web template.",
-  "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
   "Page Template name cannot be empty.": "Page Template name cannot be empty.",
   "New Page Template": "New Page Template",
   "Choose web template": "Choose web template",
@@ -170,8 +176,8 @@
       "The {0} represents the optional name the user provided for the profile)"
     ]
   },
-  "Resource: {0}/The {0} represents profile's resource/environment URL": {
-    "message": "Resource: {0}",
+  "Default Environment: {0}/The {0} represents profile's resource/environment URL": {
+    "message": "Default Environment: {0}",
     "comment": [
       "The {0} represents profile's resource/environment URL"
     ]

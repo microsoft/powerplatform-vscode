@@ -25,8 +25,6 @@ const containerSchema = {
     },
 };
 
-let initial = false;
-
 class AzureFluidClient {
     static _clientInstance;
     static _container;
@@ -80,75 +78,113 @@ class AzureFluidClient {
     }
 }
 
-async function loadContainer(config, id, swpId) {
+let intital = false;
+
+async function loadContainer(config, swpId, entityInfo) {
     try {
+        self.postMessage({
+            type: "telemetry-info",
+            eventName: "webExtensionWebWorkerLoadContainerStart",
+        });
+
         const { container, audience, map } =
             await AzureFluidClient.fetchContainerAndService(config, swpId);
-
         const existingMembers = audience.getMembers();
+        const myself = audience.getMyself();
+        const selectionSharedMap = await (await map.get('selection')).get();
 
-        // TODO: yet to be decided how entity id will be passed in container from vscode side
+        if (audience && myself) {
+            const myConnectionId = audience['container'].clientId;
+            if (intital) {
+                const entityIdObj = new Array(entityInfo.rootWebPageId);
+                selectionSharedMap.set(myConnectionId, entityIdObj);
+            } else {
+                intital = true;
+            }
+        }
 
         audience.on("memberRemoved", (clientId, member) => {
-            if (!existingMembers.get(member.userId)) {
+            if (!existingMembers.get(member.additionalDetails.AadObjectId)) {
                 self.postMessage({
                     type: "member-removed",
-                    userId: member.userId,
+                    userId: member.additionalDetails.AadObjectId,
+                });
+                self.postMessage({
+                    type: "telemetry-info",
+                    eventName: "webExtensionWebWorkerMemberRemovedSuccess",
+                    userId: member.additionalDetails.AadObjectId,
+                });
+            } else {
+                self.postMessage({
+                    type: "telemetry-error",
+                    methodName: "webWorker memberRemoved",
+                    errorMessage: "Web Extension WebWorker Member Removed Failed",
                 });
             }
         });
 
-        if (!initial) {
-            existingMembers.forEach(async (value, key) => {
-                const otherUser = value;
-                const connectionArray = otherUser.connections;
+        const getUserIdByConnectionId = (targetConnectionId) => {
+            const members = audience.getMembers();
+            for (const [userId, member] of members.entries()) {
+                const connections = member.connections;
+                if (connections.some((connection) => connection.id === targetConnectionId)) {
+                    return { userId: userId, userName: member.userName, aadObjectId: member.additionalDetails.AadObjectId };
+                }
+            }
 
-                const entityId = [];
+            throw new Error("Web Extension WebWorker GetUserIdByConnectionId Failed");
+        };
 
-                const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
+        selectionSharedMap.on("valueChanged", async (changed, local) => {
+            try {
+                const user = getUserIdByConnectionId(changed.key);
+                const userConnections = audience
+                    .getMembers()
+                    .get(user.userId).connections;
 
-                connectionArray.forEach((connectionId) => {
-                    entityId.push(connectionIdInContainer.get(connectionId));
+                const userEntityIdArray = [];
+
+                const connectionIdInContainer = await map
+                    .get("selection")
+                    .get();
+
+                userConnections.forEach((connection) => {
+                    userEntityIdArray.push(
+                        connectionIdInContainer.get(connection.id)
+                    );
                 });
 
-                self.postMessage({
-                    type: "client-data",
-                    userName: otherUser.userName,
-                    userId: key,
-                    containerId: swpId,
-                    entityId: entityId,
-                });
-            });
-            initial = true;
-        }
-
-        map.on("valueChanged", async (changed, local) => {
-            if (local) {
-                return;
-            } else {
-                const otherUser = map.get(changed.key);
-                const connectionArray = otherUser.connections;
-
-                const entityId = [];
-
-                const connectionIdInContainer = await (container.initialObjects.sharedState.get('selection').get());
-
-                connectionArray.forEach((connectionId) => {
-                    entityId.push(connectionIdInContainer.get(connectionId));
-                });
-
-                // eslint-disable-next-line no-undef
+                // aadObjectId is the unique identifier for a user
                 await self.postMessage({
                     type: "client-data",
-                    userId: changed.key,
-                    userName: otherUser.userName,
+                    userId: user.aadObjectId,
+                    userName: user.userName,
                     containerId: swpId,
-                    entityId: entityId,
+                    entityId: userEntityIdArray,
+                });
+
+                await self.postMessage({
+                    type: "telemetry-info",
+                    eventName: "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
+                    userId: user.aadObjectId,
+                });
+            } catch (error) {
+                await self.postMessage({
+                    type: "telemetry-error",
+                    methodName: "webWorker valueChanged",
+                    errorMessage: error?.message,
+                    error: error,
                 });
             }
         });
     } catch (error) {
-        // TODO: add telemetry
+        self.postMessage({
+            type: "telemetry-error",
+            eventName: "webExtensionWebWorkerLoadContainerFailed",
+            methodName: loadContainer.name,
+            errorMessage: error?.message,
+            error: error,
+        });
     }
 }
 
@@ -160,8 +196,8 @@ function runFluidApp() {
 
         await loadContainer(
             message.afrConfig,
-            message.containerId,
             message.afrConfig.swpId,
+            message.entityInfo
         );
     });
 }

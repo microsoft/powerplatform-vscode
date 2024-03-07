@@ -119,7 +119,7 @@ describe("WebExtensionContext", () => {
             assert.calledOnceWithExactly(
                 sendErrorTelemetry,
                 telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
-                'triggeredMethod'
+                WebExtensionContext.dataverseAuthentication.name
             );
             expect(WebExtensionContext.websiteIdToLanguage).empty;
             expect(WebExtensionContext.languageIdCodeMap).empty;
@@ -186,7 +186,8 @@ describe("WebExtensionContext", () => {
             fileName,
             attributePath,
             encodeAsBase64,
-            mimeType
+            mimeType,
+            true
         );
 
         //Assert
@@ -204,6 +205,9 @@ describe("WebExtensionContext", () => {
             _encodeAsBase64: true,
             _mimeType: "pdf",
             _hasDirtyChanges: false,
+            _hasDiffViewTriggered: false,
+            _isContentLoaded: true,
+            _entityMetadata: undefined
         };
         expect(fileMap).deep.eq(expectedResult);
     });
@@ -253,12 +257,15 @@ describe("WebExtensionContext", () => {
             _encodeAsBase64: encodeAsBase64,
             _hasDirtyChanges: false,
             _mimeType: undefined,
+            _hasDiffViewTriggered: false,
+            _isContentLoaded: undefined,
+            _entityMetadata: undefined
         };
 
         expect(fileMap).deep.eq(expectedResult);
     });
 
-    it("updateEntityDetailsInContext_whenPassAllParamsExcpet_shouldSetColumnContent", async () => {
+    it("updateEntityDetailsInContext_whenPassAllParamsExcept_shouldSetColumnContent", async () => {
         //Act
         const attributePaths = {
             relativePath: "relativePath",
@@ -334,7 +341,7 @@ describe("WebExtensionContext", () => {
             assert.calledOnceWithExactly(
                 sendErrorTelemetry,
                 telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
-                'triggeredMethod'
+                WebExtensionContext.dataverseAuthentication.name
             );
             expect(WebExtensionContext.websiteIdToLanguage).length(0);
             expect(WebExtensionContext.languageIdCodeMap).length(0);
@@ -404,6 +411,15 @@ describe("WebExtensionContext", () => {
             "getWebsiteLanguageIdToPortalLanguageIdMap"
         ).returns(websiteLanguageIdToPortalLanguageMap);
 
+        const sharedWorkSpaceParamsMap = new Map<string, string>([
+            [
+                "workspaceKey",
+                "d8b40829-17c8-4082-9e3f-89d60dc0ab7e", // some guid value
+            ],
+        ]);
+        const getOrCreateSharedWorkspace = stub(urlBuilderUtil, "getOrCreateSharedWorkspace")
+            .resolves(sharedWorkSpaceParamsMap);
+
         const portalLanguageIdCodeMap = new Map<string, string>([
             ["d8b40829-17c8-4082-9e3f-89d60dc0ab7e", "1033"],
         ]);
@@ -447,7 +463,7 @@ describe("WebExtensionContext", () => {
         );
 
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
-        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL);
+        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
         assert.callCount(sendAPISuccessTelemetry, 3);
         assert.calledOnceWithExactly(
             getLcidCodeMap,
@@ -508,9 +524,9 @@ describe("WebExtensionContext", () => {
             Constants.initializationEntityName.WEBSITELANGUAGE
         );
 
-        const thrirdGetCustomRequestURLCall = getCustomRequestURL.getCalls()[2];
-        expect(thrirdGetCustomRequestURLCall.args[0]).eq(ORG_URL);
-        expect(thrirdGetCustomRequestURLCall.args[1]).eq(
+        const thirdGetCustomRequestURLCall = getCustomRequestURL.getCalls()[2];
+        expect(thirdGetCustomRequestURLCall.args[0]).eq(ORG_URL);
+        expect(thirdGetCustomRequestURLCall.args[1]).eq(
             Constants.initializationEntityName.PORTALLANGUAGE
         );
         //#endregion
@@ -531,6 +547,15 @@ describe("WebExtensionContext", () => {
         expect(thirdFetchCall.args[1]?.headers).deep.eq(header);
 
         //#endregion
+
+        assert.calledOnceWithExactly(
+            getOrCreateSharedWorkspace,
+            {
+                headers: header,
+                dataverseOrgUrl: ORG_URL,
+                websiteId: undefined
+            }
+        );
     });
 
     it("authenticateAndUpdateDataverseProperties_whenFetchCallFails_languageMapsShouldStillBeUpdated", async () => {
@@ -557,21 +582,6 @@ describe("WebExtensionContext", () => {
             urlBuilderUtil,
             "getCustomRequestURL"
         ).returns(requestUrl);
-
-        const sendAPIFailureTelemetry = stub(
-            WebExtensionContext.telemetry,
-            "sendAPIFailureTelemetry"
-        );
-
-        const sendAPITelemetry = stub(
-            WebExtensionContext.telemetry,
-            "sendAPITelemetry"
-        );
-
-        const sendAPISuccessTelemetry = stub(
-            WebExtensionContext.telemetry,
-            "sendAPISuccessTelemetry"
-        );
 
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
         const getLcidCodeMap = stub(schemaHelperUtil, "getLcidCodeMap").returns(
@@ -631,54 +641,11 @@ describe("WebExtensionContext", () => {
         );
 
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
-        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL);
-        assert.calledThrice(sendAPISuccessTelemetry);
-        assert.calledOnceWithExactly(
-            getLcidCodeMap,
-            { value: "value" },
-            SCHEMA_VERSION.toLowerCase()
-        );
-        assert.calledOnceWithExactly(
-            getWebsiteIdToLcidMap,
-            { value: "value" },
-            SCHEMA_VERSION.toLowerCase()
-        );
-        assert.calledOnceWithExactly(
-            getPortalLanguageIdToLcidMap,
-            { value: "value" },
-            SCHEMA_VERSION.toLowerCase()
-        );
-        assert.calledOnceWithExactly(
-            getWebsiteLanguageIdToPortalLanguageIdMap,
-            { value: "value" },
-            SCHEMA_VERSION.toLowerCase()
-        );
-
-        assert.calledThrice(sendAPIFailureTelemetry);
-
-        //#region sendAPITelemetry calls
-        assert.calledThrice(sendAPITelemetry);
-        const firstSendAPITelemetryCall = sendAPITelemetry.getCalls()[0];
-        expect(firstSendAPITelemetryCall.args[0]).eq(requestUrl);
-        expect(firstSendAPITelemetryCall.args[1]).eq(
-            Constants.initializationEntityName.WEBSITE
-        );
-        expect(firstSendAPITelemetryCall.args[2]).eq(Constants.httpMethod.GET);
-
-        const secondSendAPITelemetryCall = sendAPITelemetry.getCalls()[1];
-        expect(secondSendAPITelemetryCall.args[0]).eq(requestUrl);
-        expect(secondSendAPITelemetryCall.args[1]).eq(
-            Constants.initializationEntityName.WEBSITELANGUAGE
-        );
-        expect(secondSendAPITelemetryCall.args[2]).eq(Constants.httpMethod.GET);
-
-        const thirdSendAPITelemetryCall = sendAPITelemetry.getCalls()[2];
-        expect(thirdSendAPITelemetryCall.args[0]).eq(requestUrl);
-        expect(thirdSendAPITelemetryCall.args[1]).eq(
-            Constants.initializationEntityName.PORTALLANGUAGE
-        );
-        expect(thirdSendAPITelemetryCall.args[2]).eq(Constants.httpMethod.GET);
-        //#endregion
+        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
+        assert.notCalled(getLcidCodeMap);
+        assert.notCalled(getWebsiteIdToLcidMap);
+        assert.notCalled(getPortalLanguageIdToLcidMap);
+        assert.notCalled(getWebsiteLanguageIdToPortalLanguageIdMap);
 
         //#region getCustomRequestURL calls
         assert.calledThrice(getCustomRequestURL);
@@ -694,9 +661,9 @@ describe("WebExtensionContext", () => {
             Constants.initializationEntityName.WEBSITELANGUAGE
         );
 
-        const thrirdGetCustomRequestURLCall = getCustomRequestURL.getCalls()[2];
-        expect(thrirdGetCustomRequestURLCall.args[0]).eq(ORG_URL);
-        expect(thrirdGetCustomRequestURLCall.args[1]).eq(
+        const thirdGetCustomRequestURLCall = getCustomRequestURL.getCalls()[2];
+        expect(thirdGetCustomRequestURLCall.args[0]).eq(ORG_URL);
+        expect(thirdGetCustomRequestURLCall.args[1]).eq(
             Constants.initializationEntityName.PORTALLANGUAGE
         );
         //#endregion
@@ -744,11 +711,6 @@ describe("WebExtensionContext", () => {
             "getCustomRequestURL"
         ).returns(requestUrl);
 
-        const sendAPIFailureTelemetry = stub(
-            WebExtensionContext.telemetry,
-            "sendAPIFailureTelemetry"
-        );
-
         const _mockFetch = stub(fetch, "default").throws();
         const languageIdCodeMap = new Map<string, string>([["1033", "en-US"]]);
         stub(schemaHelperUtil, "getLcidCodeMap").returns(languageIdCodeMap);
@@ -795,7 +757,7 @@ describe("WebExtensionContext", () => {
         );
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
 
-        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL);
+        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
         //#region  Fetch
         const header = getCommonHeaders(accessToken);
         assert.calledThrice(_mockFetch);
@@ -810,7 +772,6 @@ describe("WebExtensionContext", () => {
         const thirdFetchCall = _mockFetch.getCalls()[2];
         expect(thirdFetchCall.args[0], requestUrl);
         expect(thirdFetchCall.args[1]?.headers).deep.eq(header);
-        assert.calledThrice(sendAPIFailureTelemetry);
 
         //#endregion
 
@@ -828,9 +789,9 @@ describe("WebExtensionContext", () => {
             Constants.initializationEntityName.WEBSITELANGUAGE
         );
 
-        const thrirdGetCustomRequestURLCall = getCustomRequestURL.getCalls()[2];
-        expect(thrirdGetCustomRequestURLCall.args[0]).eq(ORG_URL);
-        expect(thrirdGetCustomRequestURLCall.args[1]).eq(
+        const thirdGetCustomRequestURLCall = getCustomRequestURL.getCalls()[2];
+        expect(thirdGetCustomRequestURLCall.args[0]).eq(ORG_URL);
+        expect(thirdGetCustomRequestURLCall.args[1]).eq(
             Constants.initializationEntityName.PORTALLANGUAGE
         );
         //#endregion

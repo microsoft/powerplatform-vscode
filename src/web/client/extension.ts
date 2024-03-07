@@ -10,6 +10,7 @@ import {
     PUBLIC,
     queryParameters,
     IS_MULTIFILE_FIRST_RUN_EXPERIENCE,
+    ARTEMIS_RESPONSE_FAILED,
 } from "./common/constants";
 import { PortalsFS } from "./dal/fileSystemProvider";
 import {
@@ -33,6 +34,10 @@ import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
+import * as Constants from "./common/constants"
+import { fetchArtemisResponse } from "../../common/ArtemisService";
+import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -42,6 +47,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             dataBoundary
         );
+    oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
     WebExtensionContext.telemetry.setTelemetryReporter(
         context.extension.id,
@@ -86,12 +92,12 @@ export function activate(context: vscode.ExtensionContext): void {
                         );
                     }
                 }
-
+                const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
+                const orgGeo = await fetchArtemisData(orgId);
+                oneDSLoggerWrapper.instantiate(orgGeo);
                 if (
                     !checkMandatoryParameters(
                         appName,
-                        entity,
-                        entityId,
                         queryParamsMap
                     )
                 ) {
@@ -144,6 +150,8 @@ export function activate(context: vscode.ExtensionContext): void {
                                         context.extensionUri
                                     );
                                 }
+
+                                await logArtemisTelemetry();
                             }
                             break;
                         default:
@@ -185,9 +193,35 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillSaveDocument(context);
 
-    processWillStartCollaboartion();
+    processWillStartCollaboartion(context);
+
+    enableFileSearchFunctionality(portalsFS);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+}
+
+export function enableFileSearchFunctionality(portalsFS: PortalsFS) {
+    vscode.workspace.registerFileSearchProvider(PORTALS_URI_SCHEME, {
+        provideFileSearchResults: async (query) => {
+            return portalsFS.searchFiles(query.pattern);
+        },
+    });
+}
+
+export function registerCollaborationView() {
+    vscode.window.registerTreeDataProvider('powerpages.collaborationView', WebExtensionContext.userCollaborationProvider);
+    vscode.commands.registerCommand(
+        "powerpages.collaboration.openTeamsChat",
+        (event) => {
+            WebExtensionContext.openTeamsChat(event.id)
+        }
+    );
+    vscode.commands.registerCommand(
+        "powerpages.collaboration.openMail",
+        (event) => {
+            WebExtensionContext.openMail(event.id)
+        }
+    );
 }
 
 export function powerPagesNavigation() {
@@ -233,11 +267,36 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     const document = tab.input;
                     const entityInfo: IEntityInfo = {
                         entityId: getFileEntityId(document.uri.fsPath),
-                        entityName: getFileEntityName(document.uri.fsPath)
+                        entityName: getFileEntityName(document.uri.fsPath),
+                        rootWebPageId: WebExtensionContext.entityDataMap.getEntityMap.get(getFileEntityId(document.uri.fsPath))?.rootWebPageId as string
                     };
                     if (entityInfo.entityId && entityInfo.entityName) {
                         context.workspaceState.update(document.uri.fsPath, entityInfo);
                         WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, entityInfo);
+
+                        // sending message to webworker event listener for Co-Presence feature
+                        if (isCoPresenceEnabled()) {
+                            if (WebExtensionContext.worker !== undefined) {
+                                WebExtensionContext.worker.postMessage({
+                                    afrConfig: {
+                                        swpId: WebExtensionContext.sharedWorkSpaceMap.get(
+                                            Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
+                                        ) as string,
+                                        swptenantId: WebExtensionContext.sharedWorkSpaceMap.get(
+                                            Constants.sharedWorkspaceParameters.TENANT_ID
+                                        ) as string,
+                                        discoveryendpoint: WebExtensionContext.sharedWorkSpaceMap.get(
+                                            Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
+                                        ) as string,
+                                        swpAccessToken: WebExtensionContext.sharedWorkSpaceMap.get(
+                                            Constants.sharedWorkspaceParameters.ACCESS_TOKEN
+                                        ) as string,
+                                    },
+                                    entityInfo
+                                });
+                            }
+                            WebExtensionContext.quickPickProvider.refresh();
+                        }
                     }
                 }
             });
@@ -269,9 +328,86 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
     );
 }
 
-export function processWillStartCollaboartion() {
+export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
+    // feature in progress, hence disabling it
     if (isCoPresenceEnabled()) {
-        // TODO: Add copresence logic
+        registerCollaborationView();
+        vscode.commands.registerCommand('powerPlatform.previewCurrentActiveUsers', () => WebExtensionContext.quickPickProvider.showQuickPick());
+        createWebWorkerInstance(context);
+    }
+}
+
+export function createWebWorkerInstance(
+    context: vscode.ExtensionContext
+) {
+    try {
+        const webworkerMain = vscode.Uri.joinPath(
+            context.extensionUri,
+            "dist",
+            "web",
+            "webworker.worker.js"
+        );
+
+        const workerUrl = new URL(webworkerMain.toString());
+
+        WebExtensionContext.getWorkerScript(workerUrl)
+            .then((workerScript) => {
+                const workerBlob = new Blob([workerScript], {
+                    type: "application/javascript",
+                });
+
+                const urlObj = URL.createObjectURL(workerBlob);
+
+                WebExtensionContext.setWorker(new Worker(urlObj));
+
+                if (WebExtensionContext.worker !== undefined) {
+                    WebExtensionContext.worker.onmessage = (event) => {
+                        const { data } = event;
+
+                        WebExtensionContext.containerId = event.data.containerId;
+
+                        if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
+                            WebExtensionContext.removeConnectedUserInContext(
+                                data.userId
+                            );
+                            WebExtensionContext.userCollaborationProvider.refresh();
+                            WebExtensionContext.quickPickProvider.refresh();
+                        }
+                        if (data.type === Constants.workerEventMessages.UPDATE_CONNECTED_USERS) {
+                            WebExtensionContext.updateConnectedUsersInContext(
+                                data.containerId,
+                                data.userName,
+                                data.userId,
+                                data.entityId
+                            );
+                            WebExtensionContext.userCollaborationProvider.refresh();
+                            WebExtensionContext.quickPickProvider.refresh();
+                        }
+                        if (data.type === Constants.workerEventMessages.SEND_INFO_TELEMETRY) {
+                            WebExtensionContext.telemetry.sendInfoTelemetry(
+                                data.eventName,
+                                data?.userId ? { userId: data.userId } : {}
+                            );
+                        }
+                        if (data.type === Constants.workerEventMessages.SEND_ERROR_TELEMETRY) {
+                            WebExtensionContext.telemetry.sendErrorTelemetry(
+                                data.eventName,
+                                data.methodName,
+                                data?.errorMessage,
+                                data?.error
+                            );
+                        }
+                    };
+                }
+            })
+
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTERED);
+    } catch (error) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED,
+            createWebWorkerInstance.name,
+            Constants.WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED,
+            error as Error);
     }
 }
 
@@ -405,7 +541,8 @@ export function registerCopilot(context: vscode.ExtensionContext) {
                 queryParameters.ORG_ID
             ) as string,
             environmentName: "",
-            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string
+            activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string,
+            tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,
         } as IOrgInfo;
 
         const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
@@ -459,4 +596,32 @@ function isActiveDocument(fileFsPath: string): boolean {
         WebExtensionContext.isContextSet &&
         WebExtensionContext.fileDataMap.getFileMap.has(fileFsPath)
     );
+}
+
+async function fetchArtemisData(orgId: string) : Promise<string> {
+        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+        if (!artemisResponse) {
+            // Todo: Log in error telemetry. Runtime maintains another table for this kind of failure. We should do the same.
+            return '';
+        }
+
+        return artemisResponse[0].geoName as string;
+}
+
+async function logArtemisTelemetry() {
+
+    try {
+        const orgId = WebExtensionContext.urlParametersMap.get(
+            queryParameters.ORG_ID
+        ) as string
+
+        const geoName= fetchArtemisData(orgId);
+        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
+            { orgId: orgId, geoName: String(geoName) });
+    } catch (error) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
+            logArtemisTelemetry.name,
+            ARTEMIS_RESPONSE_FAILED);
+    }
 }

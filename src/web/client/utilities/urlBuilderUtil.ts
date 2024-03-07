@@ -10,13 +10,19 @@ import {
 } from "../common/constants";
 import WebExtensionContext from "../WebExtensionContext";
 import {
+    EntityMetadataKeyAdx,
+    EntityMetadataKeyCore,
     SCHEMA_WEBFILE_FOLDER_NAME,
+    SchemaEntityMetadata,
     entityAttributesWithBase64Encoding,
     schemaEntityKey,
     schemaEntityName,
     schemaKey,
 } from "../schema/constants";
 import { getAttributePath, getEntity, getEntityFetchQuery } from "./schemaHelperUtil";
+import { getWorkSpaceName } from "./commonUtil";
+import * as Constants from "../common/constants";
+import { telemetryEventNames } from "../telemetry/constants";
 
 export const getParameterizedRequestUrlTemplate = (
     useSingleEntityUrl: boolean
@@ -213,6 +219,35 @@ export function getLogicalEntityName(result: any, logicalEntityName?: string) {
     return logicalEntity;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getMetadataInfo(result: any, metadataKeys?: string[]): SchemaEntityMetadata {
+    const entityMetadata: SchemaEntityMetadata = {};
+
+    if (metadataKeys) {
+        for (const key of metadataKeys) {
+            const attributePath = getAttributePath(key);
+            const value = attributePath.relativePath.length > 0
+                ? JSON.parse(result[attributePath.source])[attributePath.relativePath]
+                : result[attributePath.source];
+
+            switch (key) {
+                case EntityMetadataKeyCore.ENTITY_LOGICAL_NAME:
+                case EntityMetadataKeyAdx.ENTITY_LOGICAL_NAME:
+                    entityMetadata.logicalEntityName = value;
+                    break;
+                case EntityMetadataKeyCore.FORM_LOGICAL_NAME:
+                case EntityMetadataKeyAdx.FORM_LOGICAL_NAME:
+                    entityMetadata.logicalFormName = value;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    return entityMetadata;
+}
+
 export function pathHasEntityFolderName(uri: string): boolean {
     for (const entry of WebExtensionContext.entitiesFolderNameMap.entries()) {
         if (uri.includes(entry[1])) {
@@ -242,4 +277,74 @@ export function isWebFileWithLazyLoad(fsPath: string): boolean {
         fsPath.includes(WebExtensionContext.rootDirectory.fsPath) &&
         fsPath.includes(SCHEMA_WEBFILE_FOLDER_NAME) &&
         !isPreloadedContent;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getOrCreateSharedWorkspace(config: any) {
+    let requestSentAtTime = new Date().getTime();
+
+    const origin = config.dataverseOrgUrl;
+    const apiName = Constants.GET_OR_CREATE_SHARED_WORK_SPACE;
+    const requestUrl = new URL(apiName, origin);
+
+    try {
+        WebExtensionContext.telemetry.sendAPITelemetry(
+            requestUrl.href,
+            config.entityName,
+            Constants.httpMethod.POST,
+            getOrCreateSharedWorkspace.name,
+        );
+
+        requestSentAtTime = new Date().getTime();
+
+        const createWorkspaceResponse = await WebExtensionContext.concurrencyHandler.handleRequest(
+            requestUrl,
+            {
+                headers: {
+                    ...config.headers,
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    target: {
+                        name: getWorkSpaceName(config.websiteId),
+                    }
+                }),
+            }
+        )
+
+        if (!createWorkspaceResponse.ok) {
+            throw new Error(JSON.stringify(createWorkspaceResponse));
+        }
+
+        WebExtensionContext.telemetry.sendAPISuccessTelemetry(
+            requestUrl.href,
+            config.entityName,
+            Constants.httpMethod.POST,
+            new Date().getTime() - requestSentAtTime,
+            getOrCreateSharedWorkspace.name
+        );
+
+        return await createWorkspaceResponse.json();
+    } catch (error) {
+        const errorMsg = (error as Error)?.message;
+        if ((error as Response)?.status > 0) {
+            WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                requestUrl.href,
+                config.entityName,
+                Constants.httpMethod.GET,
+                new Date().getTime() - requestSentAtTime,
+                getOrCreateSharedWorkspace.name,
+                errorMsg,
+                '',
+                (error as Response)?.status.toString()
+            );
+        } else {
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
+                getOrCreateSharedWorkspace.name,
+                Constants.WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR,
+                error as Error
+            );
+        }
+    }
 }

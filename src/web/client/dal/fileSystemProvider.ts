@@ -242,10 +242,18 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async rename(): Promise<void> {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_RENAME_NOT_SUPPORTED,
+            this.rename.name
+        );
         throw new Error("Method not implemented.");
     }
 
     async delete(): Promise<void> {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_DELETE_NOT_SUPPORTED,
+            this.delete.name
+        );
         throw new Error("Method not implemented.");
     }
 
@@ -266,6 +274,40 @@ export class PortalsFS implements vscode.FileSystemProvider {
         entry.data = new TextEncoder().encode(latestContent);
         entry.size = entry.size + 1;
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri });
+    }
+
+    async searchFiles(pattern: string) {
+        // create case sensitive regex
+        const regex = new RegExp(pattern, "i");
+        const files = await this.iterateDirectory(WebExtensionContext.rootDirectory);
+        const results: vscode.ProviderResult<vscode.Uri[]> = [];
+
+        files.forEach((fileUri) => {
+            const isMatch = regex.test(fileUri.path);
+            if (isMatch) {
+                results.push(fileUri);
+            }
+        });
+
+        return files;
+    }
+
+    private async iterateDirectory(uri: vscode.Uri) {
+        const entries = await vscode.workspace.fs.readDirectory(uri);
+        const files: vscode.Uri[] = [];
+
+        for (const [entry, type] of entries) {
+            const entryUri = vscode.Uri.joinPath(uri, entry);
+
+            if (type === vscode.FileType.Directory) {
+                const dirFiles = await this.iterateDirectory(entryUri);
+                files.push(...dirFiles);
+            } else if (type === vscode.FileType.File) {
+                files.push(entryUri);
+            }
+        }
+
+        return files;
     }
 
     // --- lookup
@@ -434,29 +476,31 @@ export class PortalsFS implements vscode.FileSystemProvider {
             ) as string
         );
 
-        // Load default file first
-        await fetchDataFromDataverseAndUpdateVFS(
-            this,
-            {
-                entityId: WebExtensionContext.defaultEntityId,
-                entityName: WebExtensionContext.defaultEntityType,
-            } as IFileInfo
-        );
+        // Try Loading default file first
+        if (WebExtensionContext.defaultEntityId !== "" && WebExtensionContext.defaultEntityType !== "") {
+            await fetchDataFromDataverseAndUpdateVFS(
+                this,
+                {
+                    entityId: WebExtensionContext.defaultEntityId,
+                    entityName: WebExtensionContext.defaultEntityType,
+                } as IFileInfo
+            );
 
-        // Fire and forget
-        vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
+            // Fire and forget
+            vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
-            {
-                commandId: "vscode.open",
-                type: "file",
-                entityId: WebExtensionContext.defaultEntityId,
-                entityName: WebExtensionContext.defaultEntityType,
-                isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
-                duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
-            }
-        );
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
+                {
+                    commandId: "vscode.open",
+                    type: "file",
+                    entityId: WebExtensionContext.defaultEntityId,
+                    entityName: WebExtensionContext.defaultEntityType,
+                    isMultifileEnabled: WebExtensionContext.showMultifileInVSCode.toString(),
+                    duration: (new Date().getTime() - WebExtensionContext.extensionActivationTime).toString(),
+                }
+            );
+        }
 
         if (WebExtensionContext.showMultifileInVSCode) {
             // load rest of the files

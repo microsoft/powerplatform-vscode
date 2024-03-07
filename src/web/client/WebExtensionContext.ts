@@ -21,14 +21,19 @@ import {
     getWebsiteIdToLcidMap,
     getWebsiteLanguageIdToPortalLanguageIdMap,
 } from "./utilities/schemaHelperUtil";
-import { getCustomRequestURL } from "./utilities/urlBuilderUtil";
-import { schemaKey } from "./schema/constants";
+import { getCustomRequestURL, getOrCreateSharedWorkspace } from "./utilities/urlBuilderUtil";
+import { SchemaEntityMetadata, schemaKey } from "./schema/constants";
 import { telemetryEventNames } from "./telemetry/constants";
 import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
-import { isMultifileEnabled } from "./utilities/commonUtil";
+import { getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
+import { UserDataMap } from "./context/userDataMap";
+import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
+import { QuickPickProvider } from "./webViews/QuickPickProvider";
+import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
+import { GraphClientService } from "./services/graphClientService";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -94,6 +99,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _extensionUri: vscode.Uri;
     private _dataverseAccessToken: string;
     private _entityDataMap: EntityDataMap;
+    private _entityForeignKeyDataMap: EntityForeignKeyDataMap;
     private _isContextSet: boolean;
     private _currentSchemaVersion: string;
     private _websiteLanguageCode: string;
@@ -101,7 +107,15 @@ class WebExtensionContext implements IWebExtensionContext {
     private _npsEligibility: boolean;
     private _userId: string;
     private _formsProEligibilityId: string;
-    private _concurrencyHandler: ConcurrencyHandler
+    private _concurrencyHandler: ConcurrencyHandler;
+    // Co-Presence for Power Pages Vscode for web
+    private _worker: Worker | undefined;
+    private _sharedWorkSpaceMap: Map<string, string>;
+    private _containerId: string;
+    private _connectedUsers: UserDataMap;
+    private _quickPickProvider: QuickPickProvider;
+    private _userCollaborationProvider: UserCollaborationProvider;
+    private _graphClientService: GraphClientService;
 
     public get schemaDataSourcePropertiesMap() {
         return this._schemaDataSourcePropertiesMap;
@@ -160,6 +174,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get entityDataMap() {
         return this._entityDataMap;
     }
+    public get entityForeignKeyDataMap() {
+        return this._entityForeignKeyDataMap;
+    }
     public get isContextSet() {
         return this._isContextSet;
     }
@@ -184,6 +201,30 @@ class WebExtensionContext implements IWebExtensionContext {
     public get concurrencyHandler() {
         return this._concurrencyHandler;
     }
+    public get worker() {
+        return this._worker;
+    }
+    public get sharedWorkSpaceMap() {
+        return this._sharedWorkSpaceMap;
+    }
+    public get connectedUsers() {
+        return this._connectedUsers;
+    }
+    public get containerId() {
+        return this._containerId;
+    }
+    public set containerId(containerId: string) {
+        this._containerId = containerId;
+    }
+    public get quickPickProvider() {
+        return this._quickPickProvider;
+    }
+    public get userCollaborationProvider() {
+        return this._userCollaborationProvider;
+    }
+    public get graphClientService() {
+        return this._graphClientService;
+    }
 
     constructor() {
         this._schemaDataSourcePropertiesMap = new Map<string, string>();
@@ -201,6 +242,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._rootDirectory = vscode.Uri.parse("");
         this._fileDataMap = new FileDataMap();
         this._entityDataMap = new EntityDataMap();
+        this._entityForeignKeyDataMap = new EntityForeignKeyDataMap();
         this._defaultFileUri = vscode.Uri.parse(``);
         this._showMultifileInVSCode = false;
         this._extensionActivationTime = new Date().getTime();
@@ -213,6 +255,12 @@ class WebExtensionContext implements IWebExtensionContext {
         this._userId = "";
         this._formsProEligibilityId = "";
         this._concurrencyHandler = new ConcurrencyHandler();
+        this._sharedWorkSpaceMap = new Map<string, string>();
+        this._containerId = "";
+        this._connectedUsers = new UserDataMap();
+        this._quickPickProvider = new QuickPickProvider();
+        this._userCollaborationProvider = new UserCollaborationProvider();
+        this._graphClientService = new GraphClientService();
     }
 
     public setWebExtensionContext(
@@ -224,8 +272,8 @@ class WebExtensionContext implements IWebExtensionContext {
         const schema = queryParamsMap.get(schemaKey.SCHEMA_VERSION) as string;
         // Initialize context from URL params
         this._currentSchemaVersion = schema;
-        this._defaultEntityType = entityName.toLowerCase();
-        this._defaultEntityId = entityId;
+        this._defaultEntityType = (entityName && entityName.toLowerCase()) ?? queryParamsMap.get(Constants.queryParameters.ENTITY) as string ?? "";
+        this._defaultEntityId = entityId ?? queryParamsMap.get(Constants.queryParameters.ENTITY_ID) as string ?? "";
         this._urlParametersMap = queryParamsMap;
         this._rootDirectory = vscode.Uri.parse(
             `${Constants.PORTALS_URI_SCHEME}:/${queryParamsMap.get(
@@ -301,6 +349,16 @@ class WebExtensionContext implements IWebExtensionContext {
         );
 
         await this.setWebsiteLanguageCode();
+
+        // Getting website Id to populate shared workspace for Co-Presence
+        const websiteId = this.urlParametersMap.get(
+            Constants.queryParameters.WEBSITE_ID
+        ) as string;
+
+        const headers = getCommonHeaders(this._dataverseAccessToken);
+
+        // Populate shared workspace for Co-Presence
+        await this.populateSharedWorkspace(headers, dataverseOrgUrl, websiteId);
     }
 
     public async dataverseAuthentication(firstTimeAuth = false) {
@@ -344,7 +402,7 @@ class WebExtensionContext implements IWebExtensionContext {
         encodeAsBase64: boolean,
         mimeType?: string,
         isContentLoaded?: boolean,
-        logicalEntityName?: string
+        entityMetadata?: SchemaEntityMetadata
     ) {
         this.fileDataMap.setEntity(
             fileUri,
@@ -357,7 +415,7 @@ class WebExtensionContext implements IWebExtensionContext {
             encodeAsBase64,
             mimeType,
             isContentLoaded,
-            logicalEntityName);
+            entityMetadata);
     }
 
     public async updateEntityDetailsInContext(
@@ -379,6 +437,16 @@ class WebExtensionContext implements IWebExtensionContext {
             mappingEntityId,
             fileUri,
             rootWebPageId);
+    }
+
+    public async updateForeignKeyDetailsInContext(
+        rootWebPageId: string,
+        entityId: string,
+    ) {
+        this.entityForeignKeyDataMap.setEntityForeignKey(
+            rootWebPageId,
+            entityId
+        );
     }
 
     public async updateSingleFileUrisInContext(uri: vscode.Uri) {
@@ -628,6 +696,127 @@ class WebExtensionContext implements IWebExtensionContext {
 
     public getVscodeWorkspaceState(key: string): IEntityInfo | undefined {
         return this._vscodeWorkspaceState.get(key);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public async getWorkerScript(workerUrl: URL): Promise<any> {
+        try {
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT
+            );
+
+            const response = await this.concurrencyHandler.handleRequest(
+                workerUrl
+            )
+
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to fetch worker script '${workerUrl.toString()}': ${response.statusText}`
+                );
+            }
+
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_SUCCESS,
+                { workerUrl: workerUrl.toString() }
+            );
+
+            return await response.text();
+        } catch (error) {
+            this.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
+                this.getWorkerScript.name,
+                Constants.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
+                error as Error
+            );
+        }
+    }
+
+    public setWorker(worker: Worker) {
+        this._worker = worker;
+    }
+
+    private async populateSharedWorkspace(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        headers: any,
+        dataverseOrgUrl: string,
+        websiteId: string
+    ) {
+        try {
+            const sharedWorkspace = await getOrCreateSharedWorkspace({
+                headers,
+                dataverseOrgUrl,
+                websiteId: websiteId,
+            });
+
+            const sharedWorkSpaceParamsMap = new Map<string, string>();
+            for (const key in sharedWorkspace) {
+                sharedWorkSpaceParamsMap.set(
+                    String(key).trim().toLocaleLowerCase(),
+                    String(sharedWorkspace[key]).trim()
+                );
+            }
+
+            this._sharedWorkSpaceMap = sharedWorkSpaceParamsMap;
+
+            this.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SUCCESS,
+                { count: this._sharedWorkSpaceMap.size.toString() }
+            );
+        } catch (error) {
+            this.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
+                this.populateSharedWorkspace.name,
+                Constants.WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR,
+                error as Error
+            );
+        }
+    }
+
+    public async updateConnectedUsersInContext(
+        containerId: string,
+        userName: string,
+        userId: string,
+        entityId: string[]
+    ) {
+        this.connectedUsers.setUserData(
+            containerId,
+            userName,
+            userId,
+            entityId
+        );
+    }
+
+    public async removeConnectedUserInContext(userId: string) {
+        this.connectedUsers.removeUser(userId);
+    }
+
+    public async getMail(userId: string): Promise<string> {
+        const mail = await this.graphClientService.getUserEmail(userId);
+        return mail;
+    }
+
+    public openTeamsChat(userId: string) {
+        this.getMail(userId).then((mail) => {
+            if (mail === undefined) {
+                vscode.window.showErrorMessage(Constants.WEB_EXTENSION_TEAMS_CHAT_NOT_AVAILABLE);
+                return;
+            } else {
+                const teamsChatLink = getTeamChatURL(mail);
+                vscode.env.openExternal(vscode.Uri.parse(teamsChatLink.href));
+            }
+        });
+    }
+
+    public async openMail(userId: string): Promise<void> {
+        this.getMail(userId).then((mail) => {
+            if (mail === undefined) {
+                vscode.window.showErrorMessage(Constants.WEB_EXTENSION_SEND_EMAIL_NOT_AVAILABLE);
+                return;
+            } else {
+                const mailToPath = getMailToPath(mail);
+                vscode.env.openExternal(vscode.Uri.parse(mailToPath));
+            }
+        });
     }
 }
 

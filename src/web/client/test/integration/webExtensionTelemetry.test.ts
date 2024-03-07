@@ -69,8 +69,6 @@ describe("webExtensionTelemetry", () => {
         //Assert
         const properties = {
             appName: "",
-            entity: "",
-            entityId: "",
         };
         assert.calledOnceWithExactly(
             sendTelemetryEvent,
@@ -97,6 +95,15 @@ describe("webExtensionTelemetry", () => {
             ],
             [queryParameters.REFERRER, "yes"],
             [queryParameters.SITE_VISIBILITY, "false"],
+            [queryParameters.REGION, "NAM"],
+            [queryParameters.GEO, "US"],
+            [queryParameters.ENV_ID, "c4dc3686-1e6b-e428-b886-16cd0b9f4918"],
+            [queryParameters.ENTITY, "webpage"],
+            [
+                queryParameters.ENTITY_ID,
+                "e5dce21c-f85f-4849-b699-920c0fad5fbf",
+            ],
+            [queryParameters.REFERRER_SOURCE, "test"],
         ]);
 
         const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
@@ -112,6 +119,12 @@ describe("webExtensionTelemetry", () => {
             ),
             referrer: queryParamsMap.get(queryParameters.REFERRER),
             siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
+            region: queryParamsMap.get(queryParameters.REGION),
+            geo: queryParamsMap.get(queryParameters.GEO),
+            envId: queryParamsMap.get(queryParameters.ENV_ID),
+            entity: queryParamsMap.get(queryParameters.ENTITY),
+            entityId: queryParamsMap.get(queryParameters.ENTITY_ID),
+            referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
 
@@ -145,6 +158,10 @@ describe("webExtensionTelemetry", () => {
             ),
             referrer: queryParamsMap.get(queryParameters.REFERRER),
             siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
+            region: queryParamsMap.get(queryParameters.REGION),
+            geo: queryParamsMap.get(queryParameters.GEO),
+            envId: queryParamsMap.get(queryParameters.ENV_ID),
+            referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
 
@@ -177,7 +194,7 @@ describe("webExtensionTelemetry", () => {
         };
 
         //Act
-        webExtensionTelemetry.sendErrorTelemetry(eventName, errorMessage);
+        webExtensionTelemetry.sendErrorTelemetry(eventName, methodName, errorMessage);
 
         //Assert
         const error: Error = new Error(errorMessage);
@@ -204,7 +221,7 @@ describe("webExtensionTelemetry", () => {
             methodName: methodName
         };
         //Act
-        webExtensionTelemetry.sendErrorTelemetry(eventName,methodName);
+        webExtensionTelemetry.sendErrorTelemetry(eventName, methodName);
         //Assert
 
         assert.calledOnce(sendTelemetryException);
@@ -246,7 +263,7 @@ describe("webExtensionTelemetry", () => {
         assert.calledOnceWithExactly(sendTelemetryEvent, eventName, properties);
     });
 
-    it("sendAPITelemetry_whenErrorMessageIsPassed_shouldCallsendTelemetryException", () => {
+    it("sendAPITelemetry_whenErrorMessageIsPassed_shouldCallSendTelemetryException", () => {
         //Act
         const URL = "powerPages.com";
         const entity = "webPages";
@@ -267,8 +284,10 @@ describe("webExtensionTelemetry", () => {
             entity: entity,
             httpMethod: httpMethod,
             entityFileExtensionType: entityFileExtensionType,
-            eventName: "update",
+            methodName: "sendAPITelemetry_whenErrorMessageIsPassed_shouldCallSendTelemetryException",
             isSuccessful: "true",
+            status: "200",
+            eventName: eventName
         };
 
         //Action
@@ -277,12 +296,13 @@ describe("webExtensionTelemetry", () => {
             URL,
             entity,
             httpMethod,
-            "sendAPITelemetry_whenErrorMessageIsPassed_shouldCallsendTelemetryException",
+            "sendAPITelemetry_whenErrorMessageIsPassed_shouldCallSendTelemetryException",
             entityFileExtensionType, // TODO: Pass these as function properties parameters
             isSuccessful,
             duration,
             errorMessage,
-            eventName
+            eventName,
+            "200"
         );
 
         const measurements = {
@@ -300,7 +320,7 @@ describe("webExtensionTelemetry", () => {
         expect(sendTelemetryExceptionCalls.args[2]).deep.eq(measurements);
     });
 
-    it("sendAPITelemetry_whenErrorMessageNotPassed_shouldCallsendTelemetryException", () => {
+    it("sendAPITelemetry_whenErrorMessageNotPassed_shouldCallSendTelemetryException", () => {
         //Act
         const URL = "powerPages.com";
         const entity = "webPages";
@@ -319,6 +339,8 @@ describe("webExtensionTelemetry", () => {
             httpMethod: httpMethod,
             entityFileExtensionType: entityFileExtensionType,
             isSuccessful: "true",
+            status: "200",
+            methodName: "sendAPITelemetry_whenErrorMessageNotPassed_shouldCallSendTelemetryException"
         };
 
         //Action
@@ -327,12 +349,13 @@ describe("webExtensionTelemetry", () => {
             URL,
             entity,
             httpMethod,
-            "sendAPITelemetry_whenErrorMessageNotPassed_shouldCallsendTelemetryException",
+            "sendAPITelemetry_whenErrorMessageNotPassed_shouldCallSendTelemetryException",
             entityFileExtensionType, // TODO: Pass these as function properties parameters
             isSuccessful,
             duration,
             errorMessage,
-            eventName
+            eventName,
+            "200"
         );
 
         const measurements = {
@@ -366,6 +389,8 @@ describe("webExtensionTelemetry", () => {
             httpMethod: httpMethod,
             entityFileExtensionType: entityFileExtensionType,
             isSuccessful: "",
+            status: "200",
+            methodName: "sendAPITelemetry_whenIsSuccessfulAndDurationIsUndefined_shouldSetDurationInMillisAs0orIsSuccessfulAsBlankString"
         };
 
         //Action
@@ -379,7 +404,8 @@ describe("webExtensionTelemetry", () => {
             isSuccessful,
             duration,
             errorMessage,
-            eventName
+            eventName,
+            "200"
         );
 
         const measurements = {
@@ -413,6 +439,8 @@ describe("webExtensionTelemetry", () => {
             httpMethod: httpMethod,
             entityFileExtensionType: entityFileExtensionType,
             isSuccessful: "false",
+            status: "200",
+            methodName: "sendAPITelemetry_whenIsSuccessfulIsFalse_shouldSetIsSuccessfulAsFalse"
         };
 
         //Action
@@ -425,7 +453,8 @@ describe("webExtensionTelemetry", () => {
             isSuccessful,
             duration,
             errorMessage,
-            eventName
+            eventName,
+            "200"
         );
 
         const measurements = {
@@ -454,19 +483,23 @@ describe("webExtensionTelemetry", () => {
             httpMethod: httpMethod,
             entityFileExtensionType: entityFileExtensionType,
             isSuccessful: "true",
+            methodName: "sendAPISuccessTelemetry_whenCall_shouldCallSendAPITelemetryWithoutErrorMessage",
+            status: "200"
         };
 
         const measurements = {
             durationInMillis: duration,
         };
-
         //Action
         webExtensionTelemetry.sendAPISuccessTelemetry(
             URL,
             entity,
             httpMethod,
             duration,
-            entityFileExtensionType
+            "sendAPISuccessTelemetry_whenCall_shouldCallSendAPITelemetryWithoutErrorMessage",
+            "WebExtensionApiRequestSuccess",
+            entityFileExtensionType,
+            "200"
         );
 
         //Assert
@@ -497,6 +530,8 @@ describe("webExtensionTelemetry", () => {
             entityFileExtensionType: entityFileExtensionType,
             eventName: telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
             isSuccessful: "false",
+            status: "200",
+            methodName: "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException"
         };
 
         const measurements = {
@@ -511,7 +546,8 @@ describe("webExtensionTelemetry", () => {
             duration,
             "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException",
             errorMessage,
-            entityFileExtensionType
+            entityFileExtensionType,
+            "200"
         );
 
         //Assert

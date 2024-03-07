@@ -104,7 +104,7 @@ export class AuthTreeView implements vscode.TreeDataProvider<AuthProfileTreeItem
                 const confirm = vscode.l10n.t("Confirm");
                 const confirmResult = await vscode.window.showWarningMessage(
                     vscode.l10n.t({ message: "Are you sure you want to delete the Auth Profile {0}-{1}?",
-                        args: [item.model.User, item.model.Resource],
+                        args: [item.model.UserDisplayName, item.model.ActiveOrganization?.Item2],
                         comment: ["{0} is the user name, {1} is the URL of environment of the auth profile"] }),
                     confirm,
                     vscode.l10n.t("Cancel"));
@@ -125,10 +125,12 @@ export class AuthTreeView implements vscode.TreeDataProvider<AuthProfileTreeItem
                 }
             }),
             vscode.commands.registerCommand('pacCLI.authPanel.navigateToResource', (item: AuthProfileTreeItem) => {
-                vscode.env.openExternal(vscode.Uri.parse(item.model.Resource));
+                if (item.model.ActiveOrganization) {
+                    vscode.env.openExternal(vscode.Uri.parse(item.model.ActiveOrganization.Item2));
+                }
             }),
             vscode.commands.registerCommand('pacCLI.authPanel.copyUser', (item: AuthProfileTreeItem) => {
-                vscode.env.clipboard.writeText(item.model.User);
+                vscode.env.clipboard.writeText(item.model.UserDisplayName);
             })
         ];
     }
@@ -147,9 +149,9 @@ class AuthProfileTreeItem extends vscode.TreeItem {
         if (profile.Name) {
             return `${profile.Kind}: ${profile.Name}`;
         } else if (profile.Kind === "ADMIN" || profile.Kind === "UNIVERSAL") {
-            return `${profile.Kind}: ${profile.User}`;
+            return `${profile.Kind}: ${profile.UserDisplayName}`;
         } else {
-            return `${profile.Kind}: ${profile.Resource}`;
+            return `${profile.Kind}: ${profile.ActiveOrganization?.Item2 ?? profile.UserDisplayName}`;
         }
     }
     private static createTooltip(profile: AuthProfileListing): string {
@@ -165,15 +167,15 @@ class AuthProfileTreeItem extends vscode.TreeItem {
                 args: [profile.Name],
                 comment: ["The {0} represents the optional name the user provided for the profile)"]}));
         }
-        if ((profile.Kind === "DATAVERSE" || profile.Kind === "UNIVERSAL") && profile.Resource) {
+        if ((profile.Kind === "DATAVERSE" || profile.Kind === "UNIVERSAL") && profile.ActiveOrganization) {
             tooltip.push(vscode.l10n.t({
-                message: "Resource: {0}",
-                args: [profile.Resource],
+                message: "Default Environment: {0}",
+                args: [profile.ActiveOrganization.Item2],
                 comment: ["The {0} represents profile's resource/environment URL"]}));
         }
         tooltip.push(vscode.l10n.t({
             message: "User: {0}",
-            args: [profile.User],
+            args: [profile.UserDisplayName],
             comment: ["The {0} represents auth profile's user name (email address))"]}));
         if (profile.CloudInstance) {
             tooltip.push(vscode.l10n.t({

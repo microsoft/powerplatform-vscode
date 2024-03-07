@@ -10,8 +10,9 @@ import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacActiveOrgListOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput } from "./PacTypes";
 import { v4 } from "uuid";
+import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export interface IPacWrapperContext {
     readonly globalStorageLocalPath: string;
@@ -56,6 +57,7 @@ export class PacInterop implements IPacInterop {
     private async proc() : Promise<ChildProcessWithoutNullStreams> {
         if (!(this._proc)) {
             this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarting');
+            oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessStarting');
 
             const env : NodeJS.ProcessEnv = {...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
 
@@ -81,6 +83,7 @@ export class PacInterop implements IPacInterop {
             // Grab the first output, which will be the PAC Version info
             await this.outputQueue.dequeue();
             this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarted');
+            oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessStarted');
         }
 
         return this._proc;
@@ -161,8 +164,8 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOrgListOutput>(new PacArguments("org", "list"));
     }
 
-    public async activeOrg(): Promise <PacActiveOrgListOutput> {
-        return this.executeCommandAndParseResults<PacActiveOrgListOutput>(new PacArguments("org", "who"));
+    public async activeOrg(): Promise <PacOrgWhoOutput> {
+        return this.executeCommandAndParseResults<PacOrgWhoOutput>(new PacArguments("org", "who"));
     }
 
     public async pcfInit(outputDirectory : string): Promise<PacOutput> {

@@ -14,6 +14,7 @@ import { PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME, PORTAL_YEOMAN_GENERATOR_PACKAGE_T
 import { ICliAcquisitionContext } from './CliAcquisition';
 import { glob } from 'glob';
 import commandExists from 'command-exists';
+import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 
 declare const __GENERATOR_PACKAGE_VERSION__: string | undefined;
 
@@ -105,6 +106,13 @@ export class GeneratorAcquisition implements IDisposable {
             const child = this.npm(['install']);
             if (child.error) {
                 this._context.telemetry.sendTelemetryErrorEvent('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion }, {}, [String(child.error)]);
+                oneDSLoggerWrapper.getLogger().traceError(
+                    'PowerPagesGeneratorInstallComplete',
+                    String(child.error),
+                    { name: 'PowerPagesGeneratorInstallComplete', message: String(child.error) } as Error,
+                    { cliVersion: this._generatorVersion }, {}
+                );
+
                 this._context.showErrorMessage(vscode.l10n.t({
                     message: "Cannot install Power Pages generator: {0}",
                     args: [String(child.error)],
@@ -112,6 +120,7 @@ export class GeneratorAcquisition implements IDisposable {
                 }));
             } else {
                 this._context.telemetry.sendTelemetryEvent('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion });
+                oneDSLoggerWrapper.getLogger().traceInfo('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion });
                 this._context.showInformationMessage(vscode.l10n.t('The Power Pages generator is ready for use in your VS Code extension!'));
             }
         }
