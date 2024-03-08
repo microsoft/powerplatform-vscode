@@ -232,7 +232,7 @@ export class OneDSLogger implements ITelemetryLogger{
 				eventType: EventType.TRACE,
                 severity: Severity.ERROR,
 				message: errorMessage!,
-                errorName: exception?.name!,
+                errorName: exception ? exception.name : "",
                 errorStack: JSON.stringify(exception!),
                 eventInfo: JSON.stringify(eventInfo!),
                 measurement:  JSON.stringify(measurement!)
