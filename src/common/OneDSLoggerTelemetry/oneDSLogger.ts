@@ -270,9 +270,6 @@ export class OneDSLogger implements ITelemetryLogger{
 			try {
                     envelope.data = envelope.data || {}; // create data nested object if doesn't exist already'
 
-                    if (envelope && envelope.ext && envelope.ext.ingest && envelope.ext.ingest.clientIp) {
-                        envelope.ext.ingest.clientIp = "";
-                    }
                     envelope.data.clientSessionId = vscode.env.sessionId;
                     envelope.data.vscodeSurface = getExtensionType();
                     envelope.data.vscodeExtensionName = EXTENSION_ID;
