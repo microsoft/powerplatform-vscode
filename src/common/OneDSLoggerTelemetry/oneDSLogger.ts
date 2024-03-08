@@ -130,6 +130,7 @@ export class OneDSLogger implements ITelemetryLogger{
             referrer: "",
             envId: "",
             referrerSource: "",
+            orgGeo: ""
         }
     }
 
@@ -231,7 +232,7 @@ export class OneDSLogger implements ITelemetryLogger{
 				eventType: EventType.TRACE,
                 severity: Severity.ERROR,
 				message: errorMessage!,
-                errorName: exception!,
+                errorName: exception?.name!,
                 errorStack: JSON.stringify(exception!),
                 eventInfo: JSON.stringify(eventInfo!),
                 measurement:  JSON.stringify(measurement!)
@@ -269,6 +270,9 @@ export class OneDSLogger implements ITelemetryLogger{
 			try {
                     envelope.data = envelope.data || {}; // create data nested object if doesn't exist already'
 
+                    if (envelope && envelope.ext && envelope.ext.ingest && envelope.ext.ingest.clientIp) {
+                        envelope.ext.ingest.clientIp = "";
+                    }
                     envelope.data.clientSessionId = vscode.env.sessionId;
                     envelope.data.vscodeSurface = getExtensionType();
                     envelope.data.vscodeExtensionName = EXTENSION_ID;
@@ -292,6 +296,7 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.screenResolution = "";
                     envelope.data.osName = "";
                     envelope.data.osVersion = "";
+                    envelope.data.timestamp = new Date();
                     if (getExtensionType() == 'Web'){
                         this.populateVscodeWebAttributes(envelope);
                     }else{
@@ -334,6 +339,7 @@ export class OneDSLogger implements ITelemetryLogger{
             OneDSLogger.contextInfo.referrer = JSON.parse(envelope.data.eventInfo).referrer;
             OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).envId;
             OneDSLogger.contextInfo.referrerSource = JSON.parse(envelope.data.eventInfo).referrerSource;
+            OneDSLogger.contextInfo.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
         }
         if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED){
             OneDSLogger.userInfo.oid= JSON.parse(envelope.data.eventInfo).userId;
