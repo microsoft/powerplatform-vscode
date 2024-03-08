@@ -99,7 +99,8 @@
     "onStartupFinished",
     "workspaceContains:**/**.portalconfig",
     "onDebug",
-    "onFileSystem:powerplatform-vfs"
+    "onFileSystem:powerplatform-vfs",
+    "onUri"
   ],
   "capabilities": {
     "untrustedWorkspaces": {
