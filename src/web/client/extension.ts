@@ -200,6 +200,8 @@ export function activate(context: vscode.ExtensionContext): void {
     enableFileSearchFunctionality(portalsFS);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+
+    processActiveTextEditorChange(context);
 }
 
 export function enableFileSearchFunctionality(portalsFS: PortalsFS) {
@@ -275,11 +277,6 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     if (entityInfo.entityId && entityInfo.entityName) {
                         context.workspaceState.update(document.uri.fsPath, entityInfo);
                         WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, entityInfo);
-
-                        // sending message to webworker event listener for Co-Presence feature
-                        if (isCoPresenceEnabled()) {
-                            sendingMessageToWebWorkerForCoPresence(entityInfo);
-                        }
                     }
                 }
             });
@@ -291,6 +288,27 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, undefined);
                 }
             });
+        })
+    );
+}
+
+export function processActiveTextEditorChange(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor((editor) => {
+            if (editor) {
+                const document = editor.document;
+                const entityInfo: IEntityInfo = {
+                    entityId: getFileEntityId(document.uri.fsPath),
+                    entityName: getFileEntityName(document.uri.fsPath),
+                    rootWebPageId: getFileRootWebPageId(document.uri.fsPath),
+                };
+                if (entityInfo.entityId && entityInfo.entityName && isCoPresenceEnabled()) {
+                    // sending message to webworker event listener for Co-Presence feature
+                    sendingMessageToWebWorkerForCoPresence(entityInfo);
+                }
+
+                WebExtensionContext.quickPickProvider.refresh();
+            }
         })
     );
 }
