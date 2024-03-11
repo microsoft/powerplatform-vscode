@@ -16,7 +16,7 @@ import { EXTENSION_ID } from "../../client/constants";
 import {OneDSCollectorEventName} from "./EventContants";
 import { telemetryEventNames } from "../../web/client/telemetry/constants";
 import { region } from "../telemetry-generated/buildRegionConfiguration";
-import { geoMappingsToAzureRegion } from "./shortNameMappingToAzureRegion";
+import { telemetryEventNames as desktopExtTelemetryEventNames } from "../../client/telemetry/TelemetryEventNames";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -130,6 +130,7 @@ export class OneDSLogger implements ITelemetryLogger{
             referrer: "",
             envId: "",
             referrerSource: "",
+            orgGeo: ""
         }
     }
 
@@ -139,10 +140,6 @@ export class OneDSLogger implements ITelemetryLogger{
             endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
             instrumentationKey: 'ffdb4c99ca3a4ad5b8e9ffb08bf7da0d-65357ff3-efcd-47fc-b2fd-ad95a52373f4-7402'
         };
-        let geoName = 'us';
-        if(geoMappingsToAzureRegion[geo!]) {
-            geoName = geoMappingsToAzureRegion[geo!].geoName;
-        }
         switch (buildRegion) {
             case 'tie':
             case 'test':
@@ -150,7 +147,7 @@ export class OneDSLogger implements ITelemetryLogger{
                 break;
             case 'prod':
             case 'preview':
-              switch (geoName) {
+              switch (geo) {
                 case 'us':
                 case 'br':
                 case 'jp':
@@ -235,7 +232,7 @@ export class OneDSLogger implements ITelemetryLogger{
 				eventType: EventType.TRACE,
                 severity: Severity.ERROR,
 				message: errorMessage!,
-                errorName: exception!,
+                errorName: exception ? exception.name : "",
                 errorStack: JSON.stringify(exception!),
                 eventInfo: JSON.stringify(eventInfo!),
                 measurement:  JSON.stringify(measurement!)
@@ -275,28 +272,28 @@ export class OneDSLogger implements ITelemetryLogger{
 
                     envelope.data.clientSessionId = vscode.env.sessionId;
                     envelope.data.vscodeSurface = getExtensionType();
-                    envelope.data.vscodeMachineId = vscode.env.machineId;
                     envelope.data.vscodeExtensionName = EXTENSION_ID;
                     envelope.data.vscodeExtensionVersion = getExtensionVersion();
                     envelope.data.vscodeVersion = vscode.version;
                     envelope.data.domain = vscode.env.appHost;
+                    envelope.data.measurements = envelope.data.measurement;
                     // Adding below attributes so they get populated in Geneva.
                     // TODO: It needs implementation for populating the actual value
-                    envelope.data.eventSubType = "test";
-                    envelope.data.scenarioId = "test";
-                    envelope.data.eventModifier = "test";
-                    envelope.data.timestamp = "test";
-                    envelope.data.country = "test";
-                    envelope.data.userLocale = "test";
-                    envelope.data.userDataBoundary = "test";
-                    envelope.data.appLocale = "test";
-                    envelope.data.userLocale = "test";
-                    envelope.data.webBrowser = "test";
-                    envelope.data.browserVersion = "test";
-                    envelope.data.browserLanguage = "test";
-                    envelope.data.screenResolution = "test";
-                    envelope.data.osName = "test";
-                    envelope.data.osVersion = "test";
+                    envelope.data.eventSubType = "";
+                    envelope.data.scenarioId = "";
+                    envelope.data.eventModifier = "";
+                    envelope.data.country = "";
+                    envelope.data.userLocale = "";
+                    envelope.data.userDataBoundary = "";
+                    envelope.data.appLocale = "";
+                    envelope.data.userLocale = "";
+                    envelope.data.webBrowser = "";
+                    envelope.data.browserVersion = "";
+                    envelope.data.browserLanguage = "";
+                    envelope.data.screenResolution = "";
+                    envelope.data.osName = "";
+                    envelope.data.osVersion = "";
+                    envelope.data.timestamp = new Date();
                     if (getExtensionType() == 'Web'){
                         this.populateVscodeWebAttributes(envelope);
                     }else{
@@ -339,6 +336,7 @@ export class OneDSLogger implements ITelemetryLogger{
             OneDSLogger.contextInfo.referrer = JSON.parse(envelope.data.eventInfo).referrer;
             OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).envId;
             OneDSLogger.contextInfo.referrerSource = JSON.parse(envelope.data.eventInfo).referrerSource;
+            OneDSLogger.contextInfo.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
         }
         if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED){
             OneDSLogger.userInfo.oid= JSON.parse(envelope.data.eventInfo).userId;
@@ -347,8 +345,12 @@ export class OneDSLogger implements ITelemetryLogger{
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private populateVscodeDesktopAttributes(envelope: any){
-        // TODO: this method helps in populating desktop attributes.
-        console.log(envelope);
+        if (envelope.data.eventName == desktopExtTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT) {
+            OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).OrgId;
+            OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).EnvironmentId;
+            // TODO: Populate website id
+            OneDSLogger.contextInfo.websiteId = 'test'
+        }
     }
 
     //// Redact Sensitive data for the fields susceptible to contain codes/tokens/keys/secrets etc.
