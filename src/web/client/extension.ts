@@ -92,9 +92,6 @@ export function activate(context: vscode.ExtensionContext): void {
                         );
                     }
                 }
-                const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
-                const orgGeo = await fetchArtemisData(orgId);
-                oneDSLoggerWrapper.instantiate(orgGeo);
                 if (
                     !checkMandatoryParameters(
                         appName,
@@ -111,6 +108,11 @@ export function activate(context: vscode.ExtensionContext): void {
                     queryParamsMap,
                     context.extensionUri
                 );
+
+                const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
+                const orgGeo = await fetchArtemisData(orgId);
+                oneDSLoggerWrapper.instantiate(orgGeo);
+
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
                     entity,
