@@ -338,10 +338,8 @@ export class PortalsFS implements vscode.FileSystemProvider {
         const matches: ISearchQueryMatch[] = [];
         const files = await this.iterateDirectory(WebExtensionContext.rootDirectory);
 
-        // counter to keep track of the number of matches
-        let counter = 0;
-        let match: ISearchQueryMatch;
-        for (const file of files) {
+        // Promises array to store promises for file reads
+        const fileReadPromises = files.map(async (file) => {
             const content = await this.readFile(file);
 
             // Convert buffer to string and replace windows line endings with unix line endings
@@ -352,7 +350,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
             const lines = text.split('\n');
 
-            match = {
+            const match: ISearchQueryMatch = {
                 uri: file,
                 ranges: [],
                 preview: text,
@@ -371,7 +369,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
 
             if (query.isMultiline) {
                 if (text.includes(pattern)) {
-                    counter++;
                     const index = text.indexOf(pattern);
                     const range = getRangeForMultilineMatch(text, pattern, index);
                     match.ranges.push(range);
@@ -380,14 +377,13 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 }
             } else {
                 for (let i = 0; i < lines.length; i++) {
-                    if (options.maxResults !== undefined && counter > options.maxResults) {
+                    if (options.maxResults !== undefined && matches.length > options.maxResults) {
                         return { matches: matches, limitHit: true };
                     }
 
                     const regexMatch = lines[i].match(regex);
 
                     if (regexMatch) {
-                        counter++;
                         regexMatch.forEach((m) => {
                             const index = lines[i].indexOf(m);
                             const range = new vscode.Range(i, index, i, index + m.length);
@@ -398,7 +394,10 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     }
                 }
             }
-        }
+        });
+
+        // Wait for all file read promises to resolve
+        await Promise.all(fileReadPromises);
 
         return { matches: matches, limitHit: false };
     }
