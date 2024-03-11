@@ -335,11 +335,17 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async searchText(query: vscode.TextSearchQuery, options: { maxResults?: number }): Promise<ISearchQueryResults> {
+        // Record start time for search
+        const startTime = Date.now();
+
         const matches: ISearchQueryMatch[] = [];
         const files = await this.iterateDirectory(WebExtensionContext.rootDirectory);
 
         // Promises array to store promises for file reads
         const fileReadPromises = files.map(async (file) => {
+            // Record start time for file processing
+            const startFileTime = Date.now();
+
             const content = await this.readFile(file);
 
             // Convert buffer to string and replace windows line endings with unix line endings
@@ -394,10 +400,30 @@ export class PortalsFS implements vscode.FileSystemProvider {
                     }
                 }
             }
+
+            // Record end time for file processing
+            const endFileTime = Date.now();
+
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_SEARCH_TEXT_RESULTS,
+                {
+                    file: file.fsPath,
+                    duration: (endFileTime - startFileTime).toString(),
+                }
+            );
         });
 
         // Wait for all file read promises to resolve
         await Promise.all(fileReadPromises);
+
+        // Record end time for search
+        const endTime = Date.now();
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_SEARCH_TEXT,
+            {
+                duration: (endTime - startTime).toString(),
+            }
+        );
 
         return { matches: matches, limitHit: false };
     }
