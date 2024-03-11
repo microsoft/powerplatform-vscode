@@ -130,6 +130,7 @@ export class OneDSLogger implements ITelemetryLogger{
             referrer: "",
             envId: "",
             referrerSource: "",
+            orgGeo: ""
         }
     }
 
@@ -231,7 +232,7 @@ export class OneDSLogger implements ITelemetryLogger{
 				eventType: EventType.TRACE,
                 severity: Severity.ERROR,
 				message: errorMessage!,
-                errorName: exception!,
+                errorName: exception ? exception.name : "",
                 errorStack: JSON.stringify(exception!),
                 eventInfo: JSON.stringify(eventInfo!),
                 measurement:  JSON.stringify(measurement!)
@@ -292,6 +293,7 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.screenResolution = "";
                     envelope.data.osName = "";
                     envelope.data.osVersion = "";
+                    envelope.data.timestamp = new Date();
                     if (getExtensionType() == 'Web'){
                         this.populateVscodeWebAttributes(envelope);
                     }else{
@@ -334,6 +336,7 @@ export class OneDSLogger implements ITelemetryLogger{
             OneDSLogger.contextInfo.referrer = JSON.parse(envelope.data.eventInfo).referrer;
             OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).envId;
             OneDSLogger.contextInfo.referrerSource = JSON.parse(envelope.data.eventInfo).referrerSource;
+            OneDSLogger.contextInfo.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
         }
         if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED){
             OneDSLogger.userInfo.oid= JSON.parse(envelope.data.eventInfo).userId;
