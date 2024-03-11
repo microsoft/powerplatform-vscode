@@ -323,7 +323,7 @@ describe("errorHandler", () => {
             _mockSendErrorTelemetry,
             telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
             checkMandatoryQueryParameters.name,
-            `orgURL:, dataSource:SQL, schemaName:1.0.0.0 ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
+            `dataSource:SQL, schemaName:1.0.0.0 ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
         );
     });
 
@@ -362,7 +362,7 @@ describe("errorHandler", () => {
             _mockSendErrorTelemetry,
             telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
             checkMandatoryQueryParameters.name,
-            `orgURL:ORG_URL, dataSource:, schemaName:1.0.0.0 ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
+            `orgURL, dataSource:, schemaName:1.0.0.0 ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
         );
     });
 
@@ -401,7 +401,7 @@ describe("errorHandler", () => {
             _mockSendErrorTelemetry,
             telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
             checkMandatoryQueryParameters.name,
-            `orgURL:ORG_URL, dataSource:SQL, schemaName: ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
+            `orgURL, dataSource:SQL, schemaName: ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
         );
     });
 
@@ -437,7 +437,7 @@ describe("errorHandler", () => {
             _mockSendErrorTelemetry,
             telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
             checkMandatoryQueryParameters.name,
-            `orgURL:ORG_URL, dataSource:SQL, schemaName:1.0.0.0 ,websiteId:`
+            `orgURL, dataSource:SQL, schemaName:1.0.0.0 ,websiteId:`
         );
     });
 
