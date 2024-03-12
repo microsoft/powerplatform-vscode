@@ -197,27 +197,31 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillStartCollaboartion(context);
 
-    enableFileSearchFunctionality(portalsFS);
+    enableFileSearchFunctionality(context, portalsFS);
 
-    enableTextSearchFunctionality(portalsFS);
+    enableTextSearchFunctionality(context, portalsFS);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
 }
 
-export function enableTextSearchFunctionality(portalsFS: PortalsFS) {
-    vscode.workspace.registerTextSearchProvider(PORTALS_URI_SCHEME, {
+export function enableTextSearchFunctionality(context: vscode.ExtensionContext, portalsFS: PortalsFS) {
+    const textSearchProvider = vscode.workspace.registerTextSearchProvider(PORTALS_URI_SCHEME, {
         provideTextSearchResults: async (query, options, progress) => {
             return portalsFS.searchTextResults(query, options, progress);
         },
     });
+
+    context.subscriptions.push(vscode.Disposable.from(textSearchProvider));
 }
 
-export function enableFileSearchFunctionality(portalsFS: PortalsFS) {
-    vscode.workspace.registerFileSearchProvider(PORTALS_URI_SCHEME, {
+export function enableFileSearchFunctionality(context: vscode.ExtensionContext, portalsFS: PortalsFS) {
+    const fileSearchProvider = vscode.workspace.registerFileSearchProvider(PORTALS_URI_SCHEME, {
         provideFileSearchResults: async (query) => {
             return portalsFS.searchFiles(query.pattern);
         },
     });
+
+    context.subscriptions.push(vscode.Disposable.from(fileSearchProvider));
 }
 
 export function registerCollaborationView() {
