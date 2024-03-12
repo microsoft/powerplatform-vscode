@@ -409,6 +409,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 {
                     file: file.fsPath,
                     duration: (endFileTime - startFileTime).toString(),
+                    searchType: `isMultiline: ${query.isMultiline}, isCaseSensitive: ${query.isCaseSensitive}, isWordMatch: ${query.isWordMatch}, isRegExp: ${query.isRegExp}`
                 }
             );
         });
