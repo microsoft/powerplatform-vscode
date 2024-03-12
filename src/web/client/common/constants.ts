@@ -146,3 +146,6 @@ export const START_TEAMS_CHAT = "Start Teams Chat";
 export const SEND_AN_EMAIL = "Send an email";
 export const WEB_EXTENSION_TEAMS_CHAT_NOT_AVAILABLE = "Teams chat is not available for this user";
 export const WEB_EXTENSION_SEND_EMAIL_NOT_AVAILABLE = "Send email is not available for this user";
+export const WEB_EXTENSION_QUICK_PICK_TITLE = "People on this file"
+export const WEB_EXTENSION_QUICK_PICK_PLACEHOLDER = "Search for people";
+export const WEB_EXTENSION_COLLABORATION_OPTIONS_CONTACT = "Contact";
