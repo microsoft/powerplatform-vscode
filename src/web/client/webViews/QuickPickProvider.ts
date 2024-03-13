@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { IEntityInfo } from "../common/interfaces";
 import * as Constants from "../common/constants";
-import { getFileEntityId, getFileEntityName } from "../utilities/fileAndEntityUtil";
+import { getFileEntityId, getFileEntityName, getFileRootWebPageId } from "../utilities/fileAndEntityUtil";
 
 interface IQuickPickItem extends vscode.QuickPickItem {
     label: string;
@@ -24,11 +24,11 @@ export class QuickPickProvider {
 
     public refresh() {
         if (vscode.window.activeTextEditor) {
-            const fileFsPath = vscode.window.activeTextEditor.document.fileName;
+            const fileFsPath = vscode.window.activeTextEditor.document.uri.fsPath;
             const entityInfo: IEntityInfo = {
                 entityId: getFileEntityId(fileFsPath),
                 entityName: getFileEntityName(fileFsPath),
-                rootWebPageId: WebExtensionContext.entityDataMap.getEntityMap.get(getFileEntityId(fileFsPath))?.rootWebPageId as string
+                rootWebPageId: getFileRootWebPageId(fileFsPath),
             };
             this.updateQuickPickItems(entityInfo);
         }
