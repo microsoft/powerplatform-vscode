@@ -29,11 +29,6 @@ export function getFileEntityName(fileFsPath: string) {
         ?.entityName as string ?? WebExtensionContext.getVscodeWorkspaceState(fileFsPath)?.entityName as string;
 }
 
-export function getFileRootWebPageId(fileFsPath: string) {
-    const entityId = getFileEntityId(fileFsPath);
-    return WebExtensionContext.entityDataMap.getEntityMap.get(entityId)?.rootWebPageId as string ?? WebExtensionContext.getVscodeWorkspaceState(fileFsPath)?.rootWebPageId as string;
-}
-
 export function getFileAttributePath(fileFsPath: string) {
     return WebExtensionContext.fileDataMap.getFileMap.get(fileFsPath)
         ?.attributePath as IAttributePath;
