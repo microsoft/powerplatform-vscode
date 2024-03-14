@@ -130,7 +130,7 @@ async function loadContainer(config, swpId, entityInfo) {
                 });
 
                 // aadObjectId is the unique identifier for a user
-                await self.postMessage({
+                self.postMessage({
                     type: "client-data",
                     userId: user.aadObjectId,
                     userName: user.userName,
@@ -186,7 +186,7 @@ async function loadContainer(config, swpId, entityInfo) {
                     });
 
                     // aadObjectId is the unique identifier for a user
-                    await self.postMessage({
+                    self.postMessage({
                         type: "client-data",
                         userId: user.aadObjectId,
                         userName: user.userName,
@@ -194,13 +194,13 @@ async function loadContainer(config, swpId, entityInfo) {
                         entityId: userEntityIdArray,
                     });
 
-                    await self.postMessage({
+                    self.postMessage({
                         type: "telemetry-info",
                         eventName: "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
                         userId: user.aadObjectId,
                     });
                 } catch (error) {
-                    await self.postMessage({
+                    self.postMessage({
                         type: "telemetry-error",
                         methodName: "webWorker valueChanged",
                         errorMessage: error?.message,
