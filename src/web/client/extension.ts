@@ -273,7 +273,7 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     const entityInfo: IEntityInfo = {
                         entityId: getFileEntityId(document.uri.fsPath),
                         entityName: getFileEntityName(document.uri.fsPath),
-                        rootWebPageId: getFileRootWebPageId(document.uri.fsPath) ?? "",
+                        rootWebPageId: getFileRootWebPageId(document.uri.fsPath),
                     };
                     if (entityInfo.entityId && entityInfo.entityName) {
                         context.workspaceState.update(document.uri.fsPath, entityInfo);
@@ -301,7 +301,7 @@ export function processActiveTextEditorChange(context: vscode.ExtensionContext) 
                 const entityInfo: IEntityInfo = {
                     entityId: getFileEntityId(document.uri.fsPath),
                     entityName: getFileEntityName(document.uri.fsPath),
-                    rootWebPageId: getFileRootWebPageId(document.uri.fsPath) ?? "",
+                    rootWebPageId: getFileRootWebPageId(document.uri.fsPath),
                 };
                 if (entityInfo.entityId && entityInfo.entityName && isCoPresenceEnabled()) {
                     // sending message to webworker event listener for Co-Presence feature

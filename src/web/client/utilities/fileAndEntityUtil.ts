@@ -35,7 +35,8 @@ export function getFileRootWebPageId(fileFsPath: string) {
         (WebExtensionContext.entityDataMap.getEntityMap.get(entityId)
             ?.rootWebPageId as string) ??
         (WebExtensionContext.getVscodeWorkspaceState(fileFsPath)
-            ?.rootWebPageId as string)
+            ?.rootWebPageId as string) ??
+        ""
     );
 }
 
