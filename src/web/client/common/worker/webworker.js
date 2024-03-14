@@ -78,7 +78,7 @@ class AzureFluidClient {
     }
 }
 
-let initial = true;
+let initialLoad = true;
 
 async function loadContainer(config, swpId, entityInfo) {
     try {
@@ -110,7 +110,9 @@ async function loadContainer(config, swpId, entityInfo) {
             const entityIdObj = new Array(entityInfo.rootWebPageId);
             selectionSharedMap.set(myConnectionId, entityIdObj);
 
-            if (initial) {
+            if (initialLoad) {
+                initialLoad = false;
+
                 const user = getUserIdByConnectionId(myConnectionId);
 
                 const userConnections = audience
@@ -166,49 +168,47 @@ async function loadContainer(config, swpId, entityInfo) {
         });
 
         selectionSharedMap.on("valueChanged", async (changed, local) => {
-            if (!initial) {
-                try {
-                    const user = getUserIdByConnectionId(changed.key);
-                    const userConnections = audience
-                        .getMembers()
-                        .get(user.userId).connections;
+            try {
+                const user = getUserIdByConnectionId(changed.key);
 
-                    const userEntityIdArray = [];
+                const userConnections = audience
+                    .getMembers()
+                    .get(user.userId).connections;
 
-                    const connectionIdInContainer = await map
-                        .get("selection")
-                        .get();
+                const userEntityIdArray = [];
 
-                    userConnections.forEach((connection) => {
-                        userEntityIdArray.push(
-                            connectionIdInContainer.get(connection.id)
-                        );
-                    });
+                const connectionIdInContainer = await map
+                    .get("selection")
+                    .get();
 
-                    // aadObjectId is the unique identifier for a user
-                    self.postMessage({
-                        type: "client-data",
-                        userId: user.aadObjectId,
-                        userName: user.userName,
-                        containerId: swpId,
-                        entityId: userEntityIdArray,
-                    });
+                userConnections.forEach((connection) => {
+                    userEntityIdArray.push(
+                        connectionIdInContainer.get(connection.id)
+                    );
+                });
 
-                    self.postMessage({
-                        type: "telemetry-info",
-                        eventName: "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
-                        userId: user.aadObjectId,
-                    });
-                } catch (error) {
-                    self.postMessage({
-                        type: "telemetry-error",
-                        methodName: "webWorker valueChanged",
-                        errorMessage: error?.message,
-                        error: error,
-                    });
-                }
-            } else {
-                initial = false;
+                // aadObjectId is the unique identifier for a user
+                self.postMessage({
+                    type: "client-data",
+                    userId: user.aadObjectId,
+                    userName: user.userName,
+                    containerId: swpId,
+                    entityId: userEntityIdArray,
+                });
+
+                self.postMessage({
+                    type: "telemetry-info",
+                    eventName:
+                        "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
+                    userId: user.aadObjectId,
+                });
+            } catch (error) {
+                self.postMessage({
+                    type: "telemetry-error",
+                    methodName: "webWorker valueChanged",
+                    errorMessage: error?.message,
+                    error: error,
+                });
             }
         });
     } catch (error) {
