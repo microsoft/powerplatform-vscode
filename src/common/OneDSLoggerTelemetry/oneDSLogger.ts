@@ -328,18 +328,18 @@ export class OneDSLogger implements ITelemetryLogger{
         if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS) {
             const eventInfo = JSON.parse(envelope.data.eventInfo);
 
-            OneDSLogger.userInfo.tid = eventInfo.tenantId;
-            OneDSLogger.userRegion = eventInfo.geo ? geoMappingsToAzureRegion[eventInfo.geo.toLowerCase()].geoName : eventInfo.geo;
-            OneDSLogger.contextInfo.orgId = eventInfo.orgId;
-            OneDSLogger.contextInfo.portalId = eventInfo.portalId;
-            OneDSLogger.contextInfo.websiteId = eventInfo.websiteId;
-            OneDSLogger.contextInfo.dataSource = eventInfo.dataSource;
-            OneDSLogger.contextInfo.schema = eventInfo.schema;
-            OneDSLogger.contextInfo.correlationId = eventInfo.referrerSessionId;
-            OneDSLogger.contextInfo.referrer = eventInfo.referrer;
-            OneDSLogger.contextInfo.envId = eventInfo.envId;
-            OneDSLogger.contextInfo.referrerSource = eventInfo.referrerSource;
-            OneDSLogger.contextInfo.orgGeo = eventInfo.orgGeo;
+            OneDSLogger.userInfo.tid = eventInfo.tenantId ?? '';
+            OneDSLogger.userRegion = eventInfo.geo ? geoMappingsToAzureRegion[eventInfo.geo.toLowerCase()].geoName ?? eventInfo.geo : '';
+            OneDSLogger.contextInfo.orgId = eventInfo.orgId ?? '';
+            OneDSLogger.contextInfo.portalId = eventInfo.portalId ?? '';
+            OneDSLogger.contextInfo.websiteId = eventInfo.websiteId ?? '';
+            OneDSLogger.contextInfo.dataSource = eventInfo.dataSource ?? '';
+            OneDSLogger.contextInfo.schema = eventInfo.schema ?? '';
+            OneDSLogger.contextInfo.correlationId = eventInfo.referrerSessionId ?? '';
+            OneDSLogger.contextInfo.referrer = eventInfo.referrer ?? '';
+            OneDSLogger.contextInfo.envId = eventInfo.envId ?? '';
+            OneDSLogger.contextInfo.referrerSource = eventInfo.referrerSource ?? '';
+            OneDSLogger.contextInfo.orgGeo = eventInfo.orgGeo ?? '';
         }
         if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED) {
             OneDSLogger.userInfo.oid = JSON.parse(envelope.data.eventInfo).userId;
