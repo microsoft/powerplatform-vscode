@@ -70,7 +70,10 @@ export class QuickPickProvider {
     }
 
     public async showQuickPick() {
-        const selectedUser = await vscode.window.showQuickPick(this.items);
+        const selectedUser = await vscode.window.showQuickPick(this.items, {
+            title: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_TITLE.toUpperCase() + ` (${this.items.length})`),
+            placeHolder: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_PLACEHOLDER),
+        });
         if (selectedUser) {
             this.handleSelectedOption(selectedUser);
         }
@@ -96,7 +99,7 @@ export class QuickPickProvider {
         ];
 
         const collaborationOptionsSelected = await vscode.window.showQuickPick(collaborationOptions, {
-            title: `CONTACT ${selectedOption.label.toUpperCase()}`,
+            title: vscode.l10n.t(Constants.WEB_EXTENSION_COLLABORATION_OPTIONS_CONTACT.toUpperCase() +  ` ${selectedOption.label.toUpperCase()}`),
         });
 
         if (collaborationOptionsSelected) {
