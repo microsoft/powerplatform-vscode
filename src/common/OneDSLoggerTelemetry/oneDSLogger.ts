@@ -16,6 +16,8 @@ import { EXTENSION_ID } from "../../client/constants";
 import {OneDSCollectorEventName} from "./EventContants";
 import { telemetryEventNames } from "../../web/client/telemetry/constants";
 import { region } from "../telemetry-generated/buildRegionConfiguration";
+import { telemetryEventNames as desktopExtTelemetryEventNames } from "../../client/telemetry/TelemetryEventNames";
+import { geoMappingsToAzureRegion } from "./shortNameMappingToAzureRegion";
 
 interface IInstrumentationSettings {
     endpointURL: string;
@@ -129,6 +131,7 @@ export class OneDSLogger implements ITelemetryLogger{
             referrer: "",
             envId: "",
             referrerSource: "",
+            orgGeo: ""
         }
     }
 
@@ -230,7 +233,7 @@ export class OneDSLogger implements ITelemetryLogger{
 				eventType: EventType.TRACE,
                 severity: Severity.ERROR,
 				message: errorMessage!,
-                errorName: exception!,
+                errorName: exception ? exception.name : "",
                 errorStack: JSON.stringify(exception!),
                 eventInfo: JSON.stringify(eventInfo!),
                 measurement:  JSON.stringify(measurement!)
@@ -270,28 +273,28 @@ export class OneDSLogger implements ITelemetryLogger{
 
                     envelope.data.clientSessionId = vscode.env.sessionId;
                     envelope.data.vscodeSurface = getExtensionType();
-                    envelope.data.vscodeMachineId = vscode.env.machineId;
                     envelope.data.vscodeExtensionName = EXTENSION_ID;
                     envelope.data.vscodeExtensionVersion = getExtensionVersion();
                     envelope.data.vscodeVersion = vscode.version;
                     envelope.data.domain = vscode.env.appHost;
+                    envelope.data.measurements = envelope.data.measurement;
                     // Adding below attributes so they get populated in Geneva.
                     // TODO: It needs implementation for populating the actual value
-                    envelope.data.eventSubType = "test";
-                    envelope.data.scenarioId = "test";
-                    envelope.data.eventModifier = "test";
-                    envelope.data.timestamp = "test";
-                    envelope.data.country = "test";
-                    envelope.data.userLocale = "test";
-                    envelope.data.userDataBoundary = "test";
-                    envelope.data.appLocale = "test";
-                    envelope.data.userLocale = "test";
-                    envelope.data.webBrowser = "test";
-                    envelope.data.browserVersion = "test";
-                    envelope.data.browserLanguage = "test";
-                    envelope.data.screenResolution = "test";
-                    envelope.data.osName = "test";
-                    envelope.data.osVersion = "test";
+                    envelope.data.eventSubType = "";
+                    envelope.data.scenarioId = "";
+                    envelope.data.eventModifier = "";
+                    envelope.data.country = "";
+                    envelope.data.userLocale = "";
+                    envelope.data.userDataBoundary = "";
+                    envelope.data.appLocale = "";
+                    envelope.data.userLocale = "";
+                    envelope.data.webBrowser = "";
+                    envelope.data.browserVersion = "";
+                    envelope.data.browserLanguage = "";
+                    envelope.data.screenResolution = "";
+                    envelope.data.osName = "";
+                    envelope.data.osVersion = "";
+                    envelope.data.timestamp = new Date();
                     if (getExtensionType() == 'Web'){
                         this.populateVscodeWebAttributes(envelope);
                     }else{
@@ -322,28 +325,35 @@ export class OneDSLogger implements ITelemetryLogger{
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private populateVscodeWebAttributes(envelope: any) {
-        if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS){
-            OneDSLogger.userInfo.tid= JSON.parse(envelope.data.eventInfo).tenantId;
-            OneDSLogger.userRegion = JSON.parse(envelope.data.eventInfo).geo;
-            OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).orgId;
-            OneDSLogger.contextInfo.portalId = JSON.parse(envelope.data.eventInfo).portalId;
-            OneDSLogger.contextInfo.websiteId = JSON.parse(envelope.data.eventInfo).websiteId;
-            OneDSLogger.contextInfo.dataSource = JSON.parse(envelope.data.eventInfo).dataSource;
-            OneDSLogger.contextInfo.schema = JSON.parse(envelope.data.eventInfo).schema;
-            OneDSLogger.contextInfo.correlationId = JSON.parse(envelope.data.eventInfo).referrerSessionId;
-            OneDSLogger.contextInfo.referrer = JSON.parse(envelope.data.eventInfo).referrer;
-            OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).envId;
-            OneDSLogger.contextInfo.referrerSource = JSON.parse(envelope.data.eventInfo).referrerSource;
+        if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS) {
+            const eventInfo = JSON.parse(envelope.data.eventInfo);
+
+            OneDSLogger.userInfo.tid = eventInfo.tenantId ?? '';
+            OneDSLogger.userRegion = eventInfo.geo ? geoMappingsToAzureRegion[eventInfo.geo.toLowerCase()].geoName ?? eventInfo.geo : '';
+            OneDSLogger.contextInfo.orgId = eventInfo.orgId ?? '';
+            OneDSLogger.contextInfo.portalId = eventInfo.portalId ?? '';
+            OneDSLogger.contextInfo.websiteId = eventInfo.websiteId ?? '';
+            OneDSLogger.contextInfo.dataSource = eventInfo.dataSource ?? '';
+            OneDSLogger.contextInfo.schema = eventInfo.schema ?? '';
+            OneDSLogger.contextInfo.correlationId = eventInfo.referrerSessionId ?? '';
+            OneDSLogger.contextInfo.referrer = eventInfo.referrer ?? '';
+            OneDSLogger.contextInfo.envId = eventInfo.envId ?? '';
+            OneDSLogger.contextInfo.referrerSource = eventInfo.referrerSource ?? '';
+            OneDSLogger.contextInfo.orgGeo = eventInfo.orgGeo ?? '';
         }
-        if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED){
-            OneDSLogger.userInfo.oid= JSON.parse(envelope.data.eventInfo).userId;
+        if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED) {
+            OneDSLogger.userInfo.oid = JSON.parse(envelope.data.eventInfo).userId;
         }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private populateVscodeDesktopAttributes(envelope: any){
-        // TODO: this method helps in populating desktop attributes.
-        console.log(envelope);
+        if (envelope.data.eventName == desktopExtTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT) {
+            OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).OrgId;
+            OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).EnvironmentId;
+            // TODO: Populate website id
+            OneDSLogger.contextInfo.websiteId = 'test'
+        }
     }
 
     //// Redact Sensitive data for the fields susceptible to contain codes/tokens/keys/secrets etc.
