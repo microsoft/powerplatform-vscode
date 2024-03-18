@@ -99,7 +99,6 @@
     "onCommand:powerplatform-walkthrough.saveConflict-start-folder",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-learn-more",
     "onCommand:powerplatform-walkthrough.advancedCapabilities-start-coding",
-    "onStartupFinished",
     "workspaceContains:**/**.portalconfig",
     "onDebug",
     "onFileSystem:powerplatform-vfs"
@@ -115,6 +114,22 @@
     }
   },
   "contributes": {
+    "chatParticipants": [
+      {
+        "name": "powerpages",
+        "description": "Meow! What can I teach you?",
+        "commands": [
+          {
+            "name": "teach",
+            "description": "Pick at random a computer science concept then explain it in purfect way of a cat"
+          },
+          {
+            "name": "play",
+            "description": "Do whatever you want, you are a cat after all"
+          }
+        ]
+      }
+    ],
     "problemMatchers": [
       {
         "name": "pcf-scripts-build",
