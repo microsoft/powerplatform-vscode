@@ -117,15 +117,19 @@
     "chatParticipants": [
       {
         "name": "powerpages",
-        "description": "Meow! What can I teach you?",
+        "description": "Power Pages Copilot",
         "commands": [
           {
-            "name": "teach",
-            "description": "Pick at random a computer science concept then explain it in purfect way of a cat"
+            "name": "form-validation",
+            "description": "Adds form validation"
           },
           {
-            "name": "play",
-            "description": "Do whatever you want, you are a cat after all"
+            "name": "web-api",
+            "description": "WebApi to perform CRUD operations"
+          },
+          {
+            "name": "create-webpage",
+            "description": "Creates a webpage"
           }
         ]
       }

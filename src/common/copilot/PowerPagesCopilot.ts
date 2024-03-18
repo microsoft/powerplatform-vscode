@@ -140,26 +140,26 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         // To talk to an LLM in your subcommand handler implementation, your
         // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
         // The GitHub Copilot Chat extension implements this provider.
-        if (request.command == 'teach') {
-            stream.progress('Picking the right topic to teach...');
+        if (this.isValidSubCommand(request.command ?? "")) {
+            stream.progress('Working on it...');
             //const topic = getTopic(context.history);
             const messages = [
-                new vscode.LanguageModelChatSystemMessage('You are a cat! Your job is to explain computer science concepts in the funny manner of a cat. Always start your response by stating what concept you are explaining. Always include code samples.'),
-                new vscode.LanguageModelChatUserMessage('topic: "What is a variable?"'),
+                new vscode.LanguageModelChatSystemMessage(await this.getPromptMessage(request.command ?? "")),
+                new vscode.LanguageModelChatUserMessage(request.prompt),
             ];
             const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
             for await (const fragment of chatResponse.stream) {
                 stream.markdown(fragment);
             }
 
-            stream.button({
-                command: 'teach',
-                title: vscode.l10n.t('Use Cat Names in Editor')
-            });
+            // stream.button({
+            //     command: 'teach',
+            //     title: vscode.l10n.t('Use Cat Names in Editor')
+            // });
 
-            return { metadata: { command: 'teach' } };
+            return { metadata: { command: request.command ?? '' } };
         } else {
-            return { metadata: { command: 'teach' } };
+            return { metadata: { command: request.command ?? '' } };
         }
 
     };
@@ -255,9 +255,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     powerpages.followupProvider = {
         provideFollowups(result: ICatChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
             return [{
-                prompt: 'let us play',
-                label: vscode.l10n.t('Play with the powerpages'),
-                command: 'play'
+                prompt: 'Create a webpage for world-cup',
+                label: vscode.l10n.t('Create a webpage'),
+                command: 'create-webpage'
             } satisfies vscode.ChatFollowup];
         }
     };
