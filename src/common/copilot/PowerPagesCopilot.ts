@@ -126,49 +126,87 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     // Define a Teams chat agent handler.
     const generateResult = {};
     const pacResult = {};
-    const handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken) => {
-        // To talk to an LLM in your slash command handler implementation, your
-        // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
-        // The pre-release of the GitHub Copilot Chat extension implements this provider.
-        const userPrompt = request.prompt;
-        const userVariables = request.variables;
-        if (this.isValidSubCommand(request.subCommand ?? "") ) {
-            const access = await vscode.chat.requestChatAccess('copilot');
 
-            const messages = [
-                {
-                    role: vscode.ChatMessageRole.System,
-                    content: await this.getPromptMessage(request.subCommand ?? "")
-                },
-                {
-                    role: vscode.ChatMessageRole.User,
-                    content: userPrompt
-                }
-            ];
-
-            const chatRequest = access.makeRequest(messages, {}, token);
-            for await (const fragment of chatRequest.response) {
-                const incomingText = fragment.replace('[RESPONSE END]', '');
-                progress.report({ content: incomingText });
-            }
-
-            if(this.needsActiveEditorChanges(request.subCommand ?? "")) {
-                const activeEditor = vscode.window.activeTextEditor;
-
-                if (activeEditor) {
-                    const document = activeEditor.document;
-                    const uri = document.uri;
-                    progress.report({ reference: uri,/// <reference path="src/common" />
-                    });
-                }
-            }
-
-            return getFollowUpMessage(request.subCommand ?? "");
-            // return {
-            //     followUp: [{ message: vscode.l10n.t('@teams /generate a Teams project'), metadata: {} }]
-            // };
+    interface ICatChatResult extends vscode.ChatResult {
+        metadata: {
+            command: string;
         }
+    }
+
+    const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo'; // Use faster model. Alternative is 'copilot-gpt-4', which is slower but more powerful
+
+    // Define a Cat chat handler.
+    const handler: vscode.ChatRequestHandler = async (request: vscode.ChatRequest, context: vscode.ChatContext, stream: vscode.ChatResponseStream, token: vscode.CancellationToken): Promise<ICatChatResult> => {
+        // To talk to an LLM in your subcommand handler implementation, your
+        // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
+        // The GitHub Copilot Chat extension implements this provider.
+        if (request.command == 'teach') {
+            stream.progress('Picking the right topic to teach...');
+            //const topic = getTopic(context.history);
+            const messages = [
+                new vscode.LanguageModelChatSystemMessage('You are a cat! Your job is to explain computer science concepts in the funny manner of a cat. Always start your response by stating what concept you are explaining. Always include code samples.'),
+                new vscode.LanguageModelChatUserMessage('topic: "What is a variable?"'),
+            ];
+            const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
+            for await (const fragment of chatResponse.stream) {
+                stream.markdown(fragment);
+            }
+
+            stream.button({
+                command: 'teach',
+                title: vscode.l10n.t('Use Cat Names in Editor')
+            });
+
+            return { metadata: { command: 'teach' } };
+        } else {
+            return { metadata: { command: 'teach' } };
+        }
+
     };
+
+    // const handler: vscode.ChatAgentHandler = async (request: vscode.ChatAgentRequest, context: vscode.ChatAgentContext, progress: vscode.Progress<vscode.ChatAgentProgress>, token: vscode.CancellationToken) => {
+    //     // To talk to an LLM in your slash command handler implementation, your
+    //     // extension can use VS Code's `requestChatAccess` API to access the Copilot API.
+    //     // The pre-release of the GitHub Copilot Chat extension implements this provider.
+    //     const userPrompt = request.prompt;
+    //     const userVariables = request.variables;
+    //     if (this.isValidSubCommand(request.subCommand ?? "") ) {
+    //         const access = await vscode.chat.requestChatAccess('copilot');
+
+    //         const messages = [
+    //             {
+    //                 role: vscode.ChatMessageRole.System,
+    //                 content: await this.getPromptMessage(request.subCommand ?? "")
+    //             },
+    //             {
+    //                 role: vscode.ChatMessageRole.User,
+    //                 content: userPrompt
+    //             }
+    //         ];
+
+    //         const chatRequest = access.makeRequest(messages, {}, token);
+    //         for await (const fragment of chatRequest.response) {
+    //             const incomingText = fragment.replace('[RESPONSE END]', '');
+    //             progress.report({ content: incomingText });
+    //         }
+
+    //         if(this.needsActiveEditorChanges(request.subCommand ?? "")) {
+    //             const activeEditor = vscode.window.activeTextEditor;
+
+    //             if (activeEditor) {
+    //                 const document = activeEditor.document;
+    //                 const uri = document.uri;
+    //                 progress.report({ reference: uri,/// <reference path="src/common" />
+    //                 });
+    //             }
+    //         }
+
+    //         return getFollowUpMessage(request.subCommand ?? "");
+    //         // return {
+    //         //     followUp: [{ message: vscode.l10n.t('@teams /generate a Teams project'), metadata: {} }]
+    //         // };
+    //     }
+    // };
 
     const customVariableResolver: vscode.ChatVariableResolver = {
         resolve(name, context, token) {
@@ -202,54 +240,71 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
     };
 
-    // Register the custom variable
-    const variableName = 'yourVariableName';
-    const variableDescription = 'Your variable description';
+    // // Register the custom variable
+    // const variableName = 'yourVariableName';
+    // const variableDescription = 'Your variable description';
 
-    const ctxTest = vscode.chat.registerVariable(variableName, variableDescription, customVariableResolver);
+    // const ctxTest = vscode.chat.registerVariable(variableName, variableDescription, customVariableResolver);
 
-
-    // Agents appear as top-level options in the chat input
+    // Chat participants appear as top-level options in the chat input
     // when you type `@`, and can contribute sub-commands in the chat input
     // that appear when you type `/`.
-    const agent = vscode.chat.createChatAgent('powerpages', handler);
-    agent.iconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'icons', 'copilot.png');
-    agent.description = vscode.l10n.t('Generate Power Pages code and components');
-    agent.fullName = vscode.l10n.t('Copilot in Powerpages');
-    agent.subCommandProvider = {
-        provideSubCommands(token) {
-            return [
-                { name: 'form-validation', description: 'Adds form validation' },
-                { name: 'web-api', description: 'WebApi to perform CRUD operations' },
-                { name: 'create-webpage', description: 'Create a webpage' },
-                { name: 'pac', description: 'Helps in "pac paportal" operations'},
-                { name: 'add-form', description: 'Add a simple form or multi-step form to webpage'}
-            ];
+    const powerpages = vscode.chat.createChatParticipant('powerpages', handler);
+    powerpages.isSticky = true; // powerpages is persistant, whenever a user starts interacting with @powerpages, @powerpages will automatically be added to the following messages
+    powerpages.iconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'icons', 'copilot.png');
+    powerpages.followupProvider = {
+        provideFollowups(result: ICatChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
+            return [{
+                prompt: 'let us play',
+                label: vscode.l10n.t('Play with the powerpages'),
+                command: 'play'
+            } satisfies vscode.ChatFollowup];
         }
     };
-    agent.followupProvider = {
-        provideFollowups(result, token) {
 
-            if (result === generateResult) {
-                return [{
-                    message: '@powerpages /create-webpage landing page for world-cup',
-                    title: vscode.l10n.t('Create Web-page'),
-                }];
-            } else if(result === pacResult) {
-                return [{
-                    message: '@powerpages /pac How to list available websites',
-                    title: vscode.l10n.t('How to list available websites'),
-                },
-                {
-                    message: '@powerpages /pac How to upload website',
-                    title: vscode.l10n.t('How to upload website'),
-                },];
-            }
-        }
-    };
+    this._extensionContext.subscriptions.push(powerpages);
+
+    // // Agents appear as top-level options in the chat input
+    // // when you type `@`, and can contribute sub-commands in the chat input
+    // // that appear when you type `/`.
+    // const agent = vscode.chat.createChatAgent('powerpages', handler);
+    // agent.iconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'icons', 'copilot.png');
+    // agent.description = vscode.l10n.t('Generate Power Pages code and components');
+    // agent.fullName = vscode.l10n.t('Copilot in Powerpages');
+    // agent.subCommandProvider = {
+    //     provideSubCommands(token) {
+    //         return [
+    //             { name: 'form-validation', description: 'Adds form validation' },
+    //             { name: 'web-api', description: 'WebApi to perform CRUD operations' },
+    //             { name: 'create-webpage', description: 'Create a webpage' },
+    //             { name: 'pac', description: 'Helps in "pac paportal" operations'},
+    //             { name: 'add-form', description: 'Add a simple form or multi-step form to webpage'}
+    //         ];
+    //     }
+    // };
+    // agent.followupProvider = {
+    //     provideFollowups(result, token) {
+
+    //         if (result === generateResult) {
+    //             return [{
+    //                 message: '@powerpages /create-webpage landing page for world-cup',
+    //                 title: vscode.l10n.t('Create Web-page'),
+    //             }];
+    //         } else if(result === pacResult) {
+    //             return [{
+    //                 message: '@powerpages /pac How to list available websites',
+    //                 title: vscode.l10n.t('How to list available websites'),
+    //             },
+    //             {
+    //                 message: '@powerpages /pac How to upload website',
+    //                 title: vscode.l10n.t('How to upload website'),
+    //             },];
+    //         }
+    //     }
+    // };
 
     this._disposables.push(
-        agent,
+        powerpages,
         // Register the command handler for the /generate Create Project followup
 
     );
