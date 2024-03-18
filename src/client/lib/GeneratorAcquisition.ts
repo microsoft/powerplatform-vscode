@@ -13,6 +13,7 @@ import * as path from 'path';
 import { PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME, PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME } from '../constants';
 import { ICliAcquisitionContext } from './CliAcquisition';
 import { glob } from 'glob';
+import commandExists from 'command-exists';
 import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 
 declare const __GENERATOR_PACKAGE_VERSION__: string | undefined;
@@ -77,6 +78,13 @@ export class GeneratorAcquisition implements IDisposable {
         }
 
         if (this.yoCommandPath === null || this.getInstalledVersion() !== this.generatorVersion) {
+            if (!commandExists.sync('npm')) {
+                this._context.showErrorMessage(vscode.l10n.t({
+                    message: 'Cannot install Power Pages generator. Please install npm and try again.',
+                    comment: ["Do not translate 'npm'"]
+                }));
+                return null;
+            }
             this._context.showInformationMessage(
                 vscode.l10n.t({
                     message: "Installing Power Pages generator(v{0})...",
