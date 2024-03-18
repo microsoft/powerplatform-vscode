@@ -40,6 +40,7 @@ export const ADX_ENTITYFORM = "adx_entityform";
 export const ADX_ENTITYLIST = "adx_entitylist";
 export const ATTRIBUTE_DESCRIPTION = 'description';
 export const ATTRIBUTE_DATAFIELD_NAME = 'datafieldname';
+export const ATTRIBUTE_CLASSID = 'classid';
 export const SYSTEFORMS_API_PATH = 'api/data/v9.2/systemforms';
 
 

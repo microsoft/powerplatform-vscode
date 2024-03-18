@@ -12,7 +12,7 @@ import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "xmldom";
-import { ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
+import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
 
 
 interface Attribute {
@@ -130,7 +130,7 @@ function parseXML(formXml: string) {
         if (label && control) {
             const description = label.getAttribute(ATTRIBUTE_DESCRIPTION);
             const datafieldname = control.getAttribute(ATTRIBUTE_DATAFIELD_NAME);
-            let classid = control.getAttribute('classid');
+            let classid = control.getAttribute(ATTRIBUTE_CLASSID);
 
             let controlType = '';
             if(classid){
