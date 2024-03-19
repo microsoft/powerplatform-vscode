@@ -130,7 +130,12 @@
           {
             "name": "create-webpage",
             "description": "Creates a webpage"
+          },
+          {
+            "name": "add-form",
+            "description": "Adds existing form to webpage"
           }
+
         ]
       }
     ],
