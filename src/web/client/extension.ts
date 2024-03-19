@@ -26,6 +26,7 @@ import { NPSWebView } from "./webViews/NPSWebView";
 import {
     getFileEntityId,
     getFileEntityName,
+    getFileRootWebPageId,
 } from "./utilities/fileAndEntityUtil";
 import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
@@ -38,6 +39,7 @@ import * as Constants from "./common/constants"
 import { fetchArtemisResponse } from "../../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
+import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -143,6 +145,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                     async () => {
                                         await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
                                         registerCopilot(context);
+                                        processWillStartCollaboration(context);
                                     }
                                 );
 
@@ -195,13 +198,13 @@ export function activate(context: vscode.ExtensionContext): void {
 
     processWillSaveDocument(context);
 
-    processWillStartCollaboartion(context);
-
     enableFileSearchFunctionality(context, portalsFS);
 
     enableTextSearchFunctionality(context, portalsFS);
 
     showWalkthrough(context, WebExtensionContext.telemetry);
+
+    processActiveTextEditorChange(context);
 }
 
 export function enableTextSearchFunctionality(context: vscode.ExtensionContext, portalsFS: PortalsFS) {
@@ -284,35 +287,11 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     const entityInfo: IEntityInfo = {
                         entityId: getFileEntityId(document.uri.fsPath),
                         entityName: getFileEntityName(document.uri.fsPath),
-                        rootWebPageId: WebExtensionContext.entityDataMap.getEntityMap.get(getFileEntityId(document.uri.fsPath))?.rootWebPageId as string
+                        rootWebPageId: getFileRootWebPageId(document.uri.fsPath),
                     };
                     if (entityInfo.entityId && entityInfo.entityName) {
                         context.workspaceState.update(document.uri.fsPath, entityInfo);
                         WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, entityInfo);
-
-                        // sending message to webworker event listener for Co-Presence feature
-                        if (isCoPresenceEnabled()) {
-                            if (WebExtensionContext.worker !== undefined) {
-                                WebExtensionContext.worker.postMessage({
-                                    afrConfig: {
-                                        swpId: WebExtensionContext.sharedWorkSpaceMap.get(
-                                            Constants.sharedWorkspaceParameters.SHAREWORKSPACE_ID
-                                        ) as string,
-                                        swptenantId: WebExtensionContext.sharedWorkSpaceMap.get(
-                                            Constants.sharedWorkspaceParameters.TENANT_ID
-                                        ) as string,
-                                        discoveryendpoint: WebExtensionContext.sharedWorkSpaceMap.get(
-                                            Constants.sharedWorkspaceParameters.DISCOVERY_ENDPOINT
-                                        ) as string,
-                                        swpAccessToken: WebExtensionContext.sharedWorkSpaceMap.get(
-                                            Constants.sharedWorkspaceParameters.ACCESS_TOKEN
-                                        ) as string,
-                                    },
-                                    entityInfo
-                                });
-                            }
-                            WebExtensionContext.quickPickProvider.refresh();
-                        }
                     }
                 }
             });
@@ -324,6 +303,27 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, undefined);
                 }
             });
+        })
+    );
+}
+
+export function processActiveTextEditorChange(context: vscode.ExtensionContext) {
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor((editor) => {
+            if (editor) {
+                const document = editor.document;
+                const entityInfo: IEntityInfo = {
+                    entityId: getFileEntityId(document.uri.fsPath),
+                    entityName: getFileEntityName(document.uri.fsPath),
+                    rootWebPageId: getFileRootWebPageId(document.uri.fsPath),
+                };
+                if (entityInfo.entityId && entityInfo.entityName && isCoPresenceEnabled()) {
+                    // sending message to webworker event listener for Co-Presence feature
+                    sendingMessageToWebWorkerForCoPresence(entityInfo);
+                }
+
+                WebExtensionContext.quickPickProvider.refresh();
+            }
         })
     );
 }
@@ -344,7 +344,7 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
     );
 }
 
-export function processWillStartCollaboartion(context: vscode.ExtensionContext) {
+export function processWillStartCollaboration(context: vscode.ExtensionContext) {
     // feature in progress, hence disabling it
     if (isCoPresenceEnabled()) {
         registerCollaborationView();
@@ -415,6 +415,14 @@ export function createWebWorkerInstance(
                         }
                     };
                 }
+
+                const entityInfo = context.workspaceState.get(vscode.window.activeTextEditor?.document.uri.fsPath as string) as IEntityInfo;
+                if (entityInfo.rootWebPageId === undefined || entityInfo.rootWebPageId === "" || entityInfo.rootWebPageId === " ") {
+                    entityInfo.rootWebPageId = getFileRootWebPageId(vscode.window.activeTextEditor?.document.uri.fsPath as string);
+                }
+
+                // sending message to webworker for initial workspace
+                sendingMessageToWebWorkerForCoPresence(entityInfo);
             })
 
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTERED);
