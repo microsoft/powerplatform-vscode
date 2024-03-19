@@ -134,8 +134,11 @@
           {
             "name": "add-form",
             "description": "Adds existing form to webpage"
+          },
+          {
+            "name": "form-customization",
+            "description": "Helps with adding customizations to form"
           }
-
         ]
       }
     ],

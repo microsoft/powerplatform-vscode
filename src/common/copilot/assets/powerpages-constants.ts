@@ -788,7 +788,6 @@ Within the inline JavaScript code block, you can include any valid JavaScript co
 `
 
 export const FORM_CREATE_PROMPT = `
-
 - Basic Forms (also known as Entity Forms): Basic Forms in Power Pages are a key component that allows you to display, insert, or edit a record from a Microsoft Dataverse entity. They provide a way to create forms on your portal pages that interact directly with your Dataverse data. One of the features of Basic Forms is the ability to include custom JavaScript. This can be used to enhance the functionality of your forms, such as adding client-side validation, dynamically changing form behavior, or integrating with third-party services.
 
 Here is an example to add a 'basic form' to a component:
@@ -809,3 +808,26 @@ Here is an example to add an 'advanced form' to a component:
 > The above code is just an example for adding forms. Attention: Entity Form name for developer's request is one of the names in this comma seperated list - [{{targetEntityForm}}] and advanced form names is one of the names in this comma seperated list - [{{targetAdvancedForm}}].
  Replace these names with the real form names as requested by developer.
 `
+
+export const FORM_CUSTOMIZATION_API_PROMPT = `
+### Form Customization
+
+- Hide field
+
+\`\`\`Javascript
+    powerPages.pageContext.dataForm.getFormControl('fieldname').hide();
+\`\`\`
+
+- Show field
+
+\`\`\`Javascript
+    powerPages.pageContext.dataForm.getFormControl('fieldname').show();
+\`\`\`
+
+- Set field Text
+
+\`\`\`Javascript
+    powerPages.pageContext.dataForm.getFormControl('fieldname').setText('value');
+\`\`\`
+
+`;

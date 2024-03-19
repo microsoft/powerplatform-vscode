@@ -27,7 +27,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName } from "./dataverseMetadata";
 import { COPILOT_STRINGS } from "./assets/copilotStrings";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
-import { FORM_CREATE_PROMPT, FORM_VALIDATION_PROMPT, PAC_CLI_PROMPT, WEBPAGE_CREATE_PROMPT, WEB_API_PROMPT } from "./assets/powerpages-constants";
+import { FORM_CREATE_PROMPT, FORM_CUSTOMIZATION_API_PROMPT, FORM_VALIDATION_PROMPT, PAC_CLI_PROMPT, WEBPAGE_CREATE_PROMPT, WEB_API_PROMPT } from "./assets/powerpages-constants";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -217,7 +217,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
  }
 
  private isValidSubCommand(subCommand: string) {
-    return subCommand === 'form-validation' || subCommand === 'web-api' || subCommand === 'create-webpage' || subCommand === 'pac' || subCommand === 'add-form';
+    return subCommand === 'form-validation' || subCommand === 'web-api' || subCommand === 'create-webpage' || subCommand === 'pac' || subCommand === 'add-form' || subCommand === 'form-customization';
  }
 
  private async getPromptMessage(scenario: string) {
@@ -234,6 +234,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             return WEBPAGE_CREATE_PROMPT;
         case 'add-form':
             return FORM_CREATE_PROMPT.replace("{{targetEntityForm}}", await this.getEntityFormNames()).replace("{{targetAdvancedForm}}", await this.getEntityFormNames(false));
+        case 'form-customization':
+            return FORM_CUSTOMIZATION_API_PROMPT;
         default:
             return '';
     }
