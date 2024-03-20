@@ -1,6 +1,11 @@
 # Change Log - Power Platform Extension
 
 ## 2.0.31
+  - pac CLI 1.31.6, (February 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Web Extension updates:
+  - TBD
+
+## 2.0.31
   - pac CLI 1.30.7, (January 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - Moved release notes to *CHANGELOG.md* file, per VS Code's [Marketplace integration](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#marketplace-integration) guidelines.
 - Web Extension updates:
