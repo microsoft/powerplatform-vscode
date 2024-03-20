@@ -277,6 +277,9 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async searchFiles(pattern: string) {
+        // Record start time for iterating directory and searching files
+        const startTime = Date.now();
+
         // create case sensitive regex
         const regex = new RegExp(pattern, "i");
         const files = await this.iterateDirectory(WebExtensionContext.rootDirectory);
@@ -288,6 +291,14 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 results.push(fileUri);
             }
         });
+
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_SEARCH_FILE,
+            {
+                duration: (Date.now() - startTime).toString(),
+                files: files.length.toString(),
+            }
+        );
 
         return files;
     }
