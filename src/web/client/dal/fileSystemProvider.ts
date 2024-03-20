@@ -407,7 +407,6 @@ export class PortalsFS implements vscode.FileSystemProvider {
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_SEARCH_TEXT_RESULTS,
                 {
-                    file: file.fsPath,
                     duration: (endFileTime - startFileTime).toString(),
                     isMultiline: query.isMultiline ? "true" : "false",
                     isCaseSensitive: query.isCaseSensitive ? "true" : "false",
