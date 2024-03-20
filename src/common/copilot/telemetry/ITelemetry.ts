@@ -20,4 +20,5 @@ export interface IProDevCopilotTelemetryData {
     orgUrl?: string,
     tokenSize?: string
     isSuggestedPrompt?: string;
+    subScenario?: string;
 }
