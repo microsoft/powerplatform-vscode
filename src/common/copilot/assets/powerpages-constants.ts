@@ -830,4 +830,6 @@ export const FORM_CUSTOMIZATION_API_PROMPT = `
     powerPages.pageContext.dataForm.getFormControl('fieldname').setText('value');
 \`\`\`
 
+Note: The above code is just an example for adding customizations to the form.  Attention: Table name for developer's request - {{targetEntity}} and column names are - [ {{targetColumns}} ]. The selectors in the example codes provided above were just some samples, replace them with the real column names from developer's request.
+
 `;

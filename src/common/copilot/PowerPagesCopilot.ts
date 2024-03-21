@@ -235,7 +235,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         case 'add-form':
             return FORM_CREATE_PROMPT.replace("{{targetEntityForm}}", await this.getEntityFormNames()).replace("{{targetAdvancedForm}}", await this.getEntityFormNames(false));
         case 'form-customization':
-            return FORM_CUSTOMIZATION_API_PROMPT;
+            ({ entityName, entityColumns } = await this.getEntityNameAndColumns());
+            return FORM_CUSTOMIZATION_API_PROMPT.replace("{{targetEntity}}", entityName).replace("{{targetColumns}}", entityColumns.join(", "));
         default:
             return '';
     }
