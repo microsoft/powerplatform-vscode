@@ -16,7 +16,7 @@ export abstract class ECSFeaturesClient {
     // Initialize ECSFeatureClient and reference this for accessing any client config like below
     // ECSFeaturesClient.getConfig(EnableMultifileVscodeWeb).enableMultifileVscodeWeb
     public static async init(telemetry: ITelemetry | TelemetryReporter, filters: ECSAPIFeatureFlagFilters, clientName?: string) {
-        if (!this._ecsConfig) {
+        if (this._ecsConfig) return;
             const requestURL = getECSRequestURL(filters, clientName);
             try {
                 const response = await fetch(requestURL, {
