@@ -123,6 +123,12 @@
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",
   "PAC Telemetry disabled": "PAC Telemetry disabled",
   "Failed to disable PAC telemetry.": "Failed to disable PAC telemetry.",
+  "Cannot install Power Pages generator. Please install npm and try again./Do not translate 'npm'": {
+    "message": "Cannot install Power Pages generator. Please install npm and try again.",
+    "comment": [
+      "Do not translate 'npm'"
+    ]
+  },
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": {
     "message": "Cannot install Power Pages generator: {0}",
     "comment": [

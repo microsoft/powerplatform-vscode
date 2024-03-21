@@ -12,7 +12,8 @@ import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "xmldom";
-import { ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, SYSTEFORMS_API_PATH } from "./constants";
+import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
+
 
 interface Attribute {
     LogicalName: string;
@@ -67,7 +68,8 @@ export async function getFormXml(entityName: string, formName: string,  orgUrl: 
         const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
         const endTime = performance.now();
         const responseTime = endTime - startTime || 0;
-        const formxml =getFormXMLFromResponse(jsonResponse);
+
+        const formxml = getFormXMLFromResponse(jsonResponse);
 
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return parseXML(formxml);
@@ -128,10 +130,21 @@ function parseXML(formXml: string) {
         if (label && control) {
             const description = label.getAttribute(ATTRIBUTE_DESCRIPTION);
             const datafieldname = control.getAttribute(ATTRIBUTE_DATAFIELD_NAME);
-            //const classid = control.getAttribute('classid');
+            let classid = control.getAttribute(ATTRIBUTE_CLASSID);
+
+            let controlType = '';
+            if(classid){
+
+                // Use a regular expression to replace both '{' and '}' with an empty string
+                // Input: '{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}'
+                // Output: '5B773807-9FB2-42DB-97C3-7A91EFF8ADFF'
+                classid = classid.replace(/{|}/g, '');
+
+                controlType = ControlClassIdMap.get(classid) ?? '';
+            }
 
             if (description && datafieldname) {
-                result.push(description, datafieldname);
+                result.push(description, datafieldname, controlType);
             }
         }
     }
