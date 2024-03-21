@@ -40,7 +40,7 @@ export abstract class ECSFeaturesClient {
         feature: ECSFeatureProperties<TConfig, TeamName>
     ) {
         if (Object.keys(this._featuresConfig).length === 0) {
-            this._featuresConfig = this._ecsConfig && feature.extractECSFeatureFlagConfig ? feature.extractECSFeatureFlagConfig(this._ecsConfig as TConfig) : {};
+            this._featuresConfig = this._ecsConfig && feature.extractECSFeatureFlagConfig?.(this._ecsConfig as TConfig) : {};
         }
 
         return Object.keys(this._featuresConfig).length === 0 ? feature.fallback : this._featuresConfig;
