@@ -118,4 +118,5 @@ export enum telemetryEventNames {
     WEB_EXTENSION_RENAME_NOT_SUPPORTED = "WebExtensionRenameNotSupported",
     WEB_EXTENSION_DELETE_NOT_SUPPORTED = "WebExtensionDeleteNotSupported",
     WEB_EXTENSION_MANDATORY_PATH_PARAMETERS_MISSING_FOR_SINGLE_FILE = "WebExtensionMandatoryPathParametersMissingForSingleFile",
+    WEB_EXTENSION_ORG_GEO = 'WebExtensionOrgGeo'
 }
