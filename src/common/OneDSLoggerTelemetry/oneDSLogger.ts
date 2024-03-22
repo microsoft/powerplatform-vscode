@@ -131,7 +131,8 @@ export class OneDSLogger implements ITelemetryLogger{
             referrer: "",
             envId: "",
             referrerSource: "",
-            orgGeo: ""
+            orgGeo: "",
+            sku: ""
         }
     }
 
@@ -341,6 +342,7 @@ export class OneDSLogger implements ITelemetryLogger{
             OneDSLogger.contextInfo.envId = eventInfo.envId ?? '';
             OneDSLogger.contextInfo.referrerSource = eventInfo.referrerSource ?? '';
             OneDSLogger.contextInfo.orgGeo = eventInfo.orgGeo ?? '';
+            OneDSLogger.contextInfo.sku = eventInfo.sku ?? '';
         }
         if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED) {
             OneDSLogger.userInfo.oid = JSON.parse(envelope.data.eventInfo).userId;
