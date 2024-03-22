@@ -57,7 +57,8 @@ export class WebExtensionTelemetry {
                 region: queryParamsMap.get(queryParameters.REGION),
                 geo: queryParamsMap.get(queryParameters.GEO),
                 envId: queryParamsMap.get(queryParameters.ENV_ID),
-                referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE)
+                referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
+                sku: queryParamsMap.get(queryParameters.SKU)
             }
         }
 
