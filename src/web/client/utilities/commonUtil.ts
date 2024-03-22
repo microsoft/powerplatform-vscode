@@ -151,7 +151,9 @@ export function isCoPresenceEnabled() {
         );
     }
 
-    return isCoPresenceEnabled as boolean;
+    // return isCoPresenceEnabled as boolean;
+    // Co-presence feature is disabled for now
+    return false;
 }
 
 /**
