@@ -250,11 +250,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                     if (feedbackValue === THUMBS_UP) {
 
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID, subScenario: String(messageScenario)});
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID, subScenario: String(messageScenario) });
                         CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_UP, this.telemetry, this.geoName as string, messageScenario, tenantId)
                     } else if (feedbackValue === THUMBS_DOWN) {
 
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID, subScenario: String(messageScenario)});
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID, subScenario: String(messageScenario) });
                         CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_DOWN, this.telemetry, this.geoName as string, messageScenario, tenantId)
                     }
                     break;
@@ -336,12 +336,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 this.sendMessageToWebview({ type: 'userName', value: userName });
 
                 let metadataInfo = { entityName: '', formName: '' };
-                let componentInfo : string[] = [];
+                let componentInfo: string[] = [];
 
                 if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
                     metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
-                    const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
+                    const dataverseToken = (await dataverseAuthentication(activeOrgUrl, true)).accessToken;
 
                     if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
                         const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, telemetry, sessionID);

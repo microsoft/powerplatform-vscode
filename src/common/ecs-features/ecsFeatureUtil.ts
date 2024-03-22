@@ -7,12 +7,9 @@ import { PowerPagesClientName, ECS_REQUEST_URL_TEMPLATE } from "./constants";
 import { ECSFeaturesClient } from "./ecsFeatureClient";
 import { ECSAPIFeatureFlagFilters } from "./ecsFeatureFlagFilters";
 import { ECSFeatureDefinition, ECSFeatureInfo, createECSFeatureDefinition } from "./ecsFeatureProperties";
-import { URL, URLSearchParams } from 'url';
 
 export function createECSRequestURL(filters: ECSAPIFeatureFlagFilters, clientName = PowerPagesClientName): string {
-    const url = new URL(`${ECS_REQUEST_URL_TEMPLATE}/${clientName}/1.0.0.0`);
-
-    const queryParams = {
+    const queryParams: { [key: string]: string } = {
         AppName: filters.AppName,
         EnvironmentID: filters.EnvID,
         UserID: filters.UserID,
@@ -20,9 +17,11 @@ export function createECSRequestURL(filters: ECSAPIFeatureFlagFilters, clientNam
         region: filters.Region
     };
 
-    url.search = new URLSearchParams(queryParams).toString();
+    const queryString = Object.keys(queryParams)
+        .map(key => `${key}=${encodeURIComponent(queryParams[key])}`)
+        .join('&');
 
-    return url.toString();
+    return `${ECS_REQUEST_URL_TEMPLATE}/${clientName}/1.0.0.0?${queryString}`;
 }
 
 export function getFeatureConfigs<TConfig extends Record<string, string | boolean>, TeamName extends string>(featureInfo: ECSFeatureInfo<TConfig, TeamName>) {

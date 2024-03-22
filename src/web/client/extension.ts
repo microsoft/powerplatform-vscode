@@ -40,6 +40,8 @@ import { fetchArtemisResponse } from "../../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
+import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
+import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -144,6 +146,18 @@ export function activate(context: vscode.ExtensionContext): void {
                                     },
                                     async () => {
                                         await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
+
+                                        await ECSFeaturesClient.init(WebExtensionContext.telemetry.getTelemetryReporter(),
+                                            {
+                                                AppName: PowerPagesAppName,
+                                                EnvID: queryParamsMap.get(queryParameters.ENV_ID) as string,
+                                                UserID: WebExtensionContext.userId,
+                                                TenantID: queryParamsMap.get(queryParameters.TENANT_ID) as string,
+                                                Region: queryParamsMap.get(queryParameters.REGION) as string
+                                            },
+                                            PowerPagesClientName);
+                                        // Initialize ECS config in webExtensionContext
+
                                         registerCopilot(context);
                                         processWillStartCollaboration(context);
                                     }
@@ -622,14 +636,14 @@ function isActiveDocument(fileFsPath: string): boolean {
     );
 }
 
-async function fetchArtemisData(orgId: string) : Promise<string> {
-        const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
-        if (!artemisResponse) {
-            // Todo: Log in error telemetry. Runtime maintains another table for this kind of failure. We should do the same.
-            return '';
-        }
+async function fetchArtemisData(orgId: string): Promise<string> {
+    const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+    if (!artemisResponse) {
+        // Todo: Log in error telemetry. Runtime maintains another table for this kind of failure. We should do the same.
+        return '';
+    }
 
-        return artemisResponse[0].geoName as string;
+    return artemisResponse[0].geoName as string;
 }
 
 async function logArtemisTelemetry() {
@@ -639,7 +653,7 @@ async function logArtemisTelemetry() {
             queryParameters.ORG_ID
         ) as string
 
-        const geoName= fetchArtemisData(orgId);
+        const geoName = fetchArtemisData(orgId);
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
             { orgId: orgId, geoName: String(geoName) });
     } catch (error) {

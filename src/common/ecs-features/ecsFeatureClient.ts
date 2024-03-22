@@ -15,7 +15,7 @@ export abstract class ECSFeaturesClient {
 
     // Initialize ECSFeatureClient and reference this for accessing any client config like below
     // ECSFeaturesClient.getConfig(EnableMultifileVscodeWeb).enableMultifileVscodeWeb
-    public static async init(telemetry: ITelemetry | TelemetryReporter, filters: ECSAPIFeatureFlagFilters, clientName?: string) {
+    public static async init(telemetry: ITelemetry | TelemetryReporter, filters: ECSAPIFeatureFlagFilters, clientName: string) {
         if (this._ecsConfig) return;
 
         const requestURL = createECSRequestURL(filters, clientName);
@@ -31,12 +31,12 @@ export abstract class ECSFeaturesClient {
             // telemetry.sendTelemetryEvent('ECSConfig', {});
 
             // Initialize ECS config
-            return result;
+            this._ecsConfig = result[clientName];
         } catch (error) {
-            return null;
+            // Log error
+            // telemetry.sendTelemetryEvent('ECSConfigError', {});
         }
     }
-
 
     public static getConfig<TConfig extends Record<string, boolean | string>, TeamName extends string>(
         feature: ECSFeatureProperties<TConfig, TeamName>
