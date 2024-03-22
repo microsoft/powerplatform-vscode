@@ -74,7 +74,7 @@
     const resultDiv = document.createElement("div");
     let codeLineCount = 0;
 
-    const responseLength = isUserCode ? responseText.length : responseText.length - 1;
+    const responseLength = responseText.length > 1 ? responseText.length -1 : responseText.length;
 
     for (let i = 0; i < responseLength; i++) {
       const textDiv = document.createElement("div");
@@ -318,11 +318,12 @@
           thinkingDiv.remove();
         }
 
+        const scenario = apiResponse.length > 1 ? apiResponse[apiResponse.length - 1] : apiResponse[0].displayText;
 
         let message = {
           id: messageIndex,
           content: apiResponse,
-          scenario: apiResponse[apiResponse.length - 1],
+          scenario: scenario,
           reaction: null
         }
 
