@@ -16,7 +16,7 @@ export const azureRegions = {
     CanadaCentral: 'canadacentral',
     CanadaEast: 'canadaeast',
     BrazilSouth: 'brazilsouth',
-  
+
     // Europe
     EuropeNorth: 'northeurope',
     EuropeWest: 'westeurope',
@@ -30,7 +30,7 @@ export const azureRegions = {
     GermanyWestCentral: 'germanywestcentral',
     NorwayWest: 'norwaywest',
     NorwayEast: 'norwayeast',
-  
+
     // Asia
     AsiaEast: 'eastasia',
     AsiaSouthEast: 'southeastasia',
@@ -45,44 +45,44 @@ export const azureRegions = {
     IndiaWest: 'westindia',
     KoreaSouth: 'koreasouth',
     KoreaCentral: 'koreacentral',
-  
+
     // UAE
     UAECentral: 'uaecentral',
     UAENorth: 'uaenorth',
     SouthAfricaNorth: 'southafricanorth',
     SouthAfricaWest: 'southafricawest',
-  
+
     // Germany
     GermanyCentral: 'germanycentral',
     GermanyNorthEast: 'germanynortheast',
-  
+
     // Singapore
     SingaporeSouthEast: 'southeastasia',
-  
+
     /// <summary>
     /// U.S. government cloud in Virginia.
     /// </summary>
-  
+
     GovernmentUSVirginia: 'usgovvirginia',
-  
+
     /// <summary>
     /// U.S. government cloud in Iowa.
     /// </summary>
     GovernmentUSIowa: 'usgoviowa',
-  
+
     /// <summary>
     /// U.S. government cloud in Arizona.
     /// </summary>
     GovernmentUSArizona: 'usgovarizona',
-  
+
     /// <summary>
     /// U.S. government cloud in Texas.
     /// </summary>
     GovernmentUSTexas: 'usgovtexas',
-  
+
     GovernmentUSDodEast: 'usdodeast',
     GovernmentUSDodCentral: 'usdodcentral',
-  
+
     /// <summary>
     /// China Environment
     /// <summary>
@@ -92,9 +92,9 @@ export const azureRegions = {
     ChinaEast: 'chinaeast',
     ChinaEast2: 'chinaeast2',
     ChinaEast3: 'chinaeast3',
-  };
-  
-  export const regionShortName = {
+};
+
+export const regionShortName = {
     wus: 'wus',
     cus: 'cus',
     eus: 'eus',
@@ -141,8 +141,8 @@ export const azureRegions = {
     cnn: 'cnn',
     cnn2: 'cnn2',
     cnn3: 'cnn3'
-  };
-  
+};
+
 export const geoMappingsToAzureRegion = {
     // Public
     [regionShortName.wus]: { geoName: 'us', azureRegion: azureRegions.USWest },
@@ -178,7 +178,7 @@ export const geoMappingsToAzureRegion = {
     [regionShortName.nch]: { geoName: 'ch', azureRegion: azureRegions.SwitzerlandNorth },
     [regionShortName.wch]: { geoName: 'ch', azureRegion: azureRegions.SwitzerlandWest },
     [regionShortName.eno]: { geoName: 'no', azureRegion: azureRegions.NorwayEast },
-    [regionShortName.wno]: { geoName: 'no', azureRegion: azureRegions.NorwayWest },     
+    [regionShortName.wno]: { geoName: 'no', azureRegion: azureRegions.NorwayWest },
     [regionShortName.ckr]: { geoName: 'kr', azureRegion: azureRegions.KoreaCentral },
     [regionShortName.skr]: { geoName: 'kr', azureRegion: azureRegions.KoreaSouth },
     // Government US.
@@ -193,5 +193,4 @@ export const geoMappingsToAzureRegion = {
     [regionShortName.cnn]: { geoName: 'cn', azureRegion: azureRegions.ChinaNorth },
     [regionShortName.cnn2]: { geoName: 'cn', azureRegion: azureRegions.ChinaNorth2 },
     [regionShortName.cnn3]: { geoName: 'cn', azureRegion: azureRegions.ChinaNorth3 },
-  };
-  
+};
