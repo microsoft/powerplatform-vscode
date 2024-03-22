@@ -35,6 +35,10 @@
     <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
+    <trans-unit id="++CODE++75106b7b8e0c597d51e042edbde3498f813c9cd7bd59759f4dde848abc054e85">
+      <source xml:lang="en">Cannot install Power Pages generator. Please install npm and try again.</source>
+      <note>Do not translate 'npm'</note>
+    </trans-unit>
     <trans-unit id="++CODE++403c4e10526afca006129953a8e31ef13e0205d0a7305427d17838e73396ce48">
       <source xml:lang="en">Cannot install Power Pages generator: {0}</source>
       <note>{0} represents the error message returned from the exception</note>

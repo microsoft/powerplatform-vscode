@@ -272,3 +272,23 @@ export function getTeamChatURL (mail: string) {
 export function getMailToPath (mail: string) {
     return `mailto:${mail}`;
 }
+
+export function getRangeForMultilineMatch(text: string, pattern: string, index: number) {
+    const textBeforePattern = text.substring(0, index).split('\n');
+    const textTillPattern = text.substring(0, index + pattern.length).split('\n');
+
+    // start line index 0 based
+    const startLine = textBeforePattern.length - 1;
+
+    // end line index 0 based
+    const endLine = textTillPattern.length - 1;
+
+    // start index relative to the line
+    const startIndex = textBeforePattern[startLine].length;
+
+    // end index relative to the line
+    const endIndex = textTillPattern[endLine].length;
+
+    const range = new vscode.Range(startLine, startIndex, endLine, endIndex);
+    return range;
+}
