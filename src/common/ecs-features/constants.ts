@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export const ECS_REQUEST_URL_TEMPLATE = "https://ecs.office.com/config/v1/{ClientName}/1.0.0.0?AppName={AppName}&EnvironmentID={EnvironmentId}&UserID={UserId}&TenantID={TenantId}&region={Region}";
+export const ECS_REQUEST_URL_TEMPLATE = "https://ecs.office.com/config/v1";
 
 export const PowerPagesClientName = 'PortalsMakerExperiences'; // Project name in ECS Portal, Do not change this
 export type ProjectTeam = typeof PowerPagesClientName;
