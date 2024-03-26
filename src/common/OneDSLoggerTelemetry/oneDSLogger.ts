@@ -32,6 +32,7 @@ export class OneDSLogger implements ITelemetryLogger{
     private static userInfo: IUserInfo = {oid: "", tid: "", puid: ""};
     private static contextInfo: IContextInfo ;
     private static userRegion : string = "";
+    private static orgGeo: string = "";
 
     private readonly regexPatternsToRedact = [
         /key["\\ ']*[:=]+["\\ ']*([a-zA-Z0-9]*)/igm,
@@ -131,7 +132,6 @@ export class OneDSLogger implements ITelemetryLogger{
             referrer: "",
             envId: "",
             referrerSource: "",
-            orgGeo: "",
             sku: ""
         }
     }
@@ -306,7 +306,7 @@ export class OneDSLogger implements ITelemetryLogger{
                     envelope.data.puid = OneDSLogger.userInfo?.puid;
                     envelope.data.context = JSON.stringify(OneDSLogger.contextInfo);
                     envelope.data.userRegion = OneDSLogger.userRegion;
-                    envelope.data.orgGeo = OneDSLogger.contextInfo.orgGeo;
+                    envelope.data.orgGeo = OneDSLogger.orgGeo;
                     // At the end of event enrichment, redact the sensitive data for all the applicable fields
                   //  envelope = this.redactSensitiveDataFromEvent(envelope);
             }
@@ -341,14 +341,13 @@ export class OneDSLogger implements ITelemetryLogger{
             OneDSLogger.contextInfo.referrer = eventInfo.referrer ?? '';
             OneDSLogger.contextInfo.envId = eventInfo.envId ?? '';
             OneDSLogger.contextInfo.referrerSource = eventInfo.referrerSource ?? '';
-            OneDSLogger.contextInfo.orgGeo = eventInfo.orgGeo ?? '';
             OneDSLogger.contextInfo.sku = eventInfo.sku ?? '';
         }
         if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED) {
             OneDSLogger.userInfo.oid = JSON.parse(envelope.data.eventInfo).userId;
         }
         if (envelope.data.eventName ==  telemetryEventNames.WEB_EXTENSION_ORG_GEO){
-            OneDSLogger.contextInfo.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
+            OneDSLogger.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
         }
     }
 

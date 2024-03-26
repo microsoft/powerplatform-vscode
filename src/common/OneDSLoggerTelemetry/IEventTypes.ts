@@ -47,6 +47,5 @@ export interface ICustomEvent {
     referrer? :string;
     envId?: string;
     referrerSource?: string;
-    orgGeo?: string;
     sku?: string;
   }
