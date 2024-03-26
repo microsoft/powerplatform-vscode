@@ -131,7 +131,7 @@ export class OneDSLogger implements ITelemetryLogger{
             correlationId: "",
             referrer: "",
             envId: "",
-            referrerSource: ""
+            referrerSource: "",
             sku: ""
         }
     }
