@@ -10,5 +10,5 @@ export type ProjectTeam = typeof PowerPagesClientName;
 export const PowerPagesAppName = 'powerpages-microsoft-com'; // Project name in ECS Portal, Do not change this
 export type ProjectName = typeof PowerPagesAppName;
 
-export const VisualStudioCodeDevInsidersUrl = 'https://insiders.vscode.dev/powerplatform/portal'; // VScode dev insiders/pre-prod env
-export const VisualStudioCodeDevUrl = 'https://vscode.dev/powerplatform/portal'; // VScode dev GA/prod env
+export const VisualStudioCodeDevInsidersUrl = 'https://insiders.vscode.dev/power/portal'; // VScode dev insiders/pre-prod env
+export const VisualStudioCodeDevUrl = 'https://vscode.dev/power/portal'; // VScode dev GA/prod env
