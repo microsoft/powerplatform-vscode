@@ -365,7 +365,7 @@ class WebExtensionContext implements IWebExtensionContext {
         const dataverseOrgUrl = this.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
-        const accessToken: string = await dataverseAuthentication(
+        const { accessToken, userId } = await dataverseAuthentication(
             dataverseOrgUrl,
             firstTimeAuth
         );
@@ -373,6 +373,7 @@ class WebExtensionContext implements IWebExtensionContext {
         if (accessToken.length === 0) {
             // re-set all properties to default values
             this._dataverseAccessToken = "";
+            this._userId = "";
             this._websiteIdToLanguage = new Map<string, string>();
             this._websiteLanguageIdToPortalLanguageMap = new Map<
                 string,
@@ -389,6 +390,7 @@ class WebExtensionContext implements IWebExtensionContext {
         }
 
         this._dataverseAccessToken = accessToken;
+        this._userId = userId;
     }
 
     public async updateFileDetailsInContext(
