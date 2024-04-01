@@ -125,6 +125,7 @@ describe("webExtensionTelemetry", () => {
             entity: queryParamsMap.get(queryParameters.ENTITY),
             entityId: queryParamsMap.get(queryParameters.ENTITY_ID),
             referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
+            sku: queryParamsMap.get(queryParameters.SKU),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
 
@@ -162,6 +163,7 @@ describe("webExtensionTelemetry", () => {
             geo: queryParamsMap.get(queryParameters.GEO),
             envId: queryParamsMap.get(queryParameters.ENV_ID),
             referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
+            sku: queryParamsMap.get(queryParameters.SKU),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
 
