@@ -120,6 +120,7 @@ async function loadContainer(config, swpId, entityInfo) {
                     .get(user.userId).connections;
 
                 const userEntityIdArray = [];
+                const userConnectionData = [];
 
                 const connectionIdInContainer = await map
                     .get("selection")
@@ -129,6 +130,7 @@ async function loadContainer(config, swpId, entityInfo) {
                     userEntityIdArray.push(
                         connectionIdInContainer.get(connection.id)
                     );
+                    userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
                 });
 
                 // aadObjectId is the unique identifier for a user
@@ -138,6 +140,7 @@ async function loadContainer(config, swpId, entityInfo) {
                     userName: user.userName,
                     containerId: swpId,
                     entityId: userEntityIdArray,
+                    connectionData: userConnectionData,
                 });
 
                 self.postMessage({
@@ -152,6 +155,8 @@ async function loadContainer(config, swpId, entityInfo) {
                 self.postMessage({
                     type: "member-removed",
                     userId: member.additionalDetails.AadObjectId,
+                    entityInfo: entityInfo,
+                    removeConnectionData: { connectionId: clientId, entityId: entityInfo.rootWebPageId },
                 });
                 self.postMessage({
                     type: "telemetry-info",
@@ -176,6 +181,7 @@ async function loadContainer(config, swpId, entityInfo) {
                     .get(user.userId).connections;
 
                 const userEntityIdArray = [];
+                const userConnectionData = [];
 
                 const connectionIdInContainer = await map
                     .get("selection")
@@ -185,6 +191,7 @@ async function loadContainer(config, swpId, entityInfo) {
                     userEntityIdArray.push(
                         connectionIdInContainer.get(connection.id)
                     );
+                    userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
                 });
 
                 // aadObjectId is the unique identifier for a user
@@ -194,6 +201,7 @@ async function loadContainer(config, swpId, entityInfo) {
                     userName: user.userName,
                     containerId: swpId,
                     entityId: userEntityIdArray,
+                    connectionData: userConnectionData,
                 });
 
                 self.postMessage({
