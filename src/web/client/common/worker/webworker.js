@@ -113,34 +113,41 @@ async function loadContainer(config, swpId, entityInfo) {
             if (initialLoad) {
                 initialLoad = false;
 
-                const user = getUserIdByConnectionId(myConnectionId);
+                audience.getMembers().forEach(async (member) => {
+                    try {
+                        const userConnections = member.connections;
 
-                const userConnections = audience
-                    .getMembers()
-                    .get(user.userId).connections;
+                        const userEntityIdArray = [];
+                        const userConnectionData = [];
 
-                const userEntityIdArray = [];
-                const userConnectionData = [];
+                        const connectionIdInContainer = await map
+                            .get("selection")
+                            .get();
 
-                const connectionIdInContainer = await map
-                    .get("selection")
-                    .get();
+                        userConnections.forEach((connection) => {
+                            userEntityIdArray.push(
+                                connectionIdInContainer.get(connection.id)
+                            );
+                            userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
+                        });
 
-                userConnections.forEach((connection) => {
-                    userEntityIdArray.push(
-                        connectionIdInContainer.get(connection.id)
-                    );
-                    userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
-                });
-
-                // aadObjectId is the unique identifier for a user
-                self.postMessage({
-                    type: "client-data",
-                    userId: user.aadObjectId,
-                    userName: user.userName,
-                    containerId: swpId,
-                    entityId: userEntityIdArray,
-                    connectionData: userConnectionData,
+                        // aadObjectId is the unique identifier for a user
+                        self.postMessage({
+                            type: "client-data",
+                            userId: member.additionalDetails.AadObjectId,
+                            userName: member.userName,
+                            containerId: swpId,
+                            entityId: userEntityIdArray,
+                            connectionData: userConnectionData,
+                        });
+                    } catch (error) {
+                        self.postMessage({
+                            type: "telemetry-error",
+                            methodName: "webWorker initialLoad",
+                            errorMessage: error?.message,
+                            error: error,
+                        });
+                    }
                 });
 
                 self.postMessage({
@@ -194,6 +201,7 @@ async function loadContainer(config, swpId, entityInfo) {
                     userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
                 });
 
+                console.log("from value changed")
                 // aadObjectId is the unique identifier for a user
                 self.postMessage({
                     type: "client-data",
