@@ -306,6 +306,7 @@ export class OneDSLogger implements ITelemetryLogger {
                 envelope.data.puid = OneDSLogger.userInfo?.puid;
                 envelope.data.context = JSON.stringify(OneDSLogger.contextInfo);
                 envelope.data.userRegion = OneDSLogger.userRegion;
+                envelope.data.orgGeo = OneDSLogger.contextInfo.orgGeo;
                 // At the end of event enrichment, redact the sensitive data for all the applicable fields
                 //  envelope = this.redactSensitiveDataFromEvent(envelope);
             }
@@ -327,7 +328,6 @@ export class OneDSLogger implements ITelemetryLogger {
     private populateVscodeWebAttributes(envelope: any) {
         if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS) {
             const eventInfo = JSON.parse(envelope.data.eventInfo);
-
             OneDSLogger.userInfo.tid = eventInfo.tenantId ?? '';
             OneDSLogger.userRegion = eventInfo.geo ? geoMappingsToAzureRegion[eventInfo.geo.toLowerCase()].geoName ?? eventInfo.geo : '';
             OneDSLogger.contextInfo.orgId = eventInfo.orgId ?? '';
@@ -342,8 +342,12 @@ export class OneDSLogger implements ITelemetryLogger {
             OneDSLogger.contextInfo.orgGeo = eventInfo.orgGeo ?? '';
             OneDSLogger.contextInfo.sku = eventInfo.sku ?? '';
         }
+        
         if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED) {
             OneDSLogger.userInfo.oid = JSON.parse(envelope.data.eventInfo).userId;
+        }
+        if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_ORG_GEO) {
+            OneDSLogger.contextInfo.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
         }
     }
 
