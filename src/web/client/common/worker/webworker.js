@@ -201,7 +201,6 @@ async function loadContainer(config, swpId, entityInfo) {
                     userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
                 });
 
-                console.log("from value changed")
                 // aadObjectId is the unique identifier for a user
                 self.postMessage({
                     type: "client-data",
