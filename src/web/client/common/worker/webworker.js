@@ -119,7 +119,6 @@ async function loadContainer(config, swpId, entityInfo) {
                     .getMembers()
                     .get(user.userId).connections;
 
-                const userEntityIdArray = [];
                 const userConnectionData = [];
 
                 const connectionIdInContainer = await map
@@ -127,9 +126,6 @@ async function loadContainer(config, swpId, entityInfo) {
                     .get();
 
                 userConnections.forEach((connection) => {
-                    userEntityIdArray.push(
-                        connectionIdInContainer.get(connection.id)
-                    );
                     userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
                 });
 
@@ -139,7 +135,6 @@ async function loadContainer(config, swpId, entityInfo) {
                     userId: user.aadObjectId,
                     userName: user.userName,
                     containerId: swpId,
-                    entityId: userEntityIdArray,
                     connectionData: userConnectionData,
                 });
 
@@ -180,7 +175,6 @@ async function loadContainer(config, swpId, entityInfo) {
                     .getMembers()
                     .get(user.userId).connections;
 
-                const userEntityIdArray = [];
                 const userConnectionData = [];
 
                 const connectionIdInContainer = await map
@@ -188,9 +182,6 @@ async function loadContainer(config, swpId, entityInfo) {
                     .get();
 
                 userConnections.forEach((connection) => {
-                    userEntityIdArray.push(
-                        connectionIdInContainer.get(connection.id)
-                    );
                     userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
                 });
 
@@ -200,7 +191,6 @@ async function loadContainer(config, swpId, entityInfo) {
                     userId: user.aadObjectId,
                     userName: user.userName,
                     containerId: swpId,
-                    entityId: userEntityIdArray,
                     connectionData: userConnectionData,
                 });
 
