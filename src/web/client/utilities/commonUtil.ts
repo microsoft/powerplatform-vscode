@@ -267,8 +267,8 @@ export function getImageFileContent(fileFsPath: string, fileContent: Uint8Array)
     return webFileV2 ? fileContent : convertContentToString(fileContent, true);
 }
 
-export function getTeamChatURL (mail: string) {
-    return new URL(mail, "https://teams.microsoft.com/l/chat/0/0?users=");
+export function getTeamChatURL(mail: string) {
+    return "https://teams.microsoft.com/l/chat/0/0?users=" + encodeURIComponent(mail);
 }
 
 export function getMailToPath (mail: string) {

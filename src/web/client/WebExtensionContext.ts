@@ -802,7 +802,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 return;
             } else {
                 const teamsChatLink = getTeamChatURL(mail);
-                vscode.env.openExternal(vscode.Uri.parse(teamsChatLink.href));
+                vscode.env.openExternal(vscode.Uri.parse(teamsChatLink));
             }
         });
     }
