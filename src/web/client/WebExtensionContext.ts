@@ -29,7 +29,7 @@ import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 import { getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
-import { UserDataMap } from "./context/userDataMap";
+import { IConnectionData, UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
 import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
@@ -776,18 +776,20 @@ class WebExtensionContext implements IWebExtensionContext {
         containerId: string,
         userName: string,
         userId: string,
-        entityId: string[]
+        entityId: string[],
+        connectionData: IConnectionData[],
     ) {
         this.connectedUsers.setUserData(
             containerId,
             userName,
             userId,
-            entityId
+            entityId,
+            connectionData
         );
     }
 
-    public async removeConnectedUserInContext(userId: string) {
-        this.connectedUsers.removeUser(userId);
+    public async removeConnectedUserInContext(userId: string, removeConnectionData: IConnectionData) {
+        this.connectedUsers.removeUser(userId, removeConnectionData);
     }
 
     public async getMail(userId: string): Promise<string> {
