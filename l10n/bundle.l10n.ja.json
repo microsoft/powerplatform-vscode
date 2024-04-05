@@ -10,6 +10,7 @@
   "Authorization Failed. Please run again to authorize it": "認証に失敗しました。再度実行し、承認してください",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "変更には注意が必要です。行った変更は、すべてのユーザーに即座に表示されます。[サイトの編集] を選択して編集を行うか、エディター タブを閉じて、編集をキャンセルしてください。",
   "Cancel": "キャンセル",
+  "Cannot install Power Pages generator. Please install npm and try again./Do not translate 'npm'": "Power Pages ジェネレーターをインストールできません。npm をインストールし、やり直してください。",
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": "Power Pages ジェネレーターをインストールできません: {0}",
   "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": "pac CLI をインストールできません: {0}",
   "Check the URL and verify the parameters are correct": "URL をチェックして、パラメーターが正しいことを確認してください",

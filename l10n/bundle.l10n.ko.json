@@ -10,6 +10,7 @@
   "Authorization Failed. Please run again to authorize it": "인증하지 못했습니다. 인증하려면 다시 실행하세요.",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "신중하게 변경하세요. 모든 사람이 변경 내용을 즉시 볼 수 있습니다. 편집하려면 사이트 편집을 선택하거나 편집하지 않고 취소하려면 편집기 탭을 닫으세요.",
   "Cancel": "취소",
+  "Cannot install Power Pages generator. Please install npm and try again./Do not translate 'npm'": "Power Pages 생성기를 설치할 수 없습니다. npm을 설치하고 다시 시도하세요.",
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": "Power Pages 생성기 {0}를 설치할 수 없습니다.",
   "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": "pac CLI를 설치할 수 없습니다. {0}",
   "Check the URL and verify the parameters are correct": "URL을 확인하고 매개 변수가 올바른지 확인하세요",
