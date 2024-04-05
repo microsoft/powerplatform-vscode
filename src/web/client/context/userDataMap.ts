@@ -33,15 +33,7 @@ export class UserData implements IUserData {
     public get connectionData(): IConnectionData[] {
         return this._connectionData;
     }
-
-    // Setters
-    public setConnectionData(connectionData: IConnectionData[]): void {
-        this._connectionData = connectionData;
-    }
-    public get connectionData(): IConnectionData[] {
-        return this._connectionData;
-    }
-
+    
     // Setters
     public setConnectionData(connectionData: IConnectionData[]): void {
         this._connectionData = connectionData;
