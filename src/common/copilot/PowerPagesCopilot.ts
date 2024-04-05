@@ -181,7 +181,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
                 case "webViewLoaded": {
-                    // Send the localized strings to the copilot webview. It can't be moved to a constant file because it's not being picked for localization
+                    // end the localized strings to the Copilot webview. They can't be moved to a constant file because they are not being picked for localization.
                     const copilotStrings = {
                         EXPLAIN_CODE_PROMPT: vscode.l10n.t('Explain the following code snippet:'),
                         LARGE_SELECTION: vscode.l10n.t('Selection is too large. Try making a shorter selection.'),
