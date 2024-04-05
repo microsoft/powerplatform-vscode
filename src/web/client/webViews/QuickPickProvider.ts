@@ -42,9 +42,9 @@ export class QuickPickProvider {
         Array.from(
             connectedUsersMap.entries()
         ).map(([, value]) => {
-            if (value._entityId.length) {
-                value._entityId.forEach(async (entityId) => {
-                    const contentPageId = WebExtensionContext.entityForeignKeyDataMap.getEntityForeignKeyMap.get(`${entityId}`);
+            if (value._connectionData.length) {
+                value._connectionData.forEach(async (connection) => {
+                    const contentPageId = WebExtensionContext.entityForeignKeyDataMap.getEntityForeignKeyMap.get(`${connection.entityId[0]}`);
 
                     if (
                         contentPageId &&

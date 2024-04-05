@@ -385,7 +385,8 @@ export function createWebWorkerInstance(
 
                         if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
                             WebExtensionContext.removeConnectedUserInContext(
-                                data.userId
+                                data.userId,
+                                data.removeConnectionData
                             );
                             WebExtensionContext.userCollaborationProvider.refresh();
                             WebExtensionContext.quickPickProvider.refresh();
@@ -395,7 +396,8 @@ export function createWebWorkerInstance(
                                 data.containerId,
                                 data.userName,
                                 data.userId,
-                                data.entityId
+                                data.entityId,
+                                data.connectionData
                             );
                             WebExtensionContext.userCollaborationProvider.refresh();
                             WebExtensionContext.quickPickProvider.refresh();
