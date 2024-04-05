@@ -112,7 +112,6 @@ async function loadContainer(config, swpId, entityInfo) {
 
             if (initialLoad) {
                 initialLoad = false;
-
                 audience.getMembers().forEach(async (member) => {
                     try {
                         const userConnections = member.connections;
