@@ -10,6 +10,7 @@
   "Authorization Failed. Please run again to authorize it": "Авторизация не пройдена. Запустите ее еще раз",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "Будьте внимательны при внесении изменений. Кто угодно может сразу увидеть ваши изменения. Выберите \"Изменить сайт\", чтобы внести изменения, или закройте вкладку редактора, чтобы выйти без редактирования.",
   "Cancel": "Отмена",
+  "Cannot install Power Pages generator. Please install npm and try again./Do not translate 'npm'": "Невозможно установить генератор Power Pages. Установите npm и повторите попытку.",
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": "Не удается установить генератор Power Pages: {0}",
   "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": "Не удается установить pac CLI: {0}",
   "Check the URL and verify the parameters are correct": "Проверьте URL-адрес и проверьте правильность параметров",
