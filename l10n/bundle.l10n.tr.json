@@ -10,6 +10,7 @@
   "Authorization Failed. Please run again to authorize it": "Yetkilendirme Başarısız Oldu. Lütfen yetkilendirmek için yeniden çalıştırın.",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "Değişiklik yaparken dikkatli olun. Herkes yaptığınız değişiklikleri anında görebilir. Düzenleme yapmak için Siteyi düzenle'yi seçin veya düzenlemeden iptal etmek için düzenleyici sekmesini kapatın.",
   "Cancel": "İptal Et",
+  "Cannot install Power Pages generator. Please install npm and try again./Do not translate 'npm'": "Power Pages oluşturucu yüklenemiyor. Lütfen npm'yi yükleyip tekrar deneyin.",
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": "Power Pages oluşturucusu yüklenemiyor: {0}",
   "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": "pac CLI yüklenemiyor: {0}",
   "Check the URL and verify the parameters are correct": "URL'yi denetleyin ve parametrelerin doğru olduğunu onaylayın",
