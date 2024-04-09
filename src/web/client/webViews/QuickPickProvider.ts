@@ -36,37 +36,27 @@ export class QuickPickProvider {
 
     public async updateQuickPickItems(entityInfo: IEntityInfo) {
         const connectedUsersMap = WebExtensionContext.connectedUsers.getUserMap;
+        const userMap = new Map<string, IQuickPickItem>();
 
-        const currentUsers: IQuickPickItem[] = [];
+        for (const [, value] of connectedUsersMap.entries()) {
+            for (const connection of value._connectionData) {
+                const contentPageId = WebExtensionContext.entityForeignKeyDataMap.getEntityForeignKeyMap.get(`${connection.entityId[0]}`);
 
-        Array.from(
-            connectedUsersMap.entries()
-        ).map(([, value]) => {
-            if (value._connectionData.length) {
-                value._connectionData.forEach(async (connection) => {
-                    const contentPageId = WebExtensionContext.entityForeignKeyDataMap.getEntityForeignKeyMap.get(`${connection.entityId[0]}`);
-
-                    if (
-                        contentPageId &&
-                        contentPageId.has(`${entityInfo.entityId}`)
-                    ) {
-                        currentUsers.push({
-                            label: value._userName,
-                            id: value._userId,
-                        });
-                    }
-                })
+                if (contentPageId && contentPageId.has(`${entityInfo.entityId}`)) {
+                    userMap.set(value._userId, {
+                        label: value._userName,
+                        id: value._userId,
+                    });
+                }
             }
-        });
-
-        if (currentUsers.length) {
-            this.items = currentUsers;
-        } else {
-            this.items = [{
-                label: Constants.WEB_EXTENSION_QUICK_PICK_DEFAULT_STRING,
-                id: "",
-            }];
         }
+
+        const currentUsers = Array.from(userMap.values());
+
+        this.items = currentUsers.length ? currentUsers : [{
+            label: Constants.WEB_EXTENSION_QUICK_PICK_DEFAULT_STRING,
+            id: "",
+        }];
     }
 
     public async showQuickPick() {
