@@ -14,8 +14,8 @@
   const chatInput = document.getElementById("chat-input");
   const chatInputComponent = document.getElementById("input-component");
   const skipCodes = ["", null, undefined, "violation", "unclear", "explain"];
-  const THUMBS_UP = "thumbsup";
-  const THUMBS_DOWN = "thumbsdown";
+  const THUMBS_UP = "thumbsUp";
+  const THUMBS_DOWN = "thumbsDown";
 
   let userName;
   let apiResponseHandler;
@@ -74,7 +74,9 @@
     const resultDiv = document.createElement("div");
     let codeLineCount = 0;
 
-    for (let i = 0; i < responseText.length-1; i++) {
+    const responseLength = responseText.length > 1 ? responseText.length -1 : responseText.length;
+
+    for (let i = 0; i < responseLength; i++) {
       const textDiv = document.createElement("div");
       textDiv.innerText = responseText[i].displayText;
       resultDiv.appendChild(textDiv);
@@ -316,11 +318,12 @@
           thinkingDiv.remove();
         }
 
+        const scenario = apiResponse.length > 1 ? apiResponse[apiResponse.length - 1] : apiResponse[0].displayText;
 
         let message = {
           id: messageIndex,
           content: apiResponse,
-          scenario: apiResponse[apiResponse.length - 1],
+          scenario: scenario,
           reaction: null
         }
 
@@ -575,11 +578,11 @@
   function handleFeedbackClick(event) {
     const target = event.target;
 
-    if (target.classList.contains(THUMBS_UP)) {
+    if (target.classList.contains("thumbsup")) {
       handleThumbsUpClick(target);
     }
 
-    if (target.classList.contains(THUMBS_DOWN)) {
+    if (target.classList.contains("thumbsdown")) {
       handleThumbsDownClick(target);
     }
   }

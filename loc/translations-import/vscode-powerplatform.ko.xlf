@@ -47,6 +47,11 @@
         <source xml:lang="en">Cancel</source>
         <target state="translated">취소</target>
       </trans-unit>
+      <trans-unit id="++CODE++75106b7b8e0c597d51e042edbde3498f813c9cd7bd59759f4dde848abc054e85">
+        <source xml:lang="en">Cannot install Power Pages generator. Please install npm and try again.</source>
+        <note>Do not translate 'npm'</note>
+        <target state="translated">Power Pages 생성기를 설치할 수 없습니다. npm을 설치하고 다시 시도하세요.</target>
+      </trans-unit>
       <trans-unit id="++CODE++403c4e10526afca006129953a8e31ef13e0205d0a7305427d17838e73396ce48">
         <source xml:lang="en">Cannot install Power Pages generator: {0}</source>
         <note>{0} represents the error message returned from the exception</note>
