@@ -10,6 +10,7 @@
   "Authorization Failed. Please run again to authorize it": "No se pudo autorizar. Vuelva a ejecutarla para autorizarla",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "Tenga cuidado al hacer cambios. Cualquier usuario puede ver inmediatamente los cambios que usted realice. Elija Editar el sitio para realizar cambios o cierre la pestaña del editor para cancelar sin hacer cambios.",
   "Cancel": "Cancelar",
+  "Cannot install Power Pages generator. Please install npm and try again./Do not translate 'npm'": "No se puede instalar el generador de Power Pages. Instale npm y vuelva a intentarlo.",
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": "No se puede instalar el generador de Power Pages: {0}",
   "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": "No se puede instalar pac CLI: {0}",
   "Check the URL and verify the parameters are correct": "Compruebe la dirección URL y asegúrese de que los parámetros sean correctos",
