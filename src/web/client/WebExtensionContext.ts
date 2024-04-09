@@ -776,14 +776,12 @@ class WebExtensionContext implements IWebExtensionContext {
         containerId: string,
         userName: string,
         userId: string,
-        entityId: string[],
         connectionData: IConnectionData[],
     ) {
         this.connectedUsers.setUserData(
             containerId,
             userName,
             userId,
-            entityId,
             connectionData
         );
     }
