@@ -18,7 +18,6 @@ export class UserData implements IUserData {
     _containerId: string;
     _userName: string;
     _userId: string;
-    _entityId: string[];
     _connectionData: IConnectionData[];
 
     // Getters
@@ -30,9 +29,6 @@ export class UserData implements IUserData {
     }
     public get userId(): string {
         return this._userId;
-    }
-    public get entityId(): string[] {
-        return this._entityId;
     }
     public get connectionData(): IConnectionData[] {
         return this._connectionData;
@@ -47,13 +43,11 @@ export class UserData implements IUserData {
         containerId: string,
         userName: string,
         userId: string,
-        entityId: string[],
         connectionData: IConnectionData[]
     ) {
         this._containerId = containerId;
         this._userName = userName;
         this._userId = userId;
-        this._entityId = entityId;
         this._connectionData = connectionData;
     }
 }
@@ -69,14 +63,12 @@ export class UserDataMap {
         containerId: string,
         userName: string,
         userId: string,
-        entityId: string[],
         connectionData: IConnectionData[]
     ) {
         const userData = new UserData(
             containerId,
             userName,
             userId,
-            entityId,
             connectionData
         );
 

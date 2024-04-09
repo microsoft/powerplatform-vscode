@@ -396,7 +396,6 @@ export function createWebWorkerInstance(
                                 data.containerId,
                                 data.userName,
                                 data.userId,
-                                data.entityId,
                                 data.connectionData
                             );
                             WebExtensionContext.userCollaborationProvider.refresh();
