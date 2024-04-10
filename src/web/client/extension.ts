@@ -94,7 +94,6 @@ export function activate(context: vscode.ExtensionContext): void {
                             pair[1].trim()
                         );
                     }
-                    logOneDSLogger(queryParamsMap)
                 }
                 if (
                     !checkMandatoryParameters(
@@ -113,6 +112,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     context.extensionUri
                 );
 
+                logOneDSLogger(queryParamsMap);
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
                 const orgGeo = await fetchArtemisData(orgId);
                 WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO,{orgGeo: orgGeo});
