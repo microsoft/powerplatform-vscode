@@ -40,6 +40,7 @@ import { fetchArtemisResponse } from "../../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
+import {IPortalWebExtensionInitQueryParametersTelemetryData} from "./telemetry/webExtensionTelemetryInterface";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -93,6 +94,7 @@ export function activate(context: vscode.ExtensionContext): void {
                             pair[1].trim()
                         );
                     }
+                    logOneDSLogger(queryParamsMap)
                 }
                 if (
                     !checkMandatoryParameters(
@@ -650,4 +652,32 @@ async function logArtemisTelemetry() {
             logArtemisTelemetry.name,
             ARTEMIS_RESPONSE_FAILED);
     }
+}
+
+function logOneDSLogger (queryParamsMap: Map<string, string>) {
+    const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
+        eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
+        properties: {
+            orgId: queryParamsMap.get(queryParameters.ORG_ID),
+            tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
+            portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
+            websiteId: queryParamsMap.get(queryParameters.WEBSITE_ID),
+            dataSource: queryParamsMap.get(queryParameters.DATA_SOURCE),
+            schema: queryParamsMap.get(queryParameters.SCHEMA),
+            referrerSessionId: queryParamsMap.get(queryParameters.REFERRER_SESSION_ID),
+            referrer: queryParamsMap.get(queryParameters.REFERRER),
+            siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
+            region: queryParamsMap.get(queryParameters.REGION),
+            geo: queryParamsMap.get(queryParameters.GEO),
+            envId: queryParamsMap.get(queryParameters.ENV_ID),
+            referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
+            sku: queryParamsMap.get(queryParameters.SKU)
+        }
+    }
+
+    if (queryParamsMap.has(queryParameters.ENTITY) && queryParamsMap.has(queryParameters.ENTITY_ID)) {
+        telemetryData.properties.entity = queryParamsMap.get(queryParameters.ENTITY);
+        telemetryData.properties.entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
+    }
+    oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
 }
