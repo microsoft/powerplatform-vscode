@@ -15,15 +15,11 @@ import { DOMParser } from "@xmldom/xmldom";
 import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
 
 
-interface Attribute {
-    LogicalName: string;
-}
-
 declare const IS_DESKTOP: string | undefined;
 
 export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
     try {
-        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$expand=Attributes($select=LogicalName)`;
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$expand=Attributes`;
         const requestInit: RequestInit = {
             method: "GET",
             headers: {
@@ -36,10 +32,10 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
         const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
         const endTime = performance.now();
         const responseTime = endTime - startTime || 0;
-        const attributes = getAttributesFromResponse(jsonResponse);
+        const attributes = getAttributesFromResponse(jsonResponse); //Display name and logical name fetching from response
 
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
-        return attributes.map((attribute: Attribute) => attribute.LogicalName);
+        return attributes
 
     } catch (error) {
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
@@ -92,9 +88,20 @@ async function fetchJsonResponse(url: string, requestInit: RequestInit): Promise
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getAttributesFromResponse(jsonResponse: any): Attribute[] {
+function getAttributesFromResponse(jsonResponse: any): string[] {
     if (jsonResponse.Attributes && Array.isArray(jsonResponse.Attributes) && jsonResponse.Attributes.length > 0) {
-        return jsonResponse.Attributes;
+        const attributes =  jsonResponse.Attributes;
+        const logicalNameDisplayName: string[] = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        attributes.forEach((attr:any) => {
+            const attrDisplayName = attr.DisplayName?.UserLocalizedLabel?.Label; // Optional chaining for handling missing values
+            if (attrDisplayName) {
+                logicalNameDisplayName.push(attrDisplayName)
+                logicalNameDisplayName.push(attr.LogicalName)
+            }
+        })
+
+        return logicalNameDisplayName
     }
 
     return [];
