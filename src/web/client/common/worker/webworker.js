@@ -112,30 +112,36 @@ async function loadContainer(config, swpId, entityInfo) {
 
             if (initialLoad) {
                 initialLoad = false;
+                audience.getMembers().forEach(async (member) => {
+                    try {
+                        const userConnections = member.connections;
 
-                const user = getUserIdByConnectionId(myConnectionId);
+                        const userConnectionData = [];
 
-                const userConnections = audience
-                    .getMembers()
-                    .get(user.userId).connections;
+                        const connectionIdInContainer = await map
+                            .get("selection")
+                            .get();
 
-                const userConnectionData = [];
+                        userConnections.forEach((connection) => {
+                            userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
+                        });
 
-                const connectionIdInContainer = await map
-                    .get("selection")
-                    .get();
-
-                userConnections.forEach((connection) => {
-                    userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
-                });
-
-                // aadObjectId is the unique identifier for a user
-                self.postMessage({
-                    type: "client-data",
-                    userId: user.aadObjectId,
-                    userName: user.userName,
-                    containerId: swpId,
-                    connectionData: userConnectionData,
+                        // aadObjectId is the unique identifier for a user
+                        self.postMessage({
+                            type: "client-data",
+                            userId: member.additionalDetails.AadObjectId,
+                            userName: member.userName,
+                            containerId: swpId,
+                            connectionData: userConnectionData,
+                        });
+                    } catch (error) {
+                        self.postMessage({
+                            type: "telemetry-error",
+                            methodName: "webWorker initialLoad",
+                            errorMessage: error?.message,
+                            error: error,
+                        });
+                    }
                 });
 
                 self.postMessage({
