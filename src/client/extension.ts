@@ -193,8 +193,8 @@ export async function activate(
             const orgID = orgDetails.OrgId;
             const artemisResponse = await fetchArtemisResponse(orgID, _telemetry);
             if (artemisResponse) {
-                const { geoName } = artemisResponse[0];
-                oneDSLoggerWrapper.instantiate(geoName);
+                const { geoName, geoLongName } = artemisResponse[0];
+                oneDSLoggerWrapper.instantiate(geoName, geoLongName);
                 oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, orgDetails);
             }
         })
