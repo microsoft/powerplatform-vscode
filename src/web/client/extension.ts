@@ -399,6 +399,11 @@ export function createWebWorkerInstance(
                                 data.userId,
                                 data.connectionData
                             );
+
+                            if (data.currentConnectionId) {
+                                WebExtensionContext.setCurrentConnectionId(data.currentConnectionId);
+                            }
+
                             WebExtensionContext.userCollaborationProvider.refresh();
                             WebExtensionContext.quickPickProvider.refresh();
                         }

@@ -40,13 +40,16 @@ export class QuickPickProvider {
 
         for (const [, value] of connectedUsersMap.entries()) {
             for (const connection of value._connectionData) {
-                const contentPageId = WebExtensionContext.entityForeignKeyDataMap.getEntityForeignKeyMap.get(`${connection.entityId[0]}`);
+                // List all the user connections except the current connection
+                if (connection.connectionId !== WebExtensionContext.currentConnectionId) {
+                    const contentPageId = WebExtensionContext.entityForeignKeyDataMap.getEntityForeignKeyMap.get(`${connection.entityId[0]}`);
 
-                if (contentPageId && contentPageId.has(`${entityInfo.entityId}`)) {
-                    userMap.set(value._userId, {
-                        label: value._userName,
-                        id: value._userId,
-                    });
+                    if (contentPageId && contentPageId.has(`${entityInfo.entityId}`)) {
+                        userMap.set(value._userId, {
+                            label: value._userName,
+                            id: value._userId,
+                        });
+                    }
                 }
             }
         }
@@ -89,7 +92,7 @@ export class QuickPickProvider {
         ];
 
         const collaborationOptionsSelected = await vscode.window.showQuickPick(collaborationOptions, {
-            title: vscode.l10n.t(Constants.WEB_EXTENSION_COLLABORATION_OPTIONS_CONTACT.toUpperCase() +  ` ${selectedOption.label.toUpperCase()}`),
+            title: vscode.l10n.t(Constants.WEB_EXTENSION_COLLABORATION_OPTIONS_CONTACT.toUpperCase() + ` ${selectedOption.label.toUpperCase()}`),
         });
 
         if (collaborationOptionsSelected) {

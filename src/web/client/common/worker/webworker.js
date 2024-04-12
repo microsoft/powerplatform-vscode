@@ -133,6 +133,7 @@ async function loadContainer(config, swpId, entityInfo) {
                             userName: member.userName,
                             containerId: swpId,
                             connectionData: userConnectionData,
+                            currentConnectionId: myConnectionId,
                         });
                     } catch (error) {
                         self.postMessage({
