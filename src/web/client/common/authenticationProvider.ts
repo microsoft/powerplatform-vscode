@@ -126,6 +126,66 @@ export async function dataverseAuthentication(
     return accessToken;
 }
 
+export async function bapAuthentication(
+    dataverseOrgURL: string,
+    firstTimeAuth = false
+): Promise<string> {
+    let accessToken = "";
+    try {
+        console.log("bapAuthentication", dataverseOrgURL);
+        let session = await vscode.authentication.getSession(
+            PROVIDER_ID,
+            [
+                `https://management.core.windows.net/${SCOPE_OPTION_DEFAULT}`
+            ],
+            { silent: true }
+        );
+        if (!session) {
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [
+                    `https://management.core.windows.net/${SCOPE_OPTION_DEFAULT}`
+                ],
+                { createIfNone: true }
+            );
+        }
+
+        accessToken = session?.accessToken ?? "";
+        if (!accessToken) {
+            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+        }
+
+        if (firstTimeAuth) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+                {
+                    userId:
+                        session?.account.id.split("/").pop() ??
+                        session?.account.id ??
+                        "",
+                }
+            );
+        }
+
+        console.log("bapAuthentication accessToken", accessToken);
+    } catch (error) {
+        const authError = (error as Error)?.message;
+        showErrorDialog(
+            vscode.l10n.t(
+                "Authorization Failed. Please run again to authorize it"
+            ),
+            vscode.l10n.t("There was a permissions problem with the server")
+        );
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
+            dataverseAuthentication.name,
+            authError
+        );
+    }
+
+    return accessToken;
+}
+
 export async function npsAuthentication(
     cesSurveyAuthorizationEndpoint: string
 ): Promise<string> {

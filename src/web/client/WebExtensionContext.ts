@@ -5,6 +5,7 @@
 
 import * as vscode from "vscode";
 import {
+    bapAuthentication,
     dataverseAuthentication,
     getCommonHeaders,
 } from "./common/authenticationProvider";
@@ -366,6 +367,11 @@ class WebExtensionContext implements IWebExtensionContext {
             Constants.queryParameters.ORG_URL
         ) as string;
         const accessToken: string = await dataverseAuthentication(
+            dataverseOrgUrl,
+            firstTimeAuth
+        );
+
+        await bapAuthentication(
             dataverseOrgUrl,
             firstTimeAuth
         );
