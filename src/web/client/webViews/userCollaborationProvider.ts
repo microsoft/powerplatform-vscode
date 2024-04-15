@@ -8,8 +8,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import * as Constants from "../common/constants";
 
 export class UserCollaborationProvider
-    implements vscode.TreeDataProvider<UserNode>
-{
+    implements vscode.TreeDataProvider<UserNode> {
     private _onDidChangeTreeData: vscode.EventEmitter<
         UserNode | undefined | void
     > = new vscode.EventEmitter<UserNode | undefined | void>();
@@ -30,15 +29,18 @@ export class UserCollaborationProvider
 
     getConnectedUsers(): UserNode[] {
         const connectedUsersMap = WebExtensionContext.connectedUsers.getUserMap;
-        const connectedUsers: UserNode[] = Array.from(
-            connectedUsersMap.entries()
-        ).map(([, value]) => {
-            return new UserNode(
-                value._userName,
-                value._userId,
-                vscode.TreeItemCollapsibleState.None
+        const connectedUsers: UserNode[] = Array.from(connectedUsersMap.values())
+            .filter(value =>
+                !(value._connectionData.length === 0 ||
+                    (value._connectionData.length === 1 && value._connectionData[0].connectionId === WebExtensionContext.currentConnectionId))
+            )
+            .map(value =>
+                new UserNode(
+                    value._userName,
+                    value._userId,
+                    vscode.TreeItemCollapsibleState.None
+                )
             );
-        });
 
         return connectedUsers;
     }

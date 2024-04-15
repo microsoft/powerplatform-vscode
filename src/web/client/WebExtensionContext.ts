@@ -112,6 +112,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _worker: Worker | undefined;
     private _sharedWorkSpaceMap: Map<string, string>;
     private _containerId: string;
+    private _currentConnectionId: string;
     private _connectedUsers: UserDataMap;
     private _quickPickProvider: QuickPickProvider;
     private _userCollaborationProvider: UserCollaborationProvider;
@@ -216,6 +217,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public set containerId(containerId: string) {
         this._containerId = containerId;
     }
+    public get currentConnectionId() {
+        return this._currentConnectionId;
+    }
     public get quickPickProvider() {
         return this._quickPickProvider;
     }
@@ -257,6 +261,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._concurrencyHandler = new ConcurrencyHandler();
         this._sharedWorkSpaceMap = new Map<string, string>();
         this._containerId = "";
+        this._currentConnectionId = "";
         this._connectedUsers = new UserDataMap();
         this._quickPickProvider = new QuickPickProvider();
         this._userCollaborationProvider = new UserCollaborationProvider();
@@ -788,6 +793,10 @@ class WebExtensionContext implements IWebExtensionContext {
 
     public async removeConnectedUserInContext(userId: string, removeConnectionData: IConnectionData) {
         this.connectedUsers.removeUser(userId, removeConnectionData);
+    }
+
+    public setCurrentConnectionId(connectionId: string) {
+        this._currentConnectionId = connectionId;
     }
 
     public async getMail(userId: string): Promise<string> {
