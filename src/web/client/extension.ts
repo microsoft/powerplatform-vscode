@@ -261,7 +261,7 @@ export function processWalkthroughFirstRunExperience(context: vscode.ExtensionCo
     if (isMultifileFirstRun && WebExtensionContext.showMultifileInVSCode) {
         vscode.commands.executeCommand(
             `workbench.action.openWalkthrough`,
-            `microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted-multiFile`,
+            `microsoft-IsvExpTools.powerplatform-vscode-preview#PowerPage-gettingStarted-multiFile`,
             false
         );
         context.globalState.update(
@@ -274,7 +274,7 @@ export function processWalkthroughFirstRunExperience(context: vscode.ExtensionCo
                 commandId:
                     "workbench.action.openWalkthrough",
                 walkthroughId:
-                    "microsoft-IsvExpTools.powerplatform-vscode#PowerPage-gettingStarted-multiFile",
+                    "microsoft-IsvExpTools.powerplatform-vscode-preview#PowerPage-gettingStarted-multiFile",
             }
         );
     }
