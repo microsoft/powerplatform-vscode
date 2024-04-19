@@ -93,6 +93,7 @@ describe("remoteSaveProvider", () => {
                 accept: "application/json",
                 "OData-MaxVersion": "4.0",
                 "OData-Version": "4.0",
+                "x-ms-user-agent": "Vscode-Web-Client"
             },
         });
 
@@ -211,6 +212,7 @@ describe("remoteSaveProvider", () => {
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
                     "OData-Version": "4.0",
+                    "x-ms-user-agent": "Vscode-Web-Client"
                 },
             };
             const fetchCalls = _mockFetch.getCalls();
@@ -288,6 +290,7 @@ describe("remoteSaveProvider", () => {
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
                     "OData-Version": "4.0",
+                    "x-ms-user-agent": "Vscode-Web-Client"
                 },
             });
             assert.calledOnce(getColumnContent);
@@ -377,7 +380,8 @@ describe("remoteSaveProvider", () => {
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
                     "OData-Version": "4.0",
-                    'x-ms-file-name': 'testfilename'
+                    'x-ms-file-name': 'testfilename',
+                    "x-ms-user-agent": "Vscode-Web-Client"
                 },
             }
         );

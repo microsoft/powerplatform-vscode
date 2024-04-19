@@ -15,7 +15,7 @@ import * as authenticationProvider from "../../common/authenticationProvider";
 import { telemetryEventNames } from "../../telemetry/constants";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
-import { getCommonHeaders } from "../../common/authenticationProvider";
+import { getCommonHeadersForDataverse } from "../../common/authenticationProvider";
 import { IAttributePath } from "../../common/interfaces";
 
 describe("WebExtensionContext", () => {
@@ -532,7 +532,7 @@ describe("WebExtensionContext", () => {
         //#endregion
 
         //#region  Fetch
-        const header = getCommonHeaders(accessToken);
+        const header = getCommonHeadersForDataverse(accessToken);
         assert.callCount(_mockFetch, 3);
         const firstFetchCall = _mockFetch.getCalls()[0];
         expect(firstFetchCall.args[0], requestUrl);
@@ -669,7 +669,7 @@ describe("WebExtensionContext", () => {
         //#endregion
 
         //#region  Fetch
-        const header = getCommonHeaders(accessToken);
+        const header = getCommonHeadersForDataverse(accessToken);
         assert.calledThrice(_mockFetch);
         const firstFetchCall = _mockFetch.getCalls()[0];
         expect(firstFetchCall.args[0], requestUrl);
@@ -759,7 +759,7 @@ describe("WebExtensionContext", () => {
 
         assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
         //#region  Fetch
-        const header = getCommonHeaders(accessToken);
+        const header = getCommonHeadersForDataverse(accessToken);
         assert.calledThrice(_mockFetch);
         const firstFetchCall = _mockFetch.getCalls()[0];
         expect(firstFetchCall.args[0], requestUrl);
