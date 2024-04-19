@@ -10,7 +10,7 @@ import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../telemetry/ITelemetry";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, WebsiteListOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, WebsiteListOutput, WebsiteListOutput } from "./PacTypes";
 import { v4 } from "uuid";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
@@ -178,6 +178,10 @@ export class PacWrapper {
 
     public async disableTelemetry(): Promise<PacOutput> {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "disable"));
+    }
+
+    public async websiteList(): Promise<WebsiteListOutput> {
+        return this.executeCommandAndParseResults<WebsiteListOutput>(new PacArguments("paportal", "list"));
     }
 
     public async websiteList(): Promise<WebsiteListOutput> {

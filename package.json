@@ -344,6 +344,29 @@
         "title": "Bootstrap Migration"
       },
       {
+        "command": "powerpages.websitePanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "powerpages.websitePanel.downloadWebsite",
+        "title": "Download Website",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "powerpages.websitePanel.uploadWebsite",
+        "title": "Upload Website",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "powerpages.websitePanel.uploadWebsiteForceAll",
+        "title": "Upload Website (force all)"
+      },
+      {
+        "command": "powerpages.websitePanel.bootstrap-migration",
+        "title": "Bootstrap Migration"
+      },
+      {
         "command": "microsoft-powerapps-portals.webpage",
         "category": "Powerpages",
         "title": "New Webpage"
@@ -1005,6 +1028,14 @@
       {
         "id": "microsoft-powerapps-portals.powerpages-copilot",
         "label": "Copilot In Power Pages"
+      },
+      {
+        "id": "microsoft-powerpages-download",
+        "label": "Download"
+      },
+      {
+        "id": "microsoft-powerpages-upload",
+        "label": "Upload"
       }
     ],
     "viewsContainers": {
