@@ -85,13 +85,4 @@ export type WebsiteListing = {
 
 export type PacOrgWhoOutput = PacOutputWithResult<ActiveOrgOutput>;
 
-export type WebsiteListOutput = PacOutput & {
-    Results: WebsiteListing[];
-}
-
-export type WebsiteListing = {
-    Index: number;
-    WebsiteId: string;
-    WebsiteName: string;
-}
 
