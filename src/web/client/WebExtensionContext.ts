@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import {
     dataverseAuthentication,
-    getCommonHeaders,
+    getCommonHeadersForDataverse,
 } from "./common/authenticationProvider";
 import * as Constants from "./common/constants";
 import {
@@ -360,7 +360,7 @@ class WebExtensionContext implements IWebExtensionContext {
             Constants.queryParameters.WEBSITE_ID
         ) as string;
 
-        const headers = getCommonHeaders(this._dataverseAccessToken);
+        const headers = getCommonHeadersForDataverse(this._dataverseAccessToken);
 
         // Populate shared workspace for Co-Presence
         await this.populateSharedWorkspace(headers, dataverseOrgUrl, websiteId);
@@ -482,7 +482,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
+                headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
@@ -548,7 +548,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
+                headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
@@ -610,7 +610,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
+                headers: getCommonHeadersForDataverse(accessToken),
             });
 
             if (!response?.ok) {

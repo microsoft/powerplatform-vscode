@@ -20,7 +20,7 @@ import { sendTelemetryEvent } from "../../../common/copilot/telemetry/copilotTel
 import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../../../common/copilot/telemetry/telemetryConstants";
 
 
-export function getCommonHeaders(
+export function getCommonHeadersForDataverse(
     accessToken: string,
     useOctetStreamContentType?: boolean
 ) {
@@ -32,6 +32,22 @@ export function getCommonHeaders(
         accept: "application/json",
         "OData-MaxVersion": "4.0",
         "OData-Version": "4.0",
+        "x-ms-user-agent": "Vscode-Web-Client"
+    };
+}
+
+export function getCommonHeaders(
+    accessToken: string,
+    useOctetStreamContentType?: boolean
+) {
+    return {
+        authorization: "Bearer " + accessToken,
+        "content-type": useOctetStreamContentType
+            ? "application/octet-stream"
+            : "application/json; charset=utf-8",
+        accept: "application/json",
+        "OData-MaxVersion": "4.0",
+        "OData-Version": "4.0"
     };
 }
 

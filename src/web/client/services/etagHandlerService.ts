@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { RequestInit } from "node-fetch";
-import { getCommonHeaders } from "../common/authenticationProvider";
+import { getCommonHeadersForDataverse } from "../common/authenticationProvider";
 import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { PortalsFS } from "../dal/fileSystemProvider";
@@ -53,7 +53,7 @@ export class EtagHandlerService {
         try {
             const requestInit: RequestInit = {
                 method: httpMethod.GET,
-                headers: getCommonHeaders(
+                headers: getCommonHeadersForDataverse(
                     WebExtensionContext.dataverseAccessToken
                 ),
             };
@@ -165,7 +165,7 @@ export class EtagHandlerService {
         try {
             const requestInit: RequestInit = {
                 method: httpMethod.GET,
-                headers: getCommonHeaders(
+                headers: getCommonHeadersForDataverse(
                     WebExtensionContext.dataverseAccessToken
                 ),
             };

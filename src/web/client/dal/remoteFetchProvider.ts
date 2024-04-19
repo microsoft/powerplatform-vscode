@@ -15,7 +15,7 @@ import {
     setFileContent,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getMappingEntityContent, getMetadataInfo, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
-import { getCommonHeaders } from "../common/authenticationProvider";
+import { getCommonHeadersForDataverse } from "../common/authenticationProvider";
 import * as Constants from "../common/constants";
 import { ERRORS, showErrorDialog } from "../common/errorHandler";
 import { PortalsFS } from "./fileSystemProvider";
@@ -94,7 +94,7 @@ async function fetchFromDataverseAndCreateFiles(
             requestSentAtTime = new Date().getTime();
             const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
                 headers: {
-                    ...getCommonHeaders(
+                    ...getCommonHeadersForDataverse(
                         WebExtensionContext.dataverseAccessToken
                     ),
                     Prefer: `odata.maxpagesize=${Constants.MAX_ENTITY_FETCH_COUNT}, odata.include-annotations="Microsoft.Dynamics.CRM.*"`,
@@ -506,7 +506,7 @@ async function fetchMappingEntityContent(
     requestSentAtTime = new Date().getTime();
 
     const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
-        headers: getCommonHeaders(accessToken),
+        headers: getCommonHeadersForDataverse(accessToken),
     });
 
     if (!response.ok) {
