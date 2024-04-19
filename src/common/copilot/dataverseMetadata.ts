@@ -25,6 +25,7 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
             headers: {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": "Vscode-Desktop"
             },
         };
 
@@ -57,6 +58,7 @@ export async function getFormXml(entityName: string, formName: string,  orgUrl: 
             headers: {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": "Vscode-Desktop"
             },
         };
 
