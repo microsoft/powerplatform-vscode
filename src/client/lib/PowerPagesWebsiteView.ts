@@ -68,9 +68,8 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
         } else {
             const pacOutput = await this.dataSource();
             if (pacOutput && pacOutput.Status === "Success" && pacOutput.Information) {
-                const items = pacOutput.Information
-                    // .filter(item => item.Kind !== "ADMIN") // Only Universal and Dataverse profiles
-                    .map(item => new AuthProfileTreeItem(item));
+                const items = JSON.parse(pacOutput.Information[5])
+                    .map((item: { FriendlyName: string; }) => new AuthProfileTreeItem(item.FriendlyName))
                 return items;
             } else {
                 return [];
@@ -85,15 +84,15 @@ export class WebsiteTreeView implements vscode.TreeDataProvider<AuthProfileTreeI
             vscode.commands.registerCommand("powerpages.websitePanel.downloadWebsite", async () => {
                 const downloadPath: string | undefined = this.getCurrentWorkspacePath();
                 if (downloadPath && downloadPath.length > 0) {
-                    const websiteDownloadPath = this.removeLeadingSlash(downloadPath);
+                    const websiteDownloadPath = '"' + this.removeLeadingSlash(downloadPath) + '"';
                     vscode.window.showInformationMessage(vscode.l10n.t("Downloading website..."));
-                    vscode.commands.executeCommand("pacCLI.pacPaportalDownload",  '7b9d41f2-9748-ee11-be6f-6045bd072a16' , websiteDownloadPath);
+                    vscode.commands.executeCommand("pacCLI.pacPaportalDownload", '7b9d41f2-9748-ee11-be6f-6045bd072a16', websiteDownloadPath, '-mv', '2');
                 }
             }),
             vscode.commands.registerCommand("powerpages.websitePanel.uploadWebsite", async () => {
                 const uploadPath: string | undefined = this.getCurrentWorkspacePath();
                 const modelVersion = 1 // get model version from
-            
+
                 if (uploadPath && uploadPath.length > 0) {
                     const websiteUploadPath = this.removeLeadingSlash(uploadPath);
                     vscode.window.showInformationMessage(vscode.l10n.t("Uploading website..."));

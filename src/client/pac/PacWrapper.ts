@@ -181,7 +181,7 @@ export class PacWrapper {
     }
 
     public async websiteList(): Promise<WebsiteListOutput> {
-        return this.executeCommandAndParseResults<WebsiteListOutput>(new PacArguments("paportal", "list"));
+        return this.executeCommandAndParseResults<WebsiteListOutput>(new PacArguments("paportal", "list", "-j", "-v"));
     }
 
     public exit() : void {
