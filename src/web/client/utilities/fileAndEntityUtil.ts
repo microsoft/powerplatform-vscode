@@ -31,13 +31,16 @@ export function getFileEntityName(fileFsPath: string) {
 
 export function getFileRootWebPageId(fileFsPath: string) {
     const entityId = getFileEntityId(fileFsPath);
-    return (
+
+    const rootWebPageId =
         (WebExtensionContext.entityDataMap.getEntityMap.get(entityId)
             ?.rootWebPageId as string) ??
         (WebExtensionContext.getVscodeWorkspaceState(fileFsPath)
             ?.rootWebPageId as string) ??
-        ""
-    );
+        "";
+
+    // If rootWebPageId is not present, return entityId as content is not localized
+    return rootWebPageId !== "" ? rootWebPageId : entityId;
 }
 
 export function getFileAttributePath(fileFsPath: string) {
