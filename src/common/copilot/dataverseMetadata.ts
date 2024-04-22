@@ -13,6 +13,7 @@ import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEv
 import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "@xmldom/xmldom";
 import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
+import { getUserAgent } from "../Utils";
 
 
 declare const IS_DESKTOP: string | undefined;
@@ -25,7 +26,7 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
             headers: {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${apiToken}`,
-                "x-ms-user-agent": "Vscode-Desktop"
+                "x-ms-user-agent": getUserAgent()
             },
         };
 
@@ -58,7 +59,7 @@ export async function getFormXml(entityName: string, formName: string,  orgUrl: 
             headers: {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${apiToken}`,
-                "x-ms-user-agent": "Vscode-Desktop"
+                "x-ms-user-agent": getUserAgent()
             },
         };
 

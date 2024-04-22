@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
@@ -18,6 +18,7 @@ import { ERRORS, showErrorDialog } from "./errorHandler";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../../../common/copilot/telemetry/copilotTelemetry";
 import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../../../common/copilot/telemetry/telemetryConstants";
+import { getUserAgent } from "../../../common/Utils";
 
 
 export function getCommonHeadersForDataverse(
@@ -32,7 +33,7 @@ export function getCommonHeadersForDataverse(
         accept: "application/json",
         "OData-MaxVersion": "4.0",
         "OData-Version": "4.0",
-        "x-ms-user-agent": "Vscode-Web-Client"
+        "x-ms-user-agent": getUserAgent()
     };
 }
 
