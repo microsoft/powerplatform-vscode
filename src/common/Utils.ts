@@ -125,7 +125,7 @@ export function isCustomTelemetryEnabled():boolean {
 }
 
 export function getUserAgent(): string {
-    let userAgent = "{product} / {product-version} {comment}";
+    const userAgent = "{product} / {product-version} {comment}";
     return userAgent
         .replace("{product}", EXTENSION_NAME)
         .replace("{product-version}", getExtensionVersion())
