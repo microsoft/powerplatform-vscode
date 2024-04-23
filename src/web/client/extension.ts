@@ -347,7 +347,6 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 }
 
 export function processWillStartCollaboration(context: vscode.ExtensionContext) {
-    // feature in progress, hence disabling it
     if (isCoPresenceEnabled()) {
         registerCollaborationView();
         vscode.commands.registerCommand('powerPlatform.previewCurrentActiveUsers', () => WebExtensionContext.quickPickProvider.showQuickPick());
