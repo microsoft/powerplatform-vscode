@@ -18,7 +18,24 @@ import { ERRORS, showErrorDialog } from "./errorHandler";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../../../common/copilot/telemetry/copilotTelemetry";
 import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../../../common/copilot/telemetry/telemetryConstants";
+import { getUserAgent } from "../../../common/Utils";
 
+
+export function getCommonHeadersForDataverse(
+    accessToken: string,
+    useOctetStreamContentType?: boolean
+) {
+    return {
+        authorization: "Bearer " + accessToken,
+        "content-type": useOctetStreamContentType
+            ? "application/octet-stream"
+            : "application/json; charset=utf-8",
+        accept: "application/json",
+        "OData-MaxVersion": "4.0",
+        "OData-Version": "4.0",
+        "x-ms-user-agent": getUserAgent()
+    };
+}
 
 export function getCommonHeaders(
     accessToken: string,
@@ -31,7 +48,7 @@ export function getCommonHeaders(
             : "application/json; charset=utf-8",
         accept: "application/json",
         "OData-MaxVersion": "4.0",
-        "OData-Version": "4.0",
+        "OData-Version": "4.0"
     };
 }
 
