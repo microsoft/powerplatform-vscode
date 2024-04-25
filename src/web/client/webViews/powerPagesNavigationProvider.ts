@@ -6,9 +6,10 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import WebExtensionContext from "../WebExtensionContext";
-import { httpMethod, queryParameters } from '../common/constants';
+import { queryParameters } from '../common/constants';
 import { getBackToStudioURL } from '../utilities/commonUtil';
 import { telemetryEventNames } from '../telemetry/constants';
+import { PortalRuntimeClient, RuntimeParameters } from './PortalRuntimeClient';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -61,63 +62,27 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
     }
 
     async previewPowerPageSite(): Promise<void> {
-        let requestSentAtTime = new Date().getTime();
         const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
-        // Runtime clear cache call
-        const requestUrl = `${websitePreviewUrl.endsWith('/') ? websitePreviewUrl : websitePreviewUrl.concat('/')}_services/cache/config`;
-
-        WebExtensionContext.telemetry.sendAPITelemetry(
-            requestUrl,
-            "Preview power pages site",
-            httpMethod.DELETE,
-            this.previewPowerPageSite.name
-        );
-        requestSentAtTime = new Date().getTime();
-        WebExtensionContext.dataverseAuthentication();
-
-        await vscode.window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                cancellable: true,
-                title: vscode.l10n.t("Opening preview site..."),
-            },
-            async () => {
-                const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
-                    headers: {
-                        authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
-                        'Accept': '*/*',
-                        'Content-Type': 'text/plain',
-                    },
-                    method: 'DELETE',
-                });
-
-                if (response.ok) {
-                    WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-                        requestUrl,
-                        "Preview power pages site",
-                        httpMethod.DELETE,
-                        new Date().getTime() - requestSentAtTime,
-                        this.previewPowerPageSite.name
-                    );
-                } else {
-                    WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                        requestUrl,
-                        "Preview power pages site",
-                        httpMethod.DELETE,
-                        new Date().getTime() - requestSentAtTime,
-                        this.previewPowerPageSite.name,
-                        JSON.stringify(response),
-                        '',
-                        response?.status.toString()
-                    );
+        const runtimeParameters: RuntimeParameters = {
+            instanceUrl: websitePreviewUrl,
+            bearerToken: WebExtensionContext.urlParametersMap.get(WebExtensionContext.dataverseAccessToken) as string
+        };
+        
+        const portalRuntimeClient = new PortalRuntimeClient(runtimeParameters);
+        portalRuntimeClient.fetchAndApplyContent('/').then((htmlContent: string) => {
+            const previewPanel = vscode.window.createWebviewPanel(
+                'powerPagesPreview',
+                'Power Pages Preview',
+                vscode.ViewColumn.One,
+                {
+                    enableScripts: true
                 }
+            );
 
+            previewPanel.webview.html = htmlContent;
 
-            }
-        );
-
-        vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
+            previewPanel.reveal();
+        });
     }
 
     backToStudio(): void {
