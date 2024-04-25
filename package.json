@@ -116,8 +116,10 @@
   "contributes": {
     "chatParticipants": [
       {
+        "id": "powerpages",
         "name": "powerpages",
         "description": "Power Pages Copilot",
+        "isSticky": true,
         "commands": [
           {
             "name": "form-validation",

@@ -42,15 +42,15 @@ let tenantId: string | undefined;
 declare const IS_DESKTOP: string | undefined;
 //TODO: Check if it can be converted to singleton
 export class PowerPagesCopilot implements vscode.WebviewViewProvider {
-  public static readonly viewType = "powerpages.copilot";
-  private _view?: vscode.WebviewView;
-  private readonly _pacWrapper?: PacWrapper;
-  private _extensionContext: vscode.ExtensionContext;
-  private readonly _disposables: vscode.Disposable[] = [];
-  private loginButtonRendered = false;
-  private telemetry: ITelemetry;
-  private aibEndpoint: string | null = null;
-  private geoName: string | null = null;
+    public static readonly viewType = "powerpages.copilot";
+    private _view?: vscode.WebviewView;
+    private readonly _pacWrapper?: PacWrapper;
+    private _extensionContext: vscode.ExtensionContext;
+    private readonly _disposables: vscode.Disposable[] = [];
+    private loginButtonRendered = false;
+    private telemetry: ITelemetry;
+    private aibEndpoint: string | null = null;
+    private geoName: string | null = null;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
@@ -63,16 +63,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         sessionID = uuidv4();
         this._pacWrapper = pacWrapper;
 
-    this._disposables.push(
-      vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
-        if (userName && orgID) {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotClearChatEvent, copilotSessionId: sessionID, orgId: orgID });
-          this.sendMessageToWebview({ type: "clearConversation" });
-          sessionID = uuidv4();
-        }
-      }
-      )
-    );
+        this._disposables.push(
+            vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
+                if (userName && orgID) {
+                    sendTelemetryEvent(this.telemetry, { eventName: CopilotClearChatEvent, copilotSessionId: sessionID, orgId: orgID });
+                    this.sendMessageToWebview({ type: "clearConversation" });
+                    sessionID = uuidv4();
+                }
+            }
+            )
+        );
 
         if (SELECTED_CODE_INFO_ENABLED) { //TODO: Remove this check once the feature is ready
 
@@ -112,183 +112,193 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             this.setupFileWatcher();
         }
 
-    if (orgInfo) {
-      orgID = orgInfo.orgId;
-      environmentName = orgInfo.environmentName;
-      activeOrgUrl = orgInfo.activeOrgUrl;
-      tenantId = orgInfo.tenantId;
-    }
-  }
-
-
-
-  private async githubCopilot() {
-    // Define a Teams chat agent handler.
-    const generateResult = {};
-    const pacResult = {};
-
-    interface IPowerPagesChatResult extends vscode.ChatResult {
-        metadata: {
-            command: string;
+        if (orgInfo) {
+            orgID = orgInfo.orgId;
+            environmentName = orgInfo.environmentName;
+            activeOrgUrl = orgInfo.activeOrgUrl;
+            tenantId = orgInfo.tenantId;
         }
     }
 
-    const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo'; // Use faster model. Alternative is 'copilot-gpt-4', which is slower but more powerful
 
-    // Define a Cat chat handler.
-    const handler: vscode.ChatRequestHandler = async (request: vscode.ChatRequest, context: vscode.ChatContext, stream: vscode.ChatResponseStream, token: vscode.CancellationToken): Promise<IPowerPagesChatResult> => {
-        if (this.isValidSubCommand(request.command ?? "")) {
-            stream.progress('Working on it...');
-            //const topic = getTopic(context.history);
-            const messages = [
-                new vscode.LanguageModelChatSystemMessage(await this.getPromptMessage(request.command ?? "")),
-                new vscode.LanguageModelChatUserMessage(request.prompt),
-            ];
-            const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
-            for await (const fragment of chatResponse.stream) {
-                stream.markdown(fragment);
+
+    private async githubCopilot() {
+        // Define a Teams chat agent handler.
+        const generateResult = {};
+        const pacResult = {};
+
+        interface IPowerPagesChatResult extends vscode.ChatResult {
+            metadata: {
+                command: string;
             }
+        }
 
-            // stream.button({
-            //     command: 'teach',
-            //     title: vscode.l10n.t('Use Cat Names in Editor')
-            // });
+        const LANGUAGE_MODEL_ID = 'copilot-gpt-3.5-turbo'; // Use faster model. Alternative is 'copilot-gpt-4', which is slower but more powerful
 
-            if (this.needsActiveEditorChanges(request.command ?? "")) {
-                const activeEditor = vscode.window.activeTextEditor;
+        // Define a Cat chat handler.
+        const handler: vscode.ChatRequestHandler = async (request: vscode.ChatRequest, context: vscode.ChatContext, stream: vscode.ChatResponseStream, token: vscode.CancellationToken): Promise<IPowerPagesChatResult> => {
+            if (this.isValidSubCommand(request.command ?? "")) {
+                stream.progress('Working on it...');
+                //const topic = getTopic(context.history);
+                // const messages = [
+                //     new vscode.LanguageModelChatSystemMessage(await this.getPromptMessage(request.command ?? "")),
+                //     new vscode.LanguageModelChatUserMessage(request.prompt),
+                // ];
+                // const chatResponse = await vscode.lm.sendChatRequest(LANGUAGE_MODEL_ID, messages, {}, token);
+                // for await (const fragment of chatResponse.stream) {
+                //     stream.markdown(fragment);
+                // }
 
-                if (activeEditor) {
-                    const document = activeEditor.document;
-                    const uri = document.uri;
-                    stream.reference(uri);
+                const aibResponse = await sendApiRequest([{ displayText: request.prompt, code: '' }], this.getActiveEditorContent().activeFileParams, orgID, intelligenceApiToken, sessionID, '', [], this.telemetry, this.aibEndpoint);
+                const codeBlock = aibResponse[0].code.replace(/\n\n/g, '\n');
+                const renderString = "This is a string I want to render as codeblock"
+                const markdownCodeBlock = '\\`\\`\\`typescript\n' + renderString + '\n\\`\\`\\`';
+                // stream.markdown(aibResponse[0].displayText);
+                stream.markdown(`\`\`\`typescript const myStack = new Stack();  myStack.push(1); // pushing a number on the stack (or let's say, adding a fish to the stack) \`\`\`
+                                myStack.push(2); // adding another fish (number 2)
+                                console.log(myStack.pop()); // eating the top fish, will output: 
+                                So remember, Code Kitten, in a stack, the last fish in is the first fish out - which we tech cats call LIFO (Last In, First Out).`);
+
+                // stream.markdown(markdownCodeBlock);
+                // stream.button({
+                //     command: 'teach',
+                //     title: vscode.l10n.t('Use Cat Names in Editor')
+                // });
+
+                if (this.needsActiveEditorChanges(request.command ?? "")) {
+                    const activeEditor = vscode.window.activeTextEditor;
+
+                    if (activeEditor) {
+                        const document = activeEditor.document;
+                        const uri = document.uri;
+                        stream.reference(uri);
+                    }
                 }
+
+                return { metadata: { command: request.command ?? '' } };
+            } else {
+                return { metadata: { command: request.command ?? '' } };
             }
 
-            return { metadata: { command: request.command ?? '' } };
-        } else {
-            return { metadata: { command: request.command ?? '' } };
-        }
+        };
 
-    };
+        // Define a custom variable resolver.
+        const customVariableResolver: vscode.ChatVariableResolver = {
+            resolve(name, context, token) {
+                // Implement your variable resolution logic here
+                // You should return an array of ChatVariableValue objects
+                // based on the provided 'name', 'context', and 'token'.
 
-    // Define a custom variable resolver.
-    const customVariableResolver: vscode.ChatVariableResolver = {
-        resolve(name, context, token) {
-            // Implement your variable resolution logic here
-            // You should return an array of ChatVariableValue objects
-            // based on the provided 'name', 'context', and 'token'.
+                const values: vscode.ChatVariableValue[] = [
+                    {
+                        level: vscode.ChatVariableLevel.Full,
+                        value: 'Your variable value (required)',
+                        description: 'Your variable description (optional)',
+                    },
+                    // Add more values if needed
+                ];
 
-            const values: vscode.ChatVariableValue[] = [
-                {
-                    level: vscode.ChatVariableLevel.Full,
-                    value: 'Your variable value (required)',
-                    description: 'Your variable description (optional)',
-                },
-                // Add more values if needed
-            ];
+                return values;
+            },
+        };
 
-            return values;
-        },
-    };
+        // Chat participants appear as top-level options in the chat input
+        // when you type `@`, and can contribute sub-commands in the chat input
+        // that appear when you type `/`.
+        const powerpages = vscode.chat.createChatParticipant('powerpages', handler);
+        powerpages.isSticky = true; // powerpages is persistant, whenever a user starts interacting with @powerpages, @powerpages will automatically be added to the following messages
+        powerpages.iconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'icons', 'copilot.png');
+        powerpages.followupProvider = {
+            provideFollowups(result: IPowerPagesChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
+                return [{
+                    prompt: 'Create a webpage for world-cup',
+                    label: vscode.l10n.t('Create a webpage'),
+                    command: 'create-webpage'
+                } satisfies vscode.ChatFollowup];
+            }
+        };
 
-    // Chat participants appear as top-level options in the chat input
-    // when you type `@`, and can contribute sub-commands in the chat input
-    // that appear when you type `/`.
-    const powerpages = vscode.chat.createChatParticipant('powerpages', handler);
-    powerpages.isSticky = true; // powerpages is persistant, whenever a user starts interacting with @powerpages, @powerpages will automatically be added to the following messages
-    powerpages.iconPath = vscode.Uri.joinPath(this._extensionUri, 'src', 'common', 'copilot', 'assets', 'icons', 'copilot.png');
-    powerpages.followupProvider = {
-        provideFollowups(result: IPowerPagesChatResult, context: vscode.ChatContext, token: vscode.CancellationToken) {
-            return [{
-                prompt: 'Create a webpage for world-cup',
-                label: vscode.l10n.t('Create a webpage'),
-                command: 'create-webpage'
-            } satisfies vscode.ChatFollowup];
-        }
-    };
+        this._extensionContext.subscriptions.push(powerpages);
 
-    this._extensionContext.subscriptions.push(powerpages);
+        this._disposables.push(
+            powerpages,
+            // Register the command handler for the /generate Create Project followup
+        );
 
-    this._disposables.push(
-        powerpages,
-        // Register the command handler for the /generate Create Project followup
-    );
-
- }
-
- private isValidSubCommand(subCommand: string) {
-    return subCommand === 'form-validation' || subCommand === 'web-api' || subCommand === 'create-webpage' || subCommand === 'pac' || subCommand === 'add-form' || subCommand === 'form-customization';
- }
-
- private async getPromptMessage(scenario: string) {
-    let entityName = "";
-    let entityColumns: string[] = [];
-
-    switch (scenario) {
-        case 'form-validation':
-            ({ entityName, entityColumns } = await this.getEntityNameAndColumns());
-            return FORM_VALIDATION_PROMPT.replace("{{targetEntity}}", entityName).replace("{{targetColumns}}", entityColumns.join(", "));
-        case 'web-api':
-            return WEB_API_PROMPT;
-        case 'create-webpage':
-            return WEBPAGE_CREATE_PROMPT;
-        case 'add-form':
-            return FORM_CREATE_PROMPT.replace("{{targetEntityForm}}", await this.getEntityFormNames()).replace("{{targetAdvancedForm}}", await this.getEntityFormNames(false));
-        case 'form-customization':
-            ({ entityName, entityColumns } = await this.getEntityNameAndColumns());
-            return FORM_CUSTOMIZATION_API_PROMPT.replace("{{targetEntity}}", entityName).replace("{{targetColumns}}", entityColumns.join(", "));
-        default:
-            return '';
-    }
- }
-
- private async getEntityNameAndColumns () {
-    const { activeFileParams } = this.getActiveEditorContent();
-
-    let entityName = "";
-    let entityColumns: string[] = [];
-
-    if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
-        entityName = await getEntityName(this.telemetry, sessionID, activeFileParams.dataverseEntity);
-
-        const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
-
-        entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, this.telemetry, sessionID);
     }
 
-    return { entityName, entityColumns };
-}
-
- private async getEntityFormNames(isEntityForm = true) {
-    const formNames: string[] = [];
-    const files = await vscode.workspace.findFiles(`**/${isEntityForm ? "basic-forms" : "advanced-forms"}/**/${isEntityForm ?  "*.yml" : "*.advancedform.yml"}`);
-
-    files.forEach(file => {
-        const name = this.getEntityNameFromYml(file.path)
-        if(name) {
-            formNames.push(name);
-        }
-    });
-    return formNames.join(", ");
-
- }
-
-private getEntityNameFromYml(uriPath: string) : string | undefined
-{
-    try {
-        const uri = vscode.Uri.file(uriPath);
-        const fileContents = fs.readFileSync(uri.fsPath, 'utf8');
-        const parsedFileContents = YAML.parse(fileContents);
-        return parsedFileContents['adx_name']
-
-    } catch (e) {
-        // Do nothing
+    private isValidSubCommand(subCommand: string) {
+        return subCommand === 'form-validation' || subCommand === 'web-api' || subCommand === 'create-webpage' || subCommand === 'pac' || subCommand === 'add-form' || subCommand === 'form-customization';
     }
-}
 
- private needsActiveEditorChanges(scenario: string) {
-    return scenario === 'form-validation' || scenario === 'create-webpage' || scenario === 'add-form';
- }
+    private async getPromptMessage(scenario: string) {
+        let entityName = "";
+        let entityColumns: string[] = [];
+
+        switch (scenario) {
+            case 'form-validation':
+                ({ entityName, entityColumns } = await this.getEntityNameAndColumns());
+                return FORM_VALIDATION_PROMPT.replace("{{targetEntity}}", entityName).replace("{{targetColumns}}", entityColumns.join(", "));
+            case 'web-api':
+                return WEB_API_PROMPT;
+            case 'create-webpage':
+                return WEBPAGE_CREATE_PROMPT;
+            case 'add-form':
+                return FORM_CREATE_PROMPT.replace("{{targetEntityForm}}", await this.getEntityFormNames()).replace("{{targetAdvancedForm}}", await this.getEntityFormNames(false));
+            case 'form-customization':
+                ({ entityName, entityColumns } = await this.getEntityNameAndColumns());
+                return FORM_CUSTOMIZATION_API_PROMPT.replace("{{targetEntity}}", entityName).replace("{{targetColumns}}", entityColumns.join(", "));
+            default:
+                return '';
+        }
+    }
+
+    private async getEntityNameAndColumns() {
+        const { activeFileParams } = this.getActiveEditorContent();
+
+        let entityName = "";
+        let entityColumns: string[] = [];
+
+        if (activeFileParams.dataverseEntity == "adx_entityform" || activeFileParams.dataverseEntity == 'adx_entitylist') {
+            entityName = await getEntityName(this.telemetry, sessionID, activeFileParams.dataverseEntity);
+
+            const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
+
+            entityColumns = await getEntityColumns(entityName, activeOrgUrl, dataverseToken, this.telemetry, sessionID);
+        }
+
+        return { entityName, entityColumns };
+    }
+
+    private async getEntityFormNames(isEntityForm = true) {
+        const formNames: string[] = [];
+        const files = await vscode.workspace.findFiles(`**/${isEntityForm ? "basic-forms" : "advanced-forms"}/**/${isEntityForm ? "*.yml" : "*.advancedform.yml"}`);
+
+        files.forEach(file => {
+            const name = this.getEntityNameFromYml(file.path)
+            if (name) {
+                formNames.push(name);
+            }
+        });
+        return formNames.join(", ");
+
+    }
+
+    private getEntityNameFromYml(uriPath: string): string | undefined {
+        try {
+            const uri = vscode.Uri.file(uriPath);
+            const fileContents = fs.readFileSync(uri.fsPath, 'utf8');
+            const parsedFileContents = YAML.parse(fileContents);
+            return parsedFileContents['adx_name']
+
+        } catch (e) {
+            // Do nothing
+        }
+    }
+
+    private needsActiveEditorChanges(scenario: string) {
+        return scenario === 'form-validation' || scenario === 'create-webpage' || scenario === 'add-form';
+    }
 
     public dispose(): void {
         this._disposables.forEach(d => d.dispose());
@@ -374,35 +384,35 @@ private getEntityNameFromYml(uriPath: string) : string | undefined
                         return;
                     }
 
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
-          this.sendMessageToWebview({ type: 'env' }); //TODO Use IS_DESKTOP
-          await this.checkAuthentication();
-          if (orgID && userName) {
-            this.sendMessageToWebview({ type: 'isLoggedIn', value: true });
-            this.sendMessageToWebview({ type: 'userName', value: userName });
-          } else {
-            this.sendMessageToWebview({ type: 'isLoggedIn', value: false });
-            this.loginButtonRendered = true;
-          }
-          this.sendMessageToWebview({ type: "welcomeScreen" });
-          break;
-        }
-        case "login": {
-          this.handleLogin();
-          break;
-        }
-        case "newUserPrompt": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, isSuggestedPrompt: String(data.value.isSuggestedPrompt) }); //TODO: Add active Editor info
-          orgID
-            ? (async () => {
-              const { activeFileParams } = this.getActiveEditorContent();
-              await this.authenticateAndSendAPIRequest(data.value.userPrompt, activeFileParams, orgID, this.telemetry);
-            })()
-            : (() => {
-              this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
-              this.handleOrgChange();
-              this.sendMessageToWebview({ type: 'enableInput' });
-            })();
+                    sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
+                    this.sendMessageToWebview({ type: 'env' }); //TODO Use IS_DESKTOP
+                    await this.checkAuthentication();
+                    if (orgID && userName) {
+                        this.sendMessageToWebview({ type: 'isLoggedIn', value: true });
+                        this.sendMessageToWebview({ type: 'userName', value: userName });
+                    } else {
+                        this.sendMessageToWebview({ type: 'isLoggedIn', value: false });
+                        this.loginButtonRendered = true;
+                    }
+                    this.sendMessageToWebview({ type: "welcomeScreen" });
+                    break;
+                }
+                case "login": {
+                    this.handleLogin();
+                    break;
+                }
+                case "newUserPrompt": {
+                    sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, isSuggestedPrompt: String(data.value.isSuggestedPrompt) }); //TODO: Add active Editor info
+                    orgID
+                        ? (async () => {
+                            const { activeFileParams } = this.getActiveEditorContent();
+                            await this.authenticateAndSendAPIRequest(data.value.userPrompt, activeFileParams, orgID, this.telemetry);
+                        })()
+                        : (() => {
+                            this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
+                            this.handleOrgChange();
+                            this.sendMessageToWebview({ type: 'enableInput' });
+                        })();
 
                     break;
                 }
@@ -432,27 +442,27 @@ private getEntityNameFromYml(uriPath: string) : string | undefined
 
                     if (data.value === "thumbsUp") {
 
-            sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
-            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.geoName as string, tenantId)
-          } else if (data.value === "thumbsDown") {
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
+                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsUp", this.telemetry, this.geoName as string, tenantId)
+                    } else if (data.value === "thumbsDown") {
 
-            sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
-            CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.geoName as string, tenantId)
-          }
-          break;
-        }
-        case "walkthrough": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID, orgId: orgID });
-          openWalkthrough(this._extensionUri);
-          break;
-        }
-        case "codeLineCount": {
-          sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: String(data.value), orgId: orgID });
-          break;
-        }
-      }
-    });
-  }
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
+                        CESUserFeedback(this._extensionContext, sessionID, userID, "thumbsDown", this.telemetry, this.geoName as string, tenantId)
+                    }
+                    break;
+                }
+                case "walkthrough": {
+                    sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID, orgId: orgID });
+                    openWalkthrough(this._extensionUri);
+                    break;
+                }
+                case "codeLineCount": {
+                    sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: String(data.value), orgId: orgID });
+                    break;
+                }
+            }
+        });
+    }
 
     public show() {
         if (this._view) {
@@ -553,19 +563,19 @@ private getEntityNameFromYml(uriPath: string) : string | undefined
         this.aibEndpoint = intelligenceEndpoint;
         this.geoName = geoName;
 
-    if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
-      sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
-      this.sendMessageToWebview({ type: 'Unavailable' });
-    } else {
-      this.sendMessageToWebview({ type: 'Available' });
-    }
+        if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+            sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
+            this.sendMessageToWebview({ type: 'Unavailable' });
+        } else {
+            this.sendMessageToWebview({ type: 'Available' });
+        }
 
-    if (IS_DESKTOP && this._view?.visible) {
-      showConnectedOrgMessage(environmentName, activeOrgUrl);
-    }
+        if (IS_DESKTOP && this._view?.visible) {
+            showConnectedOrgMessage(environmentName, activeOrgUrl);
+        }
 
-    await this.githubCopilot();
-  }
+        await this.githubCopilot();
+    }
 
     private async intelligenceAPIAuthenticationHandler(accessToken: string, user: string, userId: string) {
         if (accessToken && user) {
