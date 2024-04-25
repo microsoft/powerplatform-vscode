@@ -13,7 +13,7 @@ import vscode from "vscode";
 import WebExtensionContext from "../../WebExtensionContext";
 import { telemetryEventNames } from "../../telemetry/constants";
 import * as errorHandler from "../../common/errorHandler";
-import {oneDSLoggerWrapper} from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let traceError: any
@@ -56,7 +56,7 @@ describe("Authentication Provider", () => {
 
         const result = await dataverseAuthentication(dataverseOrgURL);
         sinon.assert.calledOnce(_mockgetSession);
-        expect(accessToken).eq(result);
+        expect({ accessToken: accessToken, userId: "" }).eq(result);
     });
 
     it("dataverseAuthentication_return_blank_if_accessToken_is_null", async () => {
@@ -96,7 +96,8 @@ describe("Authentication Provider", () => {
         sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(sendErrorTelemetry);
         sinon.assert.calledOnce(_mockgetSession);
-        expect(result).empty;
+        expect(result.accessToken).empty;
+        expect(result.userId).empty;
     });
 
     it("dataverseAuthentication_return_blank_if_exception_thrown", async () => {
@@ -124,6 +125,7 @@ describe("Authentication Provider", () => {
             errorMessage
         );
         sinon.assert.calledOnce(_mockgetSession);
-        expect(result).empty;
+        expect(result.accessToken).empty;
+        expect(result.userId).empty;
     });
 });
