@@ -97,7 +97,7 @@ describe("Authentication Provider", () => {
         sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(sendErrorTelemetry);
         sinon.assert.calledOnce(_mockgetSession);
-        expect(result.accessToken).eq("f068ee9f-a010-47b9-b1e1-7e6353730e7d");
+        expect(result.accessToken).empty;
         expect(result.userId).empty;
     });
 
