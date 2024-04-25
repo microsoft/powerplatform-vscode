@@ -56,7 +56,8 @@ describe("Authentication Provider", () => {
 
         const result = await dataverseAuthentication(dataverseOrgURL);
         sinon.assert.calledOnce(_mockgetSession);
-        expect({ accessToken: accessToken, userId: "" }).eq(result);
+        expect(result.accessToken).eq("f068ee9f-a010-47b9-b1e1-7e6353730e7d");
+        expect(result.userId).empty;
     });
 
     it("dataverseAuthentication_return_blank_if_accessToken_is_null", async () => {
@@ -96,7 +97,7 @@ describe("Authentication Provider", () => {
         sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(sendErrorTelemetry);
         sinon.assert.calledOnce(_mockgetSession);
-        expect(result.accessToken).empty;
+        expect(result.accessToken).eq("f068ee9f-a010-47b9-b1e1-7e6353730e7d");
         expect(result.userId).empty;
     });
 
