@@ -42,6 +42,7 @@ import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
 import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
+import { IPortalWebExtensionInitQueryParametersTelemetryData } from "./telemetry/webExtensionTelemetryInterface";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -112,10 +113,10 @@ export function activate(context: vscode.ExtensionContext): void {
                     queryParamsMap,
                     context.extensionUri
                 );
-
+                logOneDSLogger(queryParamsMap);
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
                 const orgGeo = await fetchArtemisData(orgId);
-                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO,{orgGeo: orgGeo});
+                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgGeo: orgGeo });
                 oneDSLoggerWrapper.instantiate(orgGeo);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
@@ -360,7 +361,6 @@ export function processWillSaveDocument(context: vscode.ExtensionContext) {
 }
 
 export function processWillStartCollaboration(context: vscode.ExtensionContext) {
-    // feature in progress, hence disabling it
     if (isCoPresenceEnabled()) {
         registerCollaborationView();
         vscode.commands.registerCommand('powerPlatform.previewCurrentActiveUsers', () => WebExtensionContext.quickPickProvider.showQuickPick());
@@ -399,7 +399,8 @@ export function createWebWorkerInstance(
 
                         if (data.type === Constants.workerEventMessages.REMOVE_CONNECTED_USER) {
                             WebExtensionContext.removeConnectedUserInContext(
-                                data.userId
+                                data.userId,
+                                data.removeConnectionData
                             );
                             WebExtensionContext.userCollaborationProvider.refresh();
                             WebExtensionContext.quickPickProvider.refresh();
@@ -409,8 +410,13 @@ export function createWebWorkerInstance(
                                 data.containerId,
                                 data.userName,
                                 data.userId,
-                                data.entityId
+                                data.connectionData
                             );
+
+                            if (data.currentConnectionId) {
+                                WebExtensionContext.setCurrentConnectionId(data.currentConnectionId);
+                            }
+
                             WebExtensionContext.userCollaborationProvider.refresh();
                             WebExtensionContext.quickPickProvider.refresh();
                         }
@@ -663,4 +669,32 @@ async function logArtemisTelemetry() {
             logArtemisTelemetry.name,
             ARTEMIS_RESPONSE_FAILED);
     }
+}
+
+function logOneDSLogger(queryParamsMap: Map<string, string>) {
+    const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
+        eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
+        properties: {
+            orgId: queryParamsMap.get(queryParameters.ORG_ID),
+            tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
+            portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
+            websiteId: queryParamsMap.get(queryParameters.WEBSITE_ID),
+            dataSource: queryParamsMap.get(queryParameters.DATA_SOURCE),
+            schema: queryParamsMap.get(queryParameters.SCHEMA),
+            referrerSessionId: queryParamsMap.get(queryParameters.REFERRER_SESSION_ID),
+            referrer: queryParamsMap.get(queryParameters.REFERRER),
+            siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
+            region: queryParamsMap.get(queryParameters.REGION),
+            geo: queryParamsMap.get(queryParameters.GEO),
+            envId: queryParamsMap.get(queryParameters.ENV_ID),
+            referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
+            sku: queryParamsMap.get(queryParameters.SKU)
+        }
+    }
+
+    if (queryParamsMap.has(queryParameters.ENTITY) && queryParamsMap.has(queryParameters.ENTITY_ID)) {
+        telemetryData.properties.entity = queryParamsMap.get(queryParameters.ENTITY);
+        telemetryData.properties.entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
+    }
+    oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
 }

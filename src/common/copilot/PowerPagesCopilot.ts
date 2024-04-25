@@ -21,7 +21,6 @@ import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common
 import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
-import { COPILOT_STRINGS } from "./assets/copilotStrings";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
 
@@ -182,8 +181,36 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
                 case "webViewLoaded": {
-                    // Send the localized strings to the copilot webview
-                    this.sendMessageToWebview({ type: 'copilotStrings', value: COPILOT_STRINGS })
+                    // end the localized strings to the Copilot webview. They can't be moved to a constant file because they are not being picked for localization.
+                    const copilotStrings = {
+                        EXPLAIN_CODE_PROMPT: vscode.l10n.t('Explain the following code snippet:'),
+                        LARGE_SELECTION: vscode.l10n.t('Selection is too large. Try making a shorter selection.'),
+                        FEATURE_NOT_ENABLED_MESSAGE: vscode.l10n.t("Feature is not enabled for this geo."),
+                        COPILOT_SUPPORT_MESSAGE: vscode.l10n.t("Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details."),
+                        COPY_TO_CLIPBOARD_MESSAGE: vscode.l10n.t("Copy to clipboard"),
+                        INSERT_CODE_MESSAGE: vscode.l10n.t("Insert code into editor"),
+                        AI_CONTENT_MISTAKES_MESSAGE: vscode.l10n.t("AI-generated content can contain mistakes"),
+                        THUMBS_UP_MESSAGE: vscode.l10n.t("Thumbs Up"),
+                        THUMBS_DOWN_MESSAGE: vscode.l10n.t("Thumbs Down"),
+                        FORM_PROMPT: vscode.l10n.t("Write JavaScript code for form field validation to check phone field value is in the valid format."),
+                        WEB_API_PROMPT: vscode.l10n.t("Write web API code to query active contact records."),
+                        LIST_PROMPT: vscode.l10n.t("Write JavaScript code to highlight the row where email field is empty in table list."),
+                        SUGGESTIONS_MESSAGE: vscode.l10n.t("Here are a few suggestions to get you started"),
+                        GETTING_STARTED_MESSAGE: vscode.l10n.t("GETTING STARTED"),
+                        LEARN_MORE_MESSAGE: vscode.l10n.t("Learn more about Copilot"),
+                        LOGIN_MESSAGE: vscode.l10n.t("Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account."),
+                        LOGIN_BUTTON: vscode.l10n.t("Login"),
+                        HI: vscode.l10n.t("Hi"),
+                        WELCOME_MESSAGE: vscode.l10n.t(`In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.`),
+                        DOCUMENTATION_LINK: vscode.l10n.t("To know more, see <a href=\"https://go.microsoft.com/fwlink/?linkid=2206366\">Copilot in Power Pages documentation."),
+                        WORKING_ON_IT_MESSAGE: vscode.l10n.t("Working on it...")
+                    };
+
+                    this.sendMessageToWebview({
+                        type: 'copilotStrings',
+                        value: copilotStrings
+                    });
+                    
                     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;

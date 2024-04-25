@@ -9,11 +9,16 @@ export interface IUserData {
     userId: string;
 }
 
+export interface IConnectionData {
+    connectionId: string;
+    entityId: string;
+}
+
 export class UserData implements IUserData {
     _containerId: string;
     _userName: string;
     _userId: string;
-    _entityId: string[];
+    _connectionData: IConnectionData[];
 
     // Getters
     public get containerId(): string {
@@ -25,20 +30,25 @@ export class UserData implements IUserData {
     public get userId(): string {
         return this._userId;
     }
-    public get entityId(): string[] {
-        return this._entityId;
+    public get connectionData(): IConnectionData[] {
+        return this._connectionData;
+    }
+
+    // Setters
+    public setConnectionData(connectionData: IConnectionData[]): void {
+        this._connectionData = connectionData;
     }
 
     constructor(
         containerId: string,
         userName: string,
         userId: string,
-        entityId: string[]
+        connectionData: IConnectionData[]
     ) {
         this._containerId = containerId;
         this._userName = userName;
         this._userId = userId;
-        this._entityId = entityId;
+        this._connectionData = connectionData;
     }
 }
 
@@ -53,19 +63,34 @@ export class UserDataMap {
         containerId: string,
         userName: string,
         userId: string,
-        entityId: string[]
+        connectionData: IConnectionData[]
     ) {
         const userData = new UserData(
             containerId,
             userName,
             userId,
-            entityId
+            connectionData
         );
 
         this.usersMap.set(userId, userData);
     }
 
-    public removeUser(userId: string) {
-        this.usersMap.delete(userId);
+    public removeUser(userId: string, removeConnectionData: IConnectionData) {
+        const connectionData = this.usersMap.get(userId)?.connectionData ?? [];
+
+        // Remove the connection data from the user's connection data
+        const newConnectionData = connectionData.filter(connection => {
+            return !(connection.connectionId === removeConnectionData.connectionId && connection.entityId[0] === removeConnectionData.entityId);
+        });
+
+        const userData = this.usersMap.get(userId) as UserData;
+        userData.setConnectionData(newConnectionData);
+
+        // If the user has no more connection data, remove the user from the map
+        if (newConnectionData.length === 0) {
+            this.usersMap.delete(userId);
+        } else {
+            this.usersMap.set(userId, userData);
+        }
     }
 }

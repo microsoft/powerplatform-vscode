@@ -10,6 +10,7 @@
   "Authorization Failed. Please run again to authorize it": "授權失敗。請重新執行以進行授權",
   "Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.": "進行變更時請務必小心，因為任何人都會立即看到您所做的變更。選擇 [編輯網站] 進行編輯，或關閉編輯器索引標籤以取消而不編輯。",
   "Cancel": "取消",
+  "Cannot install Power Pages generator. Please install npm and try again./Do not translate 'npm'": "無法安裝 Power Pages 產生器。請安裝 npm 並再試一次。",
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": "無法安裝 Power Pages 產生器: {0}",
   "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": "無法安裝 pac CLI: {0}",
   "Check the URL and verify the parameters are correct": "檢查 URL 並確認參數正確無誤",

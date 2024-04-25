@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import {
     dataverseAuthentication,
-    getCommonHeaders,
+    getCommonHeadersForDataverse,
 } from "./common/authenticationProvider";
 import * as Constants from "./common/constants";
 import {
@@ -29,7 +29,7 @@ import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
 import { getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
-import { UserDataMap } from "./context/userDataMap";
+import { IConnectionData, UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
 import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
@@ -112,6 +112,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _worker: Worker | undefined;
     private _sharedWorkSpaceMap: Map<string, string>;
     private _containerId: string;
+    private _currentConnectionId: string;
     private _connectedUsers: UserDataMap;
     private _quickPickProvider: QuickPickProvider;
     private _userCollaborationProvider: UserCollaborationProvider;
@@ -216,6 +217,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public set containerId(containerId: string) {
         this._containerId = containerId;
     }
+    public get currentConnectionId() {
+        return this._currentConnectionId;
+    }
     public get quickPickProvider() {
         return this._quickPickProvider;
     }
@@ -257,6 +261,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._concurrencyHandler = new ConcurrencyHandler();
         this._sharedWorkSpaceMap = new Map<string, string>();
         this._containerId = "";
+        this._currentConnectionId = "";
         this._connectedUsers = new UserDataMap();
         this._quickPickProvider = new QuickPickProvider();
         this._userCollaborationProvider = new UserCollaborationProvider();
@@ -355,7 +360,7 @@ class WebExtensionContext implements IWebExtensionContext {
             Constants.queryParameters.WEBSITE_ID
         ) as string;
 
-        const headers = getCommonHeaders(this._dataverseAccessToken);
+        const headers = getCommonHeadersForDataverse(this._dataverseAccessToken);
 
         // Populate shared workspace for Co-Presence
         await this.populateSharedWorkspace(headers, dataverseOrgUrl, websiteId);
@@ -479,7 +484,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
+                headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
@@ -545,7 +550,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
+                headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
@@ -607,7 +612,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
+                headers: getCommonHeadersForDataverse(accessToken),
             });
 
             if (!response?.ok) {
@@ -778,18 +783,22 @@ class WebExtensionContext implements IWebExtensionContext {
         containerId: string,
         userName: string,
         userId: string,
-        entityId: string[]
+        connectionData: IConnectionData[],
     ) {
         this.connectedUsers.setUserData(
             containerId,
             userName,
             userId,
-            entityId
+            connectionData
         );
     }
 
-    public async removeConnectedUserInContext(userId: string) {
-        this.connectedUsers.removeUser(userId);
+    public async removeConnectedUserInContext(userId: string, removeConnectionData: IConnectionData) {
+        this.connectedUsers.removeUser(userId, removeConnectionData);
+    }
+
+    public setCurrentConnectionId(connectionId: string) {
+        this._currentConnectionId = connectionId;
     }
 
     public async getMail(userId: string): Promise<string> {
@@ -804,7 +813,7 @@ class WebExtensionContext implements IWebExtensionContext {
                 return;
             } else {
                 const teamsChatLink = getTeamChatURL(mail);
-                vscode.env.openExternal(vscode.Uri.parse(teamsChatLink.href));
+                vscode.env.openExternal(vscode.Uri.parse(teamsChatLink));
             }
         });
     }
