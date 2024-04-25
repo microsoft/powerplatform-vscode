@@ -149,6 +149,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                     async () => {
                                         await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
 
+                                        // Initialize ECS config in webExtensionContext
                                         await ECSFeaturesClient.init(WebExtensionContext.telemetry.getTelemetryReporter(),
                                             {
                                                 AppName: PowerPagesAppName,
@@ -158,7 +159,6 @@ export function activate(context: vscode.ExtensionContext): void {
                                                 Region: queryParamsMap.get(queryParameters.REGION) as string
                                             },
                                             PowerPagesClientName);
-                                        // Initialize ECS config in webExtensionContext
 
                                         registerCopilot(context);
                                         processWillStartCollaboration(context);
