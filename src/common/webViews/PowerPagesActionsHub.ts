@@ -5,12 +5,8 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import WebExtensionContext from "../WebExtensionContext";
-import { httpMethod, queryParameters } from '../common/constants';
-import { getBackToStudioURL } from '../utilities/commonUtil';
-import { telemetryEventNames } from '../telemetry/constants';
 
-export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
+export class PowerPagesActionsHub implements vscode.TreeDataProvider<PowerPagesNode> {
 
     private _onDidChangeTreeData: vscode.EventEmitter<PowerPagesNode | undefined | void> = new vscode.EventEmitter<PowerPagesNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<PowerPagesNode | undefined | void> = this._onDidChangeTreeData.event;
@@ -61,59 +57,6 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
     }
 
     async previewPowerPageSite(): Promise<void> {
-        let requestSentAtTime = new Date().getTime();
-        const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
-        // Runtime clear cache call
-        const requestUrl = `${websitePreviewUrl.endsWith('/') ? websitePreviewUrl : websitePreviewUrl.concat('/')}_services/cache/config`;
-
-        WebExtensionContext.telemetry.sendAPITelemetry(
-            requestUrl,
-            "Preview power pages site",
-            httpMethod.DELETE,
-            this.previewPowerPageSite.name
-        );
-        requestSentAtTime = new Date().getTime();
-        WebExtensionContext.dataverseAuthentication();
-
-        await vscode.window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                cancellable: true,
-                title: vscode.l10n.t("Opening preview site..."),
-            },
-            async () => {
-                const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
-                    headers: {
-                        authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
-                        'Accept': '*/*',
-                        'Content-Type': 'text/plain',
-                    },
-                    method: 'DELETE',
-                });
-
-                if (response.ok) {
-                    WebExtensionContext.telemetry.sendAPISuccessTelemetry(
-                        requestUrl,
-                        "Preview power pages site",
-                        httpMethod.DELETE,
-                        new Date().getTime() - requestSentAtTime,
-                        this.previewPowerPageSite.name
-                    );
-                } else {
-                    WebExtensionContext.telemetry.sendAPIFailureTelemetry(
-                        requestUrl,
-                        "Preview power pages site",
-                        httpMethod.DELETE,
-                        new Date().getTime() - requestSentAtTime,
-                        this.previewPowerPageSite.name,
-                        JSON.stringify(response),
-                        '',
-                        response?.status.toString()
-                    );
-                }
-            }
-        );
-
         const panel = vscode.window.createWebviewPanel(
             'powerPagesPreview',
             'Power Pages Preview',
@@ -141,24 +84,19 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                     </style>
                 </head>
                 <body>
-                    <iframe src=${websitePreviewUrl}/>
+                    <iframe src="https://site-ka6r6.powerappsportals.com/"/>
                 </body>
             </html>
         `;
 
         panel.reveal();
-
-        // vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
     }
 
     backToStudio(): void {
-        const backToStudioUrl = getBackToStudioURL();
-        vscode.env.openExternal(vscode.Uri.parse(backToStudioUrl));
+        // const backToStudioUrl = "https://w3schools.com";
+        // vscode.env.openExternal(vscode.Uri.parse(backToStudioUrl));
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
-            backToStudioUrl: backToStudioUrl
-        });
+        vscode.window.showInformationMessage("Not implemented");
     }
 }
 
@@ -177,8 +115,8 @@ export class PowerPagesNode extends vscode.TreeItem {
 
     getIconPath(svgFileName: string) {
         return {
-            light: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', svgFileName),
-            dark: vscode.Uri.joinPath(WebExtensionContext.extensionUri, 'src', 'web', 'client', 'assets', svgFileName)
+            light: path.join(__filename, '..', '..', '..', '..', 'resources', svgFileName),
+            dark: path.join(__filename, '..', '..', '..', '..', 'resources', svgFileName)
         };
     }
 }

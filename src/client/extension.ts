@@ -40,6 +40,7 @@ import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWr
 import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
+import { PowerPagesActionsHub } from "../common/webViews/PowerPagesActionsHub";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -114,6 +115,18 @@ export async function activate(
         )
     );
 
+    // portals action hub
+    const powerPagesActionsHub = new PowerPagesActionsHub();
+    _context.subscriptions.push(
+        vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesActionsHub)
+    );
+    _context.subscriptions.push(
+        vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesActionsHub.previewPowerPageSite())
+    );
+    _context.subscriptions.push(
+        vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesActionsHub.backToStudio())
+    );
+
     // registering bootstrapdiff command
     _context.subscriptions.push(
         vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async () => {
@@ -148,6 +161,7 @@ export async function activate(
             }
         })
     );
+
     _context.subscriptions.push(
         vscode.workspace.onDidChangeTextDocument(() => {
             if (vscode.window.activeTextEditor === undefined) {
