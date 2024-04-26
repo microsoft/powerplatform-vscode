@@ -241,6 +241,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++aba96e0c43da62e6c721a35c5d5eb5ffecaf8316ddea5379049172acfe6c7152">
       <source xml:lang="en">PAC Telemetry enabled</source>
     </trans-unit>
+    <trans-unit id="++CODE++59e1f415bf9d7761b450dcb4785daac53307323451bc453bfaa06a46d4649e2a">
+      <source xml:lang="en">PREVIEW</source>
+    </trans-unit>
     <trans-unit id="++CODE++1514b12ec249ca33bc0568c872840126e82cc964aaa7f028393674c17d554444">
       <source xml:lang="en">Page Template name cannot be empty.</source>
     </trans-unit>
@@ -388,6 +391,12 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
       <source xml:lang="en">Clear Auth Profiles</source>
+    </trans-unit>
+    <trans-unit id="powerpages.copilotPanel.clearConversation.title">
+      <source xml:lang="en">Clear Conversation</source>
+    </trans-unit>
+    <trans-unit id="powerpages.copilotPanel.title">
+      <source xml:lang="en">Copilot In Power Pages</source>
     </trans-unit>
     <trans-unit id="pacCLI.envAndSolutionsPanel.copyDisplayName.title">
       <source xml:lang="en">Copy Display Name</source>
