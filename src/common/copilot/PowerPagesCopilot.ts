@@ -23,6 +23,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
+import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -210,8 +211,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         type: 'copilotStrings',
                         value: copilotStrings
                     });
-                    
+
+                    console.log("copilot orgs 1", getDisabledOrgList(), orgID, tenantId, getDisabledTenantList());
                     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+                        this.sendMessageToWebview({ type: 'Unavailable' });
+                        return;
+                    } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
+                        console.log("copilot not available");
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;
                     }
@@ -405,10 +412,18 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this.aibEndpoint = intelligenceEndpoint;
         this.geoName = geoName;
 
+        console.log("copilot orgs 2", getDisabledOrgList(), orgID, tenantId, getDisabledTenantList());
         if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
             sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
             this.sendMessageToWebview({ type: 'Unavailable' });
-        } else {
+            return;
+        } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
+            console.log("copilot not available");
+            sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
+            this.sendMessageToWebview({ type: 'Unavailable' });
+            return;
+        }
+        else {
             this.sendMessageToWebview({ type: 'Available' });
         }
 
