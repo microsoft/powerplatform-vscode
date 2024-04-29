@@ -87,8 +87,9 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
 export async function dataverseAuthentication(
     dataverseOrgURL: string,
     firstTimeAuth = false
-): Promise<string> {
+): Promise<{ accessToken: string, userId: string }> {
     let accessToken = "";
+    let userId = "";
     try {
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
@@ -110,6 +111,9 @@ export async function dataverseAuthentication(
         }
 
         accessToken = session?.accessToken ?? "";
+        userId = session?.account.id.split("/").pop() ??
+            session?.account.id ??
+            "";
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
@@ -118,10 +122,7 @@ export async function dataverseAuthentication(
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
                 {
-                    userId:
-                        session?.account.id.split("/").pop() ??
-                        session?.account.id ??
-                        "",
+                    userId: userId
                 }
             );
         }
@@ -140,7 +141,7 @@ export async function dataverseAuthentication(
         );
     }
 
-    return accessToken;
+    return { accessToken, userId };
 }
 
 export async function npsAuthentication(

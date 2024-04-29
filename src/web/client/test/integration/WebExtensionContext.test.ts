@@ -100,7 +100,7 @@ describe("WebExtensionContext", () => {
             [Constants.queryParameters.ORG_URL, "PowerPages.com"],
         ]);
 
-        stub(authenticationProvider, "dataverseAuthentication").resolves("");
+        stub(authenticationProvider, "dataverseAuthentication").resolves({ accessToken: "", userId: "" });
         const telemetry = WebExtensionContext.telemetry;
         const sendErrorTelemetry = stub(telemetry, "sendErrorTelemetry");
 
@@ -144,7 +144,7 @@ describe("WebExtensionContext", () => {
         ]);
 
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         WebExtensionContext.setWebExtensionContext(
@@ -322,7 +322,7 @@ describe("WebExtensionContext", () => {
             [Constants.queryParameters.ORG_URL, "PowerPages.com"],
         ]);
 
-        stub(authenticationProvider, "dataverseAuthentication").resolves("");
+        stub(authenticationProvider, "dataverseAuthentication").resolves({ accessToken: "", userId: "" });
         const noPermissions = stub(vscode.FileSystemError, "NoPermissions");
         const telemetry = WebExtensionContext.telemetry;
         const sendErrorTelemetry = stub(telemetry, "sendErrorTelemetry");
@@ -370,7 +370,7 @@ describe("WebExtensionContext", () => {
         const dataverseAuthentication = stub(
             authenticationProvider,
             "dataverseAuthentication"
-        ).resolves(accessToken);
+        ).resolves({ accessToken: accessToken, userId: "" });
 
         const getCustomRequestURL = stub(
             urlBuilderUtil,
@@ -576,7 +576,7 @@ describe("WebExtensionContext", () => {
         const dataverseAuthentication = stub(
             authenticationProvider,
             "dataverseAuthentication"
-        ).resolves(accessToken);
+        ).resolves({ accessToken: accessToken, userId: "" });
 
         const getCustomRequestURL = stub(
             urlBuilderUtil,
@@ -704,7 +704,7 @@ describe("WebExtensionContext", () => {
         const dataverseAuthentication = stub(
             authenticationProvider,
             "dataverseAuthentication"
-        ).resolves(accessToken);
+        ).resolves({ accessToken: accessToken, userId: "" });
 
         const getCustomRequestURL = stub(
             urlBuilderUtil,
