@@ -224,6 +224,7 @@ export function getBackToStudioURL() {
         .replace("{.region}", region.toLowerCase() === STUDIO_PROD_REGION ? "" : `.${WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string}`)
         .replace("{webSiteId}", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID) as string);
 }
+
 export function getSupportedImageFileExtensionsForEdit() {
     return ['png', 'jpg', 'webp', 'bmp', 'tga', 'ico', 'jpeg', 'bmp', 'dib', 'jif', 'jpe', 'tpic']; // Luna paint supported image file extensions
 }

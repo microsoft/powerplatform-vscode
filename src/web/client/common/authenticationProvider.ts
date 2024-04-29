@@ -18,7 +18,24 @@ import { ERRORS, showErrorDialog } from "./errorHandler";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../../../common/copilot/telemetry/copilotTelemetry";
 import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../../../common/copilot/telemetry/telemetryConstants";
+import { getUserAgent } from "../../../common/Utils";
 
+
+export function getCommonHeadersForDataverse(
+    accessToken: string,
+    useOctetStreamContentType?: boolean
+) {
+    return {
+        authorization: "Bearer " + accessToken,
+        "content-type": useOctetStreamContentType
+            ? "application/octet-stream"
+            : "application/json; charset=utf-8",
+        accept: "application/json",
+        "OData-MaxVersion": "4.0",
+        "OData-Version": "4.0",
+        "x-ms-user-agent": getUserAgent()
+    };
+}
 
 export function getCommonHeaders(
     accessToken: string,
@@ -31,7 +48,7 @@ export function getCommonHeaders(
             : "application/json; charset=utf-8",
         accept: "application/json",
         "OData-MaxVersion": "4.0",
-        "OData-Version": "4.0",
+        "OData-Version": "4.0"
     };
 }
 
@@ -70,8 +87,9 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
 export async function dataverseAuthentication(
     dataverseOrgURL: string,
     firstTimeAuth = false
-): Promise<string> {
+): Promise<{ accessToken: string, userId: string }> {
     let accessToken = "";
+    let userId = "";
     try {
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
@@ -93,6 +111,9 @@ export async function dataverseAuthentication(
         }
 
         accessToken = session?.accessToken ?? "";
+        userId = session?.account.id.split("/").pop() ??
+            session?.account.id ??
+            "";
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
@@ -101,10 +122,7 @@ export async function dataverseAuthentication(
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
                 {
-                    userId:
-                        session?.account.id.split("/").pop() ??
-                        session?.account.id ??
-                        "",
+                    userId: userId
                 }
             );
         }
@@ -123,7 +141,7 @@ export async function dataverseAuthentication(
         );
     }
 
-    return accessToken;
+    return { accessToken, userId };
 }
 
 export async function npsAuthentication(

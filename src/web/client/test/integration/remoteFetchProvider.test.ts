@@ -67,7 +67,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const _mockFetch = stub(fetch, "default").resolves({
@@ -259,7 +259,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const _mockFetch = stub(fetch, "default").resolves({
@@ -454,7 +454,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -544,7 +544,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -641,7 +641,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -742,7 +742,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -845,7 +845,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -949,7 +949,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -1047,7 +1047,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const _mockFetch = stub(fetch, 'default').callsFake((url) => {
@@ -1135,7 +1135,7 @@ describe("remoteFetchProvider", () => {
             true,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             {}
-            );
+        );
 
         assert.calledWith(convertContentToUint8Array,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

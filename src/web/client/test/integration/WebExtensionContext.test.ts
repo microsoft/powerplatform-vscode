@@ -15,7 +15,7 @@ import * as authenticationProvider from "../../common/authenticationProvider";
 import { telemetryEventNames } from "../../telemetry/constants";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
-import { getCommonHeaders } from "../../common/authenticationProvider";
+import { getCommonHeadersForDataverse } from "../../common/authenticationProvider";
 import { IAttributePath } from "../../common/interfaces";
 
 describe("WebExtensionContext", () => {
@@ -100,7 +100,7 @@ describe("WebExtensionContext", () => {
             [Constants.queryParameters.ORG_URL, "PowerPages.com"],
         ]);
 
-        stub(authenticationProvider, "dataverseAuthentication").resolves("");
+        stub(authenticationProvider, "dataverseAuthentication").resolves({ accessToken: "", userId: "" });
         const telemetry = WebExtensionContext.telemetry;
         const sendErrorTelemetry = stub(telemetry, "sendErrorTelemetry");
 
@@ -144,7 +144,7 @@ describe("WebExtensionContext", () => {
         ]);
 
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         WebExtensionContext.setWebExtensionContext(
@@ -322,7 +322,7 @@ describe("WebExtensionContext", () => {
             [Constants.queryParameters.ORG_URL, "PowerPages.com"],
         ]);
 
-        stub(authenticationProvider, "dataverseAuthentication").resolves("");
+        stub(authenticationProvider, "dataverseAuthentication").resolves({ accessToken: "", userId: "" });
         const noPermissions = stub(vscode.FileSystemError, "NoPermissions");
         const telemetry = WebExtensionContext.telemetry;
         const sendErrorTelemetry = stub(telemetry, "sendErrorTelemetry");
@@ -370,7 +370,7 @@ describe("WebExtensionContext", () => {
         const dataverseAuthentication = stub(
             authenticationProvider,
             "dataverseAuthentication"
-        ).resolves(accessToken);
+        ).resolves({ accessToken: accessToken, userId: "" });
 
         const getCustomRequestURL = stub(
             urlBuilderUtil,
@@ -532,7 +532,7 @@ describe("WebExtensionContext", () => {
         //#endregion
 
         //#region  Fetch
-        const header = getCommonHeaders(accessToken);
+        const header = getCommonHeadersForDataverse(accessToken);
         assert.callCount(_mockFetch, 3);
         const firstFetchCall = _mockFetch.getCalls()[0];
         expect(firstFetchCall.args[0], requestUrl);
@@ -576,7 +576,7 @@ describe("WebExtensionContext", () => {
         const dataverseAuthentication = stub(
             authenticationProvider,
             "dataverseAuthentication"
-        ).resolves(accessToken);
+        ).resolves({ accessToken: accessToken, userId: "" });
 
         const getCustomRequestURL = stub(
             urlBuilderUtil,
@@ -669,7 +669,7 @@ describe("WebExtensionContext", () => {
         //#endregion
 
         //#region  Fetch
-        const header = getCommonHeaders(accessToken);
+        const header = getCommonHeadersForDataverse(accessToken);
         assert.calledThrice(_mockFetch);
         const firstFetchCall = _mockFetch.getCalls()[0];
         expect(firstFetchCall.args[0], requestUrl);
@@ -704,7 +704,7 @@ describe("WebExtensionContext", () => {
         const dataverseAuthentication = stub(
             authenticationProvider,
             "dataverseAuthentication"
-        ).resolves(accessToken);
+        ).resolves({ accessToken: accessToken, userId: "" });
 
         const getCustomRequestURL = stub(
             urlBuilderUtil,
@@ -759,7 +759,7 @@ describe("WebExtensionContext", () => {
 
         assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
         //#region  Fetch
-        const header = getCommonHeaders(accessToken);
+        const header = getCommonHeadersForDataverse(accessToken);
         assert.calledThrice(_mockFetch);
         const firstFetchCall = _mockFetch.getCalls()[0];
         expect(firstFetchCall.args[0], requestUrl);
