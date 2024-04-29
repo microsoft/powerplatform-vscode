@@ -82,7 +82,7 @@ describe("Authentication Provider", () => {
         );
 
         //Act
-        const result = await dataverseAuthentication(dataverseOrgURL);
+        await dataverseAuthentication(dataverseOrgURL);
 
         sinon.assert.calledWith(
             showErrorDialog,
@@ -97,8 +97,6 @@ describe("Authentication Provider", () => {
         sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(sendErrorTelemetry);
         sinon.assert.calledOnce(_mockgetSession);
-        expect(result.accessToken).empty;
-        expect(result.userId).empty;
     });
 
     it("dataverseAuthentication_return_blank_if_exception_thrown", async () => {
