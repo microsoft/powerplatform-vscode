@@ -111,7 +111,6 @@ export function activate(context: vscode.ExtensionContext): void {
                 logOneDSLogger(queryParamsMap);
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
                 const orgGeo = await fetchArtemisData(orgId);
-                console.log("in extension instantiating oneDSLoggerWrapper");
                 oneDSLoggerWrapper.instantiate(orgGeo);
                 oneDSLoggerWrapper.flushCache();
                 WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO,{orgGeo: orgGeo});

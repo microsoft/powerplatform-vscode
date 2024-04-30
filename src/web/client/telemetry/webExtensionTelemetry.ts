@@ -97,7 +97,6 @@ export class WebExtensionTelemetry {
 
     public sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
         this._telemetry?.sendTelemetryEvent(eventName, properties);
-        console.log("sendInfoTelemetry eventName--"+ eventName);
         this.pushData1DSLogger(eventName, properties);
     }
 
@@ -203,13 +202,10 @@ export class WebExtensionTelemetry {
     }
 
     public pushData1DSLogger(eventName: string, eventInfo?: object, measurement?: object, errorMessage?: string, error?: Error) {
-        console.log("pushData1DSLogger instantiated--"+ oneDSLoggerWrapper.isInstantiated());
-        console.log("pushData1DSLogger eventName--"+ eventName);
         if(!oneDSLoggerWrapper.isInstantiated()) {
             oneDSLoggerWrapper.pushToCache(eventName, eventInfo, measurement, errorMessage, error);
             return;
         }
-        console.log("pushData1DSLogger after instantiating check--"+ oneDSLoggerWrapper.isInstantiated());
         if (errorMessage || error) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, error!, eventInfo, measurement);

@@ -26,7 +26,6 @@ export class oneDSLoggerWrapper {
     }
 
     static instantiate(geo?: string) {
-        console.log("Instantiating oneDSLoggerWrapper");
         oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo);
     }
 
