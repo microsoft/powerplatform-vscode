@@ -5,6 +5,7 @@
 
 import { isCustomTelemetryEnabled } from "../Utils";
 import { OneDSLogger } from "./oneDSLogger";
+import { IEvent } from "./IEventTypes";
 
 //// Wrapper class of oneDSLogger for below purposes
 //// 1. Abstracting code from manual trace log APIs.
@@ -13,6 +14,7 @@ import { OneDSLogger } from "./oneDSLogger";
 export class oneDSLoggerWrapper {
     private static instance: oneDSLoggerWrapper;
     private static oneDSLoggerIntance: OneDSLogger;
+    private static telemetryCache: IEvent[] = [];
 
     private constructor(geo?: string) {
         oneDSLoggerWrapper.oneDSLoggerIntance = new OneDSLogger(geo);
@@ -24,7 +26,28 @@ export class oneDSLoggerWrapper {
     }
 
     static instantiate(geo?: string) {
+        console.log("Instantiating oneDSLoggerWrapper");
         oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo);
+    }
+
+    static isInstantiated() {
+        return oneDSLoggerWrapper.instance !== undefined;
+    }
+
+    static pushToCache(eventName: string, eventInfo?: object, measurement?: object,errorMessage?:string, error?:Error ) {
+        this.telemetryCache.push({eventName, customDimension: eventInfo, customMeasurements: measurement, errorMessage, error} as IEvent);
+    }
+
+    static flushCache() {
+        this.telemetryCache.forEach(event => {
+            if (event.errorMessage || event.error) {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                oneDSLoggerWrapper.oneDSLoggerIntance.traceError(event.eventName, event.errorMessage!,event.error!, event.customMeasurements);
+            }else{
+                oneDSLoggerWrapper.oneDSLoggerIntance.traceInfo(event.eventName, event.customDimension, event.customMeasurements);
+            }
+        });
+        this.telemetryCache = [];
     }
 
     /// Trace info log

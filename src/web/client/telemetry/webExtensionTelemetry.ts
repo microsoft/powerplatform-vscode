@@ -38,7 +38,7 @@ export class WebExtensionTelemetry {
         }
 
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
-        oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
+        this.pushData1DSLogger(telemetryData.eventName, telemetryData.properties);
     }
 
     public sendExtensionInitQueryParametersTelemetry(queryParamsMap: Map<string, string>) {
@@ -68,7 +68,7 @@ export class WebExtensionTelemetry {
         }
 
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
-        oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
+        this.pushData1DSLogger(telemetryData.eventName, telemetryData.properties);
     }
 
     public sendErrorTelemetry(eventName: string, methodName: string, errorMessage?: string, error?: Error) {
@@ -87,17 +87,18 @@ export class WebExtensionTelemetry {
             const error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, telemetryData.properties);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, error, telemetryData.properties);
+            oneDSLoggerWrapper.pushToCache(eventName, telemetryData.properties, undefined, errorMessage, error);
         } else {
             this._telemetry?.sendTelemetryException(new Error(), telemetryData.properties);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, new Error(), telemetryData.properties);
+            oneDSLoggerWrapper.pushToCache(eventName, telemetryData.properties, undefined, errorMessage!, new Error());
         }
     }
 
     public sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
         this._telemetry?.sendTelemetryEvent(eventName, properties);
-        oneDSLoggerWrapper.getLogger().traceInfo(eventName, properties);
+        console.log("sendInfoTelemetry eventName--"+ eventName);
+        this.pushData1DSLogger(eventName, properties);
     }
 
     public sendAPITelemetry(
@@ -132,10 +133,10 @@ export class WebExtensionTelemetry {
         if (errorMessage) {
             const error: Error = new Error(errorMessage);
             this._telemetry?.sendTelemetryException(error, { ...telemetryData.properties, eventName: eventName }, telemetryData.measurements);
-            oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage, error, telemetryData.properties, telemetryData.measurements);
+            this.pushData1DSLogger(eventName, telemetryData.properties, telemetryData.measurements, errorMessage, error);
         } else {
             this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
-            oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties,  telemetryData.measurements);
+            this.pushData1DSLogger(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
         }
     }
 
@@ -194,10 +195,26 @@ export class WebExtensionTelemetry {
             }
         }
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, undefined, telemetryData.measurements);
-        oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, undefined, telemetryData.measurements);
+        this.pushData1DSLogger(telemetryData.eventName, undefined, telemetryData.measurements);
     }
 
     private getPathParameterValue(parameter: string | undefined | null): string {
         return (parameter) ? parameter : '';
+    }
+
+    public pushData1DSLogger(eventName: string, eventInfo?: object, measurement?: object, errorMessage?: string, error?: Error) {
+        console.log("pushData1DSLogger instantiated--"+ oneDSLoggerWrapper.isInstantiated());
+        console.log("pushData1DSLogger eventName--"+ eventName);
+        if(!oneDSLoggerWrapper.isInstantiated()) {
+            oneDSLoggerWrapper.pushToCache(eventName, eventInfo, measurement, errorMessage, error);
+            return;
+        }
+        console.log("pushData1DSLogger after instantiating check--"+ oneDSLoggerWrapper.isInstantiated());
+        if (errorMessage || error) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, error!, eventInfo, measurement);
+        }  else {
+            oneDSLoggerWrapper.getLogger().traceInfo(eventName, eventInfo, measurement);
+        }   
     }
 }
