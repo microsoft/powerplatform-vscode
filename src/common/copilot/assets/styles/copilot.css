@@ -63,7 +63,12 @@ body {
   outline: none;
   color: var(--vscode-inputOption-activeForeground);
   background-color: transparent;
-  white-space: pre-wrap;
+  resize: none;
+  font-family: var(--vscode-font-family);
+}
+
+.input-field::-webkit-scrollbar {
+  display: none;
 }
 
 .input-field:focus {
