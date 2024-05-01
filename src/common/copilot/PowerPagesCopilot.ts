@@ -156,7 +156,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this._view = webviewView;
 
         webviewView.title = "Copilot In Power Pages" + (IS_DESKTOP ? "" : " [PREVIEW]");
-        webviewView.description = "PREVIEW";
+        webviewView.description = vscode.l10n.t("PREVIEW");
         webviewView.webview.options = {
             // Allow scripts in the webview
             enableScripts: true,
@@ -210,7 +210,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         type: 'copilotStrings',
                         value: copilotStrings
                     });
-                    
+
                     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;
