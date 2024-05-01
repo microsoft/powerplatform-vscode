@@ -156,7 +156,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this._view = webviewView;
 
         webviewView.title = "Copilot In Power Pages" + (IS_DESKTOP ? "" : " [PREVIEW]");
-        webviewView.description = "PREVIEW";
+        webviewView.description = vscode.l10n.t("PREVIEW");
         webviewView.webview.options = {
             // Allow scripts in the webview
             enableScripts: true,
@@ -210,7 +210,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         type: 'copilotStrings',
                         value: copilotStrings
                     });
-                    
+
                     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;
@@ -498,7 +498,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             <div class="chat-input" id="input-component">
               <label for="chat-input" class="input-label hide" id="input-label-id"></label>
               <div class="input-container">
-                <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
+              <textarea rows=1 placeholder="What do you need help with?" id="chat-input" class="input-field"></textarea>
                 <button aria-label="Match Case" id="send-button" class="send-button">
                   <span>
                     ${sendIconSvg}
