@@ -101,6 +101,14 @@
     "onDebug",
     "onFileSystem:powerplatform-vfs"
   ],
+  "extensionDependencies": [
+    "github.copilot-chat"
+  ],
+  "enabledApiProposals": [
+    "chatParticipant",
+    "chatVariableResolver",
+    "languageModels"
+  ],
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",
@@ -112,6 +120,14 @@
     }
   },
   "contributes": {
+    "chatParticipants": [
+      {
+        "id": "powerpages",
+        "name": "powerpages",
+        "description": "Power Pages Copilot",
+        "isSticky": true
+      }
+    ],
     "problemMatchers": [
       {
         "name": "pcf-scripts-build",
