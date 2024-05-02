@@ -15,7 +15,7 @@ import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
@@ -23,6 +23,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
+import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -212,6 +213,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     });
 
                     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+                        this.sendMessageToWebview({ type: 'Unavailable' });
+                        return;
+                    } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID });
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;
                     }
@@ -408,7 +413,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
             sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
             this.sendMessageToWebview({ type: 'Unavailable' });
-        } else {
+        } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
+            sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID });
+            this.sendMessageToWebview({ type: 'Unavailable' });
+        }
+        else {
             this.sendMessageToWebview({ type: 'Available' });
         }
 

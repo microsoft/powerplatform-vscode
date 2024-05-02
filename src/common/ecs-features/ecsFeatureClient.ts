@@ -11,7 +11,6 @@ import { ECSAPIFeatureFlagFilters } from "./ecsFeatureFlagFilters";
 
 export abstract class ECSFeaturesClient {
     private static _ecsConfig: Record<string, string | boolean>;
-    private static _featuresConfig = {};
 
     // Initialize ECSFeatureClient - any client config can be fetched with utility function like below
     // EnableMultifileVscodeWeb.getConfig().enableMultifileVscodeWeb
@@ -41,10 +40,7 @@ export abstract class ECSFeaturesClient {
     public static getConfig<TConfig extends Record<string, boolean | string>, TeamName extends string>(
         feature: ECSFeatureProperties<TConfig, TeamName>
     ) {
-        if (Object.keys(this._featuresConfig).length === 0) {
-            this._featuresConfig = this._ecsConfig && feature.extractECSFeatureFlagConfig?.(this._ecsConfig as TConfig);
-        }
-
-        return Object.keys(this._featuresConfig).length === 0 ? feature.fallback : this._featuresConfig;
+        const featuresConfig = this._ecsConfig && feature.extractECSFeatureFlagConfig?.(this._ecsConfig as TConfig);
+        return { ...feature.fallback, ...featuresConfig };
     }
 }
