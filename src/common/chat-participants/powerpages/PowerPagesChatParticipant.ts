@@ -34,16 +34,18 @@ export class PowerPagesChatParticipant {
     ): Promise<IPowerPagesChatResult> => {
         // Handle chat requests here
 
+        // TODO: Remove hardcoded values
         const aibAuth = await intelligenceAPIAuthentication(this.telemetry, 'sessionID', '9ba620dc-4b37-430e-b779-2f9a7e7a52a6', true)
 
         if(aibAuth.accessToken) {
-            
-        console.log(request.command);
-        console.log(context);
-        stream.markdown('Hello from PowerPagesChatParticipant');
-        console.log(token);
 
-        console.log("PowerPagesChatParticipant handler");
+            // User is signed in
+            stream.markdown("Welcome to Power Pages! 🚀")
+
+            //TODO: Add logic to handle the request
+            console.log(request)
+            console.log(context)
+            console.log(token)
 
         } else {
             // User is not signed in
