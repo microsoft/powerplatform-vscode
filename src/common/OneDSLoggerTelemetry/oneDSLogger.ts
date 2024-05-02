@@ -356,6 +356,7 @@ export class OneDSLogger implements ITelemetryLogger {
         if (envelope.data.eventName == desktopExtTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT) {
             OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).OrgId;
             OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).EnvironmentId;
+            OneDSLogger.contextInfo.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
             // TODO: Populate website id
             OneDSLogger.contextInfo.websiteId = 'test'
         }

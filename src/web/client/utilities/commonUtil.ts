@@ -164,6 +164,10 @@ export function isNullOrUndefined(object: any | null | undefined): boolean {
     return object === null || object === undefined;
 }
 
+export function isStringUndefinedOrEmpty(value: string | undefined): boolean {
+    return value === undefined || value === '';
+}
+
 // Clean up the file name to remove special characters
 // Ex: For input: "my_file!@#$%^&*()_|+=?;:'\",<>{}[]\\/"; the output will be "my_file"
 export function getSanitizedFileName(fileName: string): string {
@@ -219,6 +223,12 @@ export function getEnvironmentIdFromUrl() {
 export function getBackToStudioURL() {
     const region = WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string;
 
+    if (isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID)) ||
+        isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.REGION)) ||
+        isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID))) {
+        return undefined;
+    }
+
     return BACK_TO_STUDIO_URL_TEMPLATE
         .replace("{environmentId}", getEnvironmentIdFromUrl())
         .replace("{.region}", region.toLowerCase() === STUDIO_PROD_REGION ? "" : `.${WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string}`)
@@ -270,7 +280,7 @@ export function getTeamChatURL(mail: string) {
     return "https://teams.microsoft.com/l/chat/0/0?users=" + encodeURIComponent(mail);
 }
 
-export function getMailToPath (mail: string) {
+export function getMailToPath(mail: string) {
     return `mailto:${mail}`;
 }
 
