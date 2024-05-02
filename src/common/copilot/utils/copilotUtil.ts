@@ -3,14 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { ECSFeaturesClient } from "../../ecs-features/ecsFeatureClient";
 import { CopilotDisableList } from "../../ecs-features/ecsFeatureGates";
 
 export function getDisabledOrgList() {
-    console.log("copilot orgs", CopilotDisableList.getConfig().disallowedProDevCopilotOrgs);
-    return CopilotDisableList.getConfig().disallowedProDevCopilotOrgs?.split(',');
+    return ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs?.split(',').map(org => org.trim());
 }
 
 export function getDisabledTenantList() {
-    console.log("Copilot tenant", CopilotDisableList.getConfig().disallowedProDevCopilotTenants);
-    return CopilotDisableList.getConfig().disallowedProDevCopilotTenants?.split(',');
+    return ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotTenants?.split(',').map(tenant => tenant.trim());
 }

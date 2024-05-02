@@ -15,7 +15,7 @@ import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
 import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
@@ -212,13 +212,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         value: copilotStrings
                     });
 
-                    console.log("copilot orgs 1", getDisabledOrgList(), orgID, tenantId, getDisabledTenantList());
                     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;
                     } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
-                        console.log("copilot not available");
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID });
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;
                     }
@@ -412,16 +410,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this.aibEndpoint = intelligenceEndpoint;
         this.geoName = geoName;
 
-        console.log("copilot orgs 2", getDisabledOrgList(), orgID, tenantId, getDisabledTenantList());
         if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
             sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
             this.sendMessageToWebview({ type: 'Unavailable' });
-            return;
         } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
-            console.log("copilot not available");
-            sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
+            sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID });
             this.sendMessageToWebview({ type: 'Unavailable' });
-            return;
         }
         else {
             this.sendMessageToWebview({ type: 'Available' });
