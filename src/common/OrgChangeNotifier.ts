@@ -18,18 +18,21 @@ export class OrgChangeNotifier {
     private _pacWrapper: PacWrapper | undefined;
     private _orgDetails: ActiveOrgOutput | undefined;
     private static _orgChangeNotifierObj: OrgChangeNotifier | undefined;
+    private extensionContext: vscode.ExtensionContext;
 
-    private constructor(pacWrapper: PacWrapper) {
+    private constructor(pacWrapper: PacWrapper, extensionContext: vscode.ExtensionContext) {
         this._pacWrapper = pacWrapper;
         this.activeOrgDetails();
         if (this._pacWrapper) {
             this.setupFileWatcher();
         }
+
+        this.extensionContext = extensionContext;
     }
 
-    public static createOrgChangeNotifierInstance(pacWrapper: PacWrapper) {
+    public static createOrgChangeNotifierInstance(pacWrapper: PacWrapper, extensionContext: vscode.ExtensionContext) {
         if (!OrgChangeNotifier._orgChangeNotifierObj) {
-            OrgChangeNotifier._orgChangeNotifierObj = new OrgChangeNotifier(pacWrapper);
+            OrgChangeNotifier._orgChangeNotifierObj = new OrgChangeNotifier(pacWrapper, extensionContext);
         }
         return OrgChangeNotifier._orgChangeNotifierObj;
     }
@@ -48,6 +51,9 @@ export class OrgChangeNotifier {
         const pacActiveOrg = await this._pacWrapper?.activeOrg();
         if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
             this._orgDetails = pacActiveOrg.Results;
+
+            await this.extensionContext.globalState.update('orgID', this._orgDetails.OrgId);
+
             orgChangeEventEmitter.fire(this._orgDetails);
         } else {
             orgChangeErrorEventEmitter.fire();

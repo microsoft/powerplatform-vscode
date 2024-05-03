@@ -99,6 +99,13 @@ export async function activate(
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
     vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
+    /**
+     * Required for calling Power Intelligence Service
+     */
+    if(_context.globalState.get('orgID')) {
+       _context.globalState.update('orgID', ''); //TODO: Check for current active org
+    }
+
     // portal web view panel
     _context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -219,7 +226,7 @@ export async function activate(
             oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
         }
         // Init OrgChangeNotifier instance
-        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
+        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper(), _context);
 
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
