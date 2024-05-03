@@ -6,7 +6,7 @@
 
 import * as vscode from "vscode";
 import { sendApiRequest } from "./IntelligenceApiService";
-import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+import { dataverseAuthentication, intelligenceAPIAuthentication } from "../AuthenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
@@ -361,7 +361,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
                     metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
-                    const dataverseToken = (await dataverseAuthentication(activeOrgUrl, true)).accessToken;
+                    const dataverseToken = (await dataverseAuthentication(telemetry, activeOrgUrl, true)).accessToken;
 
                     if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
                         const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, telemetry, sessionID);
