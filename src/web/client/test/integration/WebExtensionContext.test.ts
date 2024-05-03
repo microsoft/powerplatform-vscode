@@ -11,11 +11,11 @@ import WebExtensionContext from "../../WebExtensionContext";
 import { schemaKey, schemaEntityKey } from "../../schema/constants";
 import * as portalSchemaReader from "../../schema/portalSchemaReader";
 import * as Constants from "../../common/constants";
-import * as authenticationProvider from "../../common/authenticationProvider";
+import * as authenticationProvider from "../../../../common/AuthenticationProvider";
 import { telemetryEventNames } from "../../telemetry/constants";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
-import { getCommonHeadersForDataverse } from "../../common/authenticationProvider";
+import { getCommonHeadersForDataverse } from "../../../../common/AuthenticationProvider";
 import { IAttributePath } from "../../common/interfaces";
 
 describe("WebExtensionContext", () => {
@@ -463,7 +463,7 @@ describe("WebExtensionContext", () => {
         );
 
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
-        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
+        assert.calledOnceWithExactly(dataverseAuthentication, WebExtensionContext.telemetry.getTelemetryReporter(), ORG_URL, true);
         assert.callCount(sendAPISuccessTelemetry, 3);
         assert.calledOnceWithExactly(
             getLcidCodeMap,
@@ -641,7 +641,7 @@ describe("WebExtensionContext", () => {
         );
 
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
-        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
+        assert.calledOnceWithExactly(dataverseAuthentication, WebExtensionContext.telemetry.getTelemetryReporter(), ORG_URL, true);
         assert.notCalled(getLcidCodeMap);
         assert.notCalled(getWebsiteIdToLcidMap);
         assert.notCalled(getPortalLanguageIdToLcidMap);
@@ -757,7 +757,7 @@ describe("WebExtensionContext", () => {
         );
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
 
-        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
+        assert.calledOnceWithExactly(dataverseAuthentication, WebExtensionContext.telemetry.getTelemetryReporter(), ORG_URL, true);
         //#region  Fetch
         const header = getCommonHeadersForDataverse(accessToken);
         assert.calledThrice(_mockFetch);
