@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 import { createChatParticipant } from '../ChatParticipantUtils';
 import { IPowerPagesChatResult } from './PowerPagesChatParticipantTypes';
-import { intelligenceAPIAuthentication } from '../../../web/client/common/authenticationProvider';
 import { ITelemetry } from '../../../client/telemetry/ITelemetry';
 import TelemetryReporter from '@vscode/extension-telemetry';
 
@@ -16,7 +15,6 @@ export class PowerPagesChatParticipant {
     private telemetry: ITelemetry;
 
     constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter,) {
-        console.log("PowerPagesChatParticipant constructor");
 
         this.chatParticipant = createChatParticipant('powerpages', this.handler);
 
@@ -27,34 +25,18 @@ export class PowerPagesChatParticipant {
     }
 
     private handler: vscode.ChatRequestHandler = async (
-        request: vscode.ChatRequest,
-        context: vscode.ChatContext,
-        stream: vscode.ChatResponseStream,
-        token: vscode.CancellationToken
+        _request: vscode.ChatRequest,
+        _context: vscode.ChatContext,
+        _stream: vscode.ChatResponseStream,
+        _token: vscode.CancellationToken
     ): Promise<IPowerPagesChatResult> => {
         // Handle chat requests here
 
-        // TODO: Remove hardcoded values
-        const aibAuth = await intelligenceAPIAuthentication(this.telemetry, 'sessionID', '9ba620dc-4b37-430e-b779-2f9a7e7a52a6', true)
-
-        if(aibAuth.accessToken) {
-
-            // User is signed in
-            stream.markdown("Welcome to Power Pages! 🚀")
-
-            //TODO: Add logic to handle the request
-            console.log(request)
-            console.log(context)
-            console.log(token)
-
-        } else {
-            // User is not signed in
-            stream.markdown("Please sign in to use Power Pages")
-        }
+        // TODO: Handle authentication and org change
 
         return {
             metadata: {
-                command: 'powerpages'
+                command: ''
             }
         };
 
