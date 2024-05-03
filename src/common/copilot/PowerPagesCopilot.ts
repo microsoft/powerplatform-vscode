@@ -149,16 +149,18 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 //     stream.markdown(fragment);
                 // }
 
-                const aibResponse = await sendApiRequest([{ displayText: request.prompt, code: '' }], this.getActiveEditorContent().activeFileParams, orgID, intelligenceApiToken, sessionID, '', [], this.telemetry, this.aibEndpoint);
-                const codeBlock = aibResponse[0].code.replace(/\n\n/g, '\n');
+               // const aibResponse = await sendApiRequest([{ displayText: request.prompt, code: '' }], this.getActiveEditorContent().activeFileParams, orgID, intelligenceApiToken, sessionID, '', [], this.telemetry, this.aibEndpoint);
+               // const codeBlock = aibResponse[0].code.replace(/\n\n/g, '\n');
                 const renderString = "This is a string I want to render as codeblock"
                 const markdownCodeBlock = '\\`\\`\\`typescript\n' + renderString + '\n\\`\\`\\`';
                 // stream.markdown(aibResponse[0].displayText);
-                stream.markdown(`\`\`\`typescript const myStack = new Stack();  myStack.push(1); // pushing a number on the stack (or let's say, adding a fish to the stack) \`\`\`
-                                myStack.push(2); // adding another fish (number 2)
-                                console.log(myStack.pop()); // eating the top fish, will output: 
-                                So remember, Code Kitten, in a stack, the last fish in is the first fish out - which we tech cats call LIFO (Last In, First Out).`);
-
+                stream.markdown(`\n\`\`\`typescript
+                const myStack = new Stack();
+                myStack.push(1); // pushing a number on the stack (or let's say, adding a fish to the stack)
+                myStack.push(2); // adding another fish (number 2)
+                console.log(myStack.pop()); // eating the top fish, will output: 2
+                \`\`\`
+                So remember, Code Kitten, in a stack, the last fish in is the first fish out - which we tech cats call LIFO (Last In, First Out).`);
                 // stream.markdown(markdownCodeBlock);
                 // stream.button({
                 //     command: 'teach',
