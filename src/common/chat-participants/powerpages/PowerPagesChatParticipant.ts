@@ -18,6 +18,7 @@ export class PowerPagesChatParticipant {
 
         this.chatParticipant = createChatParticipant('powerpages', this.handler);
 
+        //TODO: Check the icon image
         this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.png');
 
         this.telemetry = telemetry;
