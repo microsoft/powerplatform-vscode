@@ -11,6 +11,9 @@
 
   "power-platform-activitybar.title": "Power Platform",
 
+  "powerpages.copilotPanel.title": "Copilot In Power Pages",
+  "powerpages.copilotPanel.clearConversation.title": "Clear Conversation",
+
   "pacCLI.authPanel.title": "Auth Profiles",
   "pacCLI.authPanel.welcome.whenInteractiveSupported": {
     "message": "No auth profiles found on this computer.\n[Add Auth Profile](command:pacCLI.authPanel.newAuthProfile)",

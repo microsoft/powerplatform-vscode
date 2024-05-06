@@ -199,7 +199,7 @@ export async function activate(
             if (artemisResponse) {
                 const { geoName } = artemisResponse[0];
                 oneDSLoggerWrapper.instantiate(geoName);
-                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, orgDetails);
+                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, {...orgDetails, orgGeo: geoName});
             }
         })
     );
