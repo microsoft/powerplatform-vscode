@@ -8,10 +8,10 @@ import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { createECSRequestURL } from "./ecsFeatureUtil";
 import { ECSFeatureDefinition as ECSFeatureProperties } from "./ecsFeatureProperties";
 import { ECSAPIFeatureFlagFilters } from "./ecsFeatureFlagFilters";
+import { ECSConfigFailedInit, ECSConfigSuccessfulInit } from "./ecsTelemetryConstants";
 
 export abstract class ECSFeaturesClient {
     private static _ecsConfig: Record<string, string | boolean>;
-    private static _featuresConfig = {};
 
     // Initialize ECSFeatureClient - any client config can be fetched with utility function like below
     // EnableMultifileVscodeWeb.getConfig().enableMultifileVscodeWeb
@@ -27,24 +27,23 @@ export abstract class ECSFeaturesClient {
                 throw new Error('Request failed');
             }
             const result = await response.json();
-            // Update telemetry in other PR
-            // telemetry.sendTelemetryEvent('ECSConfig', {});
 
             // Initialize ECS config
             this._ecsConfig = result[clientName];
+
+            // capture telemetry
+            telemetry.sendTelemetryEvent(ECSConfigSuccessfulInit, { clientName: clientName, configFlagCount: Object.keys(this._ecsConfig).length.toString() });
         } catch (error) {
+            const message = (error as Error)?.message;
             // Log error
-            // telemetry.sendTelemetryEvent('ECSConfigError', {});
+            telemetry.sendTelemetryErrorEvent(ECSConfigFailedInit, { error: message });
         }
     }
 
     public static getConfig<TConfig extends Record<string, boolean | string>, TeamName extends string>(
         feature: ECSFeatureProperties<TConfig, TeamName>
     ) {
-        if (Object.keys(this._featuresConfig).length === 0) {
-            this._featuresConfig = this._ecsConfig && feature.extractECSFeatureFlagConfig?.(this._ecsConfig as TConfig);
-        }
-
-        return Object.keys(this._featuresConfig).length === 0 ? feature.fallback : this._featuresConfig;
+        const featuresConfig = this._ecsConfig && feature.extractECSFeatureFlagConfig?.(this._ecsConfig as TConfig);
+        return { ...feature.fallback, ...featuresConfig };
     }
 }

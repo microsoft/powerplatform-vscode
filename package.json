@@ -369,7 +369,7 @@
       {
         "command": "powerpages.copilot.clearConversation",
         "category": "Copilot In Power Pages",
-        "title": "Clear Conversation",
+        "title": "%powerpages.copilotPanel.clearConversation.title%",
         "icon": "$(clear-all)"
       },
       {
@@ -953,7 +953,7 @@
         {
           "type": "webview",
           "id": "powerpages.copilot",
-          "name": "Copilot In Power Pages",
+          "name": "%powerpages.copilotPanel.title%",
           "initialSize": 6,
           "visibility": "visible",
           "when": "(!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot)"

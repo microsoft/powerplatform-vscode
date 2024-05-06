@@ -15,7 +15,7 @@ import { schemaEntityKey, schemaKey } from "../../schema/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
-import * as authenticationProvider from "../../common/authenticationProvider";
+import * as authenticationProvider from "../../../../common/AuthenticationProvider";
 import { telemetryEventNames } from "../../telemetry/constants";
 
 describe("remoteFetchProvider", () => {
@@ -209,7 +209,7 @@ describe("remoteFetchProvider", () => {
 
         assert.callCount(writeFile, 3);
         assert.calledOnce(updateSingleFileUrisInContext);
-        assert.callCount(sendInfoTelemetry, 4);
+        assert.callCount(sendInfoTelemetry, 5);
         assert.callCount(sendAPISuccessTelemetry, 4);
     });
 
@@ -399,7 +399,7 @@ describe("remoteFetchProvider", () => {
         expect(updateFileDetailsInContextCalls[1].args[7], "false");
 
         assert.callCount(writeFile, 3);
-        assert.callCount(sendInfoTelemetry, 6);
+        assert.callCount(sendInfoTelemetry, 7);
         assert.calledOnce(executeCommand);
         assert.callCount(sendAPISuccessTelemetry, 4);
     });
@@ -1145,7 +1145,7 @@ describe("remoteFetchProvider", () => {
 
         assert.callCount(writeFile, 1);
         assert.calledOnce(updateSingleFileUrisInContext);
-        assert.callCount(sendInfoTelemetry, 4);
+        assert.callCount(sendInfoTelemetry, 5);
         assert.callCount(sendAPISuccessTelemetry, 5);
     });
 });
