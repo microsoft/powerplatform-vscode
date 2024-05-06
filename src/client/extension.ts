@@ -40,7 +40,6 @@ import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWr
 import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
-import { PowerPagesChatParticipant } from "../common/chat-participants/powerpages/PowerPagesChatParticipant";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -98,13 +97,6 @@ export async function activate(
 
     vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
     vscode.workspace.textDocuments.forEach(didOpenTextDocument);
-
-    /**
-     * Required for calling Power Intelligence Service
-     */
-    if(_context.globalState.get('orgID')) {
-       _context.globalState.update('orgID', ''); //TODO: Check for current active org
-    }
 
     // portal web view panel
     _context.subscriptions.push(
@@ -184,9 +176,6 @@ export async function activate(
 
     // Add CRUD related callback subscription here
     await handleFileSystemCallbacks(_context, _telemetry);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const PowerPagesChatParticipantInstance = new PowerPagesChatParticipant(_context, _telemetry);
 
     const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);

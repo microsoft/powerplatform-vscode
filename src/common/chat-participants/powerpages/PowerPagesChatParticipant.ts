@@ -11,14 +11,17 @@ import TelemetryReporter from '@vscode/extension-telemetry';
 import { getIntelligenceEndpoint } from '../../ArtemisService';
 import { intelligenceAPIAuthentication } from '../../../web/client/common/authenticationProvider';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
+import { PacWrapper } from '../../../client/pac/PacWrapper';
 
 
 export class PowerPagesChatParticipant {
+    private static instance : PowerPagesChatParticipant | null = null;
     private chatParticipant: vscode.ChatParticipant;
     private telemetry: ITelemetry;
     private extensionContext: vscode.ExtensionContext;
+    private readonly _pacWrapper?: PacWrapper;
 
-    constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter,) {
+    private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter,  pacWrapper?: PacWrapper) {
 
         this.chatParticipant = createChatParticipant('powerpages', this.handler);
 
@@ -28,6 +31,20 @@ export class PowerPagesChatParticipant {
         this.telemetry = telemetry;
 
         this.extensionContext = context;
+
+        this._pacWrapper = pacWrapper;
+    }
+
+    public static getInstance(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {
+        if (!PowerPagesChatParticipant.instance) {
+            PowerPagesChatParticipant.instance = new PowerPagesChatParticipant(context, telemetry, pacWrapper);
+        }
+
+        return PowerPagesChatParticipant.instance;
+    }
+
+    public dispose() {
+        this.chatParticipant.dispose();
     }
 
     private handler: vscode.ChatRequestHandler = async (
