@@ -9,10 +9,18 @@ import { IPowerPagesChatResult } from './PowerPagesChatParticipantTypes';
 import { ITelemetry } from '../../../client/telemetry/ITelemetry';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { getIntelligenceEndpoint } from '../../ArtemisService';
-import { intelligenceAPIAuthentication } from '../../../web/client/common/authenticationProvider';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
+import { PAC_SUCCESS } from '../../copilot/constants';
+import { createAuthProfileExp } from '../../Utils';
+import { intelligenceAPIAuthentication } from '../../AuthenticationProvider';
+import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
+import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
 
+export interface OrgDetails {
+    orgID: string;
+    orgUrl: string;
+}
 
 export class PowerPagesChatParticipant {
     private static instance : PowerPagesChatParticipant | null = null;
@@ -20,6 +28,12 @@ export class PowerPagesChatParticipant {
     private telemetry: ITelemetry;
     private extensionContext: vscode.ExtensionContext;
     private readonly _pacWrapper?: PacWrapper;
+    private isOrgDetailsInitialized = false;
+    private readonly _disposables: vscode.Disposable[] = [];
+    private cachedEndpoint: { intelligenceEndpoint: string, geoName: string } | null = null;
+
+    private orgID: string | undefined;
+    private orgUrl: string | undefined;
 
     private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter,  pacWrapper?: PacWrapper) {
 
@@ -33,6 +47,15 @@ export class PowerPagesChatParticipant {
         this.extensionContext = context;
 
         this._pacWrapper = pacWrapper;
+
+        this._disposables.push(orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
+            await this.handleOrgChangeSuccess(orgDetails);
+        }));
+
+        this._disposables.push(orgChangeErrorEvent(async () => {
+            await createAuthProfileExp(this._pacWrapper);
+        }));
+
     }
 
     public static getInstance(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {
@@ -57,14 +80,11 @@ export class PowerPagesChatParticipant {
 
         stream.progress('Working on it...')
 
-        let orgID = this.extensionContext.globalState.get('orgID', '');
+        this.intializeOrgDetails();
 
-        orgID = 'eff535da-5f08-ef11-9f88-00224820c64c';
-
-        if (!orgID) {
+        if (!this.orgID) {
             // TODO: Auth Create Experience
-
-
+            await createAuthProfileExp(this._pacWrapper);
             return {
                 metadata: {
                     command: ''
@@ -72,7 +92,7 @@ export class PowerPagesChatParticipant {
             };
         }
 
-        const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.telemetry, '', orgID, true);
+        const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.telemetry, '', this.orgID, true);
 
         if (!intelligenceApiAuthResponse) {
 
@@ -87,7 +107,7 @@ export class PowerPagesChatParticipant {
 
         const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
 
-        const { intelligenceEndpoint, geoName }  = await getIntelligenceEndpoint(orgID, this.telemetry, ''); //TODO: Optimize to avoid multiple calls to get intelligence endpoint
+        const { intelligenceEndpoint, geoName }  = await this.getEndpoint(this.orgID, this.telemetry);
 
         if (!intelligenceEndpoint || !geoName) {
             //TODO: Handle error
@@ -115,7 +135,7 @@ export class PowerPagesChatParticipant {
         }
 
         // export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {}
-        const llmResponse = await sendApiRequest([{displayText: userPrompt, code: ''}], {dataverseEntity:'', entityField: '', fieldType: ''}, orgID, intelligenceApiToken, '', '', [], this.telemetry, intelligenceEndpoint, geoName);
+        const llmResponse = await sendApiRequest([{displayText: userPrompt, code: ''}], {dataverseEntity:'', entityField: '', fieldType: ''}, this.orgID, intelligenceApiToken, '', '', [], this.telemetry, intelligenceEndpoint, geoName);
 
         stream.markdown(llmResponse[0].displayText);
 
@@ -132,4 +152,44 @@ export class PowerPagesChatParticipant {
 
     };
 
+    private async intializeOrgDetails(): Promise<void> {
+
+        if(this.isOrgDetailsInitialized) {
+            return;
+        }
+
+        this.isOrgDetailsInitialized = true;
+
+        const orgDetails:OrgDetails | undefined = this.extensionContext.globalState.get('orgDetails');
+
+        if(orgDetails) {
+            this.orgID = orgDetails.orgID;
+            this.orgUrl = orgDetails.orgUrl;
+        } else {
+            if (this._pacWrapper) {
+                const pacActiveOrg = await this._pacWrapper.activeOrg();
+                if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
+                    this.handleOrgChangeSuccess(pacActiveOrg.Results);
+                } else {
+                    await createAuthProfileExp(this._pacWrapper);
+                }
+            }
+        }
+    }
+
+    private async handleOrgChangeSuccess(orgDetails: ActiveOrgOutput) {
+        this.orgID = orgDetails.OrgId;
+        this.orgUrl = orgDetails.OrgUrl
+
+        this.extensionContext.globalState.update('orgDetails', {orgID: this.orgID, orgUrl: this.orgUrl});
+
+        //TODO: Handle AIB GEOs
+    }
+
+    async getEndpoint(orgID: string, telemetry: any) {
+        if (!this.cachedEndpoint) {
+            this.cachedEndpoint = await getIntelligenceEndpoint(orgID, telemetry, '') as { intelligenceEndpoint: string; geoName: string };
+        }
+        return this.cachedEndpoint;
+    }
 }
