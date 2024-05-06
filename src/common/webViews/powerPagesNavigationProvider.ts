@@ -5,10 +5,12 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import WebExtensionContext from "../WebExtensionContext";
-import { httpMethod, queryParameters } from '../common/constants';
-import { getBackToStudioURL, isStringUndefinedOrEmpty } from '../utilities/commonUtil';
-import { telemetryEventNames } from '../telemetry/constants';
+import WebExtensionContext from "../../web/client/WebExtensionContext";
+import { httpMethod } from './constants';
+import { isStringUndefinedOrEmpty } from '../Utils';
+import { WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, WEB_EXTENSION_PREVIEW_SITE_TRIGGERED } from '../TelemetryConstants';
+
+declare const IS_DESKTOP: string | undefined;
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -60,15 +62,14 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         return nodes;
     }
 
-    async previewPowerPageSite(): Promise<void> {
+    async previewPowerPageSite(websitePreviewUrl: string): Promise<void> {
         let requestSentAtTime = new Date().getTime();
-        const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
 
         if (isStringUndefinedOrEmpty(websitePreviewUrl)) {
             vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not available"));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED,
+                WEB_EXTENSION_PREVIEW_SITE_TRIGGERED,
                 vscode.l10n.t("Preview site URL is not available")
             );
             return;
@@ -84,7 +85,12 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             this.previewPowerPageSite.name
         );
         requestSentAtTime = new Date().getTime();
-        WebExtensionContext.dataverseAuthentication();
+
+        if (IS_DESKTOP) {
+            // call dataverseAuthentication() for desktop
+        } else {
+            WebExtensionContext.dataverseAuthentication();
+        }
 
         await vscode.window.withProgress(
             {
@@ -93,9 +99,17 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                 title: vscode.l10n.t("Opening preview site..."),
             },
             async () => {
+                let dataverseAccessToken = undefined;
+
+                if (IS_DESKTOP) {
+                    // get dataverseAccessToken for desktop
+                } else {
+                    dataverseAccessToken = WebExtensionContext.dataverseAccessToken;
+                }
+
                 const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
                     headers: {
-                        authorization: "Bearer " + WebExtensionContext.dataverseAccessToken,
+                        authorization: "Bearer " + dataverseAccessToken,
                         'Accept': '*/*',
                         'Content-Type': 'text/plain',
                     },
@@ -122,23 +136,21 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                         response?.status.toString()
                     );
                 }
-
-
             }
         );
 
         vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
+        WebExtensionContext.telemetry.sendInfoTelemetry(WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
     }
 
-    backToStudio(): void {
-        const backToStudioUrl = getBackToStudioURL();
+    backToStudio(backToStudio: string | undefined): void {
+        const backToStudioUrl = backToStudio;
 
         if (backToStudioUrl === undefined) {
             vscode.window.showErrorMessage(vscode.l10n.t("Power Pages studio URL is not available"));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED,
+                WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED,
                 vscode.l10n.t("Power Pages studio URL is not available")
             );
             return;
@@ -146,7 +158,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
         vscode.env.openExternal(vscode.Uri.parse(backToStudioUrl));
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
+        WebExtensionContext.telemetry.sendInfoTelemetry(WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
             backToStudioUrl: backToStudioUrl
         });
     }
