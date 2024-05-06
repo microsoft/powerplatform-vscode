@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import {
     dataverseAuthentication,
     getCommonHeadersForDataverse,
-} from "./common/authenticationProvider";
+} from "../../common/AuthenticationProvider";
 import * as Constants from "./common/constants";
 import {
     getDataSourcePropertiesMap,
@@ -371,6 +371,7 @@ class WebExtensionContext implements IWebExtensionContext {
             Constants.queryParameters.ORG_URL
         ) as string;
         const { accessToken, userId } = await dataverseAuthentication(
+            this._telemetry.getTelemetryReporter(),
             dataverseOrgUrl,
             firstTimeAuth
         );
@@ -396,6 +397,15 @@ class WebExtensionContext implements IWebExtensionContext {
 
         this._dataverseAccessToken = accessToken;
         this._userId = userId;
+
+        if (firstTimeAuth) {
+            this._telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+                {
+                    userId: userId
+                }
+            );
+        }
     }
 
     public async updateFileDetailsInContext(

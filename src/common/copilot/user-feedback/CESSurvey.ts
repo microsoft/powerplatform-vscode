@@ -4,20 +4,21 @@
  */
 
 import * as vscode from "vscode";
-import { npsAuthentication } from "../../../web/client/common/authenticationProvider";
+import { npsAuthentication } from "../../AuthenticationProvider";
 import { SurveyConstants } from "../../../web/client/common/constants";
 import fetch from "node-fetch";
 import { getNonce } from "../../Utils";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
-import { CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
+import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
 import { EUROPE_GEO, UK_GEO } from "../constants";
+import { ERRORS } from "../../ErrorConstants";
 
 let feedbackPanel: vscode.WebviewPanel | undefined;
 
 
-export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, geoName: string,  messageScenario: string, tenantId?: string) {
+export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, geoName: string, messageScenario: string, tenantId?: string) {
 
     if (feedbackPanel) {
         feedbackPanel.dispose();
@@ -35,7 +36,13 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
 
     const feedbackData = initializeFeedbackData(sessionId, vscode.env.uiKind === vscode.UIKind.Web, geoName, messageScenario, tenantId);
 
-    const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
+    const apiToken: string = await npsAuthentication(telemetry, SurveyConstants.AUTHORIZATION_ENDPOINT);
+
+    if (apiToken) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotNpsAuthenticationCompleted, feedbackType: thumbType, copilotSessionId: sessionId });
+    } else {
+        sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionId, error: new Error(ERRORS.NPS_FAILED_AUTH) });
+    }
 
     const endpointUrl = useEUEndpoint(geoName) ? `https://europe.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}` :
         `https://world.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}`;
@@ -79,7 +86,7 @@ function getWebviewURIs(context: vscode.ExtensionContext, feedbackPanel: vscode.
     return { feedbackCssUri, feedbackJsUri };
 }
 
-function initializeFeedbackData(sessionId: string, isWebExtension: boolean, geoName: string, messageScenario: string,  tenantId?: string): IFeedbackData {
+function initializeFeedbackData(sessionId: string, isWebExtension: boolean, geoName: string, messageScenario: string, tenantId?: string): IFeedbackData {
     const feedbackData: IFeedbackData = {
         TenantId: tenantId ? tenantId : '',
         Geo: geoName,

@@ -15,9 +15,9 @@ import {
     setFileContent,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getMappingEntityContent, getMetadataInfo, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
-import { getCommonHeadersForDataverse } from "../common/authenticationProvider";
+import { getCommonHeadersForDataverse } from "../../../common/AuthenticationProvider";
 import * as Constants from "../common/constants";
-import { ERRORS, showErrorDialog } from "../common/errorHandler";
+import { showErrorDialog } from "../common/errorHandler";
 import { PortalsFS } from "./fileSystemProvider";
 import {
     encodeAsBase64,
@@ -32,6 +32,7 @@ import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEn
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
+import { ERRORS } from "../../../common/ErrorConstants";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
