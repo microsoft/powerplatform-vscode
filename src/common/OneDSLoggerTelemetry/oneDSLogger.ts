@@ -175,7 +175,7 @@ export class OneDSLogger implements ITelemetryLogger {
                     case 'ae':
                     case 'kr':
                         instrumentationSettings.endpointURL = 'https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
-                            instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                        instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
                         break;
                     case 'eu':
                     case 'uk':
@@ -184,30 +184,30 @@ export class OneDSLogger implements ITelemetryLogger {
                     case 'no':
                     case 'ch':
                         instrumentationSettings.endpointURL = 'https://eu-mobile.events.data.microsoft.com/OneCollector/1.0/',
-                            instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                        instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                        break;
+                    case 'gov':
+                        instrumentationSettings.endpointURL = 'https://tb.events.data.microsoft.com/OneCollector/1.0/',
+                        instrumentationSettings.instrumentationKey = '2f217cb8f40440eeb8b0aa80a2be2f7e-e0ec7b51-d1bb-4d8c-83b1-cc77aaba9009-7472' 
+                        break;
+                    case 'high':
+                        instrumentationSettings.endpointURL = 'https://tb.events.data.microsoft.com/OneCollector/1.0/',
+                        instrumentationSettings.instrumentationKey = '4a07e143372c46aabf3841dc4f0ef795-a753031e-2005-4282-9451-a086fea4234a-6942' 
+                        break;
+                    case 'dod':
+                        instrumentationSettings.endpointURL = 'https://pf.events.data.microsoft.com/OneCollector/1.0/',
+                        instrumentationSettings.instrumentationKey = 'af47f3d608774379a53fa07cf36362ea-69701588-1aad-43ee-8b52-f71125849774-6656' 
+                        break;
+                    case 'mooncake':
+                        instrumentationSettings.endpointURL = 'https://collector.azure.cn/OneCollector/1.0/',
+                        instrumentationSettings.instrumentationKey = 'f9b6e63b5e394453ba8f58f7a7b9aea7-f38fcfa2-eb34-48bc-9ae2-61fba4abbd39-7390' //prod key;
                         break;
                     default:
                         instrumentationSettings.endpointURL = 'https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
-                            instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                        instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
                         break;
                 }
                 break;
-            case 'gov':
-                instrumentationSettings.endpointURL = 'https://tb.events.data.microsoft.com/OneCollector/1.0/',
-                instrumentationSettings.instrumentationKey = '2f217cb8f40440eeb8b0aa80a2be2f7e-e0ec7b51-d1bb-4d8c-83b1-cc77aaba9009-7472' 
-              break;
-            case 'high':
-                instrumentationSettings.endpointURL = 'https://tb.events.data.microsoft.com/OneCollector/1.0/',
-                instrumentationSettings.instrumentationKey = '4a07e143372c46aabf3841dc4f0ef795-a753031e-2005-4282-9451-a086fea4234a-6942' 
-              break;
-            case 'dod':
-                instrumentationSettings.endpointURL = 'https://pf.events.data.microsoft.com/OneCollector/1.0/',
-                instrumentationSettings.instrumentationKey = 'af47f3d608774379a53fa07cf36362ea-69701588-1aad-43ee-8b52-f71125849774-6656' 
-              break;
-            case 'mooncake':
-                instrumentationSettings.endpointURL = 'https://collector.azure.cn/OneCollector/1.0/',
-                instrumentationSettings.instrumentationKey = 'f9b6e63b5e394453ba8f58f7a7b9aea7-f38fcfa2-eb34-48bc-9ae2-61fba4abbd39-7390' //prod key;
-              break;
             case 'ex':
             case 'rx':
             default:
