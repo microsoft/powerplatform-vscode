@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { IEntityInfo } from "../common/interfaces";
 import * as Constants from "../common/constants";
-import { getFileEntityId, getFileEntityName } from "../utilities/fileAndEntityUtil";
+import { getFileEntityId, getFileEntityName, getFileRootWebPageId } from "../utilities/fileAndEntityUtil";
 
 interface IQuickPickItem extends vscode.QuickPickItem {
     label: string;
@@ -24,11 +24,11 @@ export class QuickPickProvider {
 
     public refresh() {
         if (vscode.window.activeTextEditor) {
-            const fileFsPath = vscode.window.activeTextEditor.document.fileName;
+            const fileFsPath = vscode.window.activeTextEditor.document.uri.fsPath;
             const entityInfo: IEntityInfo = {
                 entityId: getFileEntityId(fileFsPath),
                 entityName: getFileEntityName(fileFsPath),
-                rootWebPageId: WebExtensionContext.entityDataMap.getEntityMap.get(getFileEntityId(fileFsPath))?.rootWebPageId as string
+                rootWebPageId: getFileRootWebPageId(fileFsPath),
             };
             this.updateQuickPickItems(entityInfo);
         }
@@ -36,41 +36,46 @@ export class QuickPickProvider {
 
     public async updateQuickPickItems(entityInfo: IEntityInfo) {
         const connectedUsersMap = WebExtensionContext.connectedUsers.getUserMap;
+        const userMap = new Map<string, IQuickPickItem>();
 
-        const currentUsers: IQuickPickItem[] = [];
+        for (const [, value] of connectedUsersMap.entries()) {
+            for (const connection of value._connectionData) {
+                // List all the user connections except the current connection
+                if (connection.connectionId !== WebExtensionContext.currentConnectionId) {
+                    const contentPageId = WebExtensionContext.entityForeignKeyDataMap.getEntityForeignKeyMap.get(`${connection.entityId[0]}`);
 
-        Array.from(
-            connectedUsersMap.entries()
-        ).map(([, value]) => {
-            if (value._entityId.length) {
-                value._entityId.forEach(async (entityId) => {
-                    const contentPageId = WebExtensionContext.entityForeignKeyDataMap.getEntityForeignKeyMap.get(`${entityId}`);
-
-                    if (
-                        contentPageId &&
-                        contentPageId.has(`${entityInfo.entityId}`)
-                    ) {
-                        currentUsers.push({
+                    // if content is localized, then check for the content page id
+                    if ((connection.entityId[0] === entityInfo.entityId) || (contentPageId && contentPageId.has(`${entityInfo.entityId}`))) {
+                        userMap.set(value._userId, {
                             label: value._userName,
                             id: value._userId,
                         });
                     }
-                })
+                }
             }
-        });
-
-        if (currentUsers.length) {
-            this.items = currentUsers;
-        } else {
-            this.items = [{
-                label: Constants.WEB_EXTENSION_QUICK_PICK_DEFAULT_STRING,
-                id: "",
-            }];
         }
+
+        const currentUsers = Array.from(userMap.values());
+
+        this.items = currentUsers.length ? currentUsers : [{
+            label: Constants.WEB_EXTENSION_QUICK_PICK_DEFAULT_STRING,
+            id: "",
+        }];
+    }
+
+    private getLength(): number {
+        if (this.items.length === 1 && this.items[0].label === Constants.WEB_EXTENSION_QUICK_PICK_DEFAULT_STRING) {
+            return 0;
+        }
+
+        return this.items.length;
     }
 
     public async showQuickPick() {
-        const selectedUser = await vscode.window.showQuickPick(this.items);
+        const selectedUser = await vscode.window.showQuickPick(this.items, {
+            title: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_TITLE.toUpperCase() + ` (${this.getLength()})`),
+            placeHolder: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_PLACEHOLDER),
+        });
         if (selectedUser) {
             this.handleSelectedOption(selectedUser);
         }
@@ -96,7 +101,7 @@ export class QuickPickProvider {
         ];
 
         const collaborationOptionsSelected = await vscode.window.showQuickPick(collaborationOptions, {
-            title: `CONTACT ${selectedOption.label.toUpperCase()}`,
+            title: vscode.l10n.t(Constants.WEB_EXTENSION_COLLABORATION_OPTIONS_CONTACT.toUpperCase() + ` ${selectedOption.label.toUpperCase()}`),
         });
 
         if (collaborationOptionsSelected) {

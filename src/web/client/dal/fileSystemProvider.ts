@@ -13,7 +13,6 @@ import {
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
 import { saveData } from "./remoteSaveProvider";
-import { ERRORS } from "../common/errorHandler";
 import { telemetryEventNames } from "../telemetry/constants";
 import { getFolderSubUris } from "../utilities/folderHelperUtility";
 import { EtagHandlerService } from "../services/etagHandlerService";
@@ -30,8 +29,9 @@ import {
     updateFileDirtyChanges,
     updateFileEntityEtag,
 } from "../utilities/fileAndEntityUtil";
-import { getImageFileContent, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
-import { IFileInfo } from "../common/interfaces";
+import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
+import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
+import { ERRORS } from "../../../common/ErrorConstants";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -277,6 +277,9 @@ export class PortalsFS implements vscode.FileSystemProvider {
     }
 
     async searchFiles(pattern: string) {
+        // Record start time for iterating directory and searching files
+        const startTime = Date.now();
+
         // create case sensitive regex
         const regex = new RegExp(pattern, "i");
         const files = await this.iterateDirectory(WebExtensionContext.rootDirectory);
@@ -288,6 +291,14 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 results.push(fileUri);
             }
         });
+
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_SEARCH_FILE,
+            {
+                duration: (Date.now() - startTime).toString(),
+                files: files.length.toString(),
+            }
+        );
 
         return files;
     }
@@ -308,6 +319,127 @@ export class PortalsFS implements vscode.FileSystemProvider {
         }
 
         return files;
+    }
+
+    async searchTextResults(query: vscode.TextSearchQuery, options: vscode.TextSearchOptions, progress: vscode.Progress<vscode.TextSearchResult>) {
+        const results = await this.searchText(
+            query,
+            { maxResults: options.maxResults }
+        );
+
+        if (results === undefined) {
+            return { limitHit: true };
+        }
+
+        for (const match of results.matches) {
+            progress.report({
+                uri: match.uri,
+                ranges: match.ranges,
+                preview: {
+                    text: match.preview,
+                    matches: match.matches,
+                },
+            });
+        }
+
+        return { limitHit: false };
+    }
+
+    async searchText(query: vscode.TextSearchQuery, options: { maxResults?: number }): Promise<ISearchQueryResults> {
+        // Record start time for search
+        const startTime = Date.now();
+
+        const matches: ISearchQueryMatch[] = [];
+        const files = await this.iterateDirectory(WebExtensionContext.rootDirectory);
+
+        // Promises array to store promises for file reads
+        const fileReadPromises = files.map(async (file) => {
+            // Record start time for file processing
+            const startFileTime = Date.now();
+
+            const content = await this.readFile(file);
+
+            // Convert buffer to string and replace windows line endings with unix line endings
+            const text = new TextDecoder().decode(content).replace(/\r\n/g, '\n');
+
+            // Convert windows line endings with unix line endings
+            const pattern = query.pattern.replace(/\r\n/g, '\n');
+
+            const lines = text.split('\n');
+
+            const match: ISearchQueryMatch = {
+                uri: file,
+                ranges: [],
+                preview: text,
+                matches: [],
+            };
+
+            let regex;
+            if (query.isWordMatch) {
+                // \b is a word boundary
+                regex = query.isCaseSensitive ? new RegExp(`\\b${pattern}\\b`) : new RegExp(`\\b${pattern}\\b`, "i");
+            } else if (query.isRegExp) {
+                regex = new RegExp(pattern);
+            } else {
+                regex = query.isCaseSensitive ? new RegExp(pattern) : new RegExp(pattern, "i");
+            }
+
+            if (query.isMultiline) {
+                if (text.includes(pattern)) {
+                    const index = text.indexOf(pattern);
+                    const range = getRangeForMultilineMatch(text, pattern, index);
+                    match.ranges.push(range);
+                    match.matches.push(range);
+                    matches.push(match);
+                }
+            } else {
+                for (let i = 0; i < lines.length; i++) {
+                    if (options.maxResults !== undefined && matches.length > options.maxResults) {
+                        return { matches: matches, limitHit: true };
+                    }
+
+                    const regexMatch = lines[i].match(regex);
+
+                    if (regexMatch) {
+                        regexMatch.forEach((m) => {
+                            const index = lines[i].indexOf(m);
+                            const range = new vscode.Range(i, index, i, index + m.length);
+                            match.ranges.push(range);
+                            match.matches.push(new vscode.Range(i, index, i, index + m.length));
+                            matches.push(match);
+                        });
+                    }
+                }
+            }
+
+            // Record end time for file processing
+            const endFileTime = Date.now();
+
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_SEARCH_TEXT_RESULTS,
+                {
+                    duration: (endFileTime - startFileTime).toString(),
+                    isMultiline: query.isMultiline ? "true" : "false",
+                    isCaseSensitive: query.isCaseSensitive ? "true" : "false",
+                    isWordMatch: query.isWordMatch ? "true" : "false",
+                    isRegExp: query.isRegExp ? "true" : "false",
+                }
+            );
+        });
+
+        // Wait for all file read promises to resolve
+        await Promise.all(fileReadPromises);
+
+        // Record end time for search
+        const endTime = Date.now();
+        WebExtensionContext.telemetry.sendInfoTelemetry(
+            telemetryEventNames.WEB_EXTENSION_SEARCH_TEXT,
+            {
+                duration: (endTime - startTime).toString(),
+            }
+        );
+
+        return { matches: matches, limitHit: false };
     }
 
     // --- lookup

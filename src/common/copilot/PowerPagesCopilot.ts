@@ -6,24 +6,24 @@
 
 import * as vscode from "vscode";
 import { sendApiRequest } from "./IntelligenceApiService";
-import { dataverseAuthentication, intelligenceAPIAuthentication } from "../../web/client/common/authenticationProvider";
+import { dataverseAuthentication, intelligenceAPIAuthentication } from "../AuthenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
-import { escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
+import { createAuthProfileExp, escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
-import { COPILOT_STRINGS } from "./assets/copilotStrings";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
+import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -109,7 +109,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         );
 
         this._disposables.push(
-            orgChangeErrorEvent(async () => await this.createAuthProfileExp())
+            orgChangeErrorEvent(async () => await createAuthProfileExp(this._pacWrapper))
         );
 
         if (orgInfo) {
@@ -131,19 +131,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
             this.handleOrgChangeSuccess(pacOutput.Results);
         } else if (this._view?.visible) {
-            await this.createAuthProfileExp();
-        }
-    }
-
-    private async createAuthProfileExp() {
-        const userOrgUrl = await showInputBoxAndGetOrgUrl();
-        if (!userOrgUrl) {
-            return;
-        }
-        const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-        if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
-            vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
-            return;
+            await createAuthProfileExp(this._pacWrapper)
         }
     }
 
@@ -157,7 +145,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this._view = webviewView;
 
         webviewView.title = "Copilot In Power Pages" + (IS_DESKTOP ? "" : " [PREVIEW]");
-        webviewView.description = "PREVIEW";
+        webviewView.description = vscode.l10n.t("PREVIEW");
         webviewView.webview.options = {
             // Allow scripts in the webview
             enableScripts: true,
@@ -182,9 +170,41 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
                 case "webViewLoaded": {
-                    // Send the localized strings to the copilot webview
-                    this.sendMessageToWebview({ type: 'copilotStrings', value: COPILOT_STRINGS })
+                    // end the localized strings to the Copilot webview. They can't be moved to a constant file because they are not being picked for localization.
+                    const copilotStrings = {
+                        EXPLAIN_CODE_PROMPT: vscode.l10n.t('Explain the following code snippet:'),
+                        LARGE_SELECTION: vscode.l10n.t('Selection is too large. Try making a shorter selection.'),
+                        FEATURE_NOT_ENABLED_MESSAGE: vscode.l10n.t("Feature is not enabled for this geo."),
+                        COPILOT_SUPPORT_MESSAGE: vscode.l10n.t("Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details."),
+                        COPY_TO_CLIPBOARD_MESSAGE: vscode.l10n.t("Copy to clipboard"),
+                        INSERT_CODE_MESSAGE: vscode.l10n.t("Insert code into editor"),
+                        AI_CONTENT_MISTAKES_MESSAGE: vscode.l10n.t("AI-generated content can contain mistakes"),
+                        THUMBS_UP_MESSAGE: vscode.l10n.t("Thumbs Up"),
+                        THUMBS_DOWN_MESSAGE: vscode.l10n.t("Thumbs Down"),
+                        FORM_PROMPT: vscode.l10n.t("Write JavaScript code for form field validation to check phone field value is in the valid format."),
+                        WEB_API_PROMPT: vscode.l10n.t("Write web API code to query active contact records."),
+                        LIST_PROMPT: vscode.l10n.t("Write JavaScript code to highlight the row where email field is empty in table list."),
+                        SUGGESTIONS_MESSAGE: vscode.l10n.t("Here are a few suggestions to get you started"),
+                        GETTING_STARTED_MESSAGE: vscode.l10n.t("GETTING STARTED"),
+                        LEARN_MORE_MESSAGE: vscode.l10n.t("Learn more about Copilot"),
+                        LOGIN_MESSAGE: vscode.l10n.t("Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account."),
+                        LOGIN_BUTTON: vscode.l10n.t("Login"),
+                        HI: vscode.l10n.t("Hi"),
+                        WELCOME_MESSAGE: vscode.l10n.t(`In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.`),
+                        DOCUMENTATION_LINK: vscode.l10n.t("To know more, see <a href=\"https://go.microsoft.com/fwlink/?linkid=2206366\">Copilot in Power Pages documentation."),
+                        WORKING_ON_IT_MESSAGE: vscode.l10n.t("Working on it...")
+                    };
+
+                    this.sendMessageToWebview({
+                        type: 'copilotStrings',
+                        value: copilotStrings
+                    });
+
                     if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
+                        this.sendMessageToWebview({ type: 'Unavailable' });
+                        return;
+                    } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID });
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;
                     }
@@ -250,11 +270,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                     if (feedbackValue === THUMBS_UP) {
 
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID });
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID, subScenario: String(messageScenario) });
                         CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_UP, this.telemetry, this.geoName as string, messageScenario, tenantId)
                     } else if (feedbackValue === THUMBS_DOWN) {
 
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID });
+                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID, subScenario: String(messageScenario) });
                         CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_DOWN, this.telemetry, this.geoName as string, messageScenario, tenantId)
                     }
                     break;
@@ -336,12 +356,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 this.sendMessageToWebview({ type: 'userName', value: userName });
 
                 let metadataInfo = { entityName: '', formName: '' };
-                let componentInfo : string[] = [];
+                let componentInfo: string[] = [];
 
                 if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
                     metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
-                    const dataverseToken = await dataverseAuthentication(activeOrgUrl, true);
+                    const dataverseToken = (await dataverseAuthentication(telemetry, activeOrgUrl, true)).accessToken;
 
                     if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
                         const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, telemetry, sessionID);
@@ -381,7 +401,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
             sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
             this.sendMessageToWebview({ type: 'Unavailable' });
-        } else {
+        } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
+            sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID });
+            this.sendMessageToWebview({ type: 'Unavailable' });
+        }
+        else {
             this.sendMessageToWebview({ type: 'Available' });
         }
 
@@ -471,7 +495,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             <div class="chat-input" id="input-component">
               <label for="chat-input" class="input-label hide" id="input-label-id"></label>
               <div class="input-container">
-                <input type="text" placeholder="What do you need help with?" id="chat-input" class="input-field">
+              <textarea rows=1 placeholder="What do you need help with?" id="chat-input" class="input-field"></textarea>
                 <button aria-label="Match Case" id="send-button" class="send-button">
                   <span>
                     ${sendIconSvg}

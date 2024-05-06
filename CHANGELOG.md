@@ -1,5 +1,12 @@
 # Change Log - Power Platform Extension
 
+## 2.0.41
+  - pac CLI 1.31.6, (February 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Web Extension updates:
+  - Copilot available in United Kingdom, Europe and Australia regions
+  - Copilot prompt response improved accuracy for Forms scenario
+  - Text search functionality
+
 ## 2.0.31
   - pac CLI 1.30.7, (January 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
   - Moved release notes to *CHANGELOG.md* file, per VS Code's [Marketplace integration](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#marketplace-integration) guidelines.

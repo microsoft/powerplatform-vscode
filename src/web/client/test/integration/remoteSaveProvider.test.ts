@@ -15,6 +15,7 @@ import { BAD_REQUEST } from "../../common/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import { IAttributePath } from "../../common/interfaces";
 import { telemetryEventNames } from "../../telemetry/constants";
+import { getUserAgent } from "../../../../common/Utils";
 
 describe("remoteSaveProvider", () => {
     afterEach(() => {
@@ -93,6 +94,7 @@ describe("remoteSaveProvider", () => {
                 accept: "application/json",
                 "OData-MaxVersion": "4.0",
                 "OData-Version": "4.0",
+                "x-ms-user-agent": getUserAgent()
             },
         });
 
@@ -211,6 +213,7 @@ describe("remoteSaveProvider", () => {
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
                     "OData-Version": "4.0",
+                    "x-ms-user-agent": getUserAgent()
                 },
             };
             const fetchCalls = _mockFetch.getCalls();
@@ -288,6 +291,7 @@ describe("remoteSaveProvider", () => {
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
                     "OData-Version": "4.0",
+                    "x-ms-user-agent": getUserAgent()
                 },
             });
             assert.calledOnce(getColumnContent);
@@ -377,7 +381,8 @@ describe("remoteSaveProvider", () => {
                     accept: "application/json",
                     "OData-MaxVersion": "4.0",
                     "OData-Version": "4.0",
-                    'x-ms-file-name': 'testfilename'
+                    'x-ms-file-name': 'testfilename',
+                    "x-ms-user-agent": getUserAgent()
                 },
             }
         );

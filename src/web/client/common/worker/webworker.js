@@ -78,7 +78,7 @@ class AzureFluidClient {
     }
 }
 
-let intital = false;
+let initialLoad = true;
 
 async function loadContainer(config, swpId, entityInfo) {
     try {
@@ -93,13 +93,62 @@ async function loadContainer(config, swpId, entityInfo) {
         const myself = audience.getMyself();
         const selectionSharedMap = await (await map.get('selection')).get();
 
+        const getUserIdByConnectionId = (targetConnectionId) => {
+            const members = audience.getMembers();
+            for (const [userId, member] of members.entries()) {
+                const connections = member.connections;
+                if (connections.some((connection) => connection.id === targetConnectionId)) {
+                    return { userId: userId, userName: member.userName, aadObjectId: member.additionalDetails.AadObjectId };
+                }
+            }
+
+            throw new Error("Web Extension WebWorker GetUserIdByConnectionId Failed");
+        };
+
         if (audience && myself) {
             const myConnectionId = audience['container'].clientId;
-            if (intital) {
-                const entityIdObj = new Array(entityInfo.rootWebPageId);
-                selectionSharedMap.set(myConnectionId, entityIdObj);
-            } else {
-                intital = true;
+            const entityIdObj = new Array(entityInfo.rootWebPageId);
+            selectionSharedMap.set(myConnectionId, entityIdObj);
+
+            if (initialLoad) {
+                initialLoad = false;
+                audience.getMembers().forEach(async (member) => {
+                    try {
+                        const userConnections = member.connections;
+
+                        const userConnectionData = [];
+
+                        const connectionIdInContainer = await map
+                            .get("selection")
+                            .get();
+
+                        userConnections.forEach((connection) => {
+                            userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
+                        });
+
+                        // aadObjectId is the unique identifier for a user
+                        self.postMessage({
+                            type: "client-data",
+                            userId: member.additionalDetails.AadObjectId,
+                            userName: member.userName,
+                            containerId: swpId,
+                            connectionData: userConnectionData,
+                            currentConnectionId: myConnectionId,
+                        });
+                    } catch (error) {
+                        self.postMessage({
+                            type: "telemetry-error",
+                            methodName: "webWorker initialLoad",
+                            errorMessage: error?.message,
+                            error: error,
+                        });
+                    }
+                });
+
+                self.postMessage({
+                    type: "telemetry-info",
+                    eventName: "webExtensionContainerInitialPopulateSuccess",
+                });
             }
         }
 
@@ -108,6 +157,8 @@ async function loadContainer(config, swpId, entityInfo) {
                 self.postMessage({
                     type: "member-removed",
                     userId: member.additionalDetails.AadObjectId,
+                    entityInfo: entityInfo,
+                    removeConnectionData: { connectionId: clientId, entityId: entityInfo.rootWebPageId },
                 });
                 self.postMessage({
                     type: "telemetry-info",
@@ -123,53 +174,41 @@ async function loadContainer(config, swpId, entityInfo) {
             }
         });
 
-        const getUserIdByConnectionId = (targetConnectionId) => {
-            const members = audience.getMembers();
-            for (const [userId, member] of members.entries()) {
-                const connections = member.connections;
-                if (connections.some((connection) => connection.id === targetConnectionId)) {
-                    return { userId: userId, userName: member.userName, aadObjectId: member.additionalDetails.AadObjectId };
-                }
-            }
-
-            throw new Error("Web Extension WebWorker GetUserIdByConnectionId Failed");
-        };
-
         selectionSharedMap.on("valueChanged", async (changed, local) => {
             try {
                 const user = getUserIdByConnectionId(changed.key);
+
                 const userConnections = audience
                     .getMembers()
                     .get(user.userId).connections;
 
-                const userEntityIdArray = [];
+                const userConnectionData = [];
 
                 const connectionIdInContainer = await map
                     .get("selection")
                     .get();
 
                 userConnections.forEach((connection) => {
-                    userEntityIdArray.push(
-                        connectionIdInContainer.get(connection.id)
-                    );
+                    userConnectionData.push({ connectionId: connection.id, entityId: connectionIdInContainer.get(connection.id) });
                 });
 
                 // aadObjectId is the unique identifier for a user
-                await self.postMessage({
+                self.postMessage({
                     type: "client-data",
                     userId: user.aadObjectId,
                     userName: user.userName,
                     containerId: swpId,
-                    entityId: userEntityIdArray,
+                    connectionData: userConnectionData,
                 });
 
-                await self.postMessage({
+                self.postMessage({
                     type: "telemetry-info",
-                    eventName: "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
+                    eventName:
+                        "webExtensionWebWorkerGetUserIdByConnectionIdSuccess",
                     userId: user.aadObjectId,
                 });
             } catch (error) {
-                await self.postMessage({
+                self.postMessage({
                     type: "telemetry-error",
                     methodName: "webWorker valueChanged",
                     errorMessage: error?.message,

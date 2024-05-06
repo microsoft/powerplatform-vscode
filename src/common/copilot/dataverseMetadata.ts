@@ -11,23 +11,22 @@ import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
-import { DOMParser } from "xmldom";
-import { ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, SYSTEFORMS_API_PATH } from "./constants";
+import { DOMParser } from "@xmldom/xmldom";
+import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
+import { getUserAgent } from "../Utils";
 
-interface Attribute {
-    LogicalName: string;
-}
 
 declare const IS_DESKTOP: string | undefined;
 
 export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
     try {
-        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$expand=Attributes($select=LogicalName)`;
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$expand=Attributes`;
         const requestInit: RequestInit = {
             method: "GET",
             headers: {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": getUserAgent()
             },
         };
 
@@ -35,10 +34,10 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
         const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
         const endTime = performance.now();
         const responseTime = endTime - startTime || 0;
-        const attributes = getAttributesFromResponse(jsonResponse);
+        const attributes = getAttributesFromResponse(jsonResponse); //Display name and logical name fetching from response
 
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
-        return attributes.map((attribute: Attribute) => attribute.LogicalName);
+        return attributes
 
     } catch (error) {
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
@@ -60,6 +59,7 @@ export async function getFormXml(entityName: string, formName: string,  orgUrl: 
             headers: {
                 'Content-Type': "application/json",
                 Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": getUserAgent()
             },
         };
 
@@ -67,7 +67,8 @@ export async function getFormXml(entityName: string, formName: string,  orgUrl: 
         const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
         const endTime = performance.now();
         const responseTime = endTime - startTime || 0;
-        const formxml =getFormXMLFromResponse(jsonResponse);
+
+        const formxml = getFormXMLFromResponse(jsonResponse);
 
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return parseXML(formxml);
@@ -90,9 +91,20 @@ async function fetchJsonResponse(url: string, requestInit: RequestInit): Promise
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getAttributesFromResponse(jsonResponse: any): Attribute[] {
+function getAttributesFromResponse(jsonResponse: any): string[] {
     if (jsonResponse.Attributes && Array.isArray(jsonResponse.Attributes) && jsonResponse.Attributes.length > 0) {
-        return jsonResponse.Attributes;
+        const attributes =  jsonResponse.Attributes;
+        const logicalNameDisplayName: string[] = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        attributes.forEach((attr:any) => {
+            const attrDisplayName = attr.DisplayName?.UserLocalizedLabel?.Label; // Optional chaining for handling missing values
+            if (attrDisplayName) {
+                logicalNameDisplayName.push(attrDisplayName)
+                logicalNameDisplayName.push(attr.LogicalName)
+            }
+        })
+
+        return logicalNameDisplayName
     }
 
     return [];
@@ -128,10 +140,21 @@ function parseXML(formXml: string) {
         if (label && control) {
             const description = label.getAttribute(ATTRIBUTE_DESCRIPTION);
             const datafieldname = control.getAttribute(ATTRIBUTE_DATAFIELD_NAME);
-            //const classid = control.getAttribute('classid');
+            let classid = control.getAttribute(ATTRIBUTE_CLASSID);
+
+            let controlType = '';
+            if(classid){
+
+                // Use a regular expression to replace both '{' and '}' with an empty string
+                // Input: '{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}'
+                // Output: '5B773807-9FB2-42DB-97C3-7A91EFF8ADFF'
+                classid = classid.replace(/{|}/g, '');
+
+                controlType = ControlClassIdMap.get(classid) ?? '';
+            }
 
             if (description && datafieldname) {
-                result.push(description, datafieldname);
+                result.push(description, datafieldname, controlType);
             }
         }
     }

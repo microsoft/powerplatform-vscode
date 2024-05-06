@@ -151,7 +151,7 @@ export function isCoPresenceEnabled() {
         );
     }
 
-    return isCoPresenceEnabled as boolean;
+    return isCoPresenceEnabled;
 }
 
 /**
@@ -162,6 +162,10 @@ export function isCoPresenceEnabled() {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function isNullOrUndefined(object: any | null | undefined): boolean {
     return object === null || object === undefined;
+}
+
+export function isStringUndefinedOrEmpty(value: string | undefined): boolean {
+    return value === undefined || value === '';
 }
 
 // Clean up the file name to remove special characters
@@ -219,11 +223,18 @@ export function getEnvironmentIdFromUrl() {
 export function getBackToStudioURL() {
     const region = WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string;
 
+    if (isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID)) ||
+        isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.REGION)) ||
+        isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID))) {
+        return undefined;
+    }
+
     return BACK_TO_STUDIO_URL_TEMPLATE
         .replace("{environmentId}", getEnvironmentIdFromUrl())
         .replace("{.region}", region.toLowerCase() === STUDIO_PROD_REGION ? "" : `.${WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string}`)
         .replace("{webSiteId}", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID) as string);
 }
+
 export function getSupportedImageFileExtensionsForEdit() {
     return ['png', 'jpg', 'webp', 'bmp', 'tga', 'ico', 'jpeg', 'bmp', 'dib', 'jif', 'jpe', 'tpic']; // Luna paint supported image file extensions
 }
@@ -265,10 +276,30 @@ export function getImageFileContent(fileFsPath: string, fileContent: Uint8Array)
     return webFileV2 ? fileContent : convertContentToString(fileContent, true);
 }
 
-export function getTeamChatURL (mail: string) {
-    return new URL(mail, "https://teams.microsoft.com/l/chat/0/0?users=");
+export function getTeamChatURL(mail: string) {
+    return "https://teams.microsoft.com/l/chat/0/0?users=" + encodeURIComponent(mail);
 }
 
-export function getMailToPath (mail: string) {
+export function getMailToPath(mail: string) {
     return `mailto:${mail}`;
+}
+
+export function getRangeForMultilineMatch(text: string, pattern: string, index: number) {
+    const textBeforePattern = text.substring(0, index).split('\n');
+    const textTillPattern = text.substring(0, index + pattern.length).split('\n');
+
+    // start line index 0 based
+    const startLine = textBeforePattern.length - 1;
+
+    // end line index 0 based
+    const endLine = textTillPattern.length - 1;
+
+    // start index relative to the line
+    const startIndex = textBeforePattern[startLine].length;
+
+    // end index relative to the line
+    const endIndex = textTillPattern[endLine].length;
+
+    const range = new vscode.Range(startLine, startIndex, endLine, endIndex);
+    return range;
 }

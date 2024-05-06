@@ -46,7 +46,7 @@ export class NPSWebView {
             const formsProEligibilityId =
                 WebExtensionContext.formsProEligibilityId;
             WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.RENDER_NPS
+                telemetryEventNames.WEB_EXTENSION_RENDER_NPS
             );
             return `<!DOCTYPE html>
             <html lang="en">
@@ -64,7 +64,7 @@ export class NPSWebView {
             </html>`;
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.RENDER_NPS_FAILED,
+                telemetryEventNames.WEB_EXTENSION_RENDER_NPS_FAILED,
                 this._getHtml.name,
                 (error as Error)?.message
             );

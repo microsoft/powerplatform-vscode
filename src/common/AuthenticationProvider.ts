@@ -4,8 +4,6 @@
  */
 
 import * as vscode from "vscode";
-import WebExtensionContext from "../WebExtensionContext";
-import { telemetryEventNames } from "../telemetry/constants";
 import {
     INTELLIGENCE_SCOPE_DEFAULT,
     PROVIDER_ID,
@@ -13,12 +11,39 @@ import {
     SCOPE_OPTION_DEFAULT,
     SCOPE_OPTION_OFFLINE_ACCESS,
     SCOPE_OPTION_USERS_READ_BASIC_ALL,
-} from "./constants";
-import { ERRORS, showErrorDialog } from "./errorHandler";
-import { ITelemetry } from "../../../client/telemetry/ITelemetry";
-import { sendTelemetryEvent } from "../../../common/copilot/telemetry/copilotTelemetry";
-import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../../../common/copilot/telemetry/telemetryConstants";
+} from "../web/client/common/constants";
+import { showErrorDialog } from "../web/client/common/errorHandler";
+import { ITelemetry } from "../client/telemetry/ITelemetry";
+import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
+import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "./copilot/telemetry/telemetryConstants";
+import { getUserAgent } from "./Utils";
+import {
+    VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+    VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
+    VSCODE_EXTENSION_NPS_AUTHENTICATION_COMPLETED,
+    VSCODE_EXTENSION_NPS_AUTHENTICATION_FAILED,
+    VSCODE_EXTENSION_NPS_AUTHENTICATION_STARTED,
+    VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
+    VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED
+} from "./TelemetryConstants";
+import { ERRORS } from "./ErrorConstants";
 
+
+export function getCommonHeadersForDataverse(
+    accessToken: string,
+    useOctetStreamContentType?: boolean
+) {
+    return {
+        authorization: "Bearer " + accessToken,
+        "content-type": useOctetStreamContentType
+            ? "application/octet-stream"
+            : "application/json; charset=utf-8",
+        accept: "application/json",
+        "OData-MaxVersion": "4.0",
+        "OData-Version": "4.0",
+        "x-ms-user-agent": getUserAgent()
+    };
+}
 
 export function getCommonHeaders(
     accessToken: string,
@@ -31,7 +56,7 @@ export function getCommonHeaders(
             : "application/json; charset=utf-8",
         accept: "application/json",
         "OData-MaxVersion": "4.0",
-        "OData-Version": "4.0",
+        "OData-Version": "4.0"
     };
 }
 
@@ -68,10 +93,12 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
 }
 
 export async function dataverseAuthentication(
+    telemetry: ITelemetry,
     dataverseOrgURL: string,
     firstTimeAuth = false
-): Promise<string> {
+): Promise<{ accessToken: string, userId: string }> {
     let accessToken = "";
+    let userId = "";
     try {
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
@@ -93,45 +120,46 @@ export async function dataverseAuthentication(
         }
 
         accessToken = session?.accessToken ?? "";
+        userId = session?.account.id.split("/").pop() ??
+            session?.account.id ??
+            "";
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
 
         if (firstTimeAuth) {
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+            sendTelemetryEvent(telemetry,
                 {
-                    userId:
-                        session?.account.id.split("/").pop() ??
-                        session?.account.id ??
-                        "",
+                    eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+                    userId: userId
                 }
             );
         }
     } catch (error) {
-        const authError = (error as Error)?.message;
         showErrorDialog(
             vscode.l10n.t(
                 "Authorization Failed. Please run again to authorize it"
             ),
             vscode.l10n.t("There was a permissions problem with the server")
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
-            dataverseAuthentication.name,
-            authError
+        sendTelemetryEvent(
+            telemetry, {
+            eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
+            error: error as Error
+        }
         );
     }
 
-    return accessToken;
+    return { accessToken, userId };
 }
 
 export async function npsAuthentication(
+    telemetry: ITelemetry,
     cesSurveyAuthorizationEndpoint: string
 ): Promise<string> {
     let accessToken = "";
-    WebExtensionContext.telemetry.sendInfoTelemetry(
-        telemetryEventNames.NPS_AUTHENTICATION_STARTED
+    sendTelemetryEvent(telemetry,
+        { eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_STARTED }
     );
     try {
         const session = await vscode.authentication.getSession(
@@ -143,21 +171,22 @@ export async function npsAuthentication(
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
-        WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.NPS_AUTHENTICATION_COMPLETED
+        sendTelemetryEvent(telemetry,
+            { eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_COMPLETED }
         );
     } catch (error) {
-        const authError = (error as Error)?.message;
         showErrorDialog(
             vscode.l10n.t(
                 "Authorization Failed. Please run again to authorize it"
             ),
             vscode.l10n.t("There was a permissions problem with the server")
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.NPS_AUTHENTICATION_FAILED,
-            npsAuthentication.name,
-            authError
+        sendTelemetryEvent(
+            telemetry,
+            {
+                eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_FAILED,
+                error: error as Error
+            }
         );
     }
 
@@ -165,6 +194,7 @@ export async function npsAuthentication(
 }
 
 export async function graphClientAuthentication(
+    telemetry: ITelemetry,
     firstTimeAuth = false
 ): Promise<string> {
     let accessToken = "";
@@ -195,29 +225,24 @@ export async function graphClientAuthentication(
         }
 
         if (firstTimeAuth) {
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
-                {
-                    userId:
-                        session?.account.id.split("/").pop() ??
-                        session?.account.id ??
-                        "",
-                }
-            );
+            sendTelemetryEvent(telemetry, {
+                eventName: VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
+                userId:
+                    session?.account.id.split("/").pop() ??
+                    session?.account.id ??
+                    "",
+            });
         }
     } catch (error) {
-        const authError = (error as Error)?.message;
         showErrorDialog(
             vscode.l10n.t(
                 "Authorization Failed. Please run again to authorize it"
             ),
             vscode.l10n.t("There was a permissions problem with the server")
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
-            graphClientAuthentication.name,
-            authError
-        );
+        sendTelemetryEvent(telemetry,
+            { eventName: VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED, error: error as Error }
+        )
     }
 
     return accessToken;

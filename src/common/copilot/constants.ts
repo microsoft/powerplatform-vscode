@@ -40,6 +40,7 @@ export const ADX_ENTITYFORM = "adx_entityform";
 export const ADX_ENTITYLIST = "adx_entitylist";
 export const ATTRIBUTE_DESCRIPTION = 'description';
 export const ATTRIBUTE_DATAFIELD_NAME = 'datafieldname';
+export const ATTRIBUTE_CLASSID = 'classid';
 export const SYSTEFORMS_API_PATH = 'api/data/v9.2/systemforms';
 
 
@@ -71,6 +72,14 @@ export const EntityFieldMap = new Map<string, string>([
 export const FieldTypeMap = new Map<string, string>([
     ['js', 'JavaScript'],
     ['html', 'html']
+]);
+
+export const ControlClassIdMap = new Map<string, string>([
+    ['5B773807-9FB2-42DB-97C3-7A91EFF8ADFF', 'DateTimeControl'],
+    ['270BD3DB-D9AF-4782-9025-509E298DEC0A', 'LookupControl'],
+    ['67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED', 'BooleanControl'], // Radio control
+    ['B0C6723A-8503-4FD7-BB28-C8A06AC933C2', 'CheckboxControl'],
+    ['3EF39988-22BB-4F0B-BBBE-64B5A3748AEE', 'ChoiceControl'] // Picklist control
 ]);
 
 export const AuthProfileNotFound = [{ displayText: "Active auth profile is not found or has expired. Create an Auth profile to start chatting with Copilot again.", code: '' }];
