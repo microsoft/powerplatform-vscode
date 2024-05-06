@@ -19,7 +19,7 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
+import { getBackToStudioURL, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
@@ -30,7 +30,7 @@ import {
 } from "./utilities/fileAndEntityUtil";
 import { IEntityInfo } from "./common/interfaces";
 import { telemetryEventNames } from "./telemetry/constants";
-import { PowerPagesNavigationProvider } from "./webViews/powerPagesNavigationProvider";
+import { PowerPagesNavigationProvider } from "../../common/webViews/powerPagesNavigationProvider";
 import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
@@ -262,8 +262,9 @@ export function registerCollaborationView() {
 export function powerPagesNavigation() {
     const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
-    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
-    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
+    const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite(websitePreviewUrl));
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio(getBackToStudioURL()));
     WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
 }
 

@@ -947,7 +947,6 @@
         {
           "id": "powerpages.powerPagesFileExplorer",
           "name": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
-          "when": "isWeb && virtualWorkspace",
           "icon": "./src/web/client/assets/powerPages.svg",
           "contextualTitle": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
           "visibility": "visible"

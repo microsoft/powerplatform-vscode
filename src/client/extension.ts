@@ -40,6 +40,7 @@ import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWr
 import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
+import { PowerPagesNavigationProvider } from "../common/webViews/powerPagesNavigationProvider";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -112,6 +113,18 @@ export async function activate(
                 PortalWebView.createOrShow();
             }
         )
+    );
+
+    // portals action hub
+    const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
+    _context.subscriptions.push(
+        vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider)
+    );
+    _context.subscriptions.push(
+        vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite("https://site-zih6k.powerappsportals.com/"))
+    );
+    _context.subscriptions.push(
+        vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio("https://make.powerpages.microsoft.com/e/1fdc4473-a512-e14e-8326-a5b8a3fa024f/sites/37de2c85-bdf3-48b1-b262-df1f3a152ac3/pages#webpages/1f653e2b-0768-46b7-8047-2cf373f1fa17"))
     );
 
     // registering bootstrapdiff command

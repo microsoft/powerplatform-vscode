@@ -58,7 +58,6 @@ export function getNonce() {
     return text;
 }
 
-
 export function getUserName(user: string) {
     const parts = user.split(" - ");
     return parts[0];
@@ -151,4 +150,8 @@ export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
         vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
         return;
     }
+}
+
+export function isStringUndefinedOrEmpty(value: string | undefined): boolean {
+    return value === undefined || value === '';
 }

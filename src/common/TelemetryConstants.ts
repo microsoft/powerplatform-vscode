@@ -13,3 +13,7 @@ export const VSCODE_EXTENSION_NPS_AUTHENTICATION_COMPLETED = "VSCodeExtensionNPS
 export const VSCODE_EXTENSION_NPS_AUTHENTICATION_FAILED = "VSCodeExtensionNPSAuthenticationFailed";
 export const VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED = "VSCodeExtensionGraphClientAuthenticationFailed";
 export const VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED = "VSCodeExtensionGraphClientAuthenticationCompleted";
+
+// Telemetry Event Names for WebViews
+export const WEB_EXTENSION_PREVIEW_SITE_TRIGGERED = "WebExtensionPreviewSiteTriggered";
+export const WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED = "WebExtensionBackToStudioTriggered";
