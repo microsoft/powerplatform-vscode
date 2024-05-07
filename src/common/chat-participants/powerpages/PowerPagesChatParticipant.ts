@@ -11,7 +11,7 @@ import TelemetryReporter from '@vscode/extension-telemetry';
 import { getIntelligenceEndpoint } from '../../ArtemisService';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
-import { PAC_SUCCESS } from '../../copilot/constants';
+import { COPILOT_UNAVAILABLE, PAC_SUCCESS } from '../../copilot/constants';
 import { createAuthProfileExp } from '../../Utils';
 import { intelligenceAPIAuthentication } from '../../AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
@@ -109,14 +109,10 @@ export class PowerPagesChatParticipant {
 
         const { intelligenceEndpoint, geoName }  = await this.getEndpoint(this.orgID, this.telemetry);
 
-        if (!intelligenceEndpoint || !geoName) {
-            //TODO: Handle error
+        const endpointAvailabilityResult = this.handleEndpointAvailability(intelligenceEndpoint, geoName);
 
-            return {
-                metadata: {
-                    command: ''
-                }
-            };
+        if(endpointAvailabilityResult !== '') {
+            return endpointAvailabilityResult;
         }
 
         const userPrompt = request.prompt;
@@ -184,12 +180,35 @@ export class PowerPagesChatParticipant {
         this.extensionContext.globalState.update('orgDetails', {orgID: this.orgID, orgUrl: this.orgUrl});
 
         //TODO: Handle AIB GEOs
+
+        this.cachedEndpoint = null;
     }
 
-    async getEndpoint(orgID: string, telemetry: any) {
+    async getEndpoint(orgID: string, telemetry: ITelemetry) {
         if (!this.cachedEndpoint) {
             this.cachedEndpoint = await getIntelligenceEndpoint(orgID, telemetry, '') as { intelligenceEndpoint: string; geoName: string };
         }
         return this.cachedEndpoint;
     }
+
+    handleEndpointAvailability(intelligenceEndpoint: string, geoName: string) {
+        if (!intelligenceEndpoint || !geoName) {
+            return {
+                metadata: {
+                    command: ''
+                }
+            };
+        } else if(intelligenceEndpoint === COPILOT_UNAVAILABLE) {
+            return {
+                metadata: {
+                    command: ''
+                }
+            };
+        }
+
+        //TODO: Handle ECS unavailable scenario
+
+        return '' //TODO return type
+    }
+
 }
