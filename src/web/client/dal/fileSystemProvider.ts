@@ -13,7 +13,6 @@ import {
 import WebExtensionContext from "../WebExtensionContext";
 import { fetchDataFromDataverseAndUpdateVFS } from "./remoteFetchProvider";
 import { saveData } from "./remoteSaveProvider";
-import { ERRORS } from "../common/errorHandler";
 import { telemetryEventNames } from "../telemetry/constants";
 import { getFolderSubUris } from "../utilities/folderHelperUtility";
 import { EtagHandlerService } from "../services/etagHandlerService";
@@ -32,6 +31,7 @@ import {
 } from "../utilities/fileAndEntityUtil";
 import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
+import { ERRORS } from "../../../common/ErrorConstants";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;

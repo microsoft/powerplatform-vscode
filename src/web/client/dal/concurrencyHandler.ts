@@ -6,9 +6,9 @@
 import { BulkheadRejectedError, bulkhead } from 'cockatiel';
 import fetch, { RequestInfo, RequestInit } from "node-fetch";
 import { MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT } from '../common/constants';
-import { ERRORS } from '../common/errorHandler';
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from '../telemetry/constants';
+import { ERRORS } from '../../../common/ErrorConstants';
 
 export class ConcurrencyHandler {
     private _bulkhead = bulkhead(MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT);
