@@ -51,9 +51,6 @@ export class OrgChangeNotifier {
         const pacActiveOrg = await this._pacWrapper?.activeOrg();
         if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
             this._orgDetails = pacActiveOrg.Results;
-
-            await this.extensionContext.globalState.update('orgID', this._orgDetails.OrgId);
-
             orgChangeEventEmitter.fire(this._orgDetails);
         } else {
             orgChangeErrorEventEmitter.fire();
