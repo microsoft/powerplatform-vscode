@@ -85,7 +85,7 @@ export class PowerPagesChatParticipant {
         await this.intializeOrgDetails();
 
         if (!this.orgID) {
-            // TODO: Auth Create Experience
+            // TODO: Auth Create Experience using button
             await createAuthProfileExp(this._pacWrapper);
             return {
                 metadata: {
