@@ -13,3 +13,5 @@ export const VSCODE_EXTENSION_NPS_AUTHENTICATION_COMPLETED = "VSCodeExtensionNPS
 export const VSCODE_EXTENSION_NPS_AUTHENTICATION_FAILED = "VSCodeExtensionNPSAuthenticationFailed";
 export const VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED = "VSCodeExtensionGraphClientAuthenticationFailed";
 export const VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED = "VSCodeExtensionGraphClientAuthenticationCompleted";
+export const VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_FAILED = "VSCodeExtensionBAPServiceAuthenticationFailed";
+export const VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED = "VSCodeExtensionBAPServiceAuthenticationCompleted";

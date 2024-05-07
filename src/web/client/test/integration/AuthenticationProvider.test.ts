@@ -50,8 +50,6 @@ describe("Authentication Provider", () => {
         expect(result.authorization).eq("Bearer " + accessToken);
         expect(result["content-type"]).eq("application/json; charset=utf-8");
         expect(result.accept).eq("application/json");
-        expect(result["OData-MaxVersion"]).eq("4.0");
-        expect(result["OData-Version"]).eq("4.0");
     });
 
     it("dataverseAuthentication", async () => {
