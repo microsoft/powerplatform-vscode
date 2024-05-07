@@ -7,7 +7,7 @@ export interface IProDevCopilotTelemetryData {
     eventName: string,
     durationInMills?: number,
     exception?: Error,
-    copilotSessionId: string,
+    copilotSessionId?: string,
     orgId?: string,
     FeedbackId?: string
     error?: Error,
@@ -21,4 +21,6 @@ export interface IProDevCopilotTelemetryData {
     tokenSize?: string
     isSuggestedPrompt?: string;
     subScenario?: string;
+    userId?: string;
+    errorMsg?: string;
 }
