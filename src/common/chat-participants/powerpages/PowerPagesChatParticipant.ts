@@ -233,6 +233,8 @@ export class PowerPagesChatParticipant {
                 }
             };
         } else if (intelligenceEndpoint === COPILOT_UNAVAILABLE) {
+
+            //TODO: Handle Copilot Unavailable scenario with response to user
             return {
                 metadata: {
                     command: ''
