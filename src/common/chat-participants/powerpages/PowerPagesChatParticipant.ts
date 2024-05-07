@@ -17,6 +17,7 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from '../../Au
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
 import { getEntityName, getFormXml, getEntityColumns } from '../../copilot/dataverseMetadata';
+import { NO_PROMPT_MESSAGE } from './Constants';
 
 export interface OrgDetails {
     orgID: string;
@@ -125,7 +126,8 @@ export class PowerPagesChatParticipant {
 
             if (!userPrompt) {
 
-                //TODO: Show start message
+                //TODO: String approval is required
+                stream.markdown(NO_PROMPT_MESSAGE);
 
                 return {
                     metadata: {
@@ -134,7 +136,7 @@ export class PowerPagesChatParticipant {
                 };
             }
 
-            const {activeFileParams} = getActiveEditorContent();
+            const { activeFileParams } = getActiveEditorContent();
 
             let metadataInfo = { entityName: '', formName: '' };
             let componentInfo: string[] = [];
@@ -158,10 +160,16 @@ export class PowerPagesChatParticipant {
             // export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {}
             const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', '', componentInfo, this.telemetry, intelligenceEndpoint, geoName);
 
-            stream.markdown(llmResponse[0].displayText);
+            llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
+                if (response.displayText) {
+                    stream.markdown(response.displayText);
+                }
+                if (response.code) {
+                    stream.markdown('\n```javascript\n' + response.code + '\n```');
+                }
+                stream.markdown('\n');
+            });
 
-            stream.markdown('\n```typescript\n' + llmResponse[0].code + '\n```');
-            // TODO: Handle authentication and org change
         }
 
         console.log(_token)
