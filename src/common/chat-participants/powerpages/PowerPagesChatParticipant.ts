@@ -80,7 +80,7 @@ export class PowerPagesChatParticipant {
 
         stream.progress('Working on it...')
 
-        this.intializeOrgDetails();
+        await this.intializeOrgDetails();
 
         if (!this.orgID) {
             // TODO: Auth Create Experience
@@ -100,7 +100,7 @@ export class PowerPagesChatParticipant {
 
             return {
                 metadata: {
-                    command: ''
+                    command: '',
                 }
             };
         }
