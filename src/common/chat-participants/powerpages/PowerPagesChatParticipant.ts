@@ -11,11 +11,12 @@ import TelemetryReporter from '@vscode/extension-telemetry';
 import { getIntelligenceEndpoint } from '../../ArtemisService';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
-import { COPILOT_UNAVAILABLE, PAC_SUCCESS } from '../../copilot/constants';
-import { createAuthProfileExp } from '../../Utils';
-import { intelligenceAPIAuthentication } from '../../AuthenticationProvider';
+import { ADX_ENTITYFORM, ADX_ENTITYLIST, COPILOT_UNAVAILABLE, PAC_SUCCESS } from '../../copilot/constants';
+import { createAuthProfileExp, getActiveEditorContent } from '../../Utils';
+import { dataverseAuthentication, intelligenceAPIAuthentication } from '../../AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
+import { getEntityName, getFormXml, getEntityColumns } from '../../copilot/dataverseMetadata';
 
 export interface OrgDetails {
     orgID: string;
@@ -23,7 +24,7 @@ export interface OrgDetails {
 }
 
 export class PowerPagesChatParticipant {
-    private static instance : PowerPagesChatParticipant | null = null;
+    private static instance: PowerPagesChatParticipant | null = null;
     private chatParticipant: vscode.ChatParticipant;
     private telemetry: ITelemetry;
     private extensionContext: vscode.ExtensionContext;
@@ -33,9 +34,9 @@ export class PowerPagesChatParticipant {
     private cachedEndpoint: { intelligenceEndpoint: string, geoName: string } | null = null;
 
     private orgID: string | undefined;
-    private orgUrl: string | undefined;
+    private orgUrl = '';
 
-    private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter,  pacWrapper?: PacWrapper) {
+    private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {
 
         this.chatParticipant = createChatParticipant('powerpages', this.handler);
 
@@ -107,36 +108,61 @@ export class PowerPagesChatParticipant {
 
         const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
 
-        const { intelligenceEndpoint, geoName }  = await this.getEndpoint(this.orgID, this.telemetry);
+        const { intelligenceEndpoint, geoName } = await this.getEndpoint(this.orgID, this.telemetry);
 
         const endpointAvailabilityResult = this.handleEndpointAvailability(intelligenceEndpoint, geoName);
 
-        if(endpointAvailabilityResult !== '') {
+        if (endpointAvailabilityResult !== '') {
             return endpointAvailabilityResult;
         }
 
-        const userPrompt = request.prompt;
+        if (request.command) {
+            //TODO: Handle command scenarios
 
-        //TODO: Handle form and list scenarios
+        } else {
 
-        if (!userPrompt) {
+            const userPrompt = request.prompt;
 
-            //TODO: Show start message
+            if (!userPrompt) {
 
-            return {
-                metadata: {
-                    command: ''
+                //TODO: Show start message
+
+                return {
+                    metadata: {
+                        command: ''
+                    }
+                };
+            }
+
+            const {activeFileParams} = getActiveEditorContent();
+
+            let metadataInfo = { entityName: '', formName: '' };
+            let componentInfo: string[] = [];
+
+
+            if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
+                metadataInfo = await getEntityName(this.telemetry, '', activeFileParams.dataverseEntity);
+
+                const dataverseToken = (await dataverseAuthentication(this.telemetry, this.orgUrl, true)).accessToken;
+
+                if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
+                    const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, this.orgUrl, dataverseToken, this.telemetry, 'sessionID');
+                    componentInfo = formColumns;
+                } else {
+                    const entityColumns = await getEntityColumns(metadataInfo.entityName, this.orgUrl, dataverseToken, this.telemetry, 'sessionID');
+                    componentInfo = entityColumns;
                 }
-            };
+
+            }
+
+            // export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {}
+            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', '', componentInfo, this.telemetry, intelligenceEndpoint, geoName);
+
+            stream.markdown(llmResponse[0].displayText);
+
+            stream.markdown('\n```typescript\n' + llmResponse[0].code + '\n```');
+            // TODO: Handle authentication and org change
         }
-
-        // export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {}
-        const llmResponse = await sendApiRequest([{displayText: userPrompt, code: ''}], {dataverseEntity:'', entityField: '', fieldType: ''}, this.orgID, intelligenceApiToken, '', '', [], this.telemetry, intelligenceEndpoint, geoName);
-
-        stream.markdown(llmResponse[0].displayText);
-
-        stream.markdown('\n```typescript\n' + llmResponse[0].code + '\n```');
-        // TODO: Handle authentication and org change
 
         console.log(_token)
 
@@ -150,15 +176,15 @@ export class PowerPagesChatParticipant {
 
     private async intializeOrgDetails(): Promise<void> {
 
-        if(this.isOrgDetailsInitialized) {
+        if (this.isOrgDetailsInitialized) {
             return;
         }
 
         this.isOrgDetailsInitialized = true;
 
-        const orgDetails:OrgDetails | undefined = this.extensionContext.globalState.get('orgDetails');
+        const orgDetails: OrgDetails | undefined = this.extensionContext.globalState.get('orgDetails');
 
-        if(orgDetails) {
+        if (orgDetails) {
             this.orgID = orgDetails.orgID;
             this.orgUrl = orgDetails.orgUrl;
         } else {
@@ -177,7 +203,7 @@ export class PowerPagesChatParticipant {
         this.orgID = orgDetails.OrgId;
         this.orgUrl = orgDetails.OrgUrl
 
-        this.extensionContext.globalState.update('orgDetails', {orgID: this.orgID, orgUrl: this.orgUrl});
+        this.extensionContext.globalState.update('orgDetails', { orgID: this.orgID, orgUrl: this.orgUrl });
 
         //TODO: Handle AIB GEOs
 
@@ -198,7 +224,7 @@ export class PowerPagesChatParticipant {
                     command: ''
                 }
             };
-        } else if(intelligenceEndpoint === COPILOT_UNAVAILABLE) {
+        } else if (intelligenceEndpoint === COPILOT_UNAVAILABLE) {
             return {
                 metadata: {
                     command: ''
