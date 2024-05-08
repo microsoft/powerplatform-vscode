@@ -104,9 +104,6 @@
     "onDebug",
     "onFileSystem:powerplatform-vfs"
   ],
-  "extensionDependencies": [
-    "github.copilot-chat"
-  ],
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",
