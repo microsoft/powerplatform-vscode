@@ -7,7 +7,7 @@ hooks:
 git:
   addUntrackedFiles: false
   commit: false
-  push: false # ADO build pushes the tag when build is complete, and fails if it's already there
+  push: true
   # need to specify pushRepo, since AzDO insists on disconnected refs, breaking upstream
   requireUpstream: false
   pushArgs: [ '--tags' ]
