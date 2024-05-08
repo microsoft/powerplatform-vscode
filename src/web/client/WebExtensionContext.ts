@@ -6,8 +6,8 @@
 import * as vscode from "vscode";
 import {
     dataverseAuthentication,
-    getCommonHeaders,
-} from "./common/authenticationProvider";
+    getCommonHeadersForDataverse,
+} from "../../common/AuthenticationProvider";
 import * as Constants from "./common/constants";
 import {
     getDataSourcePropertiesMap,
@@ -360,7 +360,7 @@ class WebExtensionContext implements IWebExtensionContext {
             Constants.queryParameters.WEBSITE_ID
         ) as string;
 
-        const headers = getCommonHeaders(this._dataverseAccessToken);
+        const headers = getCommonHeadersForDataverse(this._dataverseAccessToken);
 
         // Populate shared workspace for Co-Presence
         await this.populateSharedWorkspace(headers, dataverseOrgUrl, websiteId);
@@ -370,7 +370,8 @@ class WebExtensionContext implements IWebExtensionContext {
         const dataverseOrgUrl = this.urlParametersMap.get(
             Constants.queryParameters.ORG_URL
         ) as string;
-        const accessToken: string = await dataverseAuthentication(
+        const { accessToken, userId } = await dataverseAuthentication(
+            this._telemetry.getTelemetryReporter(),
             dataverseOrgUrl,
             firstTimeAuth
         );
@@ -378,6 +379,7 @@ class WebExtensionContext implements IWebExtensionContext {
         if (accessToken.length === 0) {
             // re-set all properties to default values
             this._dataverseAccessToken = "";
+            this._userId = "";
             this._websiteIdToLanguage = new Map<string, string>();
             this._websiteLanguageIdToPortalLanguageMap = new Map<
                 string,
@@ -394,6 +396,16 @@ class WebExtensionContext implements IWebExtensionContext {
         }
 
         this._dataverseAccessToken = accessToken;
+        this._userId = userId;
+
+        if (firstTimeAuth) {
+            this._telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+                {
+                    userId: userId
+                }
+            );
+        }
     }
 
     public async updateFileDetailsInContext(
@@ -482,7 +494,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
+                headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
@@ -548,7 +560,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
+                headers: getCommonHeadersForDataverse(accessToken),
             });
             if (!response?.ok) {
                 throw new Error(JSON.stringify(response));
@@ -610,7 +622,7 @@ class WebExtensionContext implements IWebExtensionContext {
 
             requestSentAtTime = new Date().getTime();
             const response = await this._concurrencyHandler.handleRequest(requestUrl, {
-                headers: getCommonHeaders(accessToken),
+                headers: getCommonHeadersForDataverse(accessToken),
             });
 
             if (!response?.ok) {

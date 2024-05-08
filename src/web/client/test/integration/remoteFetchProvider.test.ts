@@ -15,7 +15,7 @@ import { schemaEntityKey, schemaKey } from "../../schema/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
-import * as authenticationProvider from "../../common/authenticationProvider";
+import * as authenticationProvider from "../../../../common/AuthenticationProvider";
 import { telemetryEventNames } from "../../telemetry/constants";
 
 describe("remoteFetchProvider", () => {
@@ -67,7 +67,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const _mockFetch = stub(fetch, "default").resolves({
@@ -209,7 +209,7 @@ describe("remoteFetchProvider", () => {
 
         assert.callCount(writeFile, 3);
         assert.calledOnce(updateSingleFileUrisInContext);
-        assert.callCount(sendInfoTelemetry, 4);
+        assert.callCount(sendInfoTelemetry, 5);
         assert.callCount(sendAPISuccessTelemetry, 4);
     });
 
@@ -259,7 +259,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const _mockFetch = stub(fetch, "default").resolves({
@@ -399,7 +399,7 @@ describe("remoteFetchProvider", () => {
         expect(updateFileDetailsInContextCalls[1].args[7], "false");
 
         assert.callCount(writeFile, 3);
-        assert.callCount(sendInfoTelemetry, 6);
+        assert.callCount(sendInfoTelemetry, 7);
         assert.calledOnce(executeCommand);
         assert.callCount(sendAPISuccessTelemetry, 4);
     });
@@ -454,7 +454,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -544,7 +544,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -641,7 +641,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -742,7 +742,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -845,7 +845,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -949,7 +949,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const portalFs = new PortalsFS();
@@ -1047,7 +1047,7 @@ describe("remoteFetchProvider", () => {
 
         const accessToken = "ae3308da-d75b-4666-bcb8-8f33a3dd8a8d";
         stub(authenticationProvider, "dataverseAuthentication").resolves(
-            accessToken
+            { accessToken: accessToken, userId: "" }
         );
 
         const _mockFetch = stub(fetch, 'default').callsFake((url) => {
@@ -1135,7 +1135,7 @@ describe("remoteFetchProvider", () => {
             true,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             {}
-            );
+        );
 
         assert.calledWith(convertContentToUint8Array,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1145,7 +1145,7 @@ describe("remoteFetchProvider", () => {
 
         assert.callCount(writeFile, 1);
         assert.calledOnce(updateSingleFileUrisInContext);
-        assert.callCount(sendInfoTelemetry, 4);
+        assert.callCount(sendInfoTelemetry, 5);
         assert.callCount(sendAPISuccessTelemetry, 5);
     });
 });

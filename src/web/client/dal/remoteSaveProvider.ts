@@ -5,7 +5,7 @@
 
 import { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
-import { getCommonHeaders } from "../common/authenticationProvider";
+import { getCommonHeadersForDataverse } from "../../../common/AuthenticationProvider";
 import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
 import { showErrorDialog } from "../common/errorHandler";
 import { FileData } from "../context/fileData";
@@ -87,7 +87,7 @@ async function getSaveParameters(
             webFileV2
         );
 
-        saveCallParameters.requestInit.headers = getCommonHeaders(
+        saveCallParameters.requestInit.headers = getCommonHeadersForDataverse(
             accessToken,
             useOctetStreamContentType(entityName, attributePath.source)
         );

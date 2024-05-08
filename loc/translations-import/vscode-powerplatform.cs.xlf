@@ -319,6 +319,10 @@ Kód organizace: {3}</target>
         <source xml:lang="en">PAC Telemetry enabled</source>
         <target state="translated">Telemetrie PAC je povolena.</target>
       </trans-unit>
+      <trans-unit id="++CODE++59e1f415bf9d7761b450dcb4785daac53307323451bc453bfaa06a46d4649e2a">
+        <source xml:lang="en">PREVIEW</source>
+        <target state="translated">PREVIEW</target>
+      </trans-unit>
       <trans-unit id="++CODE++1514b12ec249ca33bc0568c872840126e82cc964aaa7f028393674c17d554444">
         <source xml:lang="en">Page Template name cannot be empty.</source>
         <target state="translated">Název šablony stránky nemůže být prázdný.</target>
@@ -344,6 +348,9 @@ Kód organizace: {3}</target>
         <note>{0} represents the environment name</note>
         <target state="translated">Copilot služby Power Pages je nyní připojen k prostředí: {0}: {1}</target>
       </trans-unit>
+      <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
+        <source xml:lang="en">Power Pages studio URL is not available</source>
+      </trans-unit>
       <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
         <note>{0} represents the version number</note>
@@ -352,6 +359,9 @@ Kód organizace: {3}</target>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
         <target state="translated">Zobrazit náhled webu</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f190e8061b8cbadd991ff217210525eff0000a8c6ddc2d44baec8388b7bd1a3e">
+        <source xml:lang="en">Preview site URL is not available</source>
       </trans-unit>
       <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
         <source xml:lang="en">Profile Kind: {0}</source>
@@ -515,6 +525,14 @@ Další informace najdete v článku, který popisuje, jak se [vyhnout náhodný
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
         <target state="translated">Vymazat ověřovací profily</target>
+      </trans-unit>
+      <trans-unit id="powerpages.copilotPanel.clearConversation.title">
+        <source xml:lang="en">Clear Conversation</source>
+        <target state="translated">Vymazat konverzaci</target>
+      </trans-unit>
+      <trans-unit id="powerpages.copilotPanel.title">
+        <source xml:lang="en">Copilot In Power Pages</source>
+        <target state="translated">Copilot v Power Pages</target>
       </trans-unit>
       <trans-unit id="pacCLI.envAndSolutionsPanel.copyDisplayName.title">
         <source xml:lang="en">Copy Display Name</source>

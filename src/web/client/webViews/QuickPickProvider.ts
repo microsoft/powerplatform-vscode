@@ -23,14 +23,18 @@ export class QuickPickProvider {
     }
 
     public refresh() {
-        if (vscode.window.activeTextEditor) {
-            const fileFsPath = vscode.window.activeTextEditor.document.uri.fsPath;
-            const entityInfo: IEntityInfo = {
-                entityId: getFileEntityId(fileFsPath),
-                entityName: getFileEntityName(fileFsPath),
-                rootWebPageId: getFileRootWebPageId(fileFsPath),
-            };
-            this.updateQuickPickItems(entityInfo);
+        const tabGroup = vscode.window.tabGroups;
+        if (tabGroup.activeTabGroup && tabGroup.activeTabGroup.activeTab) {
+            const tab = tabGroup.activeTabGroup.activeTab;
+            if (tab.input instanceof vscode.TabInputCustom || tab.input instanceof vscode.TabInputText) {
+                const fileFsPath = tab.input.uri.fsPath;
+                const entityInfo: IEntityInfo = {
+                    entityId: getFileEntityId(fileFsPath),
+                    entityName: getFileEntityName(fileFsPath),
+                    rootWebPageId: getFileRootWebPageId(fileFsPath),
+                };
+                this.updateQuickPickItems(entityInfo);
+            }
         }
     }
 
@@ -44,7 +48,8 @@ export class QuickPickProvider {
                 if (connection.connectionId !== WebExtensionContext.currentConnectionId) {
                     const contentPageId = WebExtensionContext.entityForeignKeyDataMap.getEntityForeignKeyMap.get(`${connection.entityId[0]}`);
 
-                    if (contentPageId && contentPageId.has(`${entityInfo.entityId}`)) {
+                    // if content is localized, then check for the content page id
+                    if ((connection.entityId[0] === entityInfo.entityId) || (contentPageId && contentPageId.has(`${entityInfo.entityId}`))) {
                         userMap.set(value._userId, {
                             label: value._userName,
                             id: value._userId,
@@ -62,9 +67,17 @@ export class QuickPickProvider {
         }];
     }
 
+    private getLength(): number {
+        if (this.items.length === 1 && this.items[0].label === Constants.WEB_EXTENSION_QUICK_PICK_DEFAULT_STRING) {
+            return 0;
+        }
+
+        return this.items.length;
+    }
+
     public async showQuickPick() {
         const selectedUser = await vscode.window.showQuickPick(this.items, {
-            title: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_TITLE.toUpperCase() + ` (${this.items.length})`),
+            title: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_TITLE.toUpperCase() + ` (${this.getLength()})`),
             placeHolder: vscode.l10n.t(Constants.WEB_EXTENSION_QUICK_PICK_PLACEHOLDER),
         });
         if (selectedUser) {
