@@ -5,7 +5,7 @@
 
 import { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
-import { getCommonHeadersForDataverse } from "../common/authenticationProvider";
+import { getCommonHeadersForDataverse } from "../../../common/AuthenticationProvider";
 import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
 import { showErrorDialog } from "../common/errorHandler";
 import { FileData } from "../context/fileData";

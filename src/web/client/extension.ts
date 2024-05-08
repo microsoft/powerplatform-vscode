@@ -308,6 +308,12 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     if (entityInfo.entityId && entityInfo.entityName) {
                         context.workspaceState.update(document.uri.fsPath, entityInfo);
                         WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, entityInfo);
+
+                        if (isCoPresenceEnabled() && tab.input instanceof vscode.TabInputCustom) {
+                            // sending message to webworker event listener for Co-Presence feature
+                            sendingMessageToWebWorkerForCoPresence(entityInfo);
+                            WebExtensionContext.quickPickProvider.refresh();
+                        }
                     }
                 }
             });
