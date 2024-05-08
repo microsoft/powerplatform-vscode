@@ -44,5 +44,7 @@
   "pacCLI.pacSolutionHelp.title": "PAC ソリューションのヘルプを表示する",
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "認証で使用するべき Azure クラウド Power Platform Tools を指定します。",
-  "powerPlatform.experimental.auth.testCloudOverride.description": "テスト対象の `#powerPlatform.auth.cloud#` をオーバーライドします。空白のままにすると、既定の動作を行います。"
+  "powerPlatform.experimental.auth.testCloudOverride.description": "テスト対象の `#powerPlatform.auth.cloud#` をオーバーライドします。空白のままにすると、既定の動作を行います。",
+  "powerpages.copilotPanel.clearConversation.title": "会話をクリアする",
+  "powerpages.copilotPanel.title": "Power Pages の Copilot"
 }
