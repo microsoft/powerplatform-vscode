@@ -2,10 +2,13 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
-  "version": "1.0.1-dev",
+  "version": "8.5.0",
   "enabledApiProposals": [
     "fileSearchProvider",
-    "textSearchProvider"
+    "textSearchProvider",
+    "chatParticipant",
+    "chatVariableResolver",
+    "languageModels"
   ],
   "scripts": {
     "clean": "scorch",
@@ -103,11 +106,6 @@
   ],
   "extensionDependencies": [
     "github.copilot-chat"
-  ],
-  "enabledApiProposals": [
-    "chatParticipant",
-    "chatVariableResolver",
-    "languageModels"
   ],
   "capabilities": {
     "untrustedWorkspaces": {

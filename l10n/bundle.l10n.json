@@ -59,6 +59,7 @@
   "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.": "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.",
   "Try Copilot for Power Pages": "Try Copilot for Power Pages",
   "Do not show again": "Do not show again",
+  "Please provide a prompt to get started.\n You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.": "Please provide a prompt to get started.\n You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [
