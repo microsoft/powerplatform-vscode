@@ -22,7 +22,6 @@ export class PowerPagesChatParticipant {
         this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.png');
 
         this.telemetry = telemetry;
-
     }
 
     private handler: vscode.ChatRequestHandler = async (
