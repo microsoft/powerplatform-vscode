@@ -1,7 +1,11 @@
 # Change Log - Power Platform Extension
 
+## 2.0.49
+Web extension updates
+- Copresence support to show editors/viewers currently present on Power Pages Studio and Power Pages VSCode Extension for Web
+
 ## 2.0.41
-  - pac CLI 1.31.6, (February 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- pac CLI 1.31.6, (February 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Web Extension updates:
   - Copilot available in United Kingdom, Europe and Australia regions
   - Copilot prompt response improved accuracy for Forms scenario
