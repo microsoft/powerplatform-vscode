@@ -44,5 +44,7 @@
   "pacCLI.pacSolutionHelp.title": "Показать справку по решению PAC",
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "Какие инструменты Power Platform Tools облака Azure следует использовать для проверки подлинности.",
-  "powerPlatform.experimental.auth.testCloudOverride.description": "Переопределяет `#powerPlatform.auth.cloud#` для тестовых целей. Оставьте пустым, чтобы действовали параметры по умолчанию."
+  "powerPlatform.experimental.auth.testCloudOverride.description": "Переопределяет `#powerPlatform.auth.cloud#` для тестовых целей. Оставьте пустым, чтобы действовали параметры по умолчанию.",
+  "powerpages.copilotPanel.clearConversation.title": "Удалить разговор",
+  "powerpages.copilotPanel.title": "Copilot в Power Pages"
 }

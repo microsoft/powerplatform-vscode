@@ -40,8 +40,8 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
 
 // Function to fetch Artemis response
 export async function fetchArtemisResponse(orgId: string, telemetry: ITelemetry, sessionID = '') {
-    const { tstUrl, preprodUrl, prodUrl } = convertGuidToUrls(orgId);
-    const endpoints = [tstUrl, preprodUrl, prodUrl];
+    const { tstUrl, preprodUrl, prodUrl, gccUrl, highUrl, mooncakeUrl, dodUrl } = convertGuidToUrls(orgId);
+    const endpoints = [tstUrl, preprodUrl, prodUrl, gccUrl, highUrl, mooncakeUrl, dodUrl];
 
     const artemisResponse = await fetchIslandInfo(endpoints, telemetry, sessionID);
 
@@ -95,10 +95,18 @@ export function convertGuidToUrls(orgId: string) {
     const tstUrl = `https://${domain}.${nonProdSegment}.organization.api.test.powerplatform.com/gateway/cluster?api-version=1`;
     const preprodUrl = `https://${domain}.${nonProdSegment}.organization.api.preprod.powerplatform.com/gateway/cluster?api-version=1`;
     const prodUrl = `https://${domainProd}.${prodSegment}.organization.api.powerplatform.com/gateway/cluster?api-version=1`;
+    const gccUrl = `https://${domain}.${nonProdSegment}.organization.api.gov.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
+    const highUrl = `https://${domain}.${nonProdSegment}.organization.api.high.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
+    const mooncakeUrl = `https://${domain}.${nonProdSegment}.organization.api.powerplatform.partner.microsoftonline.cn/gateway/cluster?app-version=1`;
+    const dodUrl = `https://${domain}.${nonProdSegment}.organization.api.appsplatform.us/gateway/cluster?app-version=1`;
 
     return {
         tstUrl,
         preprodUrl,
-        prodUrl
+        prodUrl,
+        gccUrl,
+        highUrl,
+        mooncakeUrl,
+        dodUrl
     };
 }
