@@ -19,7 +19,7 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
+import { getEnvironmentIdFromUrl, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
@@ -591,6 +591,7 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             orgId: WebExtensionContext.urlParametersMap.get(
                 queryParameters.ORG_ID
             ) as string,
+            environmentId: getEnvironmentIdFromUrl(),
             environmentName: "",
             activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string,
             tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,

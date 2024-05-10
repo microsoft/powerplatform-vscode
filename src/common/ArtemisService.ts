@@ -9,9 +9,8 @@ import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
 import { getCrossGeoCopilotDataMovementEnabledFlag } from "./BAPService";
-import { BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT } from "./constants";
 
-export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemetry, sessionID: string) {
+export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemetry, sessionID: string, environmentId: string) {
 
     const artemisResponse = await fetchArtemisResponse(orgId, telemetry, sessionID);
 
@@ -19,12 +18,10 @@ export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemet
         return { intelligenceEndpoint: null, geoName: null };
     }
 
-    const { geoName, environment, clusterNumber, geoLongName, clusterCategory } = artemisResponse[0];
+    const { geoName, environment, clusterNumber, clusterCategory } = artemisResponse[0];
     sendTelemetryEvent(telemetry, { eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
-    const bapEndpoint = BAP_SERVICE_ENDPOINT.replace('{geoLongName}', geoLongName).replace('{clusterCategory}', clusterCategory) +
-        BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL.replace('{environmentID}', environment).replace('{apiVersion}', BAP_API_VERSION);
-    const response = await getCrossGeoCopilotDataMovementEnabledFlag(bapEndpoint, telemetry);
+    const response = await getCrossGeoCopilotDataMovementEnabledFlag(clusterCategory, telemetry, environmentId);
 
     console.log("PPAC flag: ", artemisResponse[0], response);
 
