@@ -186,7 +186,7 @@ export class PowerPagesChatParticipant {
         //TODO: Handle AIB GEOs
     }
 
-    async getEndpoint(orgID: string, telemetry: any) {
+    async getEndpoint(orgID: string, telemetry: ITelemetry) {
         if (!this.cachedEndpoint) {
             this.cachedEndpoint = await getIntelligenceEndpoint(orgID, telemetry, '') as { intelligenceEndpoint: string; geoName: string };
         }
