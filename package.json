@@ -120,7 +120,13 @@
         "id": "powerpages",
         "name": "powerpages",
         "description": "Power Pages Copilot",
-        "isSticky": true
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "create-site",
+            "description": "Create a new Power Pages site"
+          }
+        ]
       }
     ],
     "problemMatchers": [

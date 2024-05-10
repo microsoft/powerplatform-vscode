@@ -18,6 +18,7 @@ import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
 import { getEntityName, getFormXml, getEntityColumns } from '../../copilot/dataverseMetadata';
 import { NO_PROMPT_MESSAGE } from './Constants';
+import { MultiStepInput } from '../../../client/power-pages/create/utils/MultiStepInput';
 
 export interface OrgDetails {
     orgID: string;
@@ -57,6 +58,15 @@ export class PowerPagesChatParticipant {
         this._disposables.push(orgChangeErrorEvent(async () => {
             await createAuthProfileExp(this._pacWrapper);
         }));
+
+        vscode.commands.registerCommand('create-site-inputs', async (siteName: string, isCreateSiteInputsReceived) => {
+            if (!isCreateSiteInputsReceived) {
+                const siteCreateInputs = await this.getSiteCreationInputs(siteName);
+                if(siteCreateInputs){
+                    isCreateSiteInputsReceived = true;
+                }
+            }
+        });
 
     }
 
@@ -119,6 +129,24 @@ export class PowerPagesChatParticipant {
 
         if (request.command) {
             //TODO: Handle command scenarios
+            if(request.command == 'create-site')
+            {
+                stream.progress('Generating a new Power Pages site...');
+
+                stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
+
+
+
+                stream.button({
+                    command: 'create-site-inputs',
+                    title: 'Create Site',
+                    tooltip: 'Create a new Power Pages site',
+                    arguments: ['siteName', false],
+                })
+
+                 // register command
+
+            }
 
         } else {
 
@@ -245,6 +273,82 @@ export class PowerPagesChatParticipant {
         //TODO: Handle ECS unavailable scenario
 
         return '' //TODO return type
+    }
+
+    async getSiteCreationInputs(siteName: string) {
+        const envNames: vscode.QuickPickItem[] = [
+            { label: 'EnvONe' },
+            { label: 'EnvTwo' },
+            { label: 'EnvThree' }
+        ];
+
+        const title = vscode.l10n.t("New Power Pages Site");
+
+        interface ISiteInputState {
+            siteName: string;
+            envName: string;
+            domainName: string;
+            title: string;
+            step: number;
+            totalSteps: number;
+        }
+
+        async function collectInputs() {
+            const state = {} as Partial<ISiteInputState>;
+            await MultiStepInput.run((input) => selectEnvName(input, state));
+            return state as ISiteInputState;
+        }
+
+        async function selectEnvName(
+            input: MultiStepInput,
+            state: Partial<ISiteInputState>
+        ) {
+            const pick = await input.showQuickPick({
+                title,
+                step: 1,
+                totalSteps: 3,
+                placeholder: vscode.l10n.t("Choose Environment"),
+                items: envNames,
+                activeItem:
+                    typeof state.envName !== "string"
+                        ? state.envName
+                        : undefined,
+            });
+            state.envName = pick.label;
+            return (input: MultiStepInput) => inputSiteName(input, state);
+        }
+
+        async function inputSiteName(
+            input: MultiStepInput,
+            state: Partial<ISiteInputState>
+        ) {
+            state.siteName = await input.showInputBox({
+                title,
+                step: 2,
+                totalSteps: 3,
+                value: state.siteName || siteName,
+                placeholder: vscode.l10n.t("Enter Site Name"),
+                validate: async (value) => (value ? undefined : vscode.l10n.t("Site Name is required")),
+            });
+            return (input: MultiStepInput) => inputDomainName(input, state);
+        }
+
+        async function inputDomainName(
+            input: MultiStepInput,
+            state: Partial<ISiteInputState>
+        ) {
+            state.domainName = await input.showInputBox({
+                title,
+                step: 3,
+                totalSteps: 3,
+                value: state.domainName || "",
+                placeholder: vscode.l10n.t("Enter Domain Name"),
+                validate: async (value) => (value ? undefined : vscode.l10n.t("Domain Name is required")),
+            });
+        }
+
+        const siteInputState = await collectInputs();
+        return siteInputState;
     }
 
 }
