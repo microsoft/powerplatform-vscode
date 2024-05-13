@@ -23,14 +23,18 @@ export class QuickPickProvider {
     }
 
     public refresh() {
-        if (vscode.window.activeTextEditor) {
-            const fileFsPath = vscode.window.activeTextEditor.document.uri.fsPath;
-            const entityInfo: IEntityInfo = {
-                entityId: getFileEntityId(fileFsPath),
-                entityName: getFileEntityName(fileFsPath),
-                rootWebPageId: getFileRootWebPageId(fileFsPath),
-            };
-            this.updateQuickPickItems(entityInfo);
+        const tabGroup = vscode.window.tabGroups;
+        if (tabGroup.activeTabGroup && tabGroup.activeTabGroup.activeTab) {
+            const tab = tabGroup.activeTabGroup.activeTab;
+            if (tab.input instanceof vscode.TabInputCustom || tab.input instanceof vscode.TabInputText) {
+                const fileFsPath = tab.input.uri.fsPath;
+                const entityInfo: IEntityInfo = {
+                    entityId: getFileEntityId(fileFsPath),
+                    entityName: getFileEntityName(fileFsPath),
+                    rootWebPageId: getFileRootWebPageId(fileFsPath),
+                };
+                this.updateQuickPickItems(entityInfo);
+            }
         }
     }
 

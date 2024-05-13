@@ -11,6 +11,7 @@ import { PacWrapper } from "../client/pac/PacWrapper";
 import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "./copilot/constants";
 import { IActiveFileData, IActiveFileParams } from "./copilot/model";
 
+
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
         return "";
