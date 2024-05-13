@@ -44,5 +44,7 @@
   "pacCLI.pacSolutionHelp.title": "Zobrazit nápovědu k řešení PAC",
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "Cloudové nástroje Power Platform Tools ve službě Azure, které se mají používat k ověřování",
-  "powerPlatform.experimental.auth.testCloudOverride.description": "Přepíše `#powerPlatform.auth.cloud#` pro testovací cíle. Nezadávejte, pokud chcete použít výchozí chování."
+  "powerPlatform.experimental.auth.testCloudOverride.description": "Přepíše `#powerPlatform.auth.cloud#` pro testovací cíle. Nezadávejte, pokud chcete použít výchozí chování.",
+  "powerpages.copilotPanel.clearConversation.title": "Vymazat konverzaci",
+  "powerpages.copilotPanel.title": "Copilot v Power Pages"
 }

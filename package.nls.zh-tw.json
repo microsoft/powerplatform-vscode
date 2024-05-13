@@ -44,5 +44,7 @@
   "pacCLI.pacSolutionHelp.title": "顯示 PAC 解決方案說明",
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "應使用些 Azure 雲端 Power Platform Tools 來進行驗證。",
-  "powerPlatform.experimental.auth.testCloudOverride.description": "覆寫測試目標的 `#powerPlatform.auth.cloud#`。預設行為請保留空白。"
+  "powerPlatform.experimental.auth.testCloudOverride.description": "覆寫測試目標的 `#powerPlatform.auth.cloud#`。預設行為請保留空白。",
+  "powerpages.copilotPanel.clearConversation.title": "清除交談",
+  "powerpages.copilotPanel.title": "Power Pages 中的 Copilot"
 }
