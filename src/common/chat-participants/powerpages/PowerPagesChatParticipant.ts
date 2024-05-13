@@ -25,9 +25,13 @@ export class PowerPagesChatParticipant {
     }
 
     private handler: vscode.ChatRequestHandler = async (
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _request: vscode.ChatRequest,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _context: vscode.ChatContext,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _stream: vscode.ChatResponseStream,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _token: vscode.CancellationToken
     ): Promise<IPowerPagesChatResult> => {
         // Handle chat requests here
