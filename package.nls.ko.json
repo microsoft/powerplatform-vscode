@@ -44,5 +44,7 @@
   "pacCLI.pacSolutionHelp.title": "PAC 솔루션 도움말 표시",
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "인증에 사용해야 할 Azure 클라우드 Power Platform Tools.",
-  "powerPlatform.experimental.auth.testCloudOverride.description": "테스트 대상에 대한 `#powerPlatform.auth.cloud#`를 다시 정의합니다. 기본 동작을 사용하려면 비워두세요."
+  "powerPlatform.experimental.auth.testCloudOverride.description": "테스트 대상에 대한 `#powerPlatform.auth.cloud#`를 다시 정의합니다. 기본 동작을 사용하려면 비워두세요.",
+  "powerpages.copilotPanel.clearConversation.title": "대화 삭제",
+  "powerpages.copilotPanel.title": "Power Pages의 Copilot"
 }

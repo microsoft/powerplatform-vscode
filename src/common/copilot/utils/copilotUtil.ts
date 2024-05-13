@@ -7,9 +7,22 @@ import { ECSFeaturesClient } from "../../ecs-features/ecsFeatureClient";
 import { CopilotDisableList } from "../../ecs-features/ecsFeatureGates";
 
 export function getDisabledOrgList() {
-    return ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs?.split(',').map(org => org.trim());
+    const disallowedProDevCopilotOrgs = ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs;
+
+    if (disallowedProDevCopilotOrgs === undefined || disallowedProDevCopilotOrgs === "") {
+        return [];
+    }
+
+    return disallowedProDevCopilotOrgs.split(',').map(org => org.trim());
 }
 
 export function getDisabledTenantList() {
-    return ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotTenants?.split(',').map(tenant => tenant.trim());
+
+    const disallowedProDevCopilotTenants = ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs;
+
+    if (disallowedProDevCopilotTenants === undefined || disallowedProDevCopilotTenants === "") {
+        return [];
+    }
+
+    return disallowedProDevCopilotTenants.split(',').map(org => org.trim());
 }

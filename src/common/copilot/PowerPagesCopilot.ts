@@ -10,9 +10,9 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../Authe
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, DataverseEntityNameMap, EXPLAIN_CODE, EntityFieldMap, FieldTypeMap, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
-import { IActiveFileParams, IActiveFileData, IOrgInfo } from './model';
-import { createAuthProfileExp, escapeDollarSign, getLastThreePartsOfFileName, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
+import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, EXPLAIN_CODE, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
+import { IActiveFileParams, IOrgInfo } from './model';
+import { createAuthProfileExp, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig } from "./telemetry/telemetryConstants";
@@ -230,7 +230,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, isSuggestedPrompt: String(data.value.isSuggestedPrompt) }); //TODO: Add active Editor info
                     orgID
                         ? (async () => {
-                            const { activeFileParams } = this.getActiveEditorContent();
+                            const { activeFileParams } = getActiveEditorContent();
                             await this.authenticateAndSendAPIRequest(data.value.userPrompt, activeFileParams, orgID, this.telemetry);
                         })()
                         : (() => {
@@ -424,32 +424,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             this.sendMessageToWebview({ type: 'userName', value: userName });
             this.sendMessageToWebview({ type: "welcomeScreen" });
         }
-    }
-
-    private getActiveEditorContent(): IActiveFileData {
-        const activeEditor = vscode.window.activeTextEditor;
-        const activeFileData: IActiveFileData = {
-            activeFileContent: '',
-            activeFileParams: {
-                dataverseEntity: '',
-                entityField: '',
-                fieldType: ''
-            } as IActiveFileParams
-        };
-        if (activeEditor) {
-            const document = activeEditor.document;
-            const fileName = document.fileName;
-            const relativeFileName = vscode.workspace.asRelativePath(fileName);
-
-            const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
-
-            activeFileData.activeFileContent = document.getText();
-            activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
-            activeFileData.activeFileParams.entityField = EntityFieldMap.get(activeFileParams[1]) || "";
-            activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "";
-        }
-
-        return activeFileData;
     }
 
     public sendMessageToWebview(message: WebViewMessage) {

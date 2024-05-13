@@ -44,5 +44,7 @@
   "pacCLI.pacSolutionHelp.title": "显示 PAC 解决方案帮助",
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "应使用哪些 Azure 云 Power Platform Tools 来进行身份验证。",
-  "powerPlatform.experimental.auth.testCloudOverride.description": "替代测试目标的 `#powerPlatform.auth.cloud#`。对于默认行为，请保留为空。"
+  "powerPlatform.experimental.auth.testCloudOverride.description": "替代测试目标的 `#powerPlatform.auth.cloud#`。对于默认行为，请保留为空。",
+  "powerpages.copilotPanel.clearConversation.title": "清除对话",
+  "powerpages.copilotPanel.title": "Power Pages 中的助手"
 }
