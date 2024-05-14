@@ -23,7 +23,7 @@ export interface OrgDetails {
 }
 
 export class PowerPagesChatParticipant {
-    private static instance : PowerPagesChatParticipant | null = null;
+    private static instance: PowerPagesChatParticipant | null = null;
     private chatParticipant: vscode.ChatParticipant;
     private telemetry: ITelemetry;
     private extensionContext: vscode.ExtensionContext;
@@ -35,7 +35,7 @@ export class PowerPagesChatParticipant {
     private orgID: string | undefined;
     private orgUrl: string | undefined;
 
-    private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter,  pacWrapper?: PacWrapper) {
+    private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {
 
         this.chatParticipant = createChatParticipant('powerpages', this.handler);
 
@@ -74,6 +74,7 @@ export class PowerPagesChatParticipant {
         request: vscode.ChatRequest,
         _context: vscode.ChatContext,
         stream: vscode.ChatResponseStream,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _token: vscode.CancellationToken
     ): Promise<IPowerPagesChatResult> => {
         // Handle chat requests here
@@ -107,7 +108,7 @@ export class PowerPagesChatParticipant {
 
         const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
 
-        const { intelligenceEndpoint, geoName }  = await this.getEndpoint(this.orgID, this.telemetry);
+        const { intelligenceEndpoint, geoName } = await this.getEndpoint(this.orgID, this.telemetry);
 
         if (!intelligenceEndpoint || !geoName) {
             //TODO: Handle error
@@ -135,14 +136,12 @@ export class PowerPagesChatParticipant {
         }
 
         // export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {}
-        const llmResponse = await sendApiRequest([{displayText: userPrompt, code: ''}], {dataverseEntity:'', entityField: '', fieldType: ''}, this.orgID, intelligenceApiToken, '', '', [], this.telemetry, intelligenceEndpoint, geoName);
+        const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], { dataverseEntity: '', entityField: '', fieldType: '' }, this.orgID, intelligenceApiToken, '', '', [], this.telemetry, intelligenceEndpoint, geoName);
 
         stream.markdown(llmResponse[0].displayText);
 
         stream.markdown('\n```typescript\n' + llmResponse[0].code + '\n```');
         // TODO: Handle authentication and org change
-
-        console.log(_token)
 
         return {
             metadata: {
@@ -154,15 +153,15 @@ export class PowerPagesChatParticipant {
 
     private async intializeOrgDetails(): Promise<void> {
 
-        if(this.isOrgDetailsInitialized) {
+        if (this.isOrgDetailsInitialized) {
             return;
         }
 
         this.isOrgDetailsInitialized = true;
 
-        const orgDetails:OrgDetails | undefined = this.extensionContext.globalState.get('orgDetails');
+        const orgDetails: OrgDetails | undefined = this.extensionContext.globalState.get('orgDetails');
 
-        if(orgDetails) {
+        if (orgDetails) {
             this.orgID = orgDetails.orgID;
             this.orgUrl = orgDetails.orgUrl;
         } else {
@@ -181,7 +180,7 @@ export class PowerPagesChatParticipant {
         this.orgID = orgDetails.OrgId;
         this.orgUrl = orgDetails.OrgUrl
 
-        this.extensionContext.globalState.update('orgDetails', {orgID: this.orgID, orgUrl: this.orgUrl});
+        this.extensionContext.globalState.update('orgDetails', { orgID: this.orgID, orgUrl: this.orgUrl });
 
         //TODO: Handle AIB GEOs
     }
