@@ -300,6 +300,7 @@ export class OneDSLogger implements ITelemetryLogger {
                 envelope.data.vscodeExtensionName = EXTENSION_ID;
                 envelope.data.vscodeExtensionVersion = getExtensionVersion();
                 envelope.data.vscodeVersion = vscode.version;
+                envelope.data.machineId = vscode.env.machineId;
                 envelope.data.domain = vscode.env.appHost;
                 envelope.data.measurements = envelope.data.measurement;
                 // Adding below attributes so they get populated in Geneva.
