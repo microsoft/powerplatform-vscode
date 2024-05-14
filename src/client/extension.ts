@@ -40,6 +40,7 @@ import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWr
 import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
+import { PowerPagesChatParticipant } from "../common/chat-participants/powerpages/PowerPagesChatParticipant";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -177,6 +178,9 @@ export async function activate(
     // Add CRUD related callback subscription here
     await handleFileSystemCallbacks(_context, _telemetry);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const PowerPagesChatParticipantInstance = new PowerPagesChatParticipant(_context, _telemetry);
+
     const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
@@ -193,8 +197,8 @@ export async function activate(
             const orgID = orgDetails.OrgId;
             const artemisResponse = await fetchArtemisResponse(orgID, _telemetry);
             if (artemisResponse) {
-                const { geoName } = artemisResponse[0];
-                oneDSLoggerWrapper.instantiate(geoName);
+                const { geoName, geoLongName } = artemisResponse[0];
+                oneDSLoggerWrapper.instantiate(geoName, geoLongName);
                 oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, {...orgDetails, orgGeo: geoName});
             }
         })
