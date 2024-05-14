@@ -83,7 +83,7 @@ export class OneDSLogger implements ITelemetryLogger {
         },
     };
 
-    public constructor(geo?: string) {
+    public constructor(geo?:string, geoLongName?:string ) {
 
         this.appInsightsCore = new AppInsightsCore();
         this.postChannel = new PostChannel();
@@ -93,7 +93,7 @@ export class OneDSLogger implements ITelemetryLogger {
             httpXHROverride: this.fetchHttpXHROverride,
         };
 
-        const instrumentationSetting: IInstrumentationSettings = OneDSLogger.getInstrumentationSettings(geo); // Need to replace with actual data
+        const instrumentationSetting : IInstrumentationSettings= OneDSLogger.getInstrumentationSettings(geo, geoLongName); // Need to replace with actual data
 
         // Configure App insights core to send to collector
         const coreConfig: IExtendedConfiguration = {
@@ -136,12 +136,26 @@ export class OneDSLogger implements ITelemetryLogger {
         }
     }
 
-    private static getInstrumentationSettings(geo?: string): IInstrumentationSettings {
-        const buildRegion: string = region;
-        const instrumentationSettings: IInstrumentationSettings = {
+    private static getInstrumentationSettings(geo?:string, geoLongName?: string): IInstrumentationSettings {
+        const buildRegion:string = region;
+        const instrumentationSettings:IInstrumentationSettings = {
             endpointURL: 'https://self.pipe.aria.int.microsoft.com/OneCollector/1.0/',
             instrumentationKey: 'ffdb4c99ca3a4ad5b8e9ffb08bf7da0d-65357ff3-efcd-47fc-b2fd-ad95a52373f4-7402'
         };
+        switch(geoLongName){
+            case 'usgov':
+                geo = 'gov';
+                break;
+            case 'usgovhigh':
+                geo = 'high';
+                break;      
+            case 'usdod':
+                geo = 'dod';
+                break;  
+            case 'china':
+                geo = 'mooncake';
+                break;
+        }
         switch (buildRegion) {
             case 'tie':
             case 'test':
@@ -161,7 +175,7 @@ export class OneDSLogger implements ITelemetryLogger {
                     case 'ae':
                     case 'kr':
                         instrumentationSettings.endpointURL = 'https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
-                            instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                        instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
                         break;
                     case 'eu':
                     case 'uk':
@@ -170,20 +184,29 @@ export class OneDSLogger implements ITelemetryLogger {
                     case 'no':
                     case 'ch':
                         instrumentationSettings.endpointURL = 'https://eu-mobile.events.data.microsoft.com/OneCollector/1.0/',
-                            instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                        instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                        break;
+                    case 'gov':
+                        instrumentationSettings.endpointURL = 'https://tb.events.data.microsoft.com/OneCollector/1.0/',
+                        instrumentationSettings.instrumentationKey = '2f217cb8f40440eeb8b0aa80a2be2f7e-e0ec7b51-d1bb-4d8c-83b1-cc77aaba9009-7472' 
+                        break;
+                    case 'high':
+                        instrumentationSettings.endpointURL = 'https://tb.events.data.microsoft.com/OneCollector/1.0/',
+                        instrumentationSettings.instrumentationKey = '4a07e143372c46aabf3841dc4f0ef795-a753031e-2005-4282-9451-a086fea4234a-6942' 
+                        break;
+                    case 'dod':
+                        instrumentationSettings.endpointURL = 'https://pf.events.data.microsoft.com/OneCollector/1.0/',
+                        instrumentationSettings.instrumentationKey = 'af47f3d608774379a53fa07cf36362ea-69701588-1aad-43ee-8b52-f71125849774-6656' 
+                        break;
+                    case 'mooncake':
+                        instrumentationSettings.endpointURL = 'https://collector.azure.cn/OneCollector/1.0/',
+                        instrumentationSettings.instrumentationKey = 'f9b6e63b5e394453ba8f58f7a7b9aea7-f38fcfa2-eb34-48bc-9ae2-61fba4abbd39-7390' //prod key;
                         break;
                     default:
                         instrumentationSettings.endpointURL = 'https://us-mobile.events.data.microsoft.com/OneCollector/1.0/',
-                            instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
+                        instrumentationSettings.instrumentationKey = '197418c5cb8c4426b201f9db2e87b914-87887378-2790-49b0-9295-51f43b6204b1-7172'
                         break;
                 }
-                break;
-            case 'gov':
-            case 'high':
-            case 'dod':
-            case 'mooncake':
-                instrumentationSettings.endpointURL = '',
-                    instrumentationSettings.instrumentationKey = '' //prod key;
                 break;
             case 'ex':
             case 'rx':
@@ -357,6 +380,7 @@ export class OneDSLogger implements ITelemetryLogger {
         if (envelope.data.eventName == desktopExtTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT) {
             OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).OrgId;
             OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).EnvironmentId;
+            OneDSLogger.contextInfo.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
             // TODO: Populate website id
             OneDSLogger.contextInfo.websiteId = 'test'
         }

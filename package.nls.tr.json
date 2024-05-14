@@ -44,5 +44,7 @@
   "pacCLI.pacSolutionHelp.title": "PAC Çözümü Yardımını Göster",
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "Kimlik doğrulaması için kullanılması gereken Azure Bulut Power Platform Tools.",
-  "powerPlatform.experimental.auth.testCloudOverride.description": "Test hedefleri için `#powerPlatform.auth.cloud#` öğesini geçersiz kılar. Varsayılan davranış için boş bırakın."
+  "powerPlatform.experimental.auth.testCloudOverride.description": "Test hedefleri için `#powerPlatform.auth.cloud#` öğesini geçersiz kılar. Varsayılan davranış için boş bırakın.",
+  "powerpages.copilotPanel.clearConversation.title": "Konuşmayı Temizle",
+  "powerpages.copilotPanel.title": "Power Pages'da Copilot"
 }

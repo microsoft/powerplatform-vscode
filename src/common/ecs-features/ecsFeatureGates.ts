@@ -15,3 +15,14 @@ export const {
         enableMultifileVscodeWeb: false,
     },
 });
+
+export const {
+    feature: CopilotDisableList
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Disable Copilot',
+    fallback: {
+        disallowedProDevCopilotTenants: "",
+        disallowedProDevCopilotOrgs: "",
+    },
+});
