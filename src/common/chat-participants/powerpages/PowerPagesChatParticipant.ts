@@ -85,7 +85,6 @@ export class PowerPagesChatParticipant {
         await this.intializeOrgDetails();
 
         if (!this.orgID) {
-            // TODO: Auth Create Experience
             await createAuthProfileExp(this._pacWrapper);
             return {
                 metadata: {
@@ -124,8 +123,6 @@ export class PowerPagesChatParticipant {
 
         const userPrompt = request.prompt;
 
-        //TODO: Handle form and list scenarios
-
         if (!userPrompt) {
 
             //TODO: Show start message
@@ -137,13 +134,12 @@ export class PowerPagesChatParticipant {
             };
         }
 
-        // export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {}
+        //TODO: Handle form and list scenarios
         const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], { dataverseEntity: '', entityField: '', fieldType: '' }, this.orgID, intelligenceApiToken, '', '', [], this.telemetry, intelligenceEndpoint, geoName);
 
         stream.markdown(llmResponse[0].displayText);
 
         stream.markdown('\n```typescript\n' + llmResponse[0].code + '\n```');
-        // TODO: Handle authentication and org change
 
         return {
             metadata: {
