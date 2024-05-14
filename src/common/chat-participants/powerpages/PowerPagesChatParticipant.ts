@@ -79,6 +79,7 @@ export class PowerPagesChatParticipant {
     ): Promise<IPowerPagesChatResult> => {
         // Handle chat requests here
 
+        //TODO: Move strings to constant once finalized
         stream.progress('Working on it...')
 
         await this.intializeOrgDetails();
@@ -97,7 +98,7 @@ export class PowerPagesChatParticipant {
 
         if (!intelligenceApiAuthResponse) {
 
-            //TODO: Handle auth error and provide a way to re-authenticate
+            stream.markdown('Authentication failed. Please try again.');
 
             return {
                 metadata: {
@@ -111,7 +112,8 @@ export class PowerPagesChatParticipant {
         const { intelligenceEndpoint, geoName } = await this.getEndpoint(this.orgID, this.telemetry);
 
         if (!intelligenceEndpoint || !geoName) {
-            //TODO: Handle error
+
+            stream.markdown('Copilot is not available. Please contact your administrator.')
 
             return {
                 metadata: {
