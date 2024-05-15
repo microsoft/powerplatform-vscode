@@ -23,7 +23,7 @@ import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
 import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
-import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../constants";
+import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../Constants";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -48,6 +48,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private telemetry: ITelemetry;
     private aibEndpoint: string | null = null;
     private geoName: string | null = null;
+    private crossGeoDataMovementEnabledPPACFlag = false;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
@@ -229,7 +230,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     break;
                 }
                 case "newUserPrompt": {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, isSuggestedPrompt: String(data.value.isSuggestedPrompt) }); //TODO: Add active Editor info
+                    sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, isSuggestedPrompt: String(data.value.isSuggestedPrompt), crossGeoDataMovementEnabledPPACFlag: this.crossGeoDataMovementEnabledPPACFlag }); //TODO: Add active Editor info
                     orgID
                         ? (async () => {
                             const { activeFileParams } = getActiveEditorContent();
@@ -374,7 +375,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     }
 
                 }
-                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName);
+                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName, this.crossGeoDataMovementEnabledPPACFlag);
             })
             .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
@@ -396,9 +397,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         sessionID = uuidv4(); // Generate a new session ID on org change
         sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
-        const { intelligenceEndpoint, geoName } = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId ?? '');
-        this.aibEndpoint = intelligenceEndpoint;
-        this.geoName = geoName;
+        const intelligenceAPIEndpointInfo = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId ?? '');
+        this.aibEndpoint = intelligenceAPIEndpointInfo.intelligenceEndpoint;
+        this.geoName = intelligenceAPIEndpointInfo.geoName;
+        this.crossGeoDataMovementEnabledPPACFlag = intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag;
+
 
         if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
             sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });

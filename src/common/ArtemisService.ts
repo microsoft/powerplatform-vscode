@@ -4,42 +4,46 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { COPILOT_UNAVAILABLE, SUPPORTED_GEO } from "./copilot/constants";
+import { COPILOT_UNAVAILABLE } from "./copilot/constants";
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
 import { getCrossGeoCopilotDataMovementEnabledFlag } from "./BAPService";
-import { BAPServiceStamp as BAPAPIEndpointStamp } from "./constants";
-import { IArtemisAPIOrgResponse, IArtemisServiceEndpointInformation } from "./Interfaces";
+import { BAPServiceStamp as BAPAPIEndpointStamp } from "./Constants";
+import { IArtemisAPIOrgResponse, IArtemisServiceEndpointInformation, IIntelligenceAPIEndpointInformation } from "./Interfaces";
+import { isCopilotDisabledInGeo, isCopilotSupportedInGeo } from "./copilot/utils/copilotUtil";
 
-export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemetry, sessionID: string, environmentId: string) {
+export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemetry, sessionID: string, environmentId: string): Promise<IIntelligenceAPIEndpointInformation> {
 
     const artemisResponses = await fetchArtemisResponse(orgId, telemetry, sessionID);
 
     if (artemisResponses === null || artemisResponses.length === 0) {
-        return { intelligenceEndpoint: null, geoName: null };
+        return { intelligenceEndpoint: null, geoName: null, crossGeoDataMovementEnabledPPACFlag: false };
     }
 
     const artemisResponse = artemisResponses[0];
-
     if (artemisResponse !== null) {
         const { geoName, environment, clusterNumber } = artemisResponse.response as unknown as IArtemisAPIOrgResponse;
         sendTelemetryEvent(telemetry, { eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
-        const response = await getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp, telemetry, environmentId);
+        const crossGeoDataMovementEnabledPPACFlag = await getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp, telemetry, environmentId);
 
-        console.log("PPAC flag: ", artemisResponse, response);
-
-        if (!SUPPORTED_GEO.includes(geoName)) {
-            return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName };
+        if (isCopilotDisabledInGeo().includes(geoName)) {
+            return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
+        }
+        else if (crossGeoDataMovementEnabledPPACFlag === true) {
+            // Do nothing - we can make this call cross geo
+        }
+        else if (!isCopilotSupportedInGeo().includes(geoName)) {
+            return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
         }
 
         const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${'il' + clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
 
-        return { intelligenceEndpoint: intelligenceEndpoint, geoName: geoName };
+        return { intelligenceEndpoint: intelligenceEndpoint, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: false };
     }
 
-    return { intelligenceEndpoint: null, geoName: null };
+    return { intelligenceEndpoint: null, geoName: null, crossGeoDataMovementEnabledPPACFlag: false };
 }
 
 // Function to fetch Artemis response

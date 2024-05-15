@@ -6,7 +6,7 @@
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { bapServiceAuthentication, getCommonHeaders } from "./AuthenticationProvider";
 import { VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_COMPLETED, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED } from "./TelemetryConstants";
-import { BAPServiceStamp, BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT } from "./constants";
+import { BAPServiceStamp, BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT } from "./Constants";
 import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 
 export async function getCrossGeoCopilotDataMovementEnabledFlag(serviceEndpointStamp: BAPServiceStamp, telemetry: ITelemetry, environmentId: string): Promise<boolean> {

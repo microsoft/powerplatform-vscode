@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { BAPServiceStamp } from "./constants";
+import { BAPServiceStamp } from "./Constants";
 
 export interface IArtemisServiceEndpointInformation {
     stamp: BAPServiceStamp;
@@ -23,4 +23,10 @@ export interface IArtemisAPIOrgResponse {
     clusterCategory: string,
     clusterName: string,
     clusterType: string,
+}
+
+export interface IIntelligenceAPIEndpointInformation {
+    intelligenceEndpoint: string | null,
+    geoName: string | null,
+    crossGeoDataMovementEnabledPPACFlag: boolean
 }
