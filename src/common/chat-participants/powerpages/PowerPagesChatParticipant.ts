@@ -8,19 +8,15 @@ import { createChatParticipant } from '../ChatParticipantUtils';
 import { IPowerPagesChatResult } from './PowerPagesChatParticipantTypes';
 import { ITelemetry } from '../../../client/telemetry/ITelemetry';
 import TelemetryReporter from '@vscode/extension-telemetry';
-import { getIntelligenceEndpoint } from '../../ArtemisService';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
-import { PAC_SUCCESS } from '../../copilot/constants';
 import { createAuthProfileExp } from '../../Utils';
 import { intelligenceAPIAuthentication } from '../../AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
-
-export interface OrgDetails {
-    orgID: string;
-    orgUrl: string;
-}
+import { handleOrgChangeSuccess, initializeOrgDetails } from '../../OrgHandlerUtils';
+import { getEndpoint } from './PowerPagesChatParticipantUtils';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG } from './PowerPagesChatParticipantConstants';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -37,7 +33,7 @@ export class PowerPagesChatParticipant {
 
     private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {
 
-        this.chatParticipant = createChatParticipant('powerpages', this.handler);
+        this.chatParticipant = createChatParticipant(POWERPAGES_CHAT_PARTICIPANT_ID, this.handler);
 
         //TODO: Check the icon image
         this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.png');
@@ -79,10 +75,9 @@ export class PowerPagesChatParticipant {
     ): Promise<IPowerPagesChatResult> => {
         // Handle chat requests here
 
-        //TODO: Move strings to constant once finalized
-        stream.progress('Working on it...')
+        stream.progress(RESPONSE_AWAITED_MSG)
 
-        await this.intializeOrgDetails();
+        await this.initializeOrgDetails();
 
         if (!this.orgID) {
             await createAuthProfileExp(this._pacWrapper);
@@ -96,8 +91,7 @@ export class PowerPagesChatParticipant {
         const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.telemetry, '', this.orgID, true);
 
         if (!intelligenceApiAuthResponse) {
-
-            stream.markdown('Authentication failed. Please try again.');
+            stream.markdown(AUTHENTICATION_FAILED_MSG);
 
             return {
                 metadata: {
@@ -108,11 +102,10 @@ export class PowerPagesChatParticipant {
 
         const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
 
-        const { intelligenceEndpoint, geoName } = await this.getEndpoint(this.orgID, this.telemetry);
+        const { intelligenceEndpoint, geoName } = await getEndpoint(this.orgID, this.telemetry, this.cachedEndpoint);
 
         if (!intelligenceEndpoint || !geoName) {
-
-            stream.markdown('Copilot is not available. Please contact your administrator.')
+            stream.markdown(COPILOT_NOT_AVAILABLE_MSG)
 
             return {
                 metadata: {
@@ -149,44 +142,15 @@ export class PowerPagesChatParticipant {
 
     };
 
-    private async intializeOrgDetails(): Promise<void> {
-
-        if (this.isOrgDetailsInitialized) {
-            return;
-        }
-
-        this.isOrgDetailsInitialized = true;
-
-        const orgDetails: OrgDetails | undefined = this.extensionContext.globalState.get('orgDetails');
-
-        if (orgDetails) {
-            this.orgID = orgDetails.orgID;
-            this.orgUrl = orgDetails.orgUrl;
-        } else {
-            if (this._pacWrapper) {
-                const pacActiveOrg = await this._pacWrapper.activeOrg();
-                if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
-                    this.handleOrgChangeSuccess(pacActiveOrg.Results);
-                } else {
-                    await createAuthProfileExp(this._pacWrapper);
-                }
-            }
-        }
+    private async initializeOrgDetails(): Promise<void> {
+        const { orgID, orgUrl } = await initializeOrgDetails(this.isOrgDetailsInitialized, this.extensionContext, this._pacWrapper);
+        this.orgID = orgID;
+        this.orgUrl = orgUrl;
     }
 
-    private async handleOrgChangeSuccess(orgDetails: ActiveOrgOutput) {
-        this.orgID = orgDetails.OrgId;
-        this.orgUrl = orgDetails.OrgUrl
-
-        this.extensionContext.globalState.update('orgDetails', { orgID: this.orgID, orgUrl: this.orgUrl });
-
-        //TODO: Handle AIB GEOs
-    }
-
-    async getEndpoint(orgID: string, telemetry: ITelemetry) {
-        if (!this.cachedEndpoint) {
-            this.cachedEndpoint = await getIntelligenceEndpoint(orgID, telemetry, '') as { intelligenceEndpoint: string; geoName: string };
-        }
-        return this.cachedEndpoint;
+    private async handleOrgChangeSuccess(orgDetails: ActiveOrgOutput): Promise<void> {
+        const { orgID, orgUrl } = handleOrgChangeSuccess(orgDetails, this.extensionContext);
+        this.orgID = orgID;
+        this.orgUrl = orgUrl;
     }
 }
