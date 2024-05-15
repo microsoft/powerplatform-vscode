@@ -43,6 +43,7 @@ import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaboratio
 import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
 import { IPortalWebExtensionInitQueryParametersTelemetryData } from "./telemetry/webExtensionTelemetryInterface";
+import { IArtemisAPIOrgResponse } from "../../common/Interfaces";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -652,12 +653,12 @@ function isActiveDocument(fileFsPath: string): boolean {
 
 async function fetchArtemisData(orgId: string): Promise<string> {
     const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
-    if (!artemisResponse) {
+    if (artemisResponse === null || artemisResponse.length === 0) {
         // Todo: Log in error telemetry. Runtime maintains another table for this kind of failure. We should do the same.
         return '';
     }
 
-    return artemisResponse[0].geoName as string;
+    return (artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse).geoName as string;
 }
 
 async function logArtemisTelemetry() {

@@ -12,8 +12,8 @@ import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
-import { EUROPE_GEO, UK_GEO } from "../constants";
 import { ERRORS } from "../../ErrorConstants";
+import { EUROPE_GEO, UK_GEO } from "../constants";
 
 let feedbackPanel: vscode.WebviewPanel | undefined;
 

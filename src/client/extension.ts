@@ -192,10 +192,10 @@ export async function activate(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
             const artemisResponse = await fetchArtemisResponse(orgID, _telemetry);
-            if (artemisResponse) {
-                const { geoName, geoLongName } = artemisResponse[0];
+            if (artemisResponse !== null && artemisResponse.length > 0) {
+                const { geoName, geoLongName } = artemisResponse[0]?.response as unknown as { geoName: string, geoLongName: string };
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
-                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, {...orgDetails, orgGeo: geoName});
+                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName });
             }
         })
     );
