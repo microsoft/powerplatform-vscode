@@ -26,3 +26,15 @@ export const {
         disallowedProDevCopilotOrgs: "",
     },
 });
+
+export const {
+    feature: EnableProDevCopilot
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable ProDev Copilot',
+    fallback: {
+        "capiSupportedProDevCopilotGeoList": "us,au,uk,eu,in",
+        "unsupportedProDevCopilotGeoList": "ca",
+        "capiSupportedProDevCopilotGeoWithCrossGeoDataFlow": "eu,se,ch,fr,de,no"
+    },
+});
