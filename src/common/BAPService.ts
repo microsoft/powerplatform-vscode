@@ -6,15 +6,15 @@
 import { ITelemetry } from "../client/telemetry/ITelemetry";
 import { bapServiceAuthentication, getCommonHeaders } from "./AuthenticationProvider";
 import { VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_COMPLETED, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED } from "./TelemetryConstants";
-import { BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT } from "./constants";
+import { BAPServiceStamp, BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT } from "./constants";
 import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
 
-export async function getCrossGeoCopilotDataMovementEnabledFlag(clusterCategory: string, telemetry: ITelemetry, environmentId: string): Promise<boolean> {
+export async function getCrossGeoCopilotDataMovementEnabledFlag(serviceEndpointStamp: BAPServiceStamp, telemetry: ITelemetry, environmentId: string): Promise<boolean> {
 
     try {
         const accessToken = await bapServiceAuthentication(telemetry, true);
 
-        const response = await fetch(await getBAPEndpoint(clusterCategory, environmentId), {
+        const response = await fetch(await getBAPEndpoint(serviceEndpointStamp, environmentId), {
             method: 'GET',
             headers: getCommonHeaders(accessToken)
         });
@@ -32,18 +32,18 @@ export async function getCrossGeoCopilotDataMovementEnabledFlag(clusterCategory:
     return false;
 }
 
-export async function getBAPEndpoint(clusterCategory: string, environmentId: string): Promise<string> {
+export async function getBAPEndpoint(serviceEndpointStamp: BAPServiceStamp, environmentId: string): Promise<string> {
 
     let bapEndpoint = "";
 
-    switch (clusterCategory.toLowerCase()) {
-        case 'test':
+    switch (serviceEndpointStamp) {
+        case BAPServiceStamp.TEST:
             bapEndpoint = "https://test.api.bap.microsoft.com";
             break;
-        case 'preprod':
+        case BAPServiceStamp.PREPROD:
             bapEndpoint = "https://preprod.api.bap.microsoft.com";
             break;
-        case 'prod':
+        case BAPServiceStamp.PROD:
             bapEndpoint = "https://api.bap.microsoft.com";
             break;
     }
