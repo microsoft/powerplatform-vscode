@@ -10,7 +10,7 @@ import { dataverseAuthentication, intelligenceAPIAuthentication } from "../servi
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotDisclaimer, CopilotStylePathSegments, EXPLAIN_CODE, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
+import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IOrgInfo } from './model';
 import { createAuthProfileExp, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -147,7 +147,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     ) {
         this._view = webviewView;
 
-        webviewView.title = "Copilot In Power Pages" + (IS_DESKTOP ? "" : " [PREVIEW]");
+        webviewView.title = vscode.l10n.t("Copilot In Power Pages") + (IS_DESKTOP ? "" : " [PREVIEW]");
         webviewView.description = vscode.l10n.t("PREVIEW");
         webviewView.webview.options = {
             // Allow scripts in the webview
@@ -474,14 +474,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             <div class="chat-input" id="input-component">
               <label for="chat-input" class="input-label hide" id="input-label-id"></label>
               <div class="input-container">
-              <textarea rows=1 placeholder="What do you need help with?" id="chat-input" class="input-field"></textarea>
+              <textarea rows=1 placeholder="${vscode.l10n.t('What do you need help with?')}" id="chat-input" class="input-field"></textarea>
                 <button aria-label="Match Case" id="send-button" class="send-button">
                   <span>
                     ${sendIconSvg}
                   </span>
                 </button>
               </div>
-              <p class="disclaimer">${CopilotDisclaimer}</p>
+              <p class="disclaimer">${vscode.l10n.t(`Make sure AI-generated content is accurate and appropriate before using. <a href="https://go.microsoft.com/fwlink/?linkid=2240145">Learn more</a> | <a href="https://go.microsoft.com/fwlink/?linkid=2189520">View
+              terms</a>`)}</p>
             </div>
           </div>
 
