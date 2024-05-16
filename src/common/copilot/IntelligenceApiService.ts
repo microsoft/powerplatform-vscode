@@ -9,7 +9,7 @@ import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { CopilotResponseFailureEvent, CopilotResponseFailureEventWithMessage, CopilotResponseOkFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
-import { getExtensionType, getExtensionVersion } from "../Utils";
+import { getExtensionType, getExtensionVersion } from "../utilities/Utils";
 import { EXTENSION_NAME } from "../../client/constants";
 import { enableCrossGeoDataFlowInGeo } from "./utils/copilotUtil";
 

@@ -4,10 +4,10 @@
  */
 
 import * as vscode from "vscode";
-import { npsAuthentication } from "../../AuthenticationProvider";
+import { npsAuthentication } from "../../services/AuthenticationProvider";
 import { SurveyConstants } from "../../../web/client/common/constants";
 import fetch from "node-fetch";
-import { getNonce } from "../../Utils";
+import { getNonce } from "../../utilities/Utils";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";

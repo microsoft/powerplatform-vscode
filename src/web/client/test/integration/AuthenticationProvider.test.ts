@@ -8,14 +8,14 @@ import { expect } from "chai";
 import {
     dataverseAuthentication,
     getCommonHeaders,
-} from "../../../../common/AuthenticationProvider";
+} from "../../../../common/services/AuthenticationProvider";
 import vscode from "vscode";
 import * as errorHandler from "../../common/errorHandler";
 import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import * as copilotTelemetry from "../../../../common/copilot/telemetry/copilotTelemetry";
 import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
 import { vscodeExtAppInsightsResourceProvider } from "../../../../common/telemetry-generated/telemetryConfiguration";
-import { VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED } from "../../../../common/TelemetryConstants";
+import { VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED } from "../../../../common/services/TelemetryConstants";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let traceError: any

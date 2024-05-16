@@ -4,14 +4,14 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { COPILOT_UNAVAILABLE } from "./copilot/constants";
-import { ITelemetry } from "../client/telemetry/ITelemetry";
-import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
-import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "./copilot/telemetry/telemetryConstants";
+import { COPILOT_UNAVAILABLE } from "../copilot/constants";
+import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
+import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "../copilot/telemetry/telemetryConstants";
 import { getCrossGeoCopilotDataMovementEnabledFlag } from "./BAPService";
 import { BAPServiceStamp as BAPAPIEndpointStamp } from "./Constants";
 import { IArtemisAPIOrgResponse, IArtemisServiceEndpointInformation, IIntelligenceAPIEndpointInformation } from "./Interfaces";
-import { isCopilotDisabledInGeo, isCopilotSupportedInGeo } from "./copilot/utils/copilotUtil";
+import { isCopilotDisabledInGeo, isCopilotSupportedInGeo } from "../copilot/utils/copilotUtil";
 
 export async function getIntelligenceEndpoint(orgId: string, telemetry: ITelemetry, sessionID: string, environmentId: string): Promise<IIntelligenceAPIEndpointInformation> {
 

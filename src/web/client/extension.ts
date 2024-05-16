@@ -36,14 +36,14 @@ import { IOrgInfo } from "../../common/copilot/model";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
-import { fetchArtemisResponse } from "../../common/ArtemisService";
+import { fetchArtemisResponse } from "../../common/services/ArtemisService";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
 import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
 import { IPortalWebExtensionInitQueryParametersTelemetryData } from "./telemetry/webExtensionTelemetryInterface";
-import { IArtemisAPIOrgResponse } from "../../common/Interfaces";
+import { IArtemisAPIOrgResponse } from "../../common/services/Interfaces";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry

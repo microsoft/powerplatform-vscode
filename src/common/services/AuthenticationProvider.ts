@@ -4,11 +4,11 @@
  */
 
 import * as vscode from "vscode";
-import { showErrorDialog } from "../web/client/common/errorHandler";
-import { ITelemetry } from "../client/telemetry/ITelemetry";
-import { sendTelemetryEvent } from "./copilot/telemetry/copilotTelemetry";
-import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "./copilot/telemetry/telemetryConstants";
-import { getUserAgent } from "./Utils";
+import { showErrorDialog } from "../../web/client/common/errorHandler";
+import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
+import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../copilot/telemetry/telemetryConstants";
+import { getUserAgent } from "../utilities/Utils";
 import {
     VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
     VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
@@ -20,7 +20,7 @@ import {
     VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED,
     VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_FAILED
 } from "./TelemetryConstants";
-import { ERRORS } from "./ErrorConstants";
+import { ERRORS } from "../ErrorConstants";
 import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL } from "./Constants";
 
 
@@ -288,5 +288,3 @@ export async function bapServiceAuthentication(
 
     return accessToken;
 }
-
-
