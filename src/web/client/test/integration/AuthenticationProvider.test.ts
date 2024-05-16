@@ -126,7 +126,7 @@ describe("Authentication Provider", () => {
             sendTelemetryEvent,
             telemetry, {
             eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
-            error: { message: errorMessage } as Error
+            errorMsg: errorMessage
         }
         );
         sinon.assert.calledOnce(_mockgetSession);
