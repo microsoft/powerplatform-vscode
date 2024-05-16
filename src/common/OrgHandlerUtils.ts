@@ -39,7 +39,7 @@ export async function initializeOrgDetails(
     let orgID: string | undefined;
     let orgUrl: string | undefined;
 
-    if (orgDetails) {
+    if (orgDetails && orgDetails.orgID && orgDetails.orgUrl) {
         orgID = orgDetails.orgID;
         orgUrl = orgDetails.orgUrl;
     } else {

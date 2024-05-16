@@ -92,7 +92,9 @@ export function showConnectedOrgMessage(environmentName: string, orgUrl: string)
 export async function showInputBoxAndGetOrgUrl() {
     return vscode.window.showInputBox({
         placeHolder: vscode.l10n.t("Enter the environment URL"),
-        prompt: vscode.l10n.t("Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.")
+        prompt: vscode.l10n.t("Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL."),
+        ignoreFocusOut: true, //Input box should not close on focus out
+
     });
 }
 
