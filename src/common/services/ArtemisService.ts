@@ -69,14 +69,14 @@ async function fetchIslandInfo(endpointDetails: IArtemisServiceEndpointInformati
                 if (!response.ok) {
                     throw new Error('Request failed');
                 }
-                return { stamp: endpointDetail.stamp, response: response.json() };
+                return { stamp: endpointDetail.stamp, response: await response.json() };
             } catch (error) {
                 return null;
             }
         });
 
         const results = await Promise.all(promises);
-        const successfulResponses = results.filter(result => result?.response !== null);
+        const successfulResponses = results.filter(result => result !== null && result.response !== null);
         return successfulResponses;
     } catch (error) {
         sendTelemetryEvent(telemetry, { eventName: CopilotArtemisFailureEvent, copilotSessionId: sessionID, error: error as Error })

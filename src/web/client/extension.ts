@@ -668,7 +668,7 @@ async function logArtemisTelemetry() {
             queryParameters.ORG_ID
         ) as string
 
-        const geoName = fetchArtemisData(orgId);
+        const geoName = await fetchArtemisData(orgId);
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
             { orgId: orgId, geoName: String(geoName) });
     } catch (error) {
