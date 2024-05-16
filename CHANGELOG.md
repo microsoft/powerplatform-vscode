@@ -1,7 +1,7 @@
 # Change Log - Power Platform Extension
 
 ## NEXTRELEASE
-- pac CLI 1.32.6, (May 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- pac CLI 1.32.7, (May 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 
 ## 2.0.49
 Web extension updates
