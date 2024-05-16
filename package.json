@@ -119,6 +119,7 @@
       {
         "id": "powerpages",
         "name": "powerpages",
+        "fullName": "Power Pages Copilot",
         "description": "Power Pages Copilot",
         "isSticky": true
       }
