@@ -37,7 +37,6 @@ import { copilotNotificationPanel, disposeNotificationPanel } from "../../common
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
 import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
@@ -53,7 +52,6 @@ export function activate(context: vscode.ExtensionContext): void {
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             dataBoundary
         );
-    oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
     WebExtensionContext.telemetry.setTelemetryReporter(
         context.extension.id,
@@ -85,7 +83,6 @@ export function activate(context: vscode.ExtensionContext): void {
                             "microsoft-powerapps-portals.webExtension.init",
                     }
                 );
-
                 const { appName, entity, entityId, searchParams } = args;
                 const queryParamsMap = new Map<string, string>();
 
@@ -117,8 +114,10 @@ export function activate(context: vscode.ExtensionContext): void {
                 logOneDSLogger(queryParamsMap);
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
                 const orgGeo = await fetchArtemisData(orgId);
-                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgGeo: orgGeo });
                 oneDSLoggerWrapper.instantiate(orgGeo);
+                oneDSLoggerWrapper.flushCache();
+                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO,{orgGeo: orgGeo});
+                
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
@@ -704,5 +703,6 @@ function logOneDSLogger(queryParamsMap: Map<string, string>) {
         telemetryData.properties.entity = queryParamsMap.get(queryParameters.ENTITY);
         telemetryData.properties.entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
     }
-    oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
+
+    WebExtensionContext.telemetry.pushData1DSLogger(telemetryData.eventName, telemetryData.properties);
 }

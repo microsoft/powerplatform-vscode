@@ -21,6 +21,8 @@ export interface IEvent {
     customMeasurements?: IWebExtensionTelemetryData|  object; // TODO: Use IPortalTelemetryData
     eventSeverity?: SeverityLevel;
     correlationId?: string;
+    errorMessage?:string;
+    error?:Error;
 }
 
 export interface ICustomEvent {
