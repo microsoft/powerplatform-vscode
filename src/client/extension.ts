@@ -40,7 +40,6 @@ import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWr
 import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
-import { PowerPagesChatParticipant } from "../common/chat-participants/powerpages/PowerPagesChatParticipant";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -178,9 +177,6 @@ export async function activate(
     // Add CRUD related callback subscription here
     await handleFileSystemCallbacks(_context, _telemetry);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const PowerPagesChatParticipantInstance = new PowerPagesChatParticipant(_context, _telemetry);
-
     const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
@@ -219,7 +215,7 @@ export async function activate(
             oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
         }
         // Init OrgChangeNotifier instance
-        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
+        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper(), _context);
 
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
