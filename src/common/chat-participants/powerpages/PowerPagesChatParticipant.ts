@@ -8,22 +8,17 @@ import { createChatParticipant } from '../ChatParticipantUtils';
 import { IPowerPagesChatResult } from './PowerPagesChatParticipantTypes';
 import { ITelemetry } from '../../../client/telemetry/ITelemetry';
 import TelemetryReporter from '@vscode/extension-telemetry';
-import { getIntelligenceEndpoint } from '../../ArtemisService';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
-import { COPILOT_UNAVAILABLE, PAC_SUCCESS } from '../../copilot/constants';
-import { createAuthProfileExp } from '../../Utils';
 import { intelligenceAPIAuthentication } from '../../AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
-
-export interface OrgDetails {
-    orgID: string;
-    orgUrl: string;
-}
+import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../OrgHandlerUtils';
+import { getEndpoint } from './PowerPagesChatParticipantUtils';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG } from './PowerPagesChatParticipantConstants';
 
 export class PowerPagesChatParticipant {
-    private static instance : PowerPagesChatParticipant | null = null;
+    private static instance: PowerPagesChatParticipant | null = null;
     private chatParticipant: vscode.ChatParticipant;
     private telemetry: ITelemetry;
     private extensionContext: vscode.ExtensionContext;
@@ -35,9 +30,9 @@ export class PowerPagesChatParticipant {
     private orgID: string | undefined;
     private orgUrl: string | undefined;
 
-    private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter,  pacWrapper?: PacWrapper) {
+    private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {
 
-        this.chatParticipant = createChatParticipant('powerpages', this.handler);
+        this.chatParticipant = createChatParticipant(POWERPAGES_CHAT_PARTICIPANT_ID, this.handler);
 
         //TODO: Check the icon image
         this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.png');
@@ -53,7 +48,7 @@ export class PowerPagesChatParticipant {
         }));
 
         this._disposables.push(orgChangeErrorEvent(async () => {
-            await createAuthProfileExp(this._pacWrapper);
+            this.extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID: undefined, orgUrl: undefined});
         }));
 
     }
@@ -74,17 +69,17 @@ export class PowerPagesChatParticipant {
         request: vscode.ChatRequest,
         _context: vscode.ChatContext,
         stream: vscode.ChatResponseStream,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _token: vscode.CancellationToken
     ): Promise<IPowerPagesChatResult> => {
         // Handle chat requests here
 
-        stream.progress('Working on it...')
+        stream.progress(RESPONSE_AWAITED_MSG)
 
-        await this.intializeOrgDetails();
+        await this.initializeOrgDetails();
 
         if (!this.orgID) {
-            // TODO: Auth Create Experience
-            await createAuthProfileExp(this._pacWrapper);
+            stream.markdown(PAC_AUTH_NOT_FOUND);
             return {
                 metadata: {
                     command: ''
@@ -95,8 +90,7 @@ export class PowerPagesChatParticipant {
         const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.telemetry, '', this.orgID, true);
 
         if (!intelligenceApiAuthResponse) {
-
-            //TODO: Handle auth error and provide a way to re-authenticate
+            stream.markdown(AUTHENTICATION_FAILED_MSG);
 
             return {
                 metadata: {
@@ -107,17 +101,19 @@ export class PowerPagesChatParticipant {
 
         const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
 
-        const { intelligenceEndpoint, geoName }  = await this.getEndpoint(this.orgID, this.telemetry);
+        const { intelligenceEndpoint, geoName } = await getEndpoint(this.orgID, this.telemetry, this.cachedEndpoint);
 
-        const endpointAvailabilityResult = this.handleEndpointAvailability(intelligenceEndpoint, geoName);
+        if (!intelligenceEndpoint || !geoName) {
+            stream.markdown(COPILOT_NOT_AVAILABLE_MSG)
 
-        if(endpointAvailabilityResult !== '') {
-            return endpointAvailabilityResult;
+            return {
+                metadata: {
+                    command: ''
+                }
+            };
         }
 
         const userPrompt = request.prompt;
-
-        //TODO: Handle form and list scenarios
 
         if (!userPrompt) {
 
@@ -130,15 +126,12 @@ export class PowerPagesChatParticipant {
             };
         }
 
-        // export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {}
-        const llmResponse = await sendApiRequest([{displayText: userPrompt, code: ''}], {dataverseEntity:'', entityField: '', fieldType: ''}, this.orgID, intelligenceApiToken, '', '', [], this.telemetry, intelligenceEndpoint, geoName);
+        //TODO: Handle form and list scenarios
+        const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], { dataverseEntity: '', entityField: '', fieldType: '' }, this.orgID, intelligenceApiToken, '', '', [], this.telemetry, intelligenceEndpoint, geoName);
 
         stream.markdown(llmResponse[0].displayText);
 
         stream.markdown('\n```typescript\n' + llmResponse[0].code + '\n```');
-        // TODO: Handle authentication and org change
-
-        console.log(_token)
 
         return {
             metadata: {
@@ -148,67 +141,15 @@ export class PowerPagesChatParticipant {
 
     };
 
-    private async intializeOrgDetails(): Promise<void> {
-
-        if(this.isOrgDetailsInitialized) {
-            return;
-        }
-
-        this.isOrgDetailsInitialized = true;
-
-        const orgDetails:OrgDetails | undefined = this.extensionContext.globalState.get('orgDetails');
-
-        if(orgDetails) {
-            this.orgID = orgDetails.orgID;
-            this.orgUrl = orgDetails.orgUrl;
-        } else {
-            if (this._pacWrapper) {
-                const pacActiveOrg = await this._pacWrapper.activeOrg();
-                if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
-                    this.handleOrgChangeSuccess(pacActiveOrg.Results);
-                } else {
-                    await createAuthProfileExp(this._pacWrapper);
-                }
-            }
-        }
+    private async initializeOrgDetails(): Promise<void> {
+        const { orgID, orgUrl } = await initializeOrgDetails(this.isOrgDetailsInitialized, this.extensionContext, this._pacWrapper);
+        this.orgID = orgID;
+        this.orgUrl = orgUrl;
     }
 
-    private async handleOrgChangeSuccess(orgDetails: ActiveOrgOutput) {
-        this.orgID = orgDetails.OrgId;
-        this.orgUrl = orgDetails.OrgUrl
-
-        this.extensionContext.globalState.update('orgDetails', {orgID: this.orgID, orgUrl: this.orgUrl});
-
-        //TODO: Handle AIB GEOs
-
-        this.cachedEndpoint = null;
+    private async handleOrgChangeSuccess(orgDetails: ActiveOrgOutput): Promise<void> {
+        const { orgID, orgUrl } = handleOrgChangeSuccess(orgDetails, this.extensionContext);
+        this.orgID = orgID;
+        this.orgUrl = orgUrl;
     }
-
-    async getEndpoint(orgID: string, telemetry: ITelemetry) {
-        if (!this.cachedEndpoint) {
-            this.cachedEndpoint = await getIntelligenceEndpoint(orgID, telemetry, '') as { intelligenceEndpoint: string; geoName: string };
-        }
-        return this.cachedEndpoint;
-    }
-
-    handleEndpointAvailability(intelligenceEndpoint: string, geoName: string) {
-        if (!intelligenceEndpoint || !geoName) {
-            return {
-                metadata: {
-                    command: ''
-                }
-            };
-        } else if(intelligenceEndpoint === COPILOT_UNAVAILABLE) {
-            return {
-                metadata: {
-                    command: ''
-                }
-            };
-        }
-
-        //TODO: Handle ECS unavailable scenario
-
-        return '' //TODO return type
-    }
-
 }

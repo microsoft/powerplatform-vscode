@@ -101,9 +101,6 @@
     "onDebug",
     "onFileSystem:powerplatform-vfs"
   ],
-  "extensionDependencies": [
-    "github.copilot-chat"
-  ],
   "enabledApiProposals": [
     "chatParticipant",
     "chatVariableResolver",
@@ -124,6 +121,7 @@
       {
         "id": "powerpages",
         "name": "powerpages",
+        "fullName": "Power Pages Copilot",
         "description": "Power Pages Copilot",
         "isSticky": true
       }

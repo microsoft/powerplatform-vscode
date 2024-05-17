@@ -108,6 +108,7 @@ declare module 'vscode' {
 		/**
 		 * Arbitrary metadata for this result. Can be anything, but must be JSON-stringifyable.
 		 */
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		readonly metadata?: { readonly [key: string]: any };
 	}
 
