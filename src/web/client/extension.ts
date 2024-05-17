@@ -19,7 +19,7 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
+import { getEnvironmentIdFromUrl, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
@@ -36,13 +36,14 @@ import { IOrgInfo } from "../../common/copilot/model";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
-import { fetchArtemisResponse } from "../../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
 import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
 import { IPortalWebExtensionInitQueryParametersTelemetryData } from "./telemetry/webExtensionTelemetryInterface";
+import { IArtemisAPIOrgResponse } from "../../common/services/Interfaces";
+import { ArtemisService } from "../../common/services/ArtemisService";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -591,6 +592,7 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             orgId: WebExtensionContext.urlParametersMap.get(
                 queryParameters.ORG_ID
             ) as string,
+            environmentId: getEnvironmentIdFromUrl(),
             environmentName: "",
             activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string,
             tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,
@@ -650,13 +652,13 @@ function isActiveDocument(fileFsPath: string): boolean {
 }
 
 async function fetchArtemisData(orgId: string): Promise<string> {
-    const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
-    if (!artemisResponse) {
+    const artemisResponse = await ArtemisService.fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+    if (artemisResponse === null || artemisResponse.length === 0) {
         // Todo: Log in error telemetry. Runtime maintains another table for this kind of failure. We should do the same.
         return '';
     }
 
-    return artemisResponse[0].geoName as string;
+    return (artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse).geoName as string;
 }
 
 async function logArtemisTelemetry() {
@@ -666,7 +668,7 @@ async function logArtemisTelemetry() {
             queryParameters.ORG_ID
         ) as string
 
-        const geoName = fetchArtemisData(orgId);
+        const geoName = await fetchArtemisData(orgId);
         WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
             { orgId: orgId, geoName: String(geoName) });
     } catch (error) {

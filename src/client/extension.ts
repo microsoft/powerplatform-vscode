@@ -35,11 +35,12 @@ import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
-import { fetchArtemisResponse } from "../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
+import { IArtemisAPIOrgResponse } from "../common/services/Interfaces";
+import { ArtemisService } from "../common/services/ArtemisService";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -191,11 +192,11 @@ export async function activate(
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
-            const artemisResponse = await fetchArtemisResponse(orgID, _telemetry);
-            if (artemisResponse) {
-                const { geoName, geoLongName } = artemisResponse[0];
+            const artemisResponse = await ArtemisService.fetchArtemisResponse(orgID, _telemetry);
+            if (artemisResponse !== null && artemisResponse.length > 0) {
+                const { geoName, geoLongName } = artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse;
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
-                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, {...orgDetails, orgGeo: geoName});
+                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName });
             }
         })
     );
