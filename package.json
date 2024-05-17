@@ -104,6 +104,11 @@
     "onDebug",
     "onFileSystem:powerplatform-vfs"
   ],
+  "enabledApiProposals": [
+    "chatParticipant",
+    "chatVariableResolver",
+    "languageModels"
+  ],
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",

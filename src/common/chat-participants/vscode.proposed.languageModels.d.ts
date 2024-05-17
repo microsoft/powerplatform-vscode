@@ -196,6 +196,7 @@ declare module 'vscode' {
 		 * A set of options that control the behavior of the language model. These options are specific to the language model
 		 * and need to be lookup in the respective documentation.
 		 */
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		modelOptions?: { [name: string]: any };
 	}
 
