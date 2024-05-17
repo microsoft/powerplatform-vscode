@@ -95,9 +95,6 @@ export async function activate(
         );
     }
 
-    vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
-    vscode.workspace.textDocuments.forEach(didOpenTextDocument);
-
     // portal web view panel
     _context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -216,6 +213,9 @@ export async function activate(
         }
         // Init OrgChangeNotifier instance
         OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
+
+        vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
+        vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
