@@ -4,18 +4,19 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { GEO_REQUIRES_CROSS_GEO_OPTIONS, INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse, UserPrompt } from "./constants";
+import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse, UserPrompt } from "./constants";
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { CopilotResponseFailureEvent, CopilotResponseFailureEventWithMessage, CopilotResponseOkFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
-import { getExtensionType, getExtensionVersion } from "../Utils";
+import { getExtensionType, getExtensionVersion } from "../utilities/Utils";
 import { EXTENSION_NAME } from "../../client/constants";
+import { enableCrossGeoDataFlowInGeo } from "./utils/copilotUtil";
 
 const clientType = EXTENSION_NAME + '-' + getExtensionType();
 const clientVersion = getExtensionVersion();
 
-export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {
+export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null, crossGeoDataMovementEnabledPPACFlag = false) {
 
     if (!aibEndpoint) {
         return NetworkError;
@@ -42,11 +43,11 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
             }
         },
         "crossGeoOptions": {
-            "enableCrossGeoCall": false
+            "enableCrossGeoCall": crossGeoDataMovementEnabledPPACFlag
         }
     };
 
-    if (geoName && GEO_REQUIRES_CROSS_GEO_OPTIONS.includes(geoName)) {
+    if (geoName && enableCrossGeoDataFlowInGeo().includes(geoName)) {
         requestBody = {
             ...requestBody,
             "crossGeoOptions": {
