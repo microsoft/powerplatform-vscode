@@ -5,7 +5,7 @@
 
 import path from "path";
 import WebExtensionContext from "../WebExtensionContext";
-import { getCommonHeaders, graphClientAuthentication } from "../../../common/AuthenticationProvider";
+import { getCommonHeaders, graphClientAuthentication } from "../../../common/services/AuthenticationProvider";
 import * as Constants from "../common/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 

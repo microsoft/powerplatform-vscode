@@ -15,7 +15,7 @@ import { BAD_REQUEST } from "../../common/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import { IAttributePath } from "../../common/interfaces";
 import { telemetryEventNames } from "../../telemetry/constants";
-import { getUserAgent } from "../../../../common/Utils";
+import { getUserAgent } from "../../../../common/utilities/Utils";
 
 describe("remoteSaveProvider", () => {
     afterEach(() => {
