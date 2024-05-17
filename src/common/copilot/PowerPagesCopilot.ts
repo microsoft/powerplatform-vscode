@@ -17,13 +17,13 @@ import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
-import { getIntelligenceEndpoint } from "../services/ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
 import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../services/Constants";
+import { ArtemisService } from "../services/ArtemisService";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -397,7 +397,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         sessionID = uuidv4(); // Generate a new session ID on org change
         sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
-        const intelligenceAPIEndpointInfo = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId ?? '');
+        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId ?? '');
         this.aibEndpoint = intelligenceAPIEndpointInfo.intelligenceEndpoint;
         this.geoName = intelligenceAPIEndpointInfo.geoName;
         this.crossGeoDataMovementEnabledPPACFlag = intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag;
