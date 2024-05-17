@@ -116,9 +116,9 @@ export function activate(context: vscode.ExtensionContext): void {
                 );
                 logOneDSLogger(queryParamsMap);
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
-                const orgGeo = await fetchArtemisData(orgId);
-                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgGeo: orgGeo });
-                oneDSLoggerWrapper.instantiate(orgGeo);
+                const { geoName, geoLongName } = await fetchArtemisData(orgId);
+                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: geoName });
+                oneDSLoggerWrapper.instantiate(geoName, geoLongName);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
@@ -172,8 +172,6 @@ export function activate(context: vscode.ExtensionContext): void {
                                         context.extensionUri
                                     );
                                 }
-
-                                await logArtemisTelemetry();
                             }
                             break;
                         default:
@@ -651,32 +649,18 @@ function isActiveDocument(fileFsPath: string): boolean {
     );
 }
 
-async function fetchArtemisData(orgId: string): Promise<string> {
+async function fetchArtemisData(orgId: string): Promise<IArtemisAPIOrgResponse> {
     const artemisResponse = await ArtemisService.fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
     if (artemisResponse === null || artemisResponse.length === 0) {
-        // Todo: Log in error telemetry. Runtime maintains another table for this kind of failure. We should do the same.
-        return '';
-    }
-
-    return (artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse).geoName as string;
-}
-
-async function logArtemisTelemetry() {
-
-    try {
-        const orgId = WebExtensionContext.urlParametersMap.get(
-            queryParameters.ORG_ID
-        ) as string
-
-        const geoName = await fetchArtemisData(orgId);
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
-            { orgId: orgId, geoName: String(geoName) });
-    } catch (error) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
-            logArtemisTelemetry.name,
-            ARTEMIS_RESPONSE_FAILED);
+            fetchArtemisData.name,
+            ARTEMIS_RESPONSE_FAILED
+        );
+        return { geo: "", geoLongName: "" } as unknown as IArtemisAPIOrgResponse;
     }
+
+    return artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse;
 }
 
 function logOneDSLogger(queryParamsMap: Map<string, string>) {
