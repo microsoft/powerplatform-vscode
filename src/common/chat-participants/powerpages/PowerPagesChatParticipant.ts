@@ -10,15 +10,13 @@ import { ITelemetry } from '../../../client/telemetry/ITelemetry';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
-import { ADX_ENTITYFORM, ADX_ENTITYLIST } from '../../copilot/constants';
-import { getActiveEditorContent } from '../../utilities/Utils';
-import { dataverseAuthentication, intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
+import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
-import { getEntityName, getFormXml, getEntityColumns } from '../../copilot/dataverseMetadata';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { getEndpoint } from './PowerPagesChatParticipantUtils';
+import { getComponentInfo, getEndpoint } from './PowerPagesChatParticipantUtils';
+import { getActiveEditorContent } from '../../utilities/Utils';
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
     private chatParticipant: vscode.ChatParticipant;
@@ -133,26 +131,9 @@ export class PowerPagesChatParticipant {
                 };
             }
 
-            const { activeFileParams } = getActiveEditorContent();
+            const {activeFileParams} = getActiveEditorContent();
 
-            let metadataInfo = { entityName: '', formName: '' };
-            let componentInfo: string[] = [];
-
-
-            if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
-                metadataInfo = await getEntityName(this.telemetry, '', activeFileParams.dataverseEntity);
-
-                const dataverseToken = (await dataverseAuthentication(this.telemetry, this.orgUrl ?? '', true)).accessToken;
-
-                if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
-                    const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, this.orgUrl ?? '', dataverseToken, this.telemetry, 'sessionID');
-                    componentInfo = formColumns;
-                } else {
-                    const entityColumns = await getEntityColumns(metadataInfo.entityName, this.orgUrl ?? '', dataverseToken, this.telemetry, 'sessionID');
-                    componentInfo = entityColumns;
-                }
-
-            }
+            const componentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams);
 
             const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', '', componentInfo, this.telemetry, intelligenceEndpoint, geoName);
 
