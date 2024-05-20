@@ -4,7 +4,7 @@
  */
 
 import jwt_decode from 'jwt-decode';
-import { npsAuthentication } from "../../../common/AuthenticationProvider";
+import { npsAuthentication } from "../../../common/services/AuthenticationProvider";
 import { SurveyConstants, httpMethod, queryParameters } from '../common/constants';
 import { RequestInit } from 'node-fetch'
 import WebExtensionContext from '../WebExtensionContext';

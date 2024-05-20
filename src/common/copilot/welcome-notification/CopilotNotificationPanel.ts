@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { getNonce, openWalkthrough } from "../../Utils";
+import { getNonce, openWalkthrough } from "../../utilities/Utils";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { CopilotNotificationDoNotShowChecked, CopilotTryNotificationClickedEvent, CopilotWalkthroughEvent, CopilotNotificationDoNotShowUnchecked } from "../telemetry/telemetryConstants";
 import { COPILOT_NOTIFICATION_DISABLED } from "../constants";

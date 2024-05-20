@@ -6,24 +6,24 @@
 
 import * as vscode from "vscode";
 import { sendApiRequest } from "./IntelligenceApiService";
-import { dataverseAuthentication, intelligenceAPIAuthentication } from "../AuthenticationProvider";
+import { dataverseAuthentication, intelligenceAPIAuthentication } from "../services/AuthenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IOrgInfo } from './model';
-import { createAuthProfileExp, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../Utils";
+import { createAuthProfileExp, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
-import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
-import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml, getDefaultLanguageCode } from "./dataverseMetadata";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
 import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
+import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../services/Constants";
+import { ArtemisService } from "../services/ArtemisService";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -34,6 +34,7 @@ let orgID: string;
 let environmentName: string;
 let activeOrgUrl: string;
 let tenantId: string | undefined;
+let environmentId: string;
 
 declare const IS_DESKTOP: string | undefined;
 //TODO: Check if it can be converted to singleton
@@ -47,6 +48,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private telemetry: ITelemetry;
     private aibEndpoint: string | null = null;
     private geoName: string | null = null;
+    private crossGeoDataMovementEnabledPPACFlag = false;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
@@ -108,15 +110,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             orgChangeEvent((orgDetails: ActiveOrgOutput) => this.handleOrgChangeSuccess(orgDetails))
         );
 
-        this._disposables.push(
-            orgChangeErrorEvent(async () => await createAuthProfileExp(this._pacWrapper))
-        );
+        if(this._view?.visible) {
+            this._disposables.push(orgChangeErrorEvent(async () => await createAuthProfileExp(this._pacWrapper)));
+        }
 
         if (orgInfo) {
             orgID = orgInfo.orgId;
             environmentName = orgInfo.environmentName;
             activeOrgUrl = orgInfo.activeOrgUrl;
             tenantId = orgInfo.tenantId;
+            environmentId = orgInfo.environmentId;
         }
     }
 
@@ -227,7 +230,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     break;
                 }
                 case "newUserPrompt": {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, isSuggestedPrompt: String(data.value.isSuggestedPrompt) }); //TODO: Add active Editor info
+                    sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, isSuggestedPrompt: String(data.value.isSuggestedPrompt), crossGeoDataMovementEnabledPPACFlag: this.crossGeoDataMovementEnabledPPACFlag }); //TODO: Add active Editor info
                     orgID
                         ? (async () => {
                             const { activeFileParams } = getActiveEditorContent();
@@ -375,7 +378,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                 const defaultLanguageCode = await getDefaultLanguageCode(activeOrgUrl, this.telemetry, sessionID, dataverseToken);
 
-                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName, defaultLanguageCode);
+                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName, this.crossGeoDataMovementEnabledPPACFlag, defaultLanguageCode);
             })
             .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
@@ -393,13 +396,16 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         environmentName = activeOrg.FriendlyName;
         userID = activeOrg.UserId;
         activeOrgUrl = activeOrg.OrgUrl;
+        environmentId = activeOrg.EnvironmentId
 
         sessionID = uuidv4(); // Generate a new session ID on org change
         sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
-        const { intelligenceEndpoint, geoName } = await getIntelligenceEndpoint(orgID, this.telemetry, sessionID);
-        this.aibEndpoint = intelligenceEndpoint;
-        this.geoName = geoName;
+        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId);
+        this.aibEndpoint = intelligenceAPIEndpointInfo.intelligenceEndpoint;
+        this.geoName = intelligenceAPIEndpointInfo.geoName;
+        this.crossGeoDataMovementEnabledPPACFlag = intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag;
+
 
         if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
             sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
