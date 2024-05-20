@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { RequestInit } from "node-fetch";
-import { getCommonHeadersForDataverse } from "../../../common/AuthenticationProvider";
+import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
 import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { PortalsFS } from "../dal/fileSystemProvider";

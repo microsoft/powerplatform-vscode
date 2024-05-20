@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import {
     dataverseAuthentication,
     getCommonHeadersForDataverse,
-} from "../../common/AuthenticationProvider";
+} from "../../common/services/AuthenticationProvider";
 import * as Constants from "./common/constants";
 import {
     getDataSourcePropertiesMap,
