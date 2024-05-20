@@ -3,13 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-
 import * as vscode from "vscode";
-import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../client/constants";
-import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "./OneDSLoggerTelemetry/telemetryConstants";
-import { PacWrapper } from "../client/pac/PacWrapper";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "./copilot/constants";
-import { IActiveFileData, IActiveFileParams } from "./copilot/model";
+import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../client/constants";
+import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
+import { PacWrapper } from "../../client/pac/PacWrapper";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "../copilot/constants";
+import { IActiveFileData, IActiveFileParams } from "../copilot/model";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -120,7 +119,7 @@ export function openWalkthrough(extensionUri: vscode.Uri) {
     vscode.commands.executeCommand("markdown.showPreview", walkthroughUri);
 }
 
-export function isCustomTelemetryEnabled():boolean {
+export function isCustomTelemetryEnabled(): boolean {
     const isCustomTelemetryEnabled = vscode.workspace
         .getConfiguration(SETTINGS_EXPERIMENTAL_STORE_NAME)
         .get(CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME);
@@ -133,7 +132,7 @@ export function getUserAgent(): string {
     return userAgent
         .replace("{product}", EXTENSION_NAME)
         .replace("{product-version}", getExtensionVersion())
-        .replace("{comment}", "(" + getExtensionType()+'; )');
+        .replace("{comment}", "(" + getExtensionType() + '; )');
 }
 
 export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
@@ -142,7 +141,7 @@ export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
         return;
     }
 
-    if(!pacWrapper){
+    if (!pacWrapper) {
         vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
         return;
     }

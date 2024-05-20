@@ -25,6 +25,7 @@ export interface IActiveFileData {
 export interface IOrgInfo {
     orgId: string;
     environmentName: string;
+    environmentId: string;
     activeOrgUrl: string;
     tenantId?: string;
 }

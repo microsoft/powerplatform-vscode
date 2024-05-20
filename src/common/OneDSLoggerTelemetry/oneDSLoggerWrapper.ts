@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { isCustomTelemetryEnabled } from "../Utils";
+import { isCustomTelemetryEnabled } from "../utilities/Utils";
 import { OneDSLogger } from "./oneDSLogger";
 
 //// Wrapper class of oneDSLogger for below purposes
@@ -23,7 +23,7 @@ export class oneDSLoggerWrapper {
         return this.instance;
     }
 
-    static instantiate(geo?:string, geoLongName?: string){
+    static instantiate(geo?: string, geoLongName?: string) {
         oneDSLoggerWrapper.instance = new oneDSLoggerWrapper(geo, geoLongName);
     }
 
