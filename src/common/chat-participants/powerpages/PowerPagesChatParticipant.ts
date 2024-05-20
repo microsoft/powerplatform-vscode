@@ -11,14 +11,14 @@ import TelemetryReporter from '@vscode/extension-telemetry';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { ADX_ENTITYFORM, ADX_ENTITYLIST } from '../../copilot/constants';
-import { getActiveEditorContent } from '../../Utils';
-import { dataverseAuthentication, intelligenceAPIAuthentication } from '../../AuthenticationProvider';
+import { getActiveEditorContent } from '../../utilities/Utils';
+import { dataverseAuthentication, intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
 import { getEntityName, getFormXml, getEntityColumns } from '../../copilot/dataverseMetadata';
 import { NO_PROMPT_MESSAGE } from './Constants';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG } from './PowerPagesChatParticipantConstants';
-import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../OrgHandlerUtils';
+import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { getEndpoint } from './PowerPagesChatParticipantUtils';
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
