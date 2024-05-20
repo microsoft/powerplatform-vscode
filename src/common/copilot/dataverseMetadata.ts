@@ -231,22 +231,42 @@ export async function getDefaultLanguageCode(orgUrl:string, telemetry: ITelemetr
     return languageCode;
 }
 
-async function readWebsiteYAML(filePath: string): Promise<string | null> {
-    const workspaceFolderPath = vscode.workspace.getWorkspaceFolder(
-        vscode.Uri.file(filePath)
-    )?.uri.fsPath;
-    if (workspaceFolderPath) {
-        const websiteYAMLFilePath = path.join(
-            workspaceFolderPath,
-            "website.yml"
-        );
+async function findWebsiteYAML(
+    dir: string,
+    workspaceFolderPath: string
+): Promise<string | null> {
+    const websiteYAMLFilePath = path.join(dir, "website.yml");
+    try {
+        const diskRead = await import("fs");
 
-        const diskRead = await import('fs');
-        if (diskRead.existsSync(websiteYAMLFilePath)) {
-            const yamlContent = diskRead.readFileSync(websiteYAMLFilePath, "utf8");
-            return yamlContent;
+        await diskRead.promises.access(websiteYAMLFilePath, diskRead.constants.F_OK);
+        const yamlContent = diskRead.readFileSync(
+            websiteYAMLFilePath,
+            "utf8"
+        );
+        return yamlContent;
+    } catch (err) {
+        const parentDir = path.dirname(dir);
+        if (
+            parentDir === dir ||
+            parentDir.startsWith(workspaceFolderPath) === false
+        ) {
+            return null;
         }
+        return await findWebsiteYAML(parentDir, workspaceFolderPath);
     }
+}
+
+async function readWebsiteYAML(filePath: string): Promise<string | null> {
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(
+        vscode.Uri.file(filePath)
+    );
+
+    if (workspaceFolder) {
+        const workspaceFolderPath = workspaceFolder.uri.fsPath;
+        return await findWebsiteYAML(filePath, workspaceFolderPath);
+    }
+
     return null;
 }
 
