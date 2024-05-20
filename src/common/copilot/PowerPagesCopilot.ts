@@ -34,7 +34,7 @@ let orgID: string;
 let environmentName: string;
 let activeOrgUrl: string;
 let tenantId: string | undefined;
-let environmentId: string | undefined;
+let environmentId: string;
 
 declare const IS_DESKTOP: string | undefined;
 //TODO: Check if it can be converted to singleton
@@ -393,11 +393,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         environmentName = activeOrg.FriendlyName;
         userID = activeOrg.UserId;
         activeOrgUrl = activeOrg.OrgUrl;
+        environmentId = activeOrg.EnvironmentId
 
         sessionID = uuidv4(); // Generate a new session ID on org change
         sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
-        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId ?? '');
+        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId);
         this.aibEndpoint = intelligenceAPIEndpointInfo.intelligenceEndpoint;
         this.geoName = intelligenceAPIEndpointInfo.geoName;
         this.crossGeoDataMovementEnabledPPACFlag = intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag;
