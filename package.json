@@ -5,10 +5,7 @@
   "version": "8.5.0",
   "enabledApiProposals": [
     "fileSearchProvider",
-    "textSearchProvider",
-    "chatParticipant",
-    "chatVariableResolver",
-    "languageModels"
+    "textSearchProvider"
   ],
   "scripts": {
     "clean": "scorch",
