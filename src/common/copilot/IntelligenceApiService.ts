@@ -15,7 +15,7 @@ import { EXTENSION_NAME } from "../../client/constants";
 const clientType = EXTENSION_NAME + '-' + getExtensionType();
 const clientVersion = getExtensionVersion();
 
-export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {
+export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null, defaultLanguageCode: string) {
 
     if (!aibEndpoint) {
         return NetworkError;
@@ -39,6 +39,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
                 "targetColumns": entityColumns,
                 "clientType": clientType,
                 "clientVersion": clientVersion,
+                "defaultLanguageCode": defaultLanguageCode,
             }
         },
         "crossGeoOptions": {

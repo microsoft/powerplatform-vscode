@@ -9,8 +9,8 @@ import * as vscode from "vscode";
 import yaml from 'yaml';
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
-import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
-import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
+import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotGetLanguageCodeFailureEvent, CopilotGetLanguageCodeSuccessEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
+import { getEntityMetadata, getDefaultLanguageCodeWeb } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "@xmldom/xmldom";
 import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
 import { getUserAgent } from "../Utils";
@@ -220,3 +220,109 @@ function parseYamlContent(content: string, telemetry: ITelemetry, sessionID: str
     }
 }
 
+export async function getDefaultLanguageCode(orgUrl:string, telemetry: ITelemetry, sessionID: string, dataverseToken: string) {
+    let languageCode = vscode.env.language;
+    if (IS_DESKTOP) {
+        const lcid = await fetchLanguageCodeId();
+        languageCode = await fetchLanguageCodeFromAPI(orgUrl, dataverseToken, telemetry, sessionID, lcid);
+    } else {
+        languageCode = getDefaultLanguageCodeWeb();
+    }
+    return languageCode;
+}
+
+async function readWebsiteYAML(filePath: string): Promise<string | null> {
+    const workspaceFolderPath = vscode.workspace.getWorkspaceFolder(
+        vscode.Uri.file(filePath)
+    )?.uri.fsPath;
+    if (workspaceFolderPath) {
+        const websiteYAMLFilePath = path.join(
+            workspaceFolderPath,
+            "website.yml"
+        );
+
+        const diskRead = await import('fs');
+        if (diskRead.existsSync(websiteYAMLFilePath)) {
+            const yamlContent = diskRead.readFileSync(websiteYAMLFilePath, "utf8");
+            return yamlContent;
+        }
+    }
+    return null;
+}
+
+async function fetchLanguageCodeId(): Promise<string> {
+    try {
+        let activeFilePath = "";
+        if (vscode.window.activeTextEditor) {
+            activeFilePath = vscode.window.activeTextEditor.document.uri.fsPath;
+        } else if (vscode.workspace.workspaceFolders?.length === 1) {
+            activeFilePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+        } else {
+            // Handle multiple workspace folders when no active text editor is present
+            return "";
+        }
+
+        const yamlContent = await readWebsiteYAML(activeFilePath);
+        if (yamlContent) {
+            const parsedYAML = yaml.parse(yamlContent);
+            const languageCodeId = parsedYAML["adx_website_language"];
+            return languageCodeId;
+        } else {
+            return "";
+        }
+    } catch (error) {
+        return "";
+    }
+}
+
+async function fetchLanguageCodeFromAPI(
+    orgUrl: string,
+    apiToken: string,
+    telemetry: ITelemetry,
+    sessionID: string,
+    lcid: string
+): Promise<string> {
+    try {
+        const dataverseApiUrl = `${
+            orgUrl.endsWith("/") ? orgUrl : orgUrl.concat("/")
+        }api/data/v9.2/adx_portallanguages`;
+
+        const requestOptions: RequestInit = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": getUserAgent(),
+            },
+        };
+
+        const startTime = performance.now();
+        const portalLanguagesResponse = await fetchJsonResponse(
+            dataverseApiUrl,
+            requestOptions
+        );
+        const endTime = performance.now();
+        const responseTime = endTime - startTime || 0;
+
+        const matchingLanguage = portalLanguagesResponse.value.find(
+            (language: any) => language.adx_lcid === parseInt(lcid, 10)
+        );
+
+        sendTelemetryEvent(telemetry, {
+            eventName: CopilotGetLanguageCodeSuccessEvent,
+            copilotSessionId: sessionID,
+            durationInMills: responseTime,
+            orgUrl: orgUrl,
+        });
+
+        return matchingLanguage?.adx_languagecode ?? vscode.env.language;
+    } catch (error) {
+        sendTelemetryEvent(telemetry, {
+            eventName: CopilotGetLanguageCodeFailureEvent,
+            copilotSessionId: sessionID,
+            error: error as Error,
+            orgUrl: orgUrl,
+        });
+        return vscode.env.language;
+    }
+}

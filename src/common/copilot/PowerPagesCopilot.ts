@@ -20,7 +20,7 @@ import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../web/client/common/constants";
 import { getIntelligenceEndpoint } from "../ArtemisService";
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
+import { getEntityColumns, getEntityName, getFormXml, getDefaultLanguageCode } from "./dataverseMetadata";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
 import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
@@ -358,10 +358,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 let metadataInfo = { entityName: '', formName: '' };
                 let componentInfo: string[] = [];
 
+                const dataverseToken = (await dataverseAuthentication(telemetry, activeOrgUrl, true)).accessToken;
+
                 if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
                     metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
-
-                    const dataverseToken = (await dataverseAuthentication(telemetry, activeOrgUrl, true)).accessToken;
 
                     if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
                         const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, telemetry, sessionID);
@@ -372,7 +372,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     }
 
                 }
-                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName);
+
+                const defaultLanguageCode = await getDefaultLanguageCode(activeOrgUrl, this.telemetry, sessionID, dataverseToken);
+
+                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName, defaultLanguageCode);
             })
             .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });

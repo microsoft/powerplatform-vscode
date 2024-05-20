@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { IAttributePath } from "../common/interfaces";
 import { SchemaEntityMetadata } from "../schema/constants";
+import { queryParameters } from "../common/constants";
 
 // File utility functions
 export function fileHasDirtyChanges(fileFsPath: string) {
@@ -87,6 +88,18 @@ export function doesFileExist(fileFsPath: string) {
 
 export function getFileName(fsPath: string) {
     return fsPath.split(/[\\/]/).pop();
+}
+
+export function getDefaultLanguageCodeWeb() {
+    const lcid =
+        WebExtensionContext.websiteIdToLanguage.get(
+            WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID) as string
+        ) ?? "";
+
+    const defaultLanguageCode =
+        WebExtensionContext.languageIdCodeMap.get(lcid) ?? vscode.env.language;
+
+    return defaultLanguageCode;
 }
 
 // Entity utility functions

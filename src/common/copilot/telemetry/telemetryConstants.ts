@@ -37,3 +37,5 @@ export const CopilotNotAvailableECSConfig = 'CopilotNotAvailableECSConfig';
 export const CopilotExplainCode = 'CopilotExplainCode';
 export const CopilotExplainCodeSize = 'CopilotExplainCodeSize';
 export const CopilotNpsAuthenticationCompleted = "CopilotNpsAuthenticationCompleted";
+export const CopilotGetLanguageCodeSuccessEvent = "CopilotGetLanguageCodeSuccessEvent";
+export const CopilotGetLanguageCodeFailureEvent = "CopilotGetLanguageCodeFailureEvent";
