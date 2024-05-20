@@ -3,13 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-
 import * as vscode from "vscode";
-import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../client/constants";
-import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "./OneDSLoggerTelemetry/telemetryConstants";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "./copilot/constants";
-import { IActiveFileData, IActiveFileParams } from "./copilot/model";
-import { PacWrapper } from "../client/pac/PacWrapper";
+import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../client/constants";
+import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
+import { PacWrapper } from "../../client/pac/PacWrapper";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "../copilot/constants";
+import { IActiveFileData, IActiveFileParams } from "../copilot/model";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -92,9 +91,7 @@ export function showConnectedOrgMessage(environmentName: string, orgUrl: string)
 export async function showInputBoxAndGetOrgUrl() {
     return vscode.window.showInputBox({
         placeHolder: vscode.l10n.t("Enter the environment URL"),
-        prompt: vscode.l10n.t("Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL."),
-        ignoreFocusOut: true, //Input box should not close on focus out
-
+        prompt: vscode.l10n.t("Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.")
     });
 }
 

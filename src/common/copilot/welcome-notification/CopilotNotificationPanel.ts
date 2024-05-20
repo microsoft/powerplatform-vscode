@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { getNonce, openWalkthrough } from "../../Utils";
+import { getNonce, openWalkthrough } from "../../utilities/Utils";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { CopilotNotificationDoNotShowChecked, CopilotTryNotificationClickedEvent, CopilotWalkthroughEvent, CopilotNotificationDoNotShowUnchecked } from "../telemetry/telemetryConstants";
 import { COPILOT_NOTIFICATION_DISABLED } from "../constants";
@@ -107,7 +107,7 @@ function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vs
       <div class="container">
         <div class="container-text">
         <h1 id="heading">${vscode.l10n.t("Let Copilot help you code")}</h1>
-        <p id="welcome-text">${vscode.l10n.t("Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.")}</p>
+        <p id="welcome-text">${vscode.l10n.t("Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ")}</p>
         <button id="try-button">${vscode.l10n.t("Try Copilot for Power Pages")}</button>
         <a href="#" class="walkthrough-content" id="walkthroughLink"> <span id="walk-text">${vscode.l10n.t("Learn more about Copilot")} </span> <img src="${arrowImageUri}" id="arrow-icon"> </a>
         </div>

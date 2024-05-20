@@ -15,7 +15,7 @@ import {
     setFileContent,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getMappingEntityContent, getMetadataInfo, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
-import { getCommonHeadersForDataverse } from "../../../common/AuthenticationProvider";
+import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
 import * as Constants from "../common/constants";
 import { showErrorDialog } from "../common/errorHandler";
 import { PortalsFS } from "./fileSystemProvider";
