@@ -155,7 +155,6 @@ export class PowerPagesChatParticipant {
 
             }
 
-            // export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null) {}
             const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', '', componentInfo, this.telemetry, intelligenceEndpoint, geoName);
 
             llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
@@ -169,8 +168,6 @@ export class PowerPagesChatParticipant {
             });
 
         }
-
-        console.log(_token)
 
         return {
             metadata: {
