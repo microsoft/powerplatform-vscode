@@ -110,9 +110,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             orgChangeEvent((orgDetails: ActiveOrgOutput) => this.handleOrgChangeSuccess(orgDetails))
         );
 
-        this._disposables.push(
-            orgChangeErrorEvent(async () => await createAuthProfileExp(this._pacWrapper))
-        );
+        if(this._view?.visible) {
+            this._disposables.push(orgChangeErrorEvent(async () => await createAuthProfileExp(this._pacWrapper)));
+        }
 
         if (orgInfo) {
             orgID = orgInfo.orgId;
