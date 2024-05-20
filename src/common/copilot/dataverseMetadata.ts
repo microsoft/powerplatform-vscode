@@ -305,6 +305,7 @@ async function fetchLanguageCodeFromAPI(
         const responseTime = endTime - startTime || 0;
 
         const matchingLanguage = portalLanguagesResponse.value.find(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (language: any) => language.adx_lcid === parseInt(lcid, 10)
         );
 
