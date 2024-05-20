@@ -4,10 +4,10 @@
  */
 
 import { ExtensionContext } from 'vscode';
-import { ActiveOrgOutput } from '../client/pac/PacTypes';
-import { PacWrapper } from '../client/pac/PacWrapper';
-import { OrgDetails } from './chat-participants/powerpages/PowerPagesChatParticipantTypes';
-import { PAC_SUCCESS } from './copilot/constants';
+import { ActiveOrgOutput } from '../../client/pac/PacTypes';
+import { PacWrapper } from '../../client/pac/PacWrapper';
+import { OrgDetails } from '../chat-participants/powerpages/PowerPagesChatParticipantTypes';
+import { PAC_SUCCESS } from '../copilot/constants';
 import { createAuthProfileExp } from './Utils';
 
 export const ORG_DETAILS_KEY = 'orgDetails';

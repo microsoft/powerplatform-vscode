@@ -10,12 +10,12 @@ import { ITelemetry } from '../../../client/telemetry/ITelemetry';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
-import { intelligenceAPIAuthentication } from '../../AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
-import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../OrgHandlerUtils';
+import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { getEndpoint } from './PowerPagesChatParticipantUtils';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG } from './PowerPagesChatParticipantConstants';
+import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -48,7 +48,7 @@ export class PowerPagesChatParticipant {
         }));
 
         this._disposables.push(orgChangeErrorEvent(async () => {
-            this.extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID: undefined, orgUrl: undefined});
+            this.extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID: undefined, orgUrl: undefined });
         }));
 
     }
