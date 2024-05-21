@@ -16,7 +16,7 @@ import { enableCrossGeoDataFlowInGeo } from "./utils/copilotUtil";
 const clientType = EXTENSION_NAME + '-' + getExtensionType();
 const clientVersion = getExtensionVersion();
 
-export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null, crossGeoDataMovementEnabledPPACFlag = false, defaultPortalLanguageCode: string) {
+export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null, defaultPortalLanguageCode: string, crossGeoDataMovementEnabledPPACFlag = false) {
 
     if (!aibEndpoint) {
         return NetworkError;
