@@ -185,7 +185,7 @@ export async function findWebsiteYAML(
     dir: string,
     workspaceFolderPath: string
 ): Promise<string | null> {
-    const websiteYAMLFilePath = path.join(dir, "website.yml");
+    const websiteYAMLFilePath = vscode.Uri.joinPath(vscode.Uri.file(dir), "website.yml").fsPath;
 
     const diskRead = await import("fs");
 
