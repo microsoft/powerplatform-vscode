@@ -12,6 +12,20 @@ import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { CopilotGetLanguageCodeFailureEvent, CopilotGetLanguageCodeSuccessEvent } from "../telemetry/telemetryConstants";
 import { ADX_LANGUAGECODE, ADX_WEBSITE_LANGUAGE } from "../constants";
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
+import { getDefaultLanguageCodeWeb } from "../../../web/client/utilities/fileAndEntityUtil";
+
+declare const IS_DESKTOP: string | undefined;
+
+export async function getDefaultLanguageCode(orgUrl:string, telemetry: ITelemetry, sessionID: string, dataverseToken: string) {
+    let defaultPortalLanguageCode = vscode.env.language;
+    if (IS_DESKTOP) {
+        const lcid = await fetchLanguageCodeId();
+        defaultPortalLanguageCode = await fetchLanguageCodeFromAPI(orgUrl, dataverseToken, telemetry, sessionID, lcid);
+    } else {
+        defaultPortalLanguageCode = getDefaultLanguageCodeWeb();
+    }
+    return defaultPortalLanguageCode;
+}
 
 export async function readWebsiteYAML(filePath: string): Promise<string | null> {
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(

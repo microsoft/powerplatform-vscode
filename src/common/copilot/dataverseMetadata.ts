@@ -10,11 +10,10 @@ import yaml from 'yaml';
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
-import { getEntityMetadata, getDefaultLanguageCodeWeb } from "../../web/client/utilities/fileAndEntityUtil";
+import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "@xmldom/xmldom";
 import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
 import { getUserAgent } from "../utilities/Utils";
-import { fetchLanguageCodeFromAPI, fetchLanguageCodeId } from "./Language/Utils";
 import { fetchJsonResponse } from "../services/AuthenticationProvider";
 
 
@@ -209,15 +208,4 @@ function parseYamlContent(content: string, telemetry: ITelemetry, sessionID: str
         sendTelemetryEvent(telemetry, { eventName: CopilotYamlParsingFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         return {};
     }
-}
-
-export async function getDefaultLanguageCode(orgUrl:string, telemetry: ITelemetry, sessionID: string, dataverseToken: string) {
-    let defaultPortalLanguageCode = vscode.env.language;
-    if (IS_DESKTOP) {
-        const lcid = await fetchLanguageCodeId();
-        defaultPortalLanguageCode = await fetchLanguageCodeFromAPI(orgUrl, dataverseToken, telemetry, sessionID, lcid);
-    } else {
-        defaultPortalLanguageCode = getDefaultLanguageCodeWeb();
-    }
-    return defaultPortalLanguageCode;
 }
