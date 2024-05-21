@@ -14,6 +14,7 @@ import { getEntityMetadata, getDefaultLanguageCodeWeb } from "../../web/client/u
 import { DOMParser } from "@xmldom/xmldom";
 import { ADX_LANGUAGECODE, ADX_WEBSITE_LANGUAGE, ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
 import { findWebsiteYAML, getUserAgent } from "../utilities/Utils";
+import { getCommonHeaders } from "../services/AuthenticationProvider";
 
 
 declare const IS_DESKTOP: string | undefined;
@@ -283,11 +284,7 @@ async function fetchLanguageCodeFromAPI(
 
         const requestOptions: RequestInit = {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${apiToken}`,
-                "x-ms-user-agent": getUserAgent(),
-            },
+            headers: getCommonHeaders(apiToken),
         };
 
         const startTime = performance.now();
