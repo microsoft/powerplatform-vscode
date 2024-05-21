@@ -69,7 +69,7 @@ export class PowerPagesChatParticipant {
         request: vscode.ChatRequest,
         _context: vscode.ChatContext,
         stream: vscode.ChatResponseStream,
-        _token: vscode.CancellationToken
+        //_token: vscode.CancellationToken
     ): Promise<IPowerPagesChatResult> => {
         // Handle chat requests here
 
