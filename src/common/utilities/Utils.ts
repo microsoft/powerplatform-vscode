@@ -186,23 +186,23 @@ export async function findWebsiteYAML(
     workspaceFolderPath: string
 ): Promise<string | null> {
     const websiteYAMLFilePath = path.join(dir, "website.yml");
-    try {
-        const diskRead = await import("fs");
 
+    const diskRead = await import("fs");
+
+    try {
         await diskRead.promises.access(websiteYAMLFilePath, diskRead.constants.F_OK);
-        const yamlContent = diskRead.readFileSync(
-            websiteYAMLFilePath,
-            "utf8"
-        );
-        return yamlContent;
-    } catch (err) {
+    } catch (error) {
         const parentDir = path.dirname(dir);
-        if (
-            parentDir === dir ||
-            parentDir.startsWith(workspaceFolderPath) === false
-        ) {
+        if (parentDir === dir || !parentDir.startsWith(workspaceFolderPath)) {
             return null;
         }
-        return await findWebsiteYAML(parentDir, workspaceFolderPath);
+        return findWebsiteYAML(parentDir, workspaceFolderPath);
+    }
+
+    try {
+        const yamlContent = await diskRead.readFileSync(websiteYAMLFilePath, "utf8");
+        return yamlContent;
+    } catch (error) {
+        return null;
     }
 }
