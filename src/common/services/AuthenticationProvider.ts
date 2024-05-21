@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import fetch, { RequestInit } from "node-fetch";
 import { showErrorDialog } from "../../web/client/common/errorHandler";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
@@ -51,6 +52,17 @@ export function getCommonHeaders(
             : "application/json; charset=utf-8",
         accept: "application/json",
     };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function fetchJsonResponse(url: string, requestInit: RequestInit): Promise<any> {
+    const response = await fetch(url, requestInit);
+
+    if (!response.ok) {
+        throw new Error(`Network request failed with status ${response.status}`);
+    }
+
+    return response.json();
 }
 
 //Get access token for Intelligence API service

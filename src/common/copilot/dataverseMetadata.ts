@@ -3,18 +3,19 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import fetch, { RequestInit } from "node-fetch";
+import { RequestInit } from "node-fetch";
 import path from "path";
 import * as vscode from "vscode";
 import yaml from 'yaml';
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
-import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotGetLanguageCodeFailureEvent, CopilotGetLanguageCodeSuccessEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
+import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 import { getEntityMetadata, getDefaultLanguageCodeWeb } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "@xmldom/xmldom";
-import { ADX_LANGUAGECODE, ADX_WEBSITE_LANGUAGE, ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
-import { findWebsiteYAML, getUserAgent } from "../utilities/Utils";
-import { getCommonHeaders } from "../services/AuthenticationProvider";
+import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
+import { getUserAgent } from "../utilities/Utils";
+import { fetchLanguageCodeFromAPI, fetchLanguageCodeId } from "./Language/Utils";
+import { fetchJsonResponse } from "../services/AuthenticationProvider";
 
 
 declare const IS_DESKTOP: string | undefined;
@@ -78,17 +79,6 @@ export async function getFormXml(entityName: string, formName: string, orgUrl: s
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
         return [];
     }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function fetchJsonResponse(url: string, requestInit: RequestInit): Promise<any> {
-    const response = await fetch(url, requestInit);
-
-    if (!response.ok) {
-        throw new Error(`Network request failed with status ${response.status}`);
-    }
-
-    return response.json();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -230,91 +220,4 @@ export async function getDefaultLanguageCode(orgUrl:string, telemetry: ITelemetr
         defaultPortalLanguageCode = getDefaultLanguageCodeWeb();
     }
     return defaultPortalLanguageCode;
-}
-
-async function readWebsiteYAML(filePath: string): Promise<string | null> {
-    const workspaceFolder = vscode.workspace.getWorkspaceFolder(
-        vscode.Uri.file(filePath)
-    );
-
-    if (workspaceFolder) {
-        const workspaceFolderPath = workspaceFolder.uri.fsPath;
-        return await findWebsiteYAML(filePath, workspaceFolderPath);
-    }
-
-    return null;
-}
-
-async function fetchLanguageCodeId(): Promise<string> {
-    try {
-        let activeFilePath = "";
-        if (vscode.window.activeTextEditor) {
-            activeFilePath = vscode.window.activeTextEditor.document.uri.fsPath;
-        } else if (vscode.workspace.workspaceFolders?.length === 1) {
-            activeFilePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-        } else {
-            // Handle multiple workspace folders when no active text editor is present
-            return "";
-        }
-
-        const yamlContent = await readWebsiteYAML(activeFilePath);
-        if (yamlContent) {
-            const parsedYAML = yaml.parse(yamlContent);
-            const languageCodeId = parsedYAML[ADX_WEBSITE_LANGUAGE];
-            return languageCodeId;
-        } else {
-            return "";
-        }
-    } catch (error) {
-        return "";
-    }
-}
-
-async function fetchLanguageCodeFromAPI(
-    orgUrl: string,
-    apiToken: string,
-    telemetry: ITelemetry,
-    sessionID: string,
-    lcid: string
-): Promise<string> {
-    try {
-        const dataverseApiUrl = `${
-            orgUrl.endsWith("/") ? orgUrl : orgUrl.concat("/")
-        }api/data/v9.2/adx_portallanguages`;
-
-        const requestOptions: RequestInit = {
-            method: "GET",
-            headers: getCommonHeaders(apiToken),
-        };
-
-        const startTime = performance.now();
-        const portalLanguagesResponse = await fetchJsonResponse(
-            dataverseApiUrl,
-            requestOptions
-        );
-        const endTime = performance.now();
-        const responseTime = endTime - startTime || 0;
-
-        const matchingLanguage = portalLanguagesResponse.value.find(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (language: any) => language.adx_lcid === parseInt(lcid, 10)
-        );
-
-        sendTelemetryEvent(telemetry, {
-            eventName: CopilotGetLanguageCodeSuccessEvent,
-            copilotSessionId: sessionID,
-            durationInMills: responseTime,
-            orgUrl: orgUrl,
-        });
-
-        return matchingLanguage?.[ADX_LANGUAGECODE] ?? vscode.env.language;
-    } catch (error) {
-        sendTelemetryEvent(telemetry, {
-            eventName: CopilotGetLanguageCodeFailureEvent,
-            copilotSessionId: sessionID,
-            error: error as Error,
-            orgUrl: orgUrl,
-        });
-        return vscode.env.language;
-    }
 }
