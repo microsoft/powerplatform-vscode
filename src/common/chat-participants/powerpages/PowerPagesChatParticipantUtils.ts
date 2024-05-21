@@ -4,11 +4,14 @@
  */
 
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
-import { ADX_ENTITYFORM, ADX_ENTITYLIST } from "../../copilot/constants";
+import { ADX_ENTITYFORM} from "../../copilot/constants";
 import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/dataverseMetadata";
 import { IActiveFileParams } from "../../copilot/model";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
+import { SUPPORTED_ENTITIES } from "./PowerPagesChatParticipantConstants";
+
+
 
 export async function getEndpoint(
     orgID: string,
@@ -30,7 +33,7 @@ export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | u
     let metadataInfo = { entityName: '', formName: '' };
     let componentInfo: string[] = [];
 
-    if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
+    if (isEntityInSupportedList(activeFileParams.dataverseEntity)) {
         metadataInfo = await getEntityName(telemetry, '', activeFileParams.dataverseEntity);
 
         const dataverseToken = (await dataverseAuthentication(telemetry, orgUrl ?? '', true)).accessToken;
@@ -45,4 +48,8 @@ export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | u
     }
 
     return componentInfo;
+}
+
+export function isEntityInSupportedList(entity: string): boolean {
+    return SUPPORTED_ENTITIES.includes(entity);
 }
