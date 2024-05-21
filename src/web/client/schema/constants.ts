@@ -87,6 +87,4 @@ export enum EntityMetadataKeyCore {
 export enum EntityMetadataKeyAdx {
     ENTITY_LOGICAL_NAME = "adx_entityname",
     FORM_LOGICAL_NAME = "adx_formname",
-    LANGUAGE_NAME_CODE = "adx_languagecode",
-    LANGUAGE_ID = "adx_website_language"
 }

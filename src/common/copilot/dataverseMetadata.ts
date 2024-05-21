@@ -12,9 +12,8 @@ import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotGetLanguageCodeFailureEvent, CopilotGetLanguageCodeSuccessEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 import { getEntityMetadata, getDefaultLanguageCodeWeb } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "@xmldom/xmldom";
-import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
+import { ADX_LANGUAGECODE, ADX_WEBSITE_LANGUAGE, ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
 import { findWebsiteYAML, getUserAgent } from "../utilities/Utils";
-import { EntityMetadataKeyAdx } from "../../web/client/schema/constants";
 
 
 declare const IS_DESKTOP: string | undefined;
@@ -260,7 +259,7 @@ async function fetchLanguageCodeId(): Promise<string> {
         const yamlContent = await readWebsiteYAML(activeFilePath);
         if (yamlContent) {
             const parsedYAML = yaml.parse(yamlContent);
-            const languageCodeId = parsedYAML[EntityMetadataKeyAdx.LANGUAGE_ID];
+            const languageCodeId = parsedYAML[ADX_WEBSITE_LANGUAGE];
             return languageCodeId;
         } else {
             return "";
@@ -311,7 +310,7 @@ async function fetchLanguageCodeFromAPI(
             orgUrl: orgUrl,
         });
 
-        return matchingLanguage?.[EntityMetadataKeyAdx.LANGUAGE_NAME_CODE] ?? vscode.env.language;
+        return matchingLanguage?.[ADX_LANGUAGECODE] ?? vscode.env.language;
     } catch (error) {
         sendTelemetryEvent(telemetry, {
             eventName: CopilotGetLanguageCodeFailureEvent,
