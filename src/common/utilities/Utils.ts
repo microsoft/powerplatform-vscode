@@ -9,6 +9,7 @@ import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTel
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "../copilot/constants";
 import { IActiveFileData, IActiveFileParams } from "../copilot/model";
+import path from "path";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -178,4 +179,30 @@ export function getActiveEditorContent(): IActiveFileData {
     }
 
     return activeFileData;
+}
+
+export async function findWebsiteYAML(
+    dir: string,
+    workspaceFolderPath: string
+): Promise<string | null> {
+    const websiteYAMLFilePath = path.join(dir, "website.yml");
+    try {
+        const diskRead = await import("fs");
+
+        await diskRead.promises.access(websiteYAMLFilePath, diskRead.constants.F_OK);
+        const yamlContent = diskRead.readFileSync(
+            websiteYAMLFilePath,
+            "utf8"
+        );
+        return yamlContent;
+    } catch (err) {
+        const parentDir = path.dirname(dir);
+        if (
+            parentDir === dir ||
+            parentDir.startsWith(workspaceFolderPath) === false
+        ) {
+            return null;
+        }
+        return await findWebsiteYAML(parentDir, workspaceFolderPath);
+    }
 }

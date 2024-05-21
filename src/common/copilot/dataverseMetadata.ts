@@ -13,7 +13,8 @@ import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEv
 import { getEntityMetadata, getDefaultLanguageCodeWeb } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "@xmldom/xmldom";
 import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
-import { getUserAgent } from "../utilities/Utils";
+import { findWebsiteYAML, getUserAgent } from "../utilities/Utils";
+import { EntityMetadataKeyAdx } from "../../web/client/schema/constants";
 
 
 declare const IS_DESKTOP: string | undefined;
@@ -231,32 +232,6 @@ export async function getDefaultLanguageCode(orgUrl:string, telemetry: ITelemetr
     return defaultPortalLanguageCode;
 }
 
-async function findWebsiteYAML(
-    dir: string,
-    workspaceFolderPath: string
-): Promise<string | null> {
-    const websiteYAMLFilePath = path.join(dir, "website.yml");
-    try {
-        const diskRead = await import("fs");
-
-        await diskRead.promises.access(websiteYAMLFilePath, diskRead.constants.F_OK);
-        const yamlContent = diskRead.readFileSync(
-            websiteYAMLFilePath,
-            "utf8"
-        );
-        return yamlContent;
-    } catch (err) {
-        const parentDir = path.dirname(dir);
-        if (
-            parentDir === dir ||
-            parentDir.startsWith(workspaceFolderPath) === false
-        ) {
-            return null;
-        }
-        return await findWebsiteYAML(parentDir, workspaceFolderPath);
-    }
-}
-
 async function readWebsiteYAML(filePath: string): Promise<string | null> {
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(
         vscode.Uri.file(filePath)
@@ -285,7 +260,7 @@ async function fetchLanguageCodeId(): Promise<string> {
         const yamlContent = await readWebsiteYAML(activeFilePath);
         if (yamlContent) {
             const parsedYAML = yaml.parse(yamlContent);
-            const languageCodeId = parsedYAML["adx_website_language"];
+            const languageCodeId = parsedYAML[EntityMetadataKeyAdx.LANGUAGE_ID];
             return languageCodeId;
         } else {
             return "";
@@ -336,7 +311,7 @@ async function fetchLanguageCodeFromAPI(
             orgUrl: orgUrl,
         });
 
-        return matchingLanguage?.adx_languagecode ?? vscode.env.language;
+        return matchingLanguage?.[EntityMetadataKeyAdx.LANGUAGE_NAME_CODE] ?? vscode.env.language;
     } catch (error) {
         sendTelemetryEvent(telemetry, {
             eventName: CopilotGetLanguageCodeFailureEvent,
