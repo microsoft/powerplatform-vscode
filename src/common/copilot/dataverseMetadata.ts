@@ -221,14 +221,14 @@ function parseYamlContent(content: string, telemetry: ITelemetry, sessionID: str
 }
 
 export async function getDefaultLanguageCode(orgUrl:string, telemetry: ITelemetry, sessionID: string, dataverseToken: string) {
-    let languageCode = vscode.env.language;
+    let defaultPortalLanguageCode = vscode.env.language;
     if (IS_DESKTOP) {
         const lcid = await fetchLanguageCodeId();
-        languageCode = await fetchLanguageCodeFromAPI(orgUrl, dataverseToken, telemetry, sessionID, lcid);
+        defaultPortalLanguageCode = await fetchLanguageCodeFromAPI(orgUrl, dataverseToken, telemetry, sessionID, lcid);
     } else {
-        languageCode = getDefaultLanguageCodeWeb();
+        defaultPortalLanguageCode = getDefaultLanguageCodeWeb();
     }
-    return languageCode;
+    return defaultPortalLanguageCode;
 }
 
 async function findWebsiteYAML(

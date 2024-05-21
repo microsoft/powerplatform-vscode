@@ -376,9 +376,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                 }
 
-                const defaultLanguageCode = await getDefaultLanguageCode(activeOrgUrl, this.telemetry, sessionID, dataverseToken);
+                const defaultPortalLanguageCode = await getDefaultLanguageCode(activeOrgUrl, this.telemetry, sessionID, dataverseToken);
 
-                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName, this.crossGeoDataMovementEnabledPPACFlag, defaultLanguageCode);
+                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName, this.crossGeoDataMovementEnabledPPACFlag, defaultPortalLanguageCode);
             })
             .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
