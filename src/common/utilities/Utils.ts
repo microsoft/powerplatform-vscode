@@ -4,6 +4,7 @@
  */
 
 import * as vscode from "vscode";
+import yaml from 'yaml';
 import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../client/constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { PacWrapper } from "../../client/pac/PacWrapper";
@@ -205,4 +206,9 @@ export async function findWebsiteYAML(
     } catch (error) {
         return null;
     }
+}
+
+export async function parseYAMLAndFetchKey(yamlContent: string, key: string): Promise<string> {
+    const parsedYAML = yaml.parse(yamlContent);
+    return parsedYAML[key];
 }

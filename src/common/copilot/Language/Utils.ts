@@ -5,8 +5,7 @@
 
 import * as vscode from "vscode";
 import { RequestInit } from "node-fetch";
-import yaml from 'yaml';
-import { findWebsiteYAML } from "../../utilities/Utils";
+import { findWebsiteYAML, parseYAMLAndFetchKey } from "../../utilities/Utils";
 import { fetchJsonResponse, getCommonHeaders } from "../../services/AuthenticationProvider";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { CopilotGetLanguageCodeFailureEvent, CopilotGetLanguageCodeSuccessEvent } from "../telemetry/telemetryConstants";
@@ -54,8 +53,7 @@ export async function fetchLanguageCodeId(): Promise<string> {
 
         const yamlContent = await readWebsiteYAML(activeFilePath);
         if (yamlContent) {
-            const parsedYAML = yaml.parse(yamlContent);
-            const languageCodeId = parsedYAML[ADX_WEBSITE_LANGUAGE];
+            const languageCodeId = parseYAMLAndFetchKey(yamlContent, ADX_WEBSITE_LANGUAGE);
             return languageCodeId;
         } else {
             return "";
