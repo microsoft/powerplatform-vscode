@@ -30,7 +30,7 @@ export async function getEndpoint(
     * Get component info for the active file
     * @returns componentInfo - Entity details for active file (form or list)
 */
-export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | undefined, activeFileParams: IActiveFileParams): Promise<string[]> {
+export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | undefined, activeFileParams: IActiveFileParams): Promise<{ componentInfo: string[], entityName: string }> {
 
     let metadataInfo = { entityName: '', formName: '' };
     let componentInfo: string[] = [];
@@ -49,7 +49,7 @@ export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | u
         }
     }
 
-    return componentInfo;
+    return {componentInfo, entityName: metadataInfo.entityName};
 }
 
 export function isEntityInSupportedList(entity: string): boolean {

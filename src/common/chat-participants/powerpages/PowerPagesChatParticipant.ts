@@ -137,9 +137,9 @@ export class PowerPagesChatParticipant {
 
             const {activeFileParams} = getActiveEditorContent();
 
-            const componentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams);
+            const {componentInfo, entityName} = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams);
 
-            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', '', componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName);
+            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
 
             llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
                 if (response.displayText) {
