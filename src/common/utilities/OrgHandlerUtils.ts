@@ -15,22 +15,21 @@ export const ORG_DETAILS_KEY = 'orgDetails';
 export function handleOrgChangeSuccess(
     orgDetails: ActiveOrgOutput,
     extensionContext: ExtensionContext
-): { orgID: string, orgUrl: string } {
+): OrgDetails {
     const orgID = orgDetails.OrgId;
     const orgUrl = orgDetails.OrgUrl;
+    const environmentID = orgDetails.EnvironmentId;
 
-    extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID, orgUrl });
+    extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID, orgUrl, environmentID });
 
-    //TODO: Handle AIB GEOs
-
-    return { orgID, orgUrl };
+    return { orgID, orgUrl, environmentID };
 }
 
 export async function initializeOrgDetails(
     isOrgDetailsInitialized: boolean,
     extensionContext: ExtensionContext,
     pacWrapper?: PacWrapper
-): Promise<{ orgID?: string, orgUrl?: string }> {
+): Promise<{ orgID?: string, orgUrl?: string, environmentID?: string }> {
     if (isOrgDetailsInitialized) {
         return {};
     }
@@ -38,10 +37,12 @@ export async function initializeOrgDetails(
     const orgDetails: OrgDetails | undefined = extensionContext.globalState.get(ORG_DETAILS_KEY);
     let orgID: string | undefined;
     let orgUrl: string | undefined;
+    let environmentID: string | undefined;
 
-    if (orgDetails && orgDetails.orgID && orgDetails.orgUrl) {
+    if (orgDetails && orgDetails.orgID && orgDetails.orgUrl && orgDetails.environmentID) {
         orgID = orgDetails.orgID;
         orgUrl = orgDetails.orgUrl;
+        environmentID = orgDetails.environmentID;
     } else {
         if (pacWrapper) {
             const pacActiveOrg = await pacWrapper.activeOrg();
@@ -49,11 +50,12 @@ export async function initializeOrgDetails(
                 const orgDetails = handleOrgChangeSuccess(pacActiveOrg.Results, extensionContext);
                 orgID = orgDetails.orgID;
                 orgUrl = orgDetails.orgUrl;
+                environmentID = orgDetails.environmentID;
             } else {
                 await createAuthProfileExp(pacWrapper);
             }
         }
     }
 
-    return { orgID, orgUrl };
+    return { orgID, orgUrl, environmentID };
 }

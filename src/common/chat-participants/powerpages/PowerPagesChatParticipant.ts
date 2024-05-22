@@ -16,7 +16,8 @@ import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { getComponentInfo, getEndpoint } from './PowerPagesChatParticipantUtils';
-import { getActiveEditorContent } from '../../utilities/Utils';
+import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
+import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
     private chatParticipant: vscode.ChatParticipant;
@@ -25,10 +26,11 @@ export class PowerPagesChatParticipant {
     private readonly _pacWrapper?: PacWrapper;
     private isOrgDetailsInitialized = false;
     private readonly _disposables: vscode.Disposable[] = [];
-    private cachedEndpoint: { intelligenceEndpoint: string, geoName: string } | null = null;
+    private cachedEndpoint: IIntelligenceAPIEndpointInformation| null = null;
 
     private orgID: string | undefined;
     private orgUrl: string | undefined;
+    private environmentID: string | undefined;
 
     private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {
 
@@ -77,7 +79,7 @@ export class PowerPagesChatParticipant {
 
         await this.initializeOrgDetails();
 
-        if (!this.orgID) {
+        if (!this.orgID || !this.environmentID) {
             stream.markdown(PAC_AUTH_NOT_FOUND);
             return {
                 metadata: {
@@ -100,9 +102,11 @@ export class PowerPagesChatParticipant {
 
         const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
 
-        const { intelligenceEndpoint, geoName } = await getEndpoint(this.orgID, this.telemetry, this.cachedEndpoint);
+        const intelligenceAPIEndpointInfo = await getEndpoint(this.orgID, this.environmentID, this.telemetry, this.cachedEndpoint);
 
-        if (!intelligenceEndpoint || !geoName) {
+        const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry, '');
+
+        if (!copilotAvailabilityStatus) {
             stream.markdown(COPILOT_NOT_AVAILABLE_MSG)
 
             return {
@@ -135,7 +139,7 @@ export class PowerPagesChatParticipant {
 
             const componentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams);
 
-            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', '', componentInfo, this.telemetry, intelligenceEndpoint, geoName);
+            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', '', componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName);
 
             llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
                 if (response.displayText) {
@@ -158,14 +162,16 @@ export class PowerPagesChatParticipant {
     };
 
     private async initializeOrgDetails(): Promise<void> {
-        const { orgID, orgUrl } = await initializeOrgDetails(this.isOrgDetailsInitialized, this.extensionContext, this._pacWrapper);
+        const { orgID, orgUrl, environmentID } = await initializeOrgDetails(this.isOrgDetailsInitialized, this.extensionContext, this._pacWrapper);
         this.orgID = orgID;
         this.orgUrl = orgUrl;
+        this.environmentID = environmentID;
     }
 
     private async handleOrgChangeSuccess(orgDetails: ActiveOrgOutput): Promise<void> {
-        const { orgID, orgUrl } = handleOrgChangeSuccess(orgDetails, this.extensionContext);
+        const { orgID, orgUrl, environmentID } = handleOrgChangeSuccess(orgDetails, this.extensionContext);
         this.orgID = orgID;
         this.orgUrl = orgUrl;
+        this.environmentID = environmentID;
     }
 }
