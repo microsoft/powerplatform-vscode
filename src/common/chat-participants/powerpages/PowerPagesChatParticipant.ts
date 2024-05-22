@@ -10,13 +10,13 @@ import { ITelemetry } from '../../../client/telemetry/ITelemetry';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
+import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { getEndpoint } from './PowerPagesChatParticipantUtils';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG } from './PowerPagesChatParticipantConstants';
-import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
-
+import { getComponentInfo, getEndpoint } from './PowerPagesChatParticipantUtils';
+import { getActiveEditorContent } from '../../utilities/Utils';
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
     private chatParticipant: vscode.ChatParticipant;
@@ -69,8 +69,7 @@ export class PowerPagesChatParticipant {
         request: vscode.ChatRequest,
         _context: vscode.ChatContext,
         stream: vscode.ChatResponseStream,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _token: vscode.CancellationToken
+        //_token: vscode.CancellationToken
     ): Promise<IPowerPagesChatResult> => {
         // Handle chat requests here
 
@@ -113,25 +112,42 @@ export class PowerPagesChatParticipant {
             };
         }
 
-        const userPrompt = request.prompt;
+        if (request.command) {
+            //TODO: Handle command scenarios
 
-        if (!userPrompt) {
+        } else {
 
-            //TODO: Show start message
+            const userPrompt = request.prompt;
 
-            return {
-                metadata: {
-                    command: ''
+            if (!userPrompt) {
+
+                //TODO: String approval is required
+                stream.markdown(NO_PROMPT_MESSAGE);
+
+                return {
+                    metadata: {
+                        command: ''
+                    }
+                };
+            }
+
+            const {activeFileParams} = getActiveEditorContent();
+
+            const componentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams);
+
+            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', '', componentInfo, this.telemetry, intelligenceEndpoint, geoName);
+
+            llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
+                if (response.displayText) {
+                    stream.markdown(response.displayText);
                 }
-            };
+                if (response.code) {
+                    stream.markdown('\n```javascript\n' + response.code + '\n```');
+                }
+                stream.markdown('\n');
+            });
+
         }
-
-        //TODO: Handle form and list scenarios
-        const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], { dataverseEntity: '', entityField: '', fieldType: '' }, this.orgID, intelligenceApiToken, '', '', [], this.telemetry, intelligenceEndpoint, geoName);
-
-        stream.markdown(llmResponse[0].displayText);
-
-        stream.markdown('\n```typescript\n' + llmResponse[0].code + '\n```');
 
         return {
             metadata: {
