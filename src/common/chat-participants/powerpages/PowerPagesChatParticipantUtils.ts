@@ -9,17 +9,20 @@ import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/datav
 import { IActiveFileParams } from "../../copilot/model";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
+import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
 import { SUPPORTED_ENTITIES } from "./PowerPagesChatParticipantConstants";
+import { IComponentInfo } from "./PowerPagesChatParticipantTypes";
 
 
 
 export async function getEndpoint(
     orgID: string,
+    environmentID: string,
     telemetry: ITelemetry,
-    cachedEndpoint: { intelligenceEndpoint: string; geoName: string } | null
-): Promise<{ intelligenceEndpoint: string; geoName: string }> {
+    cachedEndpoint: IIntelligenceAPIEndpointInformation | null
+): Promise<IIntelligenceAPIEndpointInformation> {
     if (!cachedEndpoint) {
-        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, telemetry, '', '') as { intelligenceEndpoint: string; geoName: string }; // TODO - add ENvironment ID and session ID
+        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, telemetry, environmentID, '') as IIntelligenceAPIEndpointInformation; // TODO - add session ID
     }
     return cachedEndpoint;
 }
@@ -28,7 +31,7 @@ export async function getEndpoint(
     * Get component info for the active file
     * @returns componentInfo - Entity details for active file (form or list)
 */
-export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | undefined, activeFileParams: IActiveFileParams): Promise<string[]> {
+export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | undefined, activeFileParams: IActiveFileParams): Promise<IComponentInfo> {
 
     let metadataInfo = { entityName: '', formName: '' };
     let componentInfo: string[] = [];
@@ -47,7 +50,7 @@ export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | u
         }
     }
 
-    return componentInfo;
+    return {componentInfo, entityName: metadataInfo.entityName};
 }
 
 export function isEntityInSupportedList(entity: string): boolean {
