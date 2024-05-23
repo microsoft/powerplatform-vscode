@@ -7,7 +7,7 @@
 
 ## 2.0.49
 - Web extension updates
-- Copresence support - Find out who's working on a site (Power Pages Studio and Power Pages VS Code for the Web) at the same time as you with copresence
+  - Copresence support - Find out who's working on a site (Power Pages Studio and Power Pages VS Code for the Web) at the same time as you with copresence
 
 ## 2.0.41
 - pac CLI 1.31.6, (February 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
