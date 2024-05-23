@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { createChatParticipant } from '../ChatParticipantUtils';
-import { IPowerPagesChatResult } from './PowerPagesChatParticipantTypes';
+import { IComponentInfo, IPowerPagesChatResult } from './PowerPagesChatParticipantTypes';
 import { ITelemetry } from '../../../client/telemetry/ITelemetry';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
@@ -137,7 +137,7 @@ export class PowerPagesChatParticipant {
 
             const {activeFileParams} = getActiveEditorContent();
 
-            const {componentInfo, entityName} = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams);
+            const {componentInfo, entityName}: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams);
 
             const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
 

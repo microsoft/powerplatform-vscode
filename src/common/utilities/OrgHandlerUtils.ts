@@ -6,7 +6,7 @@
 import { ExtensionContext } from 'vscode';
 import { ActiveOrgOutput } from '../../client/pac/PacTypes';
 import { PacWrapper } from '../../client/pac/PacWrapper';
-import { OrgDetails } from '../chat-participants/powerpages/PowerPagesChatParticipantTypes';
+import { IOrgDetails } from '../chat-participants/powerpages/PowerPagesChatParticipantTypes';
 import { PAC_SUCCESS } from '../copilot/constants';
 import { createAuthProfileExp } from './Utils';
 
@@ -15,7 +15,7 @@ export const ORG_DETAILS_KEY = 'orgDetails';
 export function handleOrgChangeSuccess(
     orgDetails: ActiveOrgOutput,
     extensionContext: ExtensionContext
-): OrgDetails {
+): IOrgDetails {
     const orgID = orgDetails.OrgId;
     const orgUrl = orgDetails.OrgUrl;
     const environmentID = orgDetails.EnvironmentId;
@@ -29,15 +29,15 @@ export async function initializeOrgDetails(
     isOrgDetailsInitialized: boolean,
     extensionContext: ExtensionContext,
     pacWrapper?: PacWrapper
-): Promise<{ orgID?: string, orgUrl?: string, environmentID?: string }> {
+): Promise<{ orgID: string, orgUrl: string, environmentID: string }> {
     if (isOrgDetailsInitialized) {
-        return {};
+        return {orgID:'', orgUrl: '', environmentID: ''};
     }
 
-    const orgDetails: OrgDetails | undefined = extensionContext.globalState.get(ORG_DETAILS_KEY);
-    let orgID: string | undefined;
-    let orgUrl: string | undefined;
-    let environmentID: string | undefined;
+    const orgDetails: IOrgDetails | undefined = extensionContext.globalState.get(ORG_DETAILS_KEY);
+    let orgID = '';
+    let orgUrl = '';
+    let environmentID = '';
 
     if (orgDetails && orgDetails.orgID && orgDetails.orgUrl && orgDetails.environmentID) {
         orgID = orgDetails.orgID;

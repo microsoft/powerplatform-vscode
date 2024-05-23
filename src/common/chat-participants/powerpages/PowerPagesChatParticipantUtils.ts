@@ -11,6 +11,7 @@ import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
 import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
 import { SUPPORTED_ENTITIES } from "./PowerPagesChatParticipantConstants";
+import { IComponentInfo } from "./PowerPagesChatParticipantTypes";
 
 
 
@@ -30,7 +31,7 @@ export async function getEndpoint(
     * Get component info for the active file
     * @returns componentInfo - Entity details for active file (form or list)
 */
-export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | undefined, activeFileParams: IActiveFileParams): Promise<{ componentInfo: string[], entityName: string }> {
+export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | undefined, activeFileParams: IActiveFileParams): Promise<IComponentInfo> {
 
     let metadataInfo = { entityName: '', formName: '' };
     let componentInfo: string[] = [];
