@@ -1,10 +1,12 @@
 # Change Log - Power Platform Extension
 
-## NEXTRELEASE
+## 2.0.58
 - pac CLI 1.32.7, (May 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Web extension updates
+  - Copilot available in public regions that has " Move data across regions" option enabled per [Turn on copilots and generative AI features](https://learn.microsoft.com/en-us/power-platform/admin/geographical-availability-copilot#turn-on-copilots-and-generative-ai-features-1)
 
 ## 2.0.49
-Web extension updates
+- Web extension updates
 - Copresence support - Find out who's working on a site (Power Pages Studio and Power Pages VS Code for the Web) at the same time as you with copresence
 
 ## 2.0.41
