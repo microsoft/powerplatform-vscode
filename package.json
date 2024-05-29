@@ -59,7 +59,7 @@
     "email": "PPTools@microsoft.com"
   },
   "engines": {
-    "vscode": "^1.73.0",
+    "vscode": "^1.89.0",
     "npm": ">=8.3.0"
   },
   "extensionKind": [
@@ -104,6 +104,11 @@
     "onDebug",
     "onFileSystem:powerplatform-vfs"
   ],
+  "enabledApiProposals": [
+    "chatParticipant",
+    "chatVariableResolver",
+    "languageModels"
+  ],
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",
@@ -115,6 +120,15 @@
     }
   },
   "contributes": {
+    "chatParticipants": [
+      {
+        "id": "powerpages",
+        "name": "powerpages",
+        "fullName": "Power Pages Copilot",
+        "description": "Power Pages Copilot",
+        "isSticky": true
+      }
+    ],
     "chatParticipants": [
       {
         "id": "powerpages",
@@ -498,7 +512,7 @@
         "powerPlatform.experimental.enableCoPresenceFeature": {
           "type": "boolean",
           "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
-          "default": false
+          "default": true
         },
         "powerPlatform.experimental.enableTelemetry": {
           "type": "boolean",
@@ -1054,7 +1068,6 @@
     "@types/sinon": "^10.0.12",
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
-    "@types/vscode": "^1.73.0",
     "@types/vscode-webview": "^1.57.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.17.0",

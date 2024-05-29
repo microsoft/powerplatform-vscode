@@ -19,7 +19,7 @@ import {
     showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
-import { isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
+import { getEnvironmentIdFromUrl, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
 import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
@@ -36,13 +36,14 @@ import { IOrgInfo } from "../../common/copilot/model";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
-import { fetchArtemisResponse } from "../../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
 import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
 import { IPortalWebExtensionInitQueryParametersTelemetryData } from "./telemetry/webExtensionTelemetryInterface";
+import { IArtemisAPIOrgResponse } from "../../common/services/Interfaces";
+import { ArtemisService } from "../../common/services/ArtemisService";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -115,9 +116,9 @@ export function activate(context: vscode.ExtensionContext): void {
                 );
                 logOneDSLogger(queryParamsMap);
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
-                const orgGeo = await fetchArtemisData(orgId);
-                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgGeo: orgGeo });
-                oneDSLoggerWrapper.instantiate(orgGeo);
+                const { geoName, geoLongName } = await fetchArtemisData(orgId);
+                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: geoName });
+                oneDSLoggerWrapper.instantiate(geoName, geoLongName);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
@@ -171,8 +172,6 @@ export function activate(context: vscode.ExtensionContext): void {
                                         context.extensionUri
                                     );
                                 }
-
-                                await logArtemisTelemetry();
                             }
                             break;
                         default:
@@ -308,6 +307,12 @@ export function processWorkspaceStateChanges(context: vscode.ExtensionContext) {
                     if (entityInfo.entityId && entityInfo.entityName) {
                         context.workspaceState.update(document.uri.fsPath, entityInfo);
                         WebExtensionContext.updateVscodeWorkspaceState(document.uri.fsPath, entityInfo);
+
+                        if (isCoPresenceEnabled() && tab.input instanceof vscode.TabInputCustom) {
+                            // sending message to webworker event listener for Co-Presence feature
+                            sendingMessageToWebWorkerForCoPresence(entityInfo);
+                            WebExtensionContext.quickPickProvider.refresh();
+                        }
                     }
                 }
             });
@@ -585,6 +590,7 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             orgId: WebExtensionContext.urlParametersMap.get(
                 queryParameters.ORG_ID
             ) as string,
+            environmentId: getEnvironmentIdFromUrl(),
             environmentName: "",
             activeOrgUrl: WebExtensionContext.urlParametersMap.get(queryParameters.ORG_URL) as string,
             tenantId: WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string,
@@ -643,32 +649,18 @@ function isActiveDocument(fileFsPath: string): boolean {
     );
 }
 
-async function fetchArtemisData(orgId: string): Promise<string> {
-    const artemisResponse = await fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
-    if (!artemisResponse) {
-        // Todo: Log in error telemetry. Runtime maintains another table for this kind of failure. We should do the same.
-        return '';
-    }
-
-    return artemisResponse[0].geoName as string;
-}
-
-async function logArtemisTelemetry() {
-
-    try {
-        const orgId = WebExtensionContext.urlParametersMap.get(
-            queryParameters.ORG_ID
-        ) as string
-
-        const geoName = fetchArtemisData(orgId);
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE,
-            { orgId: orgId, geoName: String(geoName) });
-    } catch (error) {
+async function fetchArtemisData(orgId: string): Promise<IArtemisAPIOrgResponse> {
+    const artemisResponse = await ArtemisService.fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
+    if (artemisResponse === null || artemisResponse.length === 0) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
-            logArtemisTelemetry.name,
-            ARTEMIS_RESPONSE_FAILED);
+            fetchArtemisData.name,
+            ARTEMIS_RESPONSE_FAILED
+        );
+        return { geo: "", geoLongName: "" } as unknown as IArtemisAPIOrgResponse;
     }
+
+    return artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse;
 }
 
 function logOneDSLogger(queryParamsMap: Map<string, string>) {

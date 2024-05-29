@@ -1,7 +1,14 @@
 # Change Log - Power Platform Extension
 
+## NEXTRELEASE
+- pac CLI 1.32.7, (May 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
+## 2.0.49
+Web extension updates
+- Copresence support - Find out who's working on a site (Power Pages Studio and Power Pages VS Code for the Web) at the same time as you with copresence
+
 ## 2.0.41
-  - pac CLI 1.31.6, (February 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- pac CLI 1.31.6, (February 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Web Extension updates:
   - Copilot available in United Kingdom, Europe and Australia regions
   - Copilot prompt response improved accuracy for Forms scenario

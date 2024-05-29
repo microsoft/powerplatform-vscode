@@ -44,5 +44,7 @@
   "pacCLI.pacSolutionHelp.title": "Hilfe zur PAC-Lösung anzeigen",
   "power-platform-activitybar.title": "Power Platform",
   "powerPlatform.auth.cloud.description": "Welche Power Platform Tools für die Azure Cloud zur Authentifizierung verwendet werden sollen.",
-  "powerPlatform.experimental.auth.testCloudOverride.description": "Überschreibt `#powerPlatform.auth.cloud#` für Testziele. Lassen Sie das Feld für das Standardverhalten leer."
+  "powerPlatform.experimental.auth.testCloudOverride.description": "Überschreibt `#powerPlatform.auth.cloud#` für Testziele. Lassen Sie das Feld für das Standardverhalten leer.",
+  "powerpages.copilotPanel.clearConversation.title": "Unterhaltung schließen",
+  "powerpages.copilotPanel.title": "Copilot in Power Pages"
 }

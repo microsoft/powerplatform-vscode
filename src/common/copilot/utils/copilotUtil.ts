@@ -4,12 +4,55 @@
  */
 
 import { ECSFeaturesClient } from "../../ecs-features/ecsFeatureClient";
-import { CopilotDisableList } from "../../ecs-features/ecsFeatureGates";
+import { CopilotDisableList, EnableProDevCopilot } from "../../ecs-features/ecsFeatureGates";
 
 export function getDisabledOrgList() {
-    return ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs?.split(',').map(org => org.trim());
+    const disallowedProDevCopilotOrgs = ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs;
+
+    if (disallowedProDevCopilotOrgs === undefined || disallowedProDevCopilotOrgs === "") {
+        return [];
+    }
+
+    return disallowedProDevCopilotOrgs.split(',').map(org => org.trim());
 }
 
 export function getDisabledTenantList() {
-    return ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotTenants?.split(',').map(tenant => tenant.trim());
+
+    const disallowedProDevCopilotTenants = ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs;
+
+    if (disallowedProDevCopilotTenants === undefined || disallowedProDevCopilotTenants === "") {
+        return [];
+    }
+
+    return disallowedProDevCopilotTenants.split(',').map(org => org.trim());
+}
+
+export function isCopilotSupportedInGeo() {
+    const supportedGeoList = ECSFeaturesClient.getConfig(EnableProDevCopilot).capiSupportedProDevCopilotGeoList;
+
+    if (supportedGeoList === undefined || supportedGeoList === "") {
+        return [];
+    }
+
+    return supportedGeoList.split(',').map(org => org.trim());
+}
+
+export function isCopilotDisabledInGeo() {
+    const disabledGeoList = ECSFeaturesClient.getConfig(EnableProDevCopilot).unsupportedProDevCopilotGeoList;
+
+    if (disabledGeoList === undefined || disabledGeoList === "") {
+        return [];
+    }
+
+    return disabledGeoList.split(',').map(org => org.trim());
+}
+
+export function enableCrossGeoDataFlowInGeo() {
+    const enableCrossGeoDataFlowInGeo = ECSFeaturesClient.getConfig(EnableProDevCopilot).capiSupportedProDevCopilotGeoWithCrossGeoDataFlow;
+
+    if (enableCrossGeoDataFlowInGeo === undefined || enableCrossGeoDataFlowInGeo === "") {
+        return [];
+    }
+
+    return enableCrossGeoDataFlowInGeo.split(',').map(org => org.trim());
 }

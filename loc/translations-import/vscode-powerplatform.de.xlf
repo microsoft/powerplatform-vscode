@@ -18,6 +18,10 @@
         <source xml:lang="en">A webtemplate with the same name already exists. Please enter a different name.</source>
         <target state="translated">Eine Webvorlage mit demselben Namen ist bereits vorhanden. Geben Sie einen anderen Namen ein.</target>
       </trans-unit>
+      <trans-unit id="++CODE++8d35e64354d3db3df1df4ef8e6068b6b9dd58514fcf980f7071e10ed160db95a">
+        <source xml:lang="en">AI-generated content can contain mistakes</source>
+        <target state="translated">KI-generierte Inhalte können Fehler enthalten</target>
+      </trans-unit>
       <trans-unit id="++CODE++5d8300ceca093c3e9b111bbcadfac87c89ca4274fc9a7fe3267f037a5ab4ceac">
         <source xml:lang="en">Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.</source>
         <target state="translated">Aktives Authentifizierungsprofil wurde nicht gefunden oder ist abgelaufen. Geben Sie die Umgebungs-URL ein, um ein neues Authentifizierungsprofil zu erstellen.</target>
@@ -91,6 +95,10 @@
         <source xml:lang="en">Copied to clipboard!</source>
         <target state="translated">In Zwischenablage kopiert</target>
       </trans-unit>
+      <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
+        <source xml:lang="en">Copy to clipboard</source>
+        <target state="translated">In die Zwischenablage kopieren</target>
+      </trans-unit>
       <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
         <source xml:lang="en">Creating {0}...</source>
         <note>{0} will be replaced by the entity type.</note>
@@ -140,6 +148,10 @@ Typ: {3}</target>
         <source xml:lang="en">Enter the name of the web template</source>
         <target state="translated">Namen der Webvorlage eingeben</target>
       </trans-unit>
+      <trans-unit id="++CODE++5a2391041cb1f6f5ab0cce07946dbf4222358fbd947768d94ac12ef5329485d3">
+        <source xml:lang="en">Explain the following code snippet:</source>
+        <target state="translated">Erläutern Sie den folgenden Codeausschnitt:</target>
+      </trans-unit>
       <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
         <source xml:lang="en">Failed to create: {0}.</source>
         <note>{0} will be replaced by the error message.</note>
@@ -161,6 +173,10 @@ Typ: {3}</target>
         <source xml:lang="en">Failed to get file ready for edit: {0}</source>
         <target state="translated">Fehler beim Vorbereiten der Datei für die Bearbeitung: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
+        <source xml:lang="en">Feature is not enabled for this geo.</source>
+        <target state="translated">Die Funktion ist für diesen geografischen Raum nicht aktiviert.</target>
+      </trans-unit>
       <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
         <source xml:lang="en">Fetching your file ...</source>
         <target state="translated">Datei wird abgerufen ...</target>
@@ -174,6 +190,30 @@ Typ: {3}</target>
         <source xml:lang="en">File(s) already exist. No new files to add</source>
         <target state="translated">Dateien sind bereits vorhanden. Es gibt keine neuen Dateien zum Hinzufügen.</target>
       </trans-unit>
+      <trans-unit id="++CODE++7184a5edf42e6fc9ef8f53fc1dd73f10b3f6196a23f6d340c4f434e60c366e45">
+        <source xml:lang="en">GETTING STARTED</source>
+        <target state="translated">ERSTE SCHRITTE</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b9f4adbdfa2deef1eaa415a914f63329ee06c604b5a1bf34645175b9e28a9712">
+        <source xml:lang="en">Here are a few suggestions to get you started</source>
+        <target state="translated">Hier einige Vorschläge für den Einstieg</target>
+      </trans-unit>
+      <trans-unit id="++CODE++3639efcd08abb273b1619e82e78c29a7df02c1051b1820e99fc395dcaa3326b8">
+        <source xml:lang="en">Hi</source>
+        <target state="translated">Hallo</target>
+      </trans-unit>
+      <trans-unit id="++CODE++57fa6bc42ff8a73f5c9271ebe8a92febd9ec652aea94798eb9023c5512b9dab1">
+        <source xml:lang="en">Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.</source>
+        <target state="translated">Hallo, generieren Sie Code für Power Pages-Websites, indem Sie die benötigten Informationen eingeben. Melden Sie sich bei Ihrem Microsoft-Konto an, um Copilot zu verwenden.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1d9bc50f05b58d430726840f771cd25056be57873eb33a5d6aeedfff2ca7e2db">
+        <source xml:lang="en">Hi! Your Microsoft account doesnâ€™t currently support Copilot. Contact your admin for details.</source>
+        <target state="translated">Hallo, Ihr Microsoft-Konto unterstützt Copilot derzeit nicht. Weitere Informationen erhalten Sie von Ihrem Administrator.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e992151b1efc99f93484c7d7f3076b66ab072a8af2383e96104cc597c971339c">
+        <source xml:lang="en">Insert code into editor</source>
+        <target state="translated">Code in Editor einfügen</target>
+      </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
         <note>{0} represents the version number</note>
@@ -186,6 +226,10 @@ Typ: {3}</target>
       <trans-unit id="++CODE++8d5ff42292d46b5c6b66b7285a701ef3b8cb3a48186944d73ed6a8d5f7ca1394">
         <source xml:lang="en">Let Copilot help you code</source>
         <target state="translated">Von Copilot beim Codieren helfen lassen</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
+        <source xml:lang="en">Login</source>
+        <target state="translated">Anmeldung</target>
       </trans-unit>
       <trans-unit id="++CODE++8f2de600bf940a26c63a7ac23984a12ca8970fcf1a85947aa5566c34e23eea07">
         <source xml:lang="en">Managed</source>
@@ -259,9 +303,9 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
         <target state="translated">Mindestens ein Attributname wurde geändert oder entfernt. Wenden Sie sich an den Administrator.</target>
       </trans-unit>
-      <trans-unit id="++CODE++9c1a3ec7947746271d8596f2a428139e20ff14d48e87d4631a3fc17004c170f9">
-        <source xml:lang="en">Open in Power Pages</source>
-        <target state="translated">In Power Pages öffnen</target>
+      <trans-unit id="++CODE++e61655958f06a0bb12435c70d95c738b62fabdff78f26c597c105a8823820fbd">
+        <source xml:lang="en">Open in Power Pages studio</source>
+        <target state="translated">Im Power Pages-Studio öffnen</target>
       </trans-unit>
       <trans-unit id="++CODE++dac0ee62a5197a3722a9e7e9e851e80504cced8a13ce8b17842d78e8313578c2">
         <source xml:lang="en">Opening preview site...</source>
@@ -274,6 +318,10 @@ Organisations-ID: {3}</target>
       <trans-unit id="++CODE++aba96e0c43da62e6c721a35c5d5eb5ffecaf8316ddea5379049172acfe6c7152">
         <source xml:lang="en">PAC Telemetry enabled</source>
         <target state="translated">PAC-Telemetrie aktiviert</target>
+      </trans-unit>
+      <trans-unit id="++CODE++59e1f415bf9d7761b450dcb4785daac53307323451bc453bfaa06a46d4649e2a">
+        <source xml:lang="en">PREVIEW</source>
+        <target state="translated">VORSCHAUVERSION</target>
       </trans-unit>
       <trans-unit id="++CODE++1514b12ec249ca33bc0568c872840126e82cc964aaa7f028393674c17d554444">
         <source xml:lang="en">Page Template name cannot be empty.</source>
@@ -300,6 +348,10 @@ Organisations-ID: {3}</target>
         <note>{0} represents the environment name</note>
         <target state="translated">Power Pages Copilot ist nun verbunden mit folgender Umgebung: {0} : {1}</target>
       </trans-unit>
+      <trans-unit id="++CODE++cce89cd3a0f118dafd3173f6444abdcd2b9782153af1b6bfa8f63ef3d4b68268">
+        <source xml:lang="en">Power Pages studio URL is not available</source>
+        <target state="translated">Power Pages-Studio-URL ist nicht verfügbar</target>
+      </trans-unit>
       <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
         <source xml:lang="en">Preparing pac CLI (v{0})...</source>
         <note>{0} represents the version number</note>
@@ -308,6 +360,10 @@ Organisations-ID: {3}</target>
       <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
         <source xml:lang="en">Preview site</source>
         <target state="translated">Site in der Vorschau anzeigen</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f190e8061b8cbadd991ff217210525eff0000a8c6ddc2d44baec8388b7bd1a3e">
+        <source xml:lang="en">Preview site URL is not available</source>
+        <target state="translated">URL für die Vorschauversion der Website ist nicht verfügbar</target>
       </trans-unit>
       <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
         <source xml:lang="en">Profile Kind: {0}</source>
@@ -335,6 +391,10 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Selection is empty.</source>
         <target state="translated">Auswahl ist leer.</target>
       </trans-unit>
+      <trans-unit id="++CODE++d4e969ee5e3ea8fe5e7f9195be448fd5fd5d2cb6f487929c3e495cbbe7e8f1e8">
+        <source xml:lang="en">Selection is too large. Try making a shorter selection.</source>
+        <target state="translated">Die Auswahl ist zu groß. Versuchen Sie, eine kürzere Auswahl zu treffen.</target>
+      </trans-unit>
       <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
         <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
         <target state="translated">Der Power Pages-Generator ist in Ihrer VS Code-Erweiterung zur Verwendung bereit!</target>
@@ -358,6 +418,18 @@ Organisations-ID: {3}</target>
       <trans-unit id="++CODE++37ea190531b914739bf1ff100b3d44579b6d703de0b79b380094714aa3b3c259">
         <source xml:lang="en">Thereâ€™s a problem on the back end</source>
         <target state="translated">Problem mit dem Backend</target>
+      </trans-unit>
+      <trans-unit id="++CODE++75670337a398f9840d2951dbc6746497caec6da9dd506ecff57ef79d59c6280f">
+        <source xml:lang="en">Thumbs Down</source>
+        <target state="translated">Daumen runter</target>
+      </trans-unit>
+      <trans-unit id="++CODE++8b1d85ebb8ecdb644b32f92089716c40b0f7dd2df4b43b3bdbaeba904deecfad">
+        <source xml:lang="en">Thumbs Up</source>
+        <target state="translated">Daumen hoch</target>
+      </trans-unit>
+      <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
+        <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
+        <target state="translated">Weitere Informationen finden Sie in der &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages-Dokumentation.</target>
       </trans-unit>
       <trans-unit id="++CODE++8d6329ce370e7f2cf3a5b77a73e0100c08550628408f2763deafe57dce769719">
         <source xml:lang="en">Try Copilot for Power Pages</source>
@@ -400,6 +472,22 @@ Organisations-ID: {3}</target>
         <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
         <target state="translated">Ob es sich um HTML-, CSS-, JS- oder Liquid-Code handelt, beschreiben Sie einfach, was Sie benötigen, und lassen Sie es von KI für Sie erstellen.</target>
       </trans-unit>
+      <trans-unit id="++CODE++47a853b9f140a6f231de8498ec559d7d882536070b83c1e45c16671fd48a0b65">
+        <source xml:lang="en">Working on it...</source>
+        <target state="translated">Wir arbeiten daran ...</target>
+      </trans-unit>
+      <trans-unit id="++CODE++30632b88fa6fb995b221521d80b196cef9e854aca2ddba36b5c34259618e890f">
+        <source xml:lang="en">Write JavaScript code for form field validation to check phone field value is in the valid format.</source>
+        <target state="translated">Schreiben Sie JavaScript-Code für die Formularfeldüberprüfung, um zu ermitteln, ob der Wert des Telefonfelds im gültigen Format liegt.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++216c39e49ae56ff6888d852e8818ed5282b19176cb7f9b4958a3fca2e1769b6c">
+        <source xml:lang="en">Write JavaScript code to highlight the row where email field is empty in table list.</source>
+        <target state="translated">Schreiben Sie JavaScript-Code, um die Zeile hervorzuheben, in der das E-Mail-Feld in der Tabellenliste leer ist.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++9265d4c9f6b10b1a95877bcccee77e9d164e8a51ab17104b14ba19e7935aef0e">
+        <source xml:lang="en">Write web API code to query active contact records.</source>
+        <target state="translated">Schreiben Sie Web-API-Code, um aktive Kontaktdatensätze zu abfragen.</target>
+      </trans-unit>
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">Sie bearbeiten eine öffentliche Live-Website </target>
@@ -439,6 +527,14 @@ Weitere Informationen finden Sie unter [Versehentliches Überschreiben verhinder
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
         <target state="translated">Authentifizierungsprofile löschen</target>
+      </trans-unit>
+      <trans-unit id="powerpages.copilotPanel.clearConversation.title">
+        <source xml:lang="en">Clear Conversation</source>
+        <target state="translated">Unterhaltung schließen</target>
+      </trans-unit>
+      <trans-unit id="powerpages.copilotPanel.title">
+        <source xml:lang="en">Copilot In Power Pages</source>
+        <target state="translated">Copilot in Power Pages</target>
       </trans-unit>
       <trans-unit id="pacCLI.envAndSolutionsPanel.copyDisplayName.title">
         <source xml:lang="en">Copy Display Name</source>

@@ -10,3 +10,13 @@ export interface IPowerPagesChatResult extends vscode.ChatResult {
         command: string;
     }
 }
+export interface IOrgDetails {
+    orgID: string;
+    orgUrl: string;
+    environmentID: string;
+}
+
+export interface IComponentInfo {
+    componentInfo: string[];
+    entityName: string;
+}

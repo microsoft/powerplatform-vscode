@@ -13,7 +13,7 @@ import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEv
 import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
 import { DOMParser } from "@xmldom/xmldom";
 import { ATTRIBUTE_CLASSID, ATTRIBUTE_DATAFIELD_NAME, ATTRIBUTE_DESCRIPTION, ControlClassIdMap, SYSTEFORMS_API_PATH } from "./constants";
-import { getUserAgent } from "../Utils";
+import { getUserAgent } from "../utilities/Utils";
 
 
 declare const IS_DESKTOP: string | undefined;
@@ -45,7 +45,7 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
     }
 }
 
-export async function getFormXml(entityName: string, formName: string,  orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<(string [])>{
+export async function getFormXml(entityName: string, formName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<(string[])> {
     try {
         // Ensure the orgUrl ends with a '/'
         const formattedOrgUrl = orgUrl.endsWith('/') ? orgUrl : `${orgUrl}/`;
@@ -93,10 +93,10 @@ async function fetchJsonResponse(url: string, requestInit: RequestInit): Promise
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getAttributesFromResponse(jsonResponse: any): string[] {
     if (jsonResponse.Attributes && Array.isArray(jsonResponse.Attributes) && jsonResponse.Attributes.length > 0) {
-        const attributes =  jsonResponse.Attributes;
+        const attributes = jsonResponse.Attributes;
         const logicalNameDisplayName: string[] = [];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        attributes.forEach((attr:any) => {
+        attributes.forEach((attr: any) => {
             const attrDisplayName = attr.DisplayName?.UserLocalizedLabel?.Label; // Optional chaining for handling missing values
             if (attrDisplayName) {
                 logicalNameDisplayName.push(attrDisplayName)
@@ -143,7 +143,7 @@ function parseXML(formXml: string) {
             let classid = control.getAttribute(ATTRIBUTE_CLASSID);
 
             let controlType = '';
-            if(classid){
+            if (classid) {
 
                 // Use a regular expression to replace both '{' and '}' with an empty string
                 // Input: '{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}'
@@ -163,7 +163,7 @@ function parseXML(formXml: string) {
 }
 
 
-export async function getEntityName(telemetry: ITelemetry, sessionID: string, dataverseEntity: string): Promise<{entityName: string, formName: string}> {
+export async function getEntityName(telemetry: ITelemetry, sessionID: string, dataverseEntity: string): Promise<{ entityName: string, formName: string }> {
     let entityName = '';
     let formName = '';
 
@@ -196,7 +196,7 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
         sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         entityName = '';
     }
-    return {entityName, formName};
+    return { entityName, formName };
 }
 
 async function getMatchingFiles(folderPath: string, fileNameFirstPart: string): Promise<string[]> {
