@@ -12,7 +12,7 @@ import {
     logErrorAndNotifyUser,
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
-import { MultiStepInput } from "./utils/MultiStepInput";
+import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import { exec } from "child_process";
 import { Tables, WEBFILE, YoSubGenerator } from "./CreateOperationConstants";
 import { FileCreateEvent, sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";

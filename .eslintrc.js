@@ -20,6 +20,7 @@ module.exports = {
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
     ],
+    ignorePatterns: ["src/typings"],
     rules: {
         "@typescript-eslint/no-unused-vars": [
             "error",
