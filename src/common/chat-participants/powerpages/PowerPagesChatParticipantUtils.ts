@@ -19,10 +19,11 @@ export async function getEndpoint(
     orgID: string,
     environmentID: string,
     telemetry: ITelemetry,
-    cachedEndpoint: IIntelligenceAPIEndpointInformation | null
+    cachedEndpoint: IIntelligenceAPIEndpointInformation | null,
+    sessionID: string
 ): Promise<IIntelligenceAPIEndpointInformation> {
     if (!cachedEndpoint) {
-        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, telemetry, environmentID, '') as IIntelligenceAPIEndpointInformation; // TODO - add session ID
+        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, telemetry, sessionID, environmentID) as IIntelligenceAPIEndpointInformation; // TODO - add session ID
     }
     return cachedEndpoint;
 }
@@ -31,21 +32,21 @@ export async function getEndpoint(
     * Get component info for the active file
     * @returns componentInfo - Entity details for active file (form or list)
 */
-export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | undefined, activeFileParams: IActiveFileParams): Promise<IComponentInfo> {
+export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | undefined, activeFileParams: IActiveFileParams, sessionID: string): Promise<IComponentInfo> {
 
     let metadataInfo = { entityName: '', formName: '' };
     let componentInfo: string[] = [];
 
     if (isEntityInSupportedList(activeFileParams.dataverseEntity)) {
-        metadataInfo = await getEntityName(telemetry, '', activeFileParams.dataverseEntity);
+        metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
         const dataverseToken = (await dataverseAuthentication(telemetry, orgUrl ?? '', true)).accessToken;
 
         if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
-            const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, orgUrl ?? '', dataverseToken, telemetry, 'sessionID');
+            const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, orgUrl ?? '', dataverseToken, telemetry, sessionID);
             componentInfo = formColumns;
         } else {
-            const entityColumns = await getEntityColumns(metadataInfo.entityName, orgUrl ?? '', dataverseToken, telemetry, 'sessionID');
+            const entityColumns = await getEntityColumns(metadataInfo.entityName, orgUrl ?? '', dataverseToken, telemetry, sessionID);
             componentInfo = entityColumns;
         }
     }
