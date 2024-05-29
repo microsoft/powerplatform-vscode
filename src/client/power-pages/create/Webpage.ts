@@ -17,7 +17,7 @@ import {
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 
-import { MultiStepInput } from "./utils/MultiStepInput";
+import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import { TableFolder, Tables, YoSubGenerator } from "./CreateOperationConstants";
 import path from "path";
 import { ITelemetry } from "../../telemetry/ITelemetry";
