@@ -347,7 +347,7 @@ async function snapshot() {
 }
 
 const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.32.7';
+const cliVersion = '1.32.8';
 
 const recompile = gulp.series(
     clean,
