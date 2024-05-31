@@ -14,7 +14,7 @@ import {
     getWebTemplates,
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
-import { MultiStepInput } from "./utils/MultiStepInput";
+import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import path from "path";
 import { statSync } from "fs";
 import { ITelemetry } from "../../telemetry/ITelemetry";
@@ -150,7 +150,7 @@ async function getPageTemplateInputs(
         if (!name) {
             return vscode.l10n.t("Please enter a name for the page template.");
         }
-    
+
         const file = formatFileName(name);
         const filePath = path.join(
             selectedWorkspaceFolder,
