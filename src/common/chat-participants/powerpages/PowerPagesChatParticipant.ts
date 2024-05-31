@@ -13,11 +13,13 @@ import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG } from './PowerPagesChatParticipantConstants';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG,NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { getComponentInfo, getEndpoint } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
+import { v4 as uuidv4 } from 'uuid';
+
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
     private chatParticipant: vscode.ChatParticipant;
@@ -27,6 +29,7 @@ export class PowerPagesChatParticipant {
     private isOrgDetailsInitialized = false;
     private readonly _disposables: vscode.Disposable[] = [];
     private cachedEndpoint: IIntelligenceAPIEndpointInformation| null = null;
+    private powerPagesAgentSessionId: string;
 
     private orgID: string | undefined;
     private orgUrl: string | undefined;
@@ -38,6 +41,8 @@ export class PowerPagesChatParticipant {
 
         //TODO: Check the icon image
         this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.png');
+
+        this.powerPagesAgentSessionId = uuidv4();
 
         this.telemetry = telemetry;
 
@@ -77,10 +82,13 @@ export class PowerPagesChatParticipant {
 
         stream.progress(RESPONSE_AWAITED_MSG)
 
+        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, {sessionId: this.powerPagesAgentSessionId});
+
         await this.initializeOrgDetails();
 
         if (!this.orgID || !this.environmentID) {
             stream.markdown(PAC_AUTH_NOT_FOUND);
+            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, {sessionId: this.powerPagesAgentSessionId});
             return {
                 metadata: {
                     command: ''
@@ -88,11 +96,12 @@ export class PowerPagesChatParticipant {
             };
         }
 
-        const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.telemetry, '', this.orgID, true);
+        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, {orgID: this.orgID, environmentID: this.environmentID, sessionId: this.powerPagesAgentSessionId});
+
+        const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.telemetry, this.powerPagesAgentSessionId, this.orgID, true);
 
         if (!intelligenceApiAuthResponse) {
             stream.markdown(AUTHENTICATION_FAILED_MSG);
-
             return {
                 metadata: {
                     command: '',
@@ -102,13 +111,12 @@ export class PowerPagesChatParticipant {
 
         const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
 
-        const intelligenceAPIEndpointInfo = await getEndpoint(this.orgID, this.environmentID, this.telemetry, this.cachedEndpoint);
+        const intelligenceAPIEndpointInfo = await getEndpoint(this.orgID, this.environmentID, this.telemetry, this.cachedEndpoint, this.powerPagesAgentSessionId);
 
-        const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry, '');
+        const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry,this.powerPagesAgentSessionId);
 
         if (!copilotAvailabilityStatus) {
             stream.markdown(COPILOT_NOT_AVAILABLE_MSG)
-
             return {
                 metadata: {
                     command: ''
@@ -137,9 +145,13 @@ export class PowerPagesChatParticipant {
 
             const {activeFileParams} = getActiveEditorContent();
 
-            const {componentInfo, entityName}: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams);
+            const {componentInfo, entityName}: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
-            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, '', entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
+            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
+
+            const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
+
+            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, {scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID})
 
             llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
                 if (response.displayText) {
