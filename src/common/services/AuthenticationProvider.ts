@@ -66,7 +66,7 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
         }
         accessToken = session?.accessToken ?? '';
         user = session.account.label;
-        userId = session?.account.id.split("/").pop() ??
+        userId = session?.account.id.split(/[./]/).shift() ??
             session?.account.id ??
             "";
         if (!accessToken) {
@@ -112,7 +112,7 @@ export async function dataverseAuthentication(
         }
 
         accessToken = session?.accessToken ?? "";
-        userId = session?.account.id.split("/").pop() ??
+        userId = session?.account.id.split(/[./]/).shift() ??
             session?.account.id ??
             "";
         if (!accessToken) {
@@ -220,7 +220,7 @@ export async function graphClientAuthentication(
             sendTelemetryEvent(telemetry, {
                 eventName: VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
                 userId:
-                    session?.account.id.split("/").pop() ??
+                    session?.account.id.split(/[./]/).shift() ??
                     session?.account.id ??
                     "",
             });
@@ -269,7 +269,7 @@ export async function bapServiceAuthentication(
             sendTelemetryEvent(telemetry, {
                 eventName: VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED,
                 userId:
-                    session?.account.id.split("/").pop() ??
+                    session?.account.id.split(/[./]/).shift() ??
                     session?.account.id ??
                     "",
             });
