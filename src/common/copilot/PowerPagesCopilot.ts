@@ -341,8 +341,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (session) {
             intelligenceApiToken = session.accessToken;
             userName = getUserName(session.account.label);
-            userID = session?.account.id.split("/").pop() ??
-                session?.account.id;
+            userID = session?.account.id.split(/[./]/).shift() ??
+                session?.account.id ??
+                "";
         } else {
             intelligenceApiToken = "";
             userName = "";
