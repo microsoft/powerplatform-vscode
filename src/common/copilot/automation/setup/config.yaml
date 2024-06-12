@@ -1,0 +1,74 @@
+# IMPORTANT: PLEASE UPDATE THE BELOW CONFIGURATION AS PER YOUR REQUIREMENT BEFORE RUNNING THE AUTOMATION SUITE BUT MAKE SURE TO KEEP THE KEYS SAME.
+
+# Required: YES
+# Description: This is the API endpoint to be used to run automation suite.
+# Type: string
+endpoint: https://aibuildertextapiservice.wus-il002.gateway.Test.island.powerapps.com/v1.0/ad48417c-a13d-ee11-be6a-00224804265b/appintelligence/chat
+#endpoint: YOUR_API_ENDPOINT
+
+# Required: YES
+# Description: This is the excel file to be used from Setup folder to run automation suite.
+# Type: string
+#excel_file_name: YOUR_EXCEL_FILE_NAME.xlsx
+excel_file_name: Copilot Prompts Tests Report - VSCode.xlsx
+
+# Required: YES
+# Description: Flag indicating whether the excel file has header or not. Default is true.
+# Type: boolean (true/false)
+is_header_in_excel_flag: true
+
+# Required: YES
+# Description: Allowed languages to be used in the automation suite.
+# Type: string []
+allowed_languages: ["js", "javascript", "html", "css", "url", "fetchxml", "liquid", "jquery"]
+
+# Required: YES
+# Description: This is the number of requests to process and try to save to excel operation. Intermittent save to excel operation will be performed after this number of requests.
+# Type: integer
+no_of_requests_to_process_and_try_save_to_excel_operation: 5
+
+# Required: YES
+# Description: This is the prompt column index from excel file. This is the column index which will be used to pass to API as question/prompt.
+# Type: integer
+input_prompt_column_index: 1
+
+# Required: YES
+# Description: This is the API response column index in excel file. This is the column index which will be used to save the API response to a question/prompt.
+# Type: integer
+api_response_column_index: 3
+
+# Required: YES
+# Description: This is the test result column index in excel file. This is the column index which will be used to indicate whether the test PASSED or FAILED (see list_of_response_codes_to_expect config below).
+# Type: integer
+test_result_column_index: 4
+
+# Required: YES
+# This is the status column index in excel file. This is a required field. This is the column index which will be used to update the status of the test case as "PROCESSED" in case API response is received.
+# Type: integer
+status_column_index: 5
+
+# Required: NO
+# Description: This is the active file content column index in excel file. This is the column index which will be used to pass to API as activeFileContent.
+# Type: integer
+active_file_content_column_index:
+
+# Required: NO
+# Description: This is the dataverse entity value which will be replaced in request body JSON. By default it is empty which is a "generic" context.
+# Type: string
+# Expected values: [adx_webpage, adx_entitylist, adx_webtemplate, adx_entityform]
+dataverseEntity: 
+
+# Required: NO
+# Description: This is the entity field value which will be replaced in request body JSON. By default it is empty.
+# Type: string
+entityField:
+
+# Required: NO
+# Description: This is the field type value which will be replaced in request body JSON. By default it is empty.
+# Type: string
+fieldType:
+
+# Required: NO
+# Description: This is the list of sheets to be ignored for processing.
+# Type: string []
+sheets_to_ignore: ["Summary"]

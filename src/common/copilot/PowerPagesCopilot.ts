@@ -24,6 +24,7 @@ import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
 import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../services/Constants";
 import { ArtemisService } from "../services/ArtemisService";
+import { processExcelFile } from "./automation/utilities";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -121,6 +122,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             tenantId = orgInfo.tenantId;
             environmentId = orgInfo.environmentId;
         }
+        this.CopilotAutomationProcessor();
     }
 
     public dispose(): void {
@@ -434,6 +436,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (this._view) {
             this._view.webview.postMessage(message);
         }
+    }
+
+    private CopilotAutomationProcessor() {
+        this._disposables.push(
+            vscode.commands.registerCommand("powerpages.copilot.promptsProcessing.automation", () => {
+                processExcelFile();
+            })
+        );
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
