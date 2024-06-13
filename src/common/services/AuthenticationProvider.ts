@@ -290,4 +290,5 @@ export function getOIDFromToken(token: string, telemetry: ITelemetry) {
             { eventName: VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED, errorMsg: (error as Error).message }
         )
     }
+    return "";
 }
