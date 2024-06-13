@@ -6,7 +6,7 @@
 
 import * as vscode from "vscode";
 import { sendApiRequest } from "./IntelligenceApiService";
-import { dataverseAuthentication, intelligenceAPIAuthentication } from "../services/AuthenticationProvider";
+import { dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication } from "../services/AuthenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
@@ -341,9 +341,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (session) {
             intelligenceApiToken = session.accessToken;
             userName = getUserName(session.account.label);
-            userID = session?.account.id.split(/[./]/).shift() ??
-                session?.account.id ??
-                "";
+            userID = getOIDFromToken(session.accessToken, this.telemetry);
         } else {
             intelligenceApiToken = "";
             userName = "";
