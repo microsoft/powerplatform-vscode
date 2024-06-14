@@ -185,6 +185,9 @@ async function getWebpageInputs(
         if (!name) {
             return vscode.l10n.t("Please enter a name for the webpage.");
         }
+        if (!/^[A-Za-z0-9-_]+$/.test(name)) {
+            return vscode.l10n.t("Webpage names should contain only letters, numbers, hyphens, or underscores.");
+        }
         if (
             webpageNames
                 .map((n) => n.toLowerCase())
