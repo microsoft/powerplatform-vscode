@@ -99,7 +99,7 @@ describe("Authentication Provider", () => {
             "Authorization Failed. Please run again to authorize it"
         );
 
-        sinon.assert.calledOnce(sendTelemetryEvent);
+        sinon.assert.calledTwice(sendTelemetryEvent);
         sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(_mockgetSession);
     });
