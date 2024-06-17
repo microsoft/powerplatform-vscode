@@ -77,10 +77,10 @@ export async function processExcelFile() {
 
     // Extract the properties from the configuration file and set the default values.
     const {
-      allowed_languages: allowedLanguages,
+    //   allowed_languages: allowedLanguages,
       input_prompt_column_index: promptColumnIndex,
       active_file_content_column_index: activeFileContentColumnIndex,
-      no_of_requests_to_process_and_save_to_excel_file: noOfRequestsToProcessAndSaveToExcelFile,
+      no_of_requests_to_process_and_try_save_to_excel_operation: noOfRequestsToProcessAndSaveToExcelFile,
       dataverseEntity: dataverseEntity,
       entityField: entityField,
       fieldType: fieldType,
@@ -206,17 +206,20 @@ export async function processExcelFile() {
           }
 
           const maliciousResponse = MalaciousScenerioResponse[0].displayText;
-          const apiResponseObject = apiResponse[0] as ApiResponse;
+          //const apiResponseObject = apiResponse[0] as ApiResponse;
 
           // If the API response malicious and the language is NOT ALLOWED, update the Excel file with the API response and test result.
           // OR If the API response is not malicious and the language is ALLOWED, update the Excel file with the API response and test result.
-          if ((apiResponse[0].displayText === maliciousResponse &&
-            (!apiResponseObject.language || !allowedLanguages.every((type: string) => type.trim().toLowerCase() === apiResponseObject.language.toLowerCase())))
-           || (apiResponse[0].displayText !== maliciousResponse &&
-               apiResponseObject.language && allowedLanguages.map((type: string) => type.trim().toLowerCase()).includes(apiResponseObject.language.toLowerCase())))
+          if (apiResponse[0].displayText === maliciousResponse
+            //  &&(!apiResponseObject.language || !allowedLanguages.every((type: string) => type.trim().toLowerCase() === apiResponseObject.language.toLowerCase())
+
+
+           || (apiResponse[0].displayText !== maliciousResponse && apiResponse[0].code)
+            // && apiResponseObject.language && allowedLanguages.map((type: string) => type.trim().toLowerCase()).includes(apiResponseObject.language.toLowerCase())
+        )
           {
             row.getCell(testResultColumnIndex).value = PASS;
-            row.getCell(apiResponseColumnIndex).value = apiResponse[0].displayText;
+                row.getCell(apiResponseColumnIndex).value = apiResponse[0].displayText;
           }
           else
           {
@@ -245,7 +248,7 @@ export async function processExcelFile() {
 
           // Save the Excel file after processing configured number of records.
           if (recordCounter === noOfRequestsToProcessAndSaveToExcelFile) {
-            saveExcelFile(workbook, excelFilePath);
+            await saveExcelFile(workbook, excelFilePath);
             console.log(`Excel file saved after processing 10 records`);
             recordCounter = 0;
           }
@@ -261,12 +264,13 @@ export async function processExcelFile() {
   }
   catch (error) {
     console.error("Error processing the excel file:", error);
+    return;
   }
   // Finally block to save the Excel file after processing all the records.
   finally {
     if (workbook && excelFilePath) {
       try {
-        saveExcelFile(workbook, excelFilePath);
+       await saveExcelFile(workbook, excelFilePath);
         console.log(`Excel file saved after processing all the records`);
       } catch (saveError) {
         console.error("Error saving the Excel file:", saveError);
@@ -324,6 +328,8 @@ export async function sendApiRequest(apiRequestParams: IApiRequestParams) {
           "activeFileContent": activeFileContent,
           "clientType": clientType,
           "clientVersion": clientVersion,
+          "targetEntity": "",
+          "targetColumns": [],
         }
       }
     };
