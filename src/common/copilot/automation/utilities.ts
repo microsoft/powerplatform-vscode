@@ -4,6 +4,7 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
+import https from "https";
 import * as vscode from "vscode";
 // import {
 //     INTELLIGENCE_SCOPE_DEFAULT,
@@ -27,6 +28,7 @@ const clientVersion = getExtensionVersion();
 const PASS = "PASS";
 const FAIL = "FAIL";
 const PROCESSED = "PROCESSED";
+const skipCodes = ["", null, undefined, "violation", "unclear", "explain"];
 
 //<summary>
 // This function is used to get the access token for the Intelligence API
@@ -219,7 +221,12 @@ export async function processExcelFile() {
         )
           {
             row.getCell(testResultColumnIndex).value = PASS;
+            if (skipCodes.includes(apiResponse[0].code)) {
                 row.getCell(apiResponseColumnIndex).value = apiResponse[0].displayText;
+            } else{
+                row.getCell(apiResponseColumnIndex).value = apiResponse[0];
+            }
+
           }
           else
           {
@@ -334,6 +341,11 @@ export async function sendApiRequest(apiRequestParams: IApiRequestParams) {
       }
     };
 
+    //Required for testing with localhost
+    const agent = new https.Agent({
+        rejectUnauthorized: false,
+    });
+
     const requestInit: RequestInit = {
       method: "POST",
       headers: {
@@ -346,7 +358,8 @@ export async function sendApiRequest(apiRequestParams: IApiRequestParams) {
         : {}),
         Authorization: `Bearer ${apiToken}`,
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
+      agent: agent,
     }
 
     try {
