@@ -321,6 +321,52 @@
         "title": "%microsoft-powerapps-portals.webExtension.init.title%"
       },
       {
+        "command": "powerpages.websitePanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "powerpages.websitePanel.downloadWebsite",
+        "title": "Download Website",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "powerpages.websitePanel.uploadWebsite",
+        "title": "Upload Website",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "powerpages.websitePanel.uploadWebsiteForceAll",
+        "title": "Upload Website (force all)"
+      },
+      {
+        "command": "powerpages.websitePanel.bootstrap-migration",
+        "title": "Bootstrap Migration"
+      },
+      {
+        "command": "powerpages.websitePanel.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "powerpages.websitePanel.downloadWebsite",
+        "title": "Download Website",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "powerpages.websitePanel.uploadWebsite",
+        "title": "Upload Website",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "powerpages.websitePanel.uploadWebsiteForceAll",
+        "title": "Upload Website (force all)"
+      },
+      {
+        "command": "powerpages.websitePanel.bootstrap-migration",
+        "title": "Bootstrap Migration"
+      },
+      {
         "command": "microsoft-powerapps-portals.webpage",
         "category": "Powerpages",
         "title": "New Webpage"
@@ -673,6 +719,26 @@
           "when": "never"
         },
         {
+          "command": "powerpages.websitePanel.refresh",
+          "when": "never"
+        },
+        {
+          "command": "powerpages.websitePanel.downloadWebsite",
+          "when": "never"
+        },
+        {
+          "command": "powerpages.websitePanel.uploadWebsite",
+          "when": "never"
+        },
+        {
+          "command": "powerpages.websitePanel.bootstrap-migration",
+          "when": "never"
+        },
+        {
+          "command": "powerpages.websitePanel.uploadWebsiteForceAll",
+          "when": "never"
+        },
+        {
           "command": "pacCLI.authPanel.refresh",
           "when": "never"
         },
@@ -830,6 +896,11 @@
           "command": "powerpages.copilot.clearConversation",
           "when": "view == powerpages.copilot",
           "group": "navigation"
+        },
+        {
+          "command": "powerpages.websitePanel.refresh",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel",
+          "group": "navigation@1"
         }
       ],
       "view/item/context": [
@@ -892,6 +963,20 @@
           "when": "!virtualWorkspace && view == pacCLI.envAndSolutionsPanel && viewItem == ENVIRONMENT"
         },
         {
+          "command": "powerpages.websitePanel.downloadWebsite",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel",
+          "group": "inline"
+        },
+        {
+          "command": "powerpages.websitePanel.uploadWebsite",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel",
+          "group": "inline"
+        },
+        {
+          "command": "powerpages.websitePanel.bootstrap-migration",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel"
+        },
+        {
           "command": "powerpages.collaboration.openTeamsChat",
           "group": "inline",
           "when": "viewItem == userNode"
@@ -900,8 +985,32 @@
           "command": "powerpages.collaboration.openMail",
           "group": "inline",
           "when": "viewItem == userNode"
+        },
+        {
+          "submenu": "microsoft-powerpages-download"
+        },
+        {
+          "submenu": "microsoft-powerpages-upload"
+        }
+
+      ],
+      "microsoft-powerpages-download":[
+        {
+          "command": "powerpages.websitePanel.downloadWebsite",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel"
+        }
+      ],
+      "microsoft-powerpages-upload":[
+        {
+          "command": "powerpages.websitePanel.uploadWebsite",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel"
+        },
+        {
+          "command": "powerpages.websitePanel.uploadWebsiteForceAll",
+          "when": "!virtualWorkspace && view == powerpages.websitePanel"
         }
       ]
+
     },
     "submenus": [
       {
@@ -909,8 +1018,24 @@
         "label": "Power Pages"
       },
       {
+        "id": "microsoft-powerpages-download",
+        "label": "Download"
+      },
+      {
+        "id": "microsoft-powerpages-upload",
+        "label": "Upload"
+      },
+      {
         "id": "microsoft-powerapps-portals.powerpages-copilot",
         "label": "Copilot In Power Pages"
+      },
+      {
+        "id": "microsoft-powerpages-download",
+        "label": "Download"
+      },
+      {
+        "id": "microsoft-powerpages-upload",
+        "label": "Upload"
       }
     ],
     "viewsContainers": {
@@ -933,6 +1058,11 @@
           "id": "pacCLI.envAndSolutionsPanel",
           "name": "%pacCLI.envAndSolutionsPanel.title%",
           "when": "!virtualWorkspace && !config.powerPlatform.experimental.disableActivityBarPanels"
+        },
+        {
+          "id": "powerpages.websitePanel",
+          "name": "Power Pages Websites",
+          "when": "!virtualWorkspace"
         },
         {
           "type": "webview",

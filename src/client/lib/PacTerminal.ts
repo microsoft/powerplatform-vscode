@@ -46,6 +46,10 @@ export class PacTerminal implements vscode.Disposable {
             vscode.commands.registerCommand('pacCLI.pacPackageHelp', () => PacTerminal.getTerminal().sendText("pac package help")),
             vscode.commands.registerCommand('pacCLI.pacPcfHelp', () => PacTerminal.getTerminal().sendText("pac pcf help")),
             vscode.commands.registerCommand('pacCLI.pacSolutionHelp', () => PacTerminal.getTerminal().sendText("pac solution help")));
+            vscode.commands.registerCommand('pacCLI.pacPaportalDownload', (websiteId, path) => PacTerminal.getTerminal().sendText(`pac paportal download -id ${websiteId} -p ${path}`));
+            vscode.commands.registerCommand('pacCLI.pacPaportalUpload', (path, modelVersion) => PacTerminal.getTerminal().sendText(`pac paportal upload -p ${path} -mv ${modelVersion}`))
+            vscode.commands.registerCommand('pacCLI.pacPaportalUploadForce', (path, modelVersion) => PacTerminal.getTerminal().sendText(`pac paportal upload -p ${path} -mv ${modelVersion} -f`))
+            vscode.commands.registerCommand('pacCLI.pacPaportalBootstrapMigration', (path) => PacTerminal.getTerminal().sendText(`pac paportal bootstrap-migrate -p ${path}`))
 
         this._cmdDisposables.push(vscode.commands.registerCommand(`pacCLI.enableTelemetry`, async () => {
             const result = await this._pacWrapper.enableTelemetry();

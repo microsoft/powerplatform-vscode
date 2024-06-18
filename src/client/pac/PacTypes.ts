@@ -72,4 +72,17 @@ export type ActiveOrgOutput = {
     EnvironmentId: string,
 }
 
+export type WebsiteListOutput = PacOutput & {
+    Results: WebsiteListing[];
+}
+
+export type WebsiteListing = {
+    Index: number;
+    WebsiteId: string;
+    WebsiteName: string;
+}
+
+
 export type PacOrgWhoOutput = PacOutputWithResult<ActiveOrgOutput>;
+
+
