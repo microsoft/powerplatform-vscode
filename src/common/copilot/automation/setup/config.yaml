@@ -10,7 +10,7 @@ endpoint: https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appin
 # Description: This is the excel file to be used from Setup folder to run automation suite.
 # Type: string
 #excel_file_name: YOUR_EXCEL_FILE_NAME.xlsx
-excel_file_name: Copilot Flight Checkdatasets.xlsx
+excel_file_name: Conversation_HarmFulContent_Sel.xlsx
 
 # Required: YES
 # Description: Flag indicating whether the excel file has header or not. Default is true.
@@ -30,27 +30,27 @@ no_of_requests_to_process_and_try_save_to_excel_operation: 5
 # Required: YES
 # Description: This is the prompt column index from excel file. This is the column index which will be used to pass to API as question/prompt.
 # Type: integer
-input_prompt_column_index: 4
+input_prompt_column_index: 1
 
 # Required: YES
 # Description: This is the API response column index in excel file. This is the column index which will be used to save the API response to a question/prompt.
 # Type: integer
-api_response_column_index: 5
+api_response_column_index: 3
 
 # Required: YES
 # Description: This is the test result column index in excel file. This is the column index which will be used to indicate whether the test PASSED or FAILED (see list_of_response_codes_to_expect config below).
 # Type: integer
-test_result_column_index: 6
+test_result_column_index: 4
 
 # Required: YES
 # This is the status column index in excel file. This is a required field. This is the column index which will be used to update the status of the test case as "PROCESSED" in case API response is received.
 # Type: integer
-status_column_index: 7
+status_column_index: 5
 
 # Required: NO
 # Description: This is the active file content column index in excel file. This is the column index which will be used to pass to API as activeFileContent.
 # Type: integer
-active_file_content_column_index:
+active_file_content_column_index: 2
 
 # Required: NO
 # Description: This is the dataverse entity value which will be replaced in request body JSON. By default it is empty which is a "generic" context.
@@ -71,4 +71,4 @@ fieldType:
 # Required: NO
 # Description: This is the list of sheets to be ignored for processing.
 # Type: string []
-sheets_to_ignore: ["Summary", "explain_feature"]
+sheets_to_ignore: ["Summary"]
