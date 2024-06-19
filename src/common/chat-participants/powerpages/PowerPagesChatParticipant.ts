@@ -13,9 +13,9 @@ import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG,NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { getComponentInfo, getEndpoint } from './PowerPagesChatParticipantUtils';
+import { getComponentInfo, getEndpoint, getSiteCreationInputs } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,7 +28,7 @@ export class PowerPagesChatParticipant {
     private readonly _pacWrapper?: PacWrapper;
     private isOrgDetailsInitialized = false;
     private readonly _disposables: vscode.Disposable[] = [];
-    private cachedEndpoint: IIntelligenceAPIEndpointInformation| null = null;
+    private cachedEndpoint: IIntelligenceAPIEndpointInformation | null = null;
     private powerPagesAgentSessionId: string;
 
     private orgID: string | undefined;
@@ -58,6 +58,15 @@ export class PowerPagesChatParticipant {
             this.extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID: undefined, orgUrl: undefined });
         }));
 
+        vscode.commands.registerCommand('create-site-inputs', async (siteName: string, isCreateSiteInputsReceived) => {
+            if (!isCreateSiteInputsReceived) {
+                const siteCreateInputs = await getSiteCreationInputs(siteName);
+                if (siteCreateInputs) {
+                    isCreateSiteInputsReceived = true;
+                }
+            }
+        });
+
     }
 
     public static getInstance(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {
@@ -82,13 +91,13 @@ export class PowerPagesChatParticipant {
 
         stream.progress(RESPONSE_AWAITED_MSG)
 
-        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, {sessionId: this.powerPagesAgentSessionId});
+        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, { sessionId: this.powerPagesAgentSessionId });
 
         await this.initializeOrgDetails();
 
         if (!this.orgID || !this.environmentID) {
             stream.markdown(PAC_AUTH_NOT_FOUND);
-            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, {sessionId: this.powerPagesAgentSessionId});
+            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, { sessionId: this.powerPagesAgentSessionId });
             return {
                 metadata: {
                     command: ''
@@ -96,7 +105,7 @@ export class PowerPagesChatParticipant {
             };
         }
 
-        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, {orgID: this.orgID, environmentID: this.environmentID, sessionId: this.powerPagesAgentSessionId});
+        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, { orgID: this.orgID, environmentID: this.environmentID, sessionId: this.powerPagesAgentSessionId });
 
         const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.telemetry, this.powerPagesAgentSessionId, this.orgID, true);
 
@@ -113,7 +122,7 @@ export class PowerPagesChatParticipant {
 
         const intelligenceAPIEndpointInfo = await getEndpoint(this.orgID, this.environmentID, this.telemetry, this.cachedEndpoint, this.powerPagesAgentSessionId);
 
-        const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry,this.powerPagesAgentSessionId);
+        const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry, this.powerPagesAgentSessionId);
 
         if (!copilotAvailabilityStatus) {
             stream.markdown(COPILOT_NOT_AVAILABLE_MSG)
@@ -126,6 +135,19 @@ export class PowerPagesChatParticipant {
 
         if (request.command) {
             //TODO: Handle command scenarios
+
+            if (request.command == 'create-site') {
+                stream.progress('Generating a new Power Pages site...');
+
+                stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
+
+                stream.button({
+                    command: 'create-site-inputs',
+                    title: 'Create Site',
+                    tooltip: 'Create a new Power Pages site',
+                    arguments: ['siteName', false],
+                })
+            }
 
         } else {
 
@@ -143,15 +165,15 @@ export class PowerPagesChatParticipant {
                 };
             }
 
-            const {activeFileParams} = getActiveEditorContent();
+            const { activeFileParams } = getActiveEditorContent();
 
-            const {componentInfo, entityName}: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
+            const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
             const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
 
             const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
 
-            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, {scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID})
+            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, { scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID })
 
             llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
                 if (response.displayText) {
@@ -186,4 +208,5 @@ export class PowerPagesChatParticipant {
         this.orgUrl = orgUrl;
         this.environmentID = environmentID;
     }
+
 }
