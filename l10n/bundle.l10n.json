@@ -114,6 +114,7 @@
   "Choose page template": "Choose page template",
   "Choose parent page": "Choose parent page",
   "Please enter a name for the webpage.": "Please enter a name for the webpage.",
+  "Webpage names should contain only letters, numbers, hyphens, or underscores.": "Webpage names should contain only letters, numbers, hyphens, or underscores.",
   "A webpage with the same name already exists. Please enter a different name.": "A webpage with the same name already exists. Please enter a different name.",
   "No parent pages found for adding webfile": "No parent pages found for adding webfile",
   "File(s) already exist. No new files to add": "File(s) already exist. No new files to add",
