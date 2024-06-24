@@ -197,3 +197,16 @@ export function getRegExPattern(fileNameArray: string[]): RegExp[] {
 
     return patterns;
 }
+
+export const findObjectIndexByProperty = (array: any, key: string, value: any): number => {
+    for (let i=0; i<array.length; i++) {
+        if (array[i][key] === value) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+export const removeExtension = (fileName: string, extn: string): string => {
+    return fileName.slice(0, -extn.length);
+}
