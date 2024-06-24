@@ -15,7 +15,7 @@ import { schemaEntityKey, schemaKey } from "../../schema/constants";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
-import * as authenticationProvider from "../../../../common/AuthenticationProvider";
+import * as authenticationProvider from "../../../../common/services/AuthenticationProvider";
 import { telemetryEventNames } from "../../telemetry/constants";
 
 describe("remoteFetchProvider", () => {

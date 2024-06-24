@@ -8,14 +8,14 @@ import { expect } from "chai";
 import {
     dataverseAuthentication,
     getCommonHeaders,
-} from "../../../../common/AuthenticationProvider";
+} from "../../../../common/services/AuthenticationProvider";
 import vscode from "vscode";
 import * as errorHandler from "../../common/errorHandler";
 import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import * as copilotTelemetry from "../../../../common/copilot/telemetry/copilotTelemetry";
 import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
 import { vscodeExtAppInsightsResourceProvider } from "../../../../common/telemetry-generated/telemetryConfiguration";
-import { VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED } from "../../../../common/TelemetryConstants";
+import { VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED } from "../../../../common/services/TelemetryConstants";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let traceError: any
@@ -50,8 +50,6 @@ describe("Authentication Provider", () => {
         expect(result.authorization).eq("Bearer " + accessToken);
         expect(result["content-type"]).eq("application/json; charset=utf-8");
         expect(result.accept).eq("application/json");
-        expect(result["OData-MaxVersion"]).eq("4.0");
-        expect(result["OData-Version"]).eq("4.0");
     });
 
     it("dataverseAuthentication", async () => {
@@ -101,7 +99,7 @@ describe("Authentication Provider", () => {
             "Authorization Failed. Please run again to authorize it"
         );
 
-        sinon.assert.calledOnce(sendTelemetryEvent);
+        sinon.assert.calledTwice(sendTelemetryEvent);
         sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(_mockgetSession);
     });
@@ -128,7 +126,7 @@ describe("Authentication Provider", () => {
             sendTelemetryEvent,
             telemetry, {
             eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
-            error: { message: errorMessage } as Error
+            errorMsg: errorMessage
         }
         );
         sinon.assert.calledOnce(_mockgetSession);

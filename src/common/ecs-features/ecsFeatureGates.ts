@@ -22,7 +22,19 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Disable Copilot',
     fallback: {
-        disallowedProDevCopilotTenants: "",
+        disallowedProDevCopilotTenants: "f25493ae-1c98-41d7-8a33-0be75f5fe603",
         disallowedProDevCopilotOrgs: "",
+    },
+});
+
+export const {
+    feature: EnableProDevCopilot
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable ProDev Copilot',
+    fallback: {
+        "capiSupportedProDevCopilotGeoList": "us,au,uk,eu,in",
+        "unsupportedProDevCopilotGeoList": "ca",
+        "capiSupportedProDevCopilotGeoWithCrossGeoDataFlow": "eu,se,ch,fr,de,no"
     },
 });
