@@ -12,6 +12,7 @@ export const RESPONSE_AWAITED_MSG = vscode.l10n.t('Working on it...');
 export const AUTHENTICATION_FAILED_MSG = vscode.l10n.t('Authentication failed. Please try again.');
 export const COPILOT_NOT_AVAILABLE_MSG = vscode.l10n.t('Copilot is not available. Please contact your administrator.');
 export const PAC_AUTH_NOT_FOUND = vscode.l10n.t('Active auth profile is not found or has expired. Please try again.');
+export const DISCLAIMER_MESSAGE = vscode.l10n.t('AI-generated content can contain mistakes. [Learn more](https://example.com)');
 export const SUPPORTED_ENTITIES = [ADX_ENTITYFORM, ADX_ENTITYLIST];
 // Telemetry Event Names
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'GitHubPowerPagesAgentInvoked';
