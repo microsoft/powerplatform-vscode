@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { ITelemetry } from "../../../client/telemetry/ITelemetry";
-import { ADX_ENTITYFORM} from "../../copilot/constants";
+import { ADX_ENTITYFORM } from "../../copilot/constants";
 import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/dataverseMetadata";
 import { IActiveFileParams } from "../../copilot/model";
 import { ArtemisService } from "../../services/ArtemisService";
@@ -53,19 +53,20 @@ export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | u
         }
     }
 
-    return {componentInfo, entityName: metadataInfo.entityName};
+    return { componentInfo, entityName: metadataInfo.entityName };
 }
 
 export function isEntityInSupportedList(entity: string): boolean {
     return SUPPORTED_ENTITIES.includes(entity);
 }
 
-export async function getSiteCreationInputs(siteName: string) {
-    const envNames: vscode.QuickPickItem[] = [
-        { label: 'EnvONe' },
-        { label: 'EnvTwo' },
-        { label: 'EnvThree' }
-    ];
+export async function getSiteCreationInputs(siteName: string, envInfo: { envId: string; envDisplayName: string; }[]) {
+    const envNames: vscode.QuickPickItem[] = envInfo.map((env) => {
+        return {
+            label: env.envDisplayName,
+            description: env.envId,
+        };
+    });
 
     const title = vscode.l10n.t("New Power Pages Site");
 

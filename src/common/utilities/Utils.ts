@@ -13,6 +13,7 @@ import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
+import { bapAuthentication } from "../services/AuthenticationProvider";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -204,4 +205,35 @@ export function checkCopilotAvailability(
     } else {
         return true;
     }
+}
+
+//API call to get env list for a org
+export async function getEnvList(telemetry:ITelemetry): Promise<{envId: string, envDisplayName: string}[]> {
+
+    const bapAuthToken = await bapAuthentication(telemetry, true);
+    const envInfo : {envId: string, envDisplayName: string}[] = [];
+
+    //TODO: Add telemetry for this API call
+
+    //make fetch call to the api: https://tip1.api.bap.microsoft.com/providers/Microsoft.BusinessAppPlatform/scopes/admin/environments?api-version=2021-04-01
+    const envListResponse = await fetch("https://tip1.api.bap.microsoft.com/providers/Microsoft.BusinessAppPlatform/scopes/admin/environments?api-version=2021-04-01&select=name,properties.displayName,properties.linkedEnvironmentMetadata", {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${bapAuthToken}`
+        }
+    });
+
+
+    if (envListResponse.ok) {
+        const envListJson = await envListResponse.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        envListJson.value.forEach((env: any) => {
+            envInfo.push({envId: env.properties.linkedEnvironmentMetadata.instanceUrl, envDisplayName: env.properties.displayName});
+        });
+    }
+    else {
+        vscode.window.showErrorMessage(vscode.l10n.t("Failed to fetch environment list"));
+    }
+
+    return envInfo;
 }

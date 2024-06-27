@@ -16,7 +16,7 @@ import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { getComponentInfo, getEndpoint, getSiteCreationInputs } from './PowerPagesChatParticipantUtils';
-import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
+import { checkCopilotAvailability, getActiveEditorContent, getEnvList } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -58,9 +58,9 @@ export class PowerPagesChatParticipant {
             this.extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID: undefined, orgUrl: undefined });
         }));
 
-        vscode.commands.registerCommand('create-site-inputs', async (siteName: string, isCreateSiteInputsReceived) => {
+        vscode.commands.registerCommand('create-site-inputs', async (siteName: string, envInfo:{ envId: string; envDisplayName: string; }[], isCreateSiteInputsReceived) => {
             if (!isCreateSiteInputsReceived) {
-                const siteCreateInputs = await getSiteCreationInputs(siteName);
+                const siteCreateInputs = await getSiteCreationInputs(siteName, envInfo);
                 if (siteCreateInputs) {
                     isCreateSiteInputsReceived = true;
                 }
@@ -141,14 +141,17 @@ export class PowerPagesChatParticipant {
 
                 stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
 
+                //API call to get list of the environments
+                const envInfo = await getEnvList(this.telemetry);
+
                 stream.button({
                     command: 'create-site-inputs',
                     title: 'Create Site',
                     tooltip: 'Create a new Power Pages site',
-                    arguments: ['siteName', false],
+                    arguments: ['siteName', envInfo, false],
                 })
             }
-
+            
         } else {
 
             const userPrompt = request.prompt;

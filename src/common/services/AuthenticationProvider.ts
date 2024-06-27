@@ -288,3 +288,50 @@ export async function bapServiceAuthentication(
 
     return accessToken;
 }
+
+export async function bapAuthentication(
+    telemetry: ITelemetry,
+    firstTimeAuth = false
+): Promise<string> {
+    let accessToken = "";
+    try {
+        let session = await vscode.authentication.getSession(
+            PROVIDER_ID,
+            [
+                `https://management.core.windows.net/${SCOPE_OPTION_DEFAULT}`
+            ],
+            { silent: true }
+        );
+        if (!session) {
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [
+                    `https://management.core.windows.net/${SCOPE_OPTION_DEFAULT}`
+                ],
+                { createIfNone: true }
+            );
+        }
+
+        accessToken = session?.accessToken ?? "";
+        if (!accessToken) {
+            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+        }
+
+        if (firstTimeAuth) {
+            // TODO: Add telemetry event
+        }
+
+    } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const authError = (error as Error)?.message;
+        showErrorDialog(
+            vscode.l10n.t(
+                "Authorization Failed. Please run again to authorize it"
+            ),
+            vscode.l10n.t("There was a permissions problem with the server")
+        );
+        //TODO: Add telemetry event
+    }
+
+    return accessToken;
+}
