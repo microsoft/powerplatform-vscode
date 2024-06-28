@@ -55,7 +55,8 @@ export class NPSWebView {
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Test</title>
+                        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self';">
+                        <title>Microsoft wants your feedback</title>
                         <script>${surveyScript}</script>
                     </head>
                     <body>
@@ -115,12 +116,6 @@ export class NPSWebView {
             );
             return "";
         }
-    }
-
-    private extensionResourceUrl(...parts: string[]): vscode.Uri {
-        return this._webviewPanel.webview.asWebviewUri(
-            vscode.Uri.joinPath(this.extensionUri, ...parts)
-        );
     }
 
     public static createOrShow(extensionUri: vscode.Uri): NPSWebView {
