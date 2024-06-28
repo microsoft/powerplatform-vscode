@@ -386,7 +386,7 @@ export function createWebWorkerInstance(
 
         const workerUrl = new URL(webworkerMain.toString());
 
-        WebExtensionContext.getWorkerScript(workerUrl)
+        WebExtensionContext.fetchLocalScriptContent(workerUrl)
             .then((workerScript) => {
                 const workerBlob = new Blob([workerScript], {
                     type: "application/javascript",

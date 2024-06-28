@@ -5,10 +5,7 @@
 
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
-import { queryParameters } from "../common/constants";
-import { getDeviceType } from "../utilities/deviceType";
 import { telemetryEventNames } from "../telemetry/constants";
-import { getEnvironmentIdFromUrl } from "../utilities/commonUtil";
 
 export class NPSWebView {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -18,50 +15,98 @@ export class NPSWebView {
         webViewPanel: vscode.WebviewPanel
     ) {
         this._webviewPanel = webViewPanel;
-        this._webviewPanel.webview.html = this._getHtml();
+        this.initializeWebView();
     }
 
-    private _getHtml() {
+    private async initializeWebView() {
         try {
-            const nonce = getNonce();
-            const mainJs = this.extensionResourceUrl("media", "main.js");
-            const tid = WebExtensionContext.urlParametersMap?.get(
-                queryParameters.TENANT_ID
+            const webviewHtml = await this._getHtml();
+            if (!webviewHtml) {
+                this._webviewPanel.dispose();
+            } else {
+                this._webviewPanel.webview.html = webviewHtml;
+            }
+        } catch (error) {
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_NPS_WEBVIEW_FAILED_TO_INITIALIZE,
+                this.initializeWebView.name,
+                (error as Error)?.message
             );
-            const envId = getEnvironmentIdFromUrl();
-            const geo = WebExtensionContext.urlParametersMap?.get(
-                queryParameters.GEO
+            this._webviewPanel.dispose();
+        }
+    }
+
+    private async _getHtml(): Promise<string> {
+        try {
+            const surveyLocation = vscode.Uri.joinPath(
+                this.extensionUri,
+                "dist",
+                "media",
+                "survey.lib.umd.v1.0.10.min.js"
             );
-            const culture = vscode.env.language;
-            const productVersion = process?.env?.BUILD_NAME;
-            const deviceType = getDeviceType();
-            const referrerPath: string[] = [
-                "https:/",
-                vscode.env.appHost,
-                "powerplatform/portal",
-                WebExtensionContext.defaultEntityType,
-                WebExtensionContext.defaultEntityId,
-            ];
-            const urlReferrer = referrerPath.join("/");
-            const formsProEligibilityId =
-                WebExtensionContext.formsProEligibilityId;
-            WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_RENDER_NPS
+            const surveyUrl = new URL(surveyLocation.toString());
+            const surveyScript = await WebExtensionContext.fetchLocalScriptContent(
+                surveyUrl
             );
-            return `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>Test CES Survey</title>
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src https://customervoice.microsoft.com/ ; img-src * 'self' data: https:; style-src  https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css 'nonce-${nonce}';script-src https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js 'nonce-${nonce}';">
-            </head>
-            <body>
-                <div id="surveyDiv"></div>
-                <script src="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.js" type="text/javascript"></script>
-                <link rel="stylesheet" type="text/css" href="https://mfpembedcdnmsit.azureedge.net/mfpembedcontmsit/Embed.css" />
-                <script id="npsContext" data-tid="${tid}" data-urlReferrer="${urlReferrer}" data-envId="${envId}" data-geo="${geo}" data-deviceType ="${deviceType}" data-culture ="${culture}" data-productVersion ="${productVersion}" data-formsProEligibilityId ="${formsProEligibilityId}" nonce="${nonce}" type="module" src="${mainJs}"></script>
-            </body>
-            </html>`;
+
+            return `
+                <!DOCTYPE html>
+                <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Test</title>
+                        <script>${surveyScript}</script>
+                    </head>
+                    <body>
+                        <survey-sdk id="mySurvey"></survey-sdk>
+                    </body>
+                    <script>
+                        function getAccessToken() {
+                            return '<access token>'
+                        }
+                        async function submitFeedback(teamName, surveyName, userId, feedback) {
+                            await new Promise((resolve) => {
+                                setTimeout(() => {
+                                    resolve();
+                                }, 0.5 * 1000);
+                            });
+                            return '<feedbackId>'; // feedbackId from CES APIs
+                        }
+                        async function updateFeedback(teamName, surveyName, userId, feedbackId, feedback) {
+                            await new Promise((resolve) => {
+                                setTimeout(() => {
+                                    resolve();
+                                }, 0.5 * 1000);
+                            });
+                        }
+
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const config = {
+                                teamName: 'powerapps',
+                                surveyName: 'powerapps-nsat',
+                                userId: 'test123',
+                                tenantId: '00000000-0000-0000-0000-000000000000',
+                                locale: 'en',
+                                width: 520,
+                                uiType: survey.UiType.Modal,
+                                template: survey.Template.SAT,
+                                environment: survey.Environment.INT,
+                                region: survey.Region.World,
+                                accessToken: {
+                                    getAccessToken
+                                },
+                                callbackFunctions: {
+                                    submitFeedback,
+                                    updateFeedback
+                                }
+                            };
+                            const element = document.getElementById('mySurvey');
+                            element.config = config;
+                        });
+                    </script>
+                </html>
+            `;
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 telemetryEventNames.WEB_EXTENSION_RENDER_NPS_FAILED,
@@ -81,25 +126,15 @@ export class NPSWebView {
     public static createOrShow(extensionUri: vscode.Uri): NPSWebView {
         const webview = vscode.window.createWebviewPanel(
             "testCESSurvey",
-            vscode.l10n.t("Microsoft wants your feeback"),
+            vscode.l10n.t("Microsoft wants your feedback"),
             { viewColumn: vscode.ViewColumn.One, preserveFocus: false },
             {
                 enableScripts: true,
                 localResourceRoots: [
-                    vscode.Uri.joinPath(extensionUri, "media", "main.js"),
+                    vscode.Uri.joinPath(extensionUri, "dist", "media"),
                 ],
             }
         );
         return new NPSWebView(extensionUri, webview);
     }
-}
-
-function getNonce() {
-    let text = "";
-    const possible =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (let i = 0; i < 64; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
 }
