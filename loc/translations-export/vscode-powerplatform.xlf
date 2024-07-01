@@ -177,6 +177,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++1d9bc50f05b58d430726840f771cd25056be57873eb33a5d6aeedfff2ca7e2db">
       <source xml:lang="en">Hi! Your Microsoft account doesn’t currently support Copilot. Contact your admin for details.</source>
     </trans-unit>
+    <trans-unit id="++CODE++08295f3385931e35c850b945e2ae04882452c4bf0dd575f70e95aaa6ed00daa9">
+      <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
+    </trans-unit>
     <trans-unit id="++CODE++e992151b1efc99f93484c7d7f3076b66ab072a8af2383e96104cc597c971339c">
       <source xml:lang="en">Insert code into editor</source>
     </trans-unit>
@@ -196,6 +199,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
       <source xml:lang="en">Login</source>
     </trans-unit>
+    <trans-unit id="++CODE++74f89e02b8d346f38df55113eee5dcbb0c0f31471876c67a9c13a3ff7caeebf9">
+      <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)</source>
+    </trans-unit>
     <trans-unit id="++CODE++8f2de600bf940a26c63a7ac23984a12ca8970fcf1a85947aa5566c34e23eea07">
       <source xml:lang="en">Managed</source>
     </trans-unit>
@@ -204,6 +210,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++7fcd8b1c5225f7d9a771a4a02ca3e4795c3c9202cf2b3c3c879c625abb8b43e4">
       <source xml:lang="en">Microsoft wants your feeback</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
+      <source xml:lang="en">NEW</source>
     </trans-unit>
     <trans-unit id="++CODE++9ecf722faa0944de54826f72fe9d734c59300a093bcce9cc47b507460ac80710">
       <source xml:lang="en">Name/Rename Auth Profile</source>
@@ -408,6 +417,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
       <source xml:lang="en">You are editing a live, public site </source>
+    </trans-unit>
+    <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
+      <source xml:lang="en">You can use this in &lt;a href=&quot;#&quot; id=&quot;github-copilot-link&quot;&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
     </trans-unit>
     <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
       <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>

@@ -25,6 +25,7 @@
     let apiResponseInProgress = false;
     let selectedCode = "";
     let copilotStrings = {};
+    let isDesktop = false;
 
 
 
@@ -241,6 +242,16 @@
         return feedback;
     }
 
+    function createGitHubCopilotLinkDiv() {
+        const gitHubCopilotText = document.createElement("div");
+        gitHubCopilotText.classList.add("github-copilot-text");
+
+        gitHubCopilotText.innerHTML = `<span class="new-badge">${copilotStrings.NEW_BADGE}</span>
+        <span class="gitHubCopilotText">${copilotStrings.GITHUB_COPILOT_CHAT}</span>`
+
+        return gitHubCopilotText;
+    }
+
     function createSuggestedPromptDiv() {
         const suggestedPrompt = document.createElement("div");
         suggestedPrompt.classList.add("suggested-prompts");
@@ -384,6 +395,17 @@
                                 `;
                 messageElement.appendChild(loggedInDiv);
 
+                // Add GitHub Copilot link for desktop
+                if(isDesktop){
+                    const gitHubCopilotLink = createGitHubCopilotLinkDiv();
+                    messageElement.appendChild(gitHubCopilotLink);
+
+                    const gitHubCopilotLinkElement = document.getElementById("github-copilot-link");
+                    gitHubCopilotLinkElement.addEventListener("click", () => {
+                        vscode.postMessage({ type: "openGitHubCopilotLink" });
+                    });
+                }
+
                 const suggestedPromptDiv = createSuggestedPromptDiv();
                 messageElement.appendChild(suggestedPromptDiv);
 
@@ -441,7 +463,7 @@
                 break;
             }
             case "env": {
-
+                isDesktop = message.value;
                 welcomeScreen = setWelcomeScreen();
                 break;
             }

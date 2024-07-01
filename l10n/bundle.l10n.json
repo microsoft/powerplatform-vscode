@@ -53,8 +53,11 @@
   "Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.": "Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.",
   "Login": "Login",
   "Hi": "Hi",
+  "In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.": "In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.",
   "To know more, see <a href=\"https://go.microsoft.com/fwlink/?linkid=2206366\">Copilot in Power Pages documentation.": "To know more, see <a href=\"https://go.microsoft.com/fwlink/?linkid=2206366\">Copilot in Power Pages documentation.",
   "Working on it...": "Working on it...",
+  "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.",
+  "NEW": "NEW",
   "Copied to clipboard!": "Copied to clipboard!",
   "What do you need help with?": "What do you need help with?",
   "Let Copilot help you code": "Let Copilot help you code",
@@ -71,6 +74,7 @@
   "Authentication failed. Please try again.": "Authentication failed. Please try again.",
   "Copilot is not available. Please contact your administrator.": "Copilot is not available. Please contact your administrator.",
   "Active auth profile is not found or has expired. Please try again.": "Active auth profile is not found or has expired. Please try again.",
+  "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)": "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [
