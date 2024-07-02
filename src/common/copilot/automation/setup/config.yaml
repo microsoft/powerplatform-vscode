@@ -3,14 +3,14 @@
 # Required: YES
 # Description: This is the API endpoint to be used to run automation suite.
 # Type: string
-endpoint: https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat
-#endpoint: YOUR_API_ENDPOINT
+#endpoint: https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat
+endpoint: https://aibuildertextapiservice.us-il109.gateway.Prod.island.powerapps.com/v1.0/abcc137d-7ae6-ee11-9048-000d3a106507/appintelligence/chat
 
 # Required: YES
 # Description: This is the excel file to be used from Setup folder to run automation suite.
 # Type: string
 #excel_file_name: YOUR_EXCEL_FILE_NAME.xlsx
-excel_file_name: Conversation_HarmFulContent_Sel.xlsx
+excel_file_name: Copilot Prompts Tests Report - VSCode.xlsx
 
 # Required: YES
 # Description: Flag indicating whether the excel file has header or not. Default is true.
@@ -51,6 +51,8 @@ status_column_index: 5
 # Description: This is the active file content column index in excel file. This is the column index which will be used to pass to API as activeFileContent.
 # Type: integer
 active_file_content_column_index: 2
+
+subCategory_column_index: 6
 
 # Required: NO
 # Description: This is the dataverse entity value which will be replaced in request body JSON. By default it is empty which is a "generic" context.

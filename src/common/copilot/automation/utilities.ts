@@ -89,7 +89,8 @@ export async function processExcelFile() {
       api_response_column_index: apiResponseColumnIndex,
       test_result_column_index: testResultColumnIndex,
       status_column_index: statusColumnIndex,
-      targetColumns: targetColumns
+      targetColumns: targetColumns,
+      subCategory_column_index: subCategoryColumnIndex,
     } = configContent;
 
     workbook = new ExcelJS.Workbook();
@@ -225,6 +226,7 @@ export async function processExcelFile() {
                 row.getCell(apiResponseColumnIndex).value = apiResponse[0].displayText;
             } else{
                 row.getCell(apiResponseColumnIndex).value = apiResponse[0];
+                row.getCell(subCategoryColumnIndex).value = apiResponse[apiResponse.length - 1]
             }
 
           }
@@ -377,6 +379,7 @@ export async function sendApiRequest(apiRequestParams: IApiRequestParams) {
               const additionalData = jsonResponse.additionalData[0];
               if (additionalData.properties && additionalData.properties.response) {
                 const responseMessage = additionalData.properties.response;
+                responseMessage.push(additionalData.suggestions.subCategory ?? '');
                 return responseMessage;
               }
             }
