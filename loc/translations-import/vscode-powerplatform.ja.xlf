@@ -95,6 +95,10 @@
         <source xml:lang="en">Copied to clipboard!</source>
         <target state="translated">クリップボードにコピーしました!</target>
       </trans-unit>
+      <trans-unit id="++CODE++344de0f92ba2ec8b690a0454eef93ef33d950e4bd785171eb060164a714ed419">
+        <source xml:lang="en">Copilot In Power Pages</source>
+        <target state="translated">Power Pages の Copilot</target>
+      </trans-unit>
       <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
         <source xml:lang="en">Copy to clipboard</source>
         <target state="translated">クリップボードにコピー</target>
@@ -108,6 +112,10 @@
         <source xml:lang="en">Default Environment: {0}</source>
         <note>The {0} represents profile's resource/environment URL</note>
         <target state="translated">既定の環境: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++21c02244893ddc07c4494a2ac7eb69a143e75d7b49d04f10234a1865c2111310">
+        <source xml:lang="en">Dislike something? Tell us more.</source>
+        <target state="translated">ご不満な点を詳しくお聞かせください。</target>
       </trans-unit>
       <trans-unit id="++CODE++e9f79ac902b11087dd0d34e8afc1de54df4e48d45861a0c0b6e4edd3c204f314">
         <source xml:lang="en">Display Name: {0}
@@ -177,6 +185,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
         <source xml:lang="en">Feature is not enabled for this geo.</source>
         <target state="translated">この地域では機能が有効化されていません。</target>
       </trans-unit>
+      <trans-unit id="++CODE++aac77df347205252b074d45aff7891debdba0ff1466cc0c351416d1662bb71ab">
+        <source xml:lang="en">Feedback</source>
+        <target state="translated">フィードバック</target>
+      </trans-unit>
       <trans-unit id="++CODE++2a8ddde521f14ecd4a8717f2bcf9a2b021fa38a578518066d2ae32271aa95237">
         <source xml:lang="en">Fetching your file ...</source>
         <target state="translated">ファイルを取得しています...</target>
@@ -226,6 +238,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
       <trans-unit id="++CODE++8d5ff42292d46b5c6b66b7285a701ef3b8cb3a48186944d73ed6a8d5f7ca1394">
         <source xml:lang="en">Let Copilot help you code</source>
         <target state="translated">Copilot でコーディングをサポートします</target>
+      </trans-unit>
+      <trans-unit id="++CODE++39a6dab1c2d4a37e541c3b2672a019f937698e02ea34d22d502f60fc6dadc0ca">
+        <source xml:lang="en">Like something? Tell us more.</source>
+        <target state="translated">ご満足いただけた点を詳しくお聞かせください。</target>
       </trans-unit>
       <trans-unit id="++CODE++9d6322c1f4d9d3f38aed8bfbe0b2bcadf66ad82c008476fa62541fa069138e94">
         <source xml:lang="en">Login</source>
@@ -395,6 +411,14 @@ URL: {1}
         <source xml:lang="en">Selection is too large. Try making a shorter selection.</source>
         <target state="translated">選択項目が多すぎます。選択する数を減らしてください。</target>
       </trans-unit>
+      <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
+        <source xml:lang="en">Submit</source>
+        <target state="translated">送信</target>
+      </trans-unit>
+      <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
+        <source xml:lang="en">Tell us more.</source>
+        <target state="translated">詳しくお聞かせください。</target>
+      </trans-unit>
       <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
         <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
         <target state="translated">Power Pages ジェネレーターは、VS Code 拡張機能での使用準備が完了しています。</target>
@@ -439,6 +463,10 @@ URL: {1}
         <source xml:lang="en">Try again</source>
         <target state="translated">やり直す</target>
       </trans-unit>
+      <trans-unit id="++CODE++dabe9e12f081a01200dc7e96c5ae45a75ca20e6805dcf047778012f41ee33f31">
+        <source xml:lang="en">Try and be as specific as possible. Your feedback will be used to improve Copilot. &lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt; View privacy details &lt;/a&gt;</source>
+        <target state="translated">できるだけ具体的に記載してください。寄せられたフィードバックは Copilot の改善に活用されます。&lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt;プライバシーの詳細を表示する&lt;/a&gt;</target>
+      </trans-unit>
       <trans-unit id="++CODE++bd7b156375b48ce5797a3421150e6f5c3b71d3a30f823e957241589aea6236ca">
         <source xml:lang="en">Unable to complete the request</source>
         <target state="translated">要求を完了できません</target>
@@ -468,9 +496,17 @@ URL: {1}
         <source xml:lang="en">Webfile(s) added successfully</source>
         <target state="translated">正常に追加された Web ファイルの数</target>
       </trans-unit>
-      <trans-unit id="++CODE++ab06f2880f954cfbc6788988300346315e8372cc05d92ce26ff6635c607e1406">
-        <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
-        <target state="translated">HTML、CSS、JS、または Liquid コードのいずれであっても、必要事項を説明して、AI にコードを構築させましょう。</target>
+      <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
+        <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
+        <target state="translated">Web ページ名に使用できるのは、文字、数字、ハイフン、アンダースコアのみです。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
+        <source xml:lang="en">What do you need help with?</source>
+        <target state="translated">どのようなサポートが必要ですか?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6f65376f47dd6d9867102ea8c57d776161ac941091f2a9d52fdd4c8228575e7b">
+        <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. </source>
+        <target state="translated">HTML、CSS、JS、または Liquid コードのいずれであっても、必要事項を説明して、AI にコードを構築させましょう。 </target>
       </trans-unit>
       <trans-unit id="++CODE++47a853b9f140a6f231de8498ec559d7d882536070b83c1e45c16671fd48a0b65">
         <source xml:lang="en">Working on it...</source>
