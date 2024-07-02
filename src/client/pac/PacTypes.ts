@@ -69,6 +69,7 @@ export type ActiveOrgOutput = {
     OrgUrl: string,
     UserEmail: string,
     UserId : string,
+    AadObjectId: string,
     EnvironmentId: string,
 }
 
