@@ -215,7 +215,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     }
 
                     sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
-                    this.sendMessageToWebview({ type: 'env', value: IS_DESKTOP }); //TODO Use IS_DESKTOP
                     await this.checkAuthentication();
                     if (orgID && userName) {
                         this.sendMessageToWebview({ type: 'isLoggedIn', value: true });

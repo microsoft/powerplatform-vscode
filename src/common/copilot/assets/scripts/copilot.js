@@ -25,8 +25,6 @@
     let apiResponseInProgress = false;
     let selectedCode = "";
     let copilotStrings = {};
-    let isDesktop = false;
-
 
 
     const inputHistory = [];
@@ -395,16 +393,16 @@
                                 `;
                 messageElement.appendChild(loggedInDiv);
 
-                // Add GitHub Copilot link for desktop
-                if(isDesktop){
-                    const gitHubCopilotLink = createGitHubCopilotLinkDiv();
-                    messageElement.appendChild(gitHubCopilotLink);
+                // Add GitHub Copilot link
 
-                    const gitHubCopilotLinkElement = document.getElementById("github-copilot-link");
-                    gitHubCopilotLinkElement.addEventListener("click", () => {
-                        vscode.postMessage({ type: "openGitHubCopilotLink" });
-                    });
-                }
+                const gitHubCopilotLink = createGitHubCopilotLinkDiv();
+                messageElement.appendChild(gitHubCopilotLink);
+
+                const gitHubCopilotLinkElement = document.getElementById("github-copilot-link");
+                gitHubCopilotLinkElement.addEventListener("click", () => {
+                    vscode.postMessage({ type: "openGitHubCopilotLink" });
+                });
+
 
                 const suggestedPromptDiv = createSuggestedPromptDiv();
                 messageElement.appendChild(suggestedPromptDiv);
@@ -463,7 +461,6 @@
                 break;
             }
             case "env": {
-                isDesktop = message.value;
                 welcomeScreen = setWelcomeScreen();
                 break;
             }
