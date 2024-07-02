@@ -716,33 +716,33 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public async getWorkerScript(workerUrl: URL): Promise<any> {
+    public async fetchLocalScriptContent(scriptUrl: URL): Promise<any> {
         try {
             this.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT
+                telemetryEventNames.WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT,
             );
 
             const response = await this.concurrencyHandler.handleRequest(
-                workerUrl
+                scriptUrl
             )
 
             if (!response.ok) {
                 throw new Error(
-                    `Failed to fetch worker script '${workerUrl.toString()}': ${response.statusText}`
+                    `Failed to fetch script '${scriptUrl.toString()}': ${response.statusText}`
                 );
             }
 
             this.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_SUCCESS,
-                { workerUrl: workerUrl.toString() }
+                telemetryEventNames.WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_SUCCESS,
+                { scriptUrl: scriptUrl.toString() }
             );
 
             return await response.text();
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
-                this.getWorkerScript.name,
-                Constants.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
+                telemetryEventNames.WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_FAILED,
+                this.fetchLocalScriptContent.name,
+                Constants.WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_FAILED,
                 error as Error
             );
         }
