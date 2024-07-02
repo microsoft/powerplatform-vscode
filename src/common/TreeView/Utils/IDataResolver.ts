@@ -12,6 +12,7 @@ import { PortalDrop } from '../PortalDrops/PortalDrops';
 import { WebpageView } from '../Types/View/WebPage';
 import { Webpage } from '../Types/Entity/WebPage';
 import { Website } from '../Types/Entity/Website';
+import { WebFile } from '../Types/Entity/WebFile';
 import { WebTemplate } from '../Types/Entity/WebTemplate';
 import { IEntityAttributeMetadata } from '../Types/Entity/EntityAttributeMetadata';
 
@@ -23,12 +24,14 @@ export type PortalEntity =
   | SiteMarker
   | Website
   | WeblinkSet
+  | WebFile
   | Weblink;
 
 export interface IPreviewEngineContext {
   webpages?: Webpage[];
   contentSnippets?: ContentSnippet[];
   webTemplates?: WebTemplate[];
+  webFiles?: WebFile[];
   siteMarkers?: SiteMarker[];
   siteSettings?: SiteSetting[];
   entityLists?: EntityList[];

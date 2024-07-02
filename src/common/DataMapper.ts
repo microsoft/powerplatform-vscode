@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-
+const { Tokenizer } = require('liquidjs')
 import * as path from "path";
 import * as vscode from 'vscode';
 import { IPreviewEngineContext } from './TreeView/Utils/IDataResolver';
@@ -10,27 +10,49 @@ import { Webpage } from './TreeView/Types/Entity/WebPage';
 import { Website } from './TreeView/Types/Entity/Website';
 import { WebTemplate } from './TreeView/Types/Entity/WebTemplate';
 import { PageTemplate } from './TreeView/Types/Entity/PageTemplate';
+import { WebFile } from "./TreeView/Types/Entity/WebFile";
+import { ContentSnippet } from "./TreeView/Types/Entity/ContentSnippet";
+import { EntityForm } from "./TreeView/Types/Entity/EntityForm";
+import { EntityList } from "./TreeView/Types/Entity/EntityList";
+import { WebForm } from "./TreeView/Types/Entity/WebForm";
+import { SiteMarker } from "./TreeView/Types/Entity/SiteMarker";
+import { SiteSetting } from "./TreeView/Types/Entity/SiteSettings";
+import { Weblink } from "./TreeView/Types/Entity/Weblink";
+import { WeblinkSet } from "./TreeView/Types/Entity/WeblinkSet";
 import { PortalWebView } from '../client/PortalWebView';
-import { ContextProperty } from './TreeView/Utils/Constant';
+import { BootstrapSiteSetting, ContextProperty } from './TreeView/Utils/Constant';
 import { createTree } from './TreeViewProvider';
 import { IItem } from './TreeView/Types/Entity/IItem';
+import { getDependencies } from './DataParser';
+import { PortalComponentServiceFactory } from "./dataMapperServices/PortalComponentServiceFactory";
 
+const fs = require('fs');
 const yaml = require("js-yaml");
 const load = yaml.load;
 const fallbackURI = vscode.Uri.file('');
 
+const entityFileMap: Map<string, Set<string>> = new Map();
+
 export const treeView = async () => {
   const previewHelper = new PreviewHelper();
   try {
-    await previewHelper.createContext();  
-    const getPath=await previewHelper.getPath();
+    await previewHelper.createContext();
+    const getPath = await previewHelper.getPath();
     const IPortalMetadataContext = await previewHelper.getPreviewHelper();
     console.log(IPortalMetadataContext);
-    const web=await previewHelper.web();
-    const { allwebTemplate, allwebPage, allpageTemplate } = convertAllMetadataToItems(IPortalMetadataContext, getPath);
+    const web = await previewHelper.web();
+    const { allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm } = convertAllMetadataToItems(IPortalMetadataContext, getPath);
     const websiteIItem = await createWebsiteItem(previewHelper);
-    const { webtemplateIItem, webPageIItem, pageTemplateItem } = createIndividualItems(allwebTemplate, allwebPage, allpageTemplate);
-    (websiteIItem.children as IItem[]).push(webtemplateIItem, webPageIItem, pageTemplateItem);
+    const { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem } = createIndividualItems(allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm);
+    addWebfileToWebPage(IPortalMetadataContext, allwebPage, allwebFile);
+    addDependencies(webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem);
+    console.log(entityFileMap);
+
+    addUnUsedFiles(unUsedFileIItem, webtemplateIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem);
+
+    webPageIItem.children = webPageIItem.children.filter(item => item.label === "Home");
+    (websiteIItem.children as IItem[]).push(webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem);
+
     console.log(websiteIItem);
     createTree(websiteIItem);
 
@@ -40,10 +62,14 @@ export const treeView = async () => {
 };
 
 function convertAllMetadataToItems(IPortalMetadataContext: any, getPath: any) {
-  const allwebTemplate = convertWebTemplatesToIItems(IPortalMetadataContext, getPath);
-  const allwebPage = convertWebpagesToItems(IPortalMetadataContext, getPath);
-  const allpageTemplate = convertPageTemplateToItems(IPortalMetadataContext);
-  return { allwebTemplate, allwebPage, allpageTemplate };
+  const allwebTemplate = PortalComponentServiceFactory.getPortalComponent("WebTemplate")?.create(IPortalMetadataContext, getPath) || [];
+  const allwebPage = PortalComponentServiceFactory.getPortalComponent("WebPage")?.create(IPortalMetadataContext, getPath) || [];
+  const allwebFile = PortalComponentServiceFactory.getPortalComponent("WebFile")?.create(IPortalMetadataContext, getPath) || [];
+  const allcontentSnippet = PortalComponentServiceFactory.getPortalComponent("Content Snippet")?.create(IPortalMetadataContext, getPath) || [];
+  const alllist = PortalComponentServiceFactory.getPortalComponent("List")?.create(IPortalMetadataContext, getPath) || [];
+  const allentityForm = PortalComponentServiceFactory.getPortalComponent("EntityForm")?.create(IPortalMetadataContext, getPath) || [];
+  const allwebForm = PortalComponentServiceFactory.getPortalComponent("WebForm")?.create(IPortalMetadataContext, getPath) || [];
+  return { allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm };
 }
 
 async function createWebsiteItem(previewHelper: PreviewHelper) {
@@ -55,13 +81,13 @@ async function createWebsiteItem(previewHelper: PreviewHelper) {
     isFile: false,
     content: "",
     path: vscode.Uri.parse(`/${web.adx_name}`),
-    component: "12",
+    component: "1",
     children: [],
     error: ""
   };
 }
 
-function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], allpageTemplate: IItem[]) {
+function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], allwebFile: IItem[], allcontentSnippet: IItem[], alllist: IItem[], allentityForm: IItem[], allwebForm: IItem[]) {
   const webtemplateIItem = {
     label: 'Web Template',
     title: 'Web Template',
@@ -69,7 +95,7 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     isFile: false,
     content: "",
     path: vscode.Uri.parse(`/WebTemplate`),
-    component: "",
+    component: "8",
     children: allwebTemplate,
     error: ""
   };
@@ -81,30 +107,109 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     isFile: false,
     content: "",
     path: vscode.Uri.parse(`/WebPage`),
-    component: "",
+    component: "2",
     children: allwebPage,
     error: ""
   };
 
-  const pageTemplateItem = {
-    label: 'Page Template',
-    title: 'Page Template',
+  const webFileIItem = {
+    label: 'Web File',
+    title: 'Web File',
     id: '',
     isFile: false,
     content: "",
-    path: vscode.Uri.parse(`/PageTemplate`),
-    component: "",
-    children: allpageTemplate,
+    path: vscode.Uri.parse(`/webFile`),
+    component: "3",
+    children: allwebFile,
+    error: ""
+  };
+  const contentSnippetIItem = {
+    label: 'Content Snippet',
+    title: 'Content Snippet',
+    id: '',
+    isFile: false,
+    content: "",
+    path: vscode.Uri.parse(`/contentSnippet`),
+    component: "7",
+    children: allcontentSnippet,
+    error: ""
+  };
+  const listIItem = {
+    label: 'Lists',
+    title: 'Lists',
+    id: '',
+    isFile: false,
+    content: "",
+    path: vscode.Uri.parse(`/lists`),
+    component: "17",
+    children: alllist,
     error: ""
   };
 
-  return { webtemplateIItem, webPageIItem, pageTemplateItem };
+  const entityFormtIItem = {
+    label: 'Basic Forms',
+    title: 'Basic Forms',
+    id: '',
+    isFile: false,
+    content: "",
+    path: vscode.Uri.parse(`/basic-forms`),
+    component: "15",
+    children: allentityForm,
+    error: ""
+  };
+
+  const webFormIItem = {
+    label: 'Advanced Forms',
+    title: 'Advanced Forms',
+    id: '',
+    isFile: false,
+    content: "",
+    path: vscode.Uri.parse(`/advanced-forms`),
+    component: "19",
+    children: allwebForm,
+    error: ""
+  };
+  const unUsedFileIItem = {
+    label: 'Unused Components',
+    title: 'Unused Components',
+    id: '',
+    isFile: false,
+    content: "",
+    path: vscode.Uri.parse(`/unused-files`),
+    component: "",
+    children: [],
+    error: ""
+  };
+
+
+  return { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem };
 }
 
+function addWebfileToWebPage(metadataContext: IPreviewEngineContext, webPageIItem: IItem[], webFileIItem: IItem[]) {
+  const items: IItem[] = [];
+  const webfile: WebFile[] | undefined = metadataContext.webFiles;
 
-
-
-
+  if (!webfile) {
+    return items;
+  }
+  webfile.forEach(file => {
+    webPageIItem.forEach(item => {
+      if (file.adx_parentpageid == item.id) {
+        webFileIItem.forEach(it => {
+          if (it.id == file.adx_webfileid) {
+            let webfileItem = item.children.find(child => child.label === "Web File");
+            if (!webfileItem) {
+              let webFile = createItem('Web File', 'Web File', '', false, vscode.Uri.parse(`/webFile`), "3", [it]);
+              item.children.push(webFile);
+            } else {
+              webfileItem.children.push(it);
+            }
+          }
+        })
+      }
+    });
+  });
+}
 
 function createItem(label: string, title: string, id: string, isFile: boolean, path: vscode.Uri, component: string, children: IItem[] = [], content: string = '', error: string = ''): IItem {
   return {
@@ -120,1297 +225,463 @@ function createItem(label: string, title: string, id: string, isFile: boolean, p
   };
 }
 
-function createCopyItems(webpage: Webpage, getPath: any, y: string, x: string, langSuffix: string = '',content: string = ''): IItem[] {
-  const basePath = `${getPath.path}/web-pages/${y}${content}/${x}${langSuffix}`;
-  const copyItem = createItem(`${webpage.adx_name} Copy`, `${webpage.adx_name} Copy`, `${webpage.adx_webpageid}_copy`, true, vscode.Uri.file(`${basePath}.webpage.copy.html`), "01");
-  const dependenciesItem = createItem(`Dependencies`, `Dependencies`, '', false, vscode.Uri.file(`/dependencies`), "01");
-  const cssItem = createItem(`${webpage.adx_name}.css`, `${webpage.adx_name}.css`, `${webpage.adx_webpageid}_css`, true, vscode.Uri.file(`${basePath}.webpage.custom_css.css`), "01");
-  const jsItem = createItem(`${webpage.adx_name}.js`, `${webpage.adx_name}.js`, `${webpage.adx_webpageid}_js`, true, vscode.Uri.file(`${basePath}.webpage.custom_javascript.js`), "01");
-  const summaryItem = createItem(`${webpage.adx_name} Summary`, `${webpage.adx_name} Summary`, `${webpage.adx_webpageid}_summary`, true, vscode.Uri.file(`${basePath}.webpage.summary.html`), "01");
-  const pageCopy = createItem(`Page Copy`, `Page Copy`, `Page_copy`, false, vscode.Uri.file(`/pagecopy`), "01", [copyItem, dependenciesItem]);
-  const pageSummary = createItem(`Page Summary`, `Page Summary`, `Page_Summary`, false, vscode.Uri.file(`/pageSummary`), "01", [summaryItem]);
-
-  return [pageCopy, cssItem, jsItem, pageSummary];
+function addDependencies(webtemplateIItem: IItem, webPageIItem: IItem, webFileIItem: IItem, contentSnippetIItem: IItem, listIItem: IItem, entityFormtIItem: IItem, webFormIItem: IItem): any {
+  addDependenciesToIItem(webtemplateIItem, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem);
+  addDependenciesToWebPage(webPageIItem, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem);
+  addDependenciesToIItem(contentSnippetIItem, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem);
+  addDependenciesToIItem(listIItem, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem);
+  addDependenciesToIItem(entityFormtIItem, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem)
 }
 
-function convertWebpagesToItems(metadataContext: IPreviewEngineContext, getPath: any): IItem[] {
-  const items: IItem[] = [];
-  const webpages: Webpage[] | undefined = metadataContext.webpages;
-
-  if (!webpages) {
-    return items;
-  }
-
-  const contentPage: Webpage[] = [];
-
-  for (const webpage of webpages) {
-    if (!webpage.adx_webpagelanguageid) {
-      const str = webpage.adx_name;
-      let x = str.replace(/\s+/g, '-');
-      let y = x.toLowerCase();
-      const [pageCopy, cssItem, jsItem, pageSummary] = createCopyItems(webpage, getPath, y, x);
-      const webpageItem = createItem(webpage.adx_name, webpage.adx_name, webpage.adx_webpageid, false, vscode.Uri.parse(`/${webpage.adx_name}`), "03", [pageCopy, cssItem, jsItem, pageSummary]);
-      items.push(webpageItem);
+function addDependenciesToIItem(entityIItem: IItem, contentSnippetIItem: IItem, webtemplateIItem: IItem, entityFormtIItem: IItem, listIItem: IItem, webFormIItem: IItem): any {
+  entityIItem.children.forEach((item: IItem) => {
+    let sourceDep = item.children.find((child: IItem) => child.isFile === false);
+    if (!sourceDep) {
+      sourceDep = createItem(`Uses & UsedBy ${item.label}`, `Uses & UsedBy ${item.label}`, '', false, vscode.Uri.parse(''), "", [], "");
+    }
+    const htOrJsFile = item.children.find((child: IItem) => child.isFile === true);
+    const filePath = htOrJsFile?.path?.fsPath;
+    if (filePath && sourceDep) {
+      processDependencies(sourceDep, filePath, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem);
     } else {
-      contentPage.push(webpage);
+      console.log('No valid file path found for:', item);
+    }
+    if (sourceDep.children.length != 0) {
+      item.children.push(sourceDep);
+    }
+  });
+}
+
+function addDependenciesToWebPage(webPageIItem: IItem, contentSnippetIItem: IItem, webtemplateIItem: IItem, entityFormtIItem: IItem, listIItem: IItem, webFormIItem: IItem): any {
+  webPageIItem.children.forEach((item: IItem) => {
+    const pgcy = item.children.find(child => child.label === "Page Copy");
+    const pgsy = item.children.find(child => child.label === "Page Summary");
+    const cp = item.children.find(child => child.label === "Content Page")
+    const cppgcy = cp?.children.find(child => child.label === "Page Copy");
+    const cppgsy = cp?.children.find(child => child.label === "Page Summary");
+    const cpjsfile = cp?.children.find((child: IItem) => child.label.endsWith('.js'));
+    const jsfile = item.children.find((child: IItem) => child.label.endsWith('.js'));
+
+    handleChildItem(pgcy, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem, jsfile);
+    handleChildItem(pgsy, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem, jsfile);
+    handleChildItem(cppgcy, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem, cpjsfile);
+    handleChildItem(cppgsy, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem, cpjsfile);
+  });
+}
+
+function handleChildItem(child: IItem | undefined, contentSnippetIItem: IItem, webtemplateIItem: IItem, entityFormtIItem: IItem, listIItem: IItem, webFormIItem: IItem, jsfile?: IItem) {
+  if (child) {
+    const ht = child.children.find((child: IItem) => child.isFile === true);
+    const filePath = ht?.path?.fsPath;
+    const jsFilePath = jsfile?.path?.fsPath;
+    let sourceDep = child.children.find((child: IItem) => child.isFile === false);
+
+    if (!sourceDep) {
+      sourceDep = createItem("Dependencies", "Dependencies", '', false, vscode.Uri.parse(''), "", [], "");
+    }
+    if (filePath && sourceDep) {
+      processDependencies(sourceDep, filePath, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem, jsFilePath);
+    } else {
+      console.log('No valid file path or sourceDep found for:', child);
+    }
+    if (sourceDep.children.length != 0) {
+      child.children.push(sourceDep);
     }
   }
+}
 
-  items.forEach(item => {
-    webpages.forEach(webpage => {
-      if (item.id === webpage.adx_parentpageid) {
-        const subItem = items.find(it => webpage.adx_webpageid === it.id);
-        if (subItem) {
-          let subpageItem = item.children.find(child => child.label === "Subpage");
-          if (!subpageItem) {
-            subpageItem = createItem('Subpage', 'Subpage', '', false, vscode.Uri.parse(`/Subpage`), "", [subItem]);
-            item.children.push(subpageItem);
-          } else {
-            subpageItem.children.push(subItem);
-          }
-        }
+function processDependencies(sourceDep: IItem, filePath: string, contentSnippetIItem: IItem, webtemplateIItem: IItem, entityFormtIItem: IItem, listIItem: IItem, webFormIItem: IItem, jsFilePath?: string) {
+  const data = fs.readFileSync(filePath, 'utf8');
+  const dependencies = getDependencies(data);
+  if (jsFilePath) {
+    const jsdata = fs.readFileSync(jsFilePath, 'utf8');
+    const jsdependencies = getDependencies(jsdata)
+    dependencies.push(...jsdependencies);
+  }
+
+  dependencies.forEach((entity: any) => {
+    const templateName = entity.templateName.replace(/^['"](.*)['"]$/, '$1');
+    const hashName = entity.hashName.replace(/^['"](.*)['"]$/, '$1');
+    const hashValue = entity.hashValue.replace(/^['"](.*)['"]$/, '$1');
+
+    if (templateName === "snippets" || templateName === "snippet" || (templateName === 'editable' && (hashName === "snippets" || hashName === "snippet"))) {
+      processEntity(sourceDep, contentSnippetIItem, entity, 'label');
+    } else if (templateName === "Template") {
+      processEntity(sourceDep, webtemplateIItem, entity, 'label');
+    } else if (templateName === "entityform" || templateName === "entity_form") {
+      if (hashName == 'id' && isNaN(hashValue)) {
+        processEntity(sourceDep, entityFormtIItem, entity, 'id');
+      } else if (hashName == 'name' || hashName == 'key') {
+        processEntity(sourceDep, entityFormtIItem, entity, 'label')
+      } else {
+        console.log("Not Valid EnitityForm");
       }
-    });
+    } else if (templateName === "entitylist" || templateName === "entity_list") {
+      if (hashName == 'id' && isNaN(hashValue)) {
+        processEntity(sourceDep, listIItem, entity, 'id');
+      } else if (hashName == 'name' || hashName == 'key') {
+        processEntity(sourceDep, listIItem, entity, 'label')
+      } else {
+        console.log("Not Valid EntityList");
+      }
+    } else if (templateName === "webform") {
+      if (hashName == 'id' && isNaN(hashValue)) {
+        processEntity(sourceDep, webFormIItem, entity, 'id');
+      } else if (hashName == 'name' || hashName == 'key') {
+        processEntity(sourceDep, webFormIItem, entity, 'label')
+      } else {
+        console.log("Not Valid WebForm");
+      }
+    } else if ((templateName != "entityform" && templateName != "entity_form") && (templateName != "entitylist" && templateName != "entity_list")) {
+      entity.hashValue = templateName;
+      processEntity(sourceDep, webtemplateIItem, entity, 'label');
+    } else {
+      console.log("Another Dynamic entity");
+    }
   });
+}
 
-  for (const contentpg of contentPage) {
-    const str = contentpg.adx_name;
-    let x = str.replace(/\s+/g, '-');
-    let y = x.toLowerCase();
-    const [pageCopy, cssItem, jsItem, pageSummary] = createCopyItems(contentpg, getPath, y, x, '.en-US','/content-pages');
-    const contentPageItem = createItem(`${contentpg.adx_name} Content Page`, `${contentpg.adx_name} Content Page`, `${contentpg.adx_webpageid}_content`, false, vscode.Uri.file(`${contentpg.adx_name}/Content`), "", [pageCopy, cssItem, jsItem, pageSummary]);
-
-    items.forEach(item => {
-      if (item.title === contentpg.adx_name) {
-        item.children.push(contentPageItem);
+function processEntity(sourceDep: IItem, targetIItem: IItem, entity: any, compareBy: string) {
+  targetIItem.children.forEach((targetItem: IItem) => {
+    const hv = entity.hashValue.replace(/^['"](.*)['"]$/, '$1');
+    const compareValue = compareBy === 'label' ? targetItem.label : targetItem.id;
+    if (compareValue === hv) {
+      let ht = targetItem.children.find((child: IItem) => child.isFile === true);
+      let htalready = sourceDep.children.find(child => child.label === ht?.label);
+      let htLabel = ht?.label ?? '';
+      if (!entityFileMap.has(targetIItem.label)) {
+        entityFileMap.set(targetIItem.label, new Set());
       }
-    });
-  }
-
-  console.log(items);
-  return items.filter(item => item.label === "Home");
-}
-
-function convertWebTemplatesToIItems(metadataContext: IPreviewEngineContext,getPath: any): IItem[] {
-  const items: IItem[] = [];
-  const webTemplates: WebTemplate[] | undefined = metadataContext.webTemplates;
-
-  if (!webTemplates) {
-    return items; 
-  }
-
-  for (const template of webTemplates) {
-    const str=template.adx_name;
-    let x=str.replace(/\s+/g, '-');
-    let y=x.toLowerCase();
-    const children: IItem[] = [
-      {
-        label: "SourceDependencies",
-        title: "SourceDependencies",
-        id: `${template.adx_webtemplateid}_sourceDependencies`,
-        isFile: false,
-        content: "",
-        path: vscode.Uri.parse(`/${template.adx_name}/sourceDependencies`),
-        component: "", 
-        children: [],
-        error: ""
-      },
-      {
-        label: `${template.adx_name}.html`,
-        title: `${template.adx_name}.html`,
-        id: `${template.adx_webtemplateid}_html`,
-        isFile: true,
-        content: template.adx_source,
-        // path: vscode.Uri.parse(`/${template.adx_name}/${template.adx_name}.html`),
-        path: vscode.Uri.file(`${getPath.path}/web-templates/${y}/${x}.webtemplate.source.html`),
-        component: "01", 
-        children: [],
-        error: ""
+      entityFileMap.get(targetIItem.label)?.add(htLabel);
+      if (ht && !htalready) {
+        sourceDep.children.push(ht);
       }
-    ];
-
-    const item: IItem = {
-      label: template.adx_name,
-      title: template.adx_name,
-      id: template.adx_webtemplateid,
-      isFile: false,
-      content: '',
-      path: vscode.Uri.parse(`/${template.adx_name}`),
-      component: "8",
-      children: children,
-      error: ""
-    };
-
-    items.push(item);
-  }
-  return items;
+    }
+  });
 }
 
-function convertPageTemplateToItems(metadataContext: IPreviewEngineContext): IItem[] {
-  const items: IItem[] = [];
-  const pageTemplates: PageTemplate[] | undefined = metadataContext.pageTemplates;
-
-  if (!pageTemplates) {
-    return items; 
-  }
-
-  for (const template of pageTemplates) {
-    const item: IItem = {
-      label: template.adx_name,
-      title: template.adx_name,
-      id: template.adx_pagetemplateid,
-      isFile: true,
-      content: template.adx_description || '',
-      path: undefined,
-      component: "8",
-      children: [],
-      error: ""
-    };
-
-    items.push(item);
-  }
-  return items;
+function addUnUsedFiles(unUsedFileIItem: IItem, webtemplateIItem: IItem, contentSnippetIItem: IItem, listIItem: IItem, entityFormtIItem: IItem, webFormIItem: IItem) {
+  addUnusedFilesHelper('Web Template', unUsedFileIItem, webtemplateIItem, '/WebTemplate', "8");
+  addUnusedFilesHelper('Content Snippet', unUsedFileIItem, contentSnippetIItem, '/contentSnippet', "7");
+  addUnusedFilesHelper('Lists', unUsedFileIItem, listIItem, '/lists', "17");
+  addUnusedFilesHelper('Basic Forms', unUsedFileIItem, entityFormtIItem, '/basic-forms', "15");
+  addUnusedFilesHelper('Advanced Forms', unUsedFileIItem, webFormIItem, '/advanced-forms', "19");
 }
 
-
-
-
+function addUnusedFilesHelper(entityType: string, unusedFileIItem: IItem, entityIItem: IItem, folderPath: string, order: string) {
+  const usedEntityFiles = entityFileMap.get(entityType);
+  entityIItem.children.forEach((item: IItem) => {
+    const file = item.children.find((child: IItem) => child.isFile === true);
+    if (file && !usedEntityFiles?.has(file.label)) {
+      let entityPresent = unusedFileIItem.children.find(child => child.label === entityType);
+      if (entityPresent) {
+        entityPresent.children.push(file);
+      } else {
+        entityPresent = createItem(entityType, entityType, '', false, vscode.Uri.parse(folderPath), order, []);
+        entityPresent.children.push(file);
+        unusedFileIItem.children.push(entityPresent);
+      }
+    }
+  });
+}
 
 export class PreviewHelper {
-    private pathroot: vscode.Uri | null;
-    private previewHelper: IPreviewEngineContext;
-    private websiteData: Website;
+  private pathroot: vscode.Uri | null;
+  private previewHelper: IPreviewEngineContext;
+  private websiteData: Website;
+  private isBootstrapV5: boolean;
 
-    constructor() {
-        this.previewHelper = {};
-        // this.pathroot = PortalWebView.getPortalRootFolder();
-        this.pathroot= vscode.Uri.file('/c:/Users/t-mansisingh/Desktop/clone2/mansi-site-1---site-ajx90');
-        this.websiteData = {} as Website;
-    }
 
-    public createContext = async () => {
-        this.websiteData = await this.getWebsite();
-        this.previewHelper = await this.createEngineContext();
-    }
-    public getPath=async()=>{
-      return this.pathroot;
-    }
-
-    public web=async()=>{
-      return this.websiteData;
-    }
-
-    public getPreviewHelper = () => {
-        return this.previewHelper;
-    }
-
-    private getWebsite = async (): Promise<Website> => {
-      const website = await vscode.workspace.fs.readFile(this.pathroot?.with({ path: this.pathroot.path + '/website.yml' }) || fallbackURI);
-      const websiteYaml = load(new TextDecoder().decode(website));
-      return websiteYaml as Website;
+  constructor() {
+    this.isBootstrapV5 = false;
+    this.previewHelper = {};
+    // this.pathroot = PortalWebView.getPortalRootFolder();
+    this.pathroot = vscode.Uri.file('C:/Users/t-mansisingh/OneDrive - Microsoft/Desktop/clone2/mansi-site-1---site-ajx90');
+    this.websiteData = {} as Website;
   }
 
-    private createEngineContext = async (): Promise<IPreviewEngineContext> => {
-        if (this.pathroot) {
-            return {
-                webpages: await this.getWebpages(),
-                pageTemplates: await this.getPageTemplates(),
-                webTemplates: await this.getWebTemplates(),
-            }
-        } else return {}
-    }
+  public createContext = async () => {
+    this.websiteData = await this.getWebsite();
+    this.previewHelper = await this.createEngineContext();
+  }
+  public getPath = async () => {
+    return this.pathroot;
+  }
 
-    private getWebpages = async (): Promise<Webpage[]> => {
-        const webpagesDir = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/web-pages' }) || fallbackURI);
-        const webpageArray: Webpage[] = [];
+  public web = async () => {
+    return this.websiteData;
+  }
 
-        for (const webpage of webpagesDir) {
-            webpageArray.push(await this.webPageHelper(this.pathroot?.with({ path: this.pathroot.path + '/web-pages/' + webpage[0] + '/' + webpage[0] }) || fallbackURI));
+  public getPreviewHelper = () => {
+    return this.previewHelper;
+  }
 
-            const contentPageDir = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/web-pages/' + webpage[0] + '/content-pages' }) || fallbackURI);
-            for (const page of contentPageDir) {
-                if (page[0].endsWith(ContextProperty.WEBPAGE_YAML)) {
-                    const pageName = page[0].slice(0, -12);
-                    webpageArray.push(await this.webPageHelper(this.pathroot?.with({ path: this.pathroot.path + '/web-pages/' + webpage[0] + '/content-pages/' + pageName }) || fallbackURI));
-                }
-            }
+  private getWebsite = async (): Promise<Website> => {
+    const website = await vscode.workspace.fs.readFile(this.pathroot?.with({ path: this.pathroot.path + '/website.yml' }) || fallbackURI);
+    const websiteYaml = load(new TextDecoder().decode(website));
+    return websiteYaml as Website;
+  }
+
+  private createEngineContext = async (): Promise<IPreviewEngineContext> => {
+    if (this.pathroot) {
+      return {
+        webpages: await this.getWebpages(),
+        pageTemplates: await this.getPageTemplates(),
+        webTemplates: await this.getWebTemplates(),
+        webFiles: await this.getWebFiles(),
+        contentSnippets: await this.getContentSnippets(),
+        entityLists: await this.getEntityLists(),
+        entityForms: await this.getEntityForms(),
+        webForms: await this.getWebForms(),
+        siteMarkers: await this.getSiteMarker(),
+        siteSettings: await this.getSiteSetting(),
+        weblinks: await this.getWeblinks(),
+        weblinkSets: await this.getWeblinkSets(),
+        website: this.websiteData,
+        isBootstrapV5: this.isBootstrapV5,
+        // dataResolverExtras: {},
+        // resx: {},
+        // featureConfig: new Map(),
+        // entityAttributeMetadata: [] as IEntityAttributeMetadata[],
+        // lcid: '' as string,
+      }
+    } else return {}
+  }
+
+  private getWebpages = async (): Promise<Webpage[]> => {
+    const webpagesDir = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/web-pages' }) || fallbackURI);
+    const webpageArray: Webpage[] = [];
+
+    for (const webpage of webpagesDir) {
+      webpageArray.push(await this.webPageHelper(this.pathroot?.with({ path: this.pathroot.path + '/web-pages/' + webpage[0] + '/' + webpage[0] }) || fallbackURI));
+
+      const contentPageDir = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/web-pages/' + webpage[0] + '/content-pages' }) || fallbackURI);
+      for (const page of contentPageDir) {
+        if (page[0].endsWith(ContextProperty.WEBPAGE_YAML)) {
+          const pageName = page[0].slice(0, -12);
+          webpageArray.push(await this.webPageHelper(this.pathroot?.with({ path: this.pathroot.path + '/web-pages/' + webpage[0] + '/content-pages/' + pageName }) || fallbackURI));
         }
-        return webpageArray;
+      }
     }
+    return webpageArray;
+  }
 
-    private webPageHelper = async (pageUri: vscode.Uri): Promise<Webpage> => {
-        const webpageYaml = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.yml' }));
-        const webpageJS = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.custom_javascript.js' }));
-        const webpageCSS = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.custom_css.css' }));
-        const webpageCopy = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.copy.html' }));
-        const webpageSummary = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.summary.html' }));
-        const webpageRecord = load(new TextDecoder().decode(webpageYaml)) as Webpage;
-        webpageRecord.adx_customcss = new TextDecoder().decode(webpageCSS);
-        webpageRecord.adx_customjavascript = new TextDecoder().decode(webpageJS);
-        webpageRecord.adx_copy = new TextDecoder().decode(webpageCopy);
-        webpageRecord.adx_summary = new TextDecoder().decode(webpageSummary);
-        webpageRecord.adx_websiteid = this.websiteData.adx_websiteid;
-        return webpageRecord;
+  private webPageHelper = async (pageUri: vscode.Uri): Promise<Webpage> => {
+    const webpageYaml = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.yml' }));
+    const webpageJS = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.custom_javascript.js' }));
+    const webpageCSS = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.custom_css.css' }));
+    const webpageCopy = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.copy.html' }));
+    const webpageSummary = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.summary.html' }));
+    const webpageRecord = load(new TextDecoder().decode(webpageYaml)) as Webpage;
+    webpageRecord.adx_customcss = new TextDecoder().decode(webpageCSS);
+    webpageRecord.adx_customjavascript = new TextDecoder().decode(webpageJS);
+    webpageRecord.adx_copy = new TextDecoder().decode(webpageCopy);
+    webpageRecord.adx_summary = new TextDecoder().decode(webpageSummary);
+    webpageRecord.adx_websiteid = this.websiteData.adx_websiteid;
+    return webpageRecord;
+  }
+
+  private getPageTemplates = async (): Promise<PageTemplate[]> => {
+    const pageTemplatesDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/page-templates' }) || fallbackURI);
+    const pageTemplatesArray: PageTemplate[] = [];
+
+    for (const pageTemplate of pageTemplatesDirectory) {
+      pageTemplatesArray.push(await this.pageTemplateHelper(this.pathroot?.with({ path: this.pathroot.path + '/page-templates/' + pageTemplate[0] }) || fallbackURI));
     }
+    return pageTemplatesArray;
+  }
 
-    private getPageTemplates = async (): Promise<PageTemplate[]> => {
-        const pageTemplatesDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/page-templates' }) || fallbackURI);
-        const pageTemplatesArray: PageTemplate[] = [];
-
-        for (const pageTemplate of pageTemplatesDirectory) {
-            pageTemplatesArray.push(await this.pageTemplateHelper(this.pathroot?.with({ path: this.pathroot.path + '/page-templates/' + pageTemplate[0] }) || fallbackURI));
-        }
-        return pageTemplatesArray;
-    }
-
-    private pageTemplateHelper = async (fileUri: vscode.Uri): Promise<PageTemplate> => {
-        const pageTemplateYaml = await vscode.workspace.fs.readFile(fileUri);
-        const pageTemplateRecord = load(new TextDecoder().decode(pageTemplateYaml)) as PageTemplate;
-        return pageTemplateRecord;
-    };
+  private pageTemplateHelper = async (fileUri: vscode.Uri): Promise<PageTemplate> => {
+    const pageTemplateYaml = await vscode.workspace.fs.readFile(fileUri);
+    const pageTemplateRecord = load(new TextDecoder().decode(pageTemplateYaml)) as PageTemplate;
+    return pageTemplateRecord;
+  };
 
 
-    private webTemplateHelper = async (fileUri: vscode.Uri): Promise<WebTemplate> => {
-      const webTemplateYaml = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.webtemplate.yml' }));
-      const webTemplateSource = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.webtemplate.source.html' }));
-      const webTemplateSourceHTML = new TextDecoder().decode(webTemplateSource);
-      const webTemplateRecord = load(new TextDecoder().decode(webTemplateYaml)) as WebTemplate;
-      webTemplateRecord.adx_source = webTemplateSourceHTML;
-      webTemplateRecord.adx_websiteid = this.websiteData.adx_websiteid;
-      return webTemplateRecord;
+  private webTemplateHelper = async (fileUri: vscode.Uri): Promise<WebTemplate> => {
+    const webTemplateYaml = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.webtemplate.yml' }));
+    const webTemplateSource = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.webtemplate.source.html' }));
+    const webTemplateSourceHTML = new TextDecoder().decode(webTemplateSource);
+    const webTemplateRecord = load(new TextDecoder().decode(webTemplateYaml)) as WebTemplate;
+    webTemplateRecord.adx_source = webTemplateSourceHTML;
+    webTemplateRecord.adx_websiteid = this.websiteData.adx_websiteid;
+    return webTemplateRecord;
   };
 
   private getWebTemplates = async (): Promise<WebTemplate[]> => {
-      const webTemplatesDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/web-templates' }) || fallbackURI);
+    const webTemplatesDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/web-templates' }) || fallbackURI);
 
-      const webTemplatesArray: WebTemplate[] = [];
-      for (const webTemplate of webTemplatesDirectory) {
-          webTemplatesArray.push(await this.webTemplateHelper(this.pathroot?.with({ path: this.pathroot.path + '/web-templates/' + webTemplate[0] + `/${webTemplate[0]}` }) || fallbackURI));
+    const webTemplatesArray: WebTemplate[] = [];
+    for (const webTemplate of webTemplatesDirectory) {
+      webTemplatesArray.push(await this.webTemplateHelper(this.pathroot?.with({ path: this.pathroot.path + '/web-templates/' + webTemplate[0] + `/${webTemplate[0]}` }) || fallbackURI));
+    }
+    return webTemplatesArray;
+  }
+
+  private webFileHelper = async (fileUri: vscode.Uri): Promise<WebFile> => {
+    const webFileYaml = await vscode.workspace.fs.readFile(fileUri);
+    const webFileRecord = load(new TextDecoder().decode(webFileYaml)) as WebFile;
+    return webFileRecord;
+  };
+
+  private getWebFiles = async (): Promise<WebFile[]> => {
+    const webFilesDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/web-files' }) || fallbackURI);
+    const webFilesArray: WebFile[] = [];
+    for (const webFile of webFilesDirectory) {
+      if (webFile[0].endsWith("webfile.yml")) {
+        webFilesArray.push(await this.webFileHelper(this.pathroot?.with({ path: this.pathroot.path + '/web-files/' + `/${webFile[0]}` }) || fallbackURI));
       }
-      return webTemplatesArray;
+    }
+    return webFilesArray;
+  }
+
+  private contentSnippetHelper = async (fileUri: vscode.Uri): Promise<ContentSnippet> => {
+    const snippetYaml = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.contentsnippet.yml' }));
+    const snippetValue = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.contentsnippet.value.html' }));
+    const snippetRecord = load(new TextDecoder().decode(snippetYaml)) as ContentSnippet
+    snippetRecord.adx_value = new TextDecoder().decode(snippetValue);
+    snippetRecord.adx_websiteid = this.websiteData.adx_websiteid;
+    snippetRecord.stateCode = 0;
+    return snippetRecord;
+  };
+
+  private getContentSnippets = async (): Promise<ContentSnippet[]> => {
+    const contentSnippetsDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/content-snippets' }) || fallbackURI);
+    const contentSnippetsArray: ContentSnippet[] = [];
+    for (const contentSnippet of contentSnippetsDirectory) {
+      const snippetSubDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/content-snippets/' + contentSnippet[0] }) || fallbackURI);
+      for (const snippet of snippetSubDirectory) {
+        if (snippet[0].endsWith(ContextProperty.CONTENT_SNIPPET_YAML)) {
+          contentSnippetsArray.push(await this.contentSnippetHelper(this.pathroot?.with({ path: this.pathroot.path + '/content-snippets/' + contentSnippet[0] + `/${snippet[0].slice(0, -19)}` }) || fallbackURI));
+        }
+      }
+    }
+    return contentSnippetsArray;
+  }
+
+  private entityFormHelper = async (fileUri: vscode.Uri): Promise<EntityForm> => {
+    const entityFormYaml = await vscode.workspace.fs.readFile(fileUri);
+    const entityFormRecord = load(new TextDecoder().decode(entityFormYaml)) as EntityForm;
+    entityFormRecord.adx_websiteid = this.websiteData.adx_websiteid;
+    return entityFormRecord;
+  };
+
+  private getEntityForms = async (): Promise<EntityForm[]> => {
+    const entityFormsDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/basic-forms' }) || fallbackURI);
+
+    const entityFormsArray: EntityForm[] = [];
+    for (const entityForm of entityFormsDirectory) {
+      entityFormsArray.push(await this.entityFormHelper(this.pathroot?.with({ path: this.pathroot.path + '/basic-forms/' + entityForm[0] + `/${entityForm[0]}.basicform.yml` }) || fallbackURI));
+    }
+    return entityFormsArray;
+  }
+
+  private entityListHelper = async (fileUri: vscode.Uri): Promise<EntityList> => {
+    const entityListYaml = await vscode.workspace.fs.readFile(fileUri);
+    const entityListRecord = load(new TextDecoder().decode(entityListYaml)) as EntityList;
+    entityListRecord.adx_websiteid = this.websiteData.adx_websiteid;
+    return entityListRecord;
+  };
+
+  private getEntityLists = async (): Promise<EntityList[]> => {
+    const entityListsDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/lists' }) || fallbackURI);
+
+    const entityListsArray: EntityList[] = [];
+    for (const entityList of entityListsDirectory) {
+      if (entityList[0].endsWith(ContextProperty.ENTITY_LIST)) {
+        entityListsArray.push(await this.entityListHelper(this.pathroot?.with({ path: this.pathroot.path + '/lists/' + entityList[0] }) || fallbackURI));
+      }
+    }
+    return entityListsArray;
+  }
+
+  private webFormHelper = async (fileUri: vscode.Uri): Promise<WebForm> => {
+    const webFormYaml = await vscode.workspace.fs.readFile(fileUri);
+    const webFormRecord = load(new TextDecoder().decode(webFormYaml)) as WebForm;
+    webFormRecord.adx_websiteid = this.websiteData.adx_websiteid;
+    return webFormRecord;
+  };
+
+
+  private getWebForms = async (): Promise<WebForm[]> => {
+    const webFormsDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/advanced-forms' }) || fallbackURI);
+
+    const webFormsArray: WebForm[] = [];
+    for (const webForm of webFormsDirectory) {
+      webFormsArray.push(await this.webFormHelper(this.pathroot?.with({ path: this.pathroot.path + '/advanced-forms/' + webForm[0] + `/${webForm[0]}.advancedform.yml` }) || fallbackURI));
+    }
+    return webFormsArray;
+  }
+
+  private getSiteSetting = async (): Promise<SiteSetting[]> => {
+    const siteSetting = await vscode.workspace.fs.readFile(this.pathroot?.with({ path: this.pathroot.path + '/sitesetting.yml' }) || fallbackURI);
+    const siteSettingYaml = load(new TextDecoder().decode(siteSetting)) as SiteSetting[];
+    const siteSettingRecords = siteSettingYaml.map((siteSettingRecord) => {
+      if (siteSettingRecord.adx_name === BootstrapSiteSetting) {
+        this.isBootstrapV5 = siteSettingRecord.adx_value ? String(siteSettingRecord.adx_value).toLowerCase() === 'true' : false;
+      }
+      return {
+        adx_websiteid: this.websiteData.adx_websiteid,
+        adx_name: siteSettingRecord.adx_name,
+        adx_value: siteSettingRecord.adx_value,
+        adx_sitesettingid: siteSettingRecord.adx_sitesettingid,
+      }
+    });
+    return siteSettingRecords;
+  }
+
+  private getSiteMarker = async (): Promise<SiteMarker[]> => {
+    const siteMarker = await vscode.workspace.fs.readFile(this.pathroot?.with({ path: this.pathroot.path + '/sitemarker.yml' }) || fallbackURI);
+    const siteMarkerYaml = load(new TextDecoder().decode(siteMarker)) as SiteMarker[];
+    const siteMarkerRecords = siteMarkerYaml.map((siteMarkerRecord) => {
+      return {
+        adx_name: siteMarkerRecord.adx_name as string,
+        adx_pageid: siteMarkerRecord.adx_pageid as string,
+        adx_sitemarkerid: siteMarkerRecord.adx_sitemarkerid,
+        adx_websiteid: this.websiteData.adx_websiteid,
+
+      }
+
+    });
+    return siteMarkerRecords;
+  }
+
+  private getWeblinks = async (): Promise<Weblink[]> => {
+    const weblinksDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/weblink-sets' }) || fallbackURI);
+
+    const weblinksArray: Weblink[] = [];
+    for (const link of weblinksDirectory) {
+      const linkSubDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/weblink-sets/' + link[0] }) || fallbackURI);
+      for (const sublink of linkSubDirectory) {
+        if (sublink[0].endsWith(ContextProperty.WEB_LINK)) {
+          const weblinkYaml = await vscode.workspace.fs.readFile(this.pathroot?.with({ path: this.pathroot.path + '/weblink-sets/' + link[0] + `/${sublink[0]}` }) || fallbackURI);
+          const weblinkRecord = load(new TextDecoder().decode(weblinkYaml)) as Weblink[]
+          weblinksArray.push(...weblinkRecord);
+        }
+      }
+    }
+    return weblinksArray;
+  }
+
+  private webLinkSetHelper = async (fileUri: vscode.Uri): Promise<WeblinkSet> => {
+    const weblinkSetYaml = await vscode.workspace.fs.readFile(fileUri);
+    const weblinkSetRecord = load(new TextDecoder().decode(weblinkSetYaml)) as WeblinkSet;
+    weblinkSetRecord.adx_websiteid = this.websiteData.adx_websiteid;
+    return weblinkSetRecord;
+  };
+
+  private getWeblinkSets = async (): Promise<WeblinkSet[]> => {
+    const weblinkSetsDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/weblink-sets' }) || fallbackURI);
+
+    const weblinkSetsArray: WeblinkSet[] = [];
+    for (const weblinkSet of weblinkSetsDirectory) {
+      const linkSubDirectory = await vscode.workspace.fs.readDirectory(this.pathroot?.with({ path: this.pathroot.path + '/weblink-sets/' + weblinkSet[0] }) || fallbackURI);
+      for (const sublink of linkSubDirectory) {
+        if (sublink[0].endsWith(ContextProperty.WEB_LINK_SET)) {
+          weblinkSetsArray.push(await this.webLinkSetHelper(this.pathroot?.with({ path: this.pathroot.path + '/weblink-sets/' + weblinkSet[0] + `/${sublink[0]}` }) || fallbackURI)); // adx_title not in pac data but is manadatory, studio sends as undefined.
+        }
+      }
+    }
+    return weblinkSetsArray;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// export class PreviewEngineContext {
-
-//     private previewEngineContext: IPreviewEngineContext;
-//     private websiteRecord: Website;
-//     private rootPath: vscode.Uri | null;
-//     private isBootstrapV5: boolean;
-
-//     constructor() {
-//         this.isBootstrapV5 = false;
-//         this.previewEngineContext = {};
-//         this.rootPath = PortalWebView.getPortalRootFolder();
-//         this.websiteRecord = {} as Website;
-//         console.log(this.rootPath);
-//     }
-
-//     public createContext = async () => {
-//         this.websiteRecord = await this.getWebsite();
-//         this.previewEngineContext = await this.createEngineContext();
-//     }
-
-//     public getPreviewEngineContext = () => {
-//         return this.previewEngineContext;
-//     }
-
-//     private createEngineContext = async (): Promise<IPreviewEngineContext> => {
-
-//         if (this.rootPath) {
-//             return {
-//                 webpages: await this.getWebpages(),
-//                 contentSnippets: await this.getContentSnippets(),
-//                 webTemplates: await this.getWebTemplates(),
-//                 siteMarkers: await this.getSiteMarker(),
-//                 siteSettings: await this.getSiteSetting(),
-//                 entityLists: await this.getEntityLists(),
-//                 entityForms: await this.getEntityForms(),
-//                 webForms: await this.getWebForms(),
-//                 weblinks: await this.getWeblinks(),
-//                 weblinkSets: await this.getWeblinkSets(),
-//                 website: this.websiteRecord,
-//                 pageTemplates: await this.getPageTemplates(),
-//                 dataResolverExtras: {},
-//                 resx: {},
-//                 featureConfig: new Map(),
-//                 entityAttributeMetadata: [] as IEntityAttributeMetadata[],
-//                 lcid: '' as string,
-//                 isBootstrapV5: this.isBootstrapV5,
-//             }
-//         } else return {}
-//     }
-
-//     private getWebsite = async (): Promise<Website> => {
-//         const website = await vscode.workspace.fs.readFile(this.rootPath?.with({ path: this.rootPath.path + '/website.yml' }) || fallbackURI);
-//         const websiteYaml = load(new TextDecoder().decode(website));
-//         console.log(websiteYaml);
-//         return websiteYaml as Website;
-//     }
-
-//     private webPageHelper = async (pageUri: vscode.Uri): Promise<Webpage> => {
-//         const webpageYaml = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.yml' }));
-//         const webpageJS = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.custom_javascript.js' }));
-//         const webpageCSS = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.custom_css.css' }));
-//         const webpageCopy = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.copy.html' }));
-//         const webpageSummary = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.summary.html' }));
-//         const webpageRecord = load(new TextDecoder().decode(webpageYaml)) as Webpage;
-//         webpageRecord.adx_customcss = new TextDecoder().decode(webpageCSS);
-//         webpageRecord.adx_customjavascript = new TextDecoder().decode(webpageJS);
-//         webpageRecord.adx_copy = new TextDecoder().decode(webpageCopy);
-//         webpageRecord.adx_summary = new TextDecoder().decode(webpageSummary);
-//         webpageRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return webpageRecord;
-//     }
-
-
-//     private getWebpages = async (): Promise<Webpage[]> => {
-//         const webpagesDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/web-pages' }) || fallbackURI);
-
-//         const webpageArray: Webpage[] = [];
-//         for (const webpage of webpagesDirectory) {
-//             webpageArray.push(await this.webPageHelper(this.rootPath?.with({ path: this.rootPath.path + '/web-pages/' + webpage[0] + '/' + webpage[0] }) || fallbackURI));
-
-//             const contentPageDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/web-pages/' + webpage[0] + '/content-pages' }) || fallbackURI);
-//             for (const page of contentPageDirectory) {
-//                 if (page[0].endsWith(ContextProperty.WEBPAGE_YAML)) {
-//                     const pageName = page[0].slice(0, -12);
-//                     webpageArray.push(await this.webPageHelper(this.rootPath?.with({ path: this.rootPath.path + '/web-pages/' + webpage[0] + '/content-pages/' + pageName }) || fallbackURI));
-//                 }
-//             }
-//         }
-//         console.log(webpageArray);
-//         return webpageArray;
-//     }
-
-//     private getWeblinks = async (): Promise<Weblink[]> => {
-//         const weblinksDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets' }) || fallbackURI);
-
-//         const weblinksArray: Weblink[] = [];
-//         for (const link of weblinksDirectory) {
-//             const linkSubDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets/' + link[0] }) || fallbackURI);
-//             for (const sublink of linkSubDirectory) {
-//                 if (sublink[0].endsWith(ContextProperty.WEB_LINK)) {
-//                     const weblinkYaml = await vscode.workspace.fs.readFile(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets/' + link[0] + `/${sublink[0]}` }) || fallbackURI);
-//                     const weblinkRecord = load(new TextDecoder().decode(weblinkYaml)) as Weblink[]
-//                     weblinksArray.push(...weblinkRecord);
-//                 }
-//             }
-//         }
-//         return weblinksArray;
-//     }
-
-//     private webLinkSetHelper = async (fileUri: vscode.Uri): Promise<WeblinkSet> => {
-//         const weblinkSetYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const weblinkSetRecord = load(new TextDecoder().decode(weblinkSetYaml)) as WeblinkSet;
-//         weblinkSetRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return weblinkSetRecord;
-//     };
-
-//     private getWeblinkSets = async (): Promise<WeblinkSet[]> => {
-//         const weblinkSetsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets' }) || fallbackURI);
-
-//         const weblinkSetsArray: WeblinkSet[] = [];
-//         for (const weblinkSet of weblinkSetsDirectory) {
-//             const linkSubDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets/' + weblinkSet[0] }) || fallbackURI);
-//             for (const sublink of linkSubDirectory) {
-//                 if (sublink[0].endsWith(ContextProperty.WEB_LINK_SET)) {
-//                     weblinkSetsArray.push(await this.webLinkSetHelper(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets/' + weblinkSet[0] + `/${sublink[0]}` }) || fallbackURI)); // adx_title not in pac data but is manadatory, studio sends as undefined.
-//                 }
-//             }
-//         }
-//         return weblinkSetsArray;
-//     }
-
-
-//     private contentSnippetHelper = async (fileUri: vscode.Uri): Promise<ContentSnippet> => {
-//         const snippetYaml = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.contentsnippet.yml' }));
-//         const snippetValue = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.contentsnippet.value.html' }));
-//         const snippetRecord = load(new TextDecoder().decode(snippetYaml)) as ContentSnippet
-//         snippetRecord.adx_value = new TextDecoder().decode(snippetValue);
-//         snippetRecord.adx_websiteid = '92d6c1b4-d84b-ee11-be6e-0022482d5cfb';
-//         snippetRecord.stateCode = 0; //check with PAC SME on how to get this field
-//         return snippetRecord;
-//     };
-
-
-//     private getContentSnippets = async (): Promise<ContentSnippet[]> => {
-//         const contentSnippetsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/content-snippets' }) || fallbackURI);
-
-//         const contentSnippetsArray: ContentSnippet[] = [];
-//         for (const contentSnippet of contentSnippetsDirectory) {
-//             const snippetSubDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/content-snippets/' + contentSnippet[0] }) || fallbackURI);
-//             for (const snippet of snippetSubDirectory) {
-//                 if (snippet[0].endsWith(ContextProperty.CONTENT_SNIPPET_YAML)) {
-//                     contentSnippetsArray.push(await this.contentSnippetHelper(this.rootPath?.with({ path: this.rootPath.path + '/content-snippets/' + contentSnippet[0] + `/${snippet[0].slice(0, -19)}` }) || fallbackURI));
-//                 }
-//             }
-//         }
-//         return contentSnippetsArray;
-//     }
-
-//     private pageTemplateHelper = async (fileUri: vscode.Uri): Promise<PageTemplate> => {
-//         const pageTemplateYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const pageTemplateRecord = load(new TextDecoder().decode(pageTemplateYaml)) as PageTemplate;
-//         return pageTemplateRecord;
-//     };
-
-
-//     private getPageTemplates = async (): Promise<PageTemplate[]> => {
-//         const pageTemplatesDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/page-templates' }) || fallbackURI);
-
-//         const pageTemplatesArray: PageTemplate[] = [];
-//         for (const pageTemplate of pageTemplatesDirectory) {
-//             pageTemplatesArray.push(await this.pageTemplateHelper(this.rootPath?.with({ path: this.rootPath.path + '/page-templates/' + pageTemplate[0] }) || fallbackURI));
-//         }
-//         return pageTemplatesArray;
-//     }
-
-//     private webTemplateHelper = async (fileUri: vscode.Uri): Promise<WebTemplate> => {
-//         const webTemplateYaml = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.webtemplate.yml' }));
-//         const webTemplateSource = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.webtemplate.source.html' }));
-//         const webTemplateSourceHTML = new TextDecoder().decode(webTemplateSource);
-//         const webTemplateRecord = load(new TextDecoder().decode(webTemplateYaml)) as WebTemplate;
-//         webTemplateRecord.adx_source = webTemplateSourceHTML;
-//         webTemplateRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return webTemplateRecord;
-//     };
-
-//     private getWebTemplates = async (): Promise<WebTemplate[]> => {
-//         const webTemplatesDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/web-templates' }) || fallbackURI);
-
-//         const webTemplatesArray: WebTemplate[] = [];
-//         for (const webTemplate of webTemplatesDirectory) {
-//             webTemplatesArray.push(await this.webTemplateHelper(this.rootPath?.with({ path: this.rootPath.path + '/web-templates/' + webTemplate[0] + `/${webTemplate[0]}` }) || fallbackURI));
-//         }
-//         return webTemplatesArray;
-//     }
-
-//     private entityFormHelper = async (fileUri: vscode.Uri): Promise<EntityForm> => {
-//         const entityFormYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const entityFormRecord = load(new TextDecoder().decode(entityFormYaml)) as EntityForm;
-//         entityFormRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return entityFormRecord;
-//     };
-
-//     private getEntityForms = async (): Promise<EntityForm[]> => {
-//         const entityFormsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/basic-forms' }) || fallbackURI);
-
-//         const entityFormsArray: EntityForm[] = [];
-//         for (const entityForm of entityFormsDirectory) {
-//             entityFormsArray.push(await this.entityFormHelper(this.rootPath?.with({ path: this.rootPath.path + '/basic-forms/' + entityForm[0] + `/${entityForm[0]}.basicform.yml` }) || fallbackURI));
-//         }
-//         return entityFormsArray;
-//     }
-
-//     private entityListHelper = async (fileUri: vscode.Uri): Promise<EntityList> => {
-//         const entityListYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const entityListRecord = load(new TextDecoder().decode(entityListYaml)) as EntityList;
-//         entityListRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return entityListRecord;
-//     };
-
-//     private getEntityLists = async (): Promise<EntityList[]> => {
-//         const entityListsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/lists' }) || fallbackURI);
-
-//         const entityListsArray: EntityList[] = [];
-//         for (const entityList of entityListsDirectory) {
-//             if (entityList[0].endsWith(ContextProperty.ENTITY_LIST)) {
-//                 entityListsArray.push(await this.entityListHelper(this.rootPath?.with({ path: this.rootPath.path + '/lists/' + entityList[0] }) || fallbackURI));
-//             }
-//         }
-//         return entityListsArray;
-//     }
-
-//     private webFormHelper = async (fileUri: vscode.Uri): Promise<WebForm> => {
-//         const webFormYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const webFormRecord = load(new TextDecoder().decode(webFormYaml)) as WebForm;
-//         webFormRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return webFormRecord;
-//     };
-
-
-//     private getWebForms = async (): Promise<WebForm[]> => {
-//         const webFormsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/advanced-forms' }) || fallbackURI);
-
-//         const webFormsArray: WebForm[] = [];
-//         for (const webForm of webFormsDirectory) {
-//             webFormsArray.push(await this.webFormHelper(this.rootPath?.with({ path: this.rootPath.path + '/advanced-forms/' + webForm[0] + `/${webForm[0]}.advancedform.yml` }) || fallbackURI));
-//         }
-//         return webFormsArray;
-//     }
-
-//     private getSiteSetting = async (): Promise<SiteSetting[]> => {
-//         const siteSetting = await vscode.workspace.fs.readFile(this.rootPath?.with({ path: this.rootPath.path + '/sitesetting.yml' }) || fallbackURI);
-//         const siteSettingYaml = load(new TextDecoder().decode(siteSetting)) as SiteSetting[];
-//         const siteSettingRecords = siteSettingYaml.map((siteSettingRecord) => {
-//             if (siteSettingRecord.adx_name === BootstrapSiteSetting) {
-//                 this.isBootstrapV5 = siteSettingRecord.adx_value ? String(siteSettingRecord.adx_value).toLowerCase() === 'true' : false;
-//             }
-//             return {
-//                 adx_websiteid: this.websiteRecord.adx_websiteid,
-//                 adx_name: siteSettingRecord.adx_name,
-//                 adx_value: siteSettingRecord.adx_value,
-//                 adx_sitesettingid: siteSettingRecord.adx_sitesettingid,
-//             }
-//         });
-//         return siteSettingRecords;
-//     }
-
-//     private getSiteMarker = async (): Promise<SiteMarker[]> => {
-//         const siteMarker = await vscode.workspace.fs.readFile(this.rootPath?.with({ path: this.rootPath.path + '/sitemarker.yml' }) || fallbackURI);
-//         const siteMarkerYaml = load(new TextDecoder().decode(siteMarker)) as SiteMarker[];
-//         const siteMarkerRecords = siteMarkerYaml.map((siteMarkerRecord) => {
-//             return {
-//                 adx_name: siteMarkerRecord.adx_name as string,
-//                 adx_pageid: siteMarkerRecord.adx_pageid as string,
-//                 adx_sitemarkerid: siteMarkerRecord.adx_sitemarkerid,
-//                 adx_websiteid: this.websiteRecord.adx_websiteid,
-
-//             }
-
-//         });
-//         return siteMarkerRecords;
-//     }
-
-//     public updateContext = async () => {
-//         const fileUri = vscode.window.activeTextEditor?.document.uri || fallbackURI;
-//         const fileName = getFileProperties(fileUri.path).fileCompleteName;
-//         if (!fileName) {
-//             // TODO: Handle this scenario
-//             return;
-//         }
-//         // Check entity type
-//         const entityType: ContextProperty = this.getEntityType(fileName);
-
-//         switch (entityType) {
-//             case ContextProperty.SITE_MARKER:
-//                 this.previewEngineContext.siteMarkers = await this.getSiteMarker();
-//                 break;
-//             case ContextProperty.SITE_SETTING:
-//                 this.previewEngineContext.siteSettings = await this.getSiteSetting();
-//                 break;
-//             case ContextProperty.WEBSITE:
-//                 {
-//                     const websiteObj = await this.getWebsite();
-//                     if (websiteObj?.adx_websiteid === this.websiteRecord?.adx_websiteid) {
-//                         this.websiteRecord = websiteObj;
-//                     }
-//                     else {
-//                         this.websiteRecord = websiteObj;
-//                         this.previewEngineContext = await this.createEngineContext();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.WEB_LINK:
-//                 this.previewEngineContext.weblinks = await this.getWeblinks();
-//                 break;
-//             case ContextProperty.WEB_LINK_SET: {
-//                 const obj = await this.webLinkSetHelper(fileUri);
-//                 const value = obj[ContextPropertyKey.WEB_LINK_SET as unknown as keyof WeblinkSet];
-//                 const index = findObjectIndexByProperty(this.previewEngineContext.weblinkSets, ContextPropertyKey.WEB_LINK_SET, value);
-//                 if (index != -1 && this.previewEngineContext.weblinkSets) {
-//                     this.previewEngineContext.weblinkSets[index] = obj;
-//                 } else {
-//                     this.previewEngineContext.weblinkSets = await this.getWeblinkSets();
-//                 }
-//                 break;
-//             }
-//             case ContextProperty.ENTITY_FORM:
-//                 {
-//                     const obj = await this.entityFormHelper(fileUri);
-//                     const value = obj[ContextPropertyKey.ENTITY_FORM as unknown as keyof EntityForm];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.entityForms, ContextPropertyKey.ENTITY_FORM, value);
-//                     if (index != -1 && this.previewEngineContext.entityForms) {
-//                         this.previewEngineContext.entityForms[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.entityForms = await this.getEntityForms();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.ENTITY_LIST:
-//                 {
-//                     const obj = await this.entityListHelper(fileUri);
-//                     const value = obj[ContextPropertyKey.ENTITY_LIST as unknown as keyof EntityList];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.entityLists, ContextPropertyKey.ENTITY_LIST, value);
-//                     if (index != -1 && this.previewEngineContext.entityLists) {
-//                         this.previewEngineContext.entityLists[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.entityLists = await this.getEntityLists();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.WEB_FORM:
-//                 {
-//                     const obj = await this.webFormHelper(fileUri);
-//                     const value = obj[ContextPropertyKey.WEB_FORM as unknown as keyof WebForm];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.webForms, ContextPropertyKey.WEB_FORM, value);
-//                     if (index != -1 && this.previewEngineContext.webForms) {
-//                         this.previewEngineContext.webForms[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.webForms = await this.getWebForms();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.PAGE_TEMPLATE:
-//                 {
-//                     const obj = await this.pageTemplateHelper(fileUri);
-//                     const value = obj[ContextPropertyKey.PAGE_TEMPLATE as unknown as keyof PageTemplate];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.pageTemplates, ContextPropertyKey.PAGE_TEMPLATE, value);
-//                     if (index != -1 && this.previewEngineContext.pageTemplates) {
-//                         this.previewEngineContext.pageTemplates[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.pageTemplates = await this.getPageTemplates();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.WEBPAGE_YAML:
-//             case ContextProperty.WEBPAGE_COPY:
-//             case ContextProperty.WEBPAGE_CSS:
-//             case ContextProperty.WEBPAGE_JS:
-//             case ContextProperty.WEBPAGE_SUMMARY:
-//                 {
-//                     const obj = await this.webPageHelper(fileUri?.with({ path: removeExtension(fileUri.path, entityType) }));
-//                     const value = obj[ContextPropertyKey.WEBPAGE as unknown as keyof Webpage];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.webpages, ContextPropertyKey.WEBPAGE, value);
-//                     if (index != -1 && this.previewEngineContext.webpages) {
-//                         this.previewEngineContext.webpages[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.webpages = await this.getWebpages();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.WEB_TEMPLATE_YAML:
-//             case ContextProperty.WEB_TEMPLATE_SOURCE:
-//                 {
-//                     const obj = await this.webTemplateHelper(fileUri?.with({ path: removeExtension(fileUri.path, entityType) }));
-//                     const value = obj[ContextPropertyKey.WEB_TEMPLATE as unknown as keyof WebTemplate];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.webTemplates, ContextPropertyKey.WEB_TEMPLATE, value);
-//                     if (index != -1 && this.previewEngineContext.webTemplates) {
-//                         this.previewEngineContext.webTemplates[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.webTemplates = await this.getWebTemplates();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.CONTENT_SNIPPET_YAML:
-//             case ContextProperty.CONTENT_SNIPPET_VALUE:
-//                 {
-//                     const obj = await this.contentSnippetHelper(fileUri?.with({ path: removeExtension(fileUri.path, entityType) }));
-//                     const value = obj[ContextPropertyKey.CONTENT_SNIPPET as unknown as keyof ContentSnippet];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.contentSnippets, ContextPropertyKey.CONTENT_SNIPPET, value);
-//                     if (index != -1 && this.previewEngineContext.contentSnippets) {
-//                         this.previewEngineContext.contentSnippets[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.contentSnippets = await this.getContentSnippets();
-//                     }
-//                     break;
-//                 }
-//             default:
-//                 break;
-//         }
-//     }
-
-//     private getEntityType = (filename: string): ContextProperty => {
-
-//         if (filename.endsWith(ContextProperty.WEBSITE)) {
-//             return ContextProperty.WEBSITE;
-//         } else if (filename.endsWith(ContextProperty.SITE_SETTING)) {
-//             return ContextProperty.SITE_SETTING;
-//         } else if (filename.endsWith(ContextProperty.SITE_MARKER)) {
-//             return ContextProperty.SITE_MARKER;
-//         } else if (filename.endsWith(ContextProperty.ENTITY_FORM)) {
-//             return ContextProperty.ENTITY_FORM;
-//         } else if (filename.endsWith(ContextProperty.ENTITY_LIST)) {
-//             return ContextProperty.ENTITY_LIST;
-//         } else if (filename.endsWith(ContextProperty.WEB_FORM)) {
-//             return ContextProperty.WEB_FORM;
-//         } else if (filename.endsWith(ContextProperty.WEB_LINK)) {
-//             return ContextProperty.WEB_LINK;
-//         } else if (filename.endsWith(ContextProperty.WEB_LINK_SET)) {
-//             return ContextProperty.WEB_LINK_SET;
-//         } else if (filename.endsWith(ContextProperty.PAGE_TEMPLATE)) {
-//             return ContextProperty.PAGE_TEMPLATE;
-//         } else if (filename.endsWith(ContextProperty.WEB_TEMPLATE_YAML)) {
-//             return ContextProperty.WEB_TEMPLATE_YAML;
-//         } else if (filename.endsWith(ContextProperty.WEB_TEMPLATE_SOURCE)) {
-//             return ContextProperty.WEB_TEMPLATE_SOURCE;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_YAML)) {
-//             return ContextProperty.WEBPAGE_YAML;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_COPY)) {
-//             return ContextProperty.WEBPAGE_COPY;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_CSS)) {
-//             return ContextProperty.WEBPAGE_CSS;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_JS)) {
-//             return ContextProperty.WEBPAGE_JS;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_SUMMARY)) {
-//             return ContextProperty.WEBPAGE_SUMMARY;
-//         } else if (filename.endsWith(ContextProperty.CONTENT_SNIPPET_YAML)) {
-//             return ContextProperty.CONTENT_SNIPPET_YAML;
-//         } else if (filename.endsWith(ContextProperty.CONTENT_SNIPPET_VALUE)) {
-//             return ContextProperty.CONTENT_SNIPPET_VALUE;
-//         } else {
-//             return ContextProperty.UNKNOWN_PROPERTY;
-//         }
-//     }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// export const treeView = () => {
-//     const web = new PreviewEngineContext();
-//     web.createContext();
-//     console.log(web.getPreviewEngineContext());
-// }
-
-// export class PreviewEngineContext {
-//     private previewEngineContext: IPreviewEngineContext;
-//     private websiteRecord: Website;
-//     private rootPath: vscode.Uri | null;
-//     private isBootstrapV5: boolean;
-
-//     constructor() {
-//         this.isBootstrapV5 = false;
-//         this.previewEngineContext = {};
-//         this.rootPath = PortalWebView.getPortalRootFolder();
-//         this.websiteRecord = {} as Website;
-//     }
-
-//     public createContext = async () => {
-//         this.websiteRecord = await this.getWebsite();
-//         this.previewEngineContext = await this.createEngineContext();
-//     }
-
-//     public getPreviewEngineContext = () => {
-//         return this.previewEngineContext;
-//     }
-
-//     private createEngineContext = async (): Promise<IPreviewEngineContext> => {
-
-//         if (this.rootPath) {
-//             return {
-//                 webpages: await this.getWebpages(),
-//                 contentSnippets: await this.getContentSnippets(),
-//                 webTemplates: await this.getWebTemplates(),
-//                 siteMarkers: await this.getSiteMarker(),
-//                 siteSettings: await this.getSiteSetting(),
-//                 entityLists: await this.getEntityLists(),
-//                 entityForms: await this.getEntityForms(),
-//                 webForms: await this.getWebForms(),
-//                 weblinks: await this.getWeblinks(),
-//                 weblinkSets: await this.getWeblinkSets(),
-//                 website: this.websiteRecord,
-//                 pageTemplates: await this.getPageTemplates(),
-//                 dataResolverExtras: {},
-//                 resx: {},
-//                 featureConfig: new Map(),
-//                 entityAttributeMetadata: [] as IEntityAttributeMetadata[],
-//                 lcid: '' as string,
-//                 isBootstrapV5: this.isBootstrapV5,
-//             }
-//         } else return {}
-//     }
-
-//     private getWebsite = async (): Promise<Website> => {
-//         const website = await vscode.workspace.fs.readFile(this.rootPath?.with({ path: this.rootPath.path + '/website.yml' }) || fallbackURI);
-//         const websiteYaml = load(new TextDecoder().decode(website));
-//         return websiteYaml as Website;
-//     }
-
-//     private webPageHelper = async (pageUri: vscode.Uri): Promise<Webpage> => {
-//         const webpageYaml = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.yml' }));
-//         const webpageJS = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.custom_javascript.js' }));
-//         const webpageCSS = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.custom_css.css' }));
-//         const webpageCopy = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.copy.html' }));
-//         const webpageSummary = await vscode.workspace.fs.readFile(pageUri?.with({ path: pageUri.path + '.webpage.summary.html' }));
-//         const webpageRecord = load(new TextDecoder().decode(webpageYaml)) as Webpage;
-//         webpageRecord.adx_customcss = new TextDecoder().decode(webpageCSS);
-//         webpageRecord.adx_customjavascript = new TextDecoder().decode(webpageJS);
-//         webpageRecord.adx_copy = new TextDecoder().decode(webpageCopy);
-//         webpageRecord.adx_summary = new TextDecoder().decode(webpageSummary);
-//         webpageRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return webpageRecord;
-//     }
-
-
-//     private getWebpages = async (): Promise<Webpage[]> => {
-//         const webpagesDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/web-pages' }) || fallbackURI);
-
-//         const webpageArray: Webpage[] = [];
-//         for (const webpage of webpagesDirectory) {
-//             webpageArray.push(await this.webPageHelper(this.rootPath?.with({ path: this.rootPath.path + '/web-pages/' + webpage[0] + '/' + webpage[0] }) || fallbackURI));
-
-//             const contentPageDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/web-pages/' + webpage[0] + '/content-pages' }) || fallbackURI);
-//             for (const page of contentPageDirectory) {
-//                 if (page[0].endsWith(ContextProperty.WEBPAGE_YAML)) {
-//                     const pageName = page[0].slice(0, -12);
-//                     webpageArray.push(await this.webPageHelper(this.rootPath?.with({ path: this.rootPath.path + '/web-pages/' + webpage[0] + '/content-pages/' + pageName }) || fallbackURI));
-//                 }
-//             }
-//         }
-//         return webpageArray;
-//     }
-
-//     private getWeblinks = async (): Promise<Weblink[]> => {
-//         const weblinksDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets' }) || fallbackURI);
-
-//         const weblinksArray: Weblink[] = [];
-//         for (const link of weblinksDirectory) {
-//             const linkSubDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets/' + link[0] }) || fallbackURI);
-//             for (const sublink of linkSubDirectory) {
-//                 if (sublink[0].endsWith(ContextProperty.WEB_LINK)) {
-//                     const weblinkYaml = await vscode.workspace.fs.readFile(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets/' + link[0] + `/${sublink[0]}` }) || fallbackURI);
-//                     const weblinkRecord = load(new TextDecoder().decode(weblinkYaml)) as Weblink[]
-//                     weblinksArray.push(...weblinkRecord);
-//                 }
-//             }
-//         }
-//         return weblinksArray;
-//     }
-
-//     private webLinkSetHelper = async (fileUri: vscode.Uri): Promise<WeblinkSet> => {
-//         const weblinkSetYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const weblinkSetRecord = load(new TextDecoder().decode(weblinkSetYaml)) as WeblinkSet;
-//         weblinkSetRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return weblinkSetRecord;
-//     };
-
-//     private getWeblinkSets = async (): Promise<WeblinkSet[]> => {
-//         const weblinkSetsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets' }) || fallbackURI);
-
-//         const weblinkSetsArray: WeblinkSet[] = [];
-//         for (const weblinkSet of weblinkSetsDirectory) {
-//             const linkSubDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets/' + weblinkSet[0] }) || fallbackURI);
-//             for (const sublink of linkSubDirectory) {
-//                 if (sublink[0].endsWith(ContextProperty.WEB_LINK_SET)) {
-//                     weblinkSetsArray.push(await this.webLinkSetHelper(this.rootPath?.with({ path: this.rootPath.path + '/weblink-sets/' + weblinkSet[0] + `/${sublink[0]}` }) || fallbackURI)); // adx_title not in pac data but is manadatory, studio sends as undefined.
-//                 }
-//             }
-//         }
-//         return weblinkSetsArray;
-//     }
-
-
-//     private contentSnippetHelper = async (fileUri: vscode.Uri): Promise<ContentSnippet> => {
-//         const snippetYaml = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.contentsnippet.yml' }));
-//         const snippetValue = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.contentsnippet.value.html' }));
-//         const snippetRecord = load(new TextDecoder().decode(snippetYaml)) as ContentSnippet
-//         snippetRecord.adx_value = new TextDecoder().decode(snippetValue);
-//         snippetRecord.adx_websiteid = '92d6c1b4-d84b-ee11-be6e-0022482d5cfb';
-//         snippetRecord.stateCode = 0; //check with PAC SME on how to get this field
-//         return snippetRecord;
-//     };
-
-
-//     private getContentSnippets = async (): Promise<ContentSnippet[]> => {
-//         const contentSnippetsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/content-snippets' }) || fallbackURI);
-
-//         const contentSnippetsArray: ContentSnippet[] = [];
-//         for (const contentSnippet of contentSnippetsDirectory) {
-//             const snippetSubDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/content-snippets/' + contentSnippet[0] }) || fallbackURI);
-//             for (const snippet of snippetSubDirectory) {
-//                 if (snippet[0].endsWith(ContextProperty.CONTENT_SNIPPET_YAML)) {
-//                     contentSnippetsArray.push(await this.contentSnippetHelper(this.rootPath?.with({ path: this.rootPath.path + '/content-snippets/' + contentSnippet[0] + `/${snippet[0].slice(0, -19)}` }) || fallbackURI));
-//                 }
-//             }
-//         }
-//         return contentSnippetsArray;
-//     }
-
-//     private pageTemplateHelper = async (fileUri: vscode.Uri): Promise<PageTemplate> => {
-//         const pageTemplateYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const pageTemplateRecord = load(new TextDecoder().decode(pageTemplateYaml)) as PageTemplate;
-//         return pageTemplateRecord;
-//     };
-
-
-//     private getPageTemplates = async (): Promise<PageTemplate[]> => {
-//         const pageTemplatesDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/page-templates' }) || fallbackURI);
-
-//         const pageTemplatesArray: PageTemplate[] = [];
-//         for (const pageTemplate of pageTemplatesDirectory) {
-//             pageTemplatesArray.push(await this.pageTemplateHelper(this.rootPath?.with({ path: this.rootPath.path + '/page-templates/' + pageTemplate[0] }) || fallbackURI));
-//         }
-//         return pageTemplatesArray;
-//     }
-
-//     private webTemplateHelper = async (fileUri: vscode.Uri): Promise<WebTemplate> => {
-//         const webTemplateYaml = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.webtemplate.yml' }));
-//         const webTemplateSource = await vscode.workspace.fs.readFile(fileUri?.with({ path: fileUri.path + '.webtemplate.source.html' }));
-//         const webTemplateSourceHTML = new TextDecoder().decode(webTemplateSource);
-//         const webTemplateRecord = load(new TextDecoder().decode(webTemplateYaml)) as WebTemplate;
-//         webTemplateRecord.adx_source = webTemplateSourceHTML;
-//         webTemplateRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return webTemplateRecord;
-//     };
-
-//     private getWebTemplates = async (): Promise<WebTemplate[]> => {
-//         const webTemplatesDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/web-templates' }) || fallbackURI);
-
-//         const webTemplatesArray: WebTemplate[] = [];
-//         for (const webTemplate of webTemplatesDirectory) {
-//             webTemplatesArray.push(await this.webTemplateHelper(this.rootPath?.with({ path: this.rootPath.path + '/web-templates/' + webTemplate[0] + `/${webTemplate[0]}` }) || fallbackURI));
-//         }
-//         return webTemplatesArray;
-//     }
-
-//     private entityFormHelper = async (fileUri: vscode.Uri): Promise<EntityForm> => {
-//         const entityFormYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const entityFormRecord = load(new TextDecoder().decode(entityFormYaml)) as EntityForm;
-//         entityFormRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return entityFormRecord;
-//     };
-
-//     private getEntityForms = async (): Promise<EntityForm[]> => {
-//         const entityFormsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/basic-forms' }) || fallbackURI);
-
-//         const entityFormsArray: EntityForm[] = [];
-//         for (const entityForm of entityFormsDirectory) {
-//             entityFormsArray.push(await this.entityFormHelper(this.rootPath?.with({ path: this.rootPath.path + '/basic-forms/' + entityForm[0] + `/${entityForm[0]}.basicform.yml` }) || fallbackURI));
-//         }
-//         return entityFormsArray;
-//     }
-
-//     private entityListHelper = async (fileUri: vscode.Uri): Promise<EntityList> => {
-//         const entityListYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const entityListRecord = load(new TextDecoder().decode(entityListYaml)) as EntityList;
-//         entityListRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return entityListRecord;
-//     };
-
-//     private getEntityLists = async (): Promise<EntityList[]> => {
-//         const entityListsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/lists' }) || fallbackURI);
-
-//         const entityListsArray: EntityList[] = [];
-//         for (const entityList of entityListsDirectory) {
-//             if (entityList[0].endsWith(ContextProperty.ENTITY_LIST)) {
-//                 entityListsArray.push(await this.entityListHelper(this.rootPath?.with({ path: this.rootPath.path + '/lists/' + entityList[0] }) || fallbackURI));
-//             }
-//         }
-//         return entityListsArray;
-//     }
-
-//     private webFormHelper = async (fileUri: vscode.Uri): Promise<WebForm> => {
-//         const webFormYaml = await vscode.workspace.fs.readFile(fileUri);
-//         const webFormRecord = load(new TextDecoder().decode(webFormYaml)) as WebForm;
-//         webFormRecord.adx_websiteid = this.websiteRecord.adx_websiteid;
-//         return webFormRecord;
-//     };
-
-
-//     private getWebForms = async (): Promise<WebForm[]> => {
-//         const webFormsDirectory = await vscode.workspace.fs.readDirectory(this.rootPath?.with({ path: this.rootPath.path + '/advanced-forms' }) || fallbackURI);
-
-//         const webFormsArray: WebForm[] = [];
-//         for (const webForm of webFormsDirectory) {
-//             webFormsArray.push(await this.webFormHelper(this.rootPath?.with({ path: this.rootPath.path + '/advanced-forms/' + webForm[0] + `/${webForm[0]}.advancedform.yml` }) || fallbackURI));
-//         }
-//         return webFormsArray;
-//     }
-
-//     private getSiteSetting = async (): Promise<SiteSetting[]> => {
-//         const siteSetting = await vscode.workspace.fs.readFile(this.rootPath?.with({ path: this.rootPath.path + '/sitesetting.yml' }) || fallbackURI);
-//         const siteSettingYaml = load(new TextDecoder().decode(siteSetting)) as SiteSetting[];
-//         const siteSettingRecords = siteSettingYaml.map((siteSettingRecord) => {
-//             if (siteSettingRecord.adx_name === BootstrapSiteSetting) {
-//                 this.isBootstrapV5 = siteSettingRecord.adx_value ? String(siteSettingRecord.adx_value).toLowerCase() === 'true' : false;
-//             }
-//             return {
-//                 adx_websiteid: this.websiteRecord.adx_websiteid,
-//                 adx_name: siteSettingRecord.adx_name,
-//                 adx_value: siteSettingRecord.adx_value,
-//                 adx_sitesettingid: siteSettingRecord.adx_sitesettingid,
-//             }
-//         });
-//         return siteSettingRecords;
-//     }
-
-//     private getSiteMarker = async (): Promise<SiteMarker[]> => {
-//         const siteMarker = await vscode.workspace.fs.readFile(this.rootPath?.with({ path: this.rootPath.path + '/sitemarker.yml' }) || fallbackURI);
-//         const siteMarkerYaml = load(new TextDecoder().decode(siteMarker)) as SiteMarker[];
-//         const siteMarkerRecords = siteMarkerYaml.map((siteMarkerRecord) => {
-//             return {
-//                 adx_name: siteMarkerRecord.adx_name as string,
-//                 adx_pageid: siteMarkerRecord.adx_pageid as string,
-//                 adx_sitemarkerid: siteMarkerRecord.adx_sitemarkerid,
-//                 adx_websiteid: this.websiteRecord.adx_websiteid,
-
-//             }
-
-//         });
-//         return siteMarkerRecords;
-//     }
-
-//     public updateContext = async () => {
-//         const fileUri = vscode.window.activeTextEditor?.document.uri || fallbackURI;
-//         const fileName = getFileProperties(fileUri.path).fileCompleteName;
-//         if (!fileName) {
-//             // TODO: Handle this scenario
-//             return;
-//         }
-//         // Check entity type
-//         const entityType: ContextProperty = this.getEntityType(fileName);
-
-//         switch (entityType) {
-//             case ContextProperty.SITE_MARKER:
-//                 this.previewEngineContext.siteMarkers = await this.getSiteMarker();
-//                 break;
-//             case ContextProperty.SITE_SETTING:
-//                 this.previewEngineContext.siteSettings = await this.getSiteSetting();
-//                 break;
-//             case ContextProperty.WEBSITE:
-//                 {
-//                     const websiteObj = await this.getWebsite();
-//                     if (websiteObj?.adx_websiteid === this.websiteRecord?.adx_websiteid) {
-//                         this.websiteRecord = websiteObj;
-//                     }
-//                     else {
-//                         this.websiteRecord = websiteObj;
-//                         this.previewEngineContext = await this.createEngineContext();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.WEB_LINK:
-//                 this.previewEngineContext.weblinks = await this.getWeblinks();
-//                 break;
-//             case ContextProperty.WEB_LINK_SET: {
-//                 const obj = await this.webLinkSetHelper(fileUri);
-//                 const value = obj[ContextPropertyKey.WEB_LINK_SET as unknown as keyof WeblinkSet];
-//                 const index = findObjectIndexByProperty(this.previewEngineContext.weblinkSets, ContextPropertyKey.WEB_LINK_SET, value);
-//                 if (index != -1 && this.previewEngineContext.weblinkSets) {
-//                     this.previewEngineContext.weblinkSets[index] = obj;
-//                 } else {
-//                     this.previewEngineContext.weblinkSets = await this.getWeblinkSets();
-//                 }
-//                 break;
-//             }
-//             case ContextProperty.ENTITY_FORM:
-//                 {
-//                     const obj = await this.entityFormHelper(fileUri);
-//                     const value = obj[ContextPropertyKey.ENTITY_FORM as unknown as keyof EntityForm];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.entityForms, ContextPropertyKey.ENTITY_FORM, value);
-//                     if (index != -1 && this.previewEngineContext.entityForms) {
-//                         this.previewEngineContext.entityForms[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.entityForms = await this.getEntityForms();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.ENTITY_LIST:
-//                 {
-//                     const obj = await this.entityListHelper(fileUri);
-//                     const value = obj[ContextPropertyKey.ENTITY_LIST as unknown as keyof EntityList];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.entityLists, ContextPropertyKey.ENTITY_LIST, value);
-//                     if (index != -1 && this.previewEngineContext.entityLists) {
-//                         this.previewEngineContext.entityLists[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.entityLists = await this.getEntityLists();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.WEB_FORM:
-//                 {
-//                     const obj = await this.webFormHelper(fileUri);
-//                     const value = obj[ContextPropertyKey.WEB_FORM as unknown as keyof WebForm];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.webForms, ContextPropertyKey.WEB_FORM, value);
-//                     if (index != -1 && this.previewEngineContext.webForms) {
-//                         this.previewEngineContext.webForms[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.webForms = await this.getWebForms();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.PAGE_TEMPLATE:
-//                 {
-//                     const obj = await this.pageTemplateHelper(fileUri);
-//                     const value = obj[ContextPropertyKey.PAGE_TEMPLATE as unknown as keyof PageTemplate];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.pageTemplates, ContextPropertyKey.PAGE_TEMPLATE, value);
-//                     if (index != -1 && this.previewEngineContext.pageTemplates) {
-//                         this.previewEngineContext.pageTemplates[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.pageTemplates = await this.getPageTemplates();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.WEBPAGE_YAML:
-//             case ContextProperty.WEBPAGE_COPY:
-//             case ContextProperty.WEBPAGE_CSS:
-//             case ContextProperty.WEBPAGE_JS:
-//             case ContextProperty.WEBPAGE_SUMMARY:
-//                 {
-//                     const obj = await this.webPageHelper(fileUri?.with({ path: removeExtension(fileUri.path, entityType) }));
-//                     const value = obj[ContextPropertyKey.WEBPAGE as unknown as keyof Webpage];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.webpages, ContextPropertyKey.WEBPAGE, value);
-//                     if (index != -1 && this.previewEngineContext.webpages) {
-//                         this.previewEngineContext.webpages[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.webpages = await this.getWebpages();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.WEB_TEMPLATE_YAML:
-//             case ContextProperty.WEB_TEMPLATE_SOURCE:
-//                 {
-//                     const obj = await this.webTemplateHelper(fileUri?.with({ path: removeExtension(fileUri.path, entityType) }));
-//                     const value = obj[ContextPropertyKey.WEB_TEMPLATE as unknown as keyof WebTemplate];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.webTemplates, ContextPropertyKey.WEB_TEMPLATE, value);
-//                     if (index != -1 && this.previewEngineContext.webTemplates) {
-//                         this.previewEngineContext.webTemplates[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.webTemplates = await this.getWebTemplates();
-//                     }
-//                     break;
-//                 }
-//             case ContextProperty.CONTENT_SNIPPET_YAML:
-//             case ContextProperty.CONTENT_SNIPPET_VALUE:
-//                 {
-//                     const obj = await this.contentSnippetHelper(fileUri?.with({ path: removeExtension(fileUri.path, entityType) }));
-//                     const value = obj[ContextPropertyKey.CONTENT_SNIPPET as unknown as keyof ContentSnippet];
-//                     const index = findObjectIndexByProperty(this.previewEngineContext.contentSnippets, ContextPropertyKey.CONTENT_SNIPPET, value);
-//                     if (index != -1 && this.previewEngineContext.contentSnippets) {
-//                         this.previewEngineContext.contentSnippets[index] = obj;
-//                     } else {
-//                         this.previewEngineContext.contentSnippets = await this.getContentSnippets();
-//                     }
-//                     break;
-//                 }
-//             default:
-//                 break;
-//         }
-//     }
-
-//     private getEntityType = (filename: string): ContextProperty => {
-
-//         if (filename.endsWith(ContextProperty.WEBSITE)) {
-//             return ContextProperty.WEBSITE;
-//         } else if (filename.endsWith(ContextProperty.SITE_SETTING)) {
-//             return ContextProperty.SITE_SETTING;
-//         } else if (filename.endsWith(ContextProperty.SITE_MARKER)) {
-//             return ContextProperty.SITE_MARKER;
-//         } else if (filename.endsWith(ContextProperty.ENTITY_FORM)) {
-//             return ContextProperty.ENTITY_FORM;
-//         } else if (filename.endsWith(ContextProperty.ENTITY_LIST)) {
-//             return ContextProperty.ENTITY_LIST;
-//         } else if (filename.endsWith(ContextProperty.WEB_FORM)) {
-//             return ContextProperty.WEB_FORM;
-//         } else if (filename.endsWith(ContextProperty.WEB_LINK)) {
-//             return ContextProperty.WEB_LINK;
-//         } else if (filename.endsWith(ContextProperty.WEB_LINK_SET)) {
-//             return ContextProperty.WEB_LINK_SET;
-//         } else if (filename.endsWith(ContextProperty.PAGE_TEMPLATE)) {
-//             return ContextProperty.PAGE_TEMPLATE;
-//         } else if (filename.endsWith(ContextProperty.WEB_TEMPLATE_YAML)) {
-//             return ContextProperty.WEB_TEMPLATE_YAML;
-//         } else if (filename.endsWith(ContextProperty.WEB_TEMPLATE_SOURCE)) {
-//             return ContextProperty.WEB_TEMPLATE_SOURCE;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_YAML)) {
-//             return ContextProperty.WEBPAGE_YAML;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_COPY)) {
-//             return ContextProperty.WEBPAGE_COPY;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_CSS)) {
-//             return ContextProperty.WEBPAGE_CSS;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_JS)) {
-//             return ContextProperty.WEBPAGE_JS;
-//         } else if (filename.endsWith(ContextProperty.WEBPAGE_SUMMARY)) {
-//             return ContextProperty.WEBPAGE_SUMMARY;
-//         } else if (filename.endsWith(ContextProperty.CONTENT_SNIPPET_YAML)) {
-//             return ContextProperty.CONTENT_SNIPPET_YAML;
-//         } else if (filename.endsWith(ContextProperty.CONTENT_SNIPPET_VALUE)) {
-//             return ContextProperty.CONTENT_SNIPPET_VALUE;
-//         } else {
-//             return ContextProperty.UNKNOWN_PROPERTY;
-//         }
-//     }
-// }
