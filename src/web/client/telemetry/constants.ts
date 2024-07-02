@@ -49,6 +49,7 @@ export enum telemetryEventNames {
     WEB_EXTENSION_CREATE_ENTITY_FOLDER_FAILED = "webExtensionCreateEntityFolderFailed",
     WEB_EXTENSION_PREPROCESS_DATA_FAILED = "webExtensionPreprocessDataFailed",
     WEB_EXTENSION_PREPROCESS_DATA_SUCCESS = "webExtensionPreprocessDataSuccess",
+    WEB_EXTENSION_PREPROCESS_DATA_WEBFORM_STEPS_FAILED = "webExtensionPreprocessDataWebFormStepsFailed",
     WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR = "webExtensionAttributeContentError",
     WEB_EXTENSION_SET_FILE_CONTENT_ERROR = "webExtensionSetFileContentError",
     WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE = "webExtensionFailedToPrepareWorkspace",

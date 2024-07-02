@@ -18,10 +18,12 @@ import {
     VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
     VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
     VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED,
-    VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_FAILED
+    VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_FAILED,
+    VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED
 } from "./TelemetryConstants";
 import { ERRORS } from "../ErrorConstants";
 import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL } from "./Constants";
+import jwt_decode from 'jwt-decode';
 
 
 export function getCommonHeadersForDataverse(
@@ -66,9 +68,7 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
         }
         accessToken = session?.accessToken ?? '';
         user = session.account.label;
-        userId = session?.account.id.split("/").pop() ??
-            session?.account.id ??
-            "";
+        userId = getOIDFromToken(accessToken, telemetry);
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
@@ -112,9 +112,7 @@ export async function dataverseAuthentication(
         }
 
         accessToken = session?.accessToken ?? "";
-        userId = session?.account.id.split("/").pop() ??
-            session?.account.id ??
-            "";
+        userId = getOIDFromToken(accessToken, telemetry);
         if (!accessToken) {
             throw new Error(ERRORS.NO_ACCESS_TOKEN);
         }
@@ -219,10 +217,7 @@ export async function graphClientAuthentication(
         if (firstTimeAuth) {
             sendTelemetryEvent(telemetry, {
                 eventName: VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
-                userId:
-                    session?.account.id.split("/").pop() ??
-                    session?.account.id ??
-                    "",
+                userId: getOIDFromToken(accessToken, telemetry),
             });
         }
     } catch (error) {
@@ -268,10 +263,7 @@ export async function bapServiceAuthentication(
         if (firstTimeAuth) {
             sendTelemetryEvent(telemetry, {
                 eventName: VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED,
-                userId:
-                    session?.account.id.split("/").pop() ??
-                    session?.account.id ??
-                    "",
+                userId: getOIDFromToken(accessToken, telemetry),
             });
         }
     } catch (error) {
@@ -287,4 +279,16 @@ export async function bapServiceAuthentication(
     }
 
     return accessToken;
+}
+
+export function getOIDFromToken(token: string, telemetry: ITelemetry) {
+    try {
+        const decoded = jwt_decode(token);
+        return decoded?.oid ?? "";
+    } catch (error) {
+        sendTelemetryEvent(telemetry,
+            { eventName: VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED, errorMsg: (error as Error).message }
+        )
+    }
+    return "";
 }

@@ -375,6 +375,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++e433d73a7af9f003527cded50fa779687d0f923efc1beb323c3c75fd7062899f">
       <source xml:lang="en">Webfile(s) added successfully</source>
     </trans-unit>
+    <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
+      <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
+    </trans-unit>
     <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
       <source xml:lang="en">What do you need help with?</source>
     </trans-unit>
