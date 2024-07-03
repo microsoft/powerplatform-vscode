@@ -41,6 +41,7 @@ import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
 import { IArtemisAPIOrgResponse } from "../common/services/Interfaces";
 import { ArtemisService } from "../common/services/ArtemisService";
+import { treeView } from "../common/DataMapper";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -69,7 +70,10 @@ export async function activate(
     context.subscriptions.push(_telemetry);
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
-
+    oneDSLoggerWrapper.getLogger().traceInfo("Instantiating tree view", {
+        "instantiate": performance.now()
+    });
+    await treeView();
     _telemetry.sendTelemetryEvent("Start", {
         "pac.userId": readUserSettings().uniqueId,
     });
