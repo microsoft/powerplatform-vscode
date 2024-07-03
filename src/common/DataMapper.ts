@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 const { Tokenizer } = require('liquidjs')
+import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import * as path from "path";
 import * as vscode from 'vscode';
 import { IPreviewEngineContext } from './TreeView/Utils/IDataResolver';
@@ -42,6 +43,8 @@ export const treeView = async () => {
     console.log(IPortalMetadataContext);
     const web = await previewHelper.web();
     const { allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm } = convertAllMetadataToItems(IPortalMetadataContext, getPath);
+    oneDSLoggerWrapper.getLogger().traceInfo("End of IPortalMetadata creation", {
+      "timeNow": performance.now()});
     const websiteIItem = await createWebsiteItem(previewHelper);
     const { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem } = createIndividualItems(allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm);
     addWebfileToWebPage(IPortalMetadataContext, allwebPage, allwebFile);
@@ -56,6 +59,9 @@ export const treeView = async () => {
     console.log(websiteIItem);
     createTree(websiteIItem);
 
+    oneDSLoggerWrapper.getLogger().traceInfo("End of tree view creation", {
+      "timeNow": performance.now()
+  });
   } catch (error) {
     console.error('Error:', error);
   }

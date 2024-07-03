@@ -70,6 +70,9 @@ export async function activate(
     context.subscriptions.push(_telemetry);
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
+    oneDSLoggerWrapper.getLogger().traceInfo("Instantiating tree view", {
+        "instantiate": performance.now()
+    });
     await treeView();
     _telemetry.sendTelemetryEvent("Start", {
         "pac.userId": readUserSettings().uniqueId,
