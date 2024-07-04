@@ -162,6 +162,9 @@ export function getActiveEditorContent(): IActiveFileData {
     const activeEditor = vscode.window.activeTextEditor;
     const activeFileData: IActiveFileData = {
         activeFileContent: '',
+        startLine: 0,
+        endLine: 0,
+        activeFileUri: undefined,
         activeFileParams: {
             dataverseEntity: '',
             entityField: '',
@@ -172,10 +175,21 @@ export function getActiveEditorContent(): IActiveFileData {
         const document = activeEditor.document;
         const fileName = document.fileName;
         const relativeFileName = vscode.workspace.asRelativePath(fileName);
+        activeFileData.activeFileUri = document.uri;
 
         const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
 
-        activeFileData.activeFileContent = document.getText();
+        const selectedCode = getSelectedCode(activeEditor);
+        const selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
+
+        if(selectedCode.length > 0) {
+            activeFileData.activeFileContent = selectedCode;
+        } else {
+            activeFileData.activeFileContent = document.getText();
+        }
+
+        activeFileData.startLine = selectedCodeLineRange.start;
+        activeFileData.endLine = selectedCodeLineRange.end;
         activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
         activeFileData.activeFileParams.entityField = EntityFieldMap.get(activeFileParams[1]) || "";
         activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "";
