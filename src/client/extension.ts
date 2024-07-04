@@ -41,7 +41,8 @@ import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
 import { IArtemisAPIOrgResponse } from "../common/services/Interfaces";
 import { ArtemisService } from "../common/services/ArtemisService";
-import { treeView } from "../common/DataMapper";
+import { treeView } from "../common/TreeStructure/DataMapper";
+import { MyReferenceProvider } from "../common/TreeStructure/MyReferenceProvider";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -54,6 +55,16 @@ export async function activate(
     context: vscode.ExtensionContext
 ): Promise<void> {
     _context = context;
+
+    const languages = ['html', 'css', 'javascript', 'json', 'yaml'];
+    languages.forEach(language => {
+        context.subscriptions.push(
+            vscode.languages.registerReferenceProvider(
+                { scheme: 'file', language },
+                new MyReferenceProvider()
+            )
+        );
+    })
 
     // setup telemetry
     const telemetryEnv =
@@ -70,7 +81,16 @@ export async function activate(
     context.subscriptions.push(_telemetry);
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
+    oneDSLoggerWrapper.getLogger().traceInfo("Instantiating tree view", {
+        "instantiate": performance.now()
+    });
+
+    vscode.workspace.onDidSaveTextDocument(async (document) => {
+        console.log('Document saved:', document.fileName);
+        await treeView(); // Call treeView function when any document is saved
+    });
     await treeView();
+
     _telemetry.sendTelemetryEvent("Start", {
         "pac.userId": readUserSettings().uniqueId,
     });
