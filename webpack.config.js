@@ -110,12 +110,14 @@ const webConfig = {
         new webpack.DefinePlugin({
             IS_DESKTOP: false,
         }),
-        new copyWebpackPlugin([
-            {
-                from: path.resolve(__dirname, 'node_modules/@gia/survey-sdk/dist/survey.lib.umd.v1.0.10.min.js'),
-                to: path.resolve(__dirname, 'dist/media')
-            },
-        ])
+        new copyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'node_modules/@gia/survey-sdk/dist/survey.lib.umd.v1.0.10.min.js'),
+                    to: path.resolve(__dirname, 'dist/media')
+                },
+            ]
+        })
     ],
     externals: {
         'vscode': 'commonjs vscode', // ignored because it doesn't exist
