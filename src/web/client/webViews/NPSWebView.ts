@@ -6,6 +6,7 @@
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from "../telemetry/constants";
+import { queryParameters, SurveyConstants } from "../common/constants";
 
 export class NPSWebView {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -55,7 +56,6 @@ export class NPSWebView {
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self';">
                         <title>Microsoft wants your feedback</title>
                         <script>${surveyScript}</script>
                     </head>
@@ -63,15 +63,13 @@ export class NPSWebView {
                         <survey-sdk id="mySurvey"></survey-sdk>
                     </body>
                     <script>
-                        function getAccessToken() {
-                            return '<access token>'
-                        }
                         async function submitFeedback(teamName, surveyName, userId, feedback) {
                             await new Promise((resolve) => {
                                 setTimeout(() => {
                                     resolve();
                                 }, 0.5 * 1000);
                             });
+
                             return '<feedbackId>'; // feedbackId from CES APIs
                         }
                         async function updateFeedback(teamName, surveyName, userId, feedbackId, feedback) {
@@ -84,18 +82,18 @@ export class NPSWebView {
 
                         document.addEventListener("DOMContentLoaded", function () {
                             const config = {
-                                teamName: 'powerapps',
-                                surveyName: 'powerapps-nsat',
-                                userId: 'test123',
-                                tenantId: '00000000-0000-0000-0000-000000000000',
+                                teamName: ${SurveyConstants.TEAM_NAME},
+                                surveyName: ${SurveyConstants.SURVEY_NAME},
+                                userId: ${WebExtensionContext.userId},
+                                tenantId: ${WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string},
                                 locale: 'en',
                                 width: 520,
                                 uiType: survey.UiType.Modal,
-                                template: survey.Template.SAT,
+                                template: survey.Template.NPS,
                                 environment: survey.Environment.INT,
                                 region: survey.Region.World,
                                 accessToken: {
-                                    getAccessToken
+                                    ${WebExtensionContext.npsAccessToken}
                                 },
                                 callbackFunctions: {
                                     submitFeedback,

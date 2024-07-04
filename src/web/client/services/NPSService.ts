@@ -70,6 +70,7 @@ export class NPSService {
             if (accessToken) {
                 WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_NPS_AUTHENTICATION_COMPLETED);
             }
+            WebExtensionContext.setNPSAccessToken(accessToken);
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const parsedToken = jwt_decode(accessToken) as any;

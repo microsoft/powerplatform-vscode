@@ -104,6 +104,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _currentSchemaVersion: string;
     private _websiteLanguageCode: string;
     private _telemetry: WebExtensionTelemetry;
+    private _npsAccessToken: string;
     private _npsEligibility: boolean;
     private _userId: string;
     private _formsProEligibilityId: string;
@@ -190,6 +191,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get telemetry() {
         return this._telemetry;
     }
+    public get npsAccessToken() {
+        return this._npsAccessToken;
+    }
     public get npsEligibility() {
         return this._npsEligibility;
     }
@@ -255,6 +259,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._currentSchemaVersion = "";
         this._websiteLanguageCode = "";
         this._telemetry = new WebExtensionTelemetry();
+        this._npsAccessToken = "";
         this._npsEligibility = false;
         this._userId = "";
         this._formsProEligibilityId = "";
@@ -680,6 +685,10 @@ class WebExtensionContext implements IWebExtensionContext {
             telemetryEventNames.WEB_EXTENSION_WEBSITE_LANGUAGE_CODE,
             { languageCode: this._websiteLanguageCode }
         );
+    }
+
+    public setNPSAccessToken(npsAccessToken: string) {
+        this._npsAccessToken = npsAccessToken;
     }
 
     public setNPSEligibility(eligibility: boolean) {
