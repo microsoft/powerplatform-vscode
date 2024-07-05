@@ -28,6 +28,15 @@ jobs:
       with:
         lfs: true
 
+    - name: Delete node_modules (manual cleanup)
+      run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          rd /S /Q node_modules
+        else
+          rm -rf node_modules
+        fi
+      shell: bash
+
     - name: Setup Node.js environment
       uses: actions/setup-node@v3
       with:
