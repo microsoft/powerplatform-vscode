@@ -43,7 +43,13 @@ jobs:
 
     - name: Ensure node_modules directory is clean
       run: |
-        if [ -d "node_modules" ]; then rm -rf node_modules; fi
+        if [ -d "node_modules" ]; then
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            Remove-Item -Recurse -Force "node_modules"
+          else
+            rm -rf node_modules
+          fi
+        fi
 
     - name: Build and unit test
       run: |
