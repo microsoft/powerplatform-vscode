@@ -38,8 +38,9 @@ jobs:
 
     - name: Authenticate with Azure Artifacts
       run: |
-        npm install -g vsts-npm-auth
-        vsts-npm-auth -config .npmrc
+        npx vsts-npm-auth -config .npmrc
+      env:
+        AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
 
     - name: Build and unit test
       run: |
