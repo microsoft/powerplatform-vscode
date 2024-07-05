@@ -12,7 +12,7 @@ import { IPcfLaunchConfig } from "../configuration/types";
 import { ControlLocator } from "../controlLocation";
 
 import { BrowserLocator } from "./BrowserLocator";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 import { BrowserArgsBuilder } from "./BrowserArgsBuilder";
 import { Disposable } from "vscode";
@@ -85,7 +85,7 @@ export class BrowserManager implements Disposable {
         private readonly debugConfig: IPcfLaunchConfig,
         private readonly logger: ITelemetry,
         private readonly puppeteerLaunchWrapper = puppeteer.launch
-    ) {}
+    ) { }
 
     /**
      * Registers the callback that is invoked when the browser is closed.

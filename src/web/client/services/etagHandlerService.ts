@@ -9,7 +9,7 @@ import { getCommonHeadersForDataverse } from "../../../common/services/Authentic
 import { httpMethod, ODATA_ETAG, queryParameters } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { PortalsFS } from "../dal/fileSystemProvider";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { getAttributeContent } from "../utilities/commonUtil";
 import {
     getFileEntityEtag,
@@ -74,7 +74,7 @@ export class EtagHandlerService {
                 true,
                 0,
                 undefined,
-                telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE
+                webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE
             );
 
             await WebExtensionContext.dataverseAuthentication();
@@ -90,22 +90,22 @@ export class EtagHandlerService {
 
                 if (currentContent !== latestContent) {
                     WebExtensionContext.telemetry.sendInfoTelemetry(
-                        telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_CHANGED
+                        webExtensionTelemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_CHANGED
                     );
 
                     return latestContent;
                 }
 
                 WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
                 );
             } else if (response.status === 304) {
                 WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_SAME
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_API_ERROR,
                     this.getLatestFileContentAndUpdateMetadata.name,
                     response.statusText
                 );
@@ -134,7 +134,7 @@ export class EtagHandlerService {
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR,
                     this.getLatestFileContentAndUpdateMetadata.name,
                     (error as Error)?.message
                 );
@@ -188,7 +188,7 @@ export class EtagHandlerService {
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_ENTITY_CONTENT_UNEXPECTED_RESPONSE,
                     this.updateFileEtag.name,
                     response.statusText
                 );
@@ -217,7 +217,7 @@ export class EtagHandlerService {
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_ETAG_HANDLER_SERVICE_ERROR,
                     this.updateFileEtag.name,
                     (error as Error)?.message,
                     error as Error

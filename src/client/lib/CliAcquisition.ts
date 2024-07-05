@@ -10,7 +10,7 @@ import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as os from 'os';
 import { Extract } from 'unzip-stream'
-import { ITelemetry } from '../telemetry/ITelemetry';
+import { ITelemetry } from '../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 import find from 'find-process';
 import { spawnSync } from 'child_process';
 import commandExists from 'command-exists';

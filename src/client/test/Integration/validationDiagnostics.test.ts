@@ -11,7 +11,7 @@ import {
 import { expect } from "chai";
 import path from "path";
 import sinon from "sinon";
-import { ITelemetry } from "../../telemetry/ITelemetry";
+import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 
 describe("validationDiagnostics", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -36,7 +36,7 @@ describe("validationDiagnostics", () => {
         const searchByName = true;
         const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName,telemetry);
+        await validateTextDocument(uri, patterns, searchByName, telemetry);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
@@ -60,7 +60,7 @@ describe("validationDiagnostics", () => {
         const searchByName = true;
         const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName,telemetry);
+        await validateTextDocument(uri, patterns, searchByName, telemetry);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
@@ -84,7 +84,7 @@ describe("validationDiagnostics", () => {
         const searchByName = true;
         const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName,telemetry);
+        await validateTextDocument(uri, patterns, searchByName, telemetry);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");
@@ -127,7 +127,7 @@ describe("validationDiagnostics", () => {
         const searchByName = false;
         const telemetry = {} as ITelemetry;
         //Action
-        await validateTextDocument(uri, patterns, searchByName,telemetry);
+        await validateTextDocument(uri, patterns, searchByName, telemetry);
         //Assert
         const connection = await vscode.languages.getDiagnostics();
         expect(connection[0][0].scheme).eq("file");

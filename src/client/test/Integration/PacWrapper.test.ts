@@ -6,7 +6,7 @@
 import { expect } from "chai";
 import { IPacInterop, IPacWrapperContext, PacArguments, PacWrapper } from "../../pac/PacWrapper";
 import { NoopTelemetryInstance } from "../../telemetry/NoopTelemetry";
-import { ITelemetry } from "../../telemetry/ITelemetry";
+import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 
 class MockContext implements IPacWrapperContext {
     public get globalStorageLocalPath(): string { return ""; }
@@ -35,15 +35,15 @@ describe('PacWrapper', () => {
         const interop = new MockPacInterop();
         interop.executeReturnValue = "{\"Status\":\"Success\",\"Errors\":[],\"Information\":[\"Input commands: [\\\"auth\\\",\\\"list\\\"]\",\"Profiles (* indicates active):\"],"
             + "\"Results\":["
-                + "{"
-                    + "\"Index\":1,"
-                    + "\"IsActive\":true,"
-                    + "\"Kind\":\"CDS\","
-                    + "\"Name\":\"cctest\","
-                    + "\"ActiveOrganization\":{\"Item2\":\"https://contoso-mock.crmtest.dynamics.com\",\"Item1\":\"\"},"
-                    + "\"UserDisplayName\":\"bob@contoso.com\","
-                    + "\"CloudInstance\":\"Public\""
-                + "}"
+            + "{"
+            + "\"Index\":1,"
+            + "\"IsActive\":true,"
+            + "\"Kind\":\"CDS\","
+            + "\"Name\":\"cctest\","
+            + "\"ActiveOrganization\":{\"Item2\":\"https://contoso-mock.crmtest.dynamics.com\",\"Item1\":\"\"},"
+            + "\"UserDisplayName\":\"bob@contoso.com\","
+            + "\"CloudInstance\":\"Public\""
+            + "}"
             + "]}";
         const wrapper = new PacWrapper(new MockContext, interop);
 

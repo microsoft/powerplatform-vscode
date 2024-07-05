@@ -5,7 +5,7 @@
 
 import path from "path";
 import { TextDocument, Uri, workspace, WorkspaceFolder } from "vscode";
-import { ITelemetry } from "../client/telemetry/ITelemetry";
+import { ITelemetry } from "../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
 import { SourceMapValidator } from "./SourceMapValidator";
 
@@ -76,8 +76,7 @@ export class BundleLoader {
                 "Could not load file contents"
             );
             throw new Error(
-                `Could not load control '${this.fileName}' with path '${
-                    this.filePath
+                `Could not load control '${this.fileName}' with path '${this.filePath
                 }': ${error instanceof Error ? error.message : error}`
             );
         }

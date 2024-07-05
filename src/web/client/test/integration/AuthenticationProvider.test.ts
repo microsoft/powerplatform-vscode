@@ -10,7 +10,7 @@ import {
     getCommonHeaders,
 } from "../../../../common/services/AuthenticationProvider";
 import vscode from "vscode";
-import * as errorHandler from "../../common/errorHandler";
+import * as errorHandler from "../../../../common/utilities/errorHandlerUtil";
 import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import * as copilotTelemetry from "../../../../common/copilot/telemetry/copilotTelemetry";
 import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
