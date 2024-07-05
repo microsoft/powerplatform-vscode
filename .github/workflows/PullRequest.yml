@@ -29,12 +29,15 @@ jobs:
         lfs: true
 
     - name: Delete node_modules (manual cleanup)
+      if: ${{ runner.os == 'windows-latest' }}
       run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          rd /S /Q node_modules
-        else
-          rm -rf node_modules
-        fi
+        rd /S /Q node_modules
+      shell: powershell
+
+    - name: Delete node_modules (manual cleanup)
+      if: ${{ runner.os != 'windows-latest' }}
+      run: |
+        rm -rf node_modules
       shell: bash
 
     - name: Setup Node.js environment
