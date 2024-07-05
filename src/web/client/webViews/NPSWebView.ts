@@ -50,6 +50,12 @@ export class NPSWebView {
                 surveyUrl
             );
 
+            const npsAccessToken = WebExtensionContext.npsAccessToken;
+            const tid = WebExtensionContext.urlParametersMap?.get(
+                queryParameters.TENANT_ID
+            );
+            const userId = WebExtensionContext.userId;
+
             return `
                 <!DOCTYPE html>
                 <html lang="en">
@@ -84,17 +90,15 @@ export class NPSWebView {
                             const config = {
                                 teamName: ${SurveyConstants.TEAM_NAME},
                                 surveyName: ${SurveyConstants.SURVEY_NAME},
-                                userId: ${WebExtensionContext.userId},
-                                tenantId: ${WebExtensionContext.urlParametersMap.get(queryParameters.TENANT_ID) as string},
+                                userId: "${userId}",
+                                tenantId: "${tid}",
                                 locale: 'en',
                                 width: 520,
                                 uiType: survey.UiType.Modal,
                                 template: survey.Template.NPS,
                                 environment: survey.Environment.INT,
                                 region: survey.Region.World,
-                                accessToken: {
-                                    ${WebExtensionContext.npsAccessToken}
-                                },
+                                accessToken: {getAccessToken: () => "${npsAccessToken}"},
                                 callbackFunctions: {
                                     submitFeedback,
                                     updateFeedback
