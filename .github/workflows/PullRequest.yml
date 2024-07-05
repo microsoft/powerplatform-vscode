@@ -44,7 +44,7 @@ jobs:
     - name: Ensure node_modules directory is clean
       run: |
         if [ -d "node_modules" ]; then
-          if [ "${{ runner.os }}" == "Windows" ]; then
+          if [ "${{ runner.os }}" == "windows-latest" ]; then
             Remove-Item -Recurse -Force "node_modules"
           else
             rm -rf node_modules
