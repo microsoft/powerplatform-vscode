@@ -21,7 +21,6 @@ import {
     TransportKind,
     WorkspaceFolder,
 } from "vscode-languageclient/node";
-import { getPortalsOrgURLs, workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
 import {
     activateDebugger,
     deactivateDebugger,
@@ -41,6 +40,8 @@ import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
 import { IArtemisAPIOrgResponse } from "../common/services/Interfaces";
 import { ArtemisService } from "../common/services/ArtemisService";
+import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
+import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
