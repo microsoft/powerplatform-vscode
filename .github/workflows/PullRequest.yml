@@ -43,7 +43,7 @@ jobs:
 
     - name: Clean up node_modules directory
       run: |
-        if [ -d "node_modules" ]; then
+        if Test-Path node_modules; then
           rm -rf node_modules || rmdir /s /q node_modules
         fi
 
