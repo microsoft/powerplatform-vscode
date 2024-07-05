@@ -33,21 +33,20 @@ jobs:
       with:
         node-version: 18
 
-    # - name: Install dependencies
-    #   run: npm i -g npm
-
-    - name: Authenticate with Azure Artifacts
+    - name: Configure .npmrc for Azure Artifacts
       run: |
-        npx vsts-npm-auth -config .npmrc
-      env:
-        AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
+        echo "@gia:registry=https://msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/" > ~/.npmrc
+        echo "always-auth=true" >> ~/.npmrc
+        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:username=AzureDevOps" >> ~/.npmrc
+        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:_password=$(echo -n ${{ secrets.AZURE_ARTIFACTS_PAT }} | base64)" >> ~/.npmrc
+        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:email=npm@npm.com" >> ~/.npmrc
 
     - name: Build and unit test
       run: |
         npm ci
         npm run dist
       env:
-        AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
+        AZURE_ARTIFACTS_PAT: ${{ secrets.AZURE_ARTIFACTS_PAT }}
 
     - name: Run integration tests
       uses: coactions/setup-xvfb@v1
