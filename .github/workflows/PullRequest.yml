@@ -41,14 +41,10 @@ jobs:
         echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:_password=$(echo -n ${{ secrets.AZ_DevOps_Read_PAT }} | base64)" >> ~/.npmrc
         echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:email=npm@npm.com" >> ~/.npmrc
 
-    - name: Ensure node_modules directory is clean
+    - name: Clean up node_modules directory
       run: |
         if [ -d "node_modules" ]; then
-          if [ "${{ runner.os }}" == "windows-latest" ]; then
-            Remove-Item -Recurse -Force "node_modules"
-          else
-            rm -rf node_modules
-          fi
+          rm -rf node_modules || rmdir /s /q node_modules
         fi
 
     - name: Build and unit test
