@@ -36,6 +36,11 @@ jobs:
     # - name: Install dependencies
     #   run: npm i -g npm
 
+    - name: Authenticate npm registry
+      run: vsts-npm-auth -config .npmrc
+      env:
+        AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
+
     - name: Build and unit test
       run: |
         npm ci
