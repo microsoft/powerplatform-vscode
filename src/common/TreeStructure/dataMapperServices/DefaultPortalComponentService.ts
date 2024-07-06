@@ -49,18 +49,10 @@ export class DefaultPortalComponentService implements IPortalComponentService {
             if (filetype == 'js') {
                 c = '03';
             }
+            if(filetype=='yml'){
+                c='04'
+            }
             const children: IItem[] = [
-                // {
-                //     label: "SourceDependencies",
-                //     title: "SourceDependencies",
-                //     id: `${id}_sourceDependencies`,
-                //     isFile: false,
-                //     content: "",
-                //     path: vscode.Uri.parse(`/${name}/sourceDependencies`),
-                //     component: "",
-                //     children: [],
-                //     error: ""
-                // },
                 {
                     label: `${x}${url}`,
                     title: `${name}.${filetype}`,
@@ -76,7 +68,7 @@ export class DefaultPortalComponentService implements IPortalComponentService {
 
             const item: IItem = {
                 label: name,
-                title: name,
+                title: type,
                 id: id,
                 isFile: false,
                 content: '',

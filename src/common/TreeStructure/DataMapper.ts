@@ -26,13 +26,15 @@ import { IItem } from './TreeView/Types/Entity/IItem';
 import { getDependencies } from './DataParser';
 import { PortalComponentServiceFactory } from "./dataMapperServices/PortalComponentServiceFactory";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { MyReferenceProvider } from "./MyReferenceProvider";
 
 const fs = require('fs');
 const yaml = require("js-yaml");
 const load = yaml.load;
 const fallbackURI = vscode.Uri.file('');
 
-
+export let globalWebsiteIItem: IItem;
+export let globalwebPageIItem: IItem;
 export const treeView = async () => {
   const previewHelper = new PreviewHelper();
   try {
@@ -48,18 +50,28 @@ export const treeView = async () => {
 
     const { allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm } = convertAllMetadataToItems(IPortalMetadataContext, getPath);
     const websiteIItem = await createWebsiteItem(previewHelper);
-    const { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem } = createIndividualItems(allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm);
+    const { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem,webIItem } = createIndividualItems(allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm);
     addWebfileToWebPage(IPortalMetadataContext, allwebPage, allwebFile);
 
     const entityFileMap: Map<string, Set<string>> = new Map();
     addDependencies(webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, entityFileMap);
     addUnUsedFiles(unUsedFileIItem, entityFileMap, webtemplateIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem);
     removeusedOne(unUsedFileIItem, IPortalMetadataContext);
-
+    globalwebPageIItem=webIItem;
     webPageIItem.children = webPageIItem.children.filter(item => item.label === "Home");
     (websiteIItem.children as IItem[]).push(webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem);
 
     console.log(websiteIItem);
+    globalWebsiteIItem = websiteIItem;
+
+    const languages = ['html', 'css', 'javascript', 'json', 'yaml'];
+    languages.forEach(language => {
+      vscode.languages.registerReferenceProvider(
+        { scheme: 'file', language },
+        new MyReferenceProvider()
+      );
+    });
+
     createTree(websiteIItem);
 
     oneDSLoggerWrapper.getLogger().traceInfo("End of tree view creation", {
@@ -70,6 +82,10 @@ export const treeView = async () => {
     console.error('Error:', error);
   }
 };
+vscode.workspace.onDidSaveTextDocument(async (document) => {
+  console.log('Document saved:', document.fileName);
+  await treeView(); // Refresh treeView on document save
+});
 
 function convertAllMetadataToItems(IPortalMetadataContext: any, getPath: any) {
   const allwebTemplate = PortalComponentServiceFactory.getPortalComponent("WebTemplate")?.create(IPortalMetadataContext, getPath) || [];
@@ -190,9 +206,19 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     children: [],
     error: ""
   };
+  const webIItem = {
+    label: 'Web Page',
+    title: 'Web Page',
+    id: '',
+    isFile: false,
+    content: "",
+    path: vscode.Uri.parse(`/WebPage`),
+    component: "2",
+    children: allwebPage,
+    error: ""
+  };
 
-
-  return { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem };
+  return { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem,webIItem };
 }
 
 function addWebfileToWebPage(metadataContext: IPreviewEngineContext, webPageIItem: IItem[], webFileIItem: IItem[]) {
@@ -316,53 +342,53 @@ function processDependencies(sourceDep: IItem, filePath: string, contentSnippetI
     const fileNameOrID = entity.fileNameOrID.replace(/^['"](.*)['"]$/, '$1');
 
     if (tagName === "snippets" || tagName === "snippet" || (tagName === 'editable' && (property === "snippets" || property === "snippet"))) {
-      processEntity(sourceDep, contentSnippetIItem, entity, 'label', entityFileMap);
+      processEntity(sourceDep, contentSnippetIItem, entity, 'label', entityFileMap,'07');
     } else if (tagName === "Template") {
-      processEntity(sourceDep, webtemplateIItem, entity, 'label', entityFileMap);
+      processEntity(sourceDep, webtemplateIItem, entity, 'label', entityFileMap,'08');
     } else if (tagName === "entityform" || tagName === "entity_form") {
       if (property == 'id' && isNaN(fileNameOrID)) {
-        processEntity(sourceDep, entityFormtIItem, entity, 'id', entityFileMap);
+        processEntity(sourceDep, entityFormtIItem, entity, 'id', entityFileMap,'015');
       } else if (property == 'name' || property == 'key') {
-        processEntity(sourceDep, entityFormtIItem, entity, 'label', entityFileMap)
+        processEntity(sourceDep, entityFormtIItem, entity, 'label', entityFileMap,'015')
       } else {
         console.log("Not Valid EnitityForm");
       }
     } else if (tagName === "entitylist" || tagName === "entity_list") {
       if (property == 'id' && isNaN(fileNameOrID)) {
-        processEntity(sourceDep, listIItem, entity, 'id', entityFileMap);
+        processEntity(sourceDep, listIItem, entity, 'id', entityFileMap,'017');
       } else if (property == 'name' || property == 'key') {
-        processEntity(sourceDep, listIItem, entity, 'label', entityFileMap)
+        processEntity(sourceDep, listIItem, entity, 'label', entityFileMap,'017')
       } else {
         console.log("Not Valid EntityList");
       }
     } else if (tagName === "webform") {
       if (property == 'id' && isNaN(fileNameOrID)) {
-        processEntity(sourceDep, webFormIItem, entity, 'id', entityFileMap);
+        processEntity(sourceDep, webFormIItem, entity, 'id', entityFileMap,'019');
       } else if (property == 'name' || property == 'key') {
-        processEntity(sourceDep, webFormIItem, entity, 'label', entityFileMap)
+        processEntity(sourceDep, webFormIItem, entity, 'label', entityFileMap,'019')
       } else {
         console.log("Not Valid WebForm");
       }
     } else if ((tagName != "entityform" && tagName != "entity_form") && (tagName != "entitylist" && tagName != "entity_list")) {
-      entity.hashValue = tagName;
-      processEntity(sourceDep, webtemplateIItem, entity, 'label', entityFileMap);
+      entity.fileNameOrID = tagName;
+      processEntity(sourceDep, webtemplateIItem, entity, 'label', entityFileMap,'08');
     } else {
       console.log("Another Dynamic entity");
     }
   });
 }
 
-function processEntity(sourceDep: IItem, targetIItem: IItem, entity: any, compareBy: string, entityFileMap: Map<string, Set<string>>) {
+function processEntity(sourceDep: IItem, targetIItem: IItem, entity: any, compareBy: string, entityFileMap: Map<string, Set<string>>,comp:string) {
   let exist = false;
   const fileNameOrID = entity.fileNameOrID.replace(/^['"](.*)['"]$/, '$1');
   targetIItem.children.forEach((targetItem: IItem) => {
     const compareValue = compareBy === 'label' ? targetItem.label : targetItem.id;
     if (compareValue === fileNameOrID) {
       exist = true;
-      let fileNameAlready = sourceDep.children.find(child => child.label === targetItem.label);
+      let fileNameAlready = sourceDep.children.find(child => child.label === targetItem.label && child.component===targetItem.component);
       let ht = targetItem.children.find((child: IItem) => child.isFile === true);
       let htLabel = ht?.label ?? '';
-      const item = createItem(`${targetItem.label}`, `${targetItem.label}`, `${targetItem.id}`, true, vscode.Uri.parse(`${targetItem.path}`), '', [], '', '');
+      const item = createItem(`${targetItem.label}`, `Source-Dependencies`, `${targetItem.id}`, true, vscode.Uri.parse(`/inside treeItem`), comp, [], '', '');
       if (!entityFileMap.has(targetIItem.label)) {
         entityFileMap.set(targetIItem.label, new Set());
       }
@@ -454,8 +480,8 @@ export class PreviewHelper {
   constructor() {
     this.isBootstrapV5 = false;
     this.previewHelper = {};
-    this.pathroot = PortalWebView.getPortalRootFolder();
-    // this.pathroot = vscode.Uri.file('C:/Users/t-mansisingh/OneDrive - Microsoft/Desktop/clone2/mansi-site-1---site-ajx90');
+    // this.pathroot = PortalWebView.getPortalRootFolder();
+    this.pathroot = vscode.Uri.file('C:/Users/t-mansisingh/OneDrive - Microsoft/Desktop/clone2/mansi-site-1---site-ajx90');
     this.websiteData = {} as Website;
   }
 

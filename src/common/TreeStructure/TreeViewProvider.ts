@@ -9,39 +9,70 @@ class MyTreeItem extends vscode.TreeItem {
     this.tooltip = `${this.item.title}`;
     this.description = this.item.content;
     this.iconPath = this.getIconPath(item);
+    this.contextValue = this.item.isFile ? 'file' : 'folder';
+    this.command = this.getCommand(item);
   }
 
-  contextValue = this.item.isFile ? 'file' : 'folder';
-
-  command = this.item.isFile ? {
-    title: 'Open File',
-    command: 'extension.openFile',
-    arguments: [this.item]
-  } : undefined;
+  private getCommand(item: IItem): vscode.Command | undefined {
+    if (item.isFile && item.title === 'Source-Dependencies') {
+      return {
+        title: 'Item Clicked',
+        command: 'extension.itemClicked',
+        arguments: [item]
+      };
+    } else if (item.isFile) {
+      return {
+        title: 'Open File',
+        command: 'extension.openFile',
+        arguments: [item]
+      };
+    }
+    return undefined;
+  }
 
   private getIconPath(item: IItem): { light: string, dark: string } | vscode.ThemeIcon {
     const basePath = path.join(__dirname, '..', 'src', 'client', 'portal_fileicons', 'icons');
 
     if (item.isFile) {
-      // switch (item.component) {
-      // case "01": // HTML
-      //     return {
-      //         light: path.join(basePath, 'light', 'tag.svg'),
-      //         dark: path.join(basePath, 'dark', 'tag.svg')
-      //     };
-      // case "02": // CSS
-      //     return {
-      //       light: path.join(basePath, 'light', 'file-css'),
-      //       dark: path.join(basePath, 'dark', 'file-css')
-      //     };
-      // case "03": // JSON
-      //     return {
-      //       light: path.join(basePath, 'light', 'file-js'),
-      //       dark: path.join(basePath, 'dark', 'file-js')
-      //     };
-      // default:
-      return new vscode.ThemeIcon('file');
-      // }
+      switch (item.component) {
+        case "01": // HTML
+          return {
+            light: path.join(basePath, 'dark', 'html.svg'),
+            dark: path.join(basePath, 'dark', 'html.svg')
+          };
+        case "02": // CSS
+          return {
+            light: path.join(basePath, 'dark', 'css.svg'),
+            dark: path.join(basePath, 'dark', 'css.svg')
+          };
+        case "03": // JSON
+          return {
+            light: path.join(basePath, 'dark', 'js.svg'),
+            dark: path.join(basePath, 'dark', 'js.svg')
+          };
+        case "04": // YML
+          return {
+            light: path.join(basePath, 'dark', 'yml.svg'),
+            dark: path.join(basePath, 'dark', 'yml.svg')
+          };
+        case "05": // PNG
+          return {
+            light: path.join(basePath, 'dark', 'png.svg'),
+            dark: path.join(basePath, 'dark', 'png.svg')
+          };
+        case "06": // YML
+          return {
+            light: path.join(basePath, 'dark', 'json.svg'),
+            dark: path.join(basePath, 'dark', 'json.svg')
+          };
+        case "09": // MP4
+          return {
+            light: path.join(basePath, 'dark', 'mp4.svg'),
+            dark: path.join(basePath, 'dark', 'mp4.svg')
+          };
+        default:
+          return new vscode.ThemeIcon('file');
+      }
     } else {
       switch (item.component) {
         case "1": // Website
@@ -140,11 +171,68 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
   private getItemChildren(item: IItem): MyTreeItem[] {
     return item.children.map(child => new MyTreeItem(child, child.children.length > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None));
   }
-}
 
+  getParent(element: MyTreeItem): MyTreeItem | undefined {
+    const parentItem = this.findParentItem(this.data[0], element.item);
+    if (parentItem) {
+      return new MyTreeItem(parentItem, vscode.TreeItemCollapsibleState.Collapsed);
+    }
+    return undefined;
+  }
+
+  private findParentItem(currentItem: IItem, targetItem: IItem): IItem | undefined {
+    if (!currentItem || !currentItem.children) {
+      return undefined;
+    }
+    const foundChild = currentItem.children.find(child => child.id === targetItem.id && child.title === targetItem.title);
+    if (foundChild) {
+      return currentItem;
+    }
+    for (const child of currentItem.children) {
+      const parentItem = this.findParentItem(child, targetItem);
+      if (parentItem) {
+        return parentItem;
+      }
+    }
+
+    return undefined;
+  }
+
+  findItemById(item: IItem, websiteIItem: IItem): IItem | undefined {
+    const comp = item.component.slice(1);
+    console.log(comp);
+    if (comp == '7') {
+      const contentSnipppetIItem = websiteIItem.children.find((child: IItem) => child.label === 'Content Snippet');
+      return helper(item, contentSnipppetIItem);
+    } else if (comp == '8') {
+      const webTemplateIItem = websiteIItem.children.find((child: IItem) => child.label === 'Web Template');
+      return helper(item, webTemplateIItem);
+    } else if (comp == '15') {
+      const entityFormIItem = websiteIItem.children.find((child: IItem) => child.label === 'Basic Forms');
+      return helper(item, entityFormIItem);
+    } else if (comp == '17') {
+      const listsIItem = websiteIItem.children.find((child: IItem) => child.label === 'Lists');
+      return helper(item, listsIItem);
+    } else if (comp == '19') {
+      const webformIItem = websiteIItem.children.find((child: IItem) => child.label === 'Advanced Forms');
+      return helper(item, webformIItem);
+    } else {
+      return undefined;
+    }
+  }
+}
+function helper(item: IItem, entityIItem: any) {
+  for (const child of entityIItem.children) {
+    if (child.id == item.id) {
+      return child;
+    }
+  }
+  return undefined;
+}
 export function createTree(websiteIItem: IItem) {
   const treeDataProvider = new MyTreeDataProvider([websiteIItem]);
-  vscode.window.registerTreeDataProvider('exampleView', treeDataProvider);
+  const treeView = vscode.window.createTreeView('exampleView', { treeDataProvider });
+  // vscode.window.registerTreeDataProvider('exampleView', treeDataProvider);
 
   vscode.commands.registerCommand('extension.openWebpage', (webpageName: string) => {
     vscode.window.showInformationMessage(`Opening Webpage: ${webpageName}`);
@@ -172,6 +260,14 @@ export function createTree(websiteIItem: IItem) {
     } catch (error) {
       console.error('Error opening file:', error);
       vscode.window.showErrorMessage('Error opening file');
+    }
+  });
+  vscode.commands.registerCommand('extension.itemClicked', (item: IItem) => {
+    const foundItem = treeDataProvider.findItemById(item, websiteIItem);
+    console.log(foundItem);
+    if (foundItem && !foundItem.isFile) {
+      const treeItem = new MyTreeItem(foundItem, foundItem.children.length > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
+      treeView.reveal(treeItem, { focus: true, expand: true });
     }
   });
 }
