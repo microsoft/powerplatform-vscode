@@ -49,6 +49,8 @@ export const treeView = async () => {
     });
 
     const { allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm } = convertAllMetadataToItems(IPortalMetadataContext, getPath);
+    oneDSLoggerWrapper.getLogger().traceInfo("End of IPortalMetadata creation", {
+      "timeNow": performance.now()});
     const websiteIItem = await createWebsiteItem(previewHelper);
     const { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem,webIItem } = createIndividualItems(allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm);
     addWebfileToWebPage(IPortalMetadataContext, allwebPage, allwebFile);

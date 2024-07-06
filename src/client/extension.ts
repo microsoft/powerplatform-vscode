@@ -73,7 +73,6 @@ export async function activate(
     oneDSLoggerWrapper.getLogger().traceInfo("Instantiating tree view", {
         "instantiate": performance.now()
     });
-
     await treeView();
 
     _telemetry.sendTelemetryEvent("Start", {
