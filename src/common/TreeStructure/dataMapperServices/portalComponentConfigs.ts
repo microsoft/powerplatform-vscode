@@ -4,6 +4,7 @@ export const contentSnippetConfig = {
   nameField: "adx_name",
   url: ".en-US.contentsnippet.value.html",
   fileType: "html",
+  comp: "/7",
   getItems: (metadataContext: any) => metadataContext.contentSnippets
 };
 
@@ -13,6 +14,7 @@ export const webTemplateConfig = {
   nameField: "adx_name",
   url: ".webtemplate.source.html",
   fileType: "html",
+  comp: "/8",
   getItems: (metadataContext: any) => metadataContext.webTemplates,
 };
 
@@ -22,6 +24,7 @@ export const listConfig = {
   nameField: "adx_name",
   url: ".list.custom_javascript.js",
   fileType: "js",
+  comp: "/17",
   getItems: (metadataContext: any) => metadataContext.entityLists,
 };
 
@@ -31,6 +34,7 @@ export const entityFormConfig = {
   nameField: "adx_name",
   url: ".basicform.custom_javascript.js",
   fileType: "js",
+  comp: "/15",
   getItems: (metadataContext: any) => metadataContext.entityForms,
 };
 
@@ -40,5 +44,6 @@ export const webFormConfig = {
   nameField: "adx_name",
   url: ".advancedform.yml",
   fileType: "yml",
+  comp: "/9",
   getItems: (metadataContext: any) => metadataContext.webForms,
 };

@@ -11,6 +11,7 @@ interface PortalComponentConfig {
     nameField: string;
     url: string;
     fileType: string,
+    comp: string,
     getItems: (metadataContext: any) => any[];
 }
 
@@ -35,13 +36,12 @@ export class DefaultPortalComponentService implements IPortalComponentService {
             const type = this.config.type;
             const url = this.config.url;
             const filetype = this.config.fileType;
+            const comp = this.config.comp;
             let x = name.replace(/[/\s]+/g, '-');
             let y = x.toLowerCase();
-            // let z = x.toLowerCase();
             let c = '01';
             if (type == 'lists') {
                 y = '';
-                // z=`${y}/${x}${url}`;
             }
             if (type == 'basic-forms') {
                 x = y;
@@ -49,8 +49,8 @@ export class DefaultPortalComponentService implements IPortalComponentService {
             if (filetype == 'js') {
                 c = '03';
             }
-            if(filetype=='yml'){
-                c='04'
+            if (filetype == 'yml') {
+                c = '04'
             }
             const children: IItem[] = [
                 {
@@ -73,7 +73,7 @@ export class DefaultPortalComponentService implements IPortalComponentService {
                 isFile: false,
                 content: '',
                 path: vscode.Uri.parse(`${getPath.path}/${type}/${y}`),
-                component: "",
+                component: comp,
                 children: children,
                 error: ""
             };

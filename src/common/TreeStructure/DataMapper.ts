@@ -2,8 +2,6 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-const { Tokenizer } = require('liquidjs')
-import * as path from "path";
 import * as vscode from 'vscode';
 import { IPreviewEngineContext } from './TreeView/Utils/IDataResolver';
 import { Webpage } from './TreeView/Types/Entity/WebPage';
@@ -202,7 +200,7 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     isFile: false,
     content: "",
     path: vscode.Uri.parse(`/unused-files`),
-    component: "",
+    component: "20",
     children: [],
     error: ""
   };
@@ -275,7 +273,7 @@ function addDependenciesToIItem(entityIItem: IItem, contentSnippetIItem: IItem, 
   entityIItem.children.forEach((item: IItem) => {
     let sourceDep = item.children.find((child: IItem) => child.isFile === false);
     if (!sourceDep) {
-      sourceDep = createItem(`Source Dependencies`, `Uses & UsedBy ${item.label}`, '', false, vscode.Uri.parse(''), "", [], "");
+      sourceDep = createItem(`Source Dependencies`, `Uses & UsedBy ${item.label}`, '', false, vscode.Uri.parse(''), "21", [], "");
     }
     const htOrJsFile = item.children.find((child: IItem) => child.isFile === true);
     const filePath = htOrJsFile?.path?.fsPath;
@@ -315,7 +313,7 @@ function handleChildItem(child: IItem | undefined, contentSnippetIItem: IItem, w
     let sourceDep = child.children.find((child: IItem) => child.isFile === false);
 
     if (!sourceDep) {
-      sourceDep = createItem("Dependencies", "Dependencies", '', false, vscode.Uri.parse(''), "", [], "");
+      sourceDep = createItem("Dependencies", "Dependencies", '', false, vscode.Uri.parse(''), "21", [], "");
     }
     if (filePath && sourceDep) {
       processDependencies(sourceDep, filePath, contentSnippetIItem, webtemplateIItem, entityFormtIItem, listIItem, webFormIItem, entityFileMap, jsFilePath);
@@ -369,7 +367,7 @@ function processDependencies(sourceDep: IItem, filePath: string, contentSnippetI
       } else {
         console.log("Not Valid WebForm");
       }
-    } else if ((tagName != "entityform" && tagName != "entity_form") && (tagName != "entitylist" && tagName != "entity_list")) {
+    } else if ((tagName != "entityform" && tagName != "entity_form") && (tagName != "entitylist" && tagName != "entity_list") && tagName!=="editable") {
       entity.fileNameOrID = tagName;
       processEntity(sourceDep, webtemplateIItem, entity, 'label', entityFileMap,'08');
     } else {
@@ -385,7 +383,7 @@ function processEntity(sourceDep: IItem, targetIItem: IItem, entity: any, compar
     const compareValue = compareBy === 'label' ? targetItem.label : targetItem.id;
     if (compareValue === fileNameOrID) {
       exist = true;
-      let fileNameAlready = sourceDep.children.find(child => child.label === targetItem.label && child.component===targetItem.component);
+      let fileNameAlready = sourceDep.children.find(child => (child.label === targetItem.label && child.component.slice(1)===targetItem.component.slice(1)));
       let ht = targetItem.children.find((child: IItem) => child.isFile === true);
       let htLabel = ht?.label ?? '';
       const item = createItem(`${targetItem.label}`, `Source-Dependencies`, `${targetItem.id}`, true, vscode.Uri.parse(`/inside treeItem`), comp, [], '', '');
@@ -406,26 +404,6 @@ function processEntity(sourceDep: IItem, targetIItem: IItem, entity: any, compar
     }
   }
 }
-
-// function processEntity(sourceDep: IItem, targetIItem: IItem, entity: any, compareBy: string) {
-//   targetIItem.children.forEach((targetItem: IItem) => {
-//     const fileNameOrID = entity.fileNameOrID.replace(/^['"](.*)['"]$/, '$1');
-//     const compareValue = compareBy === 'label' ? targetItem.label : targetItem.id;
-//     if (compareValue === fileNameOrID) {
-//       let ht = targetItem.children.find((child: IItem) => child.isFile === true);
-//       let htalready = sourceDep.children.find(child => child.label === ht?.label);
-//       let htLabel = ht?.label ?? '';
-//       if (!entityFileMap.has(targetIItem.label)) {
-//         entityFileMap.set(targetIItem.label, new Set());
-//       }
-//       entityFileMap.get(targetIItem.label)?.add(htLabel);
-//       if (ht && !htalready) {
-//         sourceDep.children.push(ht);
-//       }
-//     }
-//   });
-// }
-
 
 
 function addUnUsedFiles(unUsedFileIItem: IItem, entityFileMap: Map<string, Set<string>>, webtemplateIItem: IItem, contentSnippetIItem: IItem, listIItem: IItem, entityFormtIItem: IItem, webFormIItem: IItem) {

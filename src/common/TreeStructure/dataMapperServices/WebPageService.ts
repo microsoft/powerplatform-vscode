@@ -25,7 +25,7 @@ export class WebPageService implements IPortalComponentService {
                 let x = str.replace(/\s+/g, '-');
                 let y = x.toLowerCase();
                 const [pageCopy, cssItem, jsItem, pageSummary] = createCopyItems(webpage, getPath, y, x);
-                const webpageItem = createItem(webpage.adx_name, webpage.adx_name, webpage.adx_webpageid, false, vscode.Uri.parse(`/${webpage.adx_name}`), "", [pageCopy, cssItem, jsItem, pageSummary]);
+                const webpageItem = createItem(webpage.adx_name, webpage.adx_name, webpage.adx_webpageid, false, vscode.Uri.parse(`/${webpage.adx_name}`), "/2", [pageCopy, cssItem, jsItem, pageSummary]);
                 items.push(webpageItem);
             } else {
                 contentPage.push(webpage);

@@ -60,7 +60,7 @@ class MyTreeItem extends vscode.TreeItem {
             light: path.join(basePath, 'dark', 'png.svg'),
             dark: path.join(basePath, 'dark', 'png.svg')
           };
-        case "06": // YML
+        case "06": // Json
           return {
             light: path.join(basePath, 'dark', 'json.svg'),
             dark: path.join(basePath, 'dark', 'json.svg')
@@ -200,7 +200,6 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
 
   findItemById(item: IItem, websiteIItem: IItem): IItem | undefined {
     const comp = item.component.slice(1);
-    console.log(comp);
     if (comp == '7') {
       const contentSnipppetIItem = websiteIItem.children.find((child: IItem) => child.label === 'Content Snippet');
       return helper(item, contentSnipppetIItem);
@@ -232,7 +231,6 @@ function helper(item: IItem, entityIItem: any) {
 export function createTree(websiteIItem: IItem) {
   const treeDataProvider = new MyTreeDataProvider([websiteIItem]);
   const treeView = vscode.window.createTreeView('exampleView', { treeDataProvider });
-  // vscode.window.registerTreeDataProvider('exampleView', treeDataProvider);
 
   vscode.commands.registerCommand('extension.openWebpage', (webpageName: string) => {
     vscode.window.showInformationMessage(`Opening Webpage: ${webpageName}`);
@@ -249,8 +247,6 @@ export function createTree(websiteIItem: IItem) {
         } else if (pathString.endsWith('.png') || pathString.endsWith('.jpg') || pathString.endsWith('.jpeg') || pathString.endsWith('.gif') || pathString.endsWith('.mp4')) {
           await vscode.commands.executeCommand('vscode.open', item.path);
         } else {
-          // const document = await vscode.workspace.openTextDocument({ content: item.content, language: 'plaintext' });
-          // await vscode.window.showTextDocument(document);
           await vscode.commands.executeCommand('revealInExplorer', item.path);
         }
       } else {

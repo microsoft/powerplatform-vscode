@@ -34,12 +34,12 @@ export class MyReferenceProvider implements vscode.ReferenceProvider {
         if (dependencies.length === 0) {
             findText(selectedText, globalWebsiteIItem, locations);
         } else {
-            helper(dependencies, globalWebsiteIItem, locations, selectedTextLine);
+            processDependencies(dependencies, globalWebsiteIItem, locations, selectedTextLine);
         }
         return locations;
     }
 }
-function findText(selectedText: string,globalWebsiteIItem: IItem, locations: vscode.Location[]){
+function findText(selectedText: string, globalWebsiteIItem: IItem, locations: vscode.Location[]) {
     for (const entityIItem of globalWebsiteIItem.children) {
         if (entityIItem.label == 'Web Page') {
             globalwebPageIItem.children.forEach((item: IItem) => {
@@ -49,20 +49,20 @@ function findText(selectedText: string,globalWebsiteIItem: IItem, locations: vsc
                 const cppgcy = cp?.children.find(child => child.label === "Page Copy");
                 const cppgsy = cp?.children.find(child => child.label === "Page Summary");
 
-                helperforText(pgcy, selectedText, locations);
-                helperforText(pgsy, selectedText, locations);
-                helperforText(cppgcy, selectedText, locations);
-                helperforText(cppgsy, selectedText, locations);
+                findTextInFile(pgcy, selectedText, locations);
+                findTextInFile(pgsy, selectedText, locations);
+                findTextInFile(cppgcy, selectedText, locations);
+                findTextInFile(cppgsy, selectedText, locations);
             })
         } else {
             for (const iitem of entityIItem.children) {
-                helperforText(iitem, selectedText, locations);
+                findTextInFile(iitem, selectedText, locations);
             }
         }
     }
 }
 
-function helperforText(entityIItem: any, selectedText: any, locations: vscode.Location[]) {
+function findTextInFile(entityIItem: any, selectedText: any, locations: vscode.Location[]) {
     let file = entityIItem.children.find((child: IItem) => child.isFile === true);
     const filePath = file?.path?.fsPath;
     if (!filePath) {
@@ -87,7 +87,7 @@ function helperforText(entityIItem: any, selectedText: any, locations: vscode.Lo
     }
 }
 
-function helper(dependencies: DyanmicEntity[], globalWebsiteIItem: IItem, locations: vscode.Location[], selectedText: string) {
+function processDependencies(dependencies: DyanmicEntity[], globalWebsiteIItem: IItem, locations: vscode.Location[], selectedText: string) {
     dependencies.forEach((entity: any) => {
         for (const entityIItem of globalWebsiteIItem.children) {
             if (entityIItem.label == 'Web Page') {
@@ -98,62 +98,62 @@ function helper(dependencies: DyanmicEntity[], globalWebsiteIItem: IItem, locati
                     const cppgcy = cp?.children.find(child => child.label === "Page Copy");
                     const cppgsy = cp?.children.find(child => child.label === "Page Summary");
 
-                    helper1(pgcy, entity, locations);
-                    helper1(pgsy, entity, locations);
-                    helper1(cppgcy, entity, locations);
-                    helper1(cppgsy, entity, locations);
+                    checkAndAddLocations(pgcy, entity, locations);
+                    checkAndAddLocations(pgsy, entity, locations);
+                    checkAndAddLocations(cppgcy, entity, locations);
+                    checkAndAddLocations(cppgsy, entity, locations);
                 })
             } else {
                 for (const iitem of entityIItem.children) {
-                    helper1(iitem, entity, locations);
+                    checkAndAddLocations(iitem, entity, locations);
                 }
             }
         }
     })
 }
 
-function helper1(entityIItem: any, entity: any, locations: vscode.Location[]) {
+function checkAndAddLocations(entityIItem: any, entity: any, locations: vscode.Location[]) {
     const tagName = entity.tagName.replace(/^['"](.*)['"]$/, '$1');
     const property = entity.property.replace(/^['"](.*)['"]$/, '$1');
     const fileNameOrID = entity.fileNameOrID.replace(/^['"](.*)['"]$/, '$1');
     if (tagName === "snippets" || tagName === "snippet" || (tagName === 'editable' && (property === "snippets" || property === "snippet"))) {
-        helper2(entityIItem, entity, 'label', locations, '07');
+        addLocations(entityIItem, entity, 'label', locations, '07');
     } else if (tagName === "Template") {
-        helper2(entityIItem, entity, 'label', locations, '08');
+        addLocations(entityIItem, entity, 'label', locations, '08');
     } else if (tagName === "entityform" || tagName === "entity_form") {
         if (property === 'id' && isNaN(fileNameOrID)) {
-            helper2(entityIItem, entity, 'id', locations, '015');
+            addLocations(entityIItem, entity, 'id', locations, '015');
         } else if (property === 'name' || property === 'key') {
-            helper2(entityIItem, entity, 'label', locations, '015');
+            addLocations(entityIItem, entity, 'label', locations, '015');
         } else {
             console.log("Not Valid EntityForm");
         }
     } else if (tagName === "entitylist" || tagName === "entity_list") {
         if (property === 'id' && isNaN(fileNameOrID)) {
-            helper2(entityIItem, entity, 'id', locations, '017');
+            addLocations(entityIItem, entity, 'id', locations, '017');
         } else if (property === 'name' || property === 'key') {
-            helper2(entityIItem, entity, 'label', locations, '017');
+            addLocations(entityIItem, entity, 'label', locations, '017');
         } else {
             console.log("Not Valid EntityList");
         }
     } else if (tagName === "webform") {
         if (property === 'id' && isNaN(fileNameOrID)) {
-            helper2(entityIItem, entity, 'id', locations, '019');
+            addLocations(entityIItem, entity, 'id', locations, '019');
         } else if (property === 'name' || property === 'key') {
-            helper2(entityIItem, entity, 'label', locations, '019');
+            addLocations(entityIItem, entity, 'label', locations, '019');
         } else {
             console.log("Not Valid WebForm");
         }
-    } else if ((tagName !== "entityform" && tagName !== "entity_form") && (tagName !== "entitylist" && tagName !== "entity_list")) {
+    } else if ((tagName !== "entityform" && tagName !== "entity_form") && (tagName !== "entitylist" && tagName !== "entity_list") && tagName !== "editable") {
         entity.fileNameOrID = tagName;
-        helper2(entityIItem, entity, 'label', locations, '08');
+        addLocations(entityIItem, entity, 'label', locations, '08');
     } else {
         console.log("Another Dynamic entity");
     }
 }
 
 
-function helper2(entityIItem: IItem, entity: DyanmicEntity, compareBy: string, locations: vscode.Location[], comp: string) {
+function addLocations(entityIItem: IItem, entity: DyanmicEntity, compareBy: string, locations: vscode.Location[], comp: string) {
     let sourceDep = entityIItem.children.find((child: IItem) => child.isFile === false);
     let file = entityIItem.children.find((child: IItem) => child.isFile === true);
     if (sourceDep) {
@@ -191,13 +191,13 @@ function addFileLocations(file: IItem, locations: vscode.Location[], entity: Dya
                     let tag = de.tagName.replace(/^['"](.*)['"]$/, '$1');
                     const pro = de.property.replace(/^['"](.*)['"]$/, '$1');
                     let fn = de.fileNameOrID?.replace(/^['"](.*)['"]$/, '$1');
-                    if (tag!=='snippets' && tag!=='snippet' && tag!=='editable' && tag!=='Template' && tag !== "webform"  && tag !== "entityform" && tag !== "entity_form" && tag !== "entitylist" && tag !== "entity_list") {
+                    if (tag !== 'snippets' && tag !== 'snippet' && tag !== 'editable' && tag !== 'Template' && tag !== "webform" && tag !== "entityform" && tag !== "entity_form" && tag !== "entitylist" && tag !== "entity_list") {
                         fn = tag;
-                        tag='Template';
+                        tag = 'Template';
                     }
-                    if (tagName!=='snippets' && tagName!=='snippet' && tagName!=='editable' && tagName!=='Template' && tagName !== "webform"  && tagName !== "entityform" && tagName !== "entity_form" && tagName !== "entitylist" && tagName !== "entity_list") {
+                    if (tagName !== 'snippets' && tagName !== 'snippet' && tagName !== 'editable' && tagName !== 'Template' && tagName !== "webform" && tagName !== "entityform" && tagName !== "entity_form" && tagName !== "entitylist" && tagName !== "entity_list") {
                         file = tagName;
-                        tagName='Template';
+                        tagName = 'Template';
                     }
                     if (tag == tagName && fn == file) {
                         const entityPosition = new vscode.Position(i, 0);
