@@ -6,8 +6,8 @@
 import { GetAuthProfileWatchPattern } from "../client/lib/AuthPanelView";
 import { PacWrapper } from "../client/pac/PacWrapper";
 import * as vscode from "vscode";
-import { PAC_SUCCESS } from "./copilot/constants";
 import { ActiveOrgOutput } from "../client/pac/PacTypes";
+import { PAC_SUCCESS } from "./CommonConstants";
 
 export const orgChangeEventEmitter = new vscode.EventEmitter<ActiveOrgOutput>();
 export const orgChangeEvent = orgChangeEventEmitter.event;

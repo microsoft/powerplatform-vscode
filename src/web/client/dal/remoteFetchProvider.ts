@@ -33,7 +33,7 @@ import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEn
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
-import { ERRORS } from "../../../common/ErrorConstants";
+import { ERRORS } from "../../../common/CommonConstants";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,

@@ -53,3 +53,4 @@ export const ERRORS = {
     BULKHEAD_LIMITS_EXCEEDED: "Bulkhead queue limits exceeded",
     NPS_FAILED_AUTH: "Failed to authenticate with NPS"
 };
+export const PAC_SUCCESS = "Success";

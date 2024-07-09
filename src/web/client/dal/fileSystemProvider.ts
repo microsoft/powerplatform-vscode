@@ -31,7 +31,7 @@ import {
 } from "../utilities/fileAndEntityUtil";
 import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
-import { ERRORS } from "../../../common/ErrorConstants";
+import { ERRORS } from "../../../common/CommonConstants";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
