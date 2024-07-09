@@ -286,13 +286,11 @@ export function createTree(websiteIItem: IItem) {
         await vscode.window.showTextDocument(document);
       }
     } catch (error) {
-      console.error('Error opening file:', error);
-      vscode.window.showErrorMessage('Error opening file');
+      vscode.window.showErrorMessage(`${item.title} ${item.id} does not exist`);
     }
   });
   vscode.commands.registerCommand('extension.itemClicked', (item: IItem) => {
     const foundItem = treeDataProvider.findItemById(item, websiteIItem);
-    console.log(foundItem);
     if (foundItem && !foundItem.isFile) {
       const treeItem = new MyTreeItem(foundItem, foundItem.children.length > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
       treeView.reveal(treeItem, { focus: true, expand: true });

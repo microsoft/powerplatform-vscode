@@ -24,8 +24,9 @@ import { IItem } from './TreeView/Types/Entity/IItem';
 import { getDependencies } from './DataParser';
 import { PortalComponentServiceFactory } from "./dataMapperServices/PortalComponentServiceFactory";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { MyReferenceProvider } from "./giveReferrence";
+import { MyReferenceProvider } from "./MyReferenceProvider";
 import { generateJsonFromIItem } from './CovertIItemToJson';
+import { contentPage } from './dataMapperServices/WebPageService';
 
 const fs = require('fs');
 const yaml = require("js-yaml");
@@ -34,7 +35,6 @@ const fallbackURI = vscode.Uri.file('');
 
 export let globalWebsiteIItem: IItem;
 export let globalwebPageIItem: IItem;
-export const referrenceMap: Map<string, IItem[]> = new Map();
 
 export const treeView = async () => {
   const previewHelper = new PreviewHelper();
@@ -53,11 +53,14 @@ export const treeView = async () => {
     const websiteIItem = await createWebsiteItem(previewHelper);
     const { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem, webIItem } = createIndividualItems(allwebTemplate, allwebPage, allwebFile, allcontentSnippet, alllist, allentityForm, allwebForm);
     addWebfileToWebPage(IPortalMetadataContext, allwebPage, allwebFile);
+    addPageTemplate(IPortalMetadataContext,contentPage, allwebPage, allwebTemplate);
 
     const entityFileMap: Map<string, Set<string>> = new Map();
+
     addDependencies(webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, entityFileMap);
     addUnUsedFiles(unUsedFileIItem, entityFileMap, webtemplateIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem);
     removeusedOne(unUsedFileIItem, IPortalMetadataContext);
+
     globalwebPageIItem = webIItem;
     webPageIItem.children = webPageIItem.children.filter(item => item.label === "Home");
     (websiteIItem.children as IItem[]).push(webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem);
@@ -74,9 +77,8 @@ export const treeView = async () => {
     });
 
     createTree(websiteIItem);
-    console.log(referrenceMap);
-    // const jsonObject = generateJsonFromIItem(websiteIItem);
-    // console.log(JSON.stringify(jsonObject, null, 2));
+    const jsonObject = generateJsonFromIItem(websiteIItem);
+    console.log(JSON.stringify(jsonObject, null, 2));
 
     oneDSLoggerWrapper.getLogger().traceInfo("End of tree view creation", {
       "timeNow": performance.now()
@@ -87,7 +89,6 @@ export const treeView = async () => {
   }
 };
 vscode.workspace.onDidSaveTextDocument(async (document) => {
-  console.log('Document saved:', document.fileName);
   await treeView(); // Refresh treeView on document save
 });
 
@@ -113,7 +114,8 @@ async function createWebsiteItem(previewHelper: PreviewHelper) {
     path: vscode.Uri.parse(`/${web.adx_name}`),
     component: "1",
     children: [],
-    error: ""
+    error: "",
+    parentList: []
   };
 }
 
@@ -127,7 +129,8 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     path: vscode.Uri.parse(`/WebTemplate`),
     component: "8",
     children: allwebTemplate,
-    error: ""
+    error: "",
+    parentList: []
   };
 
   const webPageIItem = {
@@ -139,7 +142,8 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     path: vscode.Uri.parse(`/WebPage`),
     component: "2",
     children: allwebPage,
-    error: ""
+    error: "",
+    parentList: []
   };
 
   const webFileIItem = {
@@ -151,7 +155,8 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     path: vscode.Uri.parse(`/webFile`),
     component: "3",
     children: allwebFile,
-    error: ""
+    error: "",
+    parentList: []
   };
   const contentSnippetIItem = {
     label: 'Content Snippets',
@@ -162,7 +167,8 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     path: vscode.Uri.parse(`/contentSnippet`),
     component: "7",
     children: allcontentSnippet,
-    error: ""
+    error: "",
+    parentList: []
   };
   const listIItem = {
     label: 'Lists',
@@ -173,7 +179,8 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     path: vscode.Uri.parse(`/lists`),
     component: "17",
     children: alllist,
-    error: ""
+    error: "",
+    parentList: []
   };
 
   const entityFormtIItem = {
@@ -185,7 +192,8 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     path: vscode.Uri.parse(`/basic-forms`),
     component: "15",
     children: allentityForm,
-    error: ""
+    error: "",
+    parentList: []
   };
 
   const webFormIItem = {
@@ -197,7 +205,8 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     path: vscode.Uri.parse(`/advanced-forms`),
     component: "19",
     children: allwebForm,
-    error: ""
+    error: "",
+    parentList: []
   };
   const unUsedFileIItem = {
     label: 'Unused Components',
@@ -208,7 +217,8 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     path: vscode.Uri.parse(`/unused-files`),
     component: "20",
     children: [],
-    error: ""
+    error: "",
+    parentList: []
   };
   const webIItem = {
     label: 'Web Pages',
@@ -219,7 +229,8 @@ function createIndividualItems(allwebTemplate: IItem[], allwebPage: IItem[], all
     path: vscode.Uri.parse(`/WebPage`),
     component: "2",
     children: allwebPage,
-    error: ""
+    error: "",
+    parentList: []
   };
 
   return { webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem, webIItem };
@@ -251,7 +262,7 @@ function addWebfileToWebPage(metadataContext: IPreviewEngineContext, webPageIIte
   });
 }
 
-function createItem(label: string, title: string, id: string, isFile: boolean, path: vscode.Uri, component: string, children: IItem[] = [], content: string = '', error: string = ''): IItem {
+function createItem(label: string, title: string, id: string, isFile: boolean, path: vscode.Uri, component: string, children: IItem[] = [], content: string = '', error: string = '', parentList: IItem[] = []): IItem {
   return {
     label,
     title,
@@ -262,9 +273,64 @@ function createItem(label: string, title: string, id: string, isFile: boolean, p
     component,
     children,
     error,
+    parentList,
   };
 }
 
+function addPageTemplate(IPortalMetadataContext: any, contentPage: Webpage[], webPageIItem: IItem[], webTemplateIITem: IItem[]) {
+  const pageTemplate: PageTemplate[] | undefined = IPortalMetadataContext.pageTemplates;
+  const webpages: Webpage[] | undefined = IPortalMetadataContext.webpages;
+  pageTemplate?.forEach(pg => {
+    const pgid = pg.adx_pagetemplateid;
+    webpages?.forEach(webpage => {
+      const wbpgid = webpage.adx_pagetemplateid;
+      const webPageId=webpage.adx_webpageid;
+      if (wbpgid == pgid) {
+        const webPage = webPageIItem.find(item => webPageId === item.id);
+        const tempid = pg.adx_webtemplateid;
+        if (tempid) {
+          const te = webTemplateIITem.find(it => tempid === it.id);
+          if (te) {
+            const item = createItem(`${te.label}`, `Source-Dependencies`, `${te.id}`, true, vscode.Uri.parse(`/inside treeItem`), '08', [], '', '');
+            const pageTemplateAlreadyExists = webPage?.children.find(it => it.label === 'Page Template');
+            if (!pageTemplateAlreadyExists) {
+              let pT = createItem('Page Template', 'Page Template', '', false, vscode.Uri.parse(`/pageTemplate`), "6", []);
+              pT.children.push(item);
+              webPage?.children.push(pT);
+            } else {
+              pageTemplateAlreadyExists.children.push(item);
+              webPage?.children.push(pageTemplateAlreadyExists);
+            }
+          }
+        }
+      }
+    })
+    contentPage?.forEach(webpage => {
+      const wbpgid = webpage.adx_pagetemplateid;
+      const webPageId=webpage.adx_webpageid;
+      if (wbpgid == pgid) {
+        const webPage = webPageIItem.find(item => webPageId === item.id);
+        const tempid = pg.adx_webtemplateid;
+        if (tempid) {
+          const te = webTemplateIITem.find(it => tempid === it.id);
+          if (te) {
+            const item = createItem(`${te.label}`, `Source-Dependencies`, `${te.id}`, true, vscode.Uri.parse(`/inside treeItem`), '08', [], '', '');
+            const pageTemplateAlreadyExists = webPage?.children.find(it => it.label === 'Page Template');
+            if (!pageTemplateAlreadyExists) {
+              let pT = createItem('Page Template', 'Page Template', '', false, vscode.Uri.parse(`/pageTemplate`), "6", []);
+              pT.children.push(item);
+              webPage?.children.push(pT);
+            } else {
+              pageTemplateAlreadyExists.children.push(item);
+              webPage?.children.push(pageTemplateAlreadyExists);
+            }
+          }
+        }
+      }
+    })
+  })
+  
+}
 
 
 function addDependencies(webtemplateIItem: IItem, webPageIItem: IItem, webFileIItem: IItem, contentSnippetIItem: IItem, listIItem: IItem, entityFormtIItem: IItem, webFormIItem: IItem, entityFileMap: Map<string, Set<string>>): any {
@@ -349,12 +415,10 @@ function processDependencies(sourceDep: IItem, parent: IItem, filePath: string, 
     const fileNameOrID = entity.fileNameOrID.replace(/^['"](.*)['"]$/, '$1');
 
     if (tagName === "snippets" || tagName === "snippet" || (tagName === 'editable' && (property === "snippets" || property === "snippet"))) {
-      entity.tagName = "snippets";
       processEntity(sourceDep, parent, contentSnippetIItem, entity, 'label', entityFileMap, '07');
-    } else if (tagName === "Template") {
+    } else if (tagName === "Web Template") {
       processEntity(sourceDep, parent, webtemplateIItem, entity, 'label', entityFileMap, '08');
     } else if (tagName === "entityform" || tagName === "entity_form") {
-      entity.tagName = 'entityform';
       if (property == 'id' && isNaN(fileNameOrID)) {
         processEntity(sourceDep, parent, entityFormtIItem, entity, 'id', entityFileMap, '015');
       } else if (property == 'name' || property == 'key') {
@@ -363,7 +427,6 @@ function processDependencies(sourceDep: IItem, parent: IItem, filePath: string, 
         console.log("Not Valid EnitityForm");
       }
     } else if (tagName === "entitylist" || tagName === "entity_list") {
-      entity.tagName = 'entitylist';
       if (property == 'id' && isNaN(fileNameOrID)) {
         processEntity(sourceDep, parent, listIItem, entity, 'id', entityFileMap, '017');
       } else if (property == 'name' || property == 'key') {
@@ -372,7 +435,6 @@ function processDependencies(sourceDep: IItem, parent: IItem, filePath: string, 
         console.log("Not Valid EntityList");
       }
     } else if (tagName === "webform") {
-      entity.tagName = 'webform'
       if (property == 'id' && isNaN(fileNameOrID)) {
         processEntity(sourceDep, parent, webFormIItem, entity, 'id', entityFileMap, '019');
       } else if (property == 'name' || property == 'key') {
@@ -382,7 +444,7 @@ function processDependencies(sourceDep: IItem, parent: IItem, filePath: string, 
       }
     } else if ((tagName != "entityform" && tagName != "entity_form") && (tagName != "entitylist" && tagName != "entity_list") && tagName !== "editable") {
       entity.fileNameOrID = tagName;
-      entity.tagName = 'Template'
+      entity.tagName = 'Web Template'
       processEntity(sourceDep, parent, webtemplateIItem, entity, 'label', entityFileMap, '08');
     } else {
       console.log("Another Dynamic entity");
@@ -393,7 +455,6 @@ function processDependencies(sourceDep: IItem, parent: IItem, filePath: string, 
 function processEntity(sourceDep: IItem, parent: IItem, targetIItem: IItem, entity: any, compareBy: string, entityFileMap: Map<string, Set<string>>, comp: string) {
   let exist = false;
   const fileNameOrID = entity.fileNameOrID.replace(/^['"](.*)['"]$/, '$1');
-  const tagName = entity.tagName.replace(/^['"](.*)['"]$/, '$1');
   targetIItem.children.forEach((targetItem: IItem) => {
     const compareValue = compareBy === 'label' ? targetItem.label : targetItem.id;
     if (compareValue === fileNameOrID) {
@@ -401,6 +462,10 @@ function processEntity(sourceDep: IItem, parent: IItem, targetIItem: IItem, enti
       let fileNameAlready = sourceDep.children.find(child => (child.label === targetItem.label && child.component.slice(1) === targetItem.component.slice(1)));
       let ht = targetItem.children.find((child: IItem) => child.isFile === true);
       let htLabel = ht?.label ?? '';
+      let parentAlreadyPresent = targetItem.parentList.find(child => (child.label === parent.label && child.component === parent.component));
+      if (!parentAlreadyPresent) {
+        targetItem.parentList.push(parent);
+      }
       const item = createItem(`${targetItem.label}`, `Source-Dependencies`, `${targetItem.id}`, true, vscode.Uri.parse(`/inside treeItem`), comp, [], '', '');
       if (!entityFileMap.has(targetIItem.label)) {
         entityFileMap.set(targetIItem.label, new Set());
@@ -408,16 +473,11 @@ function processEntity(sourceDep: IItem, parent: IItem, targetIItem: IItem, enti
       entityFileMap.get(targetIItem.label)?.add(htLabel);
       if (!fileNameAlready) {
         sourceDep.children.push(item);
-        const key = `${fileNameOrID}-${tagName}`;
-        if (!referrenceMap.has(key)) {
-          referrenceMap.set(key, []);
-        }
-        referrenceMap.get(key)?.push(parent);
       }
     }
   });
   if (exist == false) {
-    const item = createItem(`${fileNameOrID} Not Used`, `${fileNameOrID} Not Used`, '', true, vscode.Uri.parse(``), '', [], '', '');
+    const item = createItem(`${fileNameOrID} Not Used`, `${fileNameOrID}`, `${entity.tagName}`, true, vscode.Uri.parse(``), '', [], '', '');
     let fileNameAlready = sourceDep.children.find(child => child.label === `${fileNameOrID} Not Used`);
     if (!fileNameAlready) {
       sourceDep.children.push(item);

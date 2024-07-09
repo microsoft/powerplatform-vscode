@@ -5,9 +5,8 @@ import { IPortalComponentService } from "./IPortalComponentService";
 import { IItem } from "../TreeView/Types/Entity/IItem";
 import { Webpage } from '../TreeView/Types/Entity/WebPage';
 import * as vscode from 'vscode';
-import { PageTemplate } from '../TreeView/Types/Entity/PageTemplate';
-import { IPreviewEngineContext } from '../TreeView/Utils/IDataResolver';
 
+export const contentPage: Webpage[] = [];
 export class WebPageService implements IPortalComponentService {
     create(metadataContext: any, getPath?: any): IItem[] {
         const items: IItem[] = [];
@@ -16,8 +15,6 @@ export class WebPageService implements IPortalComponentService {
         if (!webpages) {
             return items;
         }
-
-        const contentPage: Webpage[] = [];
 
         for (const webpage of webpages) {
             if (!webpage.adx_webpagelanguageid) {
@@ -49,37 +46,19 @@ export class WebPageService implements IPortalComponentService {
             });
         });
 
-
-        const allpageTemplate = convertPageTemplateToItems(metadataContext);
-        allpageTemplate.forEach(item => {
-            webpages.forEach(webpage => {
-                if (webpage.adx_pagetemplateid == item.id) {
-                    const subItem = items.find(it => webpage.adx_webpageid === it.id);
-                    if (subItem) {
-                        let pageTemplate = createItem('Page Template', 'Page Template', '', false, vscode.Uri.parse(`/pageTemplate`), "6", [item]);
-                        subItem.children.push(pageTemplate);
-                    }
-                }
-            });
-        });
-
-
         for (const contentpg of contentPage) {
             const str = contentpg.adx_name;
             let x = str.replace(/\s+/g, '-');
             let y = x.toLowerCase();
             const [pageCopy, cssItem, jsItem, pageSummary] = createCopyItems(contentpg, getPath, y, x, '.en-US', '/content-pages');
             const contentPageItem = createItem(`Content Page`, `Content Page`, `${contentpg.adx_webpageid}_content`, false, vscode.Uri.file(`${contentpg.adx_name}/Content`), "22", [pageCopy, cssItem, jsItem, pageSummary]);
-            allpageTemplate.forEach(item => {
-                if (contentpg.adx_pagetemplateid == item.id) {
-                    let pageTemplate = createItem('Page Template', 'Page Template', '', false, vscode.Uri.parse(`/pageTemplate`), "6", [item]);
-                    contentPageItem.children.push(pageTemplate);
-                }
-            });
 
             items.forEach(item => {
                 if (item.title === contentpg.adx_name) {
-                    item.children.push(contentPageItem);
+                    const x = item.children.find(child => child.label === "Content Page");
+                    if (!x) {
+                        item.children.push(contentPageItem);
+                    }
                 }
             });
         }
@@ -88,7 +67,7 @@ export class WebPageService implements IPortalComponentService {
 
 }
 
-function createItem(label: string, title: string, id: string, isFile: boolean, path: vscode.Uri, component: string, children: IItem[] = [], content: string = '', error: string = ''): IItem {
+function createItem(label: string, title: string, id: string, isFile: boolean, path: vscode.Uri, component: string, children: IItem[] = [], content: string = '', error: string = '', parentList: IItem[] = []): IItem {
     return {
         label,
         title,
@@ -99,6 +78,7 @@ function createItem(label: string, title: string, id: string, isFile: boolean, p
         component,
         children,
         error,
+        parentList,
     };
 }
 
@@ -112,30 +92,4 @@ function createCopyItems(webpage: Webpage, getPath: any, y: string, x: string, l
     const pageSummary = createItem(`Page Summary`, `Page Summary`, `Page_Summary`, false, vscode.Uri.file(`/pageSummary`), "24", [summaryItem]);
 
     return [pageCopy, cssItem, jsItem, pageSummary];
-}
-
-function convertPageTemplateToItems(metadataContext: IPreviewEngineContext): IItem[] {
-    const items: IItem[] = [];
-    const pageTemplates: PageTemplate[] | undefined = metadataContext.pageTemplates;
-
-    if (!pageTemplates) {
-        return items;
-    }
-
-    for (const template of pageTemplates) {
-        const item: IItem = {
-            label: template.adx_name,
-            title: template.adx_name,
-            id: template.adx_pagetemplateid,
-            isFile: true,
-            content: template.adx_description || '',
-            path: undefined,
-            component: "",
-            children: [],
-            error: ""
-        };
-
-        items.push(item);
-    }
-    return items;
 }

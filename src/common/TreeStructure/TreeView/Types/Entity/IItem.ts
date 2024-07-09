@@ -10,4 +10,5 @@ export interface IItem {
   component: string;
   children: IItem[];
   error: string;
+  parentList: IItem[];
 }

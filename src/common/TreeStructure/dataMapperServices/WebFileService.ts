@@ -42,7 +42,8 @@ export class WebFileService implements IPortalComponentService {
                 path: vscode.Uri.file(`${getPath.path}/web-files/${file.adx_name}`),
                 component: c,
                 children: [],
-                error: ""
+                error: "",
+                parentList:[]
             };
             if(file.adx_name.endsWith(".html") || file.adx_name.endsWith(".js")){
                 const fileItem: IItem = {
@@ -54,7 +55,8 @@ export class WebFileService implements IPortalComponentService {
                     path: vscode.Uri.file(`/web-files`),
                     component: c,
                     children: [item],
-                    error: ""
+                    error: "",
+                    parentList:[]
                 };
                 items.push(fileItem);
             }else{

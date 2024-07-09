@@ -62,7 +62,8 @@ export class DefaultPortalComponentService implements IPortalComponentService {
                     path: vscode.Uri.file(`${getPath.path}/${type}/${y}/${x}${url}`),
                     component: c,
                     children: [],
-                    error: ""
+                    error: "",
+                    parentList:[]
                 }
             ];
 
@@ -75,7 +76,8 @@ export class DefaultPortalComponentService implements IPortalComponentService {
                 path: vscode.Uri.parse(`${getPath.path}/${type}/${y}`),
                 component: comp,
                 children: children,
-                error: ""
+                error: "",
+                parentList:[]
             };
 
             items.push(item);

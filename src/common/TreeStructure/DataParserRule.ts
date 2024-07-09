@@ -103,7 +103,7 @@ const includeTagRule: DataParserRule = {
         if (hashes.length == 0) {
             const property = "name";
             const fileNameOrID = value?.getText() || '';
-            const tagName = "Template";
+            const tagName = "Web Template";
             entities.push({ tagName, property, fileNameOrID });
         } else {
             hashes.forEach(hash => {
