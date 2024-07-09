@@ -62,13 +62,24 @@ class MyTreeItem extends vscode.TreeItem {
           };
         case "06": // Json
           return {
-            light: path.join(basePath, 'dark', 'json.svg'),
+            light: path.join(basePath, 'light', 'json.svg'),
             dark: path.join(basePath, 'dark', 'json.svg')
           };
         case "09": // MP4
           return {
             light: path.join(basePath, 'dark', 'mp4.svg'),
             dark: path.join(basePath, 'dark', 'mp4.svg')
+          };
+        case "10": // Text File
+          return new vscode.ThemeIcon('file');
+        case "07":
+        case "08":
+        case "015":
+        case "017":
+        case "019":
+          return {
+            light: path.join(basePath, 'light', 'file-symlink-file.svg'),
+            dark: path.join(basePath, 'dark', 'file-symlink-file.svg')
           };
         default:
           return new vscode.ThemeIcon('file');
@@ -140,6 +151,26 @@ class MyTreeItem extends vscode.TreeItem {
             light: path.join(basePath, 'light', 'advanced_forms.svg'),
             dark: path.join(basePath, 'dark', 'advanced_forms.svg')
           };
+        case "22": // Content Page
+          return {
+            light: path.join(basePath, 'light', 'book.svg'),
+            dark: path.join(basePath, 'dark', 'book.svg')
+          };
+        case "23": // Page Copy
+          return {
+            light: path.join(basePath, 'light', 'list-flat.svg'),
+            dark: path.join(basePath, 'dark', 'list-flat.svg')
+          };
+        case "24": // Page Summary
+          return {
+            light: path.join(basePath, 'light', 'note.svg'),
+            dark: path.join(basePath, 'dark', 'note.svg')
+          };
+        case "25": // Subpage
+          return {
+            light: path.join(basePath, 'light', 'file-submodule.svg'),
+            dark: path.join(basePath, 'dark', 'file-submodule.svg')
+          };
         default: // Default folder icon
           return {
             light: path.join(basePath, 'light', 'folder.svg'),
@@ -201,10 +232,10 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
   findItemById(item: IItem, websiteIItem: IItem): IItem | undefined {
     const comp = item.component.slice(1);
     if (comp == '7') {
-      const contentSnipppetIItem = websiteIItem.children.find((child: IItem) => child.label === 'Content Snippet');
+      const contentSnipppetIItem = websiteIItem.children.find((child: IItem) => child.label === 'Content Snippets');
       return helper(item, contentSnipppetIItem);
     } else if (comp == '8') {
-      const webTemplateIItem = websiteIItem.children.find((child: IItem) => child.label === 'Web Template');
+      const webTemplateIItem = websiteIItem.children.find((child: IItem) => child.label === 'Web Templates');
       return helper(item, webTemplateIItem);
     } else if (comp == '15') {
       const entityFormIItem = websiteIItem.children.find((child: IItem) => child.label === 'Basic Forms');
@@ -247,7 +278,8 @@ export function createTree(websiteIItem: IItem) {
         } else if (pathString.endsWith('.png') || pathString.endsWith('.jpg') || pathString.endsWith('.jpeg') || pathString.endsWith('.gif') || pathString.endsWith('.mp4')) {
           await vscode.commands.executeCommand('vscode.open', item.path);
         } else {
-          await vscode.commands.executeCommand('revealInExplorer', item.path);
+          const document = await vscode.workspace.openTextDocument(item.path);
+          await vscode.window.showTextDocument(document);
         }
       } else {
         const document = await vscode.workspace.openTextDocument({ content: item.content, language: 'plaintext' });

@@ -1,3 +1,6 @@
+/*!
+ * Copyright (C) Microsoft Corporation. All rights reserved.
+ */
 export const contentSnippetConfig = {
   type: "content-snippets",
   idField: "adx_contentsnippetid",

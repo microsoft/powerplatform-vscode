@@ -39,7 +39,7 @@ export class WebPageService implements IPortalComponentService {
                     if (subItem) {
                         let subpageItem = item.children.find(child => child.label === "Subpage");
                         if (!subpageItem) {
-                            subpageItem = createItem('Subpage', 'Subpage', '', false, vscode.Uri.parse(`/Subpage`), "", [subItem]);
+                            subpageItem = createItem('Subpage', 'Subpage', '', false, vscode.Uri.parse(`/Subpage`), "25", [subItem]);
                             item.children.push(subpageItem);
                         } else {
                             subpageItem.children.push(subItem);
@@ -69,7 +69,7 @@ export class WebPageService implements IPortalComponentService {
             let x = str.replace(/\s+/g, '-');
             let y = x.toLowerCase();
             const [pageCopy, cssItem, jsItem, pageSummary] = createCopyItems(contentpg, getPath, y, x, '.en-US', '/content-pages');
-            const contentPageItem = createItem(`Content Page`, `Content Page`, `${contentpg.adx_webpageid}_content`, false, vscode.Uri.file(`${contentpg.adx_name}/Content`), "", [pageCopy, cssItem, jsItem, pageSummary]);
+            const contentPageItem = createItem(`Content Page`, `Content Page`, `${contentpg.adx_webpageid}_content`, false, vscode.Uri.file(`${contentpg.adx_name}/Content`), "22", [pageCopy, cssItem, jsItem, pageSummary]);
             allpageTemplate.forEach(item => {
                 if (contentpg.adx_pagetemplateid == item.id) {
                     let pageTemplate = createItem('Page Template', 'Page Template', '', false, vscode.Uri.parse(`/pageTemplate`), "6", [item]);
@@ -105,13 +105,11 @@ function createItem(label: string, title: string, id: string, isFile: boolean, p
 function createCopyItems(webpage: Webpage, getPath: any, y: string, x: string, langSuffix: string = '', content: string = ''): IItem[] {
     const basePath = `${getPath.path}/web-pages/${y}${content}/${x}${langSuffix}`;
     const copyItem = createItem(`${x}${langSuffix}.webpage.copy.html`, `${x}${langSuffix}.webpage.copy.html`, `${x}${langSuffix}.webpage.copy.html`, true, vscode.Uri.file(`${basePath}.webpage.copy.html`), "01");
-    // const copydependenciesItem = createItem(`Dependencies`, `Dependencies`, '', false, vscode.Uri.file(`/dependencies`), "");
-    // const summarydependenciesItem = createItem(`Dependencies`, `Dependencies`, '', false, vscode.Uri.file(`/dependencies`), "");
     const cssItem = createItem(`${x}${langSuffix}.webpage.custom_css.css`, `${x}${langSuffix}.webpage.custom_css.css`, `${webpage.adx_webpageid}_css`, true, vscode.Uri.file(`${basePath}.webpage.custom_css.css`), "02");
     const jsItem = createItem(`${x}${langSuffix}.webpage.custom_javascript.js`, `${x}${langSuffix}.webpage.custom_javascript.js`, `${webpage.adx_webpageid}_js`, true, vscode.Uri.file(`${basePath}.webpage.custom_javascript.js`), "03");
     const summaryItem = createItem(`${x}${langSuffix}.webpage.summary.html`, `${x}${langSuffix}.webpage.summary.html`, `${x}${langSuffix}.webpage.summary.html`, true, vscode.Uri.file(`${basePath}.webpage.summary.html`), "01");
-    const pageCopy = createItem(`Page Copy`, `Page Copy`, `Page_copy`, false, vscode.Uri.file(`/pagecopy`), "", [copyItem]);
-    const pageSummary = createItem(`Page Summary`, `Page Summary`, `Page_Summary`, false, vscode.Uri.file(`/pageSummary`), "", [summaryItem]);
+    const pageCopy = createItem(`Page Copy`, `Page Copy`, `Page_copy`, false, vscode.Uri.file(`/pagecopy`), "23", [copyItem]);
+    const pageSummary = createItem(`Page Summary`, `Page Summary`, `Page_Summary`, false, vscode.Uri.file(`/pageSummary`), "24", [summaryItem]);
 
     return [pageCopy, cssItem, jsItem, pageSummary];
 }
