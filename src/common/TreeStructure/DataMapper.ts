@@ -427,8 +427,8 @@ function processEntity(sourceDep: IItem, parent: IItem, targetIItem: IItem, enti
 
 
 function addUnUsedFiles(unUsedFileIItem: IItem, entityFileMap: Map<string, Set<string>>, webtemplateIItem: IItem, contentSnippetIItem: IItem, listIItem: IItem, entityFormtIItem: IItem, webFormIItem: IItem) {
-  addUnusedFilesHelper('Web Template', unUsedFileIItem, entityFileMap, webtemplateIItem, '/WebTemplate', "8");
-  addUnusedFilesHelper('Content Snippet', unUsedFileIItem, entityFileMap, contentSnippetIItem, '/contentSnippet', "7");
+  addUnusedFilesHelper('Web Templates', unUsedFileIItem, entityFileMap, webtemplateIItem, '/WebTemplates', "8");
+  addUnusedFilesHelper('Content Snippets', unUsedFileIItem, entityFileMap, contentSnippetIItem, '/contentSnippets', "7");
   addUnusedFilesHelper('Lists', unUsedFileIItem, entityFileMap, listIItem, '/lists', "17");
   addUnusedFilesHelper('Basic Forms', unUsedFileIItem, entityFileMap, entityFormtIItem, '/basic-forms', "15");
   addUnusedFilesHelper('Advanced Forms', unUsedFileIItem, entityFileMap, webFormIItem, '/advanced-forms', "19");
