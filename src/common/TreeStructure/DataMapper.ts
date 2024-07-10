@@ -477,7 +477,7 @@ function processEntity(sourceDep: IItem, parent: IItem, targetIItem: IItem, enti
     }
   });
   if (exist == false) {
-    const item = createItem(`${fileNameOrID} Not Used`, `${fileNameOrID}`, `${entity.tagName}`, true, vscode.Uri.parse(``), '', [], '', '');
+    const item = createItem(`${fileNameOrID} Not Used`, `${fileNameOrID}`, `${entity.tagName}`, true, vscode.Uri.parse(``), comp, [], '', '');
     let fileNameAlready = sourceDep.children.find(child => child.label === `${fileNameOrID} Not Used`);
     if (!fileNameAlready) {
       sourceDep.children.push(item);
