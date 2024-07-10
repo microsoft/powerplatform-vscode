@@ -21,7 +21,6 @@ import {
     TransportKind,
     WorkspaceFolder,
 } from "vscode-languageclient/node";
-import { getPortalsOrgURLs, workspaceContainsPortalConfigFolder } from "../common/PortalConfigFinder";
 import {
     activateDebugger,
     deactivateDebugger,
@@ -41,6 +40,8 @@ import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
 import { IArtemisAPIOrgResponse } from "../common/services/Interfaces";
 import { ArtemisService } from "../common/services/ArtemisService";
+import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
+import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { treeView } from "../common/TreeStructure/DataMapper";
 
 let client: LanguageClient;
@@ -218,7 +219,7 @@ export async function activate(
             oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
         }
         // Init OrgChangeNotifier instance
-        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
+        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper(), _context);
 
         vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
         vscode.workspace.textDocuments.forEach(didOpenTextDocument);

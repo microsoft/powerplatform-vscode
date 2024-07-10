@@ -8,7 +8,7 @@ import fetch, { RequestInfo, RequestInit } from "node-fetch";
 import { MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT } from '../common/constants';
 import WebExtensionContext from "../WebExtensionContext";
 import { telemetryEventNames } from '../telemetry/constants';
-import { ERRORS } from '../../../common/ErrorConstants';
+import { ERRORS } from '../../../common/CommonConstants';
 
 export class ConcurrencyHandler {
     private _bulkhead = bulkhead(MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT);

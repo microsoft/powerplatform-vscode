@@ -10,7 +10,7 @@ import { URL } from 'url';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as YAML from 'yaml';
-import { getPortalConfigFolderUrl } from '../../common/PortalConfigFinder';
+import { getPortalConfigFolderUrl } from '../../common/utilities/PathFinderUtil';
 
 const manifest = '-manifest';
 
@@ -19,7 +19,7 @@ export interface IManifestElement {
     RecordId: string;
 }
 
-export function getMatchedManifestRecords(workspaceRootFolders : WorkspaceFolder[] | null, keyForCompletion: string, pathOfFileBeingEdited?: string) : IManifestElement[] {
+export function getMatchedManifestRecords(workspaceRootFolders: WorkspaceFolder[] | null, keyForCompletion: string, pathOfFileBeingEdited?: string): IManifestElement[] {
     let matchedManifestRecords: IManifestElement[] = [];
     if (pathOfFileBeingEdited) {
         const portalConfigFolderUrl = getPortalConfigFolderUrl(workspaceRootFolders, pathOfFileBeingEdited) as URL | null; //https://github.com/Microsoft/TypeScript/issues/11498

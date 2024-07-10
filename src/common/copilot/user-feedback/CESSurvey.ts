@@ -12,7 +12,7 @@ import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
-import { ERRORS } from "../../ErrorConstants";
+import { ERRORS } from "../../CommonConstants";
 import { EUROPE_GEO, UK_GEO } from "../constants";
 
 let feedbackPanel: vscode.WebviewPanel | undefined;

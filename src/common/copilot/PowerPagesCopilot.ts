@@ -10,7 +10,7 @@ import { dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
+import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IOrgInfo } from './model';
 import { checkCopilotAvailability, createAuthProfileExp, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -24,6 +24,7 @@ import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
 import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../services/Constants";
 import { ArtemisService } from "../services/ArtemisService";
+import { PAC_SUCCESS } from "../CommonConstants";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
