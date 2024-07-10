@@ -12,11 +12,11 @@ import { IContextInfo, IUserInfo } from "./IEventTypes";
 import { EventType, Severity } from "./telemetryConstants";
 import * as vscode from "vscode";
 import { getExtensionType, getExtensionVersion } from "../utilities/Utils";
-import { EXTENSION_ID } from "../../client/constants";
+import { EXTENSION_ID } from "../constants";
 import { OneDSCollectorEventName } from "./EventContants";
-import { telemetryEventNames } from "../../web/client/telemetry/constants";
+import { webExtensionTelemetryEventNames } from "./web/client/webExtensionTelemetryEvents";
 import { region } from "../telemetry-generated/buildRegionConfiguration";
-import { telemetryEventNames as desktopExtTelemetryEventNames } from "../../client/telemetry/TelemetryEventNames";
+import { desktopTelemetryEventNames as desktopExtTelemetryEventNames } from "./client/desktopExtensionTelemetryEventNames";
 import { geoMappingsToAzureRegion } from "./shortNameMappingToAzureRegion";
 
 interface IInstrumentationSettings {
@@ -349,7 +349,7 @@ export class OneDSLogger implements ITelemetryLogger {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private populateVscodeWebAttributes(envelope: any) {
-        if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS) {
+        if (envelope.data.eventName == webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS) {
             const eventInfo = JSON.parse(envelope.data.eventInfo);
             OneDSLogger.userInfo.tid = eventInfo.tenantId ?? '';
             OneDSLogger.userRegion = eventInfo.geo ? geoMappingsToAzureRegion[eventInfo.geo.toLowerCase()].geoName ?? eventInfo.geo : '';
@@ -366,10 +366,10 @@ export class OneDSLogger implements ITelemetryLogger {
             OneDSLogger.contextInfo.sku = eventInfo.sku ?? '';
         }
 
-        if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED) {
+        if (envelope.data.eventName == webExtensionTelemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED) {
             OneDSLogger.userInfo.oid = JSON.parse(envelope.data.eventInfo).userId;
         }
-        if (envelope.data.eventName == telemetryEventNames.WEB_EXTENSION_ORG_GEO) {
+        if (envelope.data.eventName == webExtensionTelemetryEventNames.WEB_EXTENSION_ORG_GEO) {
             OneDSLogger.contextInfo.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
         }
     }

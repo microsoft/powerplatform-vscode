@@ -7,8 +7,8 @@ import {
     WorkspaceFolder
 } from 'vscode-languageserver/node';
 import { glob } from 'glob';
-import { sendTelemetryEvent } from "../../client/power-pages/telemetry";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from '../OneDSLoggerTelemetry/telemetry/ITelemetry';
+import { sendTelemetryEvent } from '../OneDSLoggerTelemetry/telemetry/telemetry';
 
 export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null, telemetry: ITelemetry) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

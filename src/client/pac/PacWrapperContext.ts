@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { buildAgentString } from "../telemetry/batchedTelemetryAgent";
-import { ITelemetry } from "../telemetry/ITelemetry";
+import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { IPacWrapperContext } from "./PacWrapper";
 
 export class PacWrapperContext implements IPacWrapperContext {

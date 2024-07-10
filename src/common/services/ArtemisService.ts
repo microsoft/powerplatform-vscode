@@ -5,7 +5,7 @@
 
 import fetch, { RequestInit } from "node-fetch";
 import { COPILOT_UNAVAILABLE } from "../copilot/constants";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "../copilot/telemetry/telemetryConstants";
 import { BAPServiceStamp as BAPAPIEndpointStamp } from "./Constants";

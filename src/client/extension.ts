@@ -12,7 +12,7 @@ import { ITelemetryData } from "../common/TelemetryData";
 import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import { PortalWebView } from "./PortalWebView";
-import { ITelemetry } from "./telemetry/ITelemetry";
+import { ITelemetry } from "../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 
 import {
     LanguageClient,
@@ -35,9 +35,9 @@ import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryC
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
+import { OrgChangeNotifier, orgChangeEvent } from "./OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
-import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
+import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
 import { IArtemisAPIOrgResponse } from "../common/services/Interfaces";
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
@@ -194,7 +194,7 @@ export async function activate(
             if (artemisResponse !== null && artemisResponse.length > 0) {
                 const { geoName, geoLongName } = artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse;
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
-                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName });
+                oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName });
             }
         })
     );

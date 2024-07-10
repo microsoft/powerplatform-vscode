@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export enum telemetryEventNames {
+export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_INIT_PATH_PARAMETERS = "WebExtensionInitPathParameters",
     WEB_EXTENSION_INIT_QUERY_PARAMETERS = "WebExtensionInitQueryParameters",
     WEB_EXTENSION_DATAVERSE_AUTHENTICATION_STARTED = "WebExtensionDataverseAuthenticationStarted",

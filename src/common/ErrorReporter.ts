@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ITelemetry } from "../client/telemetry/ITelemetry";
+import { ITelemetry } from "./OneDSLoggerTelemetry/telemetry/ITelemetry";
 import * as vscode from "vscode";
 /**
  * Static helper class to report errors to telemetry and show them as error dialogs.
