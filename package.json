@@ -121,7 +121,13 @@
         "fullName": "Power Pages Copilot",
         "description": "Power Pages Copilot",
         "isSticky": true,
-        "when": "config.powerPlatform.experimental.powerPagesInGitHubCopilotChat"
+        "when": "config.powerPlatform.experimental.powerPagesInGitHubCopilotChat",
+        "commands": [
+          {
+            "name": "site",
+            "description": "How I can help You?"
+          }
+        ]
       }
     ],
     "problemMatchers": [
@@ -182,15 +188,15 @@
       {
         "command": "extension.openWebpage",
         "title": "Open Webpage"
-    },
-    {
-      "command": "extension.openFile",
-      "title": "Open File"
-    },
-    {
-      "command": "extension.activateDirectory",
-      "title": "Activate Directory"
-  },
+      },
+      {
+        "command": "extension.openFile",
+        "title": "Open File"
+      },
+      {
+        "command": "extension.activateDirectory",
+        "title": "Activate Directory"
+      },
       {
         "command": "powerpages.collaboration.openMail",
         "title": "Open Mail",
@@ -975,8 +981,8 @@
       "explorer": [
         {
           "id": "exampleView",
-           "name": "Example View"
-      },
+          "name": "Example View"
+        },
         {
           "id": "powerpages.powerPagesFileExplorer",
           "name": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
@@ -1121,7 +1127,6 @@
     "@fluidframework/azure-client": "^1.2.0",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
-    "@maker-studio/powerportals-preview-engine": "^3.7.24",
     "@microsoft/generator-powerpages": "1.21.19",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",

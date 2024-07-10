@@ -77,8 +77,6 @@ export const treeView = async () => {
     });
 
     createTree(websiteIItem);
-    const jsonObject = generateJsonFromIItem(websiteIItem);
-    console.log(JSON.stringify(jsonObject, null, 2));
 
     oneDSLoggerWrapper.getLogger().traceInfo("End of tree view creation", {
       "timeNow": performance.now()
