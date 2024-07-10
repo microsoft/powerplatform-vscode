@@ -12,7 +12,7 @@ import {
     WorkspaceFolder,
     debug,
 } from "vscode";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 
 import { BrowserManager } from "../browser";

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { bapServiceAuthentication, getCommonHeaders } from "./AuthenticationProvider";
 import { VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_COMPLETED, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED } from "./TelemetryConstants";
 import { BAPServiceStamp, BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT } from "./Constants";

@@ -9,7 +9,7 @@ import { LaunchDebugProvider } from "./configuration";
 import { DebugAdaptorFactory } from "./debugAdaptor";
 
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { EXTENSION_NAME } from "../client/constants";
+import { EXTENSION_NAME } from "../common/constants";
 import { UserSettingsConfigManager } from "./configuration/UserSettingsConfigManager";
 
 /**

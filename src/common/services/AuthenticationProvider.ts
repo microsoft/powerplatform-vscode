@@ -4,8 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { showErrorDialog } from "../../web/client/common/errorHandler";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../copilot/telemetry/telemetryConstants";
 import { getUserAgent } from "../utilities/Utils";
@@ -24,6 +23,7 @@ import {
 import { ERRORS } from "../CommonConstants";
 import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL } from "./Constants";
 import jwt_decode from 'jwt-decode';
+import { showErrorDialog } from "../utilities/errorHandlerUtil";
 
 
 export function getCommonHeadersForDataverse(

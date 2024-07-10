@@ -12,7 +12,7 @@ import { schemaKey, schemaEntityKey } from "../../schema/constants";
 import * as portalSchemaReader from "../../schema/portalSchemaReader";
 import * as Constants from "../../common/constants";
 import * as authenticationProvider from "../../../../common/services/AuthenticationProvider";
-import { telemetryEventNames } from "../../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import * as schemaHelperUtil from "../../utilities/schemaHelperUtil";
 import * as urlBuilderUtil from "../../utilities/urlBuilderUtil";
 import { getCommonHeadersForDataverse } from "../../../../common/services/AuthenticationProvider";
@@ -118,7 +118,7 @@ describe("WebExtensionContext", () => {
             expect(WebExtensionContext.dataverseAccessToken).eq("");
             assert.calledOnceWithExactly(
                 sendErrorTelemetry,
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
                 WebExtensionContext.dataverseAuthentication.name
             );
             expect(WebExtensionContext.websiteIdToLanguage).empty;
@@ -340,7 +340,7 @@ describe("WebExtensionContext", () => {
             expect(WebExtensionContext.dataverseAccessToken).eq("");
             assert.calledOnceWithExactly(
                 sendErrorTelemetry,
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_DATAVERSE_AUTHENTICATION_MISSING,
                 WebExtensionContext.dataverseAuthentication.name
             );
             expect(WebExtensionContext.websiteIdToLanguage).length(0);

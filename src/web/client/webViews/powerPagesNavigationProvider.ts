@@ -8,7 +8,7 @@ import * as path from 'path';
 import WebExtensionContext from "../WebExtensionContext";
 import { httpMethod, queryParameters } from '../common/constants';
 import { getBackToStudioURL, isStringUndefinedOrEmpty } from '../utilities/commonUtil';
-import { telemetryEventNames } from '../telemetry/constants';
+import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -68,7 +68,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not available"));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED,
                 vscode.l10n.t("Preview site URL is not available")
             );
             return;
@@ -128,7 +128,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         );
 
         vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
+        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
     }
 
     backToStudio(): void {
@@ -138,7 +138,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             vscode.window.showErrorMessage(vscode.l10n.t("Power Pages studio URL is not available"));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED,
                 vscode.l10n.t("Power Pages studio URL is not available")
             );
             return;
@@ -146,7 +146,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
         vscode.env.openExternal(vscode.Uri.parse(backToStudioUrl));
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
+        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED, {
             backToStudioUrl: backToStudioUrl
         });
     }

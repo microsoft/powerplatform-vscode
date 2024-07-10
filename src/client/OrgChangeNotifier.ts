@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { GetAuthProfileWatchPattern } from "../client/lib/AuthPanelView";
-import { PacWrapper } from "../client/pac/PacWrapper";
+import { GetAuthProfileWatchPattern } from "./lib/AuthPanelView";
+import { PacWrapper } from "./pac/PacWrapper";
 import * as vscode from "vscode";
-import { ActiveOrgOutput } from "../client/pac/PacTypes";
-import { PAC_SUCCESS } from "./CommonConstants";
+import { ActiveOrgOutput } from "./pac/PacTypes";
+import { SUCCESS } from "../common/constants";
 
 export const orgChangeEventEmitter = new vscode.EventEmitter<ActiveOrgOutput>();
 export const orgChangeEvent = orgChangeEventEmitter.event;
@@ -18,21 +18,18 @@ export class OrgChangeNotifier {
     private _pacWrapper: PacWrapper | undefined;
     private _orgDetails: ActiveOrgOutput | undefined;
     private static _orgChangeNotifierObj: OrgChangeNotifier | undefined;
-    private extensionContext: vscode.ExtensionContext;
 
-    private constructor(pacWrapper: PacWrapper, extensionContext: vscode.ExtensionContext) {
+    private constructor(pacWrapper: PacWrapper) {
         this._pacWrapper = pacWrapper;
         this.activeOrgDetails();
         if (this._pacWrapper) {
             this.setupFileWatcher();
         }
-
-        this.extensionContext = extensionContext;
     }
 
-    public static createOrgChangeNotifierInstance(pacWrapper: PacWrapper, extensionContext: vscode.ExtensionContext) {
+    public static createOrgChangeNotifierInstance(pacWrapper: PacWrapper) {
         if (!OrgChangeNotifier._orgChangeNotifierObj) {
-            OrgChangeNotifier._orgChangeNotifierObj = new OrgChangeNotifier(pacWrapper, extensionContext);
+            OrgChangeNotifier._orgChangeNotifierObj = new OrgChangeNotifier(pacWrapper);
         }
         return OrgChangeNotifier._orgChangeNotifierObj;
     }
@@ -49,7 +46,7 @@ export class OrgChangeNotifier {
 
     private async activeOrgDetails() {
         const pacActiveOrg = await this._pacWrapper?.activeOrg();
-        if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
+        if (pacActiveOrg && pacActiveOrg.Status === SUCCESS) {
             this._orgDetails = pacActiveOrg.Results;
             orgChangeEventEmitter.fire(this._orgDetails);
         } else {

@@ -8,7 +8,7 @@ import { Disposable } from "vscode";
 
 import { IPcfLaunchConfig } from "../configuration/types/IPcfLaunchConfig";
 import { sleep } from "../utils";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 
 /**
