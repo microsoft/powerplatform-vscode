@@ -7,7 +7,7 @@ import { BulkheadRejectedError, bulkhead } from 'cockatiel';
 import fetch, { RequestInfo, RequestInit } from "node-fetch";
 import { MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT } from '../common/constants';
 import WebExtensionContext from "../WebExtensionContext";
-import { telemetryEventNames } from '../telemetry/constants';
+import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
 import { ERRORS } from '../../../common/ErrorConstants';
 
 export class ConcurrencyHandler {
@@ -22,7 +22,7 @@ export class ConcurrencyHandler {
         } catch (e) {
             if (e instanceof BulkheadRejectedError) {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_BULKHEAD_QUEUE_FULL,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_BULKHEAD_QUEUE_FULL,
                     this.handleRequest.name,
                     this._bulkhead.executionSlots.toString(),
                 );

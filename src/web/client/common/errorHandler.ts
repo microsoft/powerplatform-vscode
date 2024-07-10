@@ -6,14 +6,10 @@
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { schemaKey } from "../schema/constants";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { PORTALS_FOLDER_NAME_DEFAULT, queryParameters } from "./constants";
 import { isMultifileEnabled } from "../utilities/commonUtil";
-
-export function showErrorDialog(errorString: string, detailMessage?: string) {
-    const options = { detail: detailMessage, modal: true };
-    vscode.window.showErrorMessage(errorString, options);
-}
+import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 
 export function removeEncodingFromParameters(
     queryParamsMap: Map<string, string>
@@ -76,7 +72,7 @@ export function checkMandatoryQueryParameters(
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
                     checkMandatoryQueryParameters.name,
                     `${orgURL ? `orgURL, ` : ``}dataSource:${dataSource}, schemaName:${schemaName} ,websiteId:${websiteId}`
                 );
@@ -115,7 +111,7 @@ export function checkMandatoryMultifileParameters(
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_MULTI_FILE_MANDATORY_PARAMETERS_MISSING,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_MANDATORY_PARAMETERS_MISSING,
                     checkMandatoryMultifileParameters.name,
                     `enableMultifile:${enableMultifile}, websiteId:${websiteId}`
                 );

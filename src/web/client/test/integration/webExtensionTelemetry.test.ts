@@ -6,7 +6,7 @@
 import sinon, { stub, assert } from "sinon";
 import { queryParameters } from "../../common/constants";
 import { sanitizeURL } from "../../utilities/urlBuilderUtil";
-import { telemetryEventNames } from "../../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
 import { vscodeExtAppInsightsResourceProvider } from "../../../../common/telemetry-generated/telemetryConfiguration";
 import { expect } from "chai";
@@ -47,7 +47,7 @@ describe("webExtensionTelemetry", () => {
         };
         assert.calledOnceWithExactly(
             sendTelemetryEvent,
-            telemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
             properties
         );
     });
@@ -72,7 +72,7 @@ describe("webExtensionTelemetry", () => {
         };
         assert.calledOnceWithExactly(
             sendTelemetryEvent,
-            telemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
             properties
         );
     });
@@ -137,7 +137,7 @@ describe("webExtensionTelemetry", () => {
         //Assert
         assert.calledOnceWithExactly(
             sendTelemetryEvent,
-            telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
             properties
         );
     });
@@ -175,7 +175,7 @@ describe("webExtensionTelemetry", () => {
         //Assert
         assert.calledOnceWithExactly(
             sendTelemetryEvent,
-            telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
             properties
         );
     });
@@ -507,7 +507,7 @@ describe("webExtensionTelemetry", () => {
         //Assert
         assert.calledOnceWithExactly(
             sendTelemetryEvent,
-            telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
             properties,
             measurements
         );
@@ -530,7 +530,7 @@ describe("webExtensionTelemetry", () => {
             entity: entity,
             httpMethod: httpMethod,
             entityFileExtensionType: entityFileExtensionType,
-            eventName: telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+            eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
             isSuccessful: "false",
             status: "200",
             methodName: "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException"
@@ -566,7 +566,7 @@ describe("webExtensionTelemetry", () => {
 
     it("sendPerfTelemetry_whenSendProperValues_shouldCallWithAllValidData", () => {
         //Act
-        const eventName = telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS;
+        const eventName = webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS;
         const duration = 3;
         const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
 
@@ -579,7 +579,7 @@ describe("webExtensionTelemetry", () => {
         };
         assert.calledOnceWithExactly(
             sendTelemetryEvent,
-            telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
             undefined,
             measurements
         );

@@ -16,7 +16,6 @@ import { PortalsFS } from "./dal/fileSystemProvider";
 import {
     checkMandatoryParameters,
     removeEncodingFromParameters,
-    showErrorDialog,
 } from "./common/errorHandler";
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
 import { getEnvironmentIdFromUrl, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
@@ -29,7 +28,7 @@ import {
     getFileRootWebPageId,
 } from "./utilities/fileAndEntityUtil";
 import { IEntityInfo } from "./common/interfaces";
-import { telemetryEventNames } from "./telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { PowerPagesNavigationProvider } from "./webViews/powerPagesNavigationProvider";
 import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
@@ -41,9 +40,10 @@ import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
 import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
-import { IPortalWebExtensionInitQueryParametersTelemetryData } from "./telemetry/webExtensionTelemetryInterface";
+import { IPortalWebExtensionInitQueryParametersTelemetryData } from "../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
 import { IArtemisAPIOrgResponse } from "../../common/services/Interfaces";
 import { ArtemisService } from "../../common/services/ArtemisService";
+import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -117,7 +117,7 @@ export function activate(context: vscode.ExtensionContext): void {
                 logOneDSLogger(queryParamsMap);
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
                 const { geoName, geoLongName } = await fetchArtemisData(orgId);
-                WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: geoName });
+                WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: geoName });
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
@@ -184,7 +184,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                 );
 
                                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                                    telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                                    webExtensionTelemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
                                     activate.name,
                                     `appName:${appName}`
                                 );
@@ -199,7 +199,7 @@ export function activate(context: vscode.ExtensionContext): void {
                     );
 
                     WebExtensionContext.telemetry.sendErrorTelemetry(
-                        telemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
+                        webExtensionTelemetryEventNames.WEB_EXTENSION_APP_NAME_NOT_FOUND,
                         activate.name,
                         `appName:${appName}`
                     );
@@ -263,7 +263,7 @@ export function powerPagesNavigation() {
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
-    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
+    WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
 }
 
 export function processWalkthroughFirstRunExperience(context: vscode.ExtensionContext) {
@@ -451,10 +451,10 @@ export function createWebWorkerInstance(
                 sendingMessageToWebWorkerForCoPresence(entityInfo);
             })
 
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTERED);
+        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTERED);
     } catch (error) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED,
             createWebWorkerInstance.name,
             Constants.WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED,
             error as Error);
@@ -611,7 +611,7 @@ export function registerCopilot(context: vscode.ExtensionContext) {
         showNotificationForCopilot(context, orgInfo.orgId);
     } catch (error) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_REGISTRATION_FAILED,
             registerCopilot.name,
             (error as Error)?.message,
             error as Error);
@@ -625,7 +625,7 @@ function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: str
 
     const isCopilotNotificationDisabled = context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
     if (!isCopilotNotificationDisabled) {
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
+        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
             { orgId: orgId });
 
         const telemetryData = JSON.stringify({ orgId: orgId });
@@ -653,7 +653,7 @@ async function fetchArtemisData(orgId: string): Promise<IArtemisAPIOrgResponse> 
     const artemisResponse = await ArtemisService.fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
     if (artemisResponse === null || artemisResponse.length === 0) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
             fetchArtemisData.name,
             ARTEMIS_RESPONSE_FAILED
         );
@@ -665,7 +665,7 @@ async function fetchArtemisData(orgId: string): Promise<IArtemisAPIOrgResponse> 
 
 function logOneDSLogger(queryParamsMap: Map<string, string>) {
     const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
-        eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
+        eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
         properties: {
             orgId: queryParamsMap.get(queryParameters.ORG_ID),
             tenantId: queryParamsMap.get(queryParameters.TENANT_ID),

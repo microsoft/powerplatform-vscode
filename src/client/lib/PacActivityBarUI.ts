@@ -8,7 +8,7 @@ import { PacWrapper } from '../pac/PacWrapper';
 import { AuthTreeView } from './AuthPanelView';
 import { EnvAndSolutionTreeView } from './EnvAndSolutionTreeView';
 import { PowerPagesCopilot } from '../../common/copilot/PowerPagesCopilot';
-import { ITelemetry } from '../telemetry/ITelemetry';
+import { ITelemetry } from '../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 
 export function RegisterPanels(pacWrapper: PacWrapper, context: vscode.ExtensionContext, telemetry: ITelemetry): vscode.Disposable[] {
     const authPanel = new AuthTreeView(() => pacWrapper.authList(), pacWrapper);
