@@ -49,9 +49,9 @@ jobs:
       run: |
         echo "@gia:registry=https://msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/" > ~/.npmrc
         echo "always-auth=true" >> ~/.npmrc
-        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:username=AzureDevOps" >> ~/.npmrc
+        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:username=nityagi" >> ~/.npmrc
         echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:_password=$(echo -n ${{ secrets.AZ_DevOps_Read_PAT }} | base64)" >> ~/.npmrc
-        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:email=npm@npm.com" >> ~/.npmrc
+        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:email=nityagi@microsoft.com" >> ~/.npmrc
 
     - name: Build and unit test
       run: |
