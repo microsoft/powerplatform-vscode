@@ -84,6 +84,8 @@ export class PowerPagesChatParticipant {
 
         stream.progress(RESPONSE_AWAITED_MSG)
 
+        let siteObject = null;
+
         this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, { sessionId: this.powerPagesAgentSessionId });
 
         await this.initializeOrgDetails();
@@ -125,50 +127,54 @@ export class PowerPagesChatParticipant {
                 }
             };
         }
-        if (request.command == 'site') {
+        if (request.command) {
             //TODO: Handle command scenarios
-
-            const jsonObject = generateJsonFromIItem(globalWebsiteIItem);
-            console.log(JSON.stringify(jsonObject, null, 2));
-            sendApiRequest();
-
-        } else {
-
-            const userPrompt = request.prompt;
-
-            if (!userPrompt) {
-
-                //TODO: String approval is required
-                stream.markdown(NO_PROMPT_MESSAGE);
-
-                return {
-                    metadata: {
-                        command: ''
-                    }
-                };
+            switch (request.command) {
+                case 'site': {
+                    siteObject = JSON.stringify(generateJsonFromIItem(globalWebsiteIItem), null, 2);
+                    console.log(JSON.stringify(siteObject, null, 2));
+                    break;
+                }
+                default:
+                    break;
             }
-
-            const { activeFileParams } = getActiveEditorContent();
-
-            const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
-
-            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
-
-            const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
-
-            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, { scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID })
-
-            llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
-                if (response.displayText) {
-                    stream.markdown(response.displayText);
-                }
-                if (response.code) {
-                    stream.markdown('\n```javascript\n' + response.code + '\n```');
-                }
-                stream.markdown('\n');
-            });
-
         }
+
+        const userPrompt = request.prompt;
+
+        if (!userPrompt) {
+
+            //TODO: String approval is required
+            stream.markdown(NO_PROMPT_MESSAGE);
+
+            return {
+                metadata: {
+                    command: ''
+                }
+            };
+        }
+
+        const { activeFileParams } = getActiveEditorContent();
+
+        const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
+
+        const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag, siteObject);
+
+        const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
+
+        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, { scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID })
+
+        llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
+            if (response.displayText) {
+                stream.markdown(response.displayText);
+            }
+            if (response.code) {
+                stream.markdown('\n```javascript\n' + response.code + '\n```');
+            }
+            stream.markdown('\n');
+        });
+
+
 
         return {
             metadata: {

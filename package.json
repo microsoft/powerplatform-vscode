@@ -125,7 +125,7 @@
         "commands": [
           {
             "name": "site",
-            "description": "How I can help You?"
+            "description": "Ask about your site"
           }
         ]
       }
