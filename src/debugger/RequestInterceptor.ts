@@ -5,7 +5,7 @@
 
 import { EventEmitter, HTTPRequest, Page } from "puppeteer-core";
 import { Disposable } from "vscode";
-import { ITelemetry } from "../client/telemetry/ITelemetry";
+import { ITelemetry } from "../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
 import { BundleLoader } from "./BundleLoader";
 
@@ -45,7 +45,7 @@ export class RequestInterceptor implements Disposable {
     constructor(
         private readonly bundleLoader: BundleLoader,
         private readonly logger: ITelemetry
-    ) {}
+    ) { }
 
     /**
      * Starts intercepting requests to the specified file.

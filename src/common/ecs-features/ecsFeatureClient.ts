@@ -4,7 +4,7 @@
  */
 
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { createECSRequestURL } from "./ecsFeatureUtil";
 import { ECSFeatureDefinition as ECSFeatureProperties } from "./ecsFeatureProperties";
 import { ECSAPIFeatureFlagFilters } from "./ecsFeatureFlagFilters";

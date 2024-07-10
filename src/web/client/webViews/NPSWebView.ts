@@ -5,8 +5,10 @@
 
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
-import { telemetryEventNames } from "../telemetry/constants";
-import { queryParameters, SurveyConstants } from "../common/constants";
+import { queryParameters } from "../common/constants";
+import { getDeviceType } from "../utilities/deviceType";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
+import { getEnvironmentIdFromUrl } from "../utilities/commonUtil";
 
 export class NPSWebView {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -112,7 +114,7 @@ export class NPSWebView {
             `;
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_RENDER_NPS_FAILED,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_RENDER_NPS_FAILED,
                 this._getHtml.name,
                 (error as Error)?.message
             );

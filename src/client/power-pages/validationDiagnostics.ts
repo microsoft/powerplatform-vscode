@@ -4,8 +4,8 @@
  */
 
 import * as vscode from "vscode";
-import { ITelemetry } from "../telemetry/ITelemetry";
-import { sendTelemetryEvent, ValidateTextDocumentEvent } from "./telemetry";
+import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
+import { sendTelemetryEvent, ValidateTextDocumentEvent } from "../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 // Create a diagnostics connection to output warning/error messages to "Problems" tab
 const connection = vscode.languages.createDiagnosticCollection("FileDeleteEvent");
@@ -45,7 +45,7 @@ export async function validateTextDocument(uri: vscode.Uri,
         connection.set(uri, diagnostics.concat(vscode.languages.getDiagnostics(uri)));
     }
     catch (error) {
-        sendTelemetryEvent(telemetry, { methodName:validateTextDocument.name,eventName: ValidateTextDocumentEvent, exception: error as Error });
+        sendTelemetryEvent(telemetry, { methodName: validateTextDocument.name, eventName: ValidateTextDocumentEvent, exception: error as Error });
     }
 }
 

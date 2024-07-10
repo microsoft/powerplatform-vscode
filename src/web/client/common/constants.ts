@@ -110,13 +110,6 @@ export enum httpMethod {
     DELETE = "DELETE",
 }
 
-export enum SurveyConstants {
-    TEAM_NAME = "PowerPages",
-    SURVEY_NAME = "PowerPages-NPS",
-    EVENT_NAME = "VscodeWeb",
-    AUTHORIZATION_ENDPOINT = "https://microsoft.onmicrosoft.com/cessurvey/user",
-}
-
 export enum portalSchemaVersion {
     V1 = "portalschemav1",
     V2 = "portalschemav2",

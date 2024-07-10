@@ -8,7 +8,7 @@ import Sinon, { stub, assert, spy } from "sinon";
 import { expect } from "chai";
 import WebExtensionContext from "../../../client/WebExtensionContext";
 import { schemaKey } from "../../schema/constants";
-import { telemetryEventNames } from "../../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 
 import {
     queryParameters,
@@ -16,12 +16,14 @@ import {
 } from "../../common/constants";
 
 import {
-    showErrorDialog,
     removeEncodingFromParameters,
     checkMandatoryParameters,
     checkMandatoryPathParameters,
     checkMandatoryQueryParameters,
 } from "../../common/errorHandler";
+import {
+    showErrorDialog
+} from "../../../../common/utilities/errorHandlerUtil";
 
 describe("errorHandler", () => {
     afterEach(() => {
@@ -321,7 +323,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
             checkMandatoryQueryParameters.name,
             `dataSource:SQL, schemaName:1.0.0.0 ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
         );
@@ -360,7 +362,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
             checkMandatoryQueryParameters.name,
             `orgURL, dataSource:, schemaName:1.0.0.0 ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
         );
@@ -399,7 +401,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
             checkMandatoryQueryParameters.name,
             `orgURL, dataSource:SQL, schemaName: ,websiteId:ed9a6c19-5ab6-4f67-8c35-2423cff958c4`
         );
@@ -435,7 +437,7 @@ describe("errorHandler", () => {
         );
         assert.calledOnceWithExactly(
             _mockSendErrorTelemetry,
-            telemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
             checkMandatoryQueryParameters.name,
             `orgURL, dataSource:SQL, schemaName:1.0.0.0 ,websiteId:`
         );
