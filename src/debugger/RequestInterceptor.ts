@@ -30,7 +30,8 @@ export class RequestInterceptor implements Disposable {
     /**
      * Event emitter for {@link onRequestHandler} used to unregister the event.
      */
-    private requestEvent?: EventEmitter;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private requestEvent?: EventEmitter<any>;
 
     /**
      * Contents of the pcf control bundle.
