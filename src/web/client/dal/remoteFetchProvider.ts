@@ -32,7 +32,7 @@ import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEn
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
-import { ERRORS } from "../../../common/CommonConstants";
+import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
@@ -119,7 +119,7 @@ async function fetchFromDataverseAndCreateFiles(
 
             if (result[Constants.ODATA_COUNT] !== 0 && data.length === 0) {
                 console.error(vscode.l10n.t("Response data is empty"));
-                throw new Error(ERRORS.EMPTY_RESPONSE);
+                throw new Error(ERROR_CONSTANTS.EMPTY_RESPONSE);
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -213,16 +213,16 @@ async function createContentFiles(
 
         // Validate entity schema details
         if (subUri?.length === 0) {
-            throw new Error(ERRORS.SUBURI_EMPTY);
+            throw new Error(ERROR_CONSTANTS.SUBURI_EMPTY);
         }
 
         if (!attributes || !attributeExtension) {
-            throw new Error(ERRORS.ATTRIBUTES_EMPTY);
+            throw new Error(ERROR_CONSTANTS.ATTRIBUTES_EMPTY);
         }
 
         const entityId = fetchedFileId ? result[fetchedFileId] : null;
         if (!entityId) {
-            throw new Error(ERRORS.FILE_ID_EMPTY);
+            throw new Error(ERROR_CONSTANTS.FILE_ID_EMPTY);
         }
 
         fileName = fetchedFileName
@@ -230,7 +230,7 @@ async function createContentFiles(
             : Constants.EMPTY_FILE_NAME;
 
         if (fileName === Constants.EMPTY_FILE_NAME) {
-            throw new Error(ERRORS.FILE_NAME_EMPTY);
+            throw new Error(ERROR_CONSTANTS.FILE_NAME_EMPTY);
         }
 
         // Create folder paths
@@ -247,7 +247,7 @@ async function createContentFiles(
         );
 
         if (languageCodeAttribute && result[languageCodeAttribute] === null) {
-            throw new Error(ERRORS.LANGUAGE_CODE_ID_VALUE_NULL);
+            throw new Error(ERROR_CONSTANTS.LANGUAGE_CODE_ID_VALUE_NULL);
         }
 
         let languageCode = WebExtensionContext.websiteLanguageCode;
@@ -264,7 +264,7 @@ async function createContentFiles(
             ) as string;
 
             if (languageCode === Constants.DEFAULT_LANGUAGE_CODE || languageCode === undefined) {
-                throw new Error(ERRORS.LANGUAGE_CODE_EMPTY);
+                throw new Error(ERROR_CONSTANTS.LANGUAGE_CODE_EMPTY);
             }
         }
 
@@ -570,7 +570,7 @@ export async function preprocessData(
             formsData?.forEach((dataItem: any) => {
                 const entityId = fetchedFileId ? dataItem[fetchedFileId] : null;
                 if (!entityId) {
-                    throw new Error(ERRORS.FILE_ID_EMPTY);
+                    throw new Error(ERROR_CONSTANTS.FILE_ID_EMPTY);
                 }
                 advancedFormStepData.set(entityId, dataItem);
             });

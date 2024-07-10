@@ -8,7 +8,7 @@ import fetch, { RequestInfo, RequestInit } from "node-fetch";
 import { MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT } from '../common/constants';
 import WebExtensionContext from "../WebExtensionContext";
 import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
-import { ERRORS } from '../../../common/CommonConstants';
+import { ERROR_CONSTANTS } from '../../../common/ErrorConstants';
 
 export class ConcurrencyHandler {
     private _bulkhead = bulkhead(MAX_CONCURRENT_REQUEST_COUNT, MAX_CONCURRENT_REQUEST_QUEUE_COUNT);
@@ -26,7 +26,7 @@ export class ConcurrencyHandler {
                     this.handleRequest.name,
                     this._bulkhead.executionSlots.toString(),
                 );
-                throw new Error(ERRORS.SUBURI_EMPTY);
+                throw new Error(ERROR_CONSTANTS.SUBURI_EMPTY);
             } else {
                 throw e;
             }

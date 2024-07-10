@@ -11,7 +11,7 @@ import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
-import { ERRORS } from "../../CommonConstants";
+import { ERROR_CONSTANTS } from "../../ErrorConstants";
 import { EUROPE_GEO, UK_GEO } from "../constants";
 import { SurveyConstants } from "./constants";
 
@@ -41,7 +41,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
     if (apiToken) {
         sendTelemetryEvent(telemetry, { eventName: CopilotNpsAuthenticationCompleted, feedbackType: thumbType, copilotSessionId: sessionId });
     } else {
-        sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionId, error: new Error(ERRORS.NPS_FAILED_AUTH) });
+        sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionId, error: new Error(ERROR_CONSTANTS.NPS_FAILED_AUTH) });
     }
 
     const endpointUrl = useEUEndpoint(geoName) ? `https://europe.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}` :
