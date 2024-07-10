@@ -2,6 +2,8 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
+
+
 import * as vscode from 'vscode';
 import { IPreviewEngineContext } from './TreeView/Utils/IDataResolver';
 import { Webpage } from './TreeView/Types/Entity/WebPage';
@@ -327,7 +329,7 @@ function addPageTemplate(IPortalMetadataContext: any, contentPage: Webpage[], we
       }
     })
   })
-  
+
 }
 
 
@@ -527,7 +529,7 @@ function removeusedOne(unUsedFileIItem: IItem, metadataContext: IPreviewEngineCo
 }
 
 export class PreviewHelper {
-  private pathroot: vscode.Uri | null;
+  private pathroot: vscode.Uri | undefined;
   private previewHelper: IPreviewEngineContext;
   private websiteData: Website;
   private isBootstrapV5: boolean;
@@ -536,8 +538,9 @@ export class PreviewHelper {
   constructor() {
     this.isBootstrapV5 = false;
     this.previewHelper = {};
-    // this.pathroot = PortalWebView.getPortalRootFolder();
-    this.pathroot = vscode.Uri.file('C:/Users/t-mansisingh/OneDrive - Microsoft/Desktop/clone2/mansi-site-1---site-ajx90');
+    //this.pathroot = PortalWebView.getPortalRootFolder();
+    //this.pathroot = vscode.Uri.file('C:/Users/t-mansisingh/OneDrive - Microsoft/Desktop/clone2/mansi-site-1---site-ajx90');
+    this.pathroot = vscode.workspace.workspaceFolders?.[0].uri; //Assumes that the workspace is having only one site
     this.websiteData = {} as Website;
   }
 
