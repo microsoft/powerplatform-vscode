@@ -164,11 +164,12 @@ export class PowerPagesChatParticipant {
 
         this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, { scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID })
 
+        const skipCodes = ["", null, undefined, "violation", "unclear", "explain"];
         llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
             if (response.displayText) {
                 stream.markdown(response.displayText);
             }
-            if (response.code) {
+            if (response.code && !skipCodes.includes(response.code)) {
                 stream.markdown('\n```javascript\n' + response.code + '\n```');
             }
             stream.markdown('\n');
