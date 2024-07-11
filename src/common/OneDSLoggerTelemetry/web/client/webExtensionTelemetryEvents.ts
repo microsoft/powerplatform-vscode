@@ -126,4 +126,6 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT = "webExtensionFetchLocalScriptContent",
     WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_SUCCESS = "webExtensionFetchLocalScriptContentSuccess",
     WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_FAILED = "webExtensionFetchLocalScriptContentFailed",
+    WEB_EXTENSION_NPS_SUBMIT_FEEDBACK_FAILED = "webExtensionNpsSubmitFeedbackFailed",
+    WEB_EXTENSION_NPS_SUBMIT_FEEDBACK_SUCCESS = "webExtensionNpsSubmitFeedbackSuccess",
 }

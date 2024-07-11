@@ -8,6 +8,7 @@ import WebExtensionContext from "../WebExtensionContext";
 import { queryParameters } from "../common/constants";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { SurveyConstants } from "../../../common/copilot/user-feedback/constants";
+import { NPSService } from "../services/NPSService";
 
 export class NPSWebView {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -17,24 +18,83 @@ export class NPSWebView {
         webViewPanel: vscode.WebviewPanel
     ) {
         this._webviewPanel = webViewPanel;
-        this.initializeWebView();
+        this.initializeWebView().catch((error) => this.handleError(error));
     }
 
     private async initializeWebView() {
         try {
             const webviewHtml = await this._getHtml();
-            if (!webviewHtml) {
-                this._webviewPanel.dispose();
-            } else {
-                this._webviewPanel.webview.html = webviewHtml;
+            this._webviewPanel.webview.html = webviewHtml;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    private handleError(error: unknown) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_WEBVIEW_FAILED_TO_INITIALIZE,
+            this.initializeWebView.name,
+            (error as Error)?.message
+        );
+        this._webviewPanel.dispose();
+    }
+
+    private async submitFeedback(
+        teamName: string,
+        surveyName: string,
+        userId: string,
+        feedback: string
+    ) {
+        try {
+            const npsSurveyHeaders: HeadersInit = NPSService.getCesHeader(
+                WebExtensionContext.npsAccessToken
+            );
+            const npsSurveyEndpoint = NPSService.getNpsSurveyEndpoint();
+            const requestUrl = `${npsSurveyEndpoint}/api/v1/${teamName}/Surveys/${surveyName}/Feedbacks?userId=${userId}`;
+
+            const requestSentAtTime = new Date().getTime();
+            const response =
+                await WebExtensionContext.concurrencyHandler.handleRequest(
+                    requestUrl,
+                    {
+                        method: "POST",
+                        headers: npsSurveyHeaders,
+                        body: JSON.stringify(feedback),
+                    }
+                );
+
+            if (!response.ok) {
+                WebExtensionContext.telemetry.sendAPIFailureTelemetry(
+                    requestUrl,
+                    "NPS-Survey",
+                    "POST",
+                    new Date().getTime() - requestSentAtTime,
+                    this.submitFeedback.name,
+                    response.statusText,
+                );
+
+                throw new Error(JSON.stringify(response));
             }
+
+            const data = await response.json();
+
+            WebExtensionContext.telemetry.sendAPISuccessTelemetry(
+                requestUrl,
+                "NPS-Survey",
+                "POST",
+                new Date().getTime() - requestSentAtTime,
+                this.submitFeedback.name
+            );
+
+            return data.feedbackId;
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_WEBVIEW_FAILED_TO_INITIALIZE,
-                this.initializeWebView.name,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_SUBMIT_FEEDBACK_FAILED,
+                this.submitFeedback.name,
                 (error as Error)?.message
             );
-            this._webviewPanel.dispose();
+
+            throw error;
         }
     }
 
@@ -47,11 +107,9 @@ export class NPSWebView {
                 "survey.lib.umd.v1.0.10.min.js"
             );
             const surveyUrl = new URL(surveyLocation.toString());
-            const surveyScript = await WebExtensionContext.fetchLocalScriptContent(
-                surveyUrl
-            );
+            const surveyScript =
+                await WebExtensionContext.fetchLocalScriptContent(surveyUrl);
 
-            const npsAccessToken = WebExtensionContext.npsAccessToken;
             const tid = WebExtensionContext.urlParametersMap?.get(
                 queryParameters.TENANT_ID
             );
@@ -70,27 +128,10 @@ export class NPSWebView {
                         <survey-sdk id="mySurvey"></survey-sdk>
                     </body>
                     <script>
-                        async function submitFeedback(teamName, surveyName, userId, feedback) {
-                            await new Promise((resolve) => {
-                                setTimeout(() => {
-                                    resolve();
-                                }, 0.5 * 1000);
-                            });
-
-                            return '<feedbackId>'; // feedbackId from CES APIs
-                        }
-                        async function updateFeedback(teamName, surveyName, userId, feedbackId, feedback) {
-                            await new Promise((resolve) => {
-                                setTimeout(() => {
-                                    resolve();
-                                }, 0.5 * 1000);
-                            });
-                        }
-
                         document.addEventListener("DOMContentLoaded", function () {
                             const config = {
-                                teamName: ${SurveyConstants.TEAM_NAME},
-                                surveyName: ${SurveyConstants.SURVEY_NAME},
+                                teamName: "${SurveyConstants.TEAM_NAME}",
+                                surveyName: "${SurveyConstants.SURVEY_NAME}",
                                 userId: "${userId}",
                                 tenantId: "${tid}",
                                 locale: 'en',
@@ -99,10 +140,9 @@ export class NPSWebView {
                                 template: survey.Template.NPS,
                                 environment: survey.Environment.INT,
                                 region: survey.Region.World,
-                                accessToken: {getAccessToken: () => "${npsAccessToken}"},
+                                accessToken: { getAccessToken: () => "${WebExtensionContext.npsAccessToken}" },
                                 callbackFunctions: {
-                                    submitFeedback,
-                                    updateFeedback
+                                    ${this.submitFeedback}
                                 }
                             };
                             const element = document.getElementById('mySurvey');
