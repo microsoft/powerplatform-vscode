@@ -114,7 +114,7 @@ const webConfig = {
             patterns: [
                 {
                     from: path.resolve(__dirname, 'node_modules/@gia/survey-sdk/dist/survey.lib.umd.v1.0.10.min.js'),
-                    to: path.resolve(__dirname, 'dist/media')
+                    to: path.resolve(__dirname, 'dist/Nps-Survey-SDK')
                 },
             ]
         })

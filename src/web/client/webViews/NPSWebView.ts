@@ -103,7 +103,7 @@ export class NPSWebView {
             const surveyLocation = vscode.Uri.joinPath(
                 this.extensionUri,
                 "dist",
-                "media",
+                "Nps-Survey-SDK",
                 "survey.lib.umd.v1.0.10.min.js"
             );
             const surveyUrl = new URL(surveyLocation.toString());
@@ -169,7 +169,7 @@ export class NPSWebView {
             {
                 enableScripts: true,
                 localResourceRoots: [
-                    vscode.Uri.joinPath(extensionUri, "dist", "media"),
+                    vscode.Uri.joinPath(extensionUri, "dist", "Nps-Survey-SDK"),
                 ],
             }
         );
