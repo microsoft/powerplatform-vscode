@@ -1104,7 +1104,7 @@
     "https-browserify": "^1.0.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
-    "puppeteer-core": "^14.4.1",
+    "puppeteer-core": "^22.12.1",
     "recursive-readdir": "^2.2.3",
     "stream-http": "^3.2.0",
     "tty-browserify": "^0.0.1",
