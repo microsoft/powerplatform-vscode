@@ -6,9 +6,8 @@
 import * as vscode from "vscode";
 import WebExtensionContext from "../WebExtensionContext";
 import { queryParameters } from "../common/constants";
-import { getDeviceType } from "../utilities/deviceType";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
-import { getEnvironmentIdFromUrl } from "../utilities/commonUtil";
+import { SurveyConstants } from "../../../common/copilot/user-feedback/constants";
 
 export class NPSWebView {
     private readonly _webviewPanel: vscode.WebviewPanel;
@@ -31,7 +30,7 @@ export class NPSWebView {
             }
         } catch (error) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_NPS_WEBVIEW_FAILED_TO_INITIALIZE,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_WEBVIEW_FAILED_TO_INITIALIZE,
                 this.initializeWebView.name,
                 (error as Error)?.message
             );

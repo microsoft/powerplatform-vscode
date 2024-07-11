@@ -743,15 +743,15 @@ class WebExtensionContext implements IWebExtensionContext {
 
             this.telemetry.sendInfoTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_SUCCESS,
-                { workerUrl: workerUrl.toString() }
+                { workerUrl: scriptUrl.toString() }
             );
 
             return await response.text();
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
-                this.getWorkerScript.name,
-                Constants.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
+                this.fetchLocalScriptContent.name,
+                Constants.WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_FAILED,
                 error as Error
             );
         }
