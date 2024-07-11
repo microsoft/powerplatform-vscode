@@ -10,9 +10,9 @@ on:
     branches: [ main ]
   pull_request:
     branches:
-    - main
-    - 'release/stable'
-    - 'features/PowerPagesAgent'
+      - main
+      - 'release/stable'
+      - 'features/PowerPagesAgent'
   workflow_dispatch:
 
 jobs:
@@ -24,45 +24,45 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        lfs: true
+      - uses: actions/checkout@v3
+        with:
+          lfs: true
 
-    - name: Delete node_modules (manual cleanup)
-      if: ${{ runner.os == 'windows-latest' }}
-      run: |
-        rd /S /Q node_modules
-      shell: powershell
-
-    - name: Delete node_modules (manual cleanup)
-      if: ${{ runner.os != 'windows-latest' }}
-      run: |
-        rm -rf node_modules
-      shell: bash
-
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
-
-    - name: Configure .npmrc for Azure Artifacts
-      run: |
-        echo "@gia:registry=https://msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/" > ~/.npmrc
-        echo "always-auth=true" >> ~/.npmrc
-        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:username=nityagi" >> ~/.npmrc
-        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:_password=$(echo -n ${{ secrets.AZ_DevOps_Read_PAT }} | base64)" >> ~/.npmrc
-        echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:email=nityagi@microsoft.com" >> ~/.npmrc
-
-    - name: Build and unit test
-      run: |
-        npm ci
-        npm run dist
-      env:
-        AZ_DevOps_Read_PAT: ${{ secrets.AZ_DevOps_Read_PAT }}
-
-    - name: Run integration tests
-      uses: coactions/setup-xvfb@v1
-      with:
+      - name: Delete node_modules (manual cleanup)
+        if: ${{ runner.os == 'windows-latest' }}
         run: |
-         npm run test-integration
-         npm run test-web-integration
+          if (Test-Path node_modules) { rd /S /Q node_modules }
+        shell: powershell
+
+      - name: Delete node_modules (manual cleanup)
+        if: ${{ runner.os != 'windows-latest' }}
+        run: |
+          if [ -d node_modules ]; then rm -rf node_modules; fi
+        shell: bash
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Configure .npmrc for Azure Artifacts
+        run: |
+          echo "@gia:registry=https://msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/" > ~/.npmrc
+          echo "always-auth=true" >> ~/.npmrc
+          echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:username=${{ secrets.AZURE_DEVOPS_USERNAME }}" >> ~/.npmrc
+          echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:_password=$(echo -n ${{ secrets.AZURE_DEVOPS_READ_PAT }} | base64)" >> ~/.npmrc
+          echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:email=${{ secrets.AZURE_DEVOPS_EMAIL }}" >> ~/.npmrc
+
+      - name: Build and unit test
+        run: |
+          npm ci
+          npm run dist
+        env:
+          AZURE_DEVOPS_READ_PAT: ${{ secrets.AZURE_DEVOPS_READ_PAT }}
+
+      - name: Run integration tests
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: |
+            npm run test-integration
+            npm run test-web-integration
