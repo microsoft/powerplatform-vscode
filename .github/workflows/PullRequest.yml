@@ -1,8 +1,3 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
-#
-# CI workflow for PRs and merges to main
-# https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions
 name: PullRequest
 
 on:
@@ -28,14 +23,14 @@ jobs:
         with:
           lfs: true
 
-      - name: Delete node_modules (manual cleanup)
-        if: ${{ runner.os == 'windows-latest' }}
+      - name: Delete node_modules (manual cleanup on Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
           if (Test-Path node_modules) { rd /S /Q node_modules }
         shell: powershell
 
-      - name: Delete node_modules (manual cleanup)
-        if: ${{ runner.os != 'windows-latest' }}
+      - name: Delete node_modules (manual cleanup on Unix)
+        if: ${{ matrix.os != 'windows-latest' }}
         run: |
           if [ -d node_modules ]; then rm -rf node_modules; fi
         shell: bash
@@ -45,13 +40,25 @@ jobs:
         with:
           node-version: 18
 
-      - name: Configure .npmrc for Azure Artifacts
+      - name: Configure .npmrc for Azure Artifacts on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          echo "@gia:registry=https://msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/" > $env:USERPROFILE\.npmrc
+          echo "always-auth=true" >> $env:USERPROFILE\.npmrc
+          echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:username=${{ secrets.AZURE_DEVOPS_USERNAME }}" >> $env:USERPROFILE\.npmrc
+          echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:_password=$(echo -n ${{ secrets.AZURE_DEVOPS_READ_PAT }} | base64)" >> $env:USERPROFILE\.npmrc
+          echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:email=${{ secrets.AZURE_DEVOPS_EMAIL }}" >> $env:USERPROFILE\.npmrc
+        shell: pwsh
+
+      - name: Configure .npmrc for Azure Artifacts on Unix
+        if: ${{ matrix.os != 'windows-latest' }}
         run: |
           echo "@gia:registry=https://msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/" > ~/.npmrc
           echo "always-auth=true" >> ~/.npmrc
           echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:username=${{ secrets.AZURE_DEVOPS_USERNAME }}" >> ~/.npmrc
           echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:_password=$(echo -n ${{ secrets.AZURE_DEVOPS_READ_PAT }} | base64)" >> ~/.npmrc
           echo "//msazure.pkgs.visualstudio.com/One/_packaging/BAP_GIA_Survey_Feed/npm/registry/:email=${{ secrets.AZURE_DEVOPS_EMAIL }}" >> ~/.npmrc
+        shell: bash
 
       - name: Build and unit test
         run: |
