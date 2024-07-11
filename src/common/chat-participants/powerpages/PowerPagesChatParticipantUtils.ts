@@ -3,17 +3,15 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ITelemetry } from "../../../client/telemetry/ITelemetry";
-import { ADX_ENTITYFORM} from "../../copilot/constants";
+import { ADX_ENTITYFORM } from "../../copilot/constants";
 import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/dataverseMetadata";
 import { IActiveFileParams } from "../../copilot/model";
+import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
 import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
 import { SUPPORTED_ENTITIES } from "./PowerPagesChatParticipantConstants";
 import { IComponentInfo } from "./PowerPagesChatParticipantTypes";
-
-
 
 export async function getEndpoint(
     orgID: string,
@@ -51,7 +49,7 @@ export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | u
         }
     }
 
-    return {componentInfo, entityName: metadataInfo.entityName};
+    return { componentInfo, entityName: metadataInfo.entityName };
 }
 
 export function isEntityInSupportedList(entity: string): boolean {

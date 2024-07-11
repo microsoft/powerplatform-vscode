@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as os from 'os'
 import { PacInterop, PacWrapper } from '../pac/PacWrapper';
-import { ITelemetry } from '../telemetry/ITelemetry';
+import { ITelemetry } from '../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { RegisterPanels } from './PacActivityBarUI';
 import { PacWrapperContext } from '../pac/PacWrapperContext';
 import { RegisterUriHandler } from '../uriHandler';
@@ -33,7 +33,7 @@ export class PacTerminal implements vscode.Disposable {
         // Compatability for users on M1 Macs with .NET 6.0 installed - permit pac and pacTelemetryUpload
         // to roll up to 6.0 if 5.0 is not found on the system.
         if (os.platform() === 'darwin' && os.version().includes('ARM64')) {
-            this._context.environmentVariableCollection.replace('DOTNET_ROLL_FORWARD','Major');
+            this._context.environmentVariableCollection.replace('DOTNET_ROLL_FORWARD', 'Major');
         }
 
         this._cmdDisposables.push(

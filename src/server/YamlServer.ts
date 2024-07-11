@@ -41,6 +41,7 @@ let hasDiagnosticRelatedInformationCapability = false;
 
 
 connection.onInitialize((params: InitializeParams) => {
+
     const capabilities = params.capabilities;
     workspaceRootFolders = params.workspaceFolders;
     // Does the client support the `workspace/configuration` request?
@@ -93,7 +94,7 @@ connection.onInitialized(() => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
-	editedTextDocument = (change.document);
+    editedTextDocument = (change.document);
 });
 
 
@@ -135,7 +136,7 @@ function getSuggestions(rowIndex: number, pathOfFileBeingEdited: string) {
         }
     }
     // we send telemetry data only in case of success, otherwise the logs will be bloated with unnecessary data
-    if(completionItems.length > 0) {
+    if (completionItems.length > 0) {
         telemetryData.properties.success = 'true';
         telemetryData.measurements.countOfAutoCompleteResults = completionItems.length;
         sendTelemetryEvent(connection, telemetryData);

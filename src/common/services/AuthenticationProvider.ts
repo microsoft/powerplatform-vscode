@@ -4,8 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { showErrorDialog } from "../../web/client/common/errorHandler";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../copilot/telemetry/telemetryConstants";
 import { getUserAgent } from "../utilities/Utils";
@@ -18,10 +17,13 @@ import {
     VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
     VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
     VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED,
-    VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_FAILED
+    VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_FAILED,
+    VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED
 } from "./TelemetryConstants";
-import { ERRORS } from "../ErrorConstants";
+import { ERROR_CONSTANTS } from "../ErrorConstants";
 import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL } from "./Constants";
+import jwt_decode from 'jwt-decode';
+import { showErrorDialog } from "../utilities/errorHandlerUtil";
 
 
 export function getCommonHeadersForDataverse(
@@ -66,11 +68,9 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
         }
         accessToken = session?.accessToken ?? '';
         user = session.account.label;
-        userId = session?.account.id.split("/").pop() ??
-            session?.account.id ??
-            "";
+        userId = getOIDFromToken(accessToken, telemetry);
         if (!accessToken) {
-            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+            throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
 
         if (firstTimeAuth) {
@@ -112,11 +112,9 @@ export async function dataverseAuthentication(
         }
 
         accessToken = session?.accessToken ?? "";
-        userId = session?.account.id.split("/").pop() ??
-            session?.account.id ??
-            "";
+        userId = getOIDFromToken(accessToken, telemetry);
         if (!accessToken) {
-            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+            throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
 
         if (firstTimeAuth) {
@@ -161,7 +159,7 @@ export async function npsAuthentication(
         );
         accessToken = session?.accessToken ?? "";
         if (!accessToken) {
-            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+            throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
         sendTelemetryEvent(telemetry,
             { eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_COMPLETED }
@@ -213,16 +211,13 @@ export async function graphClientAuthentication(
 
         accessToken = session?.accessToken ?? "";
         if (!accessToken) {
-            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+            throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
 
         if (firstTimeAuth) {
             sendTelemetryEvent(telemetry, {
                 eventName: VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
-                userId:
-                    session?.account.id.split("/").pop() ??
-                    session?.account.id ??
-                    "",
+                userId: getOIDFromToken(accessToken, telemetry),
             });
         }
     } catch (error) {
@@ -262,16 +257,13 @@ export async function bapServiceAuthentication(
 
         accessToken = session?.accessToken ?? "";
         if (!accessToken) {
-            throw new Error(ERRORS.NO_ACCESS_TOKEN);
+            throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
 
         if (firstTimeAuth) {
             sendTelemetryEvent(telemetry, {
                 eventName: VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED,
-                userId:
-                    session?.account.id.split("/").pop() ??
-                    session?.account.id ??
-                    "",
+                userId: getOIDFromToken(accessToken, telemetry),
             });
         }
     } catch (error) {
@@ -287,4 +279,16 @@ export async function bapServiceAuthentication(
     }
 
     return accessToken;
+}
+
+export function getOIDFromToken(token: string, telemetry: ITelemetry) {
+    try {
+        const decoded = jwt_decode(token);
+        return decoded?.oid ?? "";
+    } catch (error) {
+        sendTelemetryEvent(telemetry,
+            { eventName: VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED, errorMsg: (error as Error).message }
+        )
+    }
+    return "";
 }

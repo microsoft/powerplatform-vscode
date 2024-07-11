@@ -10,7 +10,6 @@ import {
     CO_PRESENCE_FEATURE_SETTING_NAME,
     DATA,
     MULTI_FILE_FEATURE_SETTING_NAME,
-    NO_CONTENT,
     STUDIO_PROD_REGION,
     VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
     portalSchemaVersion,
@@ -18,9 +17,9 @@ import {
 } from "../common/constants";
 import { IAttributePath } from "../common/interfaces";
 import { schemaEntityName } from "../schema/constants";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import WebExtensionContext from "../WebExtensionContext";
-import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../client/constants";
+import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../common/constants";
 import { doesFileExist, getFileAttributePath, getFileEntityName, updateEntityColumnContent, updateFileDirtyChanges } from "./fileAndEntityUtil";
 import { isWebFileV2 } from "./schemaHelperUtil";
 
@@ -63,19 +62,20 @@ export function isExtensionNeededInFileName(entity: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getAttributeContent(result: any, attributePath: IAttributePath, entityName: string, entityId: string) {
-    let value = result[attributePath.source] ?? NO_CONTENT;
+    let value = result[attributePath.source];
 
     try {
         if (result[attributePath.source] && attributePath.relativePath.length) {
             value =
-                JSON.parse(result[attributePath.source])[attributePath.relativePath] ?? NO_CONTENT;
+                JSON.parse(result[attributePath.source])[attributePath.relativePath];
         }
     }
     catch (error) {
         const errorMsg = (error as Error)?.message;
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR,
+        WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR,
             getAttributeContent.name,
             `For ${entityName} with entityId ${entityId} and attributePath ${JSON.stringify(attributePath)} error: ${errorMsg}`);
+        return undefined;
     }
 
     return value;
@@ -98,7 +98,7 @@ export function setFileContent(result: any, attributePath: IAttributePath, conte
         }
     } catch (error) {
         const errorMsg = (error as Error)?.message;
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_SET_FILE_CONTENT_ERROR, setFileContent.name, errorMsg);
+        WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_SET_FILE_CONTENT_ERROR, setFileContent.name, errorMsg);
     }
 }
 
@@ -109,7 +109,7 @@ export function isVersionControlEnabled() {
 
     if (!isVersionControlEnabled) {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_DIFF_VIEW_FEATURE_FLAG_DISABLED
         );
     }
 
@@ -123,12 +123,12 @@ export function isMultifileEnabled() {
 
     if (!isMultifileEnabled) {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED
         );
     }
     else {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED
         );
     }
 
@@ -142,12 +142,12 @@ export function isCoPresenceEnabled() {
 
     if (!isCoPresenceEnabled) {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED
         );
     }
     else {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED
         );
     }
 
@@ -191,7 +191,7 @@ export function isWebfileContentLoadNeeded(fileName: string, fsPath: string): bo
     const fileExtension = getFileExtension(fileName) as string;
     const validImageExtensions = getFileExtensionForPreload();
 
-    WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_WEBFILE_EXTENSION,
+    WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEBFILE_EXTENSION,
         { fileExtension: fileExtension });
 
     return fileExtension !== undefined ?
@@ -246,7 +246,7 @@ export function isImageFileSupportedForEdit(fileName: string): boolean {
         supportedImageFileExtensions.includes(fileExtension.toLowerCase()) : false;
 
     if (isSupported) {
-        WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION,
+        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION,
             { fileExtension: fileExtension });
     }
 

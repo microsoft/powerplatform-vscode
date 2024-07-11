@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export enum telemetryEventNames {
+export enum desktopTelemetryEventNames {
     DESKTOP_EXTENSION_INIT_CONTEXT = "DesktopExtensionInitContext",
-  
 }

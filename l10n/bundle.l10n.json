@@ -60,6 +60,7 @@
   "NEW": "NEW",
   "Copied to clipboard!": "Copied to clipboard!",
   "What do you need help with?": "What do you need help with?",
+  "Make sure AI-generated content is accurate and appropriate before using. <a href=\"https://go.microsoft.com/fwlink/?linkid=2240145\">Learn more</a> | <a href=\"https://go.microsoft.com/fwlink/?linkid=2189520\">View\n              terms</a>": "Make sure AI-generated content is accurate and appropriate before using. <a href=\"https://go.microsoft.com/fwlink/?linkid=2240145\">Learn more</a> | <a href=\"https://go.microsoft.com/fwlink/?linkid=2189520\">View\n              terms</a>",
   "Let Copilot help you code": "Let Copilot help you code",
   "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ": "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ",
   "Try Copilot for Power Pages": "Try Copilot for Power Pages",
@@ -112,6 +113,7 @@
       "{0} represents the name of the file"
     ]
   },
+  "Some references might be broken. Please check diagnostics for details.": "Some references might be broken. Please check diagnostics for details.",
   "Enter the name of the web template": "Enter the name of the web template",
   "Please enter a name for the web template.": "Please enter a name for the web template.",
   "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
@@ -122,10 +124,17 @@
   "Choose page template": "Choose page template",
   "Choose parent page": "Choose parent page",
   "Please enter a name for the webpage.": "Please enter a name for the webpage.",
+  "Webpage names should contain only letters, numbers, hyphens, or underscores.": "Webpage names should contain only letters, numbers, hyphens, or underscores.",
   "A webpage with the same name already exists. Please enter a different name.": "A webpage with the same name already exists. Please enter a different name.",
   "No parent pages found for adding webfile": "No parent pages found for adding webfile",
   "File(s) already exist. No new files to add": "File(s) already exist. No new files to add",
   "Web files": "Web files",
+  "Adding {0} web file(s). Existing files will be skipped/{0} represents the number of web files": {
+    "message": "Adding {0} web file(s). Existing files will be skipped",
+    "comment": [
+      "{0} represents the number of web files"
+    ]
+  },
   "Webfile(s) added successfully": "Webfile(s) added successfully",
   "Page Template name cannot be empty.": "Page Template name cannot be empty.",
   "New Page Template": "New Page Template",
@@ -134,6 +143,8 @@
   "A page template with the same name already exists. Please enter a different name.": "A page template with the same name already exists. Please enter a different name.",
   "No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.": "No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.",
   "No workspace folder found": "No workspace folder found",
+  "Operation failed. See output panel for details.": "Operation failed. See output panel for details.",
+  "Show Output Panel": "Show Output Panel",
   "New Content Snippet": "New Content Snippet",
   "Add content snippet name (name should be unique)": "Add content snippet name (name should be unique)",
   "Select Type": "Select Type",

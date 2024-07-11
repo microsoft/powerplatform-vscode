@@ -11,7 +11,7 @@ import {
     WorkspaceFolder,
     workspace,
 } from "vscode";
-import { ITelemetry } from "../client/telemetry/ITelemetry";
+import { ITelemetry } from "../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
 import { sleep } from "./utils";
 

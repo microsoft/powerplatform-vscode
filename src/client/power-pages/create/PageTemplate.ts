@@ -17,13 +17,13 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import path from "path";
 import { statSync } from "fs";
-import { ITelemetry } from "../../telemetry/ITelemetry";
+import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import {
     TableFolder,
     Tables,
     YoSubGenerator,
 } from "./CreateOperationConstants";
-import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
+import { sendTelemetryEvent, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 interface IPagetemplateInputState {
     title: string;
@@ -83,14 +83,14 @@ export const createPageTemplate = async (
             telemetry
         );
     } catch (error: any) {
-    sendTelemetryEvent(telemetry, {
-        methodName:createPageTemplate.name,
-        eventName: UserFileCreateEvent,
-        fileEntityType: Tables.PAGETEMPLATE,
-        exception: error as Error,
-    });
-    throw new Error(error);
-}
+        sendTelemetryEvent(telemetry, {
+            methodName: createPageTemplate.name,
+            eventName: UserFileCreateEvent,
+            fileEntityType: Tables.PAGETEMPLATE,
+            exception: error as Error,
+        });
+        throw new Error(error);
+    }
 };
 
 /*

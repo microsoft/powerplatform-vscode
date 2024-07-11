@@ -15,7 +15,7 @@ import {
 } from "vscode";
 
 import { Debugger } from "./Debugger";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 import { BrowserManager } from "../browser";
 import { BundleLoader } from "../BundleLoader";
@@ -33,7 +33,7 @@ export class DebugAdaptorFactory implements DebugAdapterDescriptorFactory {
      * Creates a new DebugAdaptorFactory instance.
      * @param logger The telemetry reporter to use for telemetry.
      */
-    constructor(private readonly logger: ITelemetry) {}
+    constructor(private readonly logger: ITelemetry) { }
 
     /**
      * Creates the dependencies for the debugger.

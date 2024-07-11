@@ -3,11 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { GetAuthProfileWatchPattern } from "../client/lib/AuthPanelView";
-import { PacWrapper } from "../client/pac/PacWrapper";
+import { GetAuthProfileWatchPattern } from "./lib/AuthPanelView";
+import { PacWrapper } from "./pac/PacWrapper";
 import * as vscode from "vscode";
-import { PAC_SUCCESS } from "./copilot/constants";
-import { ActiveOrgOutput } from "../client/pac/PacTypes";
+import { ActiveOrgOutput } from "./pac/PacTypes";
+import { SUCCESS } from "../common/constants";
 
 export const orgChangeEventEmitter = new vscode.EventEmitter<ActiveOrgOutput>();
 export const orgChangeEvent = orgChangeEventEmitter.event;
@@ -49,7 +49,7 @@ export class OrgChangeNotifier {
 
     private async activeOrgDetails() {
         const pacActiveOrg = await this._pacWrapper?.activeOrg();
-        if (pacActiveOrg && pacActiveOrg.Status === PAC_SUCCESS) {
+        if (pacActiveOrg && pacActiveOrg.Status === SUCCESS) {
             this._orgDetails = pacActiveOrg.Results;
             orgChangeEventEmitter.fire(this._orgDetails);
         } else {
