@@ -477,7 +477,7 @@ function processEntity(sourceDep: IItem, parent: IItem, targetIItem: IItem, enti
     }
   });
   if (exist == false) {
-    const item = createItem(`${fileNameOrID} Not Used`, `${fileNameOrID}`, `${entity.tagName}`, true, vscode.Uri.parse(``), comp, [], '', '');
+    const item = createItem(`${fileNameOrID} Not Used`, `${fileNameOrID}`, `${entity.tagName}`, true, vscode.Uri.parse(``), '00', [], '', '');
     let fileNameAlready = sourceDep.children.find(child => child.label === `${fileNameOrID} Not Used`);
     if (!fileNameAlready) {
       sourceDep.children.push(item);
@@ -539,8 +539,8 @@ export class PreviewHelper {
     this.isBootstrapV5 = false;
     this.previewHelper = {};
     //this.pathroot = PortalWebView.getPortalRootFolder();
-    //this.pathroot = vscode.Uri.file('C:/Users/t-mansisingh/OneDrive - Microsoft/Desktop/clone2/mansi-site-1---site-ajx90');
-    this.pathroot = vscode.workspace.workspaceFolders?.[0].uri; //Assumes that the workspace is having only one site
+    this.pathroot = vscode.Uri.file('C:/Users/t-mansisingh/OneDrive - Microsoft/Desktop/clone2/mansi-site-1---site-ajx90');
+    // this.pathroot = vscode.workspace.workspaceFolders?.[0].uri; //Assumes that the workspace is having only one site
     this.websiteData = {} as Website;
   }
 

@@ -61,7 +61,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
     }
 
 
-    //Required for testing with localhost
+    // Required for testing with localhost
     const agent = new https.Agent({
         rejectUnauthorized: false,
     });

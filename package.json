@@ -980,8 +980,8 @@
       ],
       "explorer": [
         {
-          "id": "exampleView",
-          "name": "Example View"
+          "id": "hierarchicalView",
+          "name": "HIERARCHICAL VIEW"
         },
         {
           "id": "powerpages.powerPagesFileExplorer",

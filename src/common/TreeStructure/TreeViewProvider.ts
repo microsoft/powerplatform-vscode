@@ -35,6 +35,11 @@ class MyTreeItem extends vscode.TreeItem {
 
     if (item.isFile) {
       switch (item.component) {
+        case "00": // HTML
+          return {
+            light: path.join(basePath, 'light', 'warning.svg'),
+            dark: path.join(basePath, 'dark', 'warning.svg')
+          };
         case "01": // HTML
           return {
             light: path.join(basePath, 'dark', 'html.svg'),
@@ -261,7 +266,7 @@ function helper(item: IItem, entityIItem: any) {
 }
 export function createTree(websiteIItem: IItem) {
   const treeDataProvider = new MyTreeDataProvider([websiteIItem]);
-  const treeView = vscode.window.createTreeView('exampleView', { treeDataProvider });
+  const treeView = vscode.window.createTreeView('hierarchicalView', { treeDataProvider });
 
   vscode.commands.registerCommand('extension.openWebpage', (webpageName: string) => {
     vscode.window.showInformationMessage(`Opening Webpage: ${webpageName}`);
