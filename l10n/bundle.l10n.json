@@ -69,6 +69,10 @@
   "Tell us more.": "Tell us more.",
   "Try and be as specific as possible. Your feedback will be used to improve Copilot. <a href=\"https://privacy.microsoft.com/en-US/data-privacy-notice\"> View privacy details </a>": "Try and be as specific as possible. Your feedback will be used to improve Copilot. <a href=\"https://privacy.microsoft.com/en-US/data-privacy-notice\"> View privacy details </a>",
   "Submit": "Submit",
+  "Please provide a prompt to get started.\n You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.": "Please provide a prompt to get started.\n You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.",
+  "Authentication failed. Please try again.": "Authentication failed. Please try again.",
+  "Copilot is not available. Please contact your administrator.": "Copilot is not available. Please contact your administrator.",
+  "Active auth profile is not found or has expired. Please try again.": "Active auth profile is not found or has expired. Please try again.",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [

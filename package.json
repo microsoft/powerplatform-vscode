@@ -112,6 +112,16 @@
     }
   },
   "contributes": {
+    "chatParticipants": [
+      {
+        "id": "powerpages",
+        "name": "powerpages",
+        "fullName": "Power Pages Copilot",
+        "description": "Power Pages Copilot",
+        "isSticky": true,
+        "when": "config.powerPlatform.experimental.powerPagesInGitHubCopilotChat"
+      }
+    ],
     "problemMatchers": [
       {
         "name": "pcf-scripts-build",
@@ -379,6 +389,11 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "Whether the Power Platform Copilot is enabled."
+        },
+        "powerPlatform.experimental.powerPagesInGitHubCopilotChat": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Whether the @powerpages integration is enabled."
         },
         "powerPlatform.auth.cloud": {
           "type": "string",

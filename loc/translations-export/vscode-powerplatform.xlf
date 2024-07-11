@@ -16,6 +16,9 @@
     <trans-unit id="++CODE++8d35e64354d3db3df1df4ef8e6068b6b9dd58514fcf980f7071e10ed160db95a">
       <source xml:lang="en">AI-generated content can contain mistakes</source>
     </trans-unit>
+    <trans-unit id="++CODE++5f9c7a14b3c0c2971e4a8f4471af5071dbd3cf37f96fa09fe1257124c0b7e921">
+      <source xml:lang="en">Active auth profile is not found or has expired. Please try again.</source>
+    </trans-unit>
     <trans-unit id="++CODE++5d8300ceca093c3e9b111bbcadfac87c89ca4274fc9a7fe3267f037a5ab4ceac">
       <source xml:lang="en">Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.</source>
     </trans-unit>
@@ -32,6 +35,9 @@
     <trans-unit id="++CODE++b30fa58bd8e7489da154905f0c0d711e956f3841cf86157ca1cdd80d2b5d5499">
       <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
       <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
+    </trans-unit>
+    <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
+      <source xml:lang="en">Authentication failed. Please try again.</source>
     </trans-unit>
     <trans-unit id="++CODE++a57666e58a53eea23667fddf0a7c41bdc64abfc5eae94637e88388a6b139b314">
       <source xml:lang="en">Authorization Failed. Please run again to authorize it</source>
@@ -78,6 +84,9 @@
     </trans-unit>
     <trans-unit id="++CODE++344de0f92ba2ec8b690a0454eef93ef33d950e4bd785171eb060164a714ed419">
       <source xml:lang="en">Copilot In Power Pages</source>
+    </trans-unit>
+    <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
+      <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
     </trans-unit>
     <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
       <source xml:lang="en">Copy to clipboard</source>
@@ -284,6 +293,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++7f6276dc63b573d177b7d6e17f787b108e3c8c7d449324ac13a6d06b1be59d8e">
       <source xml:lang="en">Please enter a name for the webpage.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++f39f65c4f7d519a37b66a00d02a6def9e3721080363dae761b907793330333cd">
+      <source xml:lang="en">Please provide a prompt to get started.
+ You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
     </trans-unit>
     <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
       <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>

@@ -10,7 +10,7 @@ import { dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
-import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
+import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IOrgInfo } from './model';
 import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -24,6 +24,7 @@ import { orgChangeErrorEvent, orgChangeEvent } from "../../client/OrgChangeNotif
 import { createAuthProfileExp, getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../services/Constants";
 import { ArtemisService } from "../services/ArtemisService";
+import { SUCCESS } from "../constants";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -131,7 +132,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         orgID = '';
         const pacOutput = await this._pacWrapper?.activeOrg();
 
-        if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
+        if (pacOutput && pacOutput.Status === SUCCESS) {
             this.handleOrgChangeSuccess(pacOutput.Results);
         } else if (this._view?.visible) {
             await createAuthProfileExp(this._pacWrapper)
@@ -162,7 +163,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             vscode.commands.executeCommand('setContext', 'powerpages.copilot.isVisible', true);
         }
 
-        if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
+        if (pacOutput && pacOutput.Status === SUCCESS) {
             await this.handleOrgChangeSuccess(pacOutput.Results);
         } else if (!IS_DESKTOP && orgID && activeOrgUrl) {
             await this.handleOrgChangeSuccess({ OrgId: orgID, UserId: userID, OrgUrl: activeOrgUrl, EnvironmentId: environmentId } as ActiveOrgOutput);
@@ -305,7 +306,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private async handleLogin() {
 
         const pacOutput = await this._pacWrapper?.activeOrg();
-        if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
+        if (pacOutput && pacOutput.Status === SUCCESS) {
             this.handleOrgChangeSuccess.call(this, pacOutput.Results);
 
             intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) => {
@@ -326,7 +327,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 return;
             }
             const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-            pacAuthCreateOutput && pacAuthCreateOutput.Status === PAC_SUCCESS
+            pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS
                 ? intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) =>
                     this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId)
                 )
