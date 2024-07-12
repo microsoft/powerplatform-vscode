@@ -297,7 +297,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 case "openGitHubCopilotLink": {
                     //Open the GitHub Copilot Chat with @powerpages if GitHub Copilot Chat is installed
                     if(vscode.extensions.getExtension('github.copilot-chat')) {
-                        vscode.commands.executeCommand('workbench.action.chat.open', '@powerpages');
+                        vscode.commands.executeCommand('workbench.action.chat.open', '@powerpages how can you help with coding for my website?');
                     } else {
                         vscode.env.openExternal(vscode.Uri.parse('https://go.microsoft.com/fwlink/?linkid=2276973'));
                     }

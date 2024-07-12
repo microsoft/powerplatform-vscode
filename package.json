@@ -119,7 +119,8 @@
         "fullName": "Copilot for Power Pages",
         "description": "Copilot for Power Pages",
         "isSticky": true,
-        "when": "config.powerPlatform.experimental.powerPagesInGitHubCopilotChat"
+        "when": "config.powerPlatform.experimental.powerPagesInGitHubCopilotChat",
+        "sampleRequest": "How can you help with coding for my website?"
       }
     ],
     "problemMatchers": [
