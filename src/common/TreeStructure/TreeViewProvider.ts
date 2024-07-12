@@ -236,20 +236,21 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<MyTreeItem> {
 
   findItemById(item: IItem, websiteIItem: IItem): IItem | undefined {
     const comp = item.component.slice(1);
+    const reusable=websiteIItem.children.find((child: IItem) => child.label === 'Reusable Components');
     if (comp == '7') {
-      const contentSnipppetIItem = websiteIItem.children.find((child: IItem) => child.label === 'Content Snippets');
+      const contentSnipppetIItem = reusable?.children.find((child: IItem) => child.label === 'Content Snippets');
       return helper(item, contentSnipppetIItem);
     } else if (comp == '8') {
-      const webTemplateIItem = websiteIItem.children.find((child: IItem) => child.label === 'Web Templates');
+      const webTemplateIItem = reusable?.children.find((child: IItem) => child.label === 'Web Templates');
       return helper(item, webTemplateIItem);
     } else if (comp == '15') {
-      const entityFormIItem = websiteIItem.children.find((child: IItem) => child.label === 'Basic Forms');
+      const entityFormIItem = reusable?.children.find((child: IItem) => child.label === 'Basic Forms');
       return helper(item, entityFormIItem);
     } else if (comp == '17') {
-      const listsIItem = websiteIItem.children.find((child: IItem) => child.label === 'Lists');
+      const listsIItem = reusable?.children.find((child: IItem) => child.label === 'Lists');
       return helper(item, listsIItem);
     } else if (comp == '19') {
-      const webformIItem = websiteIItem.children.find((child: IItem) => child.label === 'Advanced Forms');
+      const webformIItem = reusable?.children.find((child: IItem) => child.label === 'Advanced Forms');
       return helper(item, webformIItem);
     } else {
       return undefined;

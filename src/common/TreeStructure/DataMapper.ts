@@ -65,8 +65,10 @@ export const treeView = async () => {
 
     globalwebPageIItem = webIItem;
     webPageIItem.children = webPageIItem.children.filter(item => item.label === "Home");
-    (websiteIItem.children as IItem[]).push(webtemplateIItem, webPageIItem, webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem, unUsedFileIItem);
-
+    const reusableIItem = createItem(`Reusable Components`, `Reusable Components`, ``, false, vscode.Uri.parse(`/reusable Component`), '26', [], '', '');
+    (reusableIItem.children as IItem[]).push(webtemplateIItem,webFileIItem, contentSnippetIItem, listIItem, entityFormtIItem, webFormIItem);
+    (websiteIItem.children as IItem[]).push(webPageIItem,reusableIItem,unUsedFileIItem);
+    
     console.log(websiteIItem);
     globalWebsiteIItem = websiteIItem;
 
@@ -462,8 +464,8 @@ function processEntity(sourceDep: IItem, parent: IItem, targetIItem: IItem, enti
       let fileNameAlready = sourceDep.children.find(child => (child.label === targetItem.label && child.component.slice(1) === targetItem.component.slice(1)));
       let ht = targetItem.children.find((child: IItem) => child.isFile === true);
       let htLabel = ht?.label ?? '';
-      let parentAlreadyPresent = targetItem.parentList.find(child => (child.label === parent.label && child.component === parent.component));
-      if (!parentAlreadyPresent) {
+      // let parentAlreadyPresent = targetItem.parentList.find(child => (child.label === parent.label && child.component === parent.component));
+      if (!fileNameAlready) {
         targetItem.parentList.push(parent);
       }
       const item = createItem(`${targetItem.label}`, `Source-Dependencies`, `${targetItem.id}`, true, vscode.Uri.parse(`/inside treeItem`), comp, [], '', '');

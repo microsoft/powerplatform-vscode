@@ -94,18 +94,19 @@ function processDependencies(dependencies: DyanmicEntity[], locations: vscode.Lo
         const tagName = entity.tagName.replace(/^['"](.*)['"]$/, '$1');
         const property = entity.property.replace(/^['"](.*)['"]$/, '$1');
         const fileNameOrID = entity.fileNameOrID.replace(/^['"](.*)['"]$/, '$1');
+        const reusable=globalWebsiteIItem.children.find((child: IItem) => child.label === 'Reusable Components');
         if (tagName === "snippets" || tagName === "snippet" || (tagName === 'editable' && (property === "snippets" || property === "snippet"))) {
-            const contentSnippetIItem = globalWebsiteIItem.children.find((child: IItem) => child.label === 'Content Snippets');
+            const contentSnippetIItem = reusable?.children.find((child: IItem) => child.label === 'Content Snippets');
             if (contentSnippetIItem) {
                 processEntity(contentSnippetIItem, entity, locations, 'label', '07');
             }
         } else if (tagName === "Web Template") {
-            const webtemplateIItem = globalWebsiteIItem.children.find((child: IItem) => child.label === 'Web Templates');
+            const webtemplateIItem = reusable?.children.find((child: IItem) => child.label === 'Web Templates');
             if (webtemplateIItem) {
                 processEntity(webtemplateIItem, entity, locations, 'label', '08');
             }
         } else if (tagName === "entityform" || tagName === "entity_form") {
-            const entityFormtIItem = globalWebsiteIItem.children.find((child: IItem) => child.label === 'Basic Forms');
+            const entityFormtIItem = reusable?.children.find((child: IItem) => child.label === 'Basic Forms');
             if (entityFormtIItem) {
                 if (property == 'id' && isNaN(fileNameOrID)) {
                     processEntity(entityFormtIItem, entity, locations, 'id', '015');
@@ -116,7 +117,7 @@ function processDependencies(dependencies: DyanmicEntity[], locations: vscode.Lo
                 }
             }
         } else if (tagName === "entitylist" || tagName === "entity_list") {
-            const listIItem = globalWebsiteIItem.children.find((child: IItem) => child.label === 'Lists');
+            const listIItem = reusable?.children.find((child: IItem) => child.label === 'Lists');
             if (listIItem) {
                 if (property == 'id' && isNaN(fileNameOrID)) {
                     processEntity(listIItem, entity, locations, 'id', '017');
@@ -127,7 +128,7 @@ function processDependencies(dependencies: DyanmicEntity[], locations: vscode.Lo
                 }
             }
         } else if (tagName === "webform") {
-            const webFormIItem = globalWebsiteIItem.children.find((child: IItem) => child.label === 'Advanced Forms');
+            const webFormIItem = reusable?.children.find((child: IItem) => child.label === 'Advanced Forms');
             if (webFormIItem) {
                 if (property == 'id' && isNaN(fileNameOrID)) {
                     processEntity(webFormIItem, entity, locations, 'id', '019');
@@ -140,7 +141,7 @@ function processDependencies(dependencies: DyanmicEntity[], locations: vscode.Lo
         } else if ((tagName != "entityform" && tagName != "entity_form") && (tagName != "entitylist" && tagName != "entity_list") && tagName !== "editable") {
             entity.fileNameOrID = tagName;
             entity.tagName = 'Web Template';
-            const webtemplateIItem = globalWebsiteIItem.children.find((child: IItem) => child.label === 'Web Templates');
+            const webtemplateIItem = reusable?.children.find((child: IItem) => child.label === 'Web Templates');
             if (webtemplateIItem) {
                 processEntity(webtemplateIItem, entity, locations, 'label', '08');
             }
@@ -162,7 +163,16 @@ function processEntity(targetIItem: IItem, entity: any, locations: vscode.Locati
                 for (const iitem of IITem) {
                     const file = iitem.children.find((child: IItem) => child.isFile === true);
                     if (file) {
-                        addFileLocations(file, locations, entity);
+                        const filePath = file?.path?.fsPath;
+                        addFileLocations(locations, entity,filePath);
+                        if(filePath?.endsWith('.webpage.copy.html')){
+                            const jsfilePath = filePath.replace('.webpage.copy.html', '.webpage.custom_javascript.js');
+                            addFileLocations(locations, entity,jsfilePath);
+                        }
+                        if(filePath?.endsWith('.webpage.summary.html')){
+                            const jsfilePath = filePath.replace('.webpage.summary.html', '.webpage.custom_javascript.js');
+                            addFileLocations(locations, entity,jsfilePath);
+                        }
                     }
                 }
             }
@@ -170,8 +180,7 @@ function processEntity(targetIItem: IItem, entity: any, locations: vscode.Locati
     });
 }
 
-function addFileLocations(file: IItem, locations: vscode.Location[], entity: DyanmicEntity) {
-    const filePath = file?.path?.fsPath;
+function addFileLocations(locations: vscode.Location[], entity: DyanmicEntity,filePath?: string, ) {
     if (!filePath) {
         return;
     }
