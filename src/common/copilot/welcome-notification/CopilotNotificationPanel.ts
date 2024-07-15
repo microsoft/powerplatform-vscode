@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import { getNonce } from "../../utilities/Utils";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { CopilotNotificationDoNotShowChecked, CopilotTryNotificationClickedEvent, CopilotNotificationDoNotShowUnchecked } from "../telemetry/telemetryConstants";
-import { COPILOT_NOTIFICATION_DISABLED } from "../constants";
+import { COPILOT_IN_POWERPAGES, COPILOT_NOTIFICATION_DISABLED } from "../constants";
 import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 let NotificationPanel: vscode.WebviewPanel | undefined;
@@ -73,7 +73,7 @@ export async function copilotNotificationPanel(context: vscode.ExtensionContext,
 function createNotificationPanel(): vscode.WebviewPanel {
     const NotificationPanel = vscode.window.createWebviewPanel(
         "CopilotNotification",
-        "Copilot in Power Pages",
+        COPILOT_IN_POWERPAGES,
         {
             viewColumn: vscode.ViewColumn.Beside,
             preserveFocus: true,
@@ -106,7 +106,7 @@ function getWebviewURIs(context: vscode.ExtensionContext, NotificationPanel: vsc
 }
 
 
-function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri, arrowImageUri: vscode.Uri, nonce: string, webview: vscode.Webview, GITHUB_COPILOT_CHAT: string) {
+function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri, arrowImageUri: vscode.Uri, nonce: string, webview: vscode.Webview, githubCopilotChat: string) {
 
     return `<!DOCTYPE html>
       <html lang="en">
@@ -124,7 +124,7 @@ function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vs
         <h1 id="heading">${vscode.l10n.t("Let Copilot help you code")}</h1>
         <p id="welcome-text">${vscode.l10n.t("Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ")}</p>
         <button id="try-button">${vscode.l10n.t("Continue with Copilot for Power Pages")}</button>
-        <a href="#" class="walkthrough-content" id="walkthroughLink"> <span id="walk-text">${vscode.l10n.t(GITHUB_COPILOT_CHAT)} </span> <img src="${arrowImageUri}" id="arrow-icon"> </a>
+        <a href="#" class="walkthrough-content" id="walkthroughLink"> <span id="walk-text">${vscode.l10n.t(githubCopilotChat)} </span> <img src="${arrowImageUri}" id="arrow-icon"> </a>
         </div>
         <div>
         <img src="${copilotImageUri}" alt="Image">
