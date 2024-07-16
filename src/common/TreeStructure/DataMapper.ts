@@ -27,7 +27,6 @@ import { getDependencies } from './DataParser';
 import { PortalComponentServiceFactory } from "./dataMapperServices/PortalComponentServiceFactory";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { MyReferenceProvider } from "./MyReferenceProvider";
-import { generateJsonFromIItem } from './CovertIItemToJson';
 import { contentPage } from './dataMapperServices/WebPageService';
 
 const fs = require('fs');
@@ -479,7 +478,7 @@ function processEntity(sourceDep: IItem, parent: IItem, targetIItem: IItem, enti
     }
   });
   if (exist == false) {
-    const item = createItem(`${fileNameOrID} Not Used`, `${fileNameOrID}`, `${entity.tagName}`, true, vscode.Uri.parse(``), '00', [], '', '');
+    const item = createItem(`${fileNameOrID}`, `${fileNameOrID}`, `${entity.tagName}`, true, vscode.Uri.parse(``), '00', [], '', '');
     let fileNameAlready = sourceDep.children.find(child => child.label === `${fileNameOrID} Not Used`);
     if (!fileNameAlready) {
       sourceDep.children.push(item);
