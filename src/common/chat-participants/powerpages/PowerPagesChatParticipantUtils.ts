@@ -10,8 +10,9 @@ import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
 import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
-import { SUPPORTED_ENTITIES } from "./PowerPagesChatParticipantConstants";
+import { SUPPORTED_ENTITIES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP } from "./PowerPagesChatParticipantConstants";
 import { IComponentInfo } from "./PowerPagesChatParticipantTypes";
+import * as vscode from 'vscode';
 
 export async function getEndpoint(
     orgID: string,
@@ -54,4 +55,14 @@ export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | u
 
 export function isEntityInSupportedList(entity: string): boolean {
     return SUPPORTED_ENTITIES.includes(entity);
+}
+
+export function handleChatParticipantFeedback (feedback: vscode.ChatResultFeedback, sessionId: string, telemetry: ITelemetry) {
+    const scenario = feedback.result.metadata?.scenario;
+    const orgId = feedback.result.metadata?.orgId;
+    if (feedback.kind === 1) {
+        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, { feedback: feedback.kind.toString(), scenario: scenario, orgId:orgId, sessionId: sessionId });
+    } else if (feedback.kind === 0) {
+        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId});
+    }
 }
