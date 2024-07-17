@@ -35,3 +35,6 @@ export const PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME = "@microsoft/generator-powerp
  * Name of the powerpages generator tarball
  */
 export const PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME = "microsoft-generator-powerpages";
+
+
+export const SUCCESS = "Success";

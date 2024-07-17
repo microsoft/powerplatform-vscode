@@ -11,7 +11,7 @@ import { pathExists } from "fs-extra";
 import { ConfigurationManager } from "../configuration";
 import { IPcfLaunchConfig } from "../configuration/types";
 import { BrowserFlavor } from "./types/BrowserFlavor";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 import { IBrowserPath, Platform } from "./types";
 

@@ -7,7 +7,7 @@ import { RequestInit } from "node-fetch";
 import * as vscode from "vscode";
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
 import { BAD_REQUEST, MIMETYPE, queryParameters } from "../common/constants";
-import { showErrorDialog } from "../common/errorHandler";
+import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 import { FileData } from "../context/fileData";
 import { httpMethod } from "../common/constants";
 import {
@@ -18,7 +18,7 @@ import {
 import { getPatchRequestUrl, getRequestURL } from "../utilities/urlBuilderUtil";
 import WebExtensionContext from "../WebExtensionContext";
 import { IAttributePath } from "../common/interfaces";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { schemaEntityKey } from "../schema/constants";
 import { getEntityMappingEntityId } from "../utilities/fileAndEntityUtil";
 
@@ -106,7 +106,7 @@ async function getSaveParameters(
         );
     } else {
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_GET_SAVE_PARAMETERS_ERROR,
             getSaveParameters.name,
             BAD_REQUEST
         ); // no API request is made in this case since we do not know in which column should we save the value
@@ -170,7 +170,7 @@ async function saveDataToDataverse(
                 fileExtensionType
             );
             WebExtensionContext.telemetry.sendInfoTelemetry(
-                telemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_TRIGGERED
+                webExtensionTelemetryEventNames.WEB_EXTENSION_DATAVERSE_SAVE_FILE_TRIGGERED
             );
             const response = await WebExtensionContext.concurrencyHandler.handleRequest(
                 saveCallParameters.requestUrl,
@@ -187,7 +187,7 @@ async function saveDataToDataverse(
                 httpMethod.PATCH,
                 new Date().getTime() - requestSentAtTime,
                 saveDataToDataverse.name,
-                telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_SUCCESS,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_SUCCESS,
                 fileExtensionType
             );
         } catch (error) {
@@ -205,7 +205,7 @@ async function saveDataToDataverse(
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_SAVE_DATA_TO_DATAVERSE_API_ERROR,
                     saveDataToDataverse.name,
                     (error as Error)?.message,
                     error as Error

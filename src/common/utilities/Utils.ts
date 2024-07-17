@@ -4,12 +4,11 @@
  */
 
 import * as vscode from "vscode";
-import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../client/constants";
+import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
-import { PacWrapper } from "../../client/pac/PacWrapper";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "../copilot/constants";
+import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData, IActiveFileParams } from "../copilot/model";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
@@ -141,24 +140,6 @@ export function getUserAgent(): string {
         .replace("{comment}", "(" + getExtensionType() + '; )');
 }
 
-export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
-    const userOrgUrl = await showInputBoxAndGetOrgUrl();
-    if (!userOrgUrl) {
-        return;
-    }
-
-    if (!pacWrapper) {
-        vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
-        return;
-    }
-
-    const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-    if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
-        vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
-        return;
-    }
-}
-
 export function getActiveEditorContent(): IActiveFileData {
     const activeEditor = vscode.window.activeTextEditor;
     const activeFileData: IActiveFileData = {
@@ -193,10 +174,10 @@ export function checkCopilotAvailability(
     tenantId?: string | undefined,
 ): boolean {
 
-    if(!aibEndpoint) {
+    if (!aibEndpoint) {
         return false;
     }
-    else if (aibEndpoint === COPILOT_UNAVAILABLE ) {
+    else if (aibEndpoint === COPILOT_UNAVAILABLE) {
         sendTelemetryEvent(telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
         return false;
     } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) { // Tenant ID not available in desktop
@@ -216,7 +197,7 @@ export async function getEnvList(telemetry:ITelemetry): Promise<{envId: string, 
     //TODO: Add telemetry for this API call
 
     //make fetch call to the api: https://tip1.api.bap.microsoft.com/providers/Microsoft.BusinessAppPlatform/scopes/admin/environments?api-version=2021-04-01
-    const envListResponse = await fetch("https://tip1.api.bap.microsoft.com/providers/Microsoft.BusinessAppPlatform/scopes/admin/environments?api-version=2021-04-01&select=name,properties.displayName,properties.linkedEnvironmentMetadata", {
+    const envListResponse = await fetch("https://api.bap.microsoft.com/providers/Microsoft.BusinessAppPlatform/scopes/admin/environments?api-version=2021-04-01&select=name,properties.displayName,properties.linkedEnvironmentMetadata", {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${bapAuthToken}`

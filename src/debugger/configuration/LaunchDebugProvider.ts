@@ -4,8 +4,8 @@
  */
 
 import * as vscode from "vscode";
-import { EXTENSION_NAME } from "../../client/constants";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { EXTENSION_NAME } from "../../common/constants";
+import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../../common/ErrorReporter";
 
 import { ConfigurationManager } from "./ConfigurationManager";
@@ -20,7 +20,7 @@ export class LaunchDebugProvider implements vscode.DebugConfigurationProvider {
      * Creates a new LaunchDebugProvider instance.
      * @param logger The logger to log telemetry events.
      */
-    constructor(private readonly logger: ITelemetry) {}
+    constructor(private readonly logger: ITelemetry) { }
 
     /**
      * Provides the supported debug configuration.

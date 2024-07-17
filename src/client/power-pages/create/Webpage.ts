@@ -20,8 +20,8 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import { TableFolder, Tables, YoSubGenerator } from "./CreateOperationConstants";
 import path from "path";
-import { ITelemetry } from "../../telemetry/ITelemetry";
-import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
+import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
+import { sendTelemetryEvent, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 interface IWebpageInputState {
     title: string;
@@ -39,7 +39,7 @@ export const createWebpage = async (
     telemetry: ITelemetry
 ) => {
     try {
-        if(!selectedWorkspaceFolder) {
+        if (!selectedWorkspaceFolder) {
             return
         }
         const portalContext = getPortalContext(selectedWorkspaceFolder);
@@ -102,7 +102,7 @@ export const createWebpage = async (
             );
         }
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { methodName: createWebpage.name, eventName: UserFileCreateEvent, fileEntityType:Tables.WEBPAGE, exception: error as Error })
+        sendTelemetryEvent(telemetry, { methodName: createWebpage.name, eventName: UserFileCreateEvent, fileEntityType: Tables.WEBPAGE, exception: error as Error })
         throw new Error(error);
     }
 };
@@ -184,6 +184,9 @@ async function getWebpageInputs(
     async function validateNameIsUnique(name: string) {
         if (!name) {
             return vscode.l10n.t("Please enter a name for the webpage.");
+        }
+        if (!/^[A-Za-z0-9-_]+$/.test(name)) {
+            return vscode.l10n.t("Webpage names should contain only letters, numbers, hyphens, or underscores.");
         }
         if (
             webpageNames

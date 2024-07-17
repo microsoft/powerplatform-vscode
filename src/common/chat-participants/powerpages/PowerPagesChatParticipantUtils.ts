@@ -4,7 +4,7 @@
  */
 
 import * as vscode from 'vscode';
-import { ITelemetry } from "../../../client/telemetry/ITelemetry";
+import { ITelemetry } from '../../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { ADX_ENTITYFORM } from "../../copilot/constants";
 import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/dataverseMetadata";
 import { IActiveFileParams } from "../../copilot/model";
@@ -116,22 +116,22 @@ export async function getSiteCreationInputs(siteName: string, envInfo: { envId: 
             placeholder: vscode.l10n.t("Enter Site Name"),
             validate: async (value) => (value ? undefined : vscode.l10n.t("Site Name is required")),
         });
-        return (input: MultiStepInput) => inputDomainName(input, state);
+        //return (input: MultiStepInput) => inputDomainName(input, state);
     }
 
-    async function inputDomainName(
-        input: MultiStepInput,
-        state: Partial<ISiteInputState>
-    ) {
-        state.domainName = await input.showInputBox({
-            title,
-            step: 3,
-            totalSteps: 3,
-            value: state.domainName || "",
-            placeholder: vscode.l10n.t("Enter Domain Name"),
-            validate: async (value) => (value ? undefined : vscode.l10n.t("Domain Name is required")),
-        });
-    }
+    // async function inputDomainName(
+    //     input: MultiStepInput,
+    //     state: Partial<ISiteInputState>
+    // ) {
+    //     state.domainName = await input.showInputBox({
+    //         title,
+    //         step: 3,
+    //         totalSteps: 3,
+    //         value: state.domainName || "",
+    //         placeholder: vscode.l10n.t("Enter Domain Name"),
+    //         validate: async (value) => (value ? undefined : vscode.l10n.t("Domain Name is required")),
+    //     });
+    // }
 
     const siteInputState = await collectInputs();
     return siteInputState;

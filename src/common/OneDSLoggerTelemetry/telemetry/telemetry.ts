@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { ITelemetry } from "../telemetry/ITelemetry";
+import { oneDSLoggerWrapper } from "../oneDSLoggerWrapper";
+import { ITelemetry } from "./ITelemetry";
 
 // Telemetry Event Names
 export const FileDeleteEvent = 'FileDeleteEvent';
@@ -19,7 +19,7 @@ export const UpdateEntityNameInYmlEvent = 'UpdateEntityNameInYmlEvent';
 export const UserFileCreateEvent = 'UserFileCreateEvent';
 export const FileCreateEvent = 'FileCreateEvent';
 
-interface IPowerPagesTelemetryData {
+interface ITelemetryData {
     eventName: string,
     numberOfFiles?: string,
     fileEntityType?: string,
@@ -34,7 +34,7 @@ export enum TriggerPoint {
     COMMAND_PALETTE = "command-palette",
 }
 
-export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IPowerPagesTelemetryData): void {
+export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: ITelemetryData): void {
     const telemetryDataProperties: Record<string, string> = {}
     const telemetryDataMeasurements: Record<string, number> = {}
 

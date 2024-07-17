@@ -4,7 +4,7 @@
  */
 
 
-export const ERRORS = {
+export const ERROR_CONSTANTS = {
     SUBURI_EMPTY: "SubURI value for entity file is empty",
     NO_ACCESS_TOKEN: "No access token was created",
     PORTAL_FOLDER_NAME_EMPTY: "portalFolderName value for entity file is empty",
