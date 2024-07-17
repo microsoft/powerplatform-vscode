@@ -25,7 +25,7 @@ export class WebFileService implements IPortalComponentService {
                 file.adx_name=file.adx_name.replace(/\s+/g, '-');
             } else if (file.adx_name.endsWith(".html")) {
                 c = '01';
-            } else if (file.adx_name.endsWith(".png")) {
+            } else if (file.adx_name.endsWith(".png") || file.adx_name.endsWith(".jpg")) {
                 c = '05';
             } else if (file.adx_name.endsWith(".js")) {
                 c = '03';
