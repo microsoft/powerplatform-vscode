@@ -11,7 +11,7 @@ import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, CREATE_SITE_INPUTS, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { getComponentInfo, getEndpoint, getSiteCreationInputs } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, getActiveEditorContent, getEnvList } from '../../utilities/Utils';
@@ -58,7 +58,7 @@ export class PowerPagesChatParticipant {
             this.extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID: undefined, orgUrl: undefined });
         }));
 
-        vscode.commands.registerCommand('create-site-inputs', async (siteName: string, envInfo:{ envId: string; envDisplayName: string; }[], isCreateSiteInputsReceived) => {
+        vscode.commands.registerCommand(CREATE_SITE_INPUTS, async (siteName: string, envInfo: { envId: string; envDisplayName: string; }[], isCreateSiteInputsReceived) => {
             if (!isCreateSiteInputsReceived) {
                 const siteCreateInputs = await getSiteCreationInputs(siteName, envInfo);
                 if (siteCreateInputs) {
@@ -133,62 +133,70 @@ export class PowerPagesChatParticipant {
             };
         }
 
+        const userPrompt = request.prompt;
+
         if (request.command) {
             //TODO: Handle command scenarios
+            switch (request.command) {
+                case 'create-site': {
+                    //TODO: Update the strings
+                    stream.progress('Generating a new Power Pages site...');
 
-            if (request.command == 'create-site') {
-                stream.progress('Generating a new Power Pages site...');
+                    //TODO: Call NL2Site 
 
-                stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
+                    stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
 
-                //API call to get list of the environments
-                const envInfo = await getEnvList(this.telemetry);
+                    //API call to get list of the environments
+                    const envInfo = await getEnvList(this.telemetry);
 
-                stream.button({
-                    command: 'create-site-inputs',
-                    title: 'Create Site',
-                    tooltip: 'Create a new Power Pages site',
-                    arguments: ['siteName', envInfo, false],
-                })
-            }
+                    stream.button({
+                        command: CREATE_SITE_INPUTS,
+                        title: vscode.l10n.t('Create Site'),
+                        tooltip: vscode.l10n.t('Create a new Power Pages site'),
+                        arguments: ['siteName', envInfo, false],
+                    })
 
-        } else {
-
-            const userPrompt = request.prompt;
-
-            if (!userPrompt) {
-
-                //TODO: String approval is required
-                stream.markdown(NO_PROMPT_MESSAGE);
-
-                return {
-                    metadata: {
-                        command: ''
-                    }
-                };
-            }
-
-            const { activeFileParams } = getActiveEditorContent();
-
-            const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
-
-            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
-
-            const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
-
-            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, { scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID })
-
-            llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
-                if (response.displayText) {
-                    stream.markdown(response.displayText);
+                    return {
+                        metadata: {
+                            command: request.command //TODO: Review the command
+                        }
+                    };
                 }
-                if (response.code && !SKIP_CODES.includes(response.code)) {
-                    stream.markdown('\n```javascript\n' + response.code + '\n```');
-                }
-                stream.markdown('\n');
-            });
-
+                default:
+                    break;
+            }
         }
+        if (!userPrompt) {
+
+            //TODO: String approval is required
+            stream.markdown(NO_PROMPT_MESSAGE);
+
+            return {
+                metadata: {
+                    command: ''
+                }
+            };
+        }
+
+        const { activeFileParams } = getActiveEditorContent();
+
+        const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
+
+        const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
+
+        const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
+
+        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, { scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID })
+
+        llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
+            if (response.displayText) {
+                stream.markdown(response.displayText);
+            }
+            if (response.code && !SKIP_CODES.includes(response.code)) {
+                stream.markdown('\n```javascript\n' + response.code + '\n```');
+            }
+            stream.markdown('\n');
+        });
 
         return {
             metadata: {

@@ -124,6 +124,7 @@
         "fullName": "Power Pages Copilot",
         "description": "Power Pages Copilot",
         "isSticky": true,
+        "when": "never",
         "commands": [
           {
             "name": "create-site",
