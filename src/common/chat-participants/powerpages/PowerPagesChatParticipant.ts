@@ -19,6 +19,8 @@ import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { ITelemetry } from '../../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
+import { getNL2PageData } from './NL2PageService';
+import { getNL2SiteData } from './NL2SiteService';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -124,7 +126,7 @@ export class PowerPagesChatParticipant {
 
         const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry, this.powerPagesAgentSessionId);
 
-        if (!copilotAvailabilityStatus) {
+        if (!copilotAvailabilityStatus || !intelligenceAPIEndpointInfo.intelligenceEndpoint) {
             stream.markdown(COPILOT_NOT_AVAILABLE_MSG)
             return {
                 metadata: {
@@ -142,18 +144,49 @@ export class PowerPagesChatParticipant {
                     //TODO: Update the strings
                     stream.progress('Generating a new Power Pages site...');
 
-                    //TODO: Call NL2Site 
+                    //TODO: Call NL2Site
 
-                    stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
+                    // stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
 
-                    //API call to get list of the environments
+                    //Make call to intelligence API to get the site content
+                    const siteContent = await getNL2SiteData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt);
+
+                    if (!siteContent) {
+                        stream.markdown('Failed to get the site content. Please try again later.');
+                        return {
+                            metadata: {
+                                command: ''
+                            }
+                        };
+                    }
+
+                    const siteName = siteContent.additionalData[0].website.siteName;
+
+                    stream.progress('Generating webpages...');
+
+                    const sitePages = await getNL2PageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, siteName);
+
+                    if (!sitePages) {
+                        stream.markdown('Failed to get the site pages. Please try again later.');
+                        return {
+                            metadata: {
+                                command: ''
+                            }
+                        };
+                    }
+
+                    stream.markdown('\nHere is the name of the site: ' + siteName);
+
+                     //API call to get list of the environments
                     const envInfo = await getEnvList(this.telemetry);
+
+                    const createSiteArgumentsArray = [siteName, envInfo, false];
 
                     stream.button({
                         command: CREATE_SITE_INPUTS,
                         title: vscode.l10n.t('Create Site'),
                         tooltip: vscode.l10n.t('Create a new Power Pages site'),
-                        arguments: ['siteName', envInfo, false],
+                        arguments: createSiteArgumentsArray
                     })
 
                     return {
