@@ -28,5 +28,6 @@ export interface IArtemisAPIOrgResponse {
 export interface IIntelligenceAPIEndpointInformation {
     intelligenceEndpoint: string | null,
     geoName: string | null,
-    crossGeoDataMovementEnabledPPACFlag: boolean
+    crossGeoDataMovementEnabledPPACFlag: boolean,
+    endpointStamp?: BAPServiceStamp
 }

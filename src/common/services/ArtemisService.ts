@@ -25,6 +25,7 @@ export class ArtemisService {
         const artemisResponse = artemisResponses[0];
         if (artemisResponse !== null) {
             const { geoName, environment, clusterNumber } = artemisResponse.response as unknown as IArtemisAPIOrgResponse;
+            const endpointStamp = artemisResponse.stamp;
             sendTelemetryEvent(telemetry, { eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
             const crossGeoDataMovementEnabledPPACFlag = await BAPService.getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp, telemetry, environmentId);
@@ -41,7 +42,7 @@ export class ArtemisService {
 
             const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${'il' + clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
 
-            return { intelligenceEndpoint: intelligenceEndpoint, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
+            return { intelligenceEndpoint: intelligenceEndpoint, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag, endpointStamp: endpointStamp };
         }
 
         return { intelligenceEndpoint: null, geoName: null, crossGeoDataMovementEnabledPPACFlag: false };

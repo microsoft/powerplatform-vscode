@@ -17,7 +17,7 @@ import { IComponentInfo } from "./PowerPagesChatParticipantTypes";
 
 
 
-export async function getEndpoint(
+export async function getEndpointInfo(
     orgID: string,
     environmentID: string,
     telemetry: ITelemetry,

@@ -16,6 +16,7 @@ export const BAP_API_VERSION = '2021-04-01';
 export const BAP_SERVICE_SCOPE_DEFAULT = "https://api.bap.microsoft.com/.default";//"https://management.core.windows.net/.default";
 export const BAP_SERVICE_ENDPOINT = `{rootURL}/providers/Microsoft.BusinessAppPlatform/`;
 export const BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL = `scopes/admin/environments/{environmentID}?$expand=properties/copilotPolicies&api-version={apiVersion}`;
+export const BAP_ENVIRONMENT_LIST_URL = `scopes/admin/environments?api-version=2021-04-01&select=name,properties.displayName,properties.linkedEnvironmentMetadata`;
 
 export enum BAPServiceStamp {
     TEST = "test",

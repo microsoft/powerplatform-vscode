@@ -14,6 +14,7 @@ export const COPILOT_NOT_AVAILABLE_MSG = vscode.l10n.t('Copilot is not available
 export const PAC_AUTH_NOT_FOUND = vscode.l10n.t('Active auth profile is not found or has expired. Please try again.');
 export const SUPPORTED_ENTITIES = [ADX_ENTITYFORM, ADX_ENTITYLIST];
 export const CREATE_SITE_INPUTS = 'create-site-inputs';
+export const ENV_NOT_FOUND = vscode.l10n.t('No environment found for the organization to create a site.');
 // Telemetry Event Names
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'GitHubPowerPagesAgentInvoked';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS = 'GitHubPowerPagesAgentOrgDetails';

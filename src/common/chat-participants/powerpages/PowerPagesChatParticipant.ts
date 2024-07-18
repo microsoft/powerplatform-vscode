@@ -11,9 +11,9 @@ import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, CREATE_SITE_INPUTS, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, CREATE_SITE_INPUTS, ENV_NOT_FOUND, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { getComponentInfo, getEndpoint, getSiteCreationInputs } from './PowerPagesChatParticipantUtils';
+import { getComponentInfo, getEndpointInfo, getSiteCreationInputs } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, getActiveEditorContent, getEnvList } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -60,6 +60,10 @@ export class PowerPagesChatParticipant {
 
         vscode.commands.registerCommand(CREATE_SITE_INPUTS, async (siteName: string, envInfo: { envId: string; envDisplayName: string; }[], isCreateSiteInputsReceived) => {
             if (!isCreateSiteInputsReceived) {
+                if(envInfo.length === 0) {
+                    vscode.window.showErrorMessage(ENV_NOT_FOUND);
+                    return;
+                }
                 const siteCreateInputs = await getSiteCreationInputs(siteName, envInfo);
                 if (siteCreateInputs) {
                     isCreateSiteInputsReceived = true;
@@ -120,7 +124,7 @@ export class PowerPagesChatParticipant {
 
         const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
 
-        const intelligenceAPIEndpointInfo = await getEndpoint(this.orgID, this.environmentID, this.telemetry, this.cachedEndpoint, this.powerPagesAgentSessionId);
+        const intelligenceAPIEndpointInfo = await getEndpointInfo(this.orgID, this.environmentID, this.telemetry, this.cachedEndpoint, this.powerPagesAgentSessionId);
 
         const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry, this.powerPagesAgentSessionId);
 
@@ -142,12 +146,12 @@ export class PowerPagesChatParticipant {
                     //TODO: Update the strings
                     stream.progress('Generating a new Power Pages site...');
 
-                    //TODO: Call NL2Site 
+                    //TODO: Call NL2Site
 
                     stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
 
                     //API call to get list of the environments
-                    const envInfo = await getEnvList(this.telemetry);
+                    const envInfo = await getEnvList(this.telemetry, intelligenceAPIEndpointInfo.endpointStamp!);
 
                     stream.button({
                         command: CREATE_SITE_INPUTS,

@@ -13,6 +13,7 @@ import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
 import { bapAuthentication } from "../services/AuthenticationProvider";
+import { BAP_ENVIRONMENT_LIST_URL, BAP_SERVICE_ENDPOINT, BAPServiceStamp } from "../services/Constants";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -189,32 +190,57 @@ export function checkCopilotAvailability(
 }
 
 //API call to get env list for a org
-export async function getEnvList(telemetry:ITelemetry): Promise<{envId: string, envDisplayName: string}[]> {
+export async function getEnvList(telemetry: ITelemetry, endpointStamp: BAPServiceStamp): Promise<{ envId: string, envDisplayName: string }[]> {
+    const envInfo: { envId: string, envDisplayName: string }[] = [];
+    try {
+        const bapAuthToken = await bapAuthentication(telemetry, true);
+        const bapEndpoint = getBAPEndpoint(endpointStamp, telemetry);
+        const envListEndpoint = bapEndpoint + BAP_ENVIRONMENT_LIST_URL;
 
-    const bapAuthToken = await bapAuthentication(telemetry, true);
-    const envInfo : {envId: string, envDisplayName: string}[] = [];
-
-    //TODO: Add telemetry for this API call
-
-    //make fetch call to the api: https://tip1.api.bap.microsoft.com/providers/Microsoft.BusinessAppPlatform/scopes/admin/environments?api-version=2021-04-01
-    const envListResponse = await fetch("https://api.bap.microsoft.com/providers/Microsoft.BusinessAppPlatform/scopes/admin/environments?api-version=2021-04-01&select=name,properties.displayName,properties.linkedEnvironmentMetadata", {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${bapAuthToken}`
-        }
-    });
-
-
-    if (envListResponse.ok) {
-        const envListJson = await envListResponse.json();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        envListJson.value.forEach((env: any) => {
-            envInfo.push({envId: env.properties.linkedEnvironmentMetadata.instanceUrl, envDisplayName: env.properties.displayName});
+        const envListResponse = await fetch(envListEndpoint, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${bapAuthToken}`
+            }
         });
+
+        if (envListResponse.ok) {
+            const envListJson = await envListResponse.json();
+            envListJson.value.forEach((env: any) => {
+                envInfo.push({ envId: env.properties.linkedEnvironmentMetadata.instanceUrl, envDisplayName: env.properties.displayName });
+            });
+        } else {
+            //TODO: Add telemetry for this API call
+        }
+        return envInfo;
+    } catch (error) {
+        //TODO: Add telemetry for this API call
+        return envInfo;
     }
-    else {
-        vscode.window.showErrorMessage(vscode.l10n.t("Failed to fetch environment list"));
+}
+
+export function getBAPEndpoint(serviceEndpointStamp: BAPServiceStamp, telemetry: ITelemetry): string {
+    let bapEndpoint = "";
+
+    switch (serviceEndpointStamp) {
+        case BAPServiceStamp.TEST:
+            bapEndpoint = "https://test.api.bap.microsoft.com";
+            break;
+        case BAPServiceStamp.PREPROD:
+            bapEndpoint = "https://preprod.api.bap.microsoft.com";
+            break;
+        case BAPServiceStamp.PROD:
+            bapEndpoint = "https://api.bap.microsoft.com";
+            break;
+        // All below endpoints are not supported yet
+        case BAPServiceStamp.DOD:
+        case BAPServiceStamp.GCC:
+        case BAPServiceStamp.HIGH:
+        case BAPServiceStamp.MOONCAKE:
+        default:
+            sendTelemetryEvent(telemetry, { eventName: "VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION", data: serviceEndpointStamp });
+            break;
     }
 
-    return envInfo;
+    return BAP_SERVICE_ENDPOINT.replace('{rootURL}', bapEndpoint)
 }
