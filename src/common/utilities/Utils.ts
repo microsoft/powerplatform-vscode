@@ -12,7 +12,7 @@ import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
-import { bapAuthentication } from "../services/AuthenticationProvider";
+import { bapServiceAuthentication } from "../services/AuthenticationProvider";
 import { BAP_ENVIRONMENT_LIST_URL, BAP_SERVICE_ENDPOINT, BAPServiceStamp } from "../services/Constants";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
@@ -193,7 +193,7 @@ export function checkCopilotAvailability(
 export async function getEnvList(telemetry: ITelemetry, endpointStamp: BAPServiceStamp): Promise<{ envId: string, envDisplayName: string }[]> {
     const envInfo: { envId: string, envDisplayName: string }[] = [];
     try {
-        const bapAuthToken = await bapAuthentication(telemetry, true);
+        const bapAuthToken = await bapServiceAuthentication(telemetry, true);
         const bapEndpoint = getBAPEndpoint(endpointStamp, telemetry);
         const envListEndpoint = bapEndpoint + BAP_ENVIRONMENT_LIST_URL;
 
