@@ -182,14 +182,29 @@ export function getActiveEditorContent(): IActiveFileData {
         const selectedCode = getSelectedCode(activeEditor);
         const selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
 
-        if(selectedCode.length > 0) {
+        if (selectedCode.length > 0) {
             activeFileData.activeFileContent = selectedCode;
+            activeFileData.startLine = selectedCodeLineRange.start;
+            activeFileData.endLine = selectedCodeLineRange.end;
+
+        }
+        else if (document.getText().length > 100) {  //TODO: Define the token limit for context passing
+            const visibleRanges = activeEditor.visibleRanges;
+            let visibleCode = '';
+
+            visibleRanges.forEach(range => {
+                visibleCode += document.getText(range) + '\n'; // Concatenate all visible text segments, separated by new lines
+            });
+
+            const firstVisibleRange = visibleRanges[0];
+            activeFileData.activeFileContent = visibleCode;
+            activeFileData.startLine = firstVisibleRange.start.line;
+            activeFileData.endLine = firstVisibleRange.end.line;
         } else {
             activeFileData.activeFileContent = document.getText();
+            activeFileData.startLine = 0;
+            activeFileData.endLine = document.lineCount;
         }
-
-        activeFileData.startLine = selectedCodeLineRange.start;
-        activeFileData.endLine = selectedCodeLineRange.end;
         activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
         activeFileData.activeFileParams.entityField = EntityFieldMap.get(activeFileParams[1]) || "";
         activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "";
@@ -206,10 +221,10 @@ export function checkCopilotAvailability(
     tenantId?: string | undefined,
 ): boolean {
 
-    if(!aibEndpoint) {
+    if (!aibEndpoint) {
         return false;
     }
-    else if (aibEndpoint === COPILOT_UNAVAILABLE ) {
+    else if (aibEndpoint === COPILOT_UNAVAILABLE) {
         sendTelemetryEvent(telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
         return false;
     } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) { // Tenant ID not available in desktop
