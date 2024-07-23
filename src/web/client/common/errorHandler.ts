@@ -68,7 +68,7 @@ export function checkMandatoryQueryParameters(
             const dataSource = queryParamsMap?.get(queryParameters.DATA_SOURCE);
             const schemaName = queryParamsMap?.get(schemaKey.SCHEMA_VERSION);
             const websiteId = queryParamsMap?.get(queryParameters.WEBSITE_ID);
-            if (orgURL && dataSource && schemaName && websiteId) {
+            if (orgURL && dataSource && schemaName && websiteId && isDynamicsCRMUrl(orgURL)) {
                 return true;
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
@@ -131,4 +131,22 @@ export function checkMandatoryMultifileParameters(
             );
             return false;
     }
+}
+
+// Query Param value checks
+export function isDynamicsCRMUrl(url: string) {
+    // Updated pattern to match both conditions: with and without digits after "crm"
+    // We are in public cloud currently - ignoring the gov cloud for now
+    const pattern = /^https?:\/\/[^.]+\.crm(\d{1,2})?\.dynamics\.com/;
+    const result = pattern.test(url);
+
+    if (!result) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_MULTI_FILE_INVALID_DATAVERSE_URL,
+            isDynamicsCRMUrl.name,
+            `orgURL:${url}`
+        );
+    }
+
+    return result;
 }
