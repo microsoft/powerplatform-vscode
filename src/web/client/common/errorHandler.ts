@@ -74,7 +74,7 @@ export function checkMandatoryQueryParameters(
                 WebExtensionContext.telemetry.sendErrorTelemetry(
                     webExtensionTelemetryEventNames.WEB_EXTENSION_MANDATORY_QUERY_PARAMETERS_MISSING,
                     checkMandatoryQueryParameters.name,
-                    `${orgURL ? `orgURL, ` : ``}dataSource:${dataSource}, schemaName:${schemaName} ,websiteId:${websiteId}`
+                    `orgURL:${orgURL ? orgURL : ``}, dataSource:${dataSource}, schemaName:${schemaName} ,websiteId:${websiteId}`
                 );
                 showErrorDialog(
                     vscode.l10n.t("There was a problem opening the workspace"),
