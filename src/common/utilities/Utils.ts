@@ -8,7 +8,7 @@ import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "../copilot/constants";
-import { IActiveFileData, IActiveFileParams } from "../copilot/model";
+import { IActiveFileData } from "../copilot/model";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
@@ -160,57 +160,47 @@ export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
 
 export function getActiveEditorContent(): IActiveFileData {
     const activeEditor = vscode.window.activeTextEditor;
-    const activeFileData: IActiveFileData = {
-        activeFileContent: '',
-        startLine: 0,
-        endLine: 0,
-        activeFileUri: undefined,
-        activeFileParams: {
-            dataverseEntity: '',
-            entityField: '',
-            fieldType: ''
-        } as IActiveFileParams
-    };
-    if (activeEditor) {
-        const document = activeEditor.document;
-        const fileName = document.fileName;
-        const relativeFileName = vscode.workspace.asRelativePath(fileName);
-        activeFileData.activeFileUri = document.uri;
 
-        const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
-
-        const selectedCode = getSelectedCode(activeEditor);
-        const selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
-
-        if (selectedCode.length > 0) {
-            activeFileData.activeFileContent = selectedCode;
-            activeFileData.startLine = selectedCodeLineRange.start;
-            activeFileData.endLine = selectedCodeLineRange.end;
-
-        }
-        else if (document.getText().length > 100) {  //TODO: Define the token limit for context passing
-            const visibleRanges = activeEditor.visibleRanges;
-            let visibleCode = '';
-
-            visibleRanges.forEach(range => {
-                visibleCode += document.getText(range) + '\n'; // Concatenate all visible text segments, separated by new lines
-            });
-
-            const firstVisibleRange = visibleRanges[0];
-            activeFileData.activeFileContent = visibleCode;
-            activeFileData.startLine = firstVisibleRange.start.line;
-            activeFileData.endLine = firstVisibleRange.end.line;
-        } else {
-            activeFileData.activeFileContent = document.getText();
-            activeFileData.startLine = 0;
-            activeFileData.endLine = document.lineCount;
-        }
-        activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
-        activeFileData.activeFileParams.entityField = EntityFieldMap.get(activeFileParams[1]) || "";
-        activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "";
+    if (!activeEditor) {
+        return { activeFileContent: '', startLine: 0, endLine: 0, activeFileUri: undefined, activeFileParams: { dataverseEntity: '', entityField: '', fieldType: '' } };
     }
 
-    return activeFileData;
+    const document = activeEditor.document;
+    const fileName = document.fileName;
+    const relativeFileName = vscode.workspace.asRelativePath(fileName);
+    const activeFileUri = document.uri;
+    const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
+
+    let activeFileContent = document.getText();
+    let startLine = 0;
+    let endLine = document.lineCount;
+
+    const selectedCode = getSelectedCode(activeEditor);
+    const selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
+
+    if (selectedCode.length > 0) {
+        activeFileContent = selectedCode;
+        startLine = selectedCodeLineRange.start;
+        endLine = selectedCodeLineRange.end;
+
+    } else if (document.getText().length > 100) { // Define the token limit for context passing
+        const { code, startLine: visibleStart, endLine: visibleEnd } = getVisibleCode(activeEditor);
+        activeFileContent = code;
+        startLine = visibleStart;
+        endLine = visibleEnd;
+    }
+
+    return {
+        activeFileContent,
+        startLine,
+        endLine,
+        activeFileUri,
+        activeFileParams: {
+            dataverseEntity: DataverseEntityNameMap.get(activeFileParams[0]) || "",
+            entityField: EntityFieldMap.get(activeFileParams[1]) || "",
+            fieldType: FieldTypeMap.get(activeFileParams[2]) || ""
+        }
+    };
 }
 
 export function checkCopilotAvailability(
@@ -233,4 +223,15 @@ export function checkCopilotAvailability(
     } else {
         return true;
     }
+}
+
+export function getVisibleCode(editor: vscode.TextEditor): { code: string; startLine: number; endLine: number; } {
+    const visibleRanges = editor.visibleRanges;
+    const visibleCode = visibleRanges.map(range => editor.document.getText(range)).join('\n');
+    const firstVisibleRange = visibleRanges[0];
+    return {
+        code: visibleCode,
+        startLine: firstVisibleRange.start.line,
+        endLine: firstVisibleRange.end.line
+    };
 }
