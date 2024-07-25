@@ -74,6 +74,8 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED = "WebExtensionMultiFileFeatureFlagEnabled",
     WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED = "WebExtensionMultiFileFeatureFlagDisabled",
     WEB_EXTENSION_MULTI_FILE_MANDATORY_PARAMETERS_MISSING = "WebExtensionMultiFileMandatoryParametersMissing",
+    WEB_EXTENSION_MULTI_FILE_INVALID_DATAVERSE_URL = "WebExtensionMultiFileInvalidDataverseUrl",
+    WEB_EXTENSION_MULTI_FILE_INVALID_WEBSITE_PREVIEW_URL = "WebExtensionMultiFileInvalidWebsitePreviewUrl",
     WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED = "WebExtensionCoPresenceFeatureFlagDisabled",
     WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED = "WebExtensionCoPresenceFeatureFlagEnabled",
     WEB_EXTENSION_FILES_LOAD_SUCCESS = "WebExtensionFilesLoadSuccess",
