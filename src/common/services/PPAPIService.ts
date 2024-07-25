@@ -63,4 +63,3 @@ export class PPAPIService {
             `?api-version=${PPAPI_WEBSITES_API_VERSION}`;
     }
 }
-

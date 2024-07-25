@@ -27,7 +27,6 @@ import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PPAPI_WEBSITES_S
 import jwt_decode from 'jwt-decode';
 import { showErrorDialog } from "../utilities/errorHandlerUtil";
 
-
 export function getCommonHeadersForDataverse(
     accessToken: string,
     useOctetStreamContentType?: boolean
@@ -295,7 +294,6 @@ export function getOIDFromToken(token: string, telemetry: ITelemetry) {
     return "";
 }
 
-
 export async function powerPlatformAPIAuthentication(
     telemetry: ITelemetry,
     firstTimeAuth = false
@@ -344,4 +342,3 @@ export async function powerPlatformAPIAuthentication(
 
     return accessToken;
 }
-
