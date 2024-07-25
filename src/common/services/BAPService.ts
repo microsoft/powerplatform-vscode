@@ -6,11 +6,11 @@
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { bapServiceAuthentication, getCommonHeaders } from "./AuthenticationProvider";
 import { VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_COMPLETED, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED } from "./TelemetryConstants";
-import { BAPServiceStamp, BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT } from "./Constants";
+import { ServiceEndpointCategory, BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT } from "./Constants";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 
 export class BAPService {
-    public static async getCrossGeoCopilotDataMovementEnabledFlag(serviceEndpointStamp: BAPServiceStamp, telemetry: ITelemetry, environmentId: string): Promise<boolean> {
+    public static async getCrossGeoCopilotDataMovementEnabledFlag(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry, environmentId: string): Promise<boolean> {
 
         try {
             const accessToken = await bapServiceAuthentication(telemetry, true);
@@ -33,25 +33,25 @@ export class BAPService {
         return false;
     }
 
-    static async getBAPEndpoint(serviceEndpointStamp: BAPServiceStamp, telemetry: ITelemetry, environmentId: string): Promise<string> {
+    static async getBAPEndpoint(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry, environmentId: string): Promise<string> {
 
         let bapEndpoint = "";
 
         switch (serviceEndpointStamp) {
-            case BAPServiceStamp.TEST:
+            case ServiceEndpointCategory.TEST:
                 bapEndpoint = "https://test.api.bap.microsoft.com";
                 break;
-            case BAPServiceStamp.PREPROD:
+            case ServiceEndpointCategory.PREPROD:
                 bapEndpoint = "https://preprod.api.bap.microsoft.com";
                 break;
-            case BAPServiceStamp.PROD:
+            case ServiceEndpointCategory.PROD:
                 bapEndpoint = "https://api.bap.microsoft.com";
                 break;
             // All below endpoints are not supported yet
-            case BAPServiceStamp.DOD:
-            case BAPServiceStamp.GCC:
-            case BAPServiceStamp.HIGH:
-            case BAPServiceStamp.MOONCAKE:
+            case ServiceEndpointCategory.DOD:
+            case ServiceEndpointCategory.GCC:
+            case ServiceEndpointCategory.HIGH:
+            case ServiceEndpointCategory.MOONCAKE:
             default:
                 sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });
                 break;
