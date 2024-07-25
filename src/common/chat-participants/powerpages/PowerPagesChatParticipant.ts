@@ -153,7 +153,7 @@ export class PowerPagesChatParticipant {
                     // stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
 
                     //Make call to intelligence API to get the site content
-                    const siteContent = await getNL2SiteData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt);
+                    const siteContent = await getNL2SiteData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, this.powerPagesAgentSessionId);
 
                     if (!siteContent) {
                         stream.markdown('Failed to get the site content. Please try again later.');
@@ -164,11 +164,13 @@ export class PowerPagesChatParticipant {
                         };
                     }
 
-                    const siteName = siteContent.additionalData[0].website.siteName;
+                    const siteName = siteContent.siteName;
+
+                    const sitePagesList = siteContent.pages.map((page: { pageName: string; }) => page.pageName);
 
                     stream.progress('Generating webpages...');
 
-                    const sitePages = await getNL2PageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, siteName);
+                    const sitePages = await getNL2PageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, request.prompt, siteName, sitePagesList, this.powerPagesAgentSessionId);
 
                     if (!sitePages) {
                         stream.markdown('Failed to get the site pages. Please try again later.');
@@ -179,7 +181,16 @@ export class PowerPagesChatParticipant {
                         };
                     }
 
+                    const sitePagesContent: { name: string; content: string }[] = [];
+                    sitePages.forEach((page: any) => {
+                        sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
+                    });
+
                     stream.markdown('\nHere is the name of the site: ' + siteName);
+
+                    sitePagesContent.forEach((page: { name: string; content: string; }) => {
+                        stream.markdown('\n### ' + page.name);
+                    });
 
                      //API call to get list of the environments
                     const envInfo = await getEnvList(this.telemetry, intelligenceAPIEndpointInfo.endpointStamp!);

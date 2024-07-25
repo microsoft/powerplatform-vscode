@@ -3,38 +3,17 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-
-/**
- * Request body for NL2Site service
- {
-	"crossGeoOptions": {
-		"enableCrossGeoCall": true
-	},
-	"question": "Create a site for selling books",
-	"context": {
-		"sessionId": "f754a29c-8877-4070-96e2-74f81bceacde",
-		"scenario": "NL2Site",
-		"subScenario": "GenerateNewSite",
-		"version": "V1",
-		"information": {
-			"minPages": 7,
-			"maxPages": 7
-		}
-	}
-}
- */
-//make fetch call to nl2 site service
-
-export async function getNL2SiteData(aibEndpoint:string, aibToken: string, userPrompt: string) {
+export async function getNL2SiteData(aibEndpoint: string, aibToken: string, userPrompt: string, sessionId: string) {
     const requestBody = {
         "crossGeoOptions": {
             "enableCrossGeoCall": true
         },
         "question": userPrompt,
         "context": {
-            "sessionId": "f754a29c-8877-4070-96e2-74f81bceacde",
+            "sessionId": sessionId,
             "scenario": "NL2Site",
             "subScenario": "GenerateNewSite",
+            // "shouldCheckBlockList": false, // Check how to set to get value for this
             "version": "V1",
             "information": {
                 "minPages": 7,
@@ -57,7 +36,12 @@ export async function getNL2SiteData(aibEndpoint:string, aibToken: string, userP
         if (!response.ok) {
             throw new Error('Request failed');
         }
-        return response.json();
+
+        const responseBody = await response.json();
+
+        if (responseBody && responseBody.additionalData[0]?.website) {
+            return responseBody.additionalData[0].website; // Contains the pages, siteName & site description
+        }
     } catch (error) {
         return null;
     }
