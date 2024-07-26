@@ -8,55 +8,52 @@ import { COPILOT_UNAVAILABLE } from "../copilot/constants";
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { CopilotArtemisFailureEvent, CopilotArtemisSuccessEvent } from "../copilot/telemetry/telemetryConstants";
-import { BAPServiceStamp as BAPAPIEndpointStamp } from "./Constants";
-import { IArtemisAPIOrgResponse, IArtemisServiceEndpointInformation, IIntelligenceAPIEndpointInformation } from "./Interfaces";
+import { ServiceEndpointCategory } from "./Constants";
+import { IArtemisAPIOrgResponse, IArtemisServiceEndpointInformation, IArtemisServiceResponse, IIntelligenceAPIEndpointInformation } from "./Interfaces";
 import { isCopilotDisabledInGeo, isCopilotSupportedInGeo } from "../copilot/utils/copilotUtil";
 import { BAPService } from "./BAPService";
 
 export class ArtemisService {
     public static async getIntelligenceEndpoint(orgId: string, telemetry: ITelemetry, sessionID: string, environmentId: string): Promise<IIntelligenceAPIEndpointInformation> {
 
-        const artemisResponses = await ArtemisService.fetchArtemisResponse(orgId, telemetry, sessionID);
+        const artemisResponse = await ArtemisService.getArtemisResponse(orgId, telemetry, sessionID);
 
-        if (artemisResponses === null || artemisResponses.length === 0) {
+        if (artemisResponse === null) {
             return { intelligenceEndpoint: null, geoName: null, crossGeoDataMovementEnabledPPACFlag: false };
         }
+        const { geoName, environment, clusterNumber } = artemisResponse.response as unknown as IArtemisAPIOrgResponse;
+        sendTelemetryEvent(telemetry, { eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
-        const artemisResponse = artemisResponses[0];
-        if (artemisResponse !== null) {
-            const { geoName, environment, clusterNumber } = artemisResponse.response as unknown as IArtemisAPIOrgResponse;
-            sendTelemetryEvent(telemetry, { eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
+        const crossGeoDataMovementEnabledPPACFlag = await BAPService.getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp, telemetry, environmentId);
 
-            const crossGeoDataMovementEnabledPPACFlag = await BAPService.getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp, telemetry, environmentId);
-
-            if (isCopilotDisabledInGeo().includes(geoName)) {
-                return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
-            }
-            else if (crossGeoDataMovementEnabledPPACFlag === true) {
-                // Do nothing - we can make this call cross geo
-            }
-            else if (!isCopilotSupportedInGeo().includes(geoName)) {
-                return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
-            }
-
-            const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${'il' + clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
-
-            return { intelligenceEndpoint: intelligenceEndpoint, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
+        if (isCopilotDisabledInGeo().includes(geoName)) {
+            return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
+        }
+        else if (crossGeoDataMovementEnabledPPACFlag === true) {
+            // Do nothing - we can make this call cross geo
+        }
+        else if (!isCopilotSupportedInGeo().includes(geoName)) {
+            return { intelligenceEndpoint: COPILOT_UNAVAILABLE, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
         }
 
-        return { intelligenceEndpoint: null, geoName: null, crossGeoDataMovementEnabledPPACFlag: false };
+        const intelligenceEndpoint = `https://aibuildertextapiservice.${geoName}-${'il' + clusterNumber}.gateway.${environment}.island.powerapps.com/v1.0/${orgId}/appintelligence/chat`
+
+        return { intelligenceEndpoint: intelligenceEndpoint, geoName: geoName, crossGeoDataMovementEnabledPPACFlag: crossGeoDataMovementEnabledPPACFlag };
     }
 
     // Function to fetch Artemis response
-    public static async fetchArtemisResponse(orgId: string, telemetry: ITelemetry, sessionID = '') {
+    public static async getArtemisResponse(orgId: string, telemetry: ITelemetry, sessionID: string): Promise<IArtemisServiceResponse | null> {
         const endpointDetails = ArtemisService.convertGuidToUrls(orgId);
+        const artemisResponses = await ArtemisService.fetchIslandInfo(endpointDetails, telemetry, sessionID);
 
-        const artemisResponse = await ArtemisService.fetchIslandInfo(endpointDetails, telemetry, sessionID);
+        if (artemisResponses === null || artemisResponses.length === 0) {
+            return null;
+        }
 
-        return artemisResponse;
+        return artemisResponses[0];
     }
 
-    static async fetchIslandInfo(endpointDetails: IArtemisServiceEndpointInformation[], telemetry: ITelemetry, sessionID: string) {
+    static async fetchIslandInfo(endpointDetails: IArtemisServiceEndpointInformation[], telemetry: ITelemetry, sessionID: string): Promise<IArtemisServiceResponse[] | null> {
 
         const requestInit: RequestInit = {
             method: 'GET',
@@ -70,7 +67,7 @@ export class ArtemisService {
                     if (!response.ok) {
                         throw new Error('Request failed');
                     }
-                    return { stamp: endpointDetail.stamp, response: await response.json() };
+                    return { stamp: endpointDetail.stamp, response: await response.json() as IArtemisAPIOrgResponse };
                 } catch (error) {
                     return null;
                 }
@@ -78,13 +75,12 @@ export class ArtemisService {
 
             const results = await Promise.all(promises);
             const successfulResponses = results.filter(result => result !== null && result.response !== null);
-            return successfulResponses;
+            return successfulResponses as IArtemisServiceResponse[];
         } catch (error) {
             sendTelemetryEvent(telemetry, { eventName: CopilotArtemisFailureEvent, copilotSessionId: sessionID, error: error as Error })
             return null;
         }
     }
-
 
     /**
      * @param orgId
@@ -109,13 +105,13 @@ export class ArtemisService {
         const dodUrl = `https://${domain}.${nonProdSegment}.organization.api.appsplatform.us/gateway/cluster?app-version=1`;
 
         return [
-            { stamp: BAPAPIEndpointStamp.TEST, endpoint: tstUrl },
-            { stamp: BAPAPIEndpointStamp.PREPROD, endpoint: preprodUrl },
-            { stamp: BAPAPIEndpointStamp.PROD, endpoint: prodUrl },
-            { stamp: BAPAPIEndpointStamp.GCC, endpoint: gccUrl },
-            { stamp: BAPAPIEndpointStamp.HIGH, endpoint: highUrl },
-            { stamp: BAPAPIEndpointStamp.MOONCAKE, endpoint: mooncakeUrl },
-            { stamp: BAPAPIEndpointStamp.DOD, endpoint: dodUrl },
+            { stamp: ServiceEndpointCategory.TEST, endpoint: tstUrl },
+            { stamp: ServiceEndpointCategory.PREPROD, endpoint: preprodUrl },
+            { stamp: ServiceEndpointCategory.PROD, endpoint: prodUrl },
+            { stamp: ServiceEndpointCategory.GCC, endpoint: gccUrl },
+            { stamp: ServiceEndpointCategory.HIGH, endpoint: highUrl },
+            { stamp: ServiceEndpointCategory.MOONCAKE, endpoint: mooncakeUrl },
+            { stamp: ServiceEndpointCategory.DOD, endpoint: dodUrl },
         ];
     }
 
