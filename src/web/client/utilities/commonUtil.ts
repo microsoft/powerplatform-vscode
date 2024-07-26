@@ -22,6 +22,8 @@ import WebExtensionContext from "../WebExtensionContext";
 import { SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../../common/constants";
 import { doesFileExist, getFileAttributePath, getFileEntityName, updateEntityColumnContent, updateFileDirtyChanges } from "./fileAndEntityUtil";
 import { isWebFileV2 } from "./schemaHelperUtil";
+import { ServiceEndpointCategory } from "../../../common/services/Constants";
+import { PPAPIService } from "../../../common/services/PPAPIService";
 
 // decodes file content to UTF-8
 export function convertContentToUint8Array(content: string, isBase64Encoded: boolean): Uint8Array {
@@ -303,3 +305,33 @@ export function getRangeForMultilineMatch(text: string, pattern: string, index: 
     const range = new vscode.Range(startLine, startIndex, endLine, endIndex);
     return range;
 }
+
+export async function validateWebsitePreviewURL(): Promise<boolean> {
+    const envId = WebExtensionContext.urlParametersMap?.get(queryParameters.ENV_ID);
+    const serviceEndpointStamp = WebExtensionContext.serviceEndpointCategory;
+    const websitePreviewId = WebExtensionContext.urlParametersMap?.get(queryParameters.PORTAL_ID);
+
+    if (serviceEndpointStamp === ServiceEndpointCategory.NONE || !envId || !websitePreviewId) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_INSUFFICIENT_PARAMETERS,
+            validateWebsitePreviewURL.name,
+            `serviceEndpointStamp:${serviceEndpointStamp}, envId:${envId}, websitePreviewId:${websitePreviewId}`
+        );
+        return false;
+    }
+
+    const siteDetails = await PPAPIService.getWebsiteDetailsById(serviceEndpointStamp, envId, websitePreviewId, WebExtensionContext.telemetry.getTelemetryReporter());
+
+    if (siteDetails == null) {
+        WebExtensionContext.telemetry.sendErrorTelemetry(
+            webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_SITE_DETAILS_FETCH_FAILED,
+            validateWebsitePreviewURL.name,
+        );
+        return false;
+    }
+
+    return siteDetails.websiteUrl.length !== 0 &&
+        WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) !== undefined &&
+        siteDetails.websiteUrl.toLocaleLowerCase().trim() === WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL)?.toLocaleLowerCase().trim();
+}
+
