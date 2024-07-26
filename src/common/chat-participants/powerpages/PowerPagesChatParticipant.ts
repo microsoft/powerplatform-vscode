@@ -13,7 +13,7 @@ import { intelligenceAPIAuthentication } from '../../services/AuthenticationProv
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { getComponentInfo, getEndpoint } from './PowerPagesChatParticipantUtils';
+import { getComponentInfo, getEndpoint, handleChatParticipantFeedback } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -41,6 +41,11 @@ export class PowerPagesChatParticipant {
 
         //TODO: Check the icon image
         this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.png');
+
+        this.chatParticipant.onDidReceiveFeedback((feedback: vscode.ChatResultFeedback) => {
+            handleChatParticipantFeedback(feedback, this.powerPagesAgentSessionId, this.telemetry);
+        }
+        );
 
         this.powerPagesAgentSessionId = uuidv4();
 
@@ -91,7 +96,8 @@ export class PowerPagesChatParticipant {
             this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, { sessionId: this.powerPagesAgentSessionId });
             return {
                 metadata: {
-                    command: ''
+                    command: '',
+                    scenario: 'PAC_AUTH_NOT_FOUND'
                 }
             };
         }
@@ -105,6 +111,8 @@ export class PowerPagesChatParticipant {
             return {
                 metadata: {
                     command: '',
+                    scenario: 'AUTHENTICATION_FAILED_MSG',
+                    orgId: this.orgID
                 }
             };
         }
@@ -119,7 +127,9 @@ export class PowerPagesChatParticipant {
             stream.markdown(COPILOT_NOT_AVAILABLE_MSG)
             return {
                 metadata: {
-                    command: ''
+                    command: '',
+                    scenario: 'COPILOT_NOT_AVAILABLE_MSG',
+                    orgId: this.orgID
                 }
             };
         }
@@ -138,7 +148,9 @@ export class PowerPagesChatParticipant {
 
                 return {
                     metadata: {
-                        command: ''
+                        command: '',
+                        scenario: 'NO_PROMPT_MESSAGE',
+                        orgId: this.orgID
                     }
                 };
             }
@@ -163,11 +175,20 @@ export class PowerPagesChatParticipant {
                 stream.markdown('\n');
             });
 
+            return {
+                metadata: {
+                    command: '',
+                    scenario: scenario.toString(),
+                    orgId: this.orgID
+                }
+            };
         }
 
         return {
             metadata: {
-                command: ''
+                command: '',
+                scenario: '',
+                orgId: this.orgID
             }
         };
 

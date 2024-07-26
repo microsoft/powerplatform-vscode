@@ -18,6 +18,8 @@ export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'GitHubPowerPag
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS = 'GitHubPowerPagesAgentOrgDetails';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND = 'GitHubPowerPagesAgentOrgDetailsNotFound';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO = 'GitHubPowerPagesAgentScenario';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP = 'GitHubPowerPagesAgentScenarioFeedbackThumbsUp';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN = 'GitHubPowerPagesAgentScenarioFeedbackThumbsDown';
 export const SKIP_CODES = ["", null, undefined, "violation", "unclear", "explain"];
 
 
