@@ -10,6 +10,7 @@ import { CopilotDisableList, EnableProDevCopilot } from "../../ecs-features/ecsF
 import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE } from "../constants";
 import { showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../../utilities/Utils";
 import { SUCCESS } from "../../constants";
+import { Localization, localizations } from "../assets/locales/copilotLocales";
 
 export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
     const userOrgUrl = await showInputBoxAndGetOrgUrl();
@@ -79,3 +80,46 @@ export function enableCrossGeoDataFlowInGeo() {
 
     return enableCrossGeoDataFlowInGeo.split(',').map(org => org.trim());
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getTranslatedCopilotResponse(responseMessage: any, promptLanguage: string): Promise<any> {
+    // Translate the response message
+  const localization = loadLocalization(promptLanguage);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return responseMessage.map((item: any) => localizeObject(item, localization));
+
+}
+
+const loadLocalization = (language: string): Localization => {
+    return localizations[language] || localizations['en'];
+};
+
+const localizeString = (str: string, localization: Localization): string => {
+    for (const key in localization) {
+        const regex = new RegExp(key, 'g');
+        console.log(`Regex: ${regex}, Replacement: ${localization[key]}`); // Remove console.log
+
+        str = str.replace(regex, localization[key]);
+        console.log(`Updated string: ${str}`); // Remove console.log
+    }
+    return str;
+};
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const localizeObject = (obj: any, localization: Localization): any => {
+    if (typeof obj === 'string') {
+      return localizeString(obj, localization);
+    } else if (Array.isArray(obj)) {
+      return obj.map(item => localizeObject(item, localization));
+    } else if (typeof obj === 'object') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const newObj: any = {};
+      for (const key in obj) {
+        newObj[key] = localizeObject(obj[key], localization);
+      }
+      return newObj;
+    }
+    return obj;
+  };
+

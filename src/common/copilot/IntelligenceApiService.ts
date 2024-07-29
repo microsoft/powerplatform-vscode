@@ -11,7 +11,7 @@ import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { CopilotResponseFailureEvent, CopilotResponseFailureEventWithMessage, CopilotResponseOkFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
 import { getExtensionType, getExtensionVersion } from "../utilities/Utils";
 import { EXTENSION_NAME } from "../constants";
-import { enableCrossGeoDataFlowInGeo } from "./utils/copilotUtil";
+import { enableCrossGeoDataFlowInGeo, getTranslatedCopilotResponse } from "./utils/copilotUtil";
 
 const clientType = EXTENSION_NAME + '-' + getExtensionType();
 const clientVersion = getExtensionVersion();
@@ -86,8 +86,12 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
                     if (jsonResponse.additionalData && Array.isArray(jsonResponse.additionalData) && jsonResponse.additionalData.length > 0) {
                         const additionalData = jsonResponse.additionalData[0];
                         if (additionalData.properties && additionalData.properties.response) {
-                            const responseMessage = additionalData.properties.response;
+                            let responseMessage = additionalData.properties.response;
                             responseMessage.push(additionalData.suggestions.subCategory ?? '');
+                            const promptLanguage = responseMessage[0].promptLanguage;
+                            if(promptLanguage !== 'English') { //TODO: Check the language in the list of supported languages
+                                responseMessage = await getTranslatedCopilotResponse(responseMessage, promptLanguage);
+                            }
                             return responseMessage;
                         }
                     }
