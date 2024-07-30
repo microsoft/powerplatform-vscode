@@ -182,13 +182,16 @@ export function getActiveEditorContent(): IActiveFileData {
         activeFileContent = selectedCode;
         startLine = selectedCodeLineRange.start;
         endLine = selectedCodeLineRange.end;
-
-    } else if (document.getText().length > 100) { // Define the token limit for context passing
-        const { code, startLine: visibleStart, endLine: visibleEnd } = getVisibleCode(activeEditor);
-        activeFileContent = code;
-        startLine = visibleStart;
-        endLine = visibleEnd;
     }
+    /**
+     * Uncomment the below code to pass the visible code to the copilot based on the token limit.
+     */
+    //else if (document.getText().length > 100) { // Define the token limit for context passing
+    //     const { code, startLine: visibleStart, endLine: visibleEnd } = getVisibleCode(activeEditor);
+    //     activeFileContent = code;
+    //     startLine = visibleStart;
+    //     endLine = visibleEnd;
+    // }
 
     return {
         activeFileContent,
