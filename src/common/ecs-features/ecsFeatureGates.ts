@@ -38,3 +38,14 @@ export const {
         "capiSupportedProDevCopilotGeoWithCrossGeoDataFlow": "eu,se,ch,fr,de,no"
     },
 });
+
+export const {
+    feature: EnablePowerPagesGitHubCopilot
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Power Pages GitHub Copilot',
+    fallback: {
+        allowedProDevCopilotTenants: "",
+        allowedProDevCopilotOrgs: "abcc137d-7ae6-ee11-9048-000d3a106507",
+    },
+});

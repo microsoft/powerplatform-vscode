@@ -19,6 +19,7 @@ import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { ITelemetry } from '../../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
+import { getEnabledOrgList } from '../../copilot/utils/copilotUtil';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -95,6 +96,16 @@ export class PowerPagesChatParticipant {
                 }
             };
         }
+
+        if (!getEnabledOrgList().includes(this.orgID)) {
+            stream.markdown(COPILOT_NOT_AVAILABLE_MSG);
+            return {
+                metadata: {
+                    command: ''
+                }
+            };
+        }
+
 
         this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, { orgID: this.orgID, environmentID: this.environmentID, sessionId: this.powerPagesAgentSessionId });
 
