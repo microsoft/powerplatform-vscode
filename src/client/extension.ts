@@ -38,7 +38,6 @@ import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWr
 import { OrgChangeNotifier, orgChangeEvent } from "./OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
-import { IArtemisAPIOrgResponse } from "../common/services/Interfaces";
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
@@ -190,9 +189,9 @@ export async function activate(
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
-            const artemisResponse = await ArtemisService.fetchArtemisResponse(orgID, _telemetry);
-            if (artemisResponse !== null && artemisResponse.length > 0) {
-                const { geoName, geoLongName } = artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse;
+            const artemisResponse = await ArtemisService.getArtemisResponse(orgID, _telemetry, "");
+            if (artemisResponse !== null && artemisResponse.response !== null) {
+                const { geoName, geoLongName } = artemisResponse.response;
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName });
             }
