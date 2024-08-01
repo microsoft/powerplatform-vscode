@@ -116,8 +116,8 @@
       {
         "id": "powerpages",
         "name": "powerpages",
-        "fullName": "Power Pages Copilot",
-        "description": "Power Pages Copilot",
+        "fullName": "Copilot for Power Pages",
+        "description": "Copilot for Power Pages",
         "isSticky": true,
         "when": "config.powerPlatform.experimental.powerPagesInGitHubCopilotChat"
       }
