@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../../client/telemetry/ITelemetry";
 import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
-import { IActiveFileParams, IOrgInfo } from './model';
+import { IOrgInfo } from './model';
 import { checkCopilotAvailability, createAuthProfileExp, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
@@ -233,8 +233,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, isSuggestedPrompt: String(data.value.isSuggestedPrompt), crossGeoDataMovementEnabledPPACFlag: this.crossGeoDataMovementEnabledPPACFlag }); //TODO: Add active Editor info
                     orgID
                         ? (async () => {
-                            const { activeFileParams } = getActiveEditorContent();
-                            await this.authenticateAndSendAPIRequest(data.value.userPrompt, activeFileParams, orgID, this.telemetry);
+                            await this.authenticateAndSendAPIRequest(data.value.userPrompt, orgID, this.telemetry);
                         })()
                         : (() => {
                             this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
@@ -349,7 +348,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         }
     }
 
-    private async authenticateAndSendAPIRequest(data: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, telemetry: ITelemetry) {
+    private async authenticateAndSendAPIRequest(data: UserPrompt[], orgID: string, telemetry: ITelemetry) {
         return intelligenceAPIAuthentication(telemetry, sessionID, orgID)
             .then(async ({ accessToken, user, userId }) => {
                 intelligenceApiToken = accessToken;
@@ -357,6 +356,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 userID = userId;
 
                 this.sendMessageToWebview({ type: 'userName', value: userName });
+
+                const { activeFileContent, activeFileParams } = getActiveEditorContent();
 
                 let metadataInfo = { entityName: '', formName: '' };
                 let componentInfo: string[] = [];
@@ -375,7 +376,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     }
 
                 }
-                return sendApiRequest(data, activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName, this.crossGeoDataMovementEnabledPPACFlag);
+                return sendApiRequest([{ displayText: data[0].displayText, code: activeFileContent }], activeFileParams, orgID, intelligenceApiToken, sessionID, metadataInfo.entityName, componentInfo, telemetry, this.aibEndpoint, this.geoName, this.crossGeoDataMovementEnabledPPACFlag);
             })
             .then(apiResponse => {
                 this.sendMessageToWebview({ type: 'apiResponse', value: apiResponse });
@@ -406,7 +407,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         const copilotAvailabilityStatus = checkCopilotAvailability(this.aibEndpoint, orgID, this.telemetry, sessionID, tenantId);
 
-        if(!copilotAvailabilityStatus) {
+        if (!copilotAvailabilityStatus) {
             this.sendMessageToWebview({ type: 'Unavailable' });
             return;
         } else {
