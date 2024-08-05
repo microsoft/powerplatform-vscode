@@ -315,6 +315,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++f190e8061b8cbadd991ff217210525eff0000a8c6ddc2d44baec8388b7bd1a3e">
       <source xml:lang="en">Preview site URL is not available</source>
     </trans-unit>
+    <trans-unit id="++CODE++1cc20af81855b8570858ea1ac0491000d230bcf2ac53c1c1b30243a9b58a2036">
+      <source xml:lang="en">Preview site URL is not valid</source>
+    </trans-unit>
     <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
       <source xml:lang="en">Profile Kind: {0}</source>
       <note>The {0} represents the profile type (Admin vs Dataverse)</note>
