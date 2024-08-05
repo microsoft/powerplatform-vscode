@@ -42,6 +42,7 @@ import { IArtemisAPIOrgResponse } from "../common/services/Interfaces";
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
+import { SUCCESS } from "../common/constants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -192,9 +193,12 @@ export async function activate(
             const orgID = orgDetails.OrgId;
             const artemisResponse = await ArtemisService.fetchArtemisResponse(orgID, _telemetry);
             if (artemisResponse !== null && artemisResponse.length > 0) {
-                const { geoName, geoLongName } = artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse;
-                oneDSLoggerWrapper.instantiate(geoName, geoLongName);
-                oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName });
+                const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
+                if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
+                    const { geoName, geoLongName } = artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse; 
+                    oneDSLoggerWrapper.instantiate(geoName, geoLongName);
+                    oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName, principalObjectId: pacActiveAuth.Results?.EntraIDObjectId });
+                }
             }
         })
     );

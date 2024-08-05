@@ -72,4 +72,22 @@ export type ActiveOrgOutput = {
     EnvironmentId: string,
 }
 
+export type ActiveAuthOutput = {
+    Type: string,
+    Cloud: string,
+    TenantId: string,
+    TenantCountry: string,
+    User: string,
+    EntraIDObjectId: string,
+    PUID: string,
+    TokenExpires: string,
+    EnvironmentGeo: string,
+    EnvironmentId: string,
+    EnvironmentType: string,
+    OrganizationId: string,
+    OrganizationUniqueName: string,
+    OrganizationFriendlyName: string,
+}
+
+export type PacAuthWhoOutput = PacOutputWithResult<ActiveAuthOutput>;
 export type PacOrgWhoOutput = PacOutputWithResult<ActiveOrgOutput>;
