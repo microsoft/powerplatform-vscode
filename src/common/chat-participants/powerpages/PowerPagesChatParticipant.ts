@@ -21,6 +21,7 @@ import { ITelemetry } from '../../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
 import { getNL2PageData } from './NL2PageService';
 import { getNL2SiteData } from './NL2SiteService';
+import { DynamicContentProvider } from './FileSystemProvider';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -62,7 +63,7 @@ export class PowerPagesChatParticipant {
 
         vscode.commands.registerCommand(CREATE_SITE_INPUTS, async (siteName: string, envInfo: { envId: string; envDisplayName: string; }[], isCreateSiteInputsReceived) => {
             if (!isCreateSiteInputsReceived) {
-                if(envInfo.length === 0) {
+                if (envInfo.length === 0) {
                     vscode.window.showErrorMessage(ENV_NOT_FOUND);
                     return;
                 }
@@ -188,11 +189,28 @@ export class PowerPagesChatParticipant {
 
                     stream.markdown('\nHere is the name of the site: ' + siteName);
 
+
+                    const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
+                    const contentProvider = new DynamicContentProvider();
+                    const scheme = 'readonly';
+                    // Register the content provider
+                    this.extensionContext.subscriptions.push(
+                        vscode.workspace.registerTextDocumentContentProvider(scheme, contentProvider)
+                    );
+
+                    const baseUri = vscode.Uri.parse('readonly:/');
+
                     sitePagesContent.forEach((page: { name: string; content: string; }) => {
-                        stream.markdown('\n### ' + page.name);
+                        sitePagesFolder.push({ name: page.name + '.html' });
+                        const pageUri = vscode.Uri.joinPath(baseUri, page.name + '.html');
+                        contentProvider.updateFileContent(pageUri.path, page.content);
+
                     });
 
-                     //API call to get list of the environments
+                    //TODO: pass uri of current workspace as second parameter
+                    stream.filetree(sitePagesFolder, baseUri);
+
+                    //API call to get list of the environments
                     const envInfo = await getEnvList(this.telemetry, intelligenceAPIEndpointInfo.endpointStamp!);
 
                     const createSiteArgumentsArray = [siteName, envInfo, false];
@@ -268,3 +286,6 @@ export class PowerPagesChatParticipant {
         this.environmentID = environmentID;
     }
 }
+
+
+
