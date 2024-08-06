@@ -202,7 +202,6 @@ export async function activate(
                 const { geoName, geoLongName } = artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse;
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName, AadId: AadIdObject?.[0]?.Value });
-
             }
         })
     );
