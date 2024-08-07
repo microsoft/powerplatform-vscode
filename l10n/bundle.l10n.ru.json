@@ -93,6 +93,7 @@
   "Preparing pac CLI (v{0}).../{0} represents the version number": "Подготовка pac CLI (версия {0})...",
   "Preview site": "Предварительная версия сайта",
   "Preview site URL is not available": "URL-адрес предварительного просмотра сайта недоступен",
+  "Preview site URL is not valid": "Недопустимый URL-адрес предварительной версии сайта",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Вид профиля: {0}",
   "Response data is empty": "Данные ответа пусты",
   "Saving your file ...": "Сохранение файла...",

@@ -93,6 +93,7 @@
   "Preparing pac CLI (v{0}).../{0} represents the version number": "正在準備 pac CLI (v{0})...",
   "Preview site": "預覽網站",
   "Preview site URL is not available": "預覽網站 URL 無法使用",
+  "Preview site URL is not valid": "預覽版網站 URL 無效",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "設定檔種類: {0}",
   "Response data is empty": "回覆資料是空的",
   "Saving your file ...": "正在儲存您的檔案...",

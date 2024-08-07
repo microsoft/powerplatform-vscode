@@ -93,6 +93,7 @@
   "Preparing pac CLI (v{0}).../{0} represents the version number": "pac CLI(v{0}) 준비 중...",
   "Preview site": "사이트 프리뷰",
   "Preview site URL is not available": "프리뷰 사이트 URL을 사용할 수 없음",
+  "Preview site URL is not valid": "프리뷰 사이트 URL이 올바르지 않습니다",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "프로필 종류: {0}",
   "Response data is empty": "응답 데이터가 비어 있음",
   "Saving your file ...": "파일을 저장하는 중...",

@@ -93,6 +93,7 @@
   "Preparing pac CLI (v{0}).../{0} represents the version number": "Préparation de pac CLI (v{0}) en cours...",
   "Preview site": "Afficher l’aperçu du site",
   "Preview site URL is not available": "L’URL du site de la version préliminaire n’est pas disponible",
+  "Preview site URL is not valid": "L’URL du site de version préliminaire n’est pas valide",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Type de profil : {0}",
   "Response data is empty": "Les données de la réponse sont vides",
   "Saving your file ...": "Enregistrement de votre fichier en cours...",
