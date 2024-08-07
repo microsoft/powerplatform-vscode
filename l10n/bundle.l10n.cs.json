@@ -93,6 +93,7 @@
   "Preparing pac CLI (v{0}).../{0} represents the version number": "Připravuje se pac CLI (verze {0})...",
   "Preview site": "Zobrazit náhled webu",
   "Preview site URL is not available": "Adresa URL náhledu webu není k dispozici.",
+  "Preview site URL is not valid": "Adresa URL webu verze Preview není platná.",
   "Profile Kind: {0}/The {0} represents the profile type (Admin vs Dataverse)": "Druh profilu: {0}",
   "Response data is empty": "Data odpovědi jsou prázdná.",
   "Saving your file ...": "Ukládá se soubor...",
