@@ -12,7 +12,6 @@ import { getFileEntityId, getFileEntityName, getFileRootWebPageId } from "../uti
 interface IQuickPickItem extends vscode.QuickPickItem {
     label: string;
     id?: string;
-    iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri } | vscode.ThemeIcon;
 }
 
 export class QuickPickProvider {

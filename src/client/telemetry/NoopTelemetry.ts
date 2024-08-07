@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ITelemetry } from './ITelemetry';
+import { ITelemetry } from '../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 class NoopTelemetry implements ITelemetry {

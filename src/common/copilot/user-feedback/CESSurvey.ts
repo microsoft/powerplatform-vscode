@@ -5,15 +5,15 @@
 
 import * as vscode from "vscode";
 import { npsAuthentication } from "../../services/AuthenticationProvider";
-import { SurveyConstants } from "../../../web/client/common/constants";
 import fetch from "node-fetch";
 import { getNonce } from "../../utilities/Utils";
-import { ITelemetry } from "../../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
-import { ERRORS } from "../../ErrorConstants";
+import { ERROR_CONSTANTS } from "../../ErrorConstants";
 import { EUROPE_GEO, UK_GEO } from "../constants";
+import { SurveyConstants } from "./constants";
 
 let feedbackPanel: vscode.WebviewPanel | undefined;
 
@@ -41,7 +41,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
     if (apiToken) {
         sendTelemetryEvent(telemetry, { eventName: CopilotNpsAuthenticationCompleted, feedbackType: thumbType, copilotSessionId: sessionId });
     } else {
-        sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionId, error: new Error(ERRORS.NPS_FAILED_AUTH) });
+        sendTelemetryEvent(telemetry, { eventName: CopilotUserFeedbackFailureEvent, feedbackType: thumbType, copilotSessionId: sessionId, error: new Error(ERROR_CONSTANTS.NPS_FAILED_AUTH) });
     }
 
     const endpointUrl = useEUEndpoint(geoName) ? `https://europe.ces.microsoftcloud.com/api/v1/portalsdesigner/Surveys/powerpageschatgpt/Feedbacks?userId=${userID}` :
@@ -52,10 +52,10 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
             switch (message.command) {
                 case "webViewLoaded": {
                     const copilotStrings = {
-                        LIKE_MESSAGE : vscode.l10n.t('Like something? Tell us more.'),
-                        DISLIKE_MESSAGE : vscode.l10n.t('Dislike something? Tell us more.'),
+                        LIKE_MESSAGE: vscode.l10n.t('Like something? Tell us more.'),
+                        DISLIKE_MESSAGE: vscode.l10n.t('Dislike something? Tell us more.'),
                     };
-                    feedbackPanel?.webview.postMessage({ type: "copilotStrings", value: copilotStrings});
+                    feedbackPanel?.webview.postMessage({ type: "copilotStrings", value: copilotStrings });
                     break;
                 }
                 case 'feedback':

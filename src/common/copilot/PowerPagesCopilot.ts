@@ -9,21 +9,22 @@ import { sendApiRequest } from "./IntelligenceApiService";
 import { dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication } from "../services/AuthenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
-import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, PAC_SUCCESS, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
+import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IOrgInfo } from './model';
-import { createAuthProfileExp, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
+import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotNotAvailable, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
-import { orgChangeErrorEvent, orgChangeEvent } from "../OrgChangeNotifier";
-import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
+import { orgChangeErrorEvent, orgChangeEvent } from "../../client/OrgChangeNotifier";
+import { createAuthProfileExp, getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../services/Constants";
 import { ArtemisService } from "../services/ArtemisService";
+import { SUCCESS } from "../constants";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -131,7 +132,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         orgID = '';
         const pacOutput = await this._pacWrapper?.activeOrg();
 
-        if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
+        if (pacOutput && pacOutput.Status === SUCCESS) {
             this.handleOrgChangeSuccess(pacOutput.Results);
         } else if (this._view?.visible) {
             await createAuthProfileExp(this._pacWrapper)
@@ -162,7 +163,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             vscode.commands.executeCommand('setContext', 'powerpages.copilot.isVisible', true);
         }
 
-        if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
+        if (pacOutput && pacOutput.Status === SUCCESS) {
             await this.handleOrgChangeSuccess(pacOutput.Results);
         } else if (!IS_DESKTOP && orgID && activeOrgUrl) {
             await this.handleOrgChangeSuccess({ OrgId: orgID, UserId: userID, OrgUrl: activeOrgUrl, EnvironmentId: environmentId } as ActiveOrgOutput);
@@ -305,7 +306,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private async handleLogin() {
 
         const pacOutput = await this._pacWrapper?.activeOrg();
-        if (pacOutput && pacOutput.Status === PAC_SUCCESS) {
+        if (pacOutput && pacOutput.Status === SUCCESS) {
             this.handleOrgChangeSuccess.call(this, pacOutput.Results);
 
             intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) => {
@@ -326,7 +327,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 return;
             }
             const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-            pacAuthCreateOutput && pacAuthCreateOutput.Status === PAC_SUCCESS
+            pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS
                 ? intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) =>
                     this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId)
                 )
@@ -403,14 +404,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this.crossGeoDataMovementEnabledPPACFlag = intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag;
 
 
-        if (this.aibEndpoint === COPILOT_UNAVAILABLE) {
-            sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
+        const copilotAvailabilityStatus = checkCopilotAvailability(this.aibEndpoint, orgID, this.telemetry, sessionID, tenantId);
+
+        if (!copilotAvailabilityStatus) {
             this.sendMessageToWebview({ type: 'Unavailable' });
-        } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
-            sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID });
-            this.sendMessageToWebview({ type: 'Unavailable' });
-        }
-        else {
+            return;
+        } else {
             this.sendMessageToWebview({ type: 'Available' });
         }
 

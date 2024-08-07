@@ -5,7 +5,7 @@
 
 import { EventEmitter, HTTPRequest, Page } from "puppeteer-core";
 import { Disposable } from "vscode";
-import { ITelemetry } from "../client/telemetry/ITelemetry";
+import { ITelemetry } from "../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
 import { BundleLoader } from "./BundleLoader";
 
@@ -30,7 +30,8 @@ export class RequestInterceptor implements Disposable {
     /**
      * Event emitter for {@link onRequestHandler} used to unregister the event.
      */
-    private requestEvent?: EventEmitter;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private requestEvent?: EventEmitter<any>;
 
     /**
      * Contents of the pcf control bundle.
@@ -45,7 +46,7 @@ export class RequestInterceptor implements Disposable {
     constructor(
         private readonly bundleLoader: BundleLoader,
         private readonly logger: ITelemetry
-    ) {}
+    ) { }
 
     /**
      * Starts intercepting requests to the specified file.

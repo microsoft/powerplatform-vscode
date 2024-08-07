@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { EXTENSION_NAME } from "../../client/constants";
+import { EXTENSION_NAME } from "../../common/constants";
 import { IPcfLaunchConfig } from "../configuration/types";
 import * as vscode from "vscode";
 import { expect } from "chai";
@@ -66,7 +66,7 @@ export const expectThrowsAsync = async <T>(
     expect(
         result,
         "expected function to throw but got result instead: " +
-            JSON.stringify(result)
+        JSON.stringify(result)
     ).to.be.undefined;
     expect(caughtError, "expected function to throw but error was undefined.")
         .to.not.be.undefined;

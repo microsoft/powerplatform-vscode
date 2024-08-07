@@ -7,7 +7,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { CliAcquisition, ICliAcquisitionContext } from '../../lib/CliAcquisition';
 import { expect } from 'chai';
-import { ITelemetry } from '../../telemetry/ITelemetry';
+import { ITelemetry } from '../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { NoopTelemetryInstance } from '../../telemetry/NoopTelemetry';
 
 const repoRootDir = path.resolve(__dirname, '../../../..');
