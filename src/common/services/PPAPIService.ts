@@ -54,7 +54,7 @@ export class PPAPIService {
                     selectedBaseLanguage: websiteLanguage,
                     subDomain: websiteName + `-${siteSuffix.slice(siteSuffix.length - 6, siteSuffix.length)}`, // Add name sanitization function
                     templateName: "DefaultPortalTemplate",
-                    websiteRecordId: "" // If this ID is passed package installation is not done and portal is associated with the passed ID - we should use this option
+                    websiteRecordId: siteSuffix // If this ID is passed package installation is not done and portal is associated with the passed ID - we should use this option
                 })
             });
 
