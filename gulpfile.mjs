@@ -350,8 +350,8 @@ async function snapshot() {
     }
 }
 
-const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.32.8';
+const feedName = 'nuget.org';
+const cliVersion = '1.33.5';
 
 const recompile = gulp.series(
     clean,

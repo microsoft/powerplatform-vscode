@@ -7,13 +7,14 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import WebExtensionContext from "../WebExtensionContext";
 import { httpMethod, queryParameters } from '../common/constants';
-import { getBackToStudioURL, isStringUndefinedOrEmpty } from '../utilities/commonUtil';
+import { getBackToStudioURL, isStringUndefinedOrEmpty, validateWebsitePreviewURL } from '../utilities/commonUtil';
 import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
     private _onDidChangeTreeData: vscode.EventEmitter<PowerPagesNode | undefined | void> = new vscode.EventEmitter<PowerPagesNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<PowerPagesNode | undefined | void> = this._onDidChangeTreeData.event;
+    private isWebsitePreviewURLValid: Promise<boolean> = validateWebsitePreviewURL();
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
@@ -68,8 +69,21 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not available"));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                webExtensionTelemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED,
-                vscode.l10n.t("Preview site URL is not available")
+                webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_UNAVAILABLE,
+                this.previewPowerPageSite.name,
+                `websitePreviewUrl:${websitePreviewUrl}`
+            );
+            return;
+        }
+
+        const isValid = await this.isWebsitePreviewURLValid;
+        if (!isValid) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not valid"));
+
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_INVALID,
+                this.previewPowerPageSite.name,
+                `websitePreviewUrl:${websitePreviewUrl}`
             );
             return;
         }
