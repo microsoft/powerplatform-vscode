@@ -196,7 +196,7 @@ export async function activate(
                 const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
                 let AadIdObject;
                 if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
-                    AadIdObject = pacActiveAuth.Results.filter(obj => obj.Key === AadIdKey);
+                    AadIdObject = pacActiveAuth.Results?.filter(obj => obj.Key === AadIdKey);
                 }
                 const { geoName, geoLongName } = artemisResponse.response;
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
