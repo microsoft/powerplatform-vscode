@@ -41,6 +41,8 @@ import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/clien
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
+import { SUCCESS } from "../common/constants";
+import { AadIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -191,9 +193,18 @@ export async function activate(
             const orgID = orgDetails.OrgId;
             const artemisResponse = await ArtemisService.getArtemisResponse(orgID, _telemetry, "");
             if (artemisResponse !== null && artemisResponse.response !== null) {
+                const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
+                let AadIdObject;
+                if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
+                    AadIdObject = pacActiveAuth.Results?.filter(obj => obj.Key === AadIdKey);
+                }
                 const { geoName, geoLongName } = artemisResponse.response;
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
-                oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName });
+                let initContext: object = { ...orgDetails, orgGeo: geoName };
+                if (AadIdObject?.[0]?.Value) {
+                    initContext = { ...initContext, AadId: AadIdObject[0].Value }
+                }
+                oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }
         })
     );
