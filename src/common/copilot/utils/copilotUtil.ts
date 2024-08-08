@@ -7,8 +7,9 @@ import * as vscode from "vscode";
 import { PacWrapper } from "../../../client/pac/PacWrapper";
 import { ECSFeaturesClient } from "../../ecs-features/ecsFeatureClient";
 import { CopilotDisableList, EnableProDevCopilot } from "../../ecs-features/ecsFeatureGates";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, PAC_SUCCESS } from "../constants";
+import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE } from "../constants";
 import { showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../../utilities/Utils";
+import { SUCCESS } from "../../constants";
 
 export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
     const userOrgUrl = await showInputBoxAndGetOrgUrl();
@@ -22,7 +23,7 @@ export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
     }
 
     const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-    if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
+    if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== SUCCESS) {
         vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
         return;
     }

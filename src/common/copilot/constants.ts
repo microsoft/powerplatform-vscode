@@ -18,7 +18,6 @@ export const UK_GEO = 'uk';
 export const COPILOT_UNAVAILABLE = 'copilotunavailable';
 export const AUTH_CREATE_MESSAGE = vscode.l10n.t('Creating new Auth Profile');
 export const AUTH_CREATE_FAILED = vscode.l10n.t("Error creating auth profile for org")
-export const PAC_SUCCESS = "Success";
 export const RELEVANCY_CHECK_FAILED = 'RelevancyCheckFailed';
 export const INAPPROPRIATE_CONTENT = 'InappropriateContentDetected';
 export const INPUT_CONTENT_FILTERED = 'InputContentFiltered';

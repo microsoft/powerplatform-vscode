@@ -31,7 +31,7 @@ import {
 } from "../utilities/fileAndEntityUtil";
 import { getImageFileContent, getRangeForMultilineMatch, isImageFileSupportedForEdit, isVersionControlEnabled, updateFileContentInFileDataMap } from "../utilities/commonUtil";
 import { IFileInfo, ISearchQueryMatch, ISearchQueryResults } from "../common/interfaces";
-import { ERRORS } from "../../../common/ErrorConstants";
+import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 
 export class File implements vscode.FileStat {
     type: vscode.FileType;
@@ -545,7 +545,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
                 webExtensionTelemetryEventNames.WEB_EXTENSION_EMPTY_PORTAL_FOLDER_NAME,
                 this.createFileSystem.name
             );
-            throw new Error(ERRORS.PORTAL_FOLDER_NAME_EMPTY);
+            throw new Error(ERROR_CONSTANTS.PORTAL_FOLDER_NAME_EMPTY);
         }
 
         WebExtensionContext.telemetry.sendInfoTelemetry(
@@ -579,7 +579,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
         subUris.forEach(async (subUri) => {
             try {
                 if (subUri?.length === 0) {
-                    throw new Error(ERRORS.SUBURI_EMPTY);
+                    throw new Error(ERROR_CONSTANTS.SUBURI_EMPTY);
                 }
 
                 WebExtensionContext.telemetry.sendInfoTelemetry(
