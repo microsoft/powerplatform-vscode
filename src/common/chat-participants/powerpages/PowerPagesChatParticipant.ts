@@ -11,9 +11,9 @@ import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, DISCLAIMER_MESSAGE, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, STATER_PROMPTS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { getComponentInfo, getEndpoint } from './PowerPagesChatParticipantUtils';
+import { getComponentInfo, getEndpoint, provideChatParticipantFollowups } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -42,6 +42,10 @@ export class PowerPagesChatParticipant {
         //TODO: Check the icon image
         this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.png');
 
+        this.chatParticipant.followupProvider = {
+            provideFollowups: provideChatParticipantFollowups
+        };
+
         this.powerPagesAgentSessionId = uuidv4();
 
         this.telemetry = telemetry;
@@ -57,7 +61,6 @@ export class PowerPagesChatParticipant {
         this._disposables.push(orgChangeErrorEvent(async () => {
             this.extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID: undefined, orgUrl: undefined });
         }));
-
     }
 
     public static getInstance(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {
@@ -124,25 +127,32 @@ export class PowerPagesChatParticipant {
             };
         }
 
+        const userPrompt = request.prompt;
+
+        if (userPrompt === WELCOME_PROMPT) {
+            stream.markdown(WELCOME_MESSAGE);
+            return{
+                metadata: {
+                    command: STATER_PROMPTS
+                }
+            }
+        }
+
+        if (!userPrompt) {
+
+            stream.markdown(NO_PROMPT_MESSAGE);
+
+            return {
+                metadata: {
+                    command: STATER_PROMPTS
+                }
+            };
+        }
+
         if (request.command) {
             //TODO: Handle command scenarios
 
         } else {
-
-            const userPrompt = request.prompt;
-
-            if (!userPrompt) {
-
-                //TODO: String approval is required
-                stream.markdown(NO_PROMPT_MESSAGE);
-
-                return {
-                    metadata: {
-                        command: ''
-                    }
-                };
-            }
-
             const { activeFileParams } = getActiveEditorContent();
 
             const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
@@ -162,7 +172,7 @@ export class PowerPagesChatParticipant {
                 }
                 stream.markdown('\n');
             });
-
+            stream.markdown(DISCLAIMER_MESSAGE);
         }
 
         return {

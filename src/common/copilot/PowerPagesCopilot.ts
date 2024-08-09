@@ -10,7 +10,7 @@ import { dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
-import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
+import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_IN_POWERPAGES, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, UserPrompt, WebViewMessage, sendIconSvg } from "./constants";
 import { IActiveFileParams, IOrgInfo } from './model';
 import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -148,7 +148,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     ) {
         this._view = webviewView;
 
-        webviewView.title = vscode.l10n.t("Copilot In Power Pages") + (IS_DESKTOP ? "" : " [PREVIEW]");
+        webviewView.title = vscode.l10n.t(COPILOT_IN_POWERPAGES) + (IS_DESKTOP ? "" : " [PREVIEW]");
         webviewView.description = vscode.l10n.t("PREVIEW");
         webviewView.webview.options = {
             // Allow scripts in the webview
@@ -194,9 +194,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         LOGIN_MESSAGE: vscode.l10n.t("Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account."),
                         LOGIN_BUTTON: vscode.l10n.t("Login"),
                         HI: vscode.l10n.t("Hi"),
-                        WELCOME_MESSAGE: vscode.l10n.t(`In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.`),
+                        WELCOME_MESSAGE: vscode.l10n.t('In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.'),
                         DOCUMENTATION_LINK: vscode.l10n.t("To know more, see <a href=\"https://go.microsoft.com/fwlink/?linkid=2206366\">Copilot in Power Pages documentation."),
-                        WORKING_ON_IT_MESSAGE: vscode.l10n.t("Working on it...")
+                        WORKING_ON_IT_MESSAGE: vscode.l10n.t("Working on it..."),
+                        GITHUB_COPILOT_CHAT: vscode.l10n.t('You can use this in <a href="#" id="github-copilot-link">GitHub Copilot with @powerpages</a> and leverage best of both world.'),
+                        NEW_BADGE: vscode.l10n.t("NEW"),
                     };
 
                     this.sendMessageToWebview({
@@ -214,7 +216,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     }
 
                     sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID });
-                    this.sendMessageToWebview({ type: 'env' }); //TODO Use IS_DESKTOP
+                    this.sendMessageToWebview({ type: 'env' });
                     await this.checkAuthentication();
                     if (orgID && userName) {
                         this.sendMessageToWebview({ type: 'isLoggedIn', value: true });
@@ -291,6 +293,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 case "codeLineCount": {
                     sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: String(data.value), orgId: orgID });
                     break;
+                }
+                case "openGitHubCopilotLink": {
+                    //Open the GitHub Copilot Chat with @powerpages if GitHub Copilot Chat is installed
+                    if(vscode.extensions.getExtension('github.copilot-chat')) {
+                        vscode.commands.executeCommand('workbench.action.chat.open', '@powerpages how can you help with coding for my website?');
+                    } else {
+                        vscode.env.openExternal(vscode.Uri.parse('https://go.microsoft.com/fwlink/?linkid=2276973'));
+                    }
                 }
             }
         });
