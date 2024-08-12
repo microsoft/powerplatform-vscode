@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { integer } from "vscode-languageserver";
 import * as vscode from 'vscode';
 
 export interface IFeedbackData {
@@ -24,8 +23,8 @@ export interface IActiveFileData {
     activeFileParams: IActiveFileParams;
     activeFileContent: string;
     activeFileUri: vscode.Uri | undefined;
-    startLine: integer;
-    endLine: integer;
+    startLine: number;
+    endLine: number;
 }
 
 export interface IOrgInfo {

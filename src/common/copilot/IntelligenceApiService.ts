@@ -4,7 +4,6 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import https from "https";
 import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse, UserPrompt } from "./constants";
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
@@ -22,8 +21,6 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
     if (!aibEndpoint) {
         return NetworkError;
     }
-
-    aibEndpoint = "https://aibuildertextapiservice.wus-il002.gateway.Test.island.powerapps.com/v1.0/ad48417c-a13d-ee11-be6a-00224804265b/appintelligence/chat";
 
     // eslint-disable-next-line prefer-const
     let requestBody = {
@@ -59,37 +56,14 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
         }
     }
 
-        //Required for testing with localhost
-        const agent = new https.Agent({
-            rejectUnauthorized: false,
-        });
-
-        const isLocalHost = true;
-
-        const requestInit: RequestInit = {
-          method: "POST",
-          headers: {
+    const requestInit: RequestInit = {
+        method: "POST",
+        headers: {
             'Content-Type': "application/json",
-            ...(isLocalHost
-            ? {
-                'x-ms-client-principal-id': '9ba620dc-4b37-430e-b779-2f9a7e7a52a4',
-                'x-ms-client-tenant-id': '9ba620dc-4b37-430e-b779-2f9a7e7a52a3',
-            }
-            : {}),
             Authorization: `Bearer ${apiToken}`,
-          },
-          body: JSON.stringify(requestBody),
-          agent: agent,
-        }
-
-    // const requestInit: RequestInit = {
-    //     method: "POST",
-    //     headers: {
-    //         'Content-Type': "application/json",
-    //         Authorization: `Bearer ${apiToken}`,
-    //     },
-    //     body: JSON.stringify(requestBody),
-    // }
+        },
+        body: JSON.stringify(requestBody),
+    }
 
     try {
         const startTime = performance.now();

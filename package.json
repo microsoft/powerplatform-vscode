@@ -101,11 +101,6 @@
     "onDebug",
     "onFileSystem:powerplatform-vfs"
   ],
-  "enabledApiProposals": [
-    "chatParticipant",
-    "chatVariableResolver",
-    "languageModels"
-  ],
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",
@@ -123,7 +118,8 @@
         "name": "powerpages",
         "fullName": "Copilot for Power Pages",
         "description": "Copilot for Power Pages",
-        "isSticky": true
+        "isSticky": true,
+        "when": "never"
       }
     ],
     "problemMatchers": [

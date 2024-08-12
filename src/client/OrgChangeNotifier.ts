@@ -18,21 +18,19 @@ export class OrgChangeNotifier {
     private _pacWrapper: PacWrapper | undefined;
     private _orgDetails: ActiveOrgOutput | undefined;
     private static _orgChangeNotifierObj: OrgChangeNotifier | undefined;
-    private extensionContext: vscode.ExtensionContext;
 
-    private constructor(pacWrapper: PacWrapper, extensionContext: vscode.ExtensionContext) {
+    private constructor(pacWrapper: PacWrapper) {
         this._pacWrapper = pacWrapper;
         this.activeOrgDetails();
         if (this._pacWrapper) {
             this.setupFileWatcher();
         }
 
-        this.extensionContext = extensionContext;
     }
 
-    public static createOrgChangeNotifierInstance(pacWrapper: PacWrapper, extensionContext: vscode.ExtensionContext) {
+    public static createOrgChangeNotifierInstance(pacWrapper: PacWrapper) {
         if (!OrgChangeNotifier._orgChangeNotifierObj) {
-            OrgChangeNotifier._orgChangeNotifierObj = new OrgChangeNotifier(pacWrapper, extensionContext);
+            OrgChangeNotifier._orgChangeNotifierObj = new OrgChangeNotifier(pacWrapper);
         }
         return OrgChangeNotifier._orgChangeNotifierObj;
     }
