@@ -4,12 +4,11 @@
  */
 
 import * as vscode from "vscode";
-import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../client/constants";
+import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
-import { PacWrapper } from "../../client/pac/PacWrapper";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "../copilot/constants";
+import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData } from "../copilot/model";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
@@ -138,24 +137,6 @@ export function getUserAgent(): string {
         .replace("{product}", EXTENSION_NAME)
         .replace("{product-version}", getExtensionVersion())
         .replace("{comment}", "(" + getExtensionType() + '; )');
-}
-
-export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
-    const userOrgUrl = await showInputBoxAndGetOrgUrl();
-    if (!userOrgUrl) {
-        return;
-    }
-
-    if (!pacWrapper) {
-        vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
-        return;
-    }
-
-    const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-    if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
-        vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
-        return;
-    }
 }
 
 export function getActiveEditorContent(): IActiveFileData {

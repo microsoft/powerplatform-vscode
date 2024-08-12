@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-export enum telemetryEventNames {
+export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_INIT_PATH_PARAMETERS = "WebExtensionInitPathParameters",
     WEB_EXTENSION_INIT_QUERY_PARAMETERS = "WebExtensionInitQueryParameters",
     WEB_EXTENSION_DATAVERSE_AUTHENTICATION_STARTED = "WebExtensionDataverseAuthenticationStarted",
@@ -49,6 +49,7 @@ export enum telemetryEventNames {
     WEB_EXTENSION_CREATE_ENTITY_FOLDER_FAILED = "webExtensionCreateEntityFolderFailed",
     WEB_EXTENSION_PREPROCESS_DATA_FAILED = "webExtensionPreprocessDataFailed",
     WEB_EXTENSION_PREPROCESS_DATA_SUCCESS = "webExtensionPreprocessDataSuccess",
+    WEB_EXTENSION_PREPROCESS_DATA_WEBFORM_STEPS_FAILED = "webExtensionPreprocessDataWebFormStepsFailed",
     WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR = "webExtensionAttributeContentError",
     WEB_EXTENSION_SET_FILE_CONTENT_ERROR = "webExtensionSetFileContentError",
     WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE = "webExtensionFailedToPrepareWorkspace",
@@ -73,6 +74,10 @@ export enum telemetryEventNames {
     WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_ENABLED = "WebExtensionMultiFileFeatureFlagEnabled",
     WEB_EXTENSION_MULTI_FILE_FEATURE_FLAG_DISABLED = "WebExtensionMultiFileFeatureFlagDisabled",
     WEB_EXTENSION_MULTI_FILE_MANDATORY_PARAMETERS_MISSING = "WebExtensionMultiFileMandatoryParametersMissing",
+    WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_SITE_DETAILS_FETCH_FAILED = "WebExtensionWebsitePreviewUrlValidationSiteDetailsFetchFailed",
+    WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_INSUFFICIENT_PARAMETERS = "WebExtensionWebsitePreviewUrlValidationInsufficientParameters",
+    WEB_EXTENSION_MULTI_FILE_INVALID_DATAVERSE_URL = "WebExtensionMultiFileInvalidDataverseUrl",
+    WEB_EXTENSION_MULTI_FILE_INVALID_WEBSITE_PREVIEW_URL = "WebExtensionMultiFileInvalidWebsitePreviewUrl",
     WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_DISABLED = "WebExtensionCoPresenceFeatureFlagDisabled",
     WEB_EXTENSION_CO_PRESENCE_FEATURE_FLAG_ENABLED = "WebExtensionCoPresenceFeatureFlagEnabled",
     WEB_EXTENSION_FILES_LOAD_SUCCESS = "WebExtensionFilesLoadSuccess",
@@ -97,6 +102,8 @@ export enum telemetryEventNames {
     WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTER_FAILED = 'webExtensionPowerPagesWebViewRegisterFailed',
     WEB_EXTENSION_BACK_TO_STUDIO_TRIGGERED = 'webExtensionBackToStudioTriggered',
     WEB_EXTENSION_PREVIEW_SITE_TRIGGERED = 'webExtensionPreviewSiteTriggered',
+    WEB_EXTENSION_WEBSITE_PREVIEW_URL_INVALID = "WebExtensionWebsitePreviewUrlInvalid",
+    WEB_EXTENSION_WEBSITE_PREVIEW_URL_UNAVAILABLE = "WebExtensionWebsitePreviewUrlUnavailable",
     WEB_EXTENSION_IMAGE_EDIT_SUPPORTED_FILE_EXTENSION = 'webExtensionImageEditSupportedFileExtension',
     WEB_EXTENSION_SAVE_IMAGE_FILE_TRIGGERED = 'webExtensionSaveImageFileTriggered',
     WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR = 'webExtensionFetchGetOrCreateSharedWorkSpaceError',

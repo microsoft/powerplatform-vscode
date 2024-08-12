@@ -21,6 +21,7 @@ import gulpWebpack from 'webpack-stream';
 import webpack from 'webpack';
 import vsce from '@vscode/vsce';
 import yargs from 'yargs';
+import plumber from 'gulp-plumber';
 const argv = yargs(process.argv.slice(2)).argv; // skip 'node' and 'gulp.js' args
 
 import fetch from 'node-fetch';
@@ -79,6 +80,7 @@ function setBuildRegion() {
 function compile() {
     return gulp
         .src('src/**/*.ts')
+        .pipe(plumber()) // Added error handling
         .pipe(gulpWebpack(nodeConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(distdir));
@@ -87,6 +89,7 @@ function compile() {
 function compileWeb() {
     return gulp
         .src('src/web/**/*.ts')
+        .pipe(plumber()) // Added error handling
         .pipe(gulpWebpack(webConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
@@ -96,6 +99,7 @@ function compileWeb() {
 function compileWorker() {
     return gulp
         .src(["src/web/**/*.ts"])
+        .pipe(plumber()) // Added error handling
         .pipe(gulpWebpack(webWorkerConfig, webpack))
         .pipe(gulp.dest(path.resolve(`${distdir}/web`)));
 }
@@ -346,8 +350,8 @@ async function snapshot() {
     }
 }
 
-const feedName = 'CAP_ISVExp_Tools_Stable';
-const cliVersion = '1.32.7';
+const feedName = 'nuget.org';
+const cliVersion = '1.33.5';
 
 const recompile = gulp.series(
     clean,

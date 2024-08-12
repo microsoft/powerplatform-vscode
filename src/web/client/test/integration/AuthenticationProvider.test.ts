@@ -10,12 +10,12 @@ import {
     getCommonHeaders,
 } from "../../../../common/services/AuthenticationProvider";
 import vscode from "vscode";
-import * as errorHandler from "../../common/errorHandler";
+import * as errorHandler from "../../../../common/utilities/errorHandlerUtil";
 import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import * as copilotTelemetry from "../../../../common/copilot/telemetry/copilotTelemetry";
-import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
 import { vscodeExtAppInsightsResourceProvider } from "../../../../common/telemetry-generated/telemetryConfiguration";
 import { VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED } from "../../../../common/services/TelemetryConstants";
+import TelemetryReporter from "@vscode/extension-telemetry";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let traceError: any
@@ -35,14 +35,12 @@ describe("Authentication Provider", () => {
         sinon.restore();
     });
 
-    const webExtensionTelemetry = new WebExtensionTelemetry();
     const appInsightsResource =
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
             undefined
         );
-    webExtensionTelemetry.setTelemetryReporter("", "", appInsightsResource);
 
-    const telemetry = webExtensionTelemetry.getTelemetryReporter();
+    const telemetry = new TelemetryReporter("", "", appInsightsResource.instrumentationKey);
 
     it("getHeader", () => {
         const accessToken = "f068ee9f-a010-47b9-b1e1-7e6353730e7d";
@@ -99,7 +97,7 @@ describe("Authentication Provider", () => {
             "Authorization Failed. Please run again to authorize it"
         );
 
-        sinon.assert.calledOnce(sendTelemetryEvent);
+        sinon.assert.calledTwice(sendTelemetryEvent);
         sinon.assert.calledOnce(showErrorDialog);
         sinon.assert.calledOnce(_mockgetSession);
     });

@@ -4,11 +4,11 @@
  */
 
 import * as vscode from "vscode";
-import { ITelemetry } from "../telemetry/ITelemetry";
+import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { getCurrentWorkspaceURI, getExcludedFileGlobPattern, getFileProperties, getPowerPageEntityType, getRegExPattern } from "./commonUtility";
 import { PowerPagesEntityType } from "./constants";
 import { cleanupRelatedFiles, fileRenameValidation, updateEntityPathNames } from "./fileSystemUpdatesUtility";
-import { FileDeleteEvent, FileRenameEvent, sendTelemetryEvent, UserFileDeleteEvent, UserFileRenameEvent } from "./telemetry";
+import { FileDeleteEvent, FileRenameEvent, sendTelemetryEvent, UserFileDeleteEvent, UserFileRenameEvent } from "../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 import { showDiagnosticMessage, validateTextDocument } from "./validationDiagnostics";
 
 export async function handleFileSystemCallbacks(
@@ -36,12 +36,12 @@ async function processOnDidDeleteFiles(
                     currentWorkspaceURI = getCurrentWorkspaceURI(e.files[0].path);
                     await Promise.all(e.files.map(async f => {
                         const fileEntityType = getPowerPageEntityType(f.path);
-                        
+
                         // Usage of FileDeleteEvent per file
-                        sendTelemetryEvent(telemetry, { eventName: FileDeleteEvent, fileEntityType: PowerPagesEntityType[fileEntityType] , methodName:processOnDidDeleteFiles.name});
+                        sendTelemetryEvent(telemetry, { eventName: FileDeleteEvent, fileEntityType: PowerPagesEntityType[fileEntityType], methodName: processOnDidDeleteFiles.name });
 
                         if (fileEntityType === PowerPagesEntityType.UNKNOWN) {
-                            return;                            
+                            return;
                         }
 
                         const fileProperties = getFileProperties(f.path);
@@ -64,11 +64,11 @@ async function processOnDidDeleteFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { methodName:processOnDidDeleteFiles.name,eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, { methodName: processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileDeleteEvent
-                sendTelemetryEvent(telemetry, { methodName:processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent(telemetry, { methodName: processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
             }
         })
     );
@@ -88,13 +88,13 @@ async function processOnDidRenameFiles(
                     const currentWorkspaceURI = getCurrentWorkspaceURI(e.files[0].oldUri.fsPath);
 
                     await Promise.all(e.files.map(async f => {
-                        const fileEntityType = getPowerPageEntityType(f.oldUri.path);                        
+                        const fileEntityType = getPowerPageEntityType(f.oldUri.path);
 
                         // Usage of FileRenameEvent per file
-                        sendTelemetryEvent(telemetry, { methodName:processOnDidRenameFiles.name,eventName: FileRenameEvent, fileEntityType: PowerPagesEntityType[fileEntityType] });
+                        sendTelemetryEvent(telemetry, { methodName: processOnDidRenameFiles.name, eventName: FileRenameEvent, fileEntityType: PowerPagesEntityType[fileEntityType] });
 
                         if (fileEntityType === PowerPagesEntityType.UNKNOWN) {
-                            return;                            
+                            return;
                         }
 
                         const fileProperties = getFileProperties(f.oldUri.path);
@@ -120,11 +120,11 @@ async function processOnDidRenameFiles(
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, {  methodName:processOnDidRenameFiles.name,eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent(telemetry, { methodName: processOnDidRenameFiles.name, eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileRenameEvent
-                sendTelemetryEvent(telemetry, {  methodName:processOnDidRenameFiles.name,eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent(telemetry, { methodName: processOnDidRenameFiles.name, eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
             }
         })
     );

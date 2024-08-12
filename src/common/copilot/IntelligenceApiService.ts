@@ -8,10 +8,10 @@ import https from "https";
 import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse, UserPrompt } from "./constants";
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { CopilotResponseFailureEvent, CopilotResponseFailureEventWithMessage, CopilotResponseOkFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
 import { getExtensionType, getExtensionVersion } from "../utilities/Utils";
-import { EXTENSION_NAME } from "../../client/constants";
+import { EXTENSION_NAME } from "../constants";
 import { enableCrossGeoDataFlowInGeo } from "./utils/copilotUtil";
 
 const clientType = EXTENSION_NAME + '-' + getExtensionType();
@@ -23,7 +23,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
         return NetworkError;
     }
 
-    aibEndpoint = "https://localhost:5001/v1.0/9ba620dc-4b37-430e-b779-2f9a7e7a52a6/appintelligence/chat";
+    aibEndpoint = "https://aibuildertextapiservice.wus-il002.gateway.Test.island.powerapps.com/v1.0/ad48417c-a13d-ee11-be6a-00224804265b/appintelligence/chat";
 
     // eslint-disable-next-line prefer-const
     let requestBody = {

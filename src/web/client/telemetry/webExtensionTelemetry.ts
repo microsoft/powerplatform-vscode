@@ -7,8 +7,8 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { AppInsightsResource } from "../../../common/pp-tooling-telemetry-node/AppInsightsResource";
 import { queryParameters } from "../common/constants";
 import { sanitizeURL } from "../utilities/urlBuilderUtil";
-import { telemetryEventNames } from "./constants";
-import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "./webExtensionTelemetryInterface";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
+import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
 import { isNullOrUndefined } from '../utilities/commonUtil';
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
@@ -26,7 +26,7 @@ export class WebExtensionTelemetry {
 
     public sendExtensionInitPathParametersTelemetry(appName: string | undefined, entity: string | undefined, entityId: string | undefined) {
         const telemetryData: IWebExtensionInitPathTelemetryData = {
-            eventName: telemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
+            eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
             properties: {
                 appName: this.getPathParameterValue(appName),
             }
@@ -34,7 +34,7 @@ export class WebExtensionTelemetry {
 
         if (entity && entityId) {
             telemetryData.properties.entity = this.getPathParameterValue(entity),
-            telemetryData.properties.entityId = this.getPathParameterValue(entityId)
+                telemetryData.properties.entityId = this.getPathParameterValue(entityId)
         }
 
         this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
@@ -43,7 +43,7 @@ export class WebExtensionTelemetry {
 
     public sendExtensionInitQueryParametersTelemetry(queryParamsMap: Map<string, string>) {
         const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
-            eventName: telemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
+            eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
             properties: {
                 orgId: queryParamsMap.get(queryParameters.ORG_ID),
                 tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
@@ -112,7 +112,7 @@ export class WebExtensionTelemetry {
         eventName?: string,
         status?: string) {
 
-        eventName = eventName ?? telemetryEventNames.WEB_EXTENSION_API_REQUEST;
+        eventName = eventName ?? webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST;
 
         const telemetryData: IWebExtensionAPITelemetryData = {
             eventName: eventName,
@@ -135,7 +135,7 @@ export class WebExtensionTelemetry {
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage, error, telemetryData.properties, telemetryData.measurements);
         } else {
             this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
-            oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties,  telemetryData.measurements);
+            oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
         }
     }
 
@@ -158,7 +158,7 @@ export class WebExtensionTelemetry {
             true,
             duration,
             undefined,
-            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
+            !isNullOrUndefined(eventName) ? eventName : webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
             status);
     }
 
@@ -182,7 +182,7 @@ export class WebExtensionTelemetry {
             false,
             duration,
             errorMessage,
-            !isNullOrUndefined(eventName) ? eventName : telemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
+            !isNullOrUndefined(eventName) ? eventName : webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
             status);
     }
 

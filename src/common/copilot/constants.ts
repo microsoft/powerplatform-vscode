@@ -18,7 +18,6 @@ export const UK_GEO = 'uk';
 export const COPILOT_UNAVAILABLE = 'copilotunavailable';
 export const AUTH_CREATE_MESSAGE = vscode.l10n.t('Creating new Auth Profile');
 export const AUTH_CREATE_FAILED = vscode.l10n.t("Error creating auth profile for org")
-export const PAC_SUCCESS = "Success";
 export const RELEVANCY_CHECK_FAILED = 'RelevancyCheckFailed';
 export const INAPPROPRIATE_CONTENT = 'InappropriateContentDetected';
 export const INPUT_CONTENT_FILTERED = 'InputContentFiltered';
@@ -36,7 +35,7 @@ export const ATTRIBUTE_DESCRIPTION = 'description';
 export const ATTRIBUTE_DATAFIELD_NAME = 'datafieldname';
 export const ATTRIBUTE_CLASSID = 'classid';
 export const SYSTEFORMS_API_PATH = 'api/data/v9.2/systemforms';
-
+export const COPILOT_IN_POWERPAGES = 'Copilot In Power Pages'
 
 export type WebViewMessage = {
     type: string;

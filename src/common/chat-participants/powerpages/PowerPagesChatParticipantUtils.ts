@@ -3,18 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ITelemetry } from "../../../client/telemetry/ITelemetry";
 import { ADX_ENTITYFORM } from "../../copilot/constants";
 import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/dataverseMetadata";
 import { IActiveFileParams } from "../../copilot/model";
+import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
 import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
-import { SUPPORTED_ENTITIES } from "./PowerPagesChatParticipantConstants";
-import { IComponentInfo } from "./PowerPagesChatParticipantTypes";
+import { EXPLAIN_CODE_PROMPT, FORM_PROMPT, LIST_PROMPT, STATER_PROMPTS, SUPPORTED_ENTITIES, WEB_API_PROMPT } from "./PowerPagesChatParticipantConstants";
+import { IComponentInfo, IPowerPagesChatResult } from "./PowerPagesChatParticipantTypes";
 import * as vscode from 'vscode';
-
-
 
 export async function getEndpoint(
     orgID: string,
@@ -70,3 +68,15 @@ export function createAndReferenceLocation(activeFileUri: vscode.Uri, startLine:
 
     return location;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function provideChatParticipantFollowups(result: IPowerPagesChatResult, _context: vscode.ChatContext, _token: vscode.CancellationToken) {
+    if (result.metadata.command === STATER_PROMPTS) {
+        return [
+            { prompt: EXPLAIN_CODE_PROMPT },
+            { prompt: WEB_API_PROMPT },
+            { prompt: LIST_PROMPT },
+            { prompt: FORM_PROMPT }
+        ];
+    }
+}
+

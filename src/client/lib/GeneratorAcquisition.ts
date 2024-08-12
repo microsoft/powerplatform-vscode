@@ -10,7 +10,7 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import { PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME, PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME } from '../constants';
+import { PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME, PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME } from '../../common/constants';
 import { ICliAcquisitionContext } from './CliAcquisition';
 import { glob } from 'glob';
 import commandExists from 'command-exists';

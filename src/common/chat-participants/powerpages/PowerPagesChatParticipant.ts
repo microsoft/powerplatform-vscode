@@ -6,19 +6,19 @@
 import * as vscode from 'vscode';
 import { createChatParticipant } from '../ChatParticipantUtils';
 import { IComponentInfo, IPowerPagesChatResult } from './PowerPagesChatParticipantTypes';
-import { ITelemetry } from '../../../client/telemetry/ITelemetry';
+import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
-import { orgChangeErrorEvent, orgChangeEvent } from '../../OrgChangeNotifier';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, DISCLAIMER_MESSAGE, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, STATER_PROMPTS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { createAndReferenceLocation, getComponentInfo, getEndpoint } from './PowerPagesChatParticipantUtils';
+import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
+import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -41,6 +41,10 @@ export class PowerPagesChatParticipant {
 
         //TODO: Check the icon image
         this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.png');
+
+        this.chatParticipant.followupProvider = {
+            provideFollowups: provideChatParticipantFollowups
+        };
 
         this.powerPagesAgentSessionId = uuidv4();
 
@@ -124,10 +128,27 @@ export class PowerPagesChatParticipant {
             };
         }
 
-        //TODO:Get active file content and selected code, if selected code is available than that will be used as active file content
+        const userPrompt = request.prompt;
+
+        if (userPrompt === WELCOME_PROMPT) {
+            stream.markdown(WELCOME_MESSAGE);
+            return {
+                metadata: {
+                    command: STATER_PROMPTS
+                }
+            }
+        }
+
+        if (!userPrompt) {
+            stream.markdown(NO_PROMPT_MESSAGE);
+            return {
+                metadata: {
+                    command: STATER_PROMPTS
+                }
+            };
+        }
 
         const { activeFileContent, activeFileUri, startLine, endLine, activeFileParams } = getActiveEditorContent();
-
 
         const location = activeFileUri ? createAndReferenceLocation(activeFileUri, startLine, endLine) : undefined;
 
@@ -135,26 +156,10 @@ export class PowerPagesChatParticipant {
             stream.reference(location);
         }
 
-        //console.log(request.references[0].id, request.references[0].range, request.references[0].modelDescription, request.references[0].value)
-
-        const userPrompt = request.prompt;
-
         if (request.command) {
             //TODO: Handle command scenarios
 
         } else {
-            if (!userPrompt) {
-
-                //TODO: String approval is required
-                stream.markdown(NO_PROMPT_MESSAGE);
-
-                return {
-                    metadata: {
-                        command: ''
-                    }
-                };
-            }
-
             const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
             const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: activeFileContent }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
@@ -167,13 +172,14 @@ export class PowerPagesChatParticipant {
 
                 if (response.displayText) {
                     stream.markdown(response.displayText);
+                    stream.markdown('\n');
                 }
                 if (response.code && !SKIP_CODES.includes(response.code)) {
                     stream.markdown('\n```javascript\n' + response.code + '\n```');
                 }
                 stream.markdown('\n');
             });
-
+            stream.markdown(DISCLAIMER_MESSAGE);
         }
 
         return {
