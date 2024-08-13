@@ -1,5 +1,13 @@
 # Change Log - Power Platform Extension
 
+## 2.0.62
+- pac CLI 1.33.5, (July 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes
+  - HTML/YML server crash issue
+- Web extension updates
+  - Bug Fixes
+    - Form steps not displayed for any Advanced form issue
+
 ## 2.0.59
 - pac CLI 1.32.8, (May 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Web extension updates
