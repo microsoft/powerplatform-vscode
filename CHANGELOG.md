@@ -6,7 +6,7 @@
   - HTML/YML server crash issue
 - Web extension updates
   - Bug Fixes
-    - No form steps displayed for any Advanced form issue
+    - Form steps not displayed for any Advanced form issue
 
 ## 2.0.59
 - pac CLI 1.32.8, (May 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
