@@ -10,7 +10,7 @@ import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
 import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
-import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput } from "./PacTypes";
+import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, PacAuthWhoOutput } from "./PacTypes";
 import { v4 } from "uuid";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
@@ -166,6 +166,10 @@ export class PacWrapper {
 
     public async activeOrg(): Promise<PacOrgWhoOutput> {
         return this.executeCommandAndParseResults<PacOrgWhoOutput>(new PacArguments("org", "who"));
+    }
+
+    public async activeAuth(): Promise <PacAuthWhoOutput> {
+        return this.executeCommandAndParseResults<PacAuthWhoOutput>(new PacArguments("auth", "who"));
     }
 
     public async pcfInit(outputDirectory: string): Promise<PacOutput> {

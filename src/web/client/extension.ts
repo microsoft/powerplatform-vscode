@@ -41,9 +41,9 @@ import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaboratio
 import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
 import { IPortalWebExtensionInitQueryParametersTelemetryData } from "../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
-import { IArtemisAPIOrgResponse } from "../../common/services/Interfaces";
 import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
+import { ServiceEndpointCategory } from "../../common/services/Constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -116,9 +116,9 @@ export function activate(context: vscode.ExtensionContext): void {
                 );
                 logOneDSLogger(queryParamsMap);
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
-                const { geoName, geoLongName } = await fetchArtemisData(orgId);
-                WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: geoName });
-                oneDSLoggerWrapper.instantiate(geoName, geoLongName);
+                await fetchArtemisData(orgId);
+                WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: WebExtensionContext.geoName });
+                oneDSLoggerWrapper.instantiate(WebExtensionContext.geoLongName, WebExtensionContext.geoLongName);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
@@ -649,18 +649,19 @@ function isActiveDocument(fileFsPath: string): boolean {
     );
 }
 
-async function fetchArtemisData(orgId: string): Promise<IArtemisAPIOrgResponse> {
-    const artemisResponse = await ArtemisService.fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
-    if (artemisResponse === null || artemisResponse.length === 0) {
+async function fetchArtemisData(orgId: string) {
+    const artemisResponse = await ArtemisService.getArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter(), "");
+    if (artemisResponse === null) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
             fetchArtemisData.name,
             ARTEMIS_RESPONSE_FAILED
         );
-        return { geo: "", geoLongName: "" } as unknown as IArtemisAPIOrgResponse;
     }
 
-    return artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse;
+    WebExtensionContext.geoName = artemisResponse?.response?.geoName ?? "";
+    WebExtensionContext.geoLongName = artemisResponse?.response?.geoLongName ?? "";
+    WebExtensionContext.serviceEndpointCategory = artemisResponse?.stamp ?? ServiceEndpointCategory.NONE;
 }
 
 function logOneDSLogger(queryParamsMap: Map<string, string>) {

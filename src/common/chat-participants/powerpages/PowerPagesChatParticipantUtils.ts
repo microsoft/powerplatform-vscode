@@ -10,8 +10,8 @@ import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
 import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
-import { SUPPORTED_ENTITIES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP } from "./PowerPagesChatParticipantConstants";
-import { IComponentInfo } from "./PowerPagesChatParticipantTypes";
+import { SUPPORTED_ENTITIES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, EXPLAIN_CODE_PROMPT, FORM_PROMPT, LIST_PROMPT, STATER_PROMPTS, WEB_API_PROMPT  } from "./PowerPagesChatParticipantConstants";
+import { IComponentInfo, IPowerPagesChatResult } from "./PowerPagesChatParticipantTypes";
 import * as vscode from 'vscode';
 
 export async function getEndpoint(
@@ -66,3 +66,24 @@ export function handleChatParticipantFeedback (feedback: vscode.ChatResultFeedba
         telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId});
     }
 }
+export function createAndReferenceLocation(activeFileUri: vscode.Uri, startLine: number, endLine: number): vscode.Location {
+
+    const positionStart = new vscode.Position(startLine, 0),
+          positionEnd = new vscode.Position(endLine, 0),
+          activeFileRange = new vscode.Range(positionStart, positionEnd),
+          location = new vscode.Location(activeFileUri, activeFileRange);
+
+    return location;
+}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function provideChatParticipantFollowups(result: IPowerPagesChatResult, _context: vscode.ChatContext, _token: vscode.CancellationToken) {
+    if (result.metadata.command === STATER_PROMPTS) {
+        return [
+            { prompt: EXPLAIN_CODE_PROMPT },
+            { prompt: WEB_API_PROMPT },
+            { prompt: LIST_PROMPT },
+            { prompt: FORM_PROMPT }
+        ];
+    }
+} 
+
