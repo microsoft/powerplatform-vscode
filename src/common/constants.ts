@@ -63,3 +63,5 @@ export interface IRelatedFiles {
     fileContent: string;
     fileName: string;
 }
+
+export const COPILOT_RELATED_FILES_FETCH_FAILED = "CopilotRelatedFilesFetchFailed";
