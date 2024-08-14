@@ -57,6 +57,15 @@ export function isEntityInSupportedList(entity: string): boolean {
     return SUPPORTED_ENTITIES.includes(entity);
 }
 
+export function createAndReferenceLocation(activeFileUri: vscode.Uri, startLine: number, endLine: number): vscode.Location {
+
+    const positionStart = new vscode.Position(startLine, 0),
+          positionEnd = new vscode.Position(endLine, 0),
+          activeFileRange = new vscode.Range(positionStart, positionEnd),
+          location = new vscode.Location(activeFileUri, activeFileRange);
+
+    return location;
+}
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function provideChatParticipantFollowups(result: IPowerPagesChatResult, _context: vscode.ChatContext, _token: vscode.CancellationToken) {
     if (result.metadata.command === STATER_PROMPTS) {
@@ -68,3 +77,4 @@ export function provideChatParticipantFollowups(result: IPowerPagesChatResult, _
         ];
     }
 }
+

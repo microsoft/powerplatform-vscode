@@ -56,7 +56,6 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
         }
     }
 
-
     const requestInit: RequestInit = {
         method: "POST",
         headers: {

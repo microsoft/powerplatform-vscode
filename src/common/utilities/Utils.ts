@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
-import { IActiveFileData, IActiveFileParams } from "../copilot/model";
+import { IActiveFileData } from "../copilot/model";
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
@@ -141,28 +141,50 @@ export function getUserAgent(): string {
 
 export function getActiveEditorContent(): IActiveFileData {
     const activeEditor = vscode.window.activeTextEditor;
-    const activeFileData: IActiveFileData = {
-        activeFileContent: '',
-        activeFileParams: {
-            dataverseEntity: '',
-            entityField: '',
-            fieldType: ''
-        } as IActiveFileParams
-    };
-    if (activeEditor) {
-        const document = activeEditor.document;
-        const fileName = document.fileName;
-        const relativeFileName = vscode.workspace.asRelativePath(fileName);
 
-        const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
-
-        activeFileData.activeFileContent = document.getText();
-        activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
-        activeFileData.activeFileParams.entityField = EntityFieldMap.get(activeFileParams[1]) || "";
-        activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "";
+    if (!activeEditor) {
+        return { activeFileContent: '', startLine: 0, endLine: 0, activeFileUri: undefined, activeFileParams: { dataverseEntity: '', entityField: '', fieldType: '' } };
     }
 
-    return activeFileData;
+    const document = activeEditor.document;
+    const fileName = document.fileName;
+    const relativeFileName = vscode.workspace.asRelativePath(fileName);
+    const activeFileUri = document.uri;
+    const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
+
+    let activeFileContent = document.getText();
+    let startLine = 0;
+    let endLine = document.lineCount;
+
+    const selectedCode = getSelectedCode(activeEditor);
+    const selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
+
+    if (selectedCode.length > 0) {
+        activeFileContent = selectedCode;
+        startLine = selectedCodeLineRange.start;
+        endLine = selectedCodeLineRange.end;
+    }
+    /**
+     * Uncomment the below code to pass the visible code to the copilot based on the token limit.
+     */
+    //else if (document.getText().length > 100) { // Define the token limit for context passing
+    //     const { code, startLine: visibleStart, endLine: visibleEnd } = getVisibleCode(activeEditor);
+    //     activeFileContent = code;
+    //     startLine = visibleStart;
+    //     endLine = visibleEnd;
+    // }
+
+    return {
+        activeFileContent,
+        startLine,
+        endLine,
+        activeFileUri,
+        activeFileParams: {
+            dataverseEntity: DataverseEntityNameMap.get(activeFileParams[0]) || "",
+            entityField: EntityFieldMap.get(activeFileParams[1]) || "",
+            fieldType: FieldTypeMap.get(activeFileParams[2]) || ""
+        }
+    };
 }
 
 export function checkCopilotAvailability(
@@ -185,4 +207,15 @@ export function checkCopilotAvailability(
     } else {
         return true;
     }
+}
+
+export function getVisibleCode(editor: vscode.TextEditor): { code: string; startLine: number; endLine: number; } {
+    const visibleRanges = editor.visibleRanges;
+    const visibleCode = visibleRanges.map(range => editor.document.getText(range)).join('\n');
+    const firstVisibleRange = visibleRanges[0];
+    return {
+        code: visibleCode,
+        startLine: firstVisibleRange.start.line,
+        endLine: firstVisibleRange.end.line
+    };
 }

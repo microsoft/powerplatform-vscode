@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import { createChatParticipant } from '../ChatParticipantUtils';
 import { IComponentInfo, IPowerPagesChatResult } from './PowerPagesChatParticipantTypes';
+import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
@@ -13,11 +14,10 @@ import { intelligenceAPIAuthentication } from '../../services/AuthenticationProv
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, DISCLAIMER_MESSAGE, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, STATER_PROMPTS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { getComponentInfo, getEndpoint, provideChatParticipantFollowups } from './PowerPagesChatParticipantUtils';
+import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
-import { ITelemetry } from '../../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
 
 export class PowerPagesChatParticipant {
@@ -131,7 +131,7 @@ export class PowerPagesChatParticipant {
 
         if (userPrompt === WELCOME_PROMPT) {
             stream.markdown(WELCOME_MESSAGE);
-            return{
+            return {
                 metadata: {
                     command: STATER_PROMPTS
                 }
@@ -139,9 +139,7 @@ export class PowerPagesChatParticipant {
         }
 
         if (!userPrompt) {
-
             stream.markdown(NO_PROMPT_MESSAGE);
-
             return {
                 metadata: {
                     command: STATER_PROMPTS
@@ -149,23 +147,31 @@ export class PowerPagesChatParticipant {
             };
         }
 
+        const { activeFileContent, activeFileUri, startLine, endLine, activeFileParams } = getActiveEditorContent();
+
+        const location = activeFileUri ? createAndReferenceLocation(activeFileUri, startLine, endLine) : undefined;
+
+        if (location) {
+            stream.reference(location);
+        }
+
         if (request.command) {
             //TODO: Handle command scenarios
 
         } else {
-            const { activeFileParams } = getActiveEditorContent();
-
             const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
-            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: '' }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
+            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: activeFileContent }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
 
             const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
 
             this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, { scenario: scenario, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID })
 
             llmResponse.forEach((response: { displayText: string | vscode.MarkdownString; code: string; }) => {
+
                 if (response.displayText) {
                     stream.markdown(response.displayText);
+                    stream.markdown('\n');
                 }
                 if (response.code && !SKIP_CODES.includes(response.code)) {
                     stream.markdown('\n```javascript\n' + response.code + '\n```');
