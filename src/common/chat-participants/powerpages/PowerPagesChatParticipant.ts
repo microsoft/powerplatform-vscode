@@ -166,7 +166,7 @@ export class PowerPagesChatParticipant {
             switch (activeFileParams.dataverseEntity) {
                 case 'adx_webpage':
                     if (activeFileUri) {
-                        const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.telemetry);
+                        const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.telemetry, this.powerPagesAgentSessionId);
                         relatedFiles.push(...files);
                     }
                     break;

@@ -263,7 +263,7 @@ async function getFileContentByType(activeFileUri: vscode.Uri, componentType: st
 }
 
 //fetchRelatedFiles function based on component type
-export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, telemetry: ITelemetry): Promise<IRelatedFiles[]> {
+export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, telemetry: ITelemetry, sessionId:string): Promise<IRelatedFiles[]> {
     try {
         const relatedFileTypes = relatedFilesSchema[componentType]?.[fieldType];
         if (!relatedFileTypes) {
@@ -284,7 +284,7 @@ export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType
         return files;
     } catch (error) {
         const message = (error as Error)?.message;
-        telemetry.sendTelemetryErrorEvent(COPILOT_RELATED_FILES_FETCH_FAILED, { error: message });
+        telemetry.sendTelemetryErrorEvent(COPILOT_RELATED_FILES_FETCH_FAILED, { error: message, sessionId: sessionId });
         return [];
     }
 }
