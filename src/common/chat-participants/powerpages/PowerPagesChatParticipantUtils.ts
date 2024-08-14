@@ -85,5 +85,27 @@ export function provideChatParticipantFollowups(result: IPowerPagesChatResult, _
             { prompt: FORM_PROMPT }
         ];
     }
-} 
+}
 
+export function createErrorResult(message: string, scenario: string, orgId: string): IPowerPagesChatResult {
+    return {
+        metadata: {
+            command: '',
+            scenario: scenario,
+            orgId: orgId
+        },
+        errorDetails: {
+            message: message
+        }
+    };
+}
+
+export function createSuccessResult(command: string, scenario: string, orgId: string): IPowerPagesChatResult {
+    return {
+        metadata: {
+            command: command,
+            scenario: scenario,
+            orgId: orgId
+        }
+    };
+}
