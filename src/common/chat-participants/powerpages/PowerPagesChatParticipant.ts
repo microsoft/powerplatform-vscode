@@ -61,7 +61,6 @@ export class PowerPagesChatParticipant {
         this._disposables.push(orgChangeErrorEvent(async () => {
             this.extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID: undefined, orgUrl: undefined });
         }));
-
     }
 
     public static getInstance(context: vscode.ExtensionContext, telemetry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper) {

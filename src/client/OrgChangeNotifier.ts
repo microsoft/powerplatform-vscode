@@ -25,7 +25,6 @@ export class OrgChangeNotifier {
         if (this._pacWrapper) {
             this.setupFileWatcher();
         }
-
     }
 
     public static createOrgChangeNotifierInstance(pacWrapper: PacWrapper) {

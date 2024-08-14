@@ -59,12 +59,10 @@ export function isEntityInSupportedList(entity: string): boolean {
 
 export function createAndReferenceLocation(activeFileUri: vscode.Uri, startLine: number, endLine: number): vscode.Location {
 
-    const positionStart = new vscode.Position(startLine, 0);
-    const positionEnd = new vscode.Position(endLine, 0);
-
-    const activeFileRange = new vscode.Range(positionStart, positionEnd);
-
-    const location = new vscode.Location(activeFileUri, activeFileRange);
+    const positionStart = new vscode.Position(startLine, 0),
+          positionEnd = new vscode.Position(endLine, 0),
+          activeFileRange = new vscode.Range(positionStart, positionEnd),
+          location = new vscode.Location(activeFileUri, activeFileRange);
 
     return location;
 }
