@@ -14,7 +14,8 @@ import fs from 'fs';
 
 // export const AIB_ENDPOINT = 'YOUR_API_ENDPOINT_HERE';
 
-export const AIB_ENDPOINT = 'https://aibuildertextapiservice.us-il109.gateway.Prod.island.powerapps.com/v1.0/63efacda-3db4-ee11-a564-000d3a106f1e/appintelligence/chat';
+export const AIB_ENDPOINT = 'https://aibuildertextapiservice.us-il108.gateway.prod.island.powerapps.com/v1.0/09c165e4-df13-ef11-9f83-000d3a342d10/appintelligence/chat'
+// 'https://aibuildertextapiservice.us-il109.gateway.Prod.island.powerapps.com/v1.0/63efacda-3db4-ee11-a564-000d3a106f1e/appintelligence/chat';
 
 export interface IApiRequestParams {
     aibEndPoint: string;
@@ -72,12 +73,12 @@ export const ApiRequestJson = {
         "version": "V2",
         "information":
         {
-            "activeFileContent": "{1}",
+            "activeFileContent": "{6}",
             "dataverseEntity": "{2}",
             "entityField": "{3}",
             "fieldType": "{4}",
-            "targetEntity": "",
-            "targetColumns": ["Name", "adx_createdbycontact", "", "Email", "adx_contactemail", "", "Subject", "title", "","Message", "comments", ""],
+            "targetEntity": "{5}",
+            "targetColumns": ["{1}"],
             "clientType": EXTENSION_NAME + '-' + 'Desktop',
             "clientVersion": getExtensionVersion()
         }
@@ -95,15 +96,22 @@ export const ApiRequestJson = {
 // </summary>
 // <param name="values">Values to replace the placeholders</param>
 // <returns>JSON request with actual values</returns>
-export function ReplaceAPIRequestPlaceHolders(values: string[]) {
+export function ReplaceAPIRequestPlaceHolders(values: (string | string[])[]) {
+    
     return JSON.parse(JSON.stringify(ApiRequestJson, (_key, value) => {
         if (typeof value === 'string') {
             return value.replace(/{(\d+)}/g, (match, index) => {
-                return values[index] || match;
+                const replacement = values[index];
+                if (Array.isArray(replacement)) {
+                    return replacement.join(', '); // Join array values into a string
+                }
+                return replacement || match;
             });
         }
+        console.log(value);
         return value;
     }));
+    
 }
 
 // <summary>
@@ -112,9 +120,10 @@ export function ReplaceAPIRequestPlaceHolders(values: string[]) {
 // <param name="actualValues">Actual values to replace the placeholders</param>
 // <param name="accessToken">Access token for the API</param>
 // <returns>API request parameters</returns>
-export function CreateAPIRequestParams(actualValues: string[], accessToken: string) : IApiRequestParams
+export function CreateAPIRequestParams(actualValues: (string | string[])[], accessToken: string) : IApiRequestParams
 {
     const data = ReplaceAPIRequestPlaceHolders(actualValues);
+    console.log(data);
     return {
         aibEndPoint: AIB_ENDPOINT,
         apiToken: accessToken,
@@ -205,7 +214,7 @@ export function closeHtmlFile(logStream: fs.WriteStream) {
 // <param name="accessToken">Access token for the API</param>
 // <param name="logStream">Write stream</param>
 // <returns>API response</returns>
-export async function CreateAndExecuteAPIRequest(testName: string, actualValues: string[], accessToken: string, logStream: fs.WriteStream)
+export async function CreateAndExecuteAPIRequest(testName: string, actualValues: (string | string[])[], accessToken: string, logStream: fs.WriteStream)
 {
     let testLogParams: ITestLogParams;
     let testStartTime: Date = new Date();
@@ -284,8 +293,8 @@ export function ReturnFormattedAPIResponse(responseData : []) {
 
  export const SuggestedPromptsConstants : Record<string, string> = { 
     WEB_API_PROMPT: vscode.l10n.t("Write code for name field validation"),
-    /* FORM_PROMPT: vscode.l10n.t("Write JavaScript code for form field validation to check phone field value is in the valid format."),
-    LIST_PROMPT: vscode.l10n.t("Write JavaScript code to highlight the row where email field is empty in table list."), */
+    FORM_PROMPT: vscode.l10n.t("Write JavaScript code for form field validation to check phone field value is in the valid format."),
+    LIST_PROMPT: vscode.l10n.t("Write JavaScript code to highlight the row where email field is empty in table list."),
 }
 
 export const HarmsPromptsConstants : Record<string, string> = {
