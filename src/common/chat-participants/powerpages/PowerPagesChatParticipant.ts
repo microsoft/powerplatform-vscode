@@ -15,10 +15,11 @@ import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, DISCLAIMER_MESSAGE, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, STATER_PROMPTS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups } from './PowerPagesChatParticipantUtils';
-import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
+import { checkCopilotAvailability, fetchRelatedFiles, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
+import { IRelatedFiles } from '../../constants';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -159,9 +160,23 @@ export class PowerPagesChatParticipant {
             //TODO: Handle command scenarios
 
         } else {
+            const relatedFiles: IRelatedFiles[] = [];
+
+            // Based on dataverse entity fetch required context for the active file
+            switch (activeFileParams.dataverseEntity) {
+                case 'adx_webpage':
+                    if (activeFileUri) {
+                        const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType);
+                        relatedFiles.push(...files);
+                    }
+                    break;
+                default:
+                    break;
+            }
+
             const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
-            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: activeFileContent }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag);
+            const llmResponse = await sendApiRequest([{ displayText: userPrompt, code: activeFileContent }], activeFileParams, this.orgID, intelligenceApiToken, this.powerPagesAgentSessionId, entityName, componentInfo, this.telemetry, intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceAPIEndpointInfo.geoName, intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag, relatedFiles);
 
             const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
 

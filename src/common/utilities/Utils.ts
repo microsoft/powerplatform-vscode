@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../constants";
+import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData } from "../copilot/model";
@@ -12,6 +12,7 @@ import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
+import path from "path";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -218,4 +219,76 @@ export function getVisibleCode(editor: vscode.TextEditor): { code: string; start
         startLine: firstVisibleRange.start.line,
         endLine: firstVisibleRange.end.line
     };
+}
+
+
+async function getFileContent(activeFileUri: vscode.Uri, customExtension: string): Promise<{ customFileContent: string; customFileName: string; }> {
+    try {
+        const activeFileFolderPath = getFolderPathFromUri(activeFileUri);
+        const activeFileName = getFileNameFromUri(activeFileUri);
+
+        const activeFileNameParts = activeFileName.split('.');
+
+        let customFileName = activeFileNameParts[0];
+
+        for (let i = 1; i < activeFileNameParts.length - 2; i++) {
+            customFileName += `.${activeFileNameParts[i]}`;
+        }
+
+        customFileName += customExtension;
+
+        const customFilePath = path.join(activeFileFolderPath, customFileName);
+
+        // Read the content of the custom file
+        const diskRead = await import('fs');
+        const customFileContent = diskRead.readFileSync(customFilePath, 'utf8');
+
+        return {customFileContent, customFileName};
+    } catch (error) {
+        // Log the error
+        return {customFileContent:'', customFileName: ''};
+    }
+}
+
+// Generic function to get file content based on type and component type
+async function getFileContentByType(activeFileUri: vscode.Uri, componentType: string, fileType: string): Promise<{ customFileContent: string; customFileName: string; }> {
+    const extension = componentTypeSchema[componentType]?.[fileType];
+    if (!extension) {
+        //log the error
+        return {customFileContent:'', customFileName: ''};
+    }
+    return getFileContent(activeFileUri, extension);
+}
+
+//fetchRelatedFiles function based on component type
+export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string) {
+    const relatedFileTypes = relatedFilesSchema[componentType]?.[fieldType];
+    if (!relatedFileTypes) {
+        return [];
+    }
+
+    const files: IRelatedFiles[] = await Promise.all(
+        relatedFileTypes.map(async fileType => {
+            const fileContentResult = await getFileContentByType(activeFileUri, componentType, fileType);
+            return {
+                fileType,
+                fileContent: fileContentResult.customFileContent,
+                fileName: fileContentResult.customFileName
+            };
+        })
+    );
+
+    return files;
+}
+
+export function getFilePathFromUri(uri: vscode.Uri): string {
+    return uri.fsPath;
+}
+
+export function getFileNameFromUri(uri: vscode.Uri): string {
+    return path.basename(uri.fsPath);
+}
+
+export function getFolderPathFromUri(uri: vscode.Uri): string {
+    return path.dirname(uri.fsPath);
 }

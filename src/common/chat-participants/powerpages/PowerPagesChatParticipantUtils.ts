@@ -78,3 +78,28 @@ export function provideChatParticipantFollowups(result: IPowerPagesChatResult, _
     }
 }
 
+// // Helper function to fetch related files
+// export async function fetchRelatedFiles(activeFileUri: vscode.Uri, fieldType: string) {
+//     const files: IRelatedFiles[] = [];
+//     switch (fieldType) {
+//         case 'html':
+//             files.push(
+//                 { fileType: 'webpageJs', fileContent: await getWebpageJs(activeFileUri) },
+//                 { fileType: 'webpageCss', fileContent: await getWebpageCss(activeFileUri) }
+//             );
+//             break;
+//         case 'js':
+//             files.push(
+//                 { fileType: 'webpageHtml', fileContent: await getWebpageHtml(activeFileUri) },
+//                 { fileType: 'webpageCss', fileContent: await getWebpageCss(activeFileUri) }
+//             );
+//             break;
+//         case 'css':
+//             files.push(
+//                 { fileType: 'webpageHtml', fileContent: await getWebpageHtml(activeFileUri) },
+//                 { fileType: 'webpageJs', fileContent: await getWebpageJs(activeFileUri) }
+//             );
+//             break;
+//     }
+//     return files;
+// }
