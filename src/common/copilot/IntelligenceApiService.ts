@@ -30,7 +30,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
             "sessionId": sessionID,
             "scenario": "PowerPagesProDev",
             "subScenario": "PowerPagesProDevGeneric",
-            "version": "V1",
+            "version": "V2",
             "information": {
                 "dataverseEntity": activeFileParams.dataverseEntity,
                 "entityField": activeFileParams.entityField,

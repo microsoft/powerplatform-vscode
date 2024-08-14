@@ -147,18 +147,17 @@ export function getActiveEditorContent(): IActiveFileData {
         return { activeFileContent: '', startLine: 0, endLine: 0, activeFileUri: undefined, activeFileParams: { dataverseEntity: '', entityField: '', fieldType: '' } };
     }
 
-    const document = activeEditor.document;
-    const fileName = document.fileName;
-    const relativeFileName = vscode.workspace.asRelativePath(fileName);
-    const activeFileUri = document.uri;
-    const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
+    const document = activeEditor.document,
+        fileName = document.fileName,
+        relativeFileName = vscode.workspace.asRelativePath(fileName),
+        activeFileUri = document.uri,
+        activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName),
+        selectedCode = getSelectedCode(activeEditor),
+        selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
 
-    let activeFileContent = document.getText();
-    let startLine = 0;
-    let endLine = document.lineCount;
-
-    const selectedCode = getSelectedCode(activeEditor);
-    const selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
+    let activeFileContent = document.getText(),
+        startLine = 0,
+        endLine = document.lineCount;
 
     if (selectedCode.length > 0) {
         activeFileContent = selectedCode;
@@ -243,10 +242,10 @@ async function getFileContent(activeFileUri: vscode.Uri, customExtension: string
         const diskRead = await import('fs');
         const customFileContent = diskRead.readFileSync(customFilePath, 'utf8');
 
-        return {customFileContent, customFileName};
+        return { customFileContent, customFileName };
     } catch (error) {
         // Log the error
-        return {customFileContent:'', customFileName: ''};
+        return { customFileContent: '', customFileName: '' };
     }
 }
 
@@ -255,7 +254,7 @@ async function getFileContentByType(activeFileUri: vscode.Uri, componentType: st
     const extension = componentTypeSchema[componentType]?.[fileType];
     if (!extension) {
         //log the error
-        return {customFileContent:'', customFileName: ''};
+        return { customFileContent: '', customFileName: '' };
     }
     return getFileContent(activeFileUri, extension);
 }
