@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../constants";
+import { componentTypeSchema, COPILOT_RELATED_FILES_FETCH_FAILED, EXTENSION_ID, EXTENSION_NAME, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData } from "../copilot/model";
@@ -12,6 +12,7 @@ import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
+import path from "path";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -146,18 +147,17 @@ export function getActiveEditorContent(): IActiveFileData {
         return { activeFileContent: '', startLine: 0, endLine: 0, activeFileUri: undefined, activeFileParams: { dataverseEntity: '', entityField: '', fieldType: '' } };
     }
 
-    const document = activeEditor.document;
-    const fileName = document.fileName;
-    const relativeFileName = vscode.workspace.asRelativePath(fileName);
-    const activeFileUri = document.uri;
-    const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
+    const document = activeEditor.document,
+        fileName = document.fileName,
+        relativeFileName = vscode.workspace.asRelativePath(fileName),
+        activeFileUri = document.uri,
+        activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName),
+        selectedCode = getSelectedCode(activeEditor),
+        selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
 
-    let activeFileContent = document.getText();
-    let startLine = 0;
-    let endLine = document.lineCount;
-
-    const selectedCode = getSelectedCode(activeEditor);
-    const selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
+    let activeFileContent = document.getText(),
+        startLine = 0,
+        endLine = document.lineCount;
 
     if (selectedCode.length > 0) {
         activeFileContent = selectedCode;
@@ -218,4 +218,85 @@ export function getVisibleCode(editor: vscode.TextEditor): { code: string; start
         startLine: firstVisibleRange.start.line,
         endLine: firstVisibleRange.end.line
     };
+}
+
+
+async function getFileContent(activeFileUri: vscode.Uri, customExtension: string): Promise<{ customFileContent: string; customFileName: string; }> {
+    try {
+        const activeFileFolderPath = getFolderPathFromUri(activeFileUri);
+        const activeFileName = getFileNameFromUri(activeFileUri);
+
+        const activeFileNameParts = activeFileName.split('.');
+
+        let customFileName = activeFileNameParts[0];
+
+        for (let i = 1; i < activeFileNameParts.length - 2; i++) {
+            customFileName += `.${activeFileNameParts[i]}`;
+        }
+
+        customFileName += customExtension;
+
+        const customFilePath = path.join(activeFileFolderPath, customFileName);
+
+        // Read the content of the custom file
+        const diskRead = await import('fs');
+        const customFileContent = diskRead.readFileSync(customFilePath, 'utf8');
+
+        return { customFileContent, customFileName };
+    } catch (error) {
+        throw new Error(`Error reading the custom file content: ${error}`);
+    }
+}
+
+// Generic function to get file content based on type and component type
+async function getFileContentByType(activeFileUri: vscode.Uri, componentType: string, fileType: string): Promise<{ customFileContent: string; customFileName: string; }> {
+    try {
+        const extension = componentTypeSchema[componentType]?.[fileType];
+        if (!extension) {
+            throw new Error(`File type ${fileType} not found for component type ${componentType}`);
+        }
+        return await getFileContent(activeFileUri, extension);
+    } catch (error) {
+        const message = (error as Error)?.message;
+        throw new Error(message);
+    }
+}
+
+//fetchRelatedFiles function based on component type
+export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, telemetry: ITelemetry, sessionId:string): Promise<IRelatedFiles[]> {
+    try {
+        const relatedFileTypes = relatedFilesSchema[componentType]?.[fieldType];
+        if (!relatedFileTypes) {
+            return [];
+        }
+
+        const files: IRelatedFiles[] = await Promise.all(
+            relatedFileTypes.map(async fileType => {
+                const fileContentResult = await getFileContentByType(activeFileUri, componentType, fileType);
+                return {
+                    fileType,
+                    fileContent: fileContentResult.customFileContent,
+                    fileName: fileContentResult.customFileName
+                };
+            })
+        );
+
+        return files;
+    } catch (error) {
+        const message = (error as Error)?.message;
+        telemetry.sendTelemetryErrorEvent(COPILOT_RELATED_FILES_FETCH_FAILED, { error: message, sessionId: sessionId });
+        return [];
+    }
+}
+
+export function getFilePathFromUri(uri: vscode.Uri): string {
+    return uri.fsPath;
+}
+
+export function getFileNameFromUri(uri: vscode.Uri): string {
+    return path.basename(uri.fsPath);
+}
+
+export function getFolderPathFromUri(uri: vscode.Uri): string {
+    return path.dirname(uri.fsPath);
 }

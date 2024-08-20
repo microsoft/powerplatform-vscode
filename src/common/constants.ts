@@ -38,3 +38,30 @@ export const PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME = "microsoft-generator
 
 
 export const SUCCESS = "Success";
+
+// Define the schema for file extensions
+export const componentTypeSchema: { [key: string]: { [key: string]: string } } = {
+    'adx_webpage': {
+        'html': '.copy.html',
+        'js': '.custom_javascript.js',
+        'css': '.custom_css.css'
+    }
+};
+
+// Define the schema
+export const relatedFilesSchema: { [key: string]: { [key: string]: string[] } } = {
+    'adx_webpage': {
+        'html': ['js', 'css'],
+        'js': ['html', 'css'],
+        'css': ['html', 'js']
+    }
+};
+
+// Interface for related files
+export interface IRelatedFiles {
+    fileType: string;
+    fileContent: string;
+    fileName: string;
+}
+
+export const COPILOT_RELATED_FILES_FETCH_FAILED = "CopilotRelatedFilesFetchFailed";
