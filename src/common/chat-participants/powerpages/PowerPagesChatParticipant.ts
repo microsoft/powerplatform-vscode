@@ -12,13 +12,14 @@ import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, DISCLAIMER_MESSAGE, INVALID_RESPONSE, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, STATER_PROMPTS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, DISCLAIMER_MESSAGE, INVALID_RESPONSE, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, RESPONSE_SCENARIOS, SKIP_CODES, STATER_PROMPTS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups, handleChatParticipantFeedback, createErrorResult, createSuccessResult } from './PowerPagesChatParticipantUtils';
-import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
+import { checkCopilotAvailability, fetchRelatedFiles, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
+import { IRelatedFiles } from '../../constants';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -93,7 +94,7 @@ export class PowerPagesChatParticipant {
 
             if (!this.orgID || !this.environmentID) {
                 this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, { sessionId: this.powerPagesAgentSessionId });
-                return createErrorResult(PAC_AUTH_NOT_FOUND, 'PAC_AUTH_NOT_FOUND', '');
+                return createErrorResult(PAC_AUTH_NOT_FOUND, RESPONSE_SCENARIOS.PAC_AUTH_NOT_FOUND, '');
             }
 
             this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, { orgID: this.orgID, environmentID: this.environmentID, sessionId: this.powerPagesAgentSessionId });
@@ -101,7 +102,7 @@ export class PowerPagesChatParticipant {
             const intelligenceApiAuthResponse = await intelligenceAPIAuthentication(this.telemetry, this.powerPagesAgentSessionId, this.orgID, true);
 
             if (!intelligenceApiAuthResponse) {
-                return createErrorResult(AUTHENTICATION_FAILED_MSG, 'AUTHENTICATION_FAILED_MSG', this.orgID);
+                return createErrorResult(AUTHENTICATION_FAILED_MSG, RESPONSE_SCENARIOS.AUTHENTICATION_FAILED, this.orgID);
             }
 
             const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
@@ -110,31 +111,45 @@ export class PowerPagesChatParticipant {
             const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry, this.powerPagesAgentSessionId);
 
             if (!copilotAvailabilityStatus) {
-                return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, 'COPILOT_NOT_AVAILABLE_MSG', this.orgID);
+                return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
             }
 
             const userPrompt = request.prompt;
 
             if (userPrompt === WELCOME_PROMPT) {
                 stream.markdown(WELCOME_MESSAGE);
-                return createSuccessResult(STATER_PROMPTS, 'WELCOME_MESSAGE', this.orgID);
+                return createSuccessResult(STATER_PROMPTS, RESPONSE_SCENARIOS.WELCOME_PROMPT, this.orgID);
             }
 
             if (!userPrompt) {
                 stream.markdown(NO_PROMPT_MESSAGE);
-                return createSuccessResult('', 'NO_PROMPT_MESSAGE', this.orgID);
+                return createSuccessResult('', RESPONSE_SCENARIOS.NO_PROMPT, this.orgID);
             }
 
             const { activeFileContent, activeFileUri, startLine, endLine, activeFileParams } = getActiveEditorContent();
             const location = activeFileUri ? createAndReferenceLocation(activeFileUri, startLine, endLine) : undefined;
 
-            if (location) {
-                stream.reference(location);
-            }
-
             if (request.command) {
                 //TODO: Handle command scenarios
             } else {
+                if (location) {
+                    stream.reference(location);
+                }
+
+                const relatedFiles: IRelatedFiles[] = [];
+
+                // Based on dataverse entity fetch required context for the active file
+                switch (activeFileParams.dataverseEntity) {
+                    case 'adx_webpage':
+                        if (activeFileUri) {
+                            const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.telemetry, this.powerPagesAgentSessionId);
+                            relatedFiles.push(...files);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
                 const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
                 const llmResponse = await sendApiRequest(
@@ -148,7 +163,8 @@ export class PowerPagesChatParticipant {
                     this.telemetry,
                     intelligenceAPIEndpointInfo.intelligenceEndpoint,
                     intelligenceAPIEndpointInfo.geoName,
-                    intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag
+                    intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag,
+                    relatedFiles
                 );
 
                 const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
@@ -173,7 +189,7 @@ export class PowerPagesChatParticipant {
             return createSuccessResult('', '', this.orgID);
         } catch (error) {
             this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, { sessionId: this.powerPagesAgentSessionId, error: error as string });
-            return createErrorResult(INVALID_RESPONSE, 'UNEXPECTED_ERROR', this.orgID? this.orgID : '');
+            return createErrorResult(INVALID_RESPONSE, RESPONSE_SCENARIOS.INVALID_RESPONSE, this.orgID ? this.orgID : '');
         }
     };
 
