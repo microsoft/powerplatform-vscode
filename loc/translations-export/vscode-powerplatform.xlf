@@ -85,9 +85,6 @@
     <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
       <source xml:lang="en">Copied to clipboard!</source>
     </trans-unit>
-    <trans-unit id="++CODE++344de0f92ba2ec8b690a0454eef93ef33d950e4bd785171eb060164a714ed419">
-      <source xml:lang="en">Copilot In Power Pages</source>
-    </trans-unit>
     <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
       <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
     </trans-unit>
@@ -317,10 +314,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++7f6276dc63b573d177b7d6e17f787b108e3c8c7d449324ac13a6d06b1be59d8e">
       <source xml:lang="en">Please enter a name for the webpage.</source>
-    </trans-unit>
-    <trans-unit id="++CODE++f39f65c4f7d519a37b66a00d02a6def9e3721080363dae761b907793330333cd">
-      <source xml:lang="en">Please provide a prompt to get started.
- You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
     </trans-unit>
     <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
       <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>

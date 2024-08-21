@@ -104,6 +104,10 @@
         <source xml:lang="en">Confirm</source>
         <target state="translated">Confirmar</target>
       </trans-unit>
+      <trans-unit id="++CODE++02c3c88b02a43e1818bf427f60d8e58b84d40c0990e09d01c75fff4a934221d0">
+        <source xml:lang="en">Continue with Copilot for Power Pages</source>
+        <target state="translated">Continuar con Copilot para Power Pages</target>
+      </trans-unit>
       <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
         <source xml:lang="en">Copied to clipboard!</source>
         <target state="translated">Copiado al portapapeles.</target>
@@ -177,6 +181,10 @@ Tipo: {3}</target>
         <source xml:lang="en">Explain the following code snippet:</source>
         <target state="translated">Explique el siguiente fragmento de código:</target>
       </trans-unit>
+      <trans-unit id="++CODE++f9e17ed11037dab93f8820c30db63b2ff2a045b5761f71818b7291afae60f199">
+        <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
+        <target state="translated">Explicar el siguiente código {% include 'Page Copy'%}</target>
+      </trans-unit>
       <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
         <source xml:lang="en">Failed to create: {0}.</source>
         <note>{0} will be replaced by the error message.</note>
@@ -223,6 +231,10 @@ Tipo: {3}</target>
         <source xml:lang="en">GETTING STARTED</source>
         <target state="translated">INTRODUCCIÓN</target>
       </trans-unit>
+      <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
+        <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
+        <target state="translated">Hacer que GitHub Copilot pruebe @powerpages</target>
+      </trans-unit>
       <trans-unit id="++CODE++b9f4adbdfa2deef1eaa415a914f63329ee06c604b5a1bf34645175b9e28a9712">
         <source xml:lang="en">Here are a few suggestions to get you started</source>
         <target state="translated">Aquí le presentamos algunas sugerencias para empezar</target>
@@ -231,9 +243,23 @@ Tipo: {3}</target>
         <source xml:lang="en">Hi</source>
         <target state="translated">Hola</target>
       </trans-unit>
+      <trans-unit id="++CODE++f307e9947391e3b9ba6e7a7da781c995fcfc8647e780127a4c475b67fccd4d0c">
+        <source xml:lang="en">Hi! @powerpages can help you write, edit, and even summarize your website code.</source>
+        <target state="translated">¡Hola! @powerpages puede ayudarle a escribir, editar e incluso resumir el código de su sitio web.</target>
+      </trans-unit>
       <trans-unit id="++CODE++57fa6bc42ff8a73f5c9271ebe8a92febd9ec652aea94798eb9023c5512b9dab1">
         <source xml:lang="en">Hi! Instantly generate code for Power Pages sites by typing in what you need. To start using Copilot, log in to your Microsoft account.</source>
         <target state="translated">¡Hola! Genere al instante código para sitios de Power Pages escribiendo lo que necesita. Para empezar a usar Copilot, inicie sesión en su cuenta Microsoft.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++61dd014ff85ae4c042dbfd3b581668ee350e515d4abbf0d682df335b22bf703a">
+        <source xml:lang="en">Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.
+
+To create your website, visit the [Power Pages](https://powerpages.microsoft.com/).
+Return to this chat and @powerpages can help you write and edit your website code.</source>
+        <target state="translated">¡Hola! Power Pages le permite crear sitios web seguros y profesionales que puede configurar y publicar rápidamente en navegadores web y dispositivos.
+
+Para crear su sitio web, visite [Power Pages](https://powerpages.microsoft.com/).
+Regrese a este chat y @powerpages puede ayudarte a escribir y editar el código de su sitio web.</target>
       </trans-unit>
       <trans-unit id="++CODE++1d9bc50f05b58d430726840f771cd25056be57873eb33a5d6aeedfff2ca7e2db">
         <source xml:lang="en">Hi! Your Microsoft account doesnâ€™t currently support Copilot. Contact your admin for details.</source>
@@ -274,6 +300,10 @@ Tipo: {3}</target>
         <target state="translated">Asegúrese de que el contenido generado por IA sea preciso y adecuado antes de usarlo. &lt;a href="https://go.microsoft.com/fwlink/?linkid=2240145"&gt;Más información&lt;/a&gt; | &lt;a href="https://go.microsoft.com/fwlink/?linkid=2189520"&gt;Ver los
               términos&lt;/a&gt;</target>
       </trans-unit>
+      <trans-unit id="++CODE++74f89e02b8d346f38df55113eee5dcbb0c0f31471876c67a9c13a3ff7caeebf9">
+        <source xml:lang="en">Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)</source>
+        <target state="translated">Asegúrese de que el contenido generado por IA sea preciso y adecuado antes de usarlo. [Más información](https://go.microsoft.com/fwlink/?linkid=2240145) | [Ver términos](https://go.microsoft.com/fwlink/?linkid=2189520)</target>
+      </trans-unit>
       <trans-unit id="++CODE++8f2de600bf940a26c63a7ac23984a12ca8970fcf1a85947aa5566c34e23eea07">
         <source xml:lang="en">Managed</source>
         <target state="translated">Administrado</target>
@@ -285,6 +315,10 @@ Tipo: {3}</target>
       <trans-unit id="++CODE++7fcd8b1c5225f7d9a771a4a02ca3e4795c3c9202cf2b3c3c879c625abb8b43e4">
         <source xml:lang="en">Microsoft wants your feeback</source>
         <target state="translated">Microsoft quiere conocer sus comentarios</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a253ff09c5a8678e1fd1962b2c329245e139e45f9cc6ced4e5d7ad42c4108fc0">
+        <source xml:lang="en">NEW</source>
+        <target state="translated">NUEVO</target>
       </trans-unit>
       <trans-unit id="++CODE++9ecf722faa0944de54826f72fe9d734c59300a093bcce9cc47b507460ac80710">
         <source xml:lang="en">Name/Rename Auth Profile</source>
@@ -389,12 +423,6 @@ Id. de organización: {3}</target>
       <trans-unit id="++CODE++7f6276dc63b573d177b7d6e17f787b108e3c8c7d449324ac13a6d06b1be59d8e">
         <source xml:lang="en">Please enter a name for the webpage.</source>
         <target state="translated">Escriba un nombre para la página web.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++f39f65c4f7d519a37b66a00d02a6def9e3721080363dae761b907793330333cd">
-        <source xml:lang="en">Please provide a prompt to get started.
- You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
-        <target state="translated">Proporcione una indicación para empezar.
- Puede obtener ayuda con la escritura de código para sitios de Power Pages en los lenguajes HTML, CSS y JS.</target>
       </trans-unit>
       <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
         <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
@@ -504,9 +532,9 @@ Id. de organización: {3}</target>
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
         <target state="translated">Para obtener más información, consulte la &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;documentación de Copilot en Power Pages.</target>
       </trans-unit>
-      <trans-unit id="++CODE++8d6329ce370e7f2cf3a5b77a73e0100c08550628408f2763deafe57dce769719">
-        <source xml:lang="en">Try Copilot for Power Pages</source>
-        <target state="translated">Pruebe Copilot para Power Pages</target>
+      <trans-unit id="++CODE++4a7c431a6572c68bba17c3a5d858adbf5112462574953baf4d7d2fd0619807fe">
+        <source xml:lang="en">Try @powerpages with GitHub Copilot</source>
+        <target state="translated">Probar @powerpages con GitHub Copilot</target>
       </trans-unit>
       <trans-unit id="++CODE++d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f">
         <source xml:lang="en">Try again</source>
@@ -576,6 +604,10 @@ Id. de organización: {3}</target>
       <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
         <source xml:lang="en">You are editing a live, public site </source>
         <target state="translated">Está editando un sitio público activo </target>
+      </trans-unit>
+      <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
+        <source xml:lang="en">You can use this in &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
+        <target state="translated">Puede usar esto en &lt;a href="#" id="github-copilot-link"&gt;GitHub Copilot con @powerpages&lt;/a&gt; y aprovechar lo mejor de ambos mundos.</target>
       </trans-unit>
       <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
         <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
