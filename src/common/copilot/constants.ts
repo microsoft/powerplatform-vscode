@@ -63,8 +63,9 @@ export const EntityFieldMap = new Map<string, string>([
 ]);
 
 export const FieldTypeMap = new Map<string, string>([
-    ['js', 'JavaScript'],
-    ['html', 'html']
+    ['js', 'js'],
+    ['html', 'html'],
+    ['css', 'css']
 ]);
 
 export const ControlClassIdMap = new Map<string, string>([

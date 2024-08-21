@@ -77,4 +77,3 @@ export function provideChatParticipantFollowups(result: IPowerPagesChatResult, _
         ];
     }
 }
-
