@@ -19,7 +19,7 @@ import { checkCopilotAvailability, fetchRelatedFiles, getActiveEditorContent } f
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
-import { IRelatedFiles } from '../../constants';
+import { ADX_WEBPAGE, IRelatedFiles } from '../../constants';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -138,17 +138,17 @@ export class PowerPagesChatParticipant {
 
                 const relatedFiles: IRelatedFiles[] = [];
 
-                // Based on dataverse entity fetch required context for the active file
-                switch (activeFileParams.dataverseEntity) {
-                    case 'adx_webpage':
-                        if (activeFileUri) {
-                            const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.telemetry, this.powerPagesAgentSessionId);
-                            relatedFiles.push(...files);
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            // Based on dataverse entity fetch required context for the active file
+            switch (activeFileParams.dataverseEntity) {
+                case ADX_WEBPAGE:
+                    if (activeFileUri) {
+                        const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.telemetry, this.powerPagesAgentSessionId);
+                        relatedFiles.push(...files);
+                    }
+                    break;
+                default:
+                    break;
+            }
 
                 const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
