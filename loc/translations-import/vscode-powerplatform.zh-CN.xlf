@@ -418,6 +418,10 @@ URL: {1}
         <source xml:lang="en">Preview site URL is not available</source>
         <target state="translated">预览版站点 URL 不可用</target>
       </trans-unit>
+      <trans-unit id="++CODE++1cc20af81855b8570858ea1ac0491000d230bcf2ac53c1c1b30243a9b58a2036">
+        <source xml:lang="en">Preview site URL is not valid</source>
+        <target state="translated">预览版站点 URL 无效</target>
+      </trans-unit>
       <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
         <source xml:lang="en">Profile Kind: {0}</source>
         <note>The {0} represents the profile type (Admin vs Dataverse)</note>

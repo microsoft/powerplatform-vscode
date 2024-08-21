@@ -4,19 +4,19 @@
  */
 
 import fetch, { RequestInit } from "node-fetch";
-import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT, InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse, UserPrompt } from "./constants";
+import { INAPPROPRIATE_CONTENT, INPUT_CONTENT_FILTERED, INVALID_INFERENCE_INPUT,InvalidResponse, MalaciousScenerioResponse, NetworkError, PROMPT_LIMIT_EXCEEDED, PromptLimitExceededResponse, RELEVANCY_CHECK_FAILED, RateLimitingResponse, UnauthorizedResponse, UserPrompt } from "./constants";
 import { IActiveFileParams } from "./model";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { CopilotResponseFailureEvent, CopilotResponseFailureEventWithMessage, CopilotResponseOkFailureEvent, CopilotResponseSuccessEvent } from "./telemetry/telemetryConstants";
 import { getExtensionType, getExtensionVersion } from "../utilities/Utils";
-import { EXTENSION_NAME } from "../constants";
+import { EXTENSION_NAME, IRelatedFiles } from "../constants";
 import { enableCrossGeoDataFlowInGeo } from "./utils/copilotUtil";
 
 const clientType = EXTENSION_NAME + '-' + getExtensionType();
 const clientVersion = getExtensionVersion();
 
-export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null, crossGeoDataMovementEnabledPPACFlag = false) {
+export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams: IActiveFileParams, orgID: string, apiToken: string, sessionID: string, entityName: string, entityColumns: string[], telemetry: ITelemetry, aibEndpoint: string | null, geoName: string | null, crossGeoDataMovementEnabledPPACFlag = false, RelatedFiles?: IRelatedFiles[]) {
 
     if (!aibEndpoint) {
         return NetworkError;
@@ -30,7 +30,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
             "sessionId": sessionID,
             "scenario": "PowerPagesProDev",
             "subScenario": "PowerPagesProDevGeneric",
-            "version": "V1",
+            "version": "V2",
             "information": {
                 "dataverseEntity": activeFileParams.dataverseEntity,
                 "entityField": activeFileParams.entityField,
@@ -40,6 +40,7 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
                 "targetColumns": entityColumns,
                 "clientType": clientType,
                 "clientVersion": clientVersion,
+                "RelatedFiles": RelatedFiles ? RelatedFiles : [{ fileType: '', fileContent: '', fileName: '' }]
             }
         },
         "crossGeoOptions": {
@@ -55,7 +56,6 @@ export async function sendApiRequest(userPrompt: UserPrompt[], activeFileParams:
             }
         }
     }
-
 
     const requestInit: RequestInit = {
         method: "POST",

@@ -38,3 +38,5 @@ export enum GeoNames {
 }
 // Custom telemetry feature flag
 export const CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME = 'enableTelemetry';
+
+export const AadIdKey= 'Entra ID Object Id:';
