@@ -112,10 +112,6 @@
         <source xml:lang="en">Copied to clipboard!</source>
         <target state="translated">Zkopírováno do schránky</target>
       </trans-unit>
-      <trans-unit id="++CODE++344de0f92ba2ec8b690a0454eef93ef33d950e4bd785171eb060164a714ed419">
-        <source xml:lang="en">Copilot In Power Pages</source>
-        <target state="translated">Copilot v Power Pages</target>
-      </trans-unit>
       <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
         <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
         <target state="translated">Copilot není dostupný. Obraťte se na správce.</target>
