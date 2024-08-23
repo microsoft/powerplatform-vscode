@@ -48,6 +48,7 @@ import { ServiceEndpointCategory } from "../../common/services/Constants";
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
     // TODO: Determine how to determine the user's dataBoundary
+    console.log("hello Ashwani");
     const dataBoundary = undefined;
     const appInsightsResource =
         vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
@@ -263,6 +264,7 @@ export function powerPagesNavigation() {
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesNavigationProvider.openSpecificURL());
     WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
 }
 

@@ -85,9 +85,6 @@
     <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
       <source xml:lang="en">Copied to clipboard!</source>
     </trans-unit>
-    <trans-unit id="++CODE++344de0f92ba2ec8b690a0454eef93ef33d950e4bd785171eb060164a714ed419">
-      <source xml:lang="en">Copilot In Power Pages</source>
-    </trans-unit>
     <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
       <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
     </trans-unit>
@@ -337,6 +334,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++1cc20af81855b8570858ea1ac0491000d230bcf2ac53c1c1b30243a9b58a2036">
       <source xml:lang="en">Preview site URL is not valid</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7f3f918603eafcfc252549b0400e893d69aab887a05da4dcd5324ad7e2051297">
+      <source xml:lang="en">Preview site VSCode</source>
+    </trans-unit>
+    <trans-unit id="++CODE++91c0937c5b6b194faee49724f6c3acacc482c517699185370bf3ce757050a504">
+      <source xml:lang="en">Preview site in VSCode</source>
     </trans-unit>
     <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
       <source xml:lang="en">Profile Kind: {0}</source>

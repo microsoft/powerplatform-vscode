@@ -43,6 +43,7 @@ import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFin
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { SUCCESS } from "../common/constants";
 import { AadIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
+import { PowerPagesActionHub } from "../common/webPreview/PowerPagesActionHub";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -234,6 +235,7 @@ export async function activate(
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
+        powerPagesActions();
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -248,6 +250,12 @@ export async function activate(
 
     _telemetry.sendTelemetryEvent("activated");
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
+}
+
+export function powerPagesActions(){
+    const powerPagesActionHub = new PowerPagesActionHub();
+    vscode.window.registerTreeDataProvider('powerPagesActionHubView', powerPagesActionHub);
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesActionHub.openSpecificURL());
 }
 
 export async function deactivate(): Promise<void> {

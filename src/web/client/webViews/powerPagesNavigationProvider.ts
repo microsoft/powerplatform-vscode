@@ -48,6 +48,14 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
                 arguments: []
             },
             'powerPages.svg');
+        const previewSiteInVsCode = new PowerPagesNode(vscode.l10n.t("Preview site VSCode"),
+            {
+                command: 'powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode',
+                title: vscode.l10n.t("Preview site in VSCode"),
+                arguments: []
+            },
+            'previewSite.svg');
+
 
         if (label && label === previewPowerPage.label) {
             nodes.push(previewPowerPage);
@@ -56,6 +64,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         } else {
             nodes.push(previewPowerPage);
             nodes.push(backToStudio);
+            nodes.push(previewSiteInVsCode);
         }
 
         return nodes;
@@ -143,6 +152,22 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
         vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
+    }
+
+    openSpecificURL(): void {
+        const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
+
+        if (isStringUndefinedOrEmpty(websitePreviewUrl)) {
+            vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not available"));
+
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_UNAVAILABLE,
+                this.openSpecificURL.name,
+                `websitePreviewUrl:${websitePreviewUrl}`
+            );
+            return;
+        }
+        vscode.commands.executeCommand('simpleBrowser.show', vscode.Uri.parse(websitePreviewUrl));
     }
 
     backToStudio(): void {
