@@ -43,6 +43,8 @@ import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFin
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { SUCCESS } from "../common/constants";
 import { AadIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
+import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
+import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -198,7 +200,20 @@ export async function activate(
                 if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
                     AadIdObject = pacActiveAuth.Results?.filter(obj => obj.Key === AadIdKey);
                 }
+
                 const { geoName, geoLongName } = artemisResponse.response;
+
+                // Initialize ECS config in webExtensionContext
+                await ECSFeaturesClient.init(_telemetry,
+                    {
+                        AppName: PowerPagesAppName,
+                        EnvID: queryParamsMap.get(queryParameters.ENV_ID) as string,
+                        UserID: WebExtensionContext.userId,
+                        TenantID: queryParamsMap.get(queryParameters.TENANT_ID) as string,
+                        Region: queryParamsMap.get(queryParameters.REGION) as string
+                    },
+                    PowerPagesClientName);
+                    
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
                 let initContext: object = { ...orgDetails, orgGeo: geoName };
                 if (AadIdObject?.[0]?.Value) {
