@@ -110,7 +110,7 @@ export class PowerPagesChatParticipant {
 
             const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry, this.powerPagesAgentSessionId);
 
-            if (!copilotAvailabilityStatus) {
+            if (!copilotAvailabilityStatus || !intelligenceAPIEndpointInfo.intelligenceEndpoint) {
                 return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
             }
 
@@ -119,9 +119,7 @@ export class PowerPagesChatParticipant {
             if (userPrompt === WELCOME_PROMPT) {
                 stream.markdown(WELCOME_MESSAGE);
                 return createSuccessResult(STATER_PROMPTS, RESPONSE_SCENARIOS.WELCOME_PROMPT, this.orgID);
-            }
-
-            if (!userPrompt) {
+            } else if (!userPrompt) {
                 stream.markdown(NO_PROMPT_MESSAGE);
                 return createSuccessResult('', RESPONSE_SCENARIOS.NO_PROMPT, this.orgID);
             }
