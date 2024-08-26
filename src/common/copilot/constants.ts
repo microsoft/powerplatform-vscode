@@ -43,11 +43,6 @@ export type WebViewMessage = {
     envName?: string;
 };
 
-export interface UserPrompt {
-    displayText: string;
-    code: string;
-}
-
 export const DataverseEntityNameMap = new Map<string, string>([
     ['webpage', 'adx_webpage'],
     ['list', 'adx_entitylist'],

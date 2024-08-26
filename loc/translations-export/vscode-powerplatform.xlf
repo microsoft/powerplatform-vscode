@@ -364,6 +364,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
       <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
     </trans-unit>
+    <trans-unit id="++CODE++189f24adc299ea91ceab21d8100a58d89294ed17395c4e4dbc4733c9b92543df">
+      <source xml:lang="en">Something went wrong. Don’t worry, you can try again.</source>
+    </trans-unit>
     <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
       <source xml:lang="en">Submit</source>
     </trans-unit>
