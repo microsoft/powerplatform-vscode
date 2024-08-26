@@ -65,3 +65,4 @@ export interface IRelatedFiles {
 }
 
 export const COPILOT_RELATED_FILES_FETCH_FAILED = "CopilotRelatedFilesFetchFailed";
+export const ADX_WEBPAGE = 'adx_webpage'

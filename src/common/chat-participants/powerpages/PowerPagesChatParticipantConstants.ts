@@ -12,6 +12,7 @@ export const RESPONSE_AWAITED_MSG = vscode.l10n.t('Working on it...');
 export const AUTHENTICATION_FAILED_MSG = vscode.l10n.t('Authentication failed. Please try again.');
 export const COPILOT_NOT_AVAILABLE_MSG = vscode.l10n.t('Copilot is not available. Please contact your administrator.');
 export const PAC_AUTH_NOT_FOUND = vscode.l10n.t('Active auth profile is not found or has expired. Please try again.');
+export const INVALID_RESPONSE = vscode.l10n.t('Something went wrong. Don’t worry, you can try again.');
 export const DISCLAIMER_MESSAGE = vscode.l10n.t('Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)');
 export const SUPPORTED_ENTITIES = [ADX_ENTITYFORM, ADX_ENTITYLIST];
 // Telemetry Event Names
@@ -19,6 +20,9 @@ export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'GitHubPowerPag
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS = 'GitHubPowerPagesAgentOrgDetails';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND = 'GitHubPowerPagesAgentOrgDetailsNotFound';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO = 'GitHubPowerPagesAgentScenario';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP = 'GitHubPowerPagesAgentScenarioFeedbackThumbsUp';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN = 'GitHubPowerPagesAgentScenarioFeedbackThumbsDown';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR = 'GitHubPowerPagesAgentError';
 export const SKIP_CODES = ["", null, undefined, "violation", "unclear", "explain"];
 export const EXPLAIN_CODE_PROMPT = vscode.l10n.t('Explain the following code {% include \'Page Copy\'%}');
 export const WEB_API_PROMPT = vscode.l10n.t('Write web API code to query active contact records.');
@@ -27,5 +31,18 @@ export const LIST_PROMPT = vscode.l10n.t('Write JavaScript code to highlight the
 export const STATER_PROMPTS = "starterPrompts"
 export const WELCOME_PROMPT = 'how can you help with coding for my website?'
 export const WELCOME_MESSAGE = vscode.l10n.t('Hi! @powerpages can help you write, edit, and even summarize your website code.')
+export const RESPONSE_SCENARIOS = {
+    PAC_AUTH_NOT_FOUND: 'PAC_AUTH_NOT_FOUND',
+    AUTHENTICATION_FAILED: 'AUTHENTICATION_FAILED',
+    COPILOT_NOT_AVAILABLE: 'COPILOT_NOT_AVAILABLE',
+    INVALID_RESPONSE: 'INVALID_RESPONSE',
+    RESPONSE_AWAITED: 'RESPONSE_AWAITED',
+    NO_PROMPT: 'NO_PROMPT',
+    EXPLAIN_CODE_PROMPT: 'EXPLAIN_CODE_PROMPT',
+    FORM_PROMPT: 'FORM_PROMPT',
+    LIST_PROMPT: 'LIST_PROMPT',
+    WEB_API_PROMPT: 'WEB_API_PROMPT',
+    WELCOME_PROMPT: 'WELCOME_PROMPT'
+};
 
 
