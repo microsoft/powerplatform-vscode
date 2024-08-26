@@ -42,7 +42,7 @@ import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { SUCCESS } from "../common/constants";
-import { AadIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
+import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 
@@ -195,25 +195,28 @@ export async function activate(
             const orgID = orgDetails.OrgId;
             const artemisResponse = await ArtemisService.getArtemisResponse(orgID, _telemetry, "");
             if (artemisResponse !== null && artemisResponse.response !== null) {
+                const { geoName, geoLongName } = artemisResponse.response;
                 const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-                let AadIdObject;
+                let AadIdObject, EnvID, TenantID;
                 if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
                     AadIdObject = pacActiveAuth.Results?.filter(obj => obj.Key === AadIdKey);
+                    EnvID = pacActiveAuth.Results?.filter(obj => obj.Key === EnvIdKey);
+                    TenantID = pacActiveAuth.Results?.filter(obj => obj.Key === TenantIdKey);
                 }
 
-                const { geoName, geoLongName } = artemisResponse.response;
-
                 // Initialize ECS config in webExtensionContext
-                await ECSFeaturesClient.init(_telemetry,
-                    {
-                        AppName: PowerPagesAppName,
-                        EnvID: queryParamsMap.get(queryParameters.ENV_ID) as string,
-                        UserID: WebExtensionContext.userId,
-                        TenantID: queryParamsMap.get(queryParameters.TENANT_ID) as string,
-                        Region: queryParamsMap.get(queryParameters.REGION) as string
-                    },
-                    PowerPagesClientName);
-                    
+                if (EnvID?.[0]?.Value && TenantID?.[0]?.Value && AadIdObject?.[0]?.Value) {
+                    await ECSFeaturesClient.init(_telemetry,
+                        {
+                            AppName: PowerPagesAppName,
+                            EnvID: EnvID[0].Value,
+                            UserID: AadIdObject[0].Value,
+                            TenantID: TenantID[0].Value,
+                            Region: geoName
+                        },
+                        PowerPagesClientName);
+                }
+
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
                 let initContext: object = { ...orgDetails, orgGeo: geoName };
                 if (AadIdObject?.[0]?.Value) {
