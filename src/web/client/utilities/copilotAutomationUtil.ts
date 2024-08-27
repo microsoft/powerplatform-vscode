@@ -40,16 +40,10 @@ export async function getIntelligenceAPIAccessToken() : Promise<{ accessToken: s
     let accessToken = '';
     try {
         let session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { silent: true });
-        console.log("account id: " +session?.account.id);
-        console.log(" account label: " +session?.account.label);
-        console.log("Session id: " +session?.id);
-        console.log("Session scopes: " +session?.scopes);
         if (!session) {
             session = await vscode.authentication.getSession(PROVIDER_ID, [`${INTELLIGENCE_SCOPE_DEFAULT}`], { createIfNone: true });
-            console.log(session);
         }
         accessToken = session?.accessToken ?? '';
-        // console.log(accessToken);
         if (!accessToken) {
             console.log(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
             throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
@@ -66,19 +60,19 @@ export async function getIntelligenceAPIAccessToken() : Promise<{ accessToken: s
 export const ApiRequestJson = {
     "question": "{0}",
     "top": 1,
-    "context":
+    "context": 
     {
         "scenario": "PowerPagesProDev",
         "subScenario": "PowerPagesProDevGeneric",
-        "version": "V2",
-        "information":
+        "version": "V1",
+        "information": 
         {
             "activeFileContent": "{6}",
             "dataverseEntity": "{2}",
             "entityField": "{3}",
             "fieldType": "{4}",
             "targetEntity": "{5}",
-            "targetColumns": ["{1}"],
+            "targetColumns": "{1}",  // Placeholder value for targetColumns
             "clientType": EXTENSION_NAME + '-' + 'Desktop',
             "clientVersion": getExtensionVersion()
         }
@@ -96,23 +90,31 @@ export const ApiRequestJson = {
 // </summary>
 // <param name="values">Values to replace the placeholders</param>
 // <returns>JSON request with actual values</returns>
-export function ReplaceAPIRequestPlaceHolders(values: (string | string[])[]) {
-    
+export function ReplaceAPIRequestPlaceHoldersAndFormat(values: (string | string[])[]): any {
     return JSON.parse(JSON.stringify(ApiRequestJson, (_key, value) => {
         if (typeof value === 'string') {
-            return value.replace(/{(\d+)}/g, (match, index) => {
+            // Replace placeholders in the string
+            const replacedValue = value.replace(/{(\d+)}/g, (match, index) => {
                 const replacement = values[index];
                 if (Array.isArray(replacement)) {
-                    return replacement.join(', '); // Join array values into a string
+                    // Convert array values into a comma-separated string
+                    return replacement.join(', ');
                 }
                 return replacement || match;
             });
+
+            // Handle specific case where the string needs to be formatted as an array
+            if (_key === 'targetColumns') {
+                // Convert the formatted string to an array
+                return replacedValue.replace(/,/g, '","').split('","').map(e => e.replace(/^"|"$/g, ''));
+            }
+
+            return replacedValue;
         }
-        console.log(value);
         return value;
     }));
     
-}
+}  
 
 // <summary>
 // Function to create the API request parameters
@@ -122,8 +124,8 @@ export function ReplaceAPIRequestPlaceHolders(values: (string | string[])[]) {
 // <returns>API request parameters</returns>
 export function CreateAPIRequestParams(actualValues: (string | string[])[], accessToken: string) : IApiRequestParams
 {
-    const data = ReplaceAPIRequestPlaceHolders(actualValues);
-    console.log(data);
+    const data = ReplaceAPIRequestPlaceHoldersAndFormat(actualValues);
+    console.log('Data returned'+ JSON.stringify(data,null,2));
     return {
         aibEndPoint: AIB_ENDPOINT,
         apiToken: accessToken,
@@ -224,9 +226,7 @@ export async function CreateAndExecuteAPIRequest(testName: string, actualValues:
         const params = CreateAPIRequestParams(actualValues, accessToken);
 
         // Required to get rid of the localhost exception: unable to verify the first certificate.
-        const agent = new https.Agent({
-            rejectUnauthorized: false,
-        });
+        const agent = new https.Agent();
 
         const headers = {
             'Content-Type': 'application/json',
@@ -282,7 +282,7 @@ export function ReturnFormattedAPIResponse(responseData : []) {
           if (propertyValue !== undefined && propertyValue !== null && propertyValue !== 'explain') {
             // Used to replace <, >, and & characters with their corresponding HTML entities.
             // This ensures that the text is displayed as-is in the HTML report, and it won't be treated as HTML tags.
-            const escapedText = propertyValue.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;'); //`<pre>${propertyValue}</pre>`;
+            const escapedText = propertyValue.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); //`<pre>${propertyValue}</pre>`;
             appendedString += escapedText + "<br><br>";
           }
         }
