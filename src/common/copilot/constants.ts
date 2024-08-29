@@ -71,6 +71,9 @@ export const ControlClassIdMap = new Map<string, string>([
     ['3EF39988-22BB-4F0B-BBBE-64B5A3748AEE', 'ChoiceControl'] // Picklist control
 ]);
 
+export const GITHUB_COPILOT_CHAT_EXT = 'github.copilot-chat';
+export const PowerPagesParticipantPrompt = '@powerpages how can you help with coding for my website?'
+
 export const AuthProfileNotFound = [{ displayText: "Active auth profile is not found or has expired. Create an Auth profile to start chatting with Copilot again.", code: '' }];
 export const NetworkError = [{ displayText: "There was an issue connecting to the server. Please check your internet connection and try again.", code: '' }];
 export const InvalidResponse = [{ displayText: "Something went wrong. Don’t worry, you can try again.", code: '' }];

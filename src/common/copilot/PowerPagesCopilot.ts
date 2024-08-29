@@ -10,7 +10,7 @@ import { dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
-import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_IN_POWERPAGES, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, WebViewMessage, sendIconSvg } from "./constants";
+import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_IN_POWERPAGES, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, GITHUB_COPILOT_CHAT_EXT, PowerPagesParticipantPrompt, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, WebViewMessage, sendIconSvg } from "./constants";
 import { IOrgInfo } from './model';
 import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
@@ -295,8 +295,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 }
                 case "openGitHubCopilotLink": {
                     //Open the GitHub Copilot Chat with @powerpages if GitHub Copilot Chat is installed
-                    if (vscode.extensions.getExtension('github.copilot-chat')) {
-                        vscode.commands.executeCommand('workbench.action.chat.open', '@powerpages how can you help with coding for my website?');
+                    if (vscode.extensions.getExtension(GITHUB_COPILOT_CHAT_EXT)) {
+                        vscode.commands.executeCommand('workbench.action.chat.open', PowerPagesParticipantPrompt);
                     } else {
                         vscode.env.openExternal(vscode.Uri.parse('https://go.microsoft.com/fwlink/?linkid=2276973'));
                     }
