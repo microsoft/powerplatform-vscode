@@ -3,6 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { IActiveFileParams } from "./copilot/model";
+import { ITelemetry } from "./OneDSLoggerTelemetry/telemetry/ITelemetry";
+
 
 export const EXTENSION_ID = "microsoft-IsvExpTools.powerplatform-vscode";
 
@@ -62,6 +65,24 @@ export interface IRelatedFiles {
     fileType: string;
     fileContent: string;
     fileName: string;
+}
+export interface UserPrompt {
+    displayText: string;
+    code: string;
+}
+export interface IApiRequestParams {
+    userPrompt: UserPrompt[];
+    activeFileParams: IActiveFileParams;
+    orgID: string;
+    apiToken: string;
+    sessionID: string;
+    entityName: string;
+    entityColumns: string[];
+    telemetry: ITelemetry;
+    aibEndpoint: string | null;
+    geoName: string | null;
+    crossGeoDataMovementEnabledPPACFlag?: boolean;
+    relatedFiles?: IRelatedFiles[];
 }
 
 export const COPILOT_RELATED_FILES_FETCH_FAILED = "CopilotRelatedFilesFetchFailed";
