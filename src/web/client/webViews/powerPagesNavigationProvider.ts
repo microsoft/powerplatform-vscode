@@ -154,20 +154,31 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
     }
 
-    openSpecificURL(): void {
+    openSpecificURLWithoutAuth(): void {
         const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
+        vscode.commands.executeCommand('simpleBrowser.show', websitePreviewUrl);
+    }
 
-        if (isStringUndefinedOrEmpty(websitePreviewUrl)) {
-            vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not available"));
+    async openSpecificURLWithAuth(): Promise<void> {
+        const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
+        try {
+            WebExtensionContext.dataverseAuthentication();
+            const accessToken = WebExtensionContext.dataverseAccessToken;
+            if (accessToken) {
 
-            WebExtensionContext.telemetry.sendErrorTelemetry(
-                webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_UNAVAILABLE,
-                this.openSpecificURL.name,
-                `websitePreviewUrl:${websitePreviewUrl}`
-            );
-            return;
+                const authHeader = "Bearer " + accessToken;
+                 await vscode.commands.executeCommand('simpleBrowser.show', websitePreviewUrl, {
+                     headers: {
+                         "Authorization": authHeader
+                     }
+                 });
+            } else {
+                vscode.window.showErrorMessage("Failed to authenticate.");
+            }
+        } catch (exception) {
+            const e = exception as Error;
+            vscode.window.showErrorMessage("An error occurred during authentication: " + e.message);
         }
-        vscode.commands.executeCommand('simpleBrowser.show', vscode.Uri.parse(websitePreviewUrl));
     }
 
     backToStudio(): void {

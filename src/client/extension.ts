@@ -255,7 +255,9 @@ export async function activate(
 export function powerPagesActions(){
     const powerPagesActionHub = new PowerPagesActionHub();
     vscode.window.registerTreeDataProvider('powerPagesActionHubView', powerPagesActionHub);
-    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesActionHub.openSpecificURL());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesActionHub.openSpecificURLWithAuth(_telemetry));
+    // Note: uncomment the below line for testing without authentication token and comment the above line
+    //vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesActionHub.openSpecificURLWithoutAuth());
 }
 
 export async function deactivate(): Promise<void> {

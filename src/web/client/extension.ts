@@ -264,7 +264,9 @@ export function powerPagesNavigation() {
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
-    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesNavigationProvider.openSpecificURL());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesNavigationProvider.openSpecificURLWithoutAuth());
+    // Note: comment above line and uncomment below line to test with auth
+    // vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesNavigationProvider.openSpecificURLWithAuth());
     WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
 }
 

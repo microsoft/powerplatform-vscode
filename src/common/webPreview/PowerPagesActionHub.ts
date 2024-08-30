@@ -5,6 +5,8 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { dataverseAuthentication } from '../../common/services/AuthenticationProvider';
+import { ITelemetry } from '../OneDSLoggerTelemetry/telemetry/ITelemetry';
 
 export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -33,22 +35,31 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
         return nodes;
     }
 
-    async openSpecificURL(): Promise<void> {
-        const livePreviewExtension = vscode.extensions.getExtension('ms-vscode.live-server');
-        const websitePreviewUrl = "https://wikipedia.com/";
-        if (livePreviewExtension) {
-            if (!livePreviewExtension.isActive) {
-                await livePreviewExtension.activate();
+    openSpecificURLWithoutAuth(): void {
+        const websitePreviewUrl = "https://site-wug4q.powerappsportals.com/";
+        vscode.commands.executeCommand('simpleBrowser.show', vscode.Uri.parse(websitePreviewUrl));
+    }
+
+    async openSpecificURLWithAuth(telemetry: ITelemetry): Promise<void>{
+        const websitePreviewUrl = "https://site-wug4q.powerappsportals.com/";  // update the site URL with your private site
+        const dataverseOrgURL = 'https://orgf2f8b607.crm.dynamics.com/';
+
+        try {
+            const { accessToken } = await dataverseAuthentication(telemetry, dataverseOrgURL);
+            await dataverseAuthentication(telemetry, dataverseOrgURL);
+
+            if (accessToken) {
+                await vscode.commands.executeCommand('simpleBrowser.show', vscode.Uri.parse(websitePreviewUrl), {
+                    headers: {
+                        "Authorization": `Bearer ${accessToken}`
+                    }
+                });
+            } else {
+                vscode.window.showErrorMessage('Failed to authenticate.');
             }
-            try {
-                await vscode.commands.executeCommand('livePreview.start', vscode.Uri.parse(websitePreviewUrl));
-                await vscode.commands.executeCommand('livePreview.start.internalPreview.atFile', vscode.Uri.parse(websitePreviewUrl));
-            } catch (error) {
-                console.error('Failed to execute Live Preview command:', error);
-                vscode.window.showErrorMessage('Failed to start Live Preview server.');
-            }
-        } else {
-            vscode.window.showErrorMessage('Live Preview extension is not installed or activated.');
+        } catch (exception) {
+            const error = exception as Error;
+            vscode.window.showErrorMessage('An error occurred: ' + error.message);
         }
     }
 }
