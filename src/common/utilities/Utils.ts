@@ -4,15 +4,15 @@
  */
 
 import * as vscode from "vscode";
-import { EXTENSION_ID, EXTENSION_NAME, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../../client/constants";
+import { componentTypeSchema, COPILOT_RELATED_FILES_FETCH_FAILED, EXTENSION_ID, EXTENSION_NAME, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
-import { PacWrapper } from "../../client/pac/PacWrapper";
-import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap, PAC_SUCCESS } from "../copilot/constants";
-import { IActiveFileData, IActiveFileParams } from "../copilot/model";
-import { ITelemetry } from "../../client/telemetry/ITelemetry";
+import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
+import { IActiveFileData } from "../copilot/model";
+import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
+import path from "path";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -140,48 +140,51 @@ export function getUserAgent(): string {
         .replace("{comment}", "(" + getExtensionType() + '; )');
 }
 
-export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
-    const userOrgUrl = await showInputBoxAndGetOrgUrl();
-    if (!userOrgUrl) {
-        return;
-    }
-
-    if (!pacWrapper) {
-        vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
-        return;
-    }
-
-    const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-    if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== PAC_SUCCESS) {
-        vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
-        return;
-    }
-}
-
 export function getActiveEditorContent(): IActiveFileData {
     const activeEditor = vscode.window.activeTextEditor;
-    const activeFileData: IActiveFileData = {
-        activeFileContent: '',
-        activeFileParams: {
-            dataverseEntity: '',
-            entityField: '',
-            fieldType: ''
-        } as IActiveFileParams
-    };
-    if (activeEditor) {
-        const document = activeEditor.document;
-        const fileName = document.fileName;
-        const relativeFileName = vscode.workspace.asRelativePath(fileName);
 
-        const activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName);
-
-        activeFileData.activeFileContent = document.getText();
-        activeFileData.activeFileParams.dataverseEntity = DataverseEntityNameMap.get(activeFileParams[0]) || "";
-        activeFileData.activeFileParams.entityField = EntityFieldMap.get(activeFileParams[1]) || "";
-        activeFileData.activeFileParams.fieldType = FieldTypeMap.get(activeFileParams[2]) || "";
+    if (!activeEditor) {
+        return { activeFileContent: '', startLine: 0, endLine: 0, activeFileUri: undefined, activeFileParams: { dataverseEntity: '', entityField: '', fieldType: '' } };
     }
 
-    return activeFileData;
+    const document = activeEditor.document,
+        fileName = document.fileName,
+        relativeFileName = vscode.workspace.asRelativePath(fileName),
+        activeFileUri = document.uri,
+        activeFileParams: string[] = getLastThreePartsOfFileName(relativeFileName),
+        selectedCode = getSelectedCode(activeEditor),
+        selectedCodeLineRange = getSelectedCodeLineRange(activeEditor);
+
+    let activeFileContent = document.getText(),
+        startLine = 0,
+        endLine = document.lineCount;
+
+    if (selectedCode.length > 0) {
+        activeFileContent = selectedCode;
+        startLine = selectedCodeLineRange.start;
+        endLine = selectedCodeLineRange.end;
+    }
+    /**
+     * Uncomment the below code to pass the visible code to the copilot based on the token limit.
+     */
+    //else if (document.getText().length > 100) { // Define the token limit for context passing
+    //     const { code, startLine: visibleStart, endLine: visibleEnd } = getVisibleCode(activeEditor);
+    //     activeFileContent = code;
+    //     startLine = visibleStart;
+    //     endLine = visibleEnd;
+    // }
+
+    return {
+        activeFileContent,
+        startLine,
+        endLine,
+        activeFileUri,
+        activeFileParams: {
+            dataverseEntity: DataverseEntityNameMap.get(activeFileParams[0]) || "",
+            entityField: EntityFieldMap.get(activeFileParams[1]) || "",
+            fieldType: FieldTypeMap.get(activeFileParams[2]) || ""
+        }
+    };
 }
 
 export function checkCopilotAvailability(
@@ -192,10 +195,10 @@ export function checkCopilotAvailability(
     tenantId?: string | undefined,
 ): boolean {
 
-    if(!aibEndpoint) {
+    if (!aibEndpoint) {
         return false;
     }
-    else if (aibEndpoint === COPILOT_UNAVAILABLE ) {
+    else if (aibEndpoint === COPILOT_UNAVAILABLE) {
         sendTelemetryEvent(telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
         return false;
     } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) { // Tenant ID not available in desktop
@@ -204,4 +207,96 @@ export function checkCopilotAvailability(
     } else {
         return true;
     }
+}
+
+export function getVisibleCode(editor: vscode.TextEditor): { code: string; startLine: number; endLine: number; } {
+    const visibleRanges = editor.visibleRanges;
+    const visibleCode = visibleRanges.map(range => editor.document.getText(range)).join('\n');
+    const firstVisibleRange = visibleRanges[0];
+    return {
+        code: visibleCode,
+        startLine: firstVisibleRange.start.line,
+        endLine: firstVisibleRange.end.line
+    };
+}
+
+
+async function getFileContent(activeFileUri: vscode.Uri, customExtension: string): Promise<{ customFileContent: string; customFileName: string; }> {
+    try {
+        const activeFileFolderPath = getFolderPathFromUri(activeFileUri);
+        const activeFileName = getFileNameFromUri(activeFileUri);
+
+        const activeFileNameParts = activeFileName.split('.');
+
+        let customFileName = activeFileNameParts[0];
+
+        for (let i = 1; i < activeFileNameParts.length - 2; i++) {
+            customFileName += `.${activeFileNameParts[i]}`;
+        }
+
+        customFileName += customExtension;
+
+        const customFilePath = path.join(activeFileFolderPath, customFileName);
+
+        // Read the content of the custom file
+        const diskRead = await import('fs');
+        const customFileContent = diskRead.readFileSync(customFilePath, 'utf8');
+
+        return { customFileContent, customFileName };
+    } catch (error) {
+        throw new Error(`Error reading the custom file content: ${error}`);
+    }
+}
+
+// Generic function to get file content based on type and component type
+async function getFileContentByType(activeFileUri: vscode.Uri, componentType: string, fileType: string): Promise<{ customFileContent: string; customFileName: string; }> {
+    try {
+        const extension = componentTypeSchema[componentType]?.[fileType];
+        if (!extension) {
+            throw new Error(`File type ${fileType} not found for component type ${componentType}`);
+        }
+        return await getFileContent(activeFileUri, extension);
+    } catch (error) {
+        const message = (error as Error)?.message;
+        throw new Error(message);
+    }
+}
+
+//fetchRelatedFiles function based on component type
+export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, telemetry: ITelemetry, sessionId:string): Promise<IRelatedFiles[]> {
+    try {
+        const relatedFileTypes = relatedFilesSchema[componentType]?.[fieldType];
+        if (!relatedFileTypes) {
+            return [];
+        }
+
+        const files: IRelatedFiles[] = await Promise.all(
+            relatedFileTypes.map(async fileType => {
+                const fileContentResult = await getFileContentByType(activeFileUri, componentType, fileType);
+                return {
+                    fileType,
+                    fileContent: fileContentResult.customFileContent,
+                    fileName: fileContentResult.customFileName
+                };
+            })
+        );
+
+        return files;
+    } catch (error) {
+        const message = (error as Error)?.message;
+        telemetry.sendTelemetryErrorEvent(COPILOT_RELATED_FILES_FETCH_FAILED, { error: message, sessionId: sessionId });
+        return [];
+    }
+}
+
+export function getFilePathFromUri(uri: vscode.Uri): string {
+    return uri.fsPath;
+}
+
+export function getFileNameFromUri(uri: vscode.Uri): string {
+    return path.basename(uri.fsPath);
+}
+
+export function getFolderPathFromUri(uri: vscode.Uri): string {
+    return path.dirname(uri.fsPath);
 }

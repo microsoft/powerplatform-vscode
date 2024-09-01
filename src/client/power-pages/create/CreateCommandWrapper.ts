@@ -5,8 +5,8 @@
 
 import * as vscode from "vscode";
 import { GeneratorAcquisition } from "../../lib/GeneratorAcquisition";
-import { ITelemetry } from "../../telemetry/ITelemetry";
-import { sendTelemetryEvent, TriggerPoint, UserFileCreateEvent } from "../telemetry";
+import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
+import { sendTelemetryEvent, TriggerPoint, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 import { createContentSnippet } from "./Contentsnippet";
 import { CONTENT_SNIPPET, Tables, WEBFILE } from "./CreateOperationConstants";
 import { createPageTemplate } from "./PageTemplate";
@@ -43,7 +43,7 @@ function registerCreateCommands(
         "microsoft-powerapps-portals.contentsnippet",
         async (uri) => {
             const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
-            sendTelemetryEvent(telemetry, { methodName:registerCreateCommands.name, eventName: UserFileCreateEvent, fileEntityType: CONTENT_SNIPPET, triggerPoint: triggerPoint });
+            sendTelemetryEvent(telemetry, { methodName: registerCreateCommands.name, eventName: UserFileCreateEvent, fileEntityType: CONTENT_SNIPPET, triggerPoint: triggerPoint });
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,
@@ -61,7 +61,7 @@ function registerCreateCommands(
         "microsoft-powerapps-portals.webtemplate",
         async (uri) => {
             const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
-            sendTelemetryEvent(telemetry, { methodName:registerCreateCommands.name,eventName: UserFileCreateEvent, fileEntityType: Tables.WEBTEMPLATE, triggerPoint: triggerPoint });
+            sendTelemetryEvent(telemetry, { methodName: registerCreateCommands.name, eventName: UserFileCreateEvent, fileEntityType: Tables.WEBTEMPLATE, triggerPoint: triggerPoint });
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,
@@ -79,7 +79,7 @@ function registerCreateCommands(
         "microsoft-powerapps-portals.webpage",
         async (uri) => {
             const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
-            sendTelemetryEvent(telemetry, { methodName:registerCreateCommands.name, eventName: UserFileCreateEvent, fileEntityType: Tables.WEBPAGE, triggerPoint: triggerPoint });
+            sendTelemetryEvent(telemetry, { methodName: registerCreateCommands.name, eventName: UserFileCreateEvent, fileEntityType: Tables.WEBPAGE, triggerPoint: triggerPoint });
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,
@@ -97,7 +97,7 @@ function registerCreateCommands(
         "microsoft-powerapps-portals.pagetemplate",
         async (uri) => {
             const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
-            sendTelemetryEvent(telemetry, {methodName:registerCreateCommands.name, eventName: UserFileCreateEvent, fileEntityType: Tables.PAGETEMPLATE, triggerPoint: triggerPoint });
+            sendTelemetryEvent(telemetry, { methodName: registerCreateCommands.name, eventName: UserFileCreateEvent, fileEntityType: Tables.PAGETEMPLATE, triggerPoint: triggerPoint });
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,
@@ -115,7 +115,7 @@ function registerCreateCommands(
         "microsoft-powerapps-portals.webfile",
         async (uri) => {
             const triggerPoint = uri ? TriggerPoint.CONTEXT_MENU : TriggerPoint.COMMAND_PALETTE;
-            sendTelemetryEvent(telemetry, { methodName:registerCreateCommands.name, eventName: UserFileCreateEvent, fileEntityType: WEBFILE, triggerPoint: triggerPoint });
+            sendTelemetryEvent(telemetry, { methodName: registerCreateCommands.name, eventName: UserFileCreateEvent, fileEntityType: WEBFILE, triggerPoint: triggerPoint });
             const selectedWorkspaceFolder = await getSelectedWorkspaceFolder(
                 uri,
                 activeEditor,

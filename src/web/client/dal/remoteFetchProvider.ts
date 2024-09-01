@@ -18,7 +18,6 @@ import {
 import { getCustomRequestURL, getMappingEntityContent, getMetadataInfo, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
 import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
 import * as Constants from "../common/constants";
-import { showErrorDialog } from "../common/errorHandler";
 import { PortalsFS } from "./fileSystemProvider";
 import {
     encodeAsBase64,
@@ -28,12 +27,13 @@ import {
     isBase64Encoded,
 } from "../utilities/schemaHelperUtil";
 import WebExtensionContext from "../WebExtensionContext";
-import { telemetryEventNames } from "../telemetry/constants";
+import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEntityKey, schemaEntityName, schemaKey } from "../schema/constants";
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
-import { ERRORS } from "../../../common/CommonConstants";
+import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
+import { showErrorDialog } from "../../../common/utilities/errorHandlerUtil";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
@@ -50,7 +50,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
 
             if (defaultFileInfo === undefined) { // This will be undefined for bulk entity load
                 WebExtensionContext.telemetry.sendInfoTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_FILES_LOAD_SUCCESS,
                     {
                         entityName: entity.entityName,
                         duration: (new Date().getTime() - startTime).toString(),
@@ -66,7 +66,7 @@ export async function fetchDataFromDataverseAndUpdateVFS(
                 "We encountered an error preparing the files for edit."
             )
         );
-        WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, fetchDataFromDataverseAndUpdateVFS.name, errorMsg, error as Error);
+        WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_FAILED_TO_PREPARE_WORKSPACE, fetchDataFromDataverseAndUpdateVFS.name, errorMsg, error as Error);
     }
 }
 
@@ -119,7 +119,7 @@ async function fetchFromDataverseAndCreateFiles(
 
             if (result[Constants.ODATA_COUNT] !== 0 && data.length === 0) {
                 console.error(vscode.l10n.t("Response data is empty"));
-                throw new Error(ERRORS.EMPTY_RESPONSE);
+                throw new Error(ERROR_CONSTANTS.EMPTY_RESPONSE);
             }
 
             WebExtensionContext.telemetry.sendAPISuccessTelemetry(
@@ -160,7 +160,7 @@ async function fetchFromDataverseAndCreateFiles(
                 );
             } else {
                 WebExtensionContext.telemetry.sendErrorTelemetry(
-                    telemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
+                    webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_DATAVERSE_AND_CREATE_FILES_SYSTEM_ERROR,
                     fetchFromDataverseAndCreateFiles.name,
                     (error as Error)?.message,
                     error as Error
@@ -171,7 +171,7 @@ async function fetchFromDataverseAndCreateFiles(
 
     if (defaultFileInfo === undefined) {
         WebExtensionContext.telemetry.sendInfoTelemetry(
-            telemetryEventNames.WEB_EXTENSION_DATAVERSE_API_CALL_FILE_FETCH_COUNT,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_DATAVERSE_API_CALL_FILE_FETCH_COUNT,
             { entityName: entityName, count: data.length.toString() }
         );
 
@@ -213,16 +213,16 @@ async function createContentFiles(
 
         // Validate entity schema details
         if (subUri?.length === 0) {
-            throw new Error(ERRORS.SUBURI_EMPTY);
+            throw new Error(ERROR_CONSTANTS.SUBURI_EMPTY);
         }
 
         if (!attributes || !attributeExtension) {
-            throw new Error(ERRORS.ATTRIBUTES_EMPTY);
+            throw new Error(ERROR_CONSTANTS.ATTRIBUTES_EMPTY);
         }
 
         const entityId = fetchedFileId ? result[fetchedFileId] : null;
         if (!entityId) {
-            throw new Error(ERRORS.FILE_ID_EMPTY);
+            throw new Error(ERROR_CONSTANTS.FILE_ID_EMPTY);
         }
 
         fileName = fetchedFileName
@@ -230,7 +230,7 @@ async function createContentFiles(
             : Constants.EMPTY_FILE_NAME;
 
         if (fileName === Constants.EMPTY_FILE_NAME) {
-            throw new Error(ERRORS.FILE_NAME_EMPTY);
+            throw new Error(ERROR_CONSTANTS.FILE_NAME_EMPTY);
         }
 
         // Create folder paths
@@ -247,7 +247,7 @@ async function createContentFiles(
         );
 
         if (languageCodeAttribute && result[languageCodeAttribute] === null) {
-            throw new Error(ERRORS.LANGUAGE_CODE_ID_VALUE_NULL);
+            throw new Error(ERROR_CONSTANTS.LANGUAGE_CODE_ID_VALUE_NULL);
         }
 
         let languageCode = WebExtensionContext.websiteLanguageCode;
@@ -264,7 +264,7 @@ async function createContentFiles(
             ) as string;
 
             if (languageCode === Constants.DEFAULT_LANGUAGE_CODE || languageCode === undefined) {
-                throw new Error(ERRORS.LANGUAGE_CODE_EMPTY);
+                throw new Error(ERROR_CONSTANTS.LANGUAGE_CODE_EMPTY);
             }
         }
 
@@ -291,7 +291,7 @@ async function createContentFiles(
         const errorMsg = (error as Error)?.message;
         console.error(vscode.l10n.t("Failed to get file ready for edit: {0}", fileName));
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_CONTENT_FILE_CREATION_FAILED,
             createContentFiles.name,
             errorMsg,
             error as Error
@@ -570,7 +570,7 @@ export async function preprocessData(
             formsData?.forEach((dataItem: any) => {
                 const entityId = fetchedFileId ? dataItem[fetchedFileId] : null;
                 if (!entityId) {
-                    throw new Error(ERRORS.FILE_ID_EMPTY);
+                    throw new Error(ERROR_CONSTANTS.FILE_ID_EMPTY);
                 }
                 advancedFormStepData.set(entityId, dataItem);
             });
@@ -595,18 +595,18 @@ export async function preprocessData(
                 }
                 catch (error) {
                     const errorMsg = (error as Error)?.message;
-                    WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_WEBFORM_STEPS_FAILED,
+                    WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_WEBFORM_STEPS_FAILED,
                         preprocessData.name,
                         errorMsg);
                 }
             });
-            WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
+            WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
         }
     }
     catch (error) {
         const errorMsg = (error as Error)?.message;
         WebExtensionContext.telemetry.sendErrorTelemetry(
-            telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,
+            webExtensionTelemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_FAILED,
             preprocessData.name,
             errorMsg,
             error as Error
@@ -679,7 +679,7 @@ async function createVirtualFile(
         } catch (error) {
             const errorMsg = (error as Error)?.message;
             WebExtensionContext.telemetry.sendErrorTelemetry(
-                telemetryEventNames.WEB_EXTENSION_FAILED_TO_UPDATE_FOREIGN_KEY_DETAILS,
+                webExtensionTelemetryEventNames.WEB_EXTENSION_FAILED_TO_UPDATE_FOREIGN_KEY_DETAILS,
                 createVirtualFile.name,
                 errorMsg,
                 error as Error

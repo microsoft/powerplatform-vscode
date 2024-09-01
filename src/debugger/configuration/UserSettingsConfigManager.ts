@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import {
     DEBUGGER_ENABLED_DEFAULT_VALUE,
     SETTINGS_EXPERIMENTAL_STORE_NAME,
-} from "../../client/constants";
+} from "../../common/constants";
 import { BrowserFlavor } from "../browser/types";
 
 import { IUserSettings, UserDataDir } from "./types";

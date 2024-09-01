@@ -21,8 +21,8 @@ import {
     TableFolder,
     YoSubGenerator,
 } from "./CreateOperationConstants";
-import { ITelemetry } from "../../telemetry/ITelemetry";
-import { sendTelemetryEvent, UserFileCreateEvent } from "../telemetry";
+import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
+import { sendTelemetryEvent, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 interface State {
     title: string;
@@ -70,7 +70,7 @@ export const createContentSnippet = async (
             );
         }
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { methodName:createContentSnippet.name,eventName: UserFileCreateEvent, fileEntityType:CONTENT_SNIPPET, exception: error as Error })
+        sendTelemetryEvent(telemetry, { methodName: createContentSnippet.name, eventName: UserFileCreateEvent, fileEntityType: CONTENT_SNIPPET, exception: error as Error })
         throw new Error(error);
     }
 };
