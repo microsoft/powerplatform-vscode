@@ -110,3 +110,16 @@ export function createSuccessResult(command: string, scenario: string, orgId: st
     };
 }
 
+export function removeWords(userPrompt: string): string {
+    const variablesToRemove = [
+        '#editor',
+        '#selection',
+        '#terminalLastCommand',
+        '#terminalSelection',
+        '#vscodeAPI'
+    ];
+
+    const regex = new RegExp(variablesToRemove.join('|'), 'g');
+
+    return userPrompt.replace(regex, '').trim();
+}
