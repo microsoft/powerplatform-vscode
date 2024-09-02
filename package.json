@@ -119,7 +119,7 @@
         "fullName": "Copilot for Power Pages",
         "description": "Copilot for Power Pages",
         "isSticky": true,
-        "when": "config.powerPlatform.experimental.powerPagesInGitHubCopilotChat"
+        "when": "never"
       }
     ],
     "problemMatchers": [
@@ -389,11 +389,6 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "Whether the Power Platform Copilot is enabled."
-        },
-        "powerPlatform.experimental.powerPagesInGitHubCopilotChat": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Whether the @powerpages integration is enabled."
         },
         "powerPlatform.auth.cloud": {
           "type": "string",

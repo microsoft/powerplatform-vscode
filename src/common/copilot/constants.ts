@@ -35,7 +35,7 @@ export const ATTRIBUTE_DESCRIPTION = 'description';
 export const ATTRIBUTE_DATAFIELD_NAME = 'datafieldname';
 export const ATTRIBUTE_CLASSID = 'classid';
 export const SYSTEFORMS_API_PATH = 'api/data/v9.2/systemforms';
-
+export const COPILOT_IN_POWERPAGES = 'Copilot In Power Pages'
 
 export type WebViewMessage = {
     type: string;
@@ -63,8 +63,9 @@ export const EntityFieldMap = new Map<string, string>([
 ]);
 
 export const FieldTypeMap = new Map<string, string>([
-    ['js', 'JavaScript'],
-    ['html', 'html']
+    ['js', 'js'],
+    ['html', 'html'],
+    ['css', 'css']
 ]);
 
 export const ControlClassIdMap = new Map<string, string>([

@@ -34,6 +34,7 @@ import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
 import { UserCollaborationProvider } from "./webViews/userCollaborationProvider";
 import { GraphClientService } from "./services/graphClientService";
+import { ServiceEndpointCategory } from "../../common/services/Constants";
 
 export interface IWebExtensionContext {
     // From portalSchema properties
@@ -69,6 +70,9 @@ export interface IWebExtensionContext {
     isContextSet: boolean;
     currentSchemaVersion: string;
     websiteLanguageCode: string;
+    geoName: string;
+    geoLongName: string;
+    serviceEndpointCategory: ServiceEndpointCategory;
 
     // Telemetry and survey
     telemetry: WebExtensionTelemetry;
@@ -103,6 +107,9 @@ class WebExtensionContext implements IWebExtensionContext {
     private _isContextSet: boolean;
     private _currentSchemaVersion: string;
     private _websiteLanguageCode: string;
+    private _geoName: string;
+    private _geoLongName: string;
+    private _serviceEndpointCategory: ServiceEndpointCategory;
     private _telemetry: WebExtensionTelemetry;
     private _npsEligibility: boolean;
     private _userId: string;
@@ -187,6 +194,24 @@ class WebExtensionContext implements IWebExtensionContext {
     public get websiteLanguageCode() {
         return this._websiteLanguageCode;
     }
+    public get geoName() {
+        return this._geoName
+    }
+    public set geoName(name: string) {
+        this._geoName = name;
+    }
+    public get geoLongName() {
+        return this._geoLongName;
+    }
+    public set geoLongName(name: string) {
+        this._geoLongName = name;
+    }
+    public get serviceEndpointCategory() {
+        return this._serviceEndpointCategory;
+    }
+    public set serviceEndpointCategory(name: ServiceEndpointCategory) {
+        this._serviceEndpointCategory = name;
+    }
     public get telemetry() {
         return this._telemetry;
     }
@@ -254,6 +279,9 @@ class WebExtensionContext implements IWebExtensionContext {
         this._isContextSet = false;
         this._currentSchemaVersion = "";
         this._websiteLanguageCode = "";
+        this._geoName = "";
+        this._geoLongName = "";
+        this._serviceEndpointCategory = ServiceEndpointCategory.NONE;
         this._telemetry = new WebExtensionTelemetry();
         this._npsEligibility = false;
         this._userId = "";

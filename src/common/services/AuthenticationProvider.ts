@@ -18,13 +18,14 @@ import {
     VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
     VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED,
     VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_FAILED,
-    VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED
+    VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED,
+    VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_COMPLETED,
+    VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_FAILED
 } from "./TelemetryConstants";
 import { ERROR_CONSTANTS } from "../ErrorConstants";
-import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL } from "./Constants";
+import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL } from "./Constants";
 import jwt_decode from 'jwt-decode';
 import { showErrorDialog } from "../utilities/errorHandlerUtil";
-
 
 export function getCommonHeadersForDataverse(
     accessToken: string,
@@ -291,4 +292,53 @@ export function getOIDFromToken(token: string, telemetry: ITelemetry) {
         )
     }
     return "";
+}
+
+export async function powerPlatformAPIAuthentication(
+    telemetry: ITelemetry,
+    firstTimeAuth = false
+): Promise<string> {
+    let accessToken = "";
+    try {
+        let session = await vscode.authentication.getSession(
+            PROVIDER_ID,
+            [PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT],
+            { silent: true }
+        );
+
+        if (!session) {
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT],
+                { createIfNone: true }
+            );
+        }
+
+        accessToken = session?.accessToken ?? "";
+        if (!accessToken) {
+            throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
+        }
+
+        if (firstTimeAuth) {
+            sendTelemetryEvent(telemetry, {
+                eventName: VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_COMPLETED,
+                userId:
+                    session?.account.id.split("/").pop() ??
+                    session?.account.id ??
+                    "",
+            });
+        }
+    } catch (error) {
+        showErrorDialog(
+            vscode.l10n.t(
+                "Authorization Failed. Please run again to authorize it"
+            ),
+            vscode.l10n.t("There was a permissions problem with the server")
+        );
+        sendTelemetryEvent(telemetry,
+            { eventName: VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_FAILED, errorMsg: (error as Error).message }
+        )
+    }
+
+    return accessToken;
 }
