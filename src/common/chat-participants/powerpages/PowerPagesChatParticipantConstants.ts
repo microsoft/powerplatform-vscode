@@ -12,6 +12,19 @@ export const STATER_PROMPTS = "starterPrompts"
 export const WELCOME_PROMPT = 'how can you help with coding for my website?'
 export const SUPPORTED_ENTITIES = [ADX_ENTITYFORM, ADX_ENTITYLIST];
 export const SKIP_CODES = ["", null, undefined, "violation", "unclear", "explain"];
+export const RESPONSE_SCENARIOS = {
+    PAC_AUTH_NOT_FOUND: 'PAC_AUTH_NOT_FOUND',
+    AUTHENTICATION_FAILED: 'AUTHENTICATION_FAILED',
+    COPILOT_NOT_AVAILABLE: 'COPILOT_NOT_AVAILABLE',
+    INVALID_RESPONSE: 'INVALID_RESPONSE',
+    RESPONSE_AWAITED: 'RESPONSE_AWAITED',
+    NO_PROMPT: 'NO_PROMPT',
+    EXPLAIN_CODE_PROMPT: 'EXPLAIN_CODE_PROMPT',
+    FORM_PROMPT: 'FORM_PROMPT',
+    LIST_PROMPT: 'LIST_PROMPT',
+    WEB_API_PROMPT: 'WEB_API_PROMPT',
+    WELCOME_PROMPT: 'WELCOME_PROMPT'
+};
 
 // Localized strings
 export const EXPLAIN_CODE_PROMPT = vscode.l10n.t('Explain the following code {% include \'Page Copy\'%}');
@@ -23,6 +36,7 @@ export const RESPONSE_AWAITED_MSG = vscode.l10n.t('Working on it...');
 export const AUTHENTICATION_FAILED_MSG = vscode.l10n.t('Authentication failed. Please try again.');
 export const COPILOT_NOT_AVAILABLE_MSG = vscode.l10n.t('Copilot is not available. Please contact your administrator.');
 export const PAC_AUTH_NOT_FOUND = vscode.l10n.t('Active auth profile is not found or has expired. Please try again.');
+export const INVALID_RESPONSE = vscode.l10n.t('Something went wrong. Don’t worry, you can try again.');
 export const DISCLAIMER_MESSAGE = vscode.l10n.t('Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)');
 export const NO_PROMPT_MESSAGE = vscode.l10n.t('Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.');
 
@@ -31,5 +45,8 @@ export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'GitHubPowerPag
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS = 'GitHubPowerPagesAgentOrgDetails';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND = 'GitHubPowerPagesAgentOrgDetailsNotFound';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO = 'GitHubPowerPagesAgentScenario';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP = 'GitHubPowerPagesAgentScenarioFeedbackThumbsUp';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN = 'GitHubPowerPagesAgentScenarioFeedbackThumbsDown';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR = 'GitHubPowerPagesAgentError';
 
 

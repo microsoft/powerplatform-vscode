@@ -77,6 +77,7 @@
   "Authentication failed. Please try again.": "Authentication failed. Please try again.",
   "Copilot is not available. Please contact your administrator.": "Copilot is not available. Please contact your administrator.",
   "Active auth profile is not found or has expired. Please try again.": "Active auth profile is not found or has expired. Please try again.",
+  "Something went wrong. Don’t worry, you can try again.": "Something went wrong. Don’t worry, you can try again.",
   "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)": "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)",
   "Explain the following code {% include 'Page Copy'%}": "Explain the following code {% include 'Page Copy'%}",
   "Hi! @powerpages can help you write, edit, and even summarize your website code.": "Hi! @powerpages can help you write, edit, and even summarize your website code.",
