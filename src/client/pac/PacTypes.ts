@@ -73,3 +73,10 @@ export type ActiveOrgOutput = {
 }
 
 export type PacOrgWhoOutput = PacOutputWithResult<ActiveOrgOutput>;
+
+export type ActiveAuthOutput = {
+   Key: string,
+   Value: string
+}
+
+export type PacAuthWhoOutput = PacOutputWithResultList<ActiveAuthOutput>;

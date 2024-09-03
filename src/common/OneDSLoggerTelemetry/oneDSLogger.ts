@@ -380,6 +380,7 @@ export class OneDSLogger implements ITelemetryLogger {
             OneDSLogger.contextInfo.orgId = JSON.parse(envelope.data.eventInfo).OrgId;
             OneDSLogger.contextInfo.envId = JSON.parse(envelope.data.eventInfo).EnvironmentId;
             OneDSLogger.contextInfo.orgGeo = JSON.parse(envelope.data.eventInfo).orgGeo;
+            OneDSLogger.userInfo.oid = JSON.parse(envelope.data.eventInfo).AadId;
             // TODO: Populate website id
             OneDSLogger.contextInfo.websiteId = 'test'
         }
