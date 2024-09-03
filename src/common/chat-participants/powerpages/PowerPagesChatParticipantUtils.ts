@@ -110,7 +110,7 @@ export function createSuccessResult(command: string, scenario: string, orgId: st
     };
 }
 
-export function removeWords(userPrompt: string): string {
+export function removeChatVariables(userPrompt: string): string {
     const variablesToRemove = [
         '#editor',
         '#selection',
