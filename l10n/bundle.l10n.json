@@ -73,15 +73,15 @@
   "Tell us more.": "Tell us more.",
   "Try and be as specific as possible. Your feedback will be used to improve Copilot. <a href=\"https://privacy.microsoft.com/en-US/data-privacy-notice\"> View privacy details </a>": "Try and be as specific as possible. Your feedback will be used to improve Copilot. <a href=\"https://privacy.microsoft.com/en-US/data-privacy-notice\"> View privacy details </a>",
   "Submit": "Submit",
-  "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.": "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.",
+  "Explain the following code {% include 'Page Copy'%}": "Explain the following code {% include 'Page Copy'%}",
+  "Hi! @powerpages can help you write, edit, and even summarize your website code.": "Hi! @powerpages can help you write, edit, and even summarize your website code.",
   "Authentication failed. Please try again.": "Authentication failed. Please try again.",
   "Copilot is not available. Please contact your administrator.": "Copilot is not available. Please contact your administrator.",
   "Active auth profile is not found or has expired. Please try again.": "Active auth profile is not found or has expired. Please try again.",
   "Something went wrong. Don’t worry, you can try again.": "Something went wrong. Don’t worry, you can try again.",
   "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)": "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)",
   "Checking for active auth profile...": "Checking for active auth profile...",
-  "Explain the following code {% include 'Page Copy'%}": "Explain the following code {% include 'Page Copy'%}",
-  "Hi! @powerpages can help you write, edit, and even summarize your website code.": "Hi! @powerpages can help you write, edit, and even summarize your website code.",
+  "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.": "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [
