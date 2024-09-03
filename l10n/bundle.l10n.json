@@ -79,6 +79,7 @@
   "Active auth profile is not found or has expired. Please try again.": "Active auth profile is not found or has expired. Please try again.",
   "Something went wrong. Don’t worry, you can try again.": "Something went wrong. Don’t worry, you can try again.",
   "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)": "Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)",
+  "Checking for active auth profile...": "Checking for active auth profile...",
   "Explain the following code {% include 'Page Copy'%}": "Explain the following code {% include 'Page Copy'%}",
   "Hi! @powerpages can help you write, edit, and even summarize your website code.": "Hi! @powerpages can help you write, edit, and even summarize your website code.",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {

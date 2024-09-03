@@ -14,6 +14,7 @@ export const COPILOT_NOT_AVAILABLE_MSG = vscode.l10n.t('Copilot is not available
 export const PAC_AUTH_NOT_FOUND = vscode.l10n.t('Active auth profile is not found or has expired. Please try again.');
 export const INVALID_RESPONSE = vscode.l10n.t('Something went wrong. Don’t worry, you can try again.');
 export const DISCLAIMER_MESSAGE = vscode.l10n.t('Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)');
+export const PAC_AUTH_INPUT = vscode.l10n.t("Checking for active auth profile...");
 export const SUPPORTED_ENTITIES = [ADX_ENTITYFORM, ADX_ENTITYLIST];
 // Telemetry Event Names
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'GitHubPowerPagesAgentInvoked';
