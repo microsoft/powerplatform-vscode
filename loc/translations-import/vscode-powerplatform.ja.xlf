@@ -112,10 +112,6 @@
         <source xml:lang="en">Copied to clipboard!</source>
         <target state="translated">クリップボードにコピーしました!</target>
       </trans-unit>
-      <trans-unit id="++CODE++344de0f92ba2ec8b690a0454eef93ef33d950e4bd785171eb060164a714ed419">
-        <source xml:lang="en">Copilot In Power Pages</source>
-        <target state="translated">Power Pages の Copilot</target>
-      </trans-unit>
       <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
         <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
         <target state="translated">Copilot を使用できません。システム管理者にお問い合わせください。</target>
@@ -487,6 +483,10 @@ URL: {1}
       <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
         <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
         <target state="translated">一部の参照が破損しているようです。詳細については診断を確認してください。</target>
+      </trans-unit>
+      <trans-unit id="++CODE++189f24adc299ea91ceab21d8100a58d89294ed17395c4e4dbc4733c9b92543df">
+        <source xml:lang="en">Something went wrong. Donâ€™t worry, you can try again.</source>
+        <target state="translated">問題が発生しましたが、ご安心ください。やり直してください。</target>
       </trans-unit>
       <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
         <source xml:lang="en">Submit</source>
