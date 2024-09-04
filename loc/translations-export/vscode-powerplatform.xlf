@@ -63,6 +63,9 @@
     <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
       <source xml:lang="en">Check the URL and verify the parameters are correct</source>
     </trans-unit>
+    <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
+      <source xml:lang="en">Checking for active auth profile...</source>
+    </trans-unit>
     <trans-unit id="++CODE++e1c3ec6d279ce7c1a208abce1314435297d8369739967d8a9db962ab572c617f">
       <source xml:lang="en">Choose page template</source>
     </trans-unit>
