@@ -37,23 +37,32 @@ export async function initializeOrgDetails(
     extensionContext: ExtensionContext,
     pacWrapper?: PacWrapper
 ): Promise<IOrgDetails> {
+    const orgDetails: IOrgDetails = { orgID: '', orgUrl: '', environmentID: '' };
+
     if (isOrgDetailsInitialized) {
-        return { orgID: '', orgUrl: '', environmentID: '' };
+        return orgDetails;
     }
 
-    const orgDetails: IOrgDetails | undefined = extensionContext.globalState.get(ORG_DETAILS_KEY);
-    if (orgDetails && orgDetails.orgID && orgDetails.orgUrl && orgDetails.environmentID) {
-        return orgDetails;
+    // Get stored organization details from global state
+    const storedOrgDetails: IOrgDetails | undefined = extensionContext.globalState.get(ORG_DETAILS_KEY);
+    if (storedOrgDetails && storedOrgDetails.orgID && storedOrgDetails.orgUrl && storedOrgDetails.environmentID) {
+        return storedOrgDetails;
     }
 
     if (pacWrapper) {
         try {
-            return await fetchOrgDetailsFromPac(pacWrapper, extensionContext);
+            const fetchedOrgDetails = await fetchOrgDetailsFromPac(pacWrapper, extensionContext);
+            orgDetails.orgID = fetchedOrgDetails.orgID;
+            orgDetails.orgUrl = fetchedOrgDetails.orgUrl;
+            orgDetails.environmentID = fetchedOrgDetails.environmentID;
         } catch (error) {
             await createAuthProfileExp(pacWrapper);
-            return await fetchOrgDetailsFromPac(pacWrapper, extensionContext);
+            const fetchedOrgDetails = await fetchOrgDetailsFromPac(pacWrapper, extensionContext);
+            orgDetails.orgID = fetchedOrgDetails.orgID;
+            orgDetails.orgUrl = fetchedOrgDetails.orgUrl;
+            orgDetails.environmentID = fetchedOrgDetails.environmentID;
         }
     }
 
-    return { orgID: '', orgUrl: '', environmentID: '' };
+    return orgDetails;
 }
