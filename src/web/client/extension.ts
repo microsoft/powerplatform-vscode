@@ -139,8 +139,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
                                 processWalkthroughFirstRunExperience(context);
 
-                                powerPagesNavigation();
-
                                 await vscode.window.withProgress(
                                     {
                                         location: vscode.ProgressLocation.Notification,
@@ -165,6 +163,8 @@ export function activate(context: vscode.ExtensionContext): void {
                                         processWillStartCollaboration(context);
                                     }
                                 );
+
+                                powerPagesNavigation();
 
                                 await NPSService.setEligibility();
                                 if (WebExtensionContext.npsEligibility) {
