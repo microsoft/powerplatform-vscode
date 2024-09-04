@@ -46,6 +46,7 @@ export const {
     description: 'Enable Power Pages GitHub Copilot',
     fallback: {
         allowedProDevCopilotTenants: "",
-        allowedProDevCopilotOrgs: "abcc137d-7ae6-ee11-9048-000d3a106507",
+        allowedProDevCopilotOrgs: "",
+        enablePowerpagesInGithubChat: false,
     },
 });

@@ -100,3 +100,7 @@ export function getEnabledTenantList() {
 
     return allowedProDevCopilotTenants.split(',').map(org => org.trim());
 }
+
+export function isPowerPagesGitHubCopilotEnabled() {
+    return ECSFeaturesClient.getConfig(EnablePowerPagesGitHubCopilot).enablePowerpagesInGithubChat
+}
