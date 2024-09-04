@@ -12,9 +12,9 @@ import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
-import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, DISCLAIMER_MESSAGE, INVALID_RESPONSE, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, RESPONSE_SCENARIOS, SKIP_CODES, STATER_PROMPTS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
+import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, DISCLAIMER_MESSAGE, INVALID_RESPONSE, NO_PROMPT_MESSAGE, PAC_AUTH_INPUT, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, RESPONSE_SCENARIOS, SKIP_CODES, STATER_PROMPTS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups, handleChatParticipantFeedback, createErrorResult, createSuccessResult } from './PowerPagesChatParticipantUtils';
+import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups, handleChatParticipantFeedback, createErrorResult, createSuccessResult, removeChatVariables } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, fetchRelatedFiles, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -87,10 +87,14 @@ export class PowerPagesChatParticipant {
         //_token: vscode.CancellationToken
     ): Promise<IPowerPagesChatResult> => {
         try {
-            stream.progress(RESPONSE_AWAITED_MSG);
             this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, { sessionId: this.powerPagesAgentSessionId });
 
-            await this.initializeOrgDetails();
+            if (!this.isOrgDetailsInitialized) {
+                stream.progress(PAC_AUTH_INPUT);
+                await this.initializeOrgDetails();
+            }
+
+            stream.progress(RESPONSE_AWAITED_MSG);
 
             if (!this.orgID || !this.environmentID) {
                 this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, { sessionId: this.powerPagesAgentSessionId });
@@ -114,7 +118,9 @@ export class PowerPagesChatParticipant {
                 return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
             }
 
-            const userPrompt = request.prompt;
+            let userPrompt = request.prompt;
+
+            userPrompt = removeChatVariables(userPrompt);
 
             if (userPrompt === WELCOME_PROMPT) {
                 stream.markdown(WELCOME_MESSAGE);
@@ -193,11 +199,20 @@ export class PowerPagesChatParticipant {
         }
     };
 
-    private async initializeOrgDetails(): Promise<void> {
-        const { orgID, orgUrl, environmentID } = await initializeOrgDetails(this.isOrgDetailsInitialized, this.extensionContext, this._pacWrapper);
-        this.orgID = orgID;
-        this.orgUrl = orgUrl;
-        this.environmentID = environmentID;
+      private async initializeOrgDetails(): Promise<void> {
+        try {
+            const { orgID, orgUrl, environmentID } = await initializeOrgDetails(this.isOrgDetailsInitialized, this.extensionContext, this._pacWrapper);
+
+            if (!orgID) {
+                return;
+            }
+            this.orgID = orgID;
+            this.orgUrl = orgUrl;
+            this.environmentID = environmentID;
+            this.isOrgDetailsInitialized = true;
+        } catch (error) {
+            return;
+        }
     }
 
     private async handleOrgChangeSuccess(orgDetails: ActiveOrgOutput): Promise<void> {
