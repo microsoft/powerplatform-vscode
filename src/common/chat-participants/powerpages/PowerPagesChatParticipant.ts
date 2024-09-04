@@ -20,7 +20,7 @@ import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
 import { getEnabledOrgList } from '../../copilot/utils/copilotUtil';
-import { ADX_WEBPAGE, IRelatedFiles } from '../../constants';
+import { ADX_WEBPAGE, IApiRequestParams, IRelatedFiles } from '../../constants';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -157,20 +157,22 @@ export class PowerPagesChatParticipant {
 
                 const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
-                const llmResponse = await sendApiRequest(
-                    [{ displayText: userPrompt, code: activeFileContent }],
-                    activeFileParams,
-                    this.orgID,
-                    intelligenceApiToken,
-                    this.powerPagesAgentSessionId,
-                    entityName,
-                    componentInfo,
-                    this.telemetry,
-                    intelligenceAPIEndpointInfo.intelligenceEndpoint,
-                    intelligenceAPIEndpointInfo.geoName,
-                    intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag,
-                    relatedFiles
-                );
+                const apiRequestParams: IApiRequestParams = {
+                    userPrompt: [{ displayText: userPrompt, code: activeFileContent }],
+                    activeFileParams: activeFileParams,
+                    orgID: this.orgID,
+                    apiToken: intelligenceApiToken,
+                    sessionID: this.powerPagesAgentSessionId,
+                    entityName: entityName,
+                    entityColumns: componentInfo,
+                    telemetry: this.telemetry,
+                    aibEndpoint: intelligenceAPIEndpointInfo.intelligenceEndpoint,
+                    geoName: intelligenceAPIEndpointInfo.geoName,
+                    crossGeoDataMovementEnabledPPACFlag: intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag,
+                    relatedFiles: relatedFiles
+                };
+
+                const llmResponse = await sendApiRequest(apiRequestParams);
 
                 const scenario = llmResponse.length > 1 ? llmResponse[llmResponse.length - 1] : llmResponse[0].displayText;
 
