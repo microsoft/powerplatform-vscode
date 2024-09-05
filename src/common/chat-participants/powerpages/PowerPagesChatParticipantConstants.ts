@@ -25,7 +25,7 @@ export const RESPONSE_SCENARIOS = {
     WEB_API_PROMPT: 'WEB_API_PROMPT',
     WELCOME_PROMPT: 'WELCOME_PROMPT'
 };
- 
+
 // Localized strings
 export const EXPLAIN_CODE_PROMPT = vscode.l10n.t('Explain the following code {% include \'Page Copy\'%}');
 export const WEB_API_PROMPT = vscode.l10n.t('Write web API code to query active contact records.');
@@ -49,5 +49,10 @@ export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO = 'GitHubPowerPa
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP = 'GitHubPowerPagesAgentScenarioFeedbackThumbsUp';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN = 'GitHubPowerPagesAgentScenarioFeedbackThumbsDown';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR = 'GitHubPowerPagesAgentError';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES = 'GitHubPowerPagesAgentWebpageRelatedFiles';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED = 'GitHubPowerPagesAgentLocationReferenced';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT = 'GitHubPowerPagesAgentNoPrompt';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT = 'GitHubPowerPagesAgentWelcomePrompt';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT = 'GitHubPowerPagesAgentSuccessfulPrompt';
 
 

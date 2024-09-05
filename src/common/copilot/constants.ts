@@ -73,6 +73,7 @@ export const ControlClassIdMap = new Map<string, string>([
 
 export const GITHUB_COPILOT_CHAT_EXT = 'github.copilot-chat';
 export const PowerPagesParticipantPrompt = '@powerpages how can you help with coding for my website?'
+export const PowerPagesParticipantDocLink = 'https://go.microsoft.com/fwlink/?linkid=2276973';
 
 export const AuthProfileNotFound = [{ displayText: "Active auth profile is not found or has expired. Create an Auth profile to start chatting with Copilot again.", code: '' }];
 export const NetworkError = [{ displayText: "There was an issue connecting to the server. Please check your internet connection and try again.", code: '' }];

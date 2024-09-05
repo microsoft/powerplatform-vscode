@@ -13,6 +13,7 @@ import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
 import path from "path";
+import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -285,6 +286,7 @@ export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType
     } catch (error) {
         const message = (error as Error)?.message;
         telemetry.sendTelemetryErrorEvent(COPILOT_RELATED_FILES_FETCH_FAILED, { error: message, sessionId: sessionId });
+        oneDSLoggerWrapper.getLogger().traceError(COPILOT_RELATED_FILES_FETCH_FAILED, message, error as Error, { sessionId:sessionId }, {});
         return [];
     }
 }
