@@ -36,41 +36,42 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
     }
 
     openSpecificURLWithoutAuth(context: vscode.ExtensionContext): void {
-        const websitePreviewUrl = "https://site-wug4q.powerappsportals.com/"; //public site
-        //const websitePreviewUrl = "https://site-nwz9m.powerappsportals.com/"; //private site
-        // const browserLiteExtensionId = 'antfu.browse-lite';
-        // const browserLiteExtension = vscode.extensions.getExtension(browserLiteExtensionId);
+        //const websitePreviewUrl = "https://site-wug4q.powerappsportals.com/"; //public site
+        const websitePreviewUrl = "https://site-nwz9m.powerappsportals.com/"; //private site
+        const browserLiteExtensionId = 'antfu.browse-lite';
+        const browserLiteExtension = vscode.extensions.getExtension(browserLiteExtensionId);
 
-        // if (browserLiteExtension) {
-        //     if (browserLiteExtension.isActive) {
-        //         vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
-        //     } else {
-        //         browserLiteExtension.activate().then(() => {
-        //             vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
-        //         });
-        //     }
-        // } else {
-        //     vscode.window.showErrorMessage('Browser Lite extension is not installed.');
-        // }
-        context;
-        const edgeToolsExtensionId = 'ms-edgedevtools.vscode-edge-devtools';
-        const edgeToolsExtension = vscode.extensions.getExtension(edgeToolsExtensionId);
-
-        if (edgeToolsExtension) {
-            if (edgeToolsExtension.isActive) {
-                // vscode.commands.executeCommand('vscode-edge-devtools-view.launchConfigureJson');
-                // vscode.commands.executeCommand('vscode-edge-devtools.launch');
-                this.updateLaunchJsonConfig(websitePreviewUrl).then(() => {
-                    vscode.commands.executeCommand('vscode-edge-devtools.launch');
-                });
+        if (browserLiteExtension) {
+            if (browserLiteExtension.isActive) {
+                vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
             } else {
-                edgeToolsExtension.activate().then(() => {
-                    vscode.commands.executeCommand('vscode-edge-devtools.launch', context , vscode.Uri.parse(websitePreviewUrl));
+                browserLiteExtension.activate().then(() => {
+                    vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
+                    vscode.commands.executeCommand('workbench.action.webview.openDeveloperTools');
                 });
             }
         } else {
-            vscode.window.showErrorMessage('Ms Edge Tools extension is not installed.');
+            vscode.window.showErrorMessage('Browser Lite extension is not installed.');
         }
+        context;
+        // const edgeToolsExtensionId = 'ms-edgedevtools.vscode-edge-devtools';
+        // const edgeToolsExtension = vscode.extensions.getExtension(edgeToolsExtensionId);
+
+        // if (edgeToolsExtension) {
+        //     if (edgeToolsExtension.isActive) {
+        //         // vscode.commands.executeCommand('vscode-edge-devtools-view.launchConfigureJson');
+        //         // vscode.commands.executeCommand('vscode-edge-devtools.launch');
+        //         this.updateLaunchJsonConfig(websitePreviewUrl).then(() => {
+        //             vscode.commands.executeCommand('vscode-edge-devtools.launch');
+        //         });
+        //     } else {
+        //         edgeToolsExtension.activate().then(() => {
+        //             vscode.commands.executeCommand('vscode-edge-devtools.launch', context , vscode.Uri.parse(websitePreviewUrl));
+        //         });
+        //     }
+        // } else {
+        //     vscode.window.showErrorMessage('Ms Edge Tools extension is not installed.');
+        // }
 
     }
 
