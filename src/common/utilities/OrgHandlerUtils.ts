@@ -9,6 +9,7 @@ import { PacWrapper } from '../../client/pac/PacWrapper';
 import { IOrgDetails } from '../chat-participants/powerpages/PowerPagesChatParticipantTypes';
 import { SUCCESS } from '../constants';
 import { createAuthProfileExp } from '../copilot/utils/copilotUtil';
+import { ERROR_CONSTANTS } from '../ErrorConstants';
 
 export const ORG_DETAILS_KEY = 'orgDetails';
 
@@ -16,46 +17,52 @@ export function handleOrgChangeSuccess(
     orgDetails: ActiveOrgOutput,
     extensionContext: ExtensionContext
 ): IOrgDetails {
-    const orgID = orgDetails.OrgId;
-    const orgUrl = orgDetails.OrgUrl;
-    const environmentID = orgDetails.EnvironmentId;
+    const { OrgId: orgID, OrgUrl: orgUrl, EnvironmentId: environmentID } = orgDetails;
 
     extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID, orgUrl, environmentID });
 
     return { orgID, orgUrl, environmentID };
 }
 
+async function fetchOrgDetailsFromPac(pacWrapper: PacWrapper, extensionContext: ExtensionContext): Promise<IOrgDetails> {
+    const pacActiveOrg = await pacWrapper.activeOrg();
+    if (pacActiveOrg && pacActiveOrg.Status === SUCCESS) {
+        return handleOrgChangeSuccess(pacActiveOrg.Results, extensionContext);
+    }
+    throw new Error(ERROR_CONSTANTS.PAC_AUTH_FAILED);
+}
+
 export async function initializeOrgDetails(
     isOrgDetailsInitialized: boolean,
     extensionContext: ExtensionContext,
     pacWrapper?: PacWrapper
-): Promise<{ orgID: string, orgUrl: string, environmentID: string }> {
+): Promise<IOrgDetails> {
+    const orgDetails: IOrgDetails = { orgID: '', orgUrl: '', environmentID: '' };
+
     if (isOrgDetailsInitialized) {
-        return { orgID: '', orgUrl: '', environmentID: '' };
+        return orgDetails;
     }
 
-    const orgDetails: IOrgDetails | undefined = extensionContext.globalState.get(ORG_DETAILS_KEY);
-    let orgID = '';
-    let orgUrl = '';
-    let environmentID = '';
+    // Get stored organization details from global state
+    const storedOrgDetails: IOrgDetails | undefined = extensionContext.globalState.get(ORG_DETAILS_KEY);
+    if (storedOrgDetails && storedOrgDetails.orgID && storedOrgDetails.orgUrl && storedOrgDetails.environmentID) {
+        return storedOrgDetails;
+    }
 
-    if (orgDetails && orgDetails.orgID && orgDetails.orgUrl && orgDetails.environmentID) {
-        orgID = orgDetails.orgID;
-        orgUrl = orgDetails.orgUrl;
-        environmentID = orgDetails.environmentID;
-    } else {
-        if (pacWrapper) {
-            const pacActiveOrg = await pacWrapper.activeOrg();
-            if (pacActiveOrg && pacActiveOrg.Status === SUCCESS) {
-                const orgDetails = handleOrgChangeSuccess(pacActiveOrg.Results, extensionContext);
-                orgID = orgDetails.orgID;
-                orgUrl = orgDetails.orgUrl;
-                environmentID = orgDetails.environmentID;
-            } else {
-                await createAuthProfileExp(pacWrapper);
-            }
+    if (pacWrapper) {
+        try {
+            const fetchedOrgDetails = await fetchOrgDetailsFromPac(pacWrapper, extensionContext);
+            orgDetails.orgID = fetchedOrgDetails.orgID;
+            orgDetails.orgUrl = fetchedOrgDetails.orgUrl;
+            orgDetails.environmentID = fetchedOrgDetails.environmentID;
+        } catch (error) {
+            await createAuthProfileExp(pacWrapper);
+            const fetchedOrgDetails = await fetchOrgDetailsFromPac(pacWrapper, extensionContext);
+            orgDetails.orgID = fetchedOrgDetails.orgID;
+            orgDetails.orgUrl = fetchedOrgDetails.orgUrl;
+            orgDetails.environmentID = fetchedOrgDetails.environmentID;
         }
     }
 
-    return { orgID, orgUrl, environmentID };
+    return orgDetails;
 }
