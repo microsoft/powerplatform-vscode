@@ -416,7 +416,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
         orgID = activeOrg.OrgId;
         environmentName = activeOrg.FriendlyName;
-        // userID = activeOrg.UserId;
         activeOrgUrl = activeOrg.OrgUrl;
         environmentId = activeOrg.EnvironmentId
 
