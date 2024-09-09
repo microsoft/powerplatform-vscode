@@ -33,7 +33,7 @@ import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
-import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
+import { COPILOT_NOTIFICATION_DISABLED, EXTENSION_VERSION_KEY } from "../common/copilot/constants";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { OrgChangeNotifier, orgChangeEvent } from "./OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
@@ -41,7 +41,7 @@ import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/clien
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
-import { SUCCESS } from "../common/constants";
+import { EXTENSION_ID, SUCCESS } from "../common/constants";
 import { AadIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 
 let client: LanguageClient;
@@ -416,6 +416,20 @@ function handleWorkspaceFolderChange() {
 
 function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals: string) {
     if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
+        return;
+    }
+
+    const currentVersion = vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON.version;
+    const storedVersion = _context.globalState.get(EXTENSION_VERSION_KEY);
+
+    if (!storedVersion || storedVersion !== currentVersion) {
+        // Show notification panel for the first load or after an update
+        telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
+        oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
+        copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
+
+        // Update the stored version to the current version
+        _context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
         return;
     }
 

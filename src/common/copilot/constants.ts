@@ -36,6 +36,7 @@ export const ATTRIBUTE_DATAFIELD_NAME = 'datafieldname';
 export const ATTRIBUTE_CLASSID = 'classid';
 export const SYSTEFORMS_API_PATH = 'api/data/v9.2/systemforms';
 export const COPILOT_IN_POWERPAGES = 'Copilot In Power Pages'
+export const EXTENSION_VERSION_KEY = 'extensionVersion';
 
 export type WebViewMessage = {
     type: string;
