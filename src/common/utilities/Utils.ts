@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { componentTypeSchema, COPILOT_RELATED_FILES_FETCH_FAILED, EXTENSION_ID, EXTENSION_NAME, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME } from "../constants";
+import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME, VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData } from "../copilot/model";
@@ -285,8 +285,8 @@ export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType
         return files;
     } catch (error) {
         const message = (error as Error)?.message;
-        telemetry.sendTelemetryErrorEvent(COPILOT_RELATED_FILES_FETCH_FAILED, { error: message, sessionId: sessionId });
-        oneDSLoggerWrapper.getLogger().traceError(COPILOT_RELATED_FILES_FETCH_FAILED, message, error as Error, { sessionId:sessionId }, {});
+        telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED, { error: message, sessionId: sessionId });
+        oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED, message, error as Error, { sessionId:sessionId }, {});
         return [];
     }
 }
