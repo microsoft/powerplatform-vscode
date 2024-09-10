@@ -110,7 +110,8 @@ export class PowerPagesChatParticipant {
 
             if (!isPowerPagesGitHubCopilotEnabled()) {
                 stream.markdown(COPILOT_NOT_RELEASED_MSG);
-                this.telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, { sessionId: this.powerPagesAgentSessionId, orgID: this.orgID });
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, { sessionId: this.powerPagesAgentSessionId, orgID: this.orgID });
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, { sessionId: this.powerPagesAgentSessionId, orgID: this.orgID });
                 return createSuccessResult('', RESPONSE_SCENARIOS.COPILOT_NOT_RELEASED, this.orgID);
             }
 
