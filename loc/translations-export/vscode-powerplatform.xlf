@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="bundle" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="++CODE++29bb69945e50cb632fabf16f3f89a25d813910c19059d8a792f66262a952039d">
+      <source xml:lang="en">@PowerPages is not yet available in your region.</source>
+    </trans-unit>
     <trans-unit id="++CODE++32e135c21be9286cda2fda96fbe713f9af60f5f933e4e58468f256dd54b95575">
       <source xml:lang="en">A content snippet with the same name already exists. Please enter a different name.</source>
     </trans-unit>
@@ -12,6 +15,9 @@
     </trans-unit>
     <trans-unit id="++CODE++22a97bc8f9b1cf66fa77f878b5a2cc57c52ad534e6ca38fbd6e5dd3b9854602c">
       <source xml:lang="en">A webtemplate with the same name already exists. Please enter a different name.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bcfb3427790816de073090a76469fec945a3c7f5f82bbac338378ea22784c70a">
+      <source xml:lang="en">AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)</source>
     </trans-unit>
     <trans-unit id="++CODE++8d35e64354d3db3df1df4ef8e6068b6b9dd58514fcf980f7071e10ed160db95a">
       <source xml:lang="en">AI-generated content can contain mistakes</source>
@@ -87,9 +93,6 @@
     </trans-unit>
     <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
       <source xml:lang="en">Copied to clipboard!</source>
-    </trans-unit>
-    <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
-      <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
     </trans-unit>
     <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
       <source xml:lang="en">Copy to clipboard</source>
