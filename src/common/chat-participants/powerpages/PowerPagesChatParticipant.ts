@@ -43,7 +43,7 @@ export class PowerPagesChatParticipant {
         this.chatParticipant = createChatParticipant(POWERPAGES_CHAT_PARTICIPANT_ID, this.handler);
 
         //TODO: Check the icon image
-        this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.png');
+        this.chatParticipant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'common', 'chat-participants', 'powerpages', 'assets', 'copilot.svg');
 
         this.chatParticipant.onDidReceiveFeedback((feedback: vscode.ChatResultFeedback) => {
             handleChatParticipantFeedback(feedback, this.powerPagesAgentSessionId, this.telemetry);
