@@ -6,6 +6,7 @@
 import { ADX_ENTITYFORM } from "../../copilot/constants";
 import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/dataverseMetadata";
 import { IActiveFileParams } from "../../copilot/model";
+import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
@@ -62,8 +63,10 @@ export function handleChatParticipantFeedback (feedback: vscode.ChatResultFeedba
     const orgId = feedback.result.metadata?.orgId;
     if (feedback.kind === 1) {
         telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, { feedback: feedback.kind.toString(), scenario: scenario, orgId:orgId, sessionId: sessionId });
+        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId });
     } else if (feedback.kind === 0) {
         telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId});
+        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId });
     }
 }
 export function createAndReferenceLocation(activeFileUri: vscode.Uri, startLine: number, endLine: number): vscode.Location {

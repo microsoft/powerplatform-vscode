@@ -25,7 +25,7 @@ export const RESPONSE_SCENARIOS = {
     WEB_API_PROMPT: 'WEB_API_PROMPT',
     WELCOME_PROMPT: 'WELCOME_PROMPT'
 };
- 
+
 // Localized strings
 export const EXPLAIN_CODE_PROMPT = vscode.l10n.t('Explain the following code {% include \'Page Copy\'%}');
 export const WEB_API_PROMPT = vscode.l10n.t('Write web API code to query active contact records.');
@@ -42,12 +42,17 @@ export const NO_PROMPT_MESSAGE = vscode.l10n.t('Hi! Power Pages lets you build s
 export const PAC_AUTH_INPUT = vscode.l10n.t("Checking for active auth profile...");
 
 // Telemetry Event Names
-export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'GitHubPowerPagesAgentInvoked';
-export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS = 'GitHubPowerPagesAgentOrgDetails';
-export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND = 'GitHubPowerPagesAgentOrgDetailsNotFound';
-export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO = 'GitHubPowerPagesAgentScenario';
-export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP = 'GitHubPowerPagesAgentScenarioFeedbackThumbsUp';
-export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN = 'GitHubPowerPagesAgentScenarioFeedbackThumbsDown';
-export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR = 'GitHubPowerPagesAgentError';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'VSCodeExtensionGitHubPowerPagesAgentInvoked';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS = 'VSCodeExtensionGitHubPowerPagesAgentOrgDetails';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND = 'VSCodeExtensionGitHubPowerPagesAgentOrgDetailsNotFound';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO = 'VSCodeExtensionGitHubPowerPagesAgentScenario';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP = 'VSCodeExtensionGitHubPowerPagesAgentScenarioFeedbackThumbsUp';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN = 'VSCodeExtensionGitHubPowerPagesAgentScenarioFeedbackThumbsDown';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR = 'VSCodeExtensionGitHubPowerPagesAgentError';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES = 'VSCodeExtensionGitHubPowerPagesAgentWebpageRelatedFiles';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED = 'VSCodeExtensionGitHubPowerPagesAgentLocationReferenced';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT = 'VSCodeExtensionGitHubPowerPagesAgentNoPrompt';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT = 'VSCodeExtensionGitHubPowerPagesAgentWelcomePrompt';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT = 'VSCodeExtensionGitHubPowerPagesAgentSuccessfulPrompt';
 
 
