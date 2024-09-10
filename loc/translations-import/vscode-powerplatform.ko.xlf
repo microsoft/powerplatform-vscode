@@ -83,6 +83,10 @@
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">URL을 확인하고 매개 변수가 올바른지 확인하세요</target>
       </trans-unit>
+      <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
+        <source xml:lang="en">Checking for active auth profile...</source>
+        <target state="translated">활성 인증 프로필을 확인하는 중...</target>
+      </trans-unit>
       <trans-unit id="++CODE++e1c3ec6d279ce7c1a208abce1314435297d8369739967d8a9db962ab572c617f">
         <source xml:lang="en">Choose page template</source>
         <target state="translated">페이지 템플릿 선택</target>
@@ -111,10 +115,6 @@
       <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
         <source xml:lang="en">Copied to clipboard!</source>
         <target state="translated">클립보드에 복사되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="++CODE++344de0f92ba2ec8b690a0454eef93ef33d950e4bd785171eb060164a714ed419">
-        <source xml:lang="en">Copilot In Power Pages</source>
-        <target state="translated">Power Pages의 Copilot</target>
       </trans-unit>
       <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
         <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
@@ -487,6 +487,10 @@ URL: {1}
       <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
         <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
         <target state="translated">일부 참조가 깨졌을 수 있습니다. 자세한 내용은 진단을 확인하세요.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++189f24adc299ea91ceab21d8100a58d89294ed17395c4e4dbc4733c9b92543df">
+        <source xml:lang="en">Something went wrong. Donâ€™t worry, you can try again.</source>
+        <target state="translated">문제가 발생했습니다. 걱정하지 마세요, 다시 시도할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
         <source xml:lang="en">Submit</source>
