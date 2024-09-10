@@ -33,7 +33,7 @@ import { PowerPagesNavigationProvider } from "./webViews/powerPagesNavigationPro
 import * as copilot from "../../common/copilot/PowerPagesCopilot";
 import { IOrgInfo } from "../../common/copilot/model";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../../common/copilot/welcome-notification/CopilotNotificationPanel";
-import { COPILOT_NOTIFICATION_DISABLED } from "../../common/copilot/constants";
+import { COPILOT_NOTIFICATION_DISABLED, EXTENSION_VERSION_KEY } from "../../common/copilot/constants";
 import * as Constants from "./common/constants"
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
@@ -44,6 +44,7 @@ import { IPortalWebExtensionInitQueryParametersTelemetryData } from "../../commo
 import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { ServiceEndpointCategory } from "../../common/services/Constants";
+import { EXTENSION_ID } from "../../common/constants";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -623,11 +624,25 @@ function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: str
         return;
     }
 
+    const currentVersion = vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON.version;
+    const storedVersion = context.globalState.get(EXTENSION_VERSION_KEY);
+
+    if (!storedVersion || storedVersion !== currentVersion) {
+        // Show notification panel for the first load or after an update
+        WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
+            { orgId: orgId });
+        const telemetryData = JSON.stringify({ orgId: orgId });
+        copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+
+        // Update the stored version to the current version
+        context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
+        return;
+    }
+
     const isCopilotNotificationDisabled = context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
     if (!isCopilotNotificationDisabled) {
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
             { orgId: orgId });
-
         const telemetryData = JSON.stringify({ orgId: orgId });
         copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
     }
