@@ -1,5 +1,8 @@
 # Change Log - Power Platform Extension
 
+## 2.0.64
+- pac CLI 1.34.4, (August 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+
 ## 2.0.62
 - pac CLI 1.33.5, (July 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes

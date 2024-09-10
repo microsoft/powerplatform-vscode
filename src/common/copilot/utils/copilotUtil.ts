@@ -41,7 +41,7 @@ export function getDisabledOrgList() {
 
 export function getDisabledTenantList() {
 
-    const disallowedProDevCopilotTenants = ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs;
+    const disallowedProDevCopilotTenants = ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotTenants;
 
     if (disallowedProDevCopilotTenants === undefined || disallowedProDevCopilotTenants === "") {
         return [];
