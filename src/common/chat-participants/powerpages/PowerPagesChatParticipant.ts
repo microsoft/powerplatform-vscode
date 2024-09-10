@@ -227,7 +227,7 @@ export class PowerPagesChatParticipant {
 
       private async initializeOrgDetails(): Promise<void> {
         try {
-            const { orgID, orgUrl, environmentID } = await initializeOrgDetails(this.isOrgDetailsInitialized, this.extensionContext, this._pacWrapper);
+            const { orgID, orgUrl, environmentID } = await initializeOrgDetails(this.isOrgDetailsInitialized, this._pacWrapper);
 
             if (!orgID) {
                 return;
@@ -242,7 +242,7 @@ export class PowerPagesChatParticipant {
     }
 
     private async handleOrgChangeSuccess(orgDetails: ActiveOrgOutput): Promise<void> {
-        const { orgID, orgUrl, environmentID } = handleOrgChangeSuccess(orgDetails, this.extensionContext);
+        const { orgID, orgUrl, environmentID } = handleOrgChangeSuccess(orgDetails);
         this.orgID = orgID;
         this.orgUrl = orgUrl;
         this.environmentID = environmentID;
