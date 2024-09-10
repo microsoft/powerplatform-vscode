@@ -23,7 +23,8 @@ export const RESPONSE_SCENARIOS = {
     FORM_PROMPT: 'FORM_PROMPT',
     LIST_PROMPT: 'LIST_PROMPT',
     WEB_API_PROMPT: 'WEB_API_PROMPT',
-    WELCOME_PROMPT: 'WELCOME_PROMPT'
+    WELCOME_PROMPT: 'WELCOME_PROMPT',
+    COPILOT_NOT_RELEASED: 'COPILOT_NOT_RELEASED'
 };
 
 // Localized strings
@@ -40,6 +41,7 @@ export const INVALID_RESPONSE = vscode.l10n.t('Something went wrong. Don’t wor
 export const DISCLAIMER_MESSAGE = vscode.l10n.t('Make sure AI-generated content is accurate and appropriate before using. [Learn more](https://go.microsoft.com/fwlink/?linkid=2240145) | [View terms](https://go.microsoft.com/fwlink/?linkid=2189520)');
 export const NO_PROMPT_MESSAGE = vscode.l10n.t('Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.');
 export const PAC_AUTH_INPUT = vscode.l10n.t("Checking for active auth profile...");
+export const COPILOT_NOT_RELEASED_MSG = vscode.l10n.t("@PowerPages is not yet available in your region.")
 
 // Telemetry Event Names
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'VSCodeExtensionGitHubPowerPagesAgentInvoked';
@@ -54,5 +56,6 @@ export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED = 'VS
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT = 'VSCodeExtensionGitHubPowerPagesAgentNoPrompt';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT = 'VSCodeExtensionGitHubPowerPagesAgentWelcomePrompt';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT = 'VSCodeExtensionGitHubPowerPagesAgentSuccessfulPrompt';
+export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS = 'VSCodeExtensionGitHubPowerPagesAgentNotAvailableECS';
 
 
