@@ -63,6 +63,9 @@
     <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
       <source xml:lang="en">Check the URL and verify the parameters are correct</source>
     </trans-unit>
+    <trans-unit id="++CODE++c724a9256b7af89455e04cc3611e5df1030c25f92652356f205c15f02c2da28e">
+      <source xml:lang="en">Checking for active auth profile...</source>
+    </trans-unit>
     <trans-unit id="++CODE++e1c3ec6d279ce7c1a208abce1314435297d8369739967d8a9db962ab572c617f">
       <source xml:lang="en">Choose page template</source>
     </trans-unit>
@@ -363,6 +366,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
       <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++189f24adc299ea91ceab21d8100a58d89294ed17395c4e4dbc4733c9b92543df">
+      <source xml:lang="en">Something went wrong. Don’t worry, you can try again.</source>
     </trans-unit>
     <trans-unit id="++CODE++155f816c0407310c0dab222493370773e045ee7fe04e6c9a951b07f495531264">
       <source xml:lang="en">Submit</source>
