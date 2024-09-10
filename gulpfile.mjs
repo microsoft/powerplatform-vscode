@@ -351,7 +351,7 @@ async function snapshot() {
 }
 
 const feedName = 'nuget.org';
-const cliVersion = '1.33.5';
+const cliVersion = '1.34.4';
 
 const recompile = gulp.series(
     clean,
