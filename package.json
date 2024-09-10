@@ -118,8 +118,7 @@
         "name": "powerpages",
         "fullName": "Copilot for Power Pages",
         "description": "Copilot for Power Pages",
-        "isSticky": true,
-        "when": "never"
+        "isSticky": true
       }
     ],
     "problemMatchers": [

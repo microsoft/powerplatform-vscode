@@ -204,7 +204,6 @@ export async function activate(
                     TenantID = pacActiveAuth.Results?.filter(obj => obj.Key === TenantIdKey);
                 }
 
-                // Initialize ECS config in webExtensionContext
                 if (EnvID?.[0]?.Value && TenantID?.[0]?.Value && AadIdObject?.[0]?.Value) {
                     await ECSFeaturesClient.init(_telemetry,
                         {
@@ -212,7 +211,7 @@ export async function activate(
                             EnvID: EnvID[0].Value,
                             UserID: AadIdObject[0].Value,
                             TenantID: TenantID[0].Value,
-                            Region: geoName
+                            Region: artemisResponse.stamp
                         },
                         PowerPagesClientName);
                 }

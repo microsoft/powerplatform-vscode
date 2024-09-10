@@ -80,27 +80,12 @@ export function enableCrossGeoDataFlowInGeo() {
     return enableCrossGeoDataFlowInGeo.split(',').map(org => org.trim());
 }
 
-export function getEnabledOrgList() {
-    const allowedProDevCopilotOrgs = ECSFeaturesClient.getConfig(EnablePowerPagesGitHubCopilot).allowedProDevCopilotOrgs;
-
-    if (allowedProDevCopilotOrgs === undefined || allowedProDevCopilotOrgs === "") {
-        return [];
-    }
-
-    return allowedProDevCopilotOrgs.split(',').map(org => org.trim());
-}
-
-export function getEnabledTenantList() {
-
-    const allowedProDevCopilotTenants = ECSFeaturesClient.getConfig(EnablePowerPagesGitHubCopilot).allowedProDevCopilotTenants;
-
-    if (allowedProDevCopilotTenants === undefined || allowedProDevCopilotTenants === "") {
-        return [];
-    }
-
-    return allowedProDevCopilotTenants.split(',').map(org => org.trim());
-}
-
 export function isPowerPagesGitHubCopilotEnabled() {
-    return ECSFeaturesClient.getConfig(EnablePowerPagesGitHubCopilot).enablePowerpagesInGithubChat
+    const enablePowerpagesInGithubCopilot = ECSFeaturesClient.getConfig(EnablePowerPagesGitHubCopilot).enablePowerpagesInGithubCopilot
+
+    if(enablePowerpagesInGithubCopilot === undefined) {
+        return false;
+    }
+
+    return enablePowerpagesInGithubCopilot;
 }

@@ -45,8 +45,6 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Enable Power Pages GitHub Copilot',
     fallback: {
-        allowedProDevCopilotTenants: "",
-        allowedProDevCopilotOrgs: "",
-        enablePowerpagesInGithubChat: false,
+        enablePowerpagesInGithubCopilot: false,
     },
 });
