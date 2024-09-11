@@ -185,10 +185,6 @@ export async function activate(
     const pacTerminal = new PacTerminal(_context, _telemetry, cliPath);
     _context.subscriptions.push(cli);
     _context.subscriptions.push(pacTerminal);
-    const workspaceFolders =
-        vscode.workspace.workspaceFolders?.map(
-            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
-        ) || [];
 
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
@@ -213,7 +209,7 @@ export async function activate(
                             TenantID: TenantID[0].Value,
                             Region: artemisResponse.stamp
                         },
-                        PowerPagesClientName);
+                        PowerPagesClientName, true);
                 }
 
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
@@ -226,6 +222,11 @@ export async function activate(
         })
     );
 
+
+    const workspaceFolders =
+        vscode.workspace.workspaceFolders?.map(
+            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+        ) || [];
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
         let telemetryData = '';
