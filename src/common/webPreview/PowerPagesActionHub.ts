@@ -37,7 +37,7 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
 
     openSpecificURLWithoutAuth(context: vscode.ExtensionContext): void {
         //const websitePreviewUrl = "https://site-wug4q.powerappsportals.com/"; //public site
-        const websitePreviewUrl = "https://site-nwz9m.powerappsportals.com/"; //private site
+        const websitePreviewUrl = "https://site-tykl8.powerappsportals.com/"; //private site
         const browserLiteExtensionId = 'antfu.browse-lite';
         const browserLiteExtension = vscode.extensions.getExtension(browserLiteExtensionId);
 
