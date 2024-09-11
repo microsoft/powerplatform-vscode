@@ -42,6 +42,7 @@ const packagedir = path.resolve('./package');
 const feedPAT = argv.feedPAT || process.env['AZ_DevOps_Read_PAT'];
 const isOfficialBuild = argv.isOfficialBuild && argv.isOfficialBuild.toLowerCase() == "true";
 const isPreviewBuild = argv.isPreviewBuild && argv.isPreviewBuild.toLowerCase() == "true";
+const feedName = argv.useFeed || 'nuget.org';
 
 async function clean() {
     (await pslist())
@@ -121,6 +122,10 @@ async function nugetInstall(nugetSource, packageName, version, targetDir) {
             // https://dev.azure.com/msazure/One/_packaging?_a=feed&feed=CAP_ISVExp_Tools_Stable
             baseUrl: 'https://pkgs.dev.azure.com/msazure/_packaging/b0441cf8-0bc8-4fad-b126-841a6184e784/nuget/v3/flat2/'
         },
+        'Power_Platform_Tools_Feed': {
+            authenticated: true,
+            baseUrl: 'https://pkgs.dev.azure.com/dynamicscrm/OneCRM/_packaging/6f6505ca-e632-4c4c-9115-6d45f61758cc/nuget/v3/flat2/'
+        }
     }
 
     const selectedFeed = feeds[nugetSource];
@@ -350,8 +355,7 @@ async function snapshot() {
     }
 }
 
-const feedName = 'nuget.org';
-const cliVersion = '1.33.5';
+const cliVersion = '1.34.4';
 
 const recompile = gulp.series(
     clean,

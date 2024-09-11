@@ -29,6 +29,7 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDev
     telemetryDataProperties.tokenSize = telemetryData.tokenSize ? telemetryData.tokenSize : '';
     telemetryDataProperties.isSuggestedPrompt = telemetryData.isSuggestedPrompt ? telemetryData.isSuggestedPrompt : '';
     telemetryDataProperties.subScenario = telemetryData.subScenario ? telemetryData.subScenario : '';
+    telemetryDataProperties.userId = telemetryData.userId ? telemetryData.userId : '';
 
     if (telemetryData.error) {
         telemetryDataProperties.eventName = telemetryData.eventName;

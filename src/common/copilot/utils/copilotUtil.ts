@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { PacWrapper } from "../../../client/pac/PacWrapper";
 import { ECSFeaturesClient } from "../../ecs-features/ecsFeatureClient";
-import { CopilotDisableList, EnableProDevCopilot } from "../../ecs-features/ecsFeatureGates";
+import { CopilotDisableList, EnablePowerPagesGitHubCopilot, EnableProDevCopilot } from "../../ecs-features/ecsFeatureGates";
 import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE } from "../constants";
 import { showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../../utilities/Utils";
 import { SUCCESS } from "../../constants";
@@ -41,7 +41,7 @@ export function getDisabledOrgList() {
 
 export function getDisabledTenantList() {
 
-    const disallowedProDevCopilotTenants = ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotOrgs;
+    const disallowedProDevCopilotTenants = ECSFeaturesClient.getConfig(CopilotDisableList).disallowedProDevCopilotTenants;
 
     if (disallowedProDevCopilotTenants === undefined || disallowedProDevCopilotTenants === "") {
         return [];
@@ -78,4 +78,14 @@ export function enableCrossGeoDataFlowInGeo() {
     }
 
     return enableCrossGeoDataFlowInGeo.split(',').map(org => org.trim());
+}
+
+export function isPowerPagesGitHubCopilotEnabled() {
+    const enablePowerpagesInGithubCopilot = ECSFeaturesClient.getConfig(EnablePowerPagesGitHubCopilot).enablePowerpagesInGithubCopilot
+
+    if(enablePowerpagesInGithubCopilot === undefined) {
+        return false;
+    }
+
+    return enablePowerpagesInGithubCopilot;
 }

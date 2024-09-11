@@ -250,6 +250,10 @@ a:focus {
   outline: none;
 }
 
+a:hover {
+  text-decoration: underline;
+}
+
 li:before {
   content: "/";
 }
@@ -338,4 +342,13 @@ hr {
   /* Set a fixed width for the icon */
   margin-right: 4px;
   /* Add some spacing between icon and text */
+}
+
+.new-badge {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border-radius: 50px;
+  padding: 1px 5px;
+  font-size: 9px;
+  /* margin-right: 2px; */
 }
