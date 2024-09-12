@@ -6,8 +6,8 @@
 import * as vscode from "vscode";
 import { getNonce } from "../../utilities/Utils";
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { CopilotNotificationDoNotShowChecked, CopilotTryNotificationClickedEvent, CopilotNotificationDoNotShowUnchecked } from "../telemetry/telemetryConstants";
-import { COPILOT_IN_POWERPAGES, COPILOT_NOTIFICATION_DISABLED } from "../constants";
+import { CopilotNotificationDoNotShowChecked, CopilotTryNotificationClickedEvent, CopilotNotificationDoNotShowUnchecked, CopilotNotificationTryGitHubCopilotClicked } from "../telemetry/telemetryConstants";
+import { COPILOT_IN_POWERPAGES, COPILOT_NOTIFICATION_DISABLED, PowerPagesParticipantDocLink, PowerPagesParticipantPrompt } from "../constants";
 import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 let NotificationPanel: vscode.WebviewPanel | undefined;
@@ -56,12 +56,12 @@ export async function copilotNotificationPanel(context: vscode.ExtensionContext,
                     NotificationPanel?.dispose();
                     break;
                 case 'learnMore':
-                    //   telemetry.sendTelemetryEvent(CopilotWalkthroughEvent, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
-                    //   openWalkthrough(context.extensionUri);
+                    telemetry.sendTelemetryEvent(CopilotNotificationTryGitHubCopilotClicked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+                    oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationTryGitHubCopilotClicked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
                     if (isGitHubCopilotPresent) {
-                        vscode.commands.executeCommand('workbench.action.chat.open', '@powerpages how can you help with coding for my website?');
+                        vscode.commands.executeCommand('workbench.action.chat.open', PowerPagesParticipantPrompt);
                     } else {
-                        vscode.env.openExternal(vscode.Uri.parse('https://go.microsoft.com/fwlink/?linkid=2276973'));
+                        vscode.env.openExternal(vscode.Uri.parse(PowerPagesParticipantDocLink));
                     }
             }
         },
