@@ -38,40 +38,38 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
     openSpecificURLWithoutAuth(context: vscode.ExtensionContext): void {
         //const websitePreviewUrl = "https://site-wug4q.powerappsportals.com/"; //public site
         const websitePreviewUrl = "https://site-tykl8.powerappsportals.com/"; //private site
-        const browserLiteExtensionId = 'antfu.browse-lite';
-        const browserLiteExtension = vscode.extensions.getExtension(browserLiteExtensionId);
+        // const browserLiteExtensionId = 'antfu.browse-lite';
+        // const browserLiteExtension = vscode.extensions.getExtension(browserLiteExtensionId);
 
-        if (browserLiteExtension) {
-            if (browserLiteExtension.isActive) {
-                vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
-            } else {
-                browserLiteExtension.activate().then(() => {
-                    vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
-                    vscode.commands.executeCommand('workbench.action.webview.openDeveloperTools');
-                });
-            }
-        } else {
-            vscode.window.showErrorMessage('Browser Lite extension is not installed.');
-        }
-        context;
-        // const edgeToolsExtensionId = 'ms-edgedevtools.vscode-edge-devtools';
-        // const edgeToolsExtension = vscode.extensions.getExtension(edgeToolsExtensionId);
-
-        // if (edgeToolsExtension) {
-        //     if (edgeToolsExtension.isActive) {
-        //         // vscode.commands.executeCommand('vscode-edge-devtools-view.launchConfigureJson');
-        //         // vscode.commands.executeCommand('vscode-edge-devtools.launch');
-        //         this.updateLaunchJsonConfig(websitePreviewUrl).then(() => {
-        //             vscode.commands.executeCommand('vscode-edge-devtools.launch');
-        //         });
+        // if (browserLiteExtension) {
+        //     if (browserLiteExtension.isActive) {
+        //         vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
         //     } else {
-        //         edgeToolsExtension.activate().then(() => {
-        //             vscode.commands.executeCommand('vscode-edge-devtools.launch', context , vscode.Uri.parse(websitePreviewUrl));
+        //         browserLiteExtension.activate().then(() => {
+        //             vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
+        //             vscode.commands.executeCommand('workbench.action.webview.openDeveloperTools');
         //         });
         //     }
         // } else {
-        //     vscode.window.showErrorMessage('Ms Edge Tools extension is not installed.');
+        //     vscode.window.showErrorMessage('Browser Lite extension is not installed.');
         // }
+
+        const edgeToolsExtensionId = 'ms-edgedevtools.vscode-edge-devtools';
+        const edgeToolsExtension = vscode.extensions.getExtension(edgeToolsExtensionId);
+
+        if (edgeToolsExtension) {
+            if (edgeToolsExtension.isActive) {
+                this.updateLaunchJsonConfig(websitePreviewUrl).then(() => {
+                    vscode.commands.executeCommand('vscode-edge-devtools.launch');
+                });
+            } else {
+                edgeToolsExtension.activate().then(() => {
+                    vscode.commands.executeCommand('vscode-edge-devtools.launch', context , vscode.Uri.parse(websitePreviewUrl));
+                });
+            }
+        } else {
+            vscode.window.showErrorMessage('Ms Edge Tools extension is not installed.');
+        }
 
     }
 
@@ -83,46 +81,101 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
         }
 
         const launchJsonPath = vscode.Uri.joinPath(workspaceFolders[0].uri, '.vscode', 'launch.json');
-try {
-    let launchJson: any;
-    let launchJsonDoc: vscode.TextDocument | undefined;
-
         try {
-            launchJsonDoc = await vscode.workspace.openTextDocument(launchJsonPath);
-            const launchJsonText = launchJsonDoc.getText();
-            launchJson = launchJsonText ? JSON.parse(launchJsonText) : { version: '0.2.0', configurations: [] };
-        } catch (error) {
-            // If the file does not exist or is empty, initialize it
-            launchJson = { version: '0.2.0', configurations: [] };
-        }
+            let launchJson: any;
+            let launchJsonDoc: vscode.TextDocument | undefined;
 
-        // Update or add the configuration for Edge DevTools
-        const edgeConfig = launchJson.configurations.find((config: any) => config.type === 'edge');
-        if (edgeConfig) {
-            edgeConfig.url = url;
-        } else {
-            launchJson.configurations.push({
-                type: 'edge',
-                request: 'launch',
-                name: 'Launch Edge DevTools',
-                url: url,
-                webRoot: "${workspaceFolder}"
+            try {
+                launchJsonDoc = await vscode.workspace.openTextDocument(launchJsonPath);
+                const launchJsonText = launchJsonDoc.getText();
+                launchJson = launchJsonText ? JSON.parse(launchJsonText) : { configurations: [], compounds: [] };
+            } catch (error) {
+                // If the file does not exist or is empty, initialize it
+                launchJson = { configurations: [], compounds: [] };
+            }
+
+            // Update or add the configurations for Microsoft Edge
+            const edgeConfigurations = [
+                {
+                    type: 'pwa-msedge',
+                    name: 'Launch Microsoft Edge',
+                    request: 'launch',
+                    runtimeArgs: ['--remote-debugging-port=9222'],
+                    url: url,
+                    presentation: {
+                        hidden: true
+                    }
+                },
+                {
+                    type: 'pwa-msedge',
+                    name: 'Launch Microsoft Edge in headless mode',
+                    request: 'launch',
+                    runtimeArgs: ['--headless', '--remote-debugging-port=9222'],
+                    url: url,
+                    presentation: {
+                        hidden: true
+                    }
+                },
+                {
+                    type: 'vscode-edge-devtools.debug',
+                    name: 'Open Edge DevTools',
+                    request: 'attach',
+                    url: url,
+                    presentation: {
+                        hidden: true
+                    }
+                }
+            ];
+
+            // Add or update each configuration in the launch.json
+            edgeConfigurations.forEach((newConfig: any) => {
+                const existingConfigIndex = launchJson.configurations.findIndex((config: any) => config.name === newConfig.name);
+                if (existingConfigIndex !== -1) {
+                    launchJson.configurations[existingConfigIndex] = newConfig;
+                } else {
+                    launchJson.configurations.push(newConfig);
+                }
             });
-        }
 
-        // Write the updated launch.json back to the file
-        const edit = new vscode.WorkspaceEdit();
-        const launchJsonContent = JSON.stringify(launchJson, null, 4);
-        if (launchJsonDoc) {
-            edit.replace(launchJsonPath, new vscode.Range(0, 0, launchJsonDoc.lineCount, 0), launchJsonContent);
-        } else {
-            edit.createFile(launchJsonPath, { overwrite: true });
-            edit.insert(launchJsonPath, new vscode.Position(0, 0), launchJsonContent);
-        }
-        await vscode.workspace.applyEdit(edit);
-        if (launchJsonDoc) {
-            await launchJsonDoc.save();
-        }
+            // Update or add the compounds
+            const compounds = [
+                {
+                    name: 'Launch Edge Headless and attach DevTools',
+                    configurations: ['Launch Microsoft Edge in headless mode', 'Open Edge DevTools']
+                },
+                {
+                    name: 'Launch Edge and attach DevTools',
+                    configurations: ['Launch Microsoft Edge', 'Open Edge DevTools']
+                }
+            ];
+
+            compounds.forEach((newCompound: any) => {
+                const existingCompoundIndex = launchJson.compounds.findIndex((compound: any) => compound.name === newCompound.name);
+                if (existingCompoundIndex !== -1) {
+                    launchJson.compounds[existingCompoundIndex] = newCompound;
+                } else {
+                    launchJson.compounds.push(newCompound);
+                }
+            });
+
+            // Write the updated launch.json back to the file
+            const edit = new vscode.WorkspaceEdit();
+            const launchJsonContent = JSON.stringify(launchJson, null, 4);
+            if (launchJsonDoc) {
+                edit.replace(launchJsonPath, new vscode.Range(0, 0, launchJsonDoc.lineCount, 0), launchJsonContent);
+            } else {
+                edit.createFile(launchJsonPath, { overwrite: true });
+                edit.insert(launchJsonPath, new vscode.Position(0, 0), launchJsonContent);
+            }
+            await vscode.workspace.applyEdit(edit);
+
+            // Save the file after editing
+            if (launchJsonDoc) {
+                await launchJsonDoc.save();
+            } else {
+                const savedLaunchJsonDoc = await vscode.workspace.openTextDocument(launchJsonPath);
+                await savedLaunchJsonDoc.save();  // Explicitly saving the newly created file
+            }
         } catch (exception) {
             const error = exception as Error;
             vscode.window.showErrorMessage('Failed to update launch.json: ' + error.message);
