@@ -2,6 +2,10 @@
 
 ## 2.0.64
 - pac CLI 1.34.4, (August 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Power Pages Chat participant release in GitHub Copilot Chat for Visual Studio Code
+- Web extension updates
+  - Bug Fixes
+    - Dual authentication on Web extension
 
 ## 2.0.62
 - pac CLI 1.33.5, (July 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
