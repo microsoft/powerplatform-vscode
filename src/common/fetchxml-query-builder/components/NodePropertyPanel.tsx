@@ -7,7 +7,8 @@ import * as React from 'react';
 import { INode } from '../interfaces/Node';
 import { NodeType } from '../constants/constants';
 import { FetchNodePropertyPanel } from './PropertyPanels/FetchNode';
-import { FetchNode } from '../models/Node';
+import { EntityNode, FetchNode } from '../models/Node';
+import { EntityNodePropertyPanel } from './PropertyPanels/EntityNode';
 
 interface NodePropertyPanelProps {
     node: INode;
@@ -29,6 +30,12 @@ const panelFactory = (node: INode, onPropertyUpdate: (updatedNode: INode) => voi
             return (
                 <FetchNodePropertyPanel 
                     node={node as FetchNode} 
+                    onPropertyUpdate={onPropertyUpdate}/>
+            );
+        case NodeType.Entity:
+            return (
+                <EntityNodePropertyPanel
+                    node={node as EntityNode}
                     onPropertyUpdate={onPropertyUpdate}/>
             );
         default:
