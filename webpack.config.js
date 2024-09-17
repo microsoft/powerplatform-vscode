@@ -37,16 +37,26 @@ const nodeConfig = {
         '@opentelemetry/tracing': "commonjs @opentelemetry/tracing"
     },
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: ['.ts', '.tsx','.js', '.jsx']
     },
     module: {
         rules: [{
-            test: /\.ts$/,
+            test: /\.(ts|tsx)$/,
             exclude: /node_modules/,
             use: [{
                 loader: 'ts-loader'
             }
             ]
+        },
+        {
+            test: /\.(js|jsx)$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-env', '@babel/preset-react']
+                }
+            }]
         }]
     },
     plugins:[
@@ -75,7 +85,7 @@ const webConfig = {
     },
     resolve: {
         mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
-        extensions: ['.ts', '.js'], // support ts-files and js-files
+        extensions: ['.ts', '.tsx', '.js', '.jsx'], // support ts-files and js-files
         alias: {
             // provides alternate implementation for node module and source files
         },
@@ -94,10 +104,20 @@ const webConfig = {
     },
     module: {
         rules: [{
-            test: /\.ts$/,
+            test: /\.(ts|tsx)$/,
             exclude: /node_modules/,
             use: [{
                 loader: 'ts-loader'
+            }]
+        },
+        {
+            test: /\.(js|jsx)$/, // Add rule for .js and .jsx files
+            exclude: /node_modules/,
+            use: [{
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-env', '@babel/preset-react'] // Add Babel presets
+                }
             }]
         }]
     },
@@ -135,7 +155,7 @@ const webWorkerConfig = {
         libraryTarget: "self",
     },
     resolve: {
-        extensions: [".ts", ".js"], // support ts-files and js-files
+        extensions: [".ts", '.tsx', ".js", ".jsx"], // support ts-files and js-files
         alias: {},
         fallback: {
             path: require.resolve("path-browserify"),
@@ -150,13 +170,23 @@ const webWorkerConfig = {
     module: {
         rules: [
             {
-                test: /\.ts$/,
+                test: /\.(ts|tsx)$/,
                 exclude: /node_modules/,
                 use: [
                     {
                         loader: "ts-loader",
                     },
                 ],
+            },
+            {
+                test: /\.(js|jsx)$/, // Add rule for .js and .jsx files
+                exclude: /node_modules/,
+                use: [{
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env', '@babel/preset-react'] // Add Babel presets
+                    }
+                }]
             },
             {
                 test: /webworker\.js$/,
@@ -176,4 +206,52 @@ const webWorkerConfig = {
     devtool: "source-map",
 };
 
-module.exports = [nodeConfig, webConfig, webWorkerConfig];
+const reactConfig = {
+    target: 'web',
+    mode: 'development',
+
+    entry: {
+        webview: './src/common/fetchxml-query-builder/index.tsx',
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].js',
+        libraryTarget: "var",
+        globalObject: 'this',  // Ensures compatibility with browser environments
+        library: 'FetchXmlQueryBuilder'
+    },    
+    devtool: 'source-map',
+    externals: {
+        vscode: "commonjs vscode",
+
+        // These dependencies are ignored because we don't use them, and App Insights has try-catch protecting their loading if they don't exist
+        // See: https://github.com/microsoft/vscode-extension-telemetry/issues/41#issuecomment-598852991
+        'applicationinsights-native-metrics': 'commonjs applicationinsights-native-metrics',
+        '@opentelemetry/tracing': "commonjs @opentelemetry/tracing"
+    },
+    resolve: {
+        extensions: ['.ts', '.tsx','.js', '.jsx']
+    },
+    module: {
+        rules: [{
+            test: /\.(ts|tsx)$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: 'ts-loader'
+            }
+            ]
+        },
+        {
+            test: /\.(js|jsx)$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-env', '@babel/preset-react']
+                }
+            }]
+        }]
+    }
+};
+
+module.exports = [nodeConfig, webConfig, webWorkerConfig, reactConfig];

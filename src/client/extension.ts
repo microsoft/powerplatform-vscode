@@ -45,6 +45,7 @@ import { EXTENSION_ID, SUCCESS } from "../common/constants";
 import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
+import { FetchXMLQueryBuilderProvider } from "../common/fetchxml-query-builder/QueryBuilderView";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -220,6 +221,11 @@ export async function activate(
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }
         })
+    );
+
+    const queryBuilderProvider = new FetchXMLQueryBuilderProvider(context.extensionUri);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(FetchXMLQueryBuilderProvider.viewType, queryBuilderProvider)
     );
 
 

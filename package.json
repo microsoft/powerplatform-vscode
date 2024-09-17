@@ -950,6 +950,11 @@
           "initialSize": 6,
           "visibility": "visible",
           "when": "(!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot)"
+        },
+        {
+          "id": "fetchXML-query-builder",
+          "name": "FetchXML Query Builder",
+          "type": "webview"
         }
       ],
       "explorer": [
@@ -1030,6 +1035,9 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.4",
+    "@babel/preset-react": "^7.24.7",
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
@@ -1042,6 +1050,8 @@
     "@types/node": "^14.14.6",
     "@types/node-fetch": "^2.6.2",
     "@types/puppeteer-core": "^5.4.0",
+    "@types/react": "^18.3.6",
+    "@types/react-dom": "^18.3.0",
     "@types/recursive-readdir": "^2.2.1",
     "@types/sinon": "^10.0.12",
     "@types/unzip-stream": "^0.3.0",
@@ -1057,6 +1067,7 @@
     "@vscode/test-web": "^0.0.50",
     "@vscode/vsce": "^2.19.0",
     "assert": "^2.0.0",
+    "babel-loader": "^9.2.0",
     "chai": "^4.3.6",
     "constants-browserify": "^1.0.0",
     "eslint": "^8.11.0",
@@ -1089,15 +1100,19 @@
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
     "webpack": "^5.94.0",
-    "webpack-cli": "^4.7.0",
+    "webpack-cli": "^4.10.0",
     "webpack-stream": "^7.0.0",
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@fluidframework/azure-client": "^1.2.0",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
     "@microsoft/generator-powerpages": "1.21.19",
+    "@mui/material": "^6.1.0",
+    "@mui/x-tree-view": "^7.17.0",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
     "@vscode/extension-telemetry": "^0.6.2",
@@ -1113,6 +1128,8 @@
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^22.12.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "recursive-readdir": "^2.2.3",
     "stream-http": "^3.2.0",
     "tty-browserify": "^0.0.1",

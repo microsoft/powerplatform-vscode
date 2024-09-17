@@ -35,7 +35,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 
 import webpackConfig from './webpack.config.js';
-const [nodeConfig, webConfig, webWorkerConfig] = webpackConfig;
+const [nodeConfig, webConfig, webWorkerConfig, reactConfig] = webpackConfig;
 const distdir = path.resolve('./dist');
 const outdir = path.resolve('./out');
 const packagedir = path.resolve('./package');
@@ -83,6 +83,15 @@ function compile() {
         .src('src/**/*.ts')
         .pipe(plumber()) // Added error handling
         .pipe(gulpWebpack(nodeConfig, webpack))
+        .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
+        .pipe(gulp.dest(distdir));
+}
+
+function compileReact() {
+    return gulp
+        .src('src/common/fetchxml-query-builder/**/*.tsx')
+        .pipe(plumber()) // Added error handling
+        .pipe(gulpWebpack(reactConfig, webpack))
         .pipe(replace("src\\\\client\\\\lib\\\\", "src/client/lib/")) // Hacky fix: vscode-nls-dev/lib/webpack-loader uses Windows style paths when built on Windows, breaking localization on Linux & Mac
         .pipe(gulp.dest(distdir));
 }
@@ -368,6 +377,7 @@ const recompile = gulp.series(
     compile,
     compileWeb,
     compileWorker,
+    compileReact
 );
 
 const dist = gulp.series(
@@ -429,6 +439,7 @@ export {
     clean,
     compile,
     compileWeb,
+    compileReact,
     compileWorker,
     recompile,
     snapshot,
