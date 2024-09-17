@@ -32,7 +32,6 @@ export const FetchNodePropertyPanel: React.FC<FetchNodePropertyPanelProps> = (pr
 
     return (
         <div>
-            <h3>Node Property Panel</h3>
             <label>
                 Top:
                 <input

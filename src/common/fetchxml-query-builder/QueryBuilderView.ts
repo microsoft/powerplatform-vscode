@@ -48,10 +48,7 @@ export class FetchXMLQueryBuilderProvider implements vscode.WebviewViewProvider 
           window.addEventListener('load', () => {
             debugger;
             if (typeof FetchXmlQueryBuilder.renderApp === 'function') {
-              console.log('ttt-hi');
-              
-              FetchXmlQueryBuilder.renderApp('root'); // Call the render function to mount the React app
-              console.log('ttt-hi2');
+              FetchXmlQueryBuilder.renderApp('root');
             } else {
               console.error('renderApp is not defined.');
             }
