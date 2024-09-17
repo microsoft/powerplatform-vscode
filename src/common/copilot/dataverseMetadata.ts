@@ -107,6 +107,7 @@ export async function executeFetchXml(entityName: string, fetchXml: string, orgU
 }
 
 // Function to extract attribute names from the response
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getAttributeNamesFromResponse(responseData: any[]): Promise<string[]> {
     if (!responseData || responseData.length === 0) {
         console.log('No records found.');

@@ -8,42 +8,50 @@ import { IEntityNode, IFetchNode, INode } from "../interfaces/Node";
 
 export class Node implements INode {
     type: NodeType;
-    label: string;
     id: string;
     children?: INode[];
 
     constructor(type: NodeType, label: string, id: string) {
         this.type = type;
-        this.label = label;
         this.id = id;
     }
 
-    get openingTag() {
+    getOpeningTag() {
         return '';
     }
 
-    get closingTag() {
+    getClosingTag() {
         return '';
+    }
+
+    getLabel() {
+        return this.id;
     }
 }
 
 export class FetchNode extends Node implements IFetchNode {
     entity: IEntityNode;
     top: number;
+    distinct: boolean;
 
-    constructor(entity: IEntityNode, top: number) {
+    constructor(entity: IEntityNode, top?: number, distinct?: boolean) {
         super(NodeType.Fetch, `Fetch top: ${top}`, 'fetch');
         this.entity = entity;
-        this.top = top;
+        this.top = top || 50;
+        this.distinct = distinct || false;
         this.children = [entity];
     }
 
-    get openingTag() {
-        return `<fetch top="${this.top}">`;
+    getOpeningTag() {
+        return `<fetch top="${this.top}" distinct="${this.distinct}">`;
     }
 
-    get closingTag() {
+    getClosingTag() {
         return `</fetch>`;
+    }
+
+    getLabel() {
+        return `Fetch top: ${this.top} distinct: ${this.distinct}`;
     }
 }
 
@@ -55,11 +63,15 @@ export class EntityNode extends Node implements IEntityNode {
         this.name = name;
     }
 
-    get openingTag() {
+    getOpeningTag() {
         return `<entity name="${this.name}">`;
     }
 
-    get closingTag() {
+    getClosingTag() {
         return `</entity>`;
+    }
+
+    getLabel() {
+        return `Entity: ${this.name}`;
     }
 }

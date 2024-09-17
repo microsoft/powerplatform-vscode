@@ -7,10 +7,10 @@ import { NodeType } from "../constants/constants";
 
 export interface INode {
     type: NodeType;
-    label: string;
     id: string;
-    openingTag: string;
-    closingTag: string;
+    getOpeningTag: () => string;
+    getClosingTag: () => string;
+    getLabel: () => string;
     children?: INode[];
 }
 
@@ -21,4 +21,5 @@ export interface IEntityNode extends INode {
 export interface IFetchNode extends INode {
     entity: IEntityNode;
     top: number;
+    distinct: boolean;
 }

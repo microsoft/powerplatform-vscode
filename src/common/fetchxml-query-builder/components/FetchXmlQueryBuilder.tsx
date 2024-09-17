@@ -11,20 +11,40 @@ import { ITree } from '../interfaces/Tree';
 import { EntityNode, FetchNode } from '../models/Node';
 
 export const FetchXmlQueryBuilderApp = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [tree, _] = React.useState<ITree>(getInitTree());
+    const [tree, setTree] = React.useState<ITree>(getInitTree());
     const [selectedNode, setSelectedNode] = React.useState<INode>(tree.root);
 
     const onNodeSelect = (node: INode) => {
         setSelectedNode(node);
     }
 
+    const onPropertyUpdate = (updatedNode: INode) => {
+        if (updatedNode.id === tree.root.id) {
+            setTree({root: updatedNode});
+        } else {
+            setTree({root: updateNodeInTree(tree.root, updatedNode)});
+        }
+    }
+
     return (
         <div>
             <QueryBuilderPanel tree={tree} onNodeSelect={onNodeSelect}/>
-            <NodePropertyPanel node={selectedNode}/>
+            <NodePropertyPanel node={selectedNode} onPropertyUpdate={onPropertyUpdate}/>
         </div>
     );
+}
+
+const updateNodeInTree = (currentNode: INode, newNode: INode) : INode => {
+    if (currentNode?.children) {
+        currentNode.children = currentNode.children.map((childNode) => {
+            if (childNode.id === newNode.id) {
+                return newNode;
+            } else {    
+                return updateNodeInTree(childNode, newNode);
+            }
+        });
+    }
+    return currentNode;
 }
 
 const getInitTree = (): ITree => {

@@ -28,7 +28,7 @@ const renderTree = (nodes: INode[], onNodeSelect: (node: INode) => void) =>{
     return (
         <SimpleTreeView>
             {nodes.map((node) =>(
-                <TreeItem itemId={node.id} label={node.label} onClick={() => onNodeSelect(node)}>
+                <TreeItem itemId={node.id} label={node.getLabel()} onClick={() => onNodeSelect(node)}>
                     {node.children && renderTree(node.children, onNodeSelect)}
                 </TreeItem>))}
         </SimpleTreeView>
