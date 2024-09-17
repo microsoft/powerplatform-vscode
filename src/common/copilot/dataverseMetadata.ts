@@ -45,6 +45,81 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
     }
 }
 
+
+//Function to fetch entities from Dataverse
+export async function getEntities(orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
+    try {
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions`;
+        const requestInit: RequestInit = {
+            method: "GET",
+            headers: {
+                'Content-Type': "application/json",
+                Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": getUserAgent()
+            },
+        };
+
+        const startTime = performance.now();
+        const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
+        const endTime = performance.now();
+        const responseTime = endTime - startTime || 0;
+
+        const entities = jsonResponse.value.map((entity: { LogicalName: string }) => entity.LogicalName);
+
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
+        return entities;
+
+    } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
+        return [];
+    }
+}
+
+//Function to execute fetchxml query to get results from Dataverse
+export async function executeFetchXml(entityName: string, fetchXml: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
+    try {
+        const queryUrl = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/${entityName}?fetchXml=${encodeURIComponent(fetchXml)}`;
+        const requestInit: RequestInit = {
+            method: "GET",
+            headers: {
+                'Content-Type': "application/json",
+                Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": getUserAgent()
+            },
+        };
+
+        const startTime = performance.now();
+        const jsonResponse = await fetchJsonResponse(queryUrl, requestInit);
+        const endTime = performance.now();
+        const responseTime = endTime - startTime || 0;
+
+        //TODO: Parse the response and return the results
+        const results = jsonResponse.value;
+
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
+        return results;
+
+    }
+    catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
+        return [];
+    }
+}
+
+// Function to extract attribute names from the response
+export async function getAttributeNamesFromResponse(responseData: any[]): Promise<string[]> {
+    if (!responseData || responseData.length === 0) {
+        console.log('No records found.');
+        return [];
+    }
+
+    // Get the attribute names from the first record in the response
+    const firstRecord = responseData[0];
+    const attributeNames = Object.keys(firstRecord);
+
+    return attributeNames;
+}
+
 export async function getFormXml(entityName: string, formName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<(string[])> {
     try {
         // Ensure the orgUrl ends with a '/'
