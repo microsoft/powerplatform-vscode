@@ -45,6 +45,7 @@ import { EXTENSION_ID, SUCCESS } from "../common/constants";
 import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
+import { getECSOrgLocationValue } from "../common/utilities/Utils";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -191,7 +192,7 @@ export async function activate(
             const orgID = orgDetails.OrgId;
             const artemisResponse = await ArtemisService.getArtemisResponse(orgID, _telemetry, "");
             if (artemisResponse !== null && artemisResponse.response !== null) {
-                const { geoName, geoLongName } = artemisResponse.response;
+                const { geoName, geoLongName, clusterName, clusterNumber } = artemisResponse.response;
                 const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
                 let AadIdObject, EnvID, TenantID;
                 if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
@@ -207,7 +208,8 @@ export async function activate(
                             EnvID: EnvID[0].Value,
                             UserID: AadIdObject[0].Value,
                             TenantID: TenantID[0].Value,
-                            Region: artemisResponse.stamp
+                            Region: artemisResponse.stamp,
+                            Location: getECSOrgLocationValue(clusterName, clusterNumber)
                         },
                         PowerPagesClientName, true);
                 }

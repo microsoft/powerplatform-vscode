@@ -264,7 +264,7 @@ async function getFileContentByType(activeFileUri: vscode.Uri, componentType: st
 }
 
 //fetchRelatedFiles function based on component type
-export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, telemetry: ITelemetry, sessionId:string): Promise<IRelatedFiles[]> {
+export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, telemetry: ITelemetry, sessionId: string): Promise<IRelatedFiles[]> {
     try {
         const relatedFileTypes = relatedFilesSchema[componentType]?.[fieldType];
         if (!relatedFileTypes) {
@@ -286,7 +286,7 @@ export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType
     } catch (error) {
         const message = (error as Error)?.message;
         telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED, { error: message, sessionId: sessionId });
-        oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED, message, error as Error, { sessionId:sessionId }, {});
+        oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED, message, error as Error, { sessionId: sessionId }, {});
         return [];
     }
 }
@@ -301,4 +301,22 @@ export function getFileNameFromUri(uri: vscode.Uri): string {
 
 export function getFolderPathFromUri(uri: vscode.Uri): string {
     return path.dirname(uri.fsPath);
+}
+
+export function getECSOrgLocationValue(clusterName: string, clusterNumber: string): string {
+    // Find the position of the identifier in the input string
+    const identifierPosition = clusterName.indexOf("il" + clusterNumber);
+
+    // If the identifier is not found, return an empty string
+    if (identifierPosition === -1) {
+        return '';
+    }
+
+    // Calculate the starting position of the substring "SIN" or "SEAS" or "SFR" in the input string
+    const startPosition = identifierPosition + clusterNumber.length;
+
+    // Extract the substring "sin" from the input string
+    const extractedSubstring = clusterName.substring(startPosition);
+
+    return extractedSubstring;
 }
