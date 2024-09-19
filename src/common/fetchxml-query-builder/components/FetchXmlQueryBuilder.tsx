@@ -9,9 +9,12 @@ import { NodePropertyPanel } from './NodePropertyPanel';
 import { IEntityNode, IFetchNode, INode } from '../interfaces/Node';
 import { ITree } from '../interfaces/Tree';
 import { EntityNode, FetchNode } from '../models/Node';
+import { containerStyle, fetchXmlStyle, showQueryButton, sidebar } from './Styles';
+import { getFetchXmlFromQueryTree, prettifyXml } from '../utility/utility';
 
 export const FetchXmlQueryBuilderApp = () => {
     const [tree, setTree] = React.useState<ITree>(getInitTree());
+    const [fetchXml, setFetchXml] = React.useState<string>('');
     const [selectedNode, setSelectedNode] = React.useState<INode>(tree.root);
 
     const onNodeSelect = (node: INode) => {
@@ -30,14 +33,26 @@ export const FetchXmlQueryBuilderApp = () => {
         }
     }
 
+    const showQuery = () => {
+        let query = getFetchXmlFromQueryTree(tree);
+        query = prettifyXml(query);
+        setFetchXml(query);
+    };
+    
     return (
-        <div>
-            <QueryBuilderPanel
-                tree={tree}
-                onNodeSelect={onNodeSelect}
-                refreshTree={refreshTree}
-            />
-            <NodePropertyPanel node={selectedNode} onPropertyUpdate={onPropertyUpdate}/>
+        <div style={containerStyle}>
+            <div style={sidebar}>
+                <button style={showQueryButton} onClick={showQuery}>Show Query</button>
+                <QueryBuilderPanel
+                    tree={tree}
+                    onNodeSelect={onNodeSelect}
+                    refreshTree={refreshTree}
+                />
+                <NodePropertyPanel node={selectedNode} onPropertyUpdate={onPropertyUpdate}/>
+            </div>
+            <div style={fetchXmlStyle}>
+                {fetchXml && fetchXml} 
+            </div>
         </div>
     );
 }

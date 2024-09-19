@@ -31,3 +31,31 @@ const vs = acquireVsCodeApi();
 export const getVSCodeApi = () => {
     return vs;
 }
+
+export const prettifyXml = (xml: string) =>{
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xml, 'application/xml');
+    
+    // Check for any parsing errors
+    const parserError = xmlDoc.getElementsByTagName('parsererror');
+    if (parserError.length > 0) {
+      throw new Error('Invalid XML format');
+    }
+  
+    // Serialize the DOM Document back to a string with proper indentation
+    const serializer = new XMLSerializer();
+    const serializedString = serializer.serializeToString(xmlDoc);
+  
+    // Use regex to format the serialized XML with line breaks and indentation
+    return serializedString.replace(/(>)(<)(\/*)/g, '$1\n$2$3').replace(/(<.+?>)/g, (match) => {
+      let indent = 0;
+      if (match.match(/^<\/.+>/)) {
+        indent--;
+      }
+      const padding = '  '.repeat(Math.max(indent, 0));
+      if (match.match(/^<[^/].+[^/]>.*$/)) {
+        indent++;
+      }
+      return padding + match;
+    });
+}  

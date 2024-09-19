@@ -80,6 +80,7 @@ export class FetchXmlQueryBuilderPanel {
         </html>`;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private _handleMessage(message: any) {
         switch (message.type) {
             case 'getEntities':
