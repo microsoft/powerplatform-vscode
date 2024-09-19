@@ -5,44 +5,57 @@
 
 import * as vscode from 'vscode';
 
-export class FetchXMLQueryBuilderProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'fetchXML-query-builder';
-  
-    constructor(private readonly _extensionUri: vscode.Uri) {}
-  
-    // This is called when the webview view is shown in the sidebar
-    public resolveWebviewView(
-      webviewView: vscode.WebviewView,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _context: vscode.WebviewViewResolveContext,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _token: vscode.CancellationToken
-    ) {
-      // Allow scripts in the webview
-      webviewView.webview.options = {
-        enableScripts: true,
-        localResourceRoots: [this._extensionUri]
-      };
+export class FetchXmlQueryBuilderPanel {
+    public static currentPanel: FetchXmlQueryBuilderPanel | undefined;
+    private readonly _panel: vscode.WebviewPanel;
+    private readonly _extensionUri: vscode.Uri;
 
-      webviewView.webview.onDidReceiveMessage(message => {
-        switch (message.type) {
-          case 'getEntities':
-            // Get the entities from the extension
-            webviewView.webview.postMessage({ type: 'getEntities', entities: [] });
-            break;
+    public static createOrShow(extensionUri: vscode.Uri) {
+        const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+
+        // If we already have a panel, show it.
+        if (FetchXmlQueryBuilderPanel.currentPanel) {
+            FetchXmlQueryBuilderPanel.currentPanel._panel.reveal(column);
+            return;
         }
-      });
 
-      // Set the HTML content of the webview
-      webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+        // Otherwise, create a new panel.
+        const panel = vscode.window.createWebviewPanel(
+            'fetchXML-query-builder',
+            'FetchXML Query Builder',
+            column || vscode.ViewColumn.One,
+            {
+                enableScripts: true,
+                retainContextWhenHidden: true,
+                localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'dist')]
+            }
+        );
+
+        FetchXmlQueryBuilderPanel.currentPanel = new FetchXmlQueryBuilderPanel(panel, extensionUri);
     }
-  
-    // Define the HTML content for the webview
-    
+
+    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+        this._panel = panel;
+        this._extensionUri = extensionUri;
+
+        // Set the HTML content for the webview
+        this._panel.webview.html = this._getHtmlForWebview(this._panel.webview);
+
+        // Handle messages from the webview
+        this._panel.webview.onDidReceiveMessage(this._handleMessage.bind(this));
+
+        // Dispose of the panel when it's closed
+        this._panel.onDidDispose(() => this.dispose(), null, []);
+    }
+
+    public dispose() {
+        FetchXmlQueryBuilderPanel.currentPanel = undefined;
+        this._panel.dispose();
+    }
+
     private _getHtmlForWebview(webview: vscode.Webview): string {
-      // The base URI is used to load the script
-      const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview.js'));
-      return `
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', 'webview.js'));
+        return `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -65,5 +78,15 @@ export class FetchXMLQueryBuilderProvider implements vscode.WebviewViewProvider 
           });
         </script>
         </html>`;
-    }    
+    }
+
+    private _handleMessage(message: any) {
+        switch (message.type) {
+            case 'getEntities':
+                // Handle the 'getEntities' message
+                this._panel.webview.postMessage({ type: 'getEntities', entities: [] });
+                break;
+            // Add more cases to handle other message types
+        }
+    }
 }

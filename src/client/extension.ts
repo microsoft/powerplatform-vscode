@@ -45,7 +45,7 @@ import { EXTENSION_ID, SUCCESS } from "../common/constants";
 import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
-import { FetchXMLQueryBuilderProvider } from "../common/fetchxml-query-builder/QueryBuilderView";
+import { FetchXmlQueryBuilderPanel } from "../common/fetchxml-query-builder/QueryBuilderView";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -222,13 +222,12 @@ export async function activate(
             }
         })
     );
-
-    const queryBuilderProvider = new FetchXMLQueryBuilderProvider(context.extensionUri);
+    
     context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(FetchXMLQueryBuilderProvider.viewType, queryBuilderProvider)
+        vscode.commands.registerCommand('fetchXMLQueryBuilder.open', () => {
+            FetchXmlQueryBuilderPanel.createOrShow(context.extensionUri);
+        })
     );
-
-
     const workspaceFolders =
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
