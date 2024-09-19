@@ -23,6 +23,16 @@ export class FetchXMLQueryBuilderProvider implements vscode.WebviewViewProvider 
         enableScripts: true,
         localResourceRoots: [this._extensionUri]
       };
+
+      webviewView.webview.onDidReceiveMessage(message => {
+        switch (message.type) {
+          case 'getEntities':
+            // Get the entities from the extension
+            webviewView.webview.postMessage({ type: 'getEntities', entities: [] });
+            break;
+        }
+      });
+
       // Set the HTML content of the webview
       webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
     }

@@ -14,15 +14,30 @@ export interface EntityNodePropertyPanelProps {
 
 export const EntityNodePropertyPanel: React.FC<EntityNodePropertyPanelProps> = (props) => {
     const [selectedEntity, setSelectedEntity] = useState(props.node.name);
-
-    // TODO: fetch entities from DV instead of the hardcoded list
-    const entities = ["account", "contact", "lead", "opportunity"];
+    const [entities, setEntities] = useState<string[]>([]);
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedEntity(event.target.value);
         const updateNode = new EntityNode(event.target.value);
         props.onPropertyUpdate(updateNode);
     };
+
+    const messageHandler = (event: MessageEvent) => {
+        if (event.data.type === 'getEntities') {
+            setEntities(event.data.entities);
+        }
+    };
+
+    React.useEffect(() => {
+        window.addEventListener('message', messageHandler);
+        
+        const vscode = acquireVsCodeApi();
+        vscode.postMessage({ type: 'getEntities' });
+    
+        return () => {
+        window.removeEventListener('message', messageHandler);
+        };  
+    }, []);
 
     return (
         <div>
