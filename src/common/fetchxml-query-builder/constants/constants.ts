@@ -7,5 +7,6 @@ export enum NodeType {
     Fetch = 'Fetch',
     Entity = 'Entity',
     Attribute = 'Attribute',
-    Filter = 'Filter'
+    Filter = 'Filter',
+    Order = 'Order'
 }

@@ -16,10 +16,19 @@ export interface INode {
 
 export interface IEntityNode extends INode {
     name?: string;
+    attributes?: IAttributeNode[];
 }
 
 export interface IFetchNode extends INode {
     entity: IEntityNode;
     top: number;
     distinct: boolean;
+}
+export interface IAttributeNode extends INode {
+    name: string;
+}
+
+export interface IOrderNode extends INode {
+    name: string;
+    descending?: boolean;
 }

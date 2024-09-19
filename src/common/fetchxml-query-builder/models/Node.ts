@@ -4,7 +4,7 @@
  */
 
 import { NodeType } from "../constants/constants";
-import { IEntityNode, IFetchNode, INode } from "../interfaces/Node";
+import { IAttributeNode, IEntityNode, IFetchNode, INode, IOrderNode } from "../interfaces/Node";
 
 export class Node implements INode {
     type: NodeType;
@@ -73,5 +73,53 @@ export class EntityNode extends Node implements IEntityNode {
 
     getLabel() {
         return `Entity: ${this.name}`;
+    }
+}
+
+export class AttributeNode extends Node implements IAttributeNode {
+    name: string;
+
+    constructor(name: string, id: string) {
+        super(NodeType.Attribute, `Attribute: ${name}`, id);
+        this.name = name;
+    }
+
+    getOpeningTag() {
+        return `<attribute name="${this.name}" />`;
+    }
+
+    getClosingTag() {
+        return '';
+    }
+
+    getLabel() {
+        return `Attribute: ${this.name}`;
+    }
+}
+
+
+//<order attribute="adx_mimetype" descending="true" />
+// default value of descending is false if not provided
+export class OrderNode extends Node implements IOrderNode {
+    name: string;
+    descending: boolean;
+
+    constructor(attribute: string,  id: string, descending?: boolean) {
+        //random id
+        super(NodeType.Order, `Order: ${attribute}`, id);
+        this.name = attribute;
+        this.descending = descending || false;
+    }
+
+    getOpeningTag() {
+        return `<order attribute="${this.name}" descending="${this.descending}" />`;
+    }
+
+    getClosingTag() {
+        return '';
+    }
+
+    getLabel() {
+        return `Order: ${this.name}`;
     }
 }
