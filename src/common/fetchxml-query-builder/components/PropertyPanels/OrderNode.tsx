@@ -21,14 +21,14 @@ export const OrderNodePropertyPanel: React.FC<OrderNodePropertyPanelProps> = (pr
     const handleAttributeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newAttribute = event.target.value;
         setAttribute(newAttribute);
-        const updatedNode = new OrderNode(newAttribute, props.node.id, descending);
+        const updatedNode = new OrderNode(props.node.id, newAttribute, descending);
         props.onPropertyUpdate(updatedNode);
     };
 
     const handleDescendingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newDescending = event.target.checked;
         setDescending(newDescending);
-        const updatedNode = new OrderNode(attribute, props.node.id, newDescending);
+        const updatedNode = new OrderNode(props.node.id, attribute, newDescending);
         props.onPropertyUpdate(updatedNode);
     };
 

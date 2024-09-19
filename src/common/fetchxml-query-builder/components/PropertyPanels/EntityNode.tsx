@@ -6,6 +6,7 @@
 import React, { useState } from "react";
 import { IEntityNode } from "../../interfaces/Node";
 import { EntityNode } from "../../models/Node";
+import { getVSCodeApi } from "../../utility/utility";
 
 export interface EntityNodePropertyPanelProps {
     node: IEntityNode;
@@ -31,7 +32,7 @@ export const EntityNodePropertyPanel: React.FC<EntityNodePropertyPanelProps> = (
     React.useEffect(() => {
         window.addEventListener('message', messageHandler);
         
-        const vscode = acquireVsCodeApi();
+        const vscode = getVSCodeApi();
         vscode.postMessage({ type: 'getEntities' });
     
         return () => {

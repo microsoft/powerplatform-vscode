@@ -21,3 +21,13 @@ export const getFetchXmlFromQueryTree = (queryTree: ITree) => {
     getFetchXML(queryTree.root);
     return query;
 }
+
+export const generateId = () => {
+    return `id-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+};
+
+const vs = acquireVsCodeApi();
+
+export const getVSCodeApi = () => {
+    return vs;
+}

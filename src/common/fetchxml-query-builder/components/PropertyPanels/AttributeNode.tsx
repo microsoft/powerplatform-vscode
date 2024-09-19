@@ -18,7 +18,7 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
     const attributes = ["name", "emailaddress1", "telephone1", "address1_city"];
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedAttribute(event.target.value);
-        const updateNode = new AttributeNode(event.target.value, props.node.id);
+        const updateNode = new AttributeNode(props.node.id, event.target.value);
         props.onPropertyUpdate(updateNode);
     };
 

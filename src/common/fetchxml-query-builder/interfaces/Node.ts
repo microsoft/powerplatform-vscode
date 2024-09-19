@@ -11,7 +11,7 @@ export interface INode {
     getOpeningTag: () => string;
     getClosingTag: () => string;
     getLabel: () => string;
-    children?: INode[];
+    children: INode[];
 }
 
 export interface IEntityNode extends INode {
@@ -25,7 +25,7 @@ export interface IFetchNode extends INode {
     distinct: boolean;
 }
 export interface IAttributeNode extends INode {
-    name: string;
+    name?: string;
 }
 
 export interface IOrderNode extends INode {
