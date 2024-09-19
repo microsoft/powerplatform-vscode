@@ -7,8 +7,10 @@ import * as React from 'react';
 import { INode } from '../interfaces/Node';
 import { NodeType } from '../constants/constants';
 import { FetchNodePropertyPanel } from './PropertyPanels/FetchNode';
-import { EntityNode, FetchNode } from '../models/Node';
+import { AttributeNode, EntityNode, FetchNode, OrderNode } from '../models/Node';
 import { EntityNodePropertyPanel } from './PropertyPanels/EntityNode';
+import { AttributeNodePropertyPanel } from './PropertyPanels/AttributeNode';
+import { OrderNodePropertyPanel } from './PropertyPanels/OrderNode';
 
 interface NodePropertyPanelProps {
     node: INode;
@@ -28,14 +30,26 @@ const panelFactory = (node: INode, onPropertyUpdate: (updatedNode: INode) => voi
     switch (node.type) {
         case NodeType.Fetch:
             return (
-                <FetchNodePropertyPanel 
-                    node={node as FetchNode} 
+                <FetchNodePropertyPanel
+                    node={node as FetchNode}
                     onPropertyUpdate={onPropertyUpdate}/>
             );
         case NodeType.Entity:
             return (
                 <EntityNodePropertyPanel
                     node={node as EntityNode}
+                    onPropertyUpdate={onPropertyUpdate}/>
+            );
+        case NodeType.Attribute:
+            return (
+                <AttributeNodePropertyPanel
+                    node={node as AttributeNode}
+                    onPropertyUpdate={onPropertyUpdate}/>
+            );
+        case NodeType.Order:
+            return (
+                <OrderNodePropertyPanel
+                    node={node as OrderNode}
                     onPropertyUpdate={onPropertyUpdate}/>
             );
         default:
