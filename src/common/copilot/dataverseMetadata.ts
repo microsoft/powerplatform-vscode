@@ -49,7 +49,7 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
 //Function to fetch entities from Dataverse
 export async function getEntities(orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
     try {
-        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions`;
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/entities`;
         const requestInit: RequestInit = {
             method: "GET",
             headers: {
@@ -64,7 +64,8 @@ export async function getEntities(orgUrl: string, apiToken: string, telemetry: I
         const endTime = performance.now();
         const responseTime = endTime - startTime || 0;
 
-        const entities = jsonResponse.value.map((entity: { LogicalName: string }) => entity.LogicalName);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const entities = jsonResponse.value.map((item: any) => item.logicalname);
 
         sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return entities;

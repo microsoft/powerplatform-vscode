@@ -14,13 +14,29 @@ export interface AttributeNodePropertyPanelProps {
 
 export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProps> = (props) => {
     const [selectedAttribute, setSelectedAttribute] = useState(props.node.name);
+    const [attributes, setAttributes] = useState<string[]>([]);
 
-    const attributes = ["name", "emailaddress1", "telephone1", "address1_city"];
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedAttribute(event.target.value);
         const updateNode = new AttributeNode(event.target.value, props.node.id);
         props.onPropertyUpdate(updateNode);
     };
+
+    const messageHandler = (event: MessageEvent) => {
+        if (event.data.type === 'getAttributes') {
+            console.log(event.data.attributes);
+            setAttributes(event.data.entities);
+        }
+    };
+
+    React.useEffect(() => {
+        window.addEventListener('message', messageHandler);
+
+        return () => {
+        window.removeEventListener('message', messageHandler);
+        };
+    }, []);
+
 
     return (
         <div>

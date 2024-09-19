@@ -222,10 +222,10 @@ export async function activate(
             }
         })
     );
-    
+
     context.subscriptions.push(
         vscode.commands.registerCommand('fetchXMLQueryBuilder.open', () => {
-            FetchXmlQueryBuilderPanel.createOrShow(context.extensionUri);
+            FetchXmlQueryBuilderPanel.createOrShow(context.extensionUri, _telemetry, pacTerminal.getWrapper());
         })
     );
     const workspaceFolders =

@@ -177,6 +177,11 @@
         }
       },
       {
+        "command": "fetchXMLQueryBuilder.open",
+        "title": "FetchXML Query Builder",
+        "category": "FetchXML"
+      },
+      {
         "command": "powerpages.collaboration.openMail",
         "title": "Open Mail",
         "icon": "$(mail)"
@@ -950,11 +955,6 @@
           "initialSize": 6,
           "visibility": "visible",
           "when": "(!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot)"
-        },
-        {
-          "id": "fetchXML-query-builder",
-          "name": "FetchXML Query Builder",
-          "type": "webview"
         }
       ],
       "explorer": [

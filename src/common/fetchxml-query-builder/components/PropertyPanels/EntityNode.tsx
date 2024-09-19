@@ -15,11 +15,16 @@ export interface EntityNodePropertyPanelProps {
 export const EntityNodePropertyPanel: React.FC<EntityNodePropertyPanelProps> = (props) => {
     const [selectedEntity, setSelectedEntity] = useState(props.node.name);
     const [entities, setEntities] = useState<string[]>([]);
+    const vscode = acquireVsCodeApi();
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedEntity(event.target.value);
-        const updateNode = new EntityNode(event.target.value);
+        const newSelectedEntity = event.target.value;
+        setSelectedEntity(newSelectedEntity);
+        const updateNode = new EntityNode(newSelectedEntity);
         props.onPropertyUpdate(updateNode);
+
+        // Send the selected entity to the VS Code extension
+        vscode.postMessage({ type: 'entitySelected', entity: newSelectedEntity });
     };
 
     const messageHandler = (event: MessageEvent) => {
@@ -30,13 +35,12 @@ export const EntityNodePropertyPanel: React.FC<EntityNodePropertyPanelProps> = (
 
     React.useEffect(() => {
         window.addEventListener('message', messageHandler);
-        
-        const vscode = acquireVsCodeApi();
+
         vscode.postMessage({ type: 'getEntities' });
-    
+
         return () => {
         window.removeEventListener('message', messageHandler);
-        };  
+        };
     }, []);
 
     return (
