@@ -13,6 +13,7 @@ import { containerStyle, fetchXmlStyle, resizer, showQueryButton, sidebar, sideb
 import { getFetchXmlFromQueryTree, prettifyXml } from '../utility/utility';
 import { ResultPanel } from './ResultPanel';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import ChatInput from './CopilotPanel';
 
 export const FetchXmlQueryBuilderApp = () => {
     const [tree, setTree] = React.useState<ITree>(getInitTree());
@@ -76,10 +77,13 @@ export const FetchXmlQueryBuilderApp = () => {
                     onNodeSelect={onNodeSelect}
                     refreshTree={refreshTree}
                 />
-                <NodePropertyPanel 
-                    node={selectedNode} 
+                <NodePropertyPanel
+                    node={selectedNode}
                     onPropertyUpdate={onPropertyUpdate}
-                    style={sidebarPanel}/>
+                    style={{...sidebarPanel, borderBottom: '0.5px solid #cccccc'}}/>
+                 <ChatInput
+                    style={sidebarPanel as React.CSSProperties}
+                 />
             </div>
             <div
                 style={resizer}

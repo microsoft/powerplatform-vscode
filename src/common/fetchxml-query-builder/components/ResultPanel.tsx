@@ -32,6 +32,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     const executeQuery = () => {
         console.log(query);
         vscode.postMessage({ type: 'executeQuery', query: query });
+        setActiveTab("execute");
     };
 
     const convertQueryToTemplate = () => {
@@ -44,6 +45,7 @@ ${attributes.map(attr => `    <div>{{result.${attr}}}</div>`).join('\n')}
 {% endfor %}
         `;
         setTemplate(template);
+        setActiveTab("convert");
     };
 
     useEffect(() => {
@@ -148,7 +150,7 @@ ${attributes.map(attr => `    <div>{{result.${attr}}}</div>`).join('\n')}
                 )}
                 {activeTab === "convert" && (
                     <div style={ResultStyle}>
-                        <h3>Convert Result</h3>
+                        <h3>Power Pages Template</h3>
                         <pre style={codeEditorStyle}>{template}</pre>
                     </div>
                 )}
