@@ -43,7 +43,7 @@ export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = (props) => {
 
     return (
         <div>
-            <h3>FetchXML Query Builder</h3>
+            <span>Query Builder</span>
             {renderTree(nodes, props.onNodeSelect, handleContextMenu)}
             {contextMenuVisible 
                 && selectedNode 
@@ -60,7 +60,8 @@ export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = (props) => {
 const renderTree = (nodes: INode[], onNodeSelect: (node: INode) => void, onContextMenu: (e: React.MouseEvent, node: INode) => void) =>{
     if (nodes.length === 0) return null;
     return (
-        <SimpleTreeView>
+        <div style={{marginTop:'5px'}}>
+            <SimpleTreeView>
             {nodes.map((node) =>(
                 <TreeItem
                     key={node.id}
@@ -71,6 +72,7 @@ const renderTree = (nodes: INode[], onNodeSelect: (node: INode) => void, onConte
                 >
                     {node.getChildren() && renderTree(node.getChildren(), onNodeSelect, onContextMenu)}
                 </TreeItem>))}
-        </SimpleTreeView>
+            </SimpleTreeView>
+        </div>
     );
 }

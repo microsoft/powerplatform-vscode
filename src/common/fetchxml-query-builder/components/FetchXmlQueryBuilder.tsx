@@ -9,14 +9,17 @@ import { NodePropertyPanel } from './NodePropertyPanel';
 import { IEntityNode, IFetchNode, INode } from '../interfaces/Node';
 import { ITree } from '../interfaces/Tree';
 import { EntityNode, FetchNode } from '../models/Node';
-import { containerStyle, fetchXmlStyle, showQueryButton, sidebar } from './Styles';
+import { containerStyle, fetchXmlStyle, resizer, showQueryButton, sidebar } from './Styles';
 import { getFetchXmlFromQueryTree, prettifyXml } from '../utility/utility';
 import { ResultPanel } from './ResultPanel';
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 
 export const FetchXmlQueryBuilderApp = () => {
     const [tree, setTree] = React.useState<ITree>(getInitTree());
     const [fetchXml, setFetchXml] = React.useState<string>('');
     const [selectedNode, setSelectedNode] = React.useState<INode>(tree.root);
+    const [sidebarWidth, setSidebarWidth] = React.useState<number>(300);
+    const isResizing = React.useRef(false);
 
     const onNodeSelect = (node: INode) => {
         setSelectedNode(node);
@@ -40,10 +43,33 @@ export const FetchXmlQueryBuilderApp = () => {
         setFetchXml(query);
     };
 
+    const handleMouseDown = (_: React.MouseEvent) => {
+        isResizing.current = true;
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!isResizing.current) return;
+        const newWidth = e.clientX;
+        if (newWidth > 200 && newWidth < 600) { // Sidebar width limits
+            setSidebarWidth(newWidth);
+        }
+    };
+
+    const handleMouseUp = () => {
+        isResizing.current = false;
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    };
+
     return (
         <div style={containerStyle}>
-            <div style={sidebar}>
-                <button style={showQueryButton} onClick={showQuery}>Show Query</button>
+            <div style={{...sidebar, width: sidebarWidth}}>
+                <button style={showQueryButton} onClick={showQuery}>
+                    <AddBoxOutlinedIcon style={{ marginRight: '8px' }}/>
+                    <span>Show Query</span>
+                </button>
                 <QueryBuilderPanel
                     tree={tree}
                     onNodeSelect={onNodeSelect}
@@ -51,6 +77,10 @@ export const FetchXmlQueryBuilderApp = () => {
                 />
                 <NodePropertyPanel node={selectedNode} onPropertyUpdate={onPropertyUpdate}/>
             </div>
+            <div
+                style={resizer}
+                onMouseDown={handleMouseDown}
+            />
             <div style={fetchXmlStyle}>
                 <ResultPanel query={fetchXml} />
             </div>
