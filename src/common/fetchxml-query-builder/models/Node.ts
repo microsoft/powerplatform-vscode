@@ -9,11 +9,12 @@ import { IAttributeNode, IEntityNode, IFetchNode, INode, IOrderNode } from "../i
 export class Node implements INode {
     type: NodeType;
     id: string;
-    children?: INode[];
+    children: INode[];
 
     constructor(type: NodeType, label: string, id: string) {
         this.type = type;
         this.id = id;
+        this.children = [];
     }
 
     getOpeningTag() {
@@ -77,9 +78,9 @@ export class EntityNode extends Node implements IEntityNode {
 }
 
 export class AttributeNode extends Node implements IAttributeNode {
-    name: string;
+    name?: string;
 
-    constructor(name: string, id: string) {
+    constructor(id: string, name?: string ) {
         super(NodeType.Attribute, `Attribute: ${name}`, id);
         this.name = name;
     }
@@ -104,10 +105,9 @@ export class OrderNode extends Node implements IOrderNode {
     name: string;
     descending: boolean;
 
-    constructor(attribute: string,  id: string, descending?: boolean) {
-        //random id
+    constructor(id: string, attribute?: string, descending?: boolean) {
         super(NodeType.Order, `Order: ${attribute}`, id);
-        this.name = attribute;
+        this.name = attribute || '';
         this.descending = descending || false;
     }
 

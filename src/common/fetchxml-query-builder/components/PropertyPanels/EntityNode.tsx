@@ -6,6 +6,7 @@
 import React, { useState } from "react";
 import { IEntityNode } from "../../interfaces/Node";
 import { EntityNode } from "../../models/Node";
+import { getVSCodeApi } from "../../utility/utility";
 
 export interface EntityNodePropertyPanelProps {
     node: IEntityNode;
@@ -15,7 +16,7 @@ export interface EntityNodePropertyPanelProps {
 export const EntityNodePropertyPanel: React.FC<EntityNodePropertyPanelProps> = (props) => {
     const [selectedEntity, setSelectedEntity] = useState(props.node.name);
     const [entities, setEntities] = useState<string[]>([]);
-    const vscode = acquireVsCodeApi();
+    const vscode = getVSCodeApi();
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newSelectedEntity = event.target.value;

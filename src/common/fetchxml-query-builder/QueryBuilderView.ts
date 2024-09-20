@@ -124,6 +124,7 @@ export class FetchXmlQueryBuilderPanel {
         </html>`;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private async _handleMessage(message: any) {
         const webView = this._panel.webview;
         const orgUrl = this.orgUrl;
@@ -135,7 +136,7 @@ export class FetchXmlQueryBuilderPanel {
                     webView.postMessage({ type: 'getEntities', entities: entities });
                     break;
                 }
-            case 'getAttributes':
+            case 'entitySelected':
                 {
                     const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
                     const attributes = await getEntityColumns(message.entity, orgUrl, dataverseToken, this.telemetry, '')
