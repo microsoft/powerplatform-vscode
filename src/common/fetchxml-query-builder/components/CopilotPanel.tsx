@@ -31,6 +31,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ style}) => {
             flexDirection: 'column',
             margin: '0px',
             padding: '12px',
+            paddingLeft: '0px'
         },
         inputLabel: {
             marginBottom: '1px',
