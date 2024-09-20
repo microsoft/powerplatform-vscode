@@ -4,7 +4,7 @@
  */
 
 import { INode } from "../../interfaces/Node";
-import { addAttribute, addOrder } from "./Actions/Actions";
+import { Options } from "./Options";
 
 interface IMenuItem {
     label: string;
@@ -15,33 +15,10 @@ interface IMenuItem {
 export const getMenuItems = (node: INode): IMenuItem[] => {
     switch (node.type) {
         case 'Entity':
-            return [
-                {
-                    label: 'Add',
-                    subMenuItems: [
-                        {
-                            label: 'Attribute',
-                            action: (node: INode) => addAttribute(node),
-                        },
-                        {
-                            label: 'Filter',
-                        },
-                        {
-                            label: 'Order',
-                            action: (node: INode) => addOrder(node),
-                        },
-                    ]
-                },
-                {
-                    label: 'Delete',
-                },
-                {
-                    label: 'Move Up',
-                },
-                {
-                    label: 'Move Down'
-                },
-            ];
+        case 'Attribute':
+        case 'Order':
+        case 'Filter':
+            return Options[node.type];
         default:
             return [];
     }

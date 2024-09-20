@@ -37,6 +37,10 @@ export const ContextMenu: React.FC<IContextMenuProps> = (props) => {
                     style={{...menuItemStyle, backgroundColor: hoveredItemLabel === item.label ? '#f0f0f0' : 'white'}}
                     onMouseEnter={() => handleMouseEnter(item.label)}
                     onMouseLeave={handleMouseLeave}
+                    onClick={() => {
+                        item.action && item.action(props.node);
+                        props.refreshTree();
+                    }}
                 >
                     {item.label}
                     {item.subMenuItems && activeMenu === item.label && (

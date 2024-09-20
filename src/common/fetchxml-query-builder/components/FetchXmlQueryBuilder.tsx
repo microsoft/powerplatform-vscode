@@ -62,10 +62,10 @@ const updateNodeInTree = (currentNode: INode, newNode: INode): INode => {
         return newNode;
     }
 
-    if (currentNode.children) {
-        currentNode.children = currentNode.children.map(childNode =>
+    if (currentNode.getChildren()) {
+        currentNode.setChildren(currentNode.getChildren().map(childNode =>
             updateNodeInTree(childNode, newNode)
-        );
+        ));
     }
 
     return currentNode;
