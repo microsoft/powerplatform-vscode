@@ -1,0 +1,227 @@
+:root {
+	--container-paddding: 20px;
+	--input-padding-vertical: 6px;
+	--input-padding-horizontal: 4px;
+	--input-margin-vertical: 4px;
+	--input-margin-horizontal: 0;
+}
+
+html,
+body {
+	height: 100%;
+	min-height: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+ol,
+ul {
+	padding-left: var(--container-paddding);
+}
+
+body > *,
+form > * {
+	margin-block-start: var(--input-margin-vertical);
+	margin-block-end: var(--input-margin-vertical);
+}
+
+*:focus {
+	outline-color: var(--vscode-focusBorder) !important;
+}
+
+a {
+	color: var(--vscode-textLink-foreground);
+}
+
+a:hover,
+a:active {
+	color: var(--vscode-textLink-activeForeground);
+}
+
+code {
+	font-size: var(--vscode-editor-font-size);
+	font-family: var(--vscode-editor-font-family);
+}
+iframe {
+	width: 100%;
+	height: 100%;
+	border: none;
+	background: white; /* Browsers default to a white background */
+}
+
+.controls,
+.find {
+	display: block;
+	width: 100%;
+	height: 2em;
+	margin-top: 0;
+	background: var(--vscode-editor-background);
+}
+
+.controls button i {
+	display: flex;
+	margin-right: 0.3em;
+}
+
+.displayContents {
+	position: fixed;
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+
+.displayContents > div {
+	display: table-row;
+	width: 100%;
+}
+
+.headercontent {
+	display: table-cell;
+	width: 100%;
+	height: 2.5em;
+}
+.header nav {
+	display: flex;
+}
+
+.header nav button {
+	border: none;
+	padding: 5px 0em 5px 4px;
+	display: flex;
+	text-align: right;
+	float: right;
+	outline: 1px solid transparent;
+	outline-offset: 2px !important;
+	color: var(--vscode-icon-foreground);
+	background: none;
+	margin: 0 0.3em;
+	border-radius: 5px;
+}
+
+/* back and forward buttons are a bit off with vertical alignment */
+.header nav button.back-button,
+.header nav button.forward-button {
+	padding: 4px 0em 6px 4px;
+}
+
+.header nav button:hover:not(:disabled) {
+	cursor: pointer;
+	background: var(--vscode-toolbar-hoverBackground);
+}
+
+.header nav button:disabled {
+	opacity: 0.5;
+}
+
+.header nav button:focus {
+	outline-color: var(--vscode-focusBorder);
+}
+
+.content iframe {
+	display: table-cell;
+	width: 100%;
+	height: 100%;
+	background: white; /* Browsers default to a white background */
+}
+
+.url-input {
+	flex: 1;
+}
+
+input:not([type='checkbox']),
+textarea {
+	display: block;
+	width: 100%;
+	border: none;
+	font-family: var(--vscode-font-family);
+	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+	color: var(--vscode-input-foreground);
+	outline-color: var(--vscode-input-border);
+	background-color: var(--vscode-input-background);
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: var(--vscode-input-placeholderForeground);
+}
+
+#link-preview {
+	position: fixed;
+	bottom: -4px;
+	left: 0px;
+	padding: 3px 5px;
+	background-color: var(--vscode-input-background);
+	color: var(--vscode-input-foreground);
+	font-size: 9px;
+	box-shadow: 1px -1px 5px rgb(129, 129, 129);
+	border-radius: 1px;
+	opacity: 0;
+}
+
+.find-container {
+	position: absolute;
+	margin-top: 3px;
+	right: 15px;
+	opacity: 0;
+}
+.find {
+	border-radius: 2px;
+	padding: 5px;
+	background: var(--vscode-editor-background);
+	margin-top: 0.5em;
+	right: 0px;
+	display: block;
+}
+
+.find-input {
+	flex: 1;
+}
+.find nav {
+	display: flex;
+}
+.find button i {
+	display: flex;
+	margin-right: 0.3em;
+	padding: 0px;
+}
+
+.find-result {
+	position: relative;
+	right: 22px;
+	top: 1px;
+}
+
+.find-result i {
+	position: absolute;
+	display: flex;
+	padding: 4px 0em 4px 0px;
+	background-color: var(--vscode-input-background);
+}
+
+.extras-menu {
+	position: absolute;
+	margin-top: 2.5em;
+	right: 0px;
+	opacity: 1;
+}
+.extras-menu table {
+	background-color: var(--vscode-input-background);
+	padding: 0.5em 0;
+	box-shadow: 0 0px 5px rgb(0 0 0 / 0.2);
+}
+
+.extras-menu button {
+	background-color: var(--vscode-toolbar-background);
+	color: var(--vscode-toolbar-foreground);
+	padding: 7px 15px;
+	width: 100%;
+	margin: 0px;
+	text-align: left;
+	border: none;
+	outline: inherit;
+	font-weight: normal;
+}
+
+.extras-menu button:focus {
+	background-color: var(--vscode-toolbar-hoverBackground);
+}

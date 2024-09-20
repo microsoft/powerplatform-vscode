@@ -45,6 +45,7 @@ import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
+import { RuntimePreview } from "./webViews/RuntimePreview";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -261,9 +262,22 @@ export function registerCollaborationView() {
 }
 
 export function powerPagesNavigation() {
+    const openRuntimeInVscode = true;
     const powerPagesNavigationProvider = new PowerPagesNavigationProvider();
     vscode.window.registerTreeDataProvider('powerpages.powerPagesFileExplorer', powerPagesNavigationProvider);
-    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => powerPagesNavigationProvider.previewPowerPageSite());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.powerPagesRuntimePreview', () => openRuntimeInVscode ? new RuntimePreview(
+        vscode.window.createWebviewPanel(
+            'runtimePreview', // Identifies the type of the webview. Used internally
+            'Webview Example', // Title of the panel displayed to the user
+            vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+            {
+                enableScripts: true, // Enable scripts in the webview
+                retainContextWhenHidden: true,
+            }
+        ),
+        WebExtensionContext.extensionUri,
+        "https://site-cwc5h.powerappsportals.com/"//WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string
+    ) : powerPagesNavigationProvider.previewPowerPageSite());
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.backToStudio', () => powerPagesNavigationProvider.backToStudio());
     WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_POWER_PAGES_WEB_VIEW_REGISTERED);
 }
