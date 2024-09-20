@@ -10,8 +10,8 @@ export const getFetchXmlFromQueryTree = (queryTree: ITree) => {
     let query = "";
     const getFetchXML = (node: INode) => {
         query += node.getOpeningTag();
-        if (node.children && node.children.length > 0) {
-            node.children.forEach(child => {
+        if (node.getChildren() && node.getChildren().length > 0) {
+            node.getChildren().forEach(child => {
                 getFetchXML(child);
             });
         }

@@ -19,14 +19,14 @@ export const FetchNodePropertyPanel: React.FC<FetchNodePropertyPanelProps> = (pr
     const handleTopChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newTop = Number(event.target.value);
         setTop(newTop);
-        const updatedNode = new FetchNode(props.node.entity, newTop, distinct);
+        const updatedNode = new FetchNode(props.node.getEntity(), newTop, distinct);
         props.onPropertyUpdate(updatedNode);
     };
 
     const handleDistinctChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newDistinct = event.target.checked;
         setDistinct(newDistinct);
-        const updatedNode = new FetchNode(props.node.entity, top, newDistinct);
+        const updatedNode = new FetchNode(props.node.getEntity(), top, newDistinct);
         props.onPropertyUpdate(updatedNode);
     };
 
@@ -50,6 +50,7 @@ export const FetchNodePropertyPanel: React.FC<FetchNodePropertyPanelProps> = (pr
                     onChange={handleDistinctChange}
                 />
             </label>
+            {!props.node.getEntity() && <p style={{ color: 'red' }}>Please add an entity under fetch.</p>}
         </div>
     );
 }

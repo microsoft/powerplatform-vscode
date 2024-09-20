@@ -69,7 +69,7 @@ const renderTree = (nodes: INode[], onNodeSelect: (node: INode) => void, onConte
                     onClick={() => onNodeSelect(node)}
                     onContextMenu={(e) => onContextMenu(e, node)}
                 >
-                    {node.children && renderTree(node.children, onNodeSelect, onContextMenu)}
+                    {node.getChildren() && renderTree(node.getChildren(), onNodeSelect, onContextMenu)}
                 </TreeItem>))}
         </SimpleTreeView>
     );

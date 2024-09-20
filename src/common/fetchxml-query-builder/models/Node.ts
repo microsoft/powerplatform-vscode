@@ -9,12 +9,14 @@ import { IAttributeNode, IEntityNode, IFetchNode, INode, IOrderNode } from "../i
 export class Node implements INode {
     type: NodeType;
     id: string;
-    children: INode[];
+    _children: INode[];
+    parent: INode | null;
 
-    constructor(type: NodeType, label: string, id: string) {
+    constructor(type: NodeType, id: string) {
         this.type = type;
         this.id = id;
-        this.children = [];
+        this._children = [];
+        this.parent = null;
     }
 
     getOpeningTag() {
@@ -28,19 +30,36 @@ export class Node implements INode {
     getLabel() {
         return this.id;
     }
+
+    getChildren() {
+        return this._children;
+    }
+
+    addChild(node: INode) {
+        this._children.push(node);
+        node.parent = this;
+    }
+
+    setChildren(children: INode[]) {
+        this._children = children;
+        for (const child of children) {
+            child.parent = this;
+        }
+    }
 }
 
 export class FetchNode extends Node implements IFetchNode {
-    entity: IEntityNode;
     top: number;
     distinct: boolean;
 
-    constructor(entity: IEntityNode, top?: number, distinct?: boolean) {
-        super(NodeType.Fetch, `Fetch top: ${top}`, 'fetch');
-        this.entity = entity;
+    constructor(entity: IEntityNode|null, top?: number, distinct?: boolean) {
+        super(NodeType.Fetch, 'fetch');
         this.top = top || 50;
         this.distinct = distinct || false;
-        this.children = [entity];
+        this._children = entity ? [entity] : [];
+        if (entity) {
+            entity.parent = this;
+        }
     }
 
     getOpeningTag() {
@@ -54,13 +73,24 @@ export class FetchNode extends Node implements IFetchNode {
     getLabel() {
         return `Fetch top: ${this.top} distinct: ${this.distinct}`;
     }
+
+    getEntity() {
+        if (!this._children) return null;
+
+        return this._children[0] as IEntityNode;
+    }
+
+    setEntity(entity: IEntityNode) {
+        this._children = [entity];
+        entity.parent = this;
+    }
 }
 
 export class EntityNode extends Node implements IEntityNode {
     name?: string;
 
     constructor(name?: string) {
-        super(NodeType.Entity, `Entity: ${name}`, 'entity');
+        super(NodeType.Entity, 'entity');
         this.name = name;
     }
 
@@ -81,7 +111,7 @@ export class AttributeNode extends Node implements IAttributeNode {
     name?: string;
 
     constructor(id: string, name?: string ) {
-        super(NodeType.Attribute, `Attribute: ${name}`, id);
+        super(NodeType.Attribute, id);
         this.name = name;
     }
 
@@ -106,7 +136,7 @@ export class OrderNode extends Node implements IOrderNode {
     descending: boolean;
 
     constructor(id: string, attribute?: string, descending?: boolean) {
-        super(NodeType.Order, `Order: ${attribute}`, id);
+        super(NodeType.Order, id);
         this.name = attribute || '';
         this.descending = descending || false;
     }
