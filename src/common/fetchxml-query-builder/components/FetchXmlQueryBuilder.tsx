@@ -79,7 +79,7 @@ export const FetchXmlQueryBuilderApp = () => {
                 <NodePropertyPanel 
                     node={selectedNode} 
                     onPropertyUpdate={onPropertyUpdate}
-                    style={sidebarPanel}/>
+                    style={{...sidebarPanel, marginTop: '10px'}}/>
             </div>
             <div
                 style={resizer}

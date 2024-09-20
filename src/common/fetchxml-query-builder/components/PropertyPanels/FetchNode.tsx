@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { IFetchNode } from '../../interfaces/Node';
 import { FetchNode } from '../../models/Node';
+import { containerStyle, labelStyle, propertyNode } from './Styles';
 
 export interface FetchNodePropertyPanelProps {
     node: IFetchNode;
@@ -31,25 +32,24 @@ export const FetchNodePropertyPanel: React.FC<FetchNodePropertyPanelProps> = (pr
     };
 
     return (
-        <div>
-            <label>
-                Top:
+        <div style={propertyNode}>
+            <div style={containerStyle}>
+                <label style={labelStyle}>Top:</label>
                 <input
                     type="number"
                     value={top}
                     onChange={handleTopChange}
                     min={0}
                 />
-            </label>
-            <br></br>
-            <label>
-                Distinct:
+            </div>
+            <div style={containerStyle}>
+                <label style={labelStyle}>Distinct:</label>
                 <input
                     type="checkbox"
                     checked={distinct}
                     onChange={handleDistinctChange}
                 />
-            </label>
+            </div>
             {!props.node.getEntity() && <p style={{ color: 'red' }}>Please add an entity under fetch.</p>}
         </div>
     );
