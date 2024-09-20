@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { IAttributeNode } from "../../interfaces/Node";
 import { AttributeNode} from "../../models/Node";
 import { getVSCodeApi } from "../../utility/utility";
-import { containerStyle, labelStyle } from "./Styles";
+import { containerStyle, labelStyle, optionStyle, selectStyle } from "./Styles";
 
 export interface AttributeNodePropertyPanelProps {
     node: IAttributeNode;
@@ -47,10 +47,14 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
     return (
         <div style={{...containerStyle, marginTop: '10px'} }>
             <label htmlFor="dropdown" style={labelStyle}>Attribute Name:</label>
-            <select id="dropdown" value={selectedAttribute} onChange={handleChange}>
-                {!selectedAttribute && <option value=""></option>}
+            <select id="dropdown" 
+                value={selectedAttribute} 
+                onChange={handleChange}
+                style={selectStyle}
+            >
+                {!selectedAttribute && <option value="" style={optionStyle}></option>}
                 {attributes.map(attribute => (
-                    <option key={attribute} value={attribute}>
+                    <option key={attribute} value={attribute} style={optionStyle}>
                         {attribute}
                     </option>
                 ))}

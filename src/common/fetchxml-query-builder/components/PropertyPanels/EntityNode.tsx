@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { IEntityNode } from "../../interfaces/Node";
 import { EntityNode } from "../../models/Node";
 import { getVSCodeApi } from "../../utility/utility";
-import { containerStyle, labelStyle } from "./Styles";
+import { containerStyle, labelStyle, optionStyle, selectStyle } from "./Styles";
 
 export interface EntityNodePropertyPanelProps {
     node: IEntityNode;
@@ -48,10 +48,10 @@ export const EntityNodePropertyPanel: React.FC<EntityNodePropertyPanelProps> = (
     return (
         <div style={{...containerStyle, marginTop: '10px'}}>
             <label htmlFor="dropdown" style={labelStyle}>Entity Name:</label>
-            <select id="dropdown" value={selectedEntity} onChange={handleChange}>
-                {!selectedEntity && <option value=""></option>}
+            <select id="dropdown" value={selectedEntity} onChange={handleChange} style={selectStyle}>
+                {!selectedEntity && <option value="" style={optionStyle}></option>}
                 {entities.map(entity => (
-                    <option key={entity} value={entity}>
+                    <option key={entity} value={entity} style={optionStyle}>
                         {entity}
                     </option>
                 ))}

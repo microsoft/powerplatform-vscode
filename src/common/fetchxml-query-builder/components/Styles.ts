@@ -14,6 +14,7 @@ export const sidebar: React.CSSProperties = {
 };
 
 export const resizer: React.CSSProperties = {
+    width: '1px',
     cursor: 'col-resize',
     backgroundColor: 'var(--vscode-editor-foreground)',
     height: '100vh',

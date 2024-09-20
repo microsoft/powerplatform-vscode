@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { IOrderNode } from '../../interfaces/Node';
 import { OrderNode } from '../../models/Node';
 import { getVSCodeApi } from '../../utility/utility';
-import { containerStyle, labelStyle } from './Styles';
+import { containerStyle, inputStyle, labelStyle, optionStyle, selectStyle } from './Styles';
 
 export interface OrderNodePropertyPanelProps {
     node: IOrderNode;
@@ -56,10 +56,10 @@ export const OrderNodePropertyPanel: React.FC<OrderNodePropertyPanelProps> = (pr
         <div style={{marginTop: '10px'}}>
             <div style={containerStyle}>
                 <label htmlFor="dropdown" style={labelStyle}>Attribute Name:</label>
-                <select id="dropdown" value={attribute} onChange={handleAttributeChange}>
-                    {!attribute && <option value=""></option>}
+                <select id="dropdown" value={attribute} onChange={handleAttributeChange} style={selectStyle}>
+                    {!attribute && <option value="" style={optionStyle}></option>}
                     {attributes.map(attribute => (
-                        <option key={attribute} value={attribute}>
+                        <option key={attribute} value={attribute} style={optionStyle}>
                             {attribute}
                         </option>
                     ))}
@@ -72,6 +72,7 @@ export const OrderNodePropertyPanel: React.FC<OrderNodePropertyPanelProps> = (pr
                         type="checkbox"
                         checked={descending}
                         onChange={handleDescendingChange}
+                        style={inputStyle}
                 />
             </div>
         </div>

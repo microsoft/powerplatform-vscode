@@ -18,3 +18,17 @@ export const labelStyle: React.CSSProperties = {
     width: '80px'
 };
 
+export const selectStyle: React.CSSProperties = {
+    backgroundColor: 'var(--vscode-dropdown-background)', 
+    color: 'var(--vscode-dropdown-foreground)'
+};
+
+export const optionStyle: React.CSSProperties = {
+    backgroundColor: 'var(--vscode-dropdown-listBackground)'
+};
+
+export const inputStyle: React.CSSProperties = {
+    backgroundColor: 'var(--vscode-input-background)', 
+    color: 'var(--vscode-input-foreground)'
+};
+
