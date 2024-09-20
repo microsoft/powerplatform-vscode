@@ -14,6 +14,7 @@ interface ResultPanelProps {
 export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     const [queryResult, setQueryResult] = useState<any[]>([]);
     const [headers, setHeaders] = useState<string[]>([]);
+    const [attributes, setAttributes] = useState<string[]>([]);
     const query = props.query;
     const vscode = getVSCodeApi();
 
@@ -38,12 +39,23 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     }, [messageHandler]);
 
     useEffect(() => {
+        // Extract attribute names from the query
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(query, "text/xml");
+        const attributeNodes = xmlDoc.getElementsByTagName("attribute");
+        const attributeNames = Array.from(attributeNodes).map(node => node.getAttribute("name") || "");
+        setAttributes(attributeNames);
+    }, [query]);
+
+    useEffect(() => {
         if (queryResult.length > 0) {
-            setHeaders(Object.keys(queryResult[0]));
+            // Filter headers based on attributes present in the query
+            const filteredHeaders = Object.keys(queryResult[0]).filter(header => attributes.includes(header));
+            setHeaders(filteredHeaders);
         } else {
             setHeaders([]);
         }
-    }, [queryResult]);
+    }, [queryResult, attributes]);
 
     return (
         <div style={resultSectionStyle}>
@@ -54,7 +66,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
                     style={editorTextareaStyle}
                     placeholder="Click on Show Query button to see the FetchXML query"
                     value={query}
-                    readOnly // Assuming the query is not editable
+                    readOnly //the query is not editable
                 />
                 {/* Convert and Execute Buttons */}
                 <div>
