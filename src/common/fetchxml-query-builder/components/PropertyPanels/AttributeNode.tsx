@@ -6,6 +6,7 @@
 import React, { useState } from "react";
 import { IAttributeNode } from "../../interfaces/Node";
 import { AttributeNode} from "../../models/Node";
+import { getVSCodeApi } from "../../utility/utility";
 
 export interface AttributeNodePropertyPanelProps {
     node: IAttributeNode;
@@ -15,6 +16,7 @@ export interface AttributeNodePropertyPanelProps {
 export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProps> = (props) => {
     const [selectedAttribute, setSelectedAttribute] = useState(props.node.name);
     const [attributes, setAttributes] = useState<string[]>([]);
+    const vscode = getVSCodeApi();
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedAttribute(event.target.value);
@@ -31,6 +33,9 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
 
     React.useEffect(() => {
         window.addEventListener('message', messageHandler);
+
+        // Request attributes for the selected entity
+        vscode.postMessage({ type: 'entitySelected', entity: ''});
 
         return () => {
         window.removeEventListener('message', messageHandler);
