@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { resultSectionStyle, buttonHoverStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle, headerRowStyles, tableStyles, tdStyles, thStyles, tabButtonStyle, activeTabButtonStyle, containerStyle, tabContentStyle, ResultStyle } from "./Styles";
+import { resultSectionStyle, buttonHoverStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle, headerRowStyles, tableStyles, tdStyles, thStyles, tabButtonStyle, activeTabButtonStyle, tabContentStyle, ResultStyle } from "./Styles";
 import { getVSCodeApi } from "../utility/utility";
 
 interface ResultPanelProps {
@@ -106,7 +106,7 @@ ${attributes.map(attr => `    <div>{{result.${attr}}}</div>`).join('\n')}
             </div>
 
             {/* Tabs for Execute Result and Convert Result */}
-            <div style={containerStyle}>
+            <div>
                 <button
                     style={activeTab === "execute" ? activeTabButtonStyle : tabButtonStyle}
                     onClick={() => setActiveTab("execute")}

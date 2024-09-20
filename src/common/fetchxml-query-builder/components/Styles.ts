@@ -133,7 +133,7 @@ export const tabButtonStyle: React.CSSProperties = {
     cursor: 'pointer',
     backgroundColor: 'var(--vscode-tab-inactiveBackground)',
     color: 'var(--vscode-tab-inactiveForeground)',
-    border: '1px solid var(--vscode-tab-border)',
+    border: '0.5px solid var(--vscode-tab-border)',
     marginRight: '5px',
 };
 
