@@ -3,18 +3,20 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import React from "react";
-import { resultSectionStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle } from "./Styles";
+import React, { useState, useEffect } from "react";
+import { resultSectionStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle, headerRowStyles, tableStyles, tdStyles, thStyles } from "./Styles";
 import { getVSCodeApi } from "../utility/utility";
+
 interface ResultPanelProps {
     query: string;
 }
 
 export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
-    const [queryResult, setQueryResult] = React.useState<string>('');
+    const [queryResult, setQueryResult] = useState<any[]>([]);
+    const [headers, setHeaders] = useState<string[]>([]);
+    const [attributes, setAttributes] = useState<string[]>([]);
     const query = props.query;
     const vscode = getVSCodeApi();
-
 
     const messageHandler = (event: MessageEvent) => {
         if (event.data.type === 'setQueryResult') {
@@ -25,20 +27,35 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
 
     const executeQuery = () => {
         console.log(query);
-        vscode.postMessage({type:'executeQuery', query: query})
-    }
+        vscode.postMessage({ type: 'executeQuery', query: query });
+    };
 
-    React.useEffect(() => {
+    useEffect(() => {
         window.addEventListener('message', messageHandler);
-
-        // Request attributes for the selected entity
-        // vscode.postMessage({ type: 'entitySelected', entity: ''});
 
         return () => {
             window.removeEventListener('message', messageHandler);
         };
-    }, []);
+    }, [messageHandler]);
 
+    useEffect(() => {
+        // Extract attribute names from the query
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(query, "text/xml");
+        const attributeNodes = xmlDoc.getElementsByTagName("attribute");
+        const attributeNames = Array.from(attributeNodes).map(node => node.getAttribute("name") || "");
+        setAttributes(attributeNames);
+    }, [query]);
+
+    useEffect(() => {
+        if (queryResult.length > 0) {
+            // Filter headers based on attributes present in the query
+            const filteredHeaders = Object.keys(queryResult[0]).filter(header => attributes.includes(header));
+            setHeaders(filteredHeaders);
+        } else {
+            setHeaders([]);
+        }
+    }, [queryResult, attributes]);
 
     return (
         <div style={resultSectionStyle}>
@@ -47,8 +64,9 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
                 <h3>XML Query</h3>
                 <textarea
                     style={editorTextareaStyle}
-                    placeholder="Write your query here..."
+                    placeholder="Click on Show Query button to see the FetchXML query"
                     value={query}
+                    readOnly //the query is not editable
                 />
                 {/* Convert and Execute Buttons */}
                 <div>
@@ -59,30 +77,26 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
 
             {/* Query Result Table */}
             <div>
-                {queryResult && queryResult}
+                <h3>Query Result</h3>
+                <table style={tableStyles}>
+                    <thead>
+                        <tr style={headerRowStyles}>
+                            {headers.map((header, index) => (
+                                <th key={index} style={thStyles}>{header}</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {queryResult.map((item, rowIndex) => (
+                            <tr key={rowIndex}>
+                                {headers.map((header, cellIndex) => (
+                                    <td key={cellIndex} style={tdStyles}>{item[header]}</td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
-
-}
-
-
-// const QueryResultTable = () => {
-//     return (
-//         <table className="result-table">
-//             <thead>
-//                 <tr>
-//                     <th className="table-header">Label</th>
-//                     {/* More columns */}
-//                 </tr>
-//             </thead>
-//             <tbody>
-//                 <tr>
-//                     <td className="table-cell">Content</td>
-//                     {/* More cells */}
-//                 </tr>
-//                 {/* More rows */}
-//             </tbody>
-//         </table>
-//     );
-// };
+};
