@@ -4,27 +4,43 @@
  */
 
 export const sidebar: React.CSSProperties = {
-    flex: 1,
+    flexDirection: 'column',
+    overflow: 'auto',
     height: '100vh',
-    overflowY: 'auto',
-    borderRight: '1px solid #ddd',
+    borderRight: '0.5px solid #cccccc',
     padding: '10px',
     position: 'relative'
 };
 
+export const resizer: React.CSSProperties = {
+  width: '2px',
+  cursor: 'col-resize',
+  backgroundColor: '#000',
+  height: '100vh',
+};
 export const showQueryButton: React.CSSProperties = {
     position: 'absolute',
-    top: '15px',
-    right: '10px'
+    top: '9px',
+    right: '10px',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    margin: 0,
+    cursor: 'pointer',
+    fontSize: 'inherit',
+    color: 'inherit',
+    display: 'flex', 
+    alignItems: 'center',
 };
 
 export const containerStyle: React.CSSProperties = {
     display: 'flex',
-    height: '100vh'
+    height: '100vh',
+    width: '100%'
 };
 
 export const fetchXmlStyle: React.CSSProperties = {
-    flex: 2,
+    flex: 1,
     height: '100vh',
 };
 

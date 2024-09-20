@@ -1111,6 +1111,7 @@
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
     "@microsoft/generator-powerpages": "1.21.19",
+    "@mui/icons-material": "^6.1.1",
     "@mui/material": "^6.1.0",
     "@mui/x-tree-view": "^7.17.0",
     "@types/jwt-decode": "2.2.0",
