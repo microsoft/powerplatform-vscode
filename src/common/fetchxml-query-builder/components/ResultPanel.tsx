@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { resultSectionStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle, headerRowStyles, tableStyles, tdStyles, thStyles } from "./Styles";
+import { resultSectionStyle, buttonHoverStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle, headerRowStyles, tableStyles, tdStyles, thStyles, tabButtonStyle, activeTabButtonStyle, containerStyle, tabContentStyle, ResultStyle } from "./Styles";
 import { getVSCodeApi } from "../utility/utility";
 
 interface ResultPanelProps {
@@ -15,6 +15,10 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     const [queryResult, setQueryResult] = useState<any[]>([]);
     const [headers, setHeaders] = useState<string[]>([]);
     const [attributes, setAttributes] = useState<string[]>([]);
+    const [template, setTemplate] = useState<string>("");
+    const [activeTab, setActiveTab] = useState<string>("execute");
+    const [isConvertHovered, setIsConvertHovered] = useState<boolean>(false);
+    const [isExecuteHovered, setIsExecuteHovered] = useState<boolean>(false);
     const query = props.query;
     const vscode = getVSCodeApi();
 
@@ -28,6 +32,18 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     const executeQuery = () => {
         console.log(query);
         vscode.postMessage({ type: 'executeQuery', query: query });
+    };
+
+    const convertQueryToTemplate = () => {
+        const template = `
+{% fetchxml Example %}
+${query}
+{% endfetchxml %}
+{% for result in Example.results.entities %}
+${attributes.map(attr => `    <div>{{result.${attr}}}</div>`).join('\n')}
+{% endfor %}
+        `;
+        setTemplate(template);
     };
 
     useEffect(() => {
@@ -66,36 +82,76 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
                     style={editorTextareaStyle}
                     placeholder="Click on Show Query button to see the FetchXML query"
                     value={query}
-                    readOnly //the query is not editable
+                    readOnly // Assuming the query is not editable
                 />
                 {/* Convert and Execute Buttons */}
                 <div>
-                    <button style={convertButtonStyle}>Convert</button>
-                    <button style={executeButtonStyle} onClick={executeQuery}>Execute</button>
+                    <button
+                        style={{ ...convertButtonStyle, ...(isConvertHovered ? buttonHoverStyle : {}) }}
+                        onMouseEnter={() => setIsConvertHovered(true)}
+                        onMouseLeave={() => setIsConvertHovered(false)}
+                        onClick={convertQueryToTemplate}
+                    >
+                        Convert
+                    </button>
+                    <button
+                        style={{ ...executeButtonStyle, ...(isExecuteHovered ? buttonHoverStyle : {}) }}
+                        onMouseEnter={() => setIsExecuteHovered(true)}
+                        onMouseLeave={() => setIsExecuteHovered(false)}
+                        onClick={executeQuery}
+                    >
+                        Execute
+                    </button>
                 </div>
             </div>
 
-            {/* Query Result Table */}
-            <div>
-                <h3>Query Result</h3>
-                <table style={tableStyles}>
-                    <thead>
-                        <tr style={headerRowStyles}>
-                            {headers.map((header, index) => (
-                                <th key={index} style={thStyles}>{header}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {queryResult.map((item, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {headers.map((header, cellIndex) => (
-                                    <td key={cellIndex} style={tdStyles}>{item[header]}</td>
+            {/* Tabs for Execute Result and Convert Result */}
+            <div style={containerStyle}>
+                <button
+                    style={activeTab === "execute" ? activeTabButtonStyle : tabButtonStyle}
+                    onClick={() => setActiveTab("execute")}
+                >
+                    Execute Result
+                </button>
+                <button
+                    style={activeTab === "convert" ? activeTabButtonStyle : tabButtonStyle}
+                    onClick={() => setActiveTab("convert")}
+                >
+                    Convert Result
+                </button>
+            </div>
+
+            {/* Tab Content */}
+            <div style={tabContentStyle}>
+                {activeTab === "execute" && (
+                    <div style={ResultStyle}>
+                        <h3>Execute Result</h3>
+                        <table style={tableStyles}>
+                            <thead>
+                                <tr style={headerRowStyles}>
+                                    {headers.map((header, index) => (
+                                        <th key={index} style={thStyles}>{header}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {queryResult.map((item, rowIndex) => (
+                                    <tr key={rowIndex}>
+                                        {headers.map((header, cellIndex) => (
+                                            <td key={cellIndex} style={tdStyles}>{item[header]}</td>
+                                        ))}
+                                    </tr>
                                 ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+                {activeTab === "convert" && (
+                    <div style={ResultStyle}>
+                        <h3>Convert Result</h3>
+                        <pre style={codeEditorStyle}>{template}</pre>
+                    </div>
+                )}
             </div>
         </div>
     );

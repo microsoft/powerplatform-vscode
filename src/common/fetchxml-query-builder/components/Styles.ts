@@ -7,18 +7,18 @@ export const sidebar: React.CSSProperties = {
     flexDirection: 'column',
     overflow: 'auto',
     height: '100vh',
-    borderRight: '0.5px solid #cccccc',
+    borderRight: '0.5px solid var(--vscode-editorGroup-border)',
     padding: '10px',
     position: 'relative',
     display: 'flex',
 };
 
 export const resizer: React.CSSProperties = {
-  width: '2px',
-  cursor: 'col-resize',
-  backgroundColor: '#000',
-  height: '100vh',
+    cursor: 'col-resize',
+    backgroundColor: 'var(--vscode-editor-foreground)',
+    height: '100vh',
 };
+
 export const showQueryButton: React.CSSProperties = {
     position: 'absolute',
     top: '9px',
@@ -30,14 +30,14 @@ export const showQueryButton: React.CSSProperties = {
     cursor: 'pointer',
     fontSize: 'inherit',
     color: 'inherit',
-    display: 'flex', 
+    display: 'flex',
     alignItems: 'center',
 };
 
 export const containerStyle: React.CSSProperties = {
     display: 'flex',
     height: '100vh',
-    width: '100%'
+    width: '100%',
 };
 
 export const fetchXmlStyle: React.CSSProperties = {
@@ -47,79 +47,110 @@ export const fetchXmlStyle: React.CSSProperties = {
 
 export const actionButtonStyle: React.CSSProperties = {
     padding: '8px 12px',
-    backgroundColor: '#007acc',
-    color: 'white',
+    backgroundColor: 'var(--vscode-button-secondaryBackground)',
+    color: 'var(--vscode-button-foreground)',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
     marginTop: '16px',
-  };
+    transition: 'background-color 0.3s ease',
+};
 
-  export const showQueryButtonStyle: React.CSSProperties = {
+export const showQueryButtonStyle: React.CSSProperties = {
     ...actionButtonStyle,
-    backgroundColor: '#555', // Override the color for Show Query
-  };
+    backgroundColor: 'var(--vscode-button-secondaryBackground)', // Override the color for Show Query
+};
 
-  export const convertButtonStyle: React.CSSProperties = {
+export const convertButtonStyle: React.CSSProperties = {
     ...actionButtonStyle,
-    backgroundColor: '#f39c12', // Override the color for Convert
-  };
+    marginRight: '16px'
+};
 
-  export const executeButtonStyle: React.CSSProperties = {
+export const executeButtonStyle: React.CSSProperties = {
     ...actionButtonStyle,
-    backgroundColor: '#27ae60', // Override the color for Execute
-  };
+};
 
-  export const resultSectionStyle: React.CSSProperties = {
+export const buttonHoverStyle: React.CSSProperties = {
+    backgroundColor: 'var(--vscode-button-background)',
+    color: 'var(--vscode-button-foreground)',
+};
+
+export const resultSectionStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
-  };
+};
 
-  export const codeEditorStyle: React.CSSProperties = {
-    backgroundColor: '#333',
-    color: 'white',
+export const codeEditorStyle: React.CSSProperties = {
+    backgroundColor: 'var(--vscode-sideBar-background)',
+    color: 'var(--vscode-editor-foreground)',
     padding: '16px',
-    borderRadius: '8px',
-  };
+     borderBottom: '2px solid var(--vscode-editorGroup-border)'
+};
 
-  export const editorTextareaStyle: React.CSSProperties = {
+export const editorTextareaStyle: React.CSSProperties = {
     width: '100%',
     height: '150px',
-    backgroundColor: '#000',
-    color: 'white',
+    backgroundColor: 'var(--vscode-editor-background)',
+    color: 'var(--vscode-editor-foreground)',
     border: 'none',
     padding: '8px',
     borderRadius: '4px',
-  };
+};
 
-  export const sidebarPanel: React.CSSProperties = {
+export const sidebarPanel: React.CSSProperties = {
     flex: 1,
     overflow: 'auto',
-  };
+};
 
-  // Inline styles for the table and elements using React.CSSProperties
+// Inline styles for the table and elements using React.CSSProperties
 export const tableStyles: React.CSSProperties = {
     width: '100%',
     borderCollapse: 'collapse',
     marginBottom: '20px',
     fontSize: '14px',
     textAlign: 'left',
-  };
+};
 
-  export const thStyles: React.CSSProperties = {
-    backgroundColor: '#f4f4f4',
+export const thStyles: React.CSSProperties = {
+    backgroundColor: 'var(--vscode-editor-background)',
     padding: '10px',
-    border: '1px solid #ddd',
+    border: '1px solid var(--vscode-editorGroup-border)',
     textTransform: 'capitalize',
-  };
+};
 
-  export const tdStyles: React.CSSProperties = {
+export const tdStyles: React.CSSProperties = {
     padding: '10px',
-    border: '1px solid #ddd',
-  };
+    border: '1px solid var(--vscode-editorGroup-border)',
+};
 
-  export const headerRowStyles: React.CSSProperties = {
-    backgroundColor: '#f9fafb',
+export const headerRowStyles: React.CSSProperties = {
+    backgroundColor: 'var(--vscode-editor-background)',
     fontWeight: 'bold',
-  };
+};
+
+export const tabButtonStyle: React.CSSProperties = {
+    padding: '10px 20px',
+    cursor: 'pointer',
+    backgroundColor: 'var(--vscode-tab-inactiveBackground)',
+    color: 'var(--vscode-tab-inactiveForeground)',
+    border: '1px solid var(--vscode-tab-border)',
+    marginRight: '5px',
+};
+
+export const activeTabButtonStyle: React.CSSProperties = {
+    ...tabButtonStyle,
+    backgroundColor: 'var(--vscode-tab-activeBackground',
+    borderTop: '2px solid var(--vscode-tab-activeBorderTop)',
+    color: 'var(--vscode-tab-activeForeground)',
+    borderBottom: 'none',
+};
+
+export const tabContentStyle: React.CSSProperties = {
+    backgroundColor: 'var(--vscode-sidebar-background)',
+};
+
+export const ResultStyle: React.CSSProperties = {
+    padding: '16px',
+    backgroundColor: 'var(--vscode-editor-background)',
+    overflow: 'auto',
+};
