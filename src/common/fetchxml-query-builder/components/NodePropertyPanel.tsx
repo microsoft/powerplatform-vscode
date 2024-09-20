@@ -15,12 +15,13 @@ import { OrderNodePropertyPanel } from './PropertyPanels/OrderNode';
 interface NodePropertyPanelProps {
     node: INode;
     onPropertyUpdate: (updatedNode: INode) => void;
+    style?: React.CSSProperties;
 }
 
 export const NodePropertyPanel: React.FC<NodePropertyPanelProps> = (props) => {
     return (
-        <div>
-            <h3>Node Property Panel</h3>
+        <div style={props.style}>
+            <span>Node Properties</span>
             {panelFactory(props.node, props.onPropertyUpdate)}
         </div>
     );

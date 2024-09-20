@@ -9,7 +9,8 @@ export const sidebar: React.CSSProperties = {
     height: '100vh',
     borderRight: '0.5px solid #cccccc',
     padding: '10px',
-    position: 'relative'
+    position: 'relative',
+    display: 'flex',
 };
 
 export const resizer: React.CSSProperties = {
@@ -90,4 +91,9 @@ export const actionButtonStyle: React.CSSProperties = {
     border: 'none',
     padding: '8px',
     borderRadius: '4px',
+  };
+
+  export const sidebarPanel: React.CSSProperties = {
+    flex: 1,
+    overflow: 'auto',
   };

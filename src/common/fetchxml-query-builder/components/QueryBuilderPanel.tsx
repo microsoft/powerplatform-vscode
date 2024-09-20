@@ -14,6 +14,7 @@ interface QueryBuilderPanelProps {
     tree: ITree;
     onNodeSelect: (node: INode) => void;
     refreshTree: () => void;
+    style: React.CSSProperties;
 }
 
 export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = (props) => {
@@ -42,7 +43,7 @@ export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = (props) => {
     };
 
     return (
-        <div>
+        <div style={props.style}>
             <span>Query Builder</span>
             {renderTree(nodes, props.onNodeSelect, handleContextMenu)}
             {contextMenuVisible 

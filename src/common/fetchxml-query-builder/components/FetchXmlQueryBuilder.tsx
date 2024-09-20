@@ -9,7 +9,7 @@ import { NodePropertyPanel } from './NodePropertyPanel';
 import { IEntityNode, IFetchNode, INode } from '../interfaces/Node';
 import { ITree } from '../interfaces/Tree';
 import { EntityNode, FetchNode } from '../models/Node';
-import { containerStyle, fetchXmlStyle, resizer, showQueryButton, sidebar } from './Styles';
+import { containerStyle, fetchXmlStyle, resizer, showQueryButton, sidebar, sidebarPanel } from './Styles';
 import { getFetchXmlFromQueryTree, prettifyXml } from '../utility/utility';
 import { ResultPanel } from './ResultPanel';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
@@ -72,10 +72,14 @@ export const FetchXmlQueryBuilderApp = () => {
                 </button>
                 <QueryBuilderPanel
                     tree={tree}
+                    style={{...sidebarPanel, borderBottom: '0.5px solid #cccccc'}}
                     onNodeSelect={onNodeSelect}
                     refreshTree={refreshTree}
                 />
-                <NodePropertyPanel node={selectedNode} onPropertyUpdate={onPropertyUpdate}/>
+                <NodePropertyPanel 
+                    node={selectedNode} 
+                    onPropertyUpdate={onPropertyUpdate}
+                    style={sidebarPanel}/>
             </div>
             <div
                 style={resizer}
