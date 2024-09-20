@@ -22,6 +22,7 @@ export class FetchXmlQueryBuilderPanel {
     private readonly _disposables: vscode.Disposable[] = [];
     private orgUrl = '';
     private telemetry: ITelemetry | TelemetryReporter;
+    private attributes: string[] = [];
 
 
 
@@ -138,9 +139,14 @@ export class FetchXmlQueryBuilderPanel {
                 }
             case 'entitySelected':
                 {
-                    const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
-                    const attributes = await getEntityColumns(message.entity, orgUrl, dataverseToken, this.telemetry, '')
-                    webView.postMessage({ type: 'getAttributes', attributes: attributes })
+                    const selectedEntity = message.entity;
+                    if (selectedEntity === '') {
+                        webView.postMessage({ type: 'getAttributes', attributes: this.attributes});
+                    } else {
+                        const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
+                        this.attributes = await getEntityColumns(message.entity, orgUrl, dataverseToken, this.telemetry, '')
+                        webView.postMessage({ type: 'getAttributes', attributes: this.attributes })
+                    }
                 }
             // Add more cases to handle other message types
         }
