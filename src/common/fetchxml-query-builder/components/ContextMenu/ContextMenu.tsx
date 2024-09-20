@@ -35,7 +35,7 @@ export const ContextMenu: React.FC<IContextMenuProps> = (props) => {
             {menuItems.map((item, index) => (
                 <li 
                     key={index}
-                    style={{...menuItemStyle, backgroundColor: hoveredItemLabel === item.label ? '#f0f0f0' : 'white'}}
+                    style={{...menuItemStyle, backgroundColor: hoveredItemLabel === item.label ? '#2A2A2A' : '#1F1F1F'}}
                     onMouseEnter={() => handleMouseEnter(item.label)}
                     onMouseLeave={handleMouseLeave}
                     onClick={() => {
@@ -49,7 +49,7 @@ export const ContextMenu: React.FC<IContextMenuProps> = (props) => {
                         {item.subMenuItems.map((subItem, subIndex) => (
                             <li 
                                 key={subIndex} 
-                                style={{...menuItemStyle, backgroundColor: hoveredItemLabel === subItem.label ? '#f0f0f0' : 'white'}}
+                                style={{...menuItemStyle, backgroundColor: hoveredItemLabel === subItem.label ? '#2A2A2A' : '#1F1F1F'}}
                                 onMouseEnter={() => setHoveredItemLabel(subItem.label)}
                                 onMouseLeave={() => setHoveredItemLabel(null)}
                                 onClick={() => {

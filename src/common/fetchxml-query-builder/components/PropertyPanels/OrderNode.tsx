@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { IOrderNode } from '../../interfaces/Node';
 import { OrderNode } from '../../models/Node';
 import { getVSCodeApi } from '../../utility/utility';
+import { containerStyle, labelStyle } from './Styles';
 
 export interface OrderNodePropertyPanelProps {
     node: IOrderNode;
@@ -52,26 +53,27 @@ export const OrderNodePropertyPanel: React.FC<OrderNodePropertyPanelProps> = (pr
     }, []);
 
     return (
-        <div>
-            <label htmlFor="dropdown">Attribute Name:</label>
-            <select id="dropdown" value={attribute} onChange={handleAttributeChange}>
-                {!attribute && <option value=""></option>}
-                {attributes.map(attribute => (
-                    <option key={attribute} value={attribute}>
-                        {attribute}
-                    </option>
-                ))}
-            </select>
+        <div style={{marginTop: '10px'}}>
+            <div style={containerStyle}>
+                <label htmlFor="dropdown" style={labelStyle}>Attribute Name:</label>
+                <select id="dropdown" value={attribute} onChange={handleAttributeChange}>
+                    {!attribute && <option value=""></option>}
+                    {attributes.map(attribute => (
+                        <option key={attribute} value={attribute}>
+                            {attribute}
+                        </option>
+                    ))}
+                </select>
+            </div>
             {!attribute && <p style={{ color: 'red' }}>Please select an attribute name.</p>}
-            <br></br>
-            <label>
-                Descending:
+            <div style={containerStyle}>
+                <label style={labelStyle}>Descending:</label>
                 <input
-                    type="checkbox"
-                    checked={descending}
-                    onChange={handleDescendingChange}
+                        type="checkbox"
+                        checked={descending}
+                        onChange={handleDescendingChange}
                 />
-            </label>
+            </div>
         </div>
     );
 }

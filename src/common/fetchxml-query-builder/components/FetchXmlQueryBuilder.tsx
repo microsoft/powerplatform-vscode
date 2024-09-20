@@ -80,7 +80,7 @@ export const FetchXmlQueryBuilderApp = () => {
                 <NodePropertyPanel
                     node={selectedNode}
                     onPropertyUpdate={onPropertyUpdate}
-                    style={{...sidebarPanel, borderBottom: '0.5px solid #cccccc'}}/>
+                    style={{...sidebarPanel,marginTop: '10px', borderBottom: '0.5px solid #cccccc'}}/>
                  <ChatInput
                     style={sidebarPanel as React.CSSProperties}
                  />
