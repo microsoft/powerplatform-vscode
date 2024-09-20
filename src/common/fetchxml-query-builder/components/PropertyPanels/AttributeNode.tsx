@@ -25,7 +25,7 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
     const messageHandler = (event: MessageEvent) => {
         if (event.data.type === 'getAttributes') {
             console.log(event.data.attributes);
-            setAttributes(event.data.entities);
+            setAttributes(event.data.attributes);
         }
     };
 
