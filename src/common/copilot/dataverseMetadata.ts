@@ -176,7 +176,7 @@ function getAttributesFromResponse(jsonResponse: any): string[] {
         attributes.forEach((attr: any) => {
             const attrDisplayName = attr.DisplayName?.UserLocalizedLabel?.Label; // Optional chaining for handling missing values
             if (attrDisplayName) {
-                logicalNameDisplayName.push(attrDisplayName)
+                // logicalNameDisplayName.push(attrDisplayName)
                 logicalNameDisplayName.push(attr.LogicalName)
             }
         })

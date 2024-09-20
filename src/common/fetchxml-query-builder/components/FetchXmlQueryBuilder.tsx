@@ -11,6 +11,7 @@ import { ITree } from '../interfaces/Tree';
 import { EntityNode, FetchNode } from '../models/Node';
 import { containerStyle, fetchXmlStyle, showQueryButton, sidebar } from './Styles';
 import { getFetchXmlFromQueryTree, prettifyXml } from '../utility/utility';
+import { ResultPanel } from './ResultPanel';
 
 export const FetchXmlQueryBuilderApp = () => {
     const [tree, setTree] = React.useState<ITree>(getInitTree());
@@ -38,7 +39,7 @@ export const FetchXmlQueryBuilderApp = () => {
         query = prettifyXml(query);
         setFetchXml(query);
     };
-    
+
     return (
         <div style={containerStyle}>
             <div style={sidebar}>
@@ -51,7 +52,7 @@ export const FetchXmlQueryBuilderApp = () => {
                 <NodePropertyPanel node={selectedNode} onPropertyUpdate={onPropertyUpdate}/>
             </div>
             <div style={fetchXmlStyle}>
-                {fetchXml && fetchXml} 
+                <ResultPanel query={fetchXml} />
             </div>
         </div>
     );

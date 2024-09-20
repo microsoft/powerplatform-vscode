@@ -9,7 +9,7 @@ import { ActiveOrgOutput } from '../../client/pac/PacTypes';
 import { dataverseAuthentication } from '../services/AuthenticationProvider';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { ITelemetry } from '../OneDSLoggerTelemetry/telemetry/ITelemetry';
-import { getEntities, getEntityColumns } from '../copilot/dataverseMetadata';
+import { executeFetchXml, getEntities, getEntityColumns } from '../copilot/dataverseMetadata';
 import { PacWrapper } from '../../client/pac/PacWrapper';
 import { SUCCESS } from '../constants';
 import { createAuthProfileExp } from '../copilot/utils/copilotUtil';
@@ -23,6 +23,7 @@ export class FetchXmlQueryBuilderPanel {
     private orgUrl = '';
     private telemetry: ITelemetry | TelemetryReporter;
     private attributes: string[] = [];
+    private entityName: string | undefined;
 
 
 
@@ -143,10 +144,21 @@ export class FetchXmlQueryBuilderPanel {
                     if (selectedEntity === '') {
                         webView.postMessage({ type: 'getAttributes', attributes: this.attributes});
                     } else {
+                        this.entityName = selectedEntity;
                         const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
                         this.attributes = await getEntityColumns(message.entity, orgUrl, dataverseToken, this.telemetry, '')
                         webView.postMessage({ type: 'getAttributes', attributes: this.attributes })
                     }
+                    break;
+                }
+            case 'executeQuery':
+                {
+                    const query = message.query;
+                    const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
+                    let queryResult = await executeFetchXml(this.entityName ? this.entityName : "mspp_webfile", query, orgUrl, dataverseToken, this.telemetry, '')
+                    queryResult = ['Query Result Placeholdr']
+                    webView.postMessage({type: 'setQueryResult', queryResult: queryResult.toString()})
+                    break;
                 }
             // Add more cases to handle other message types
         }

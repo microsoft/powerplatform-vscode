@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { IOrderNode } from '../../interfaces/Node';
 import { OrderNode } from '../../models/Node';
+import { getVSCodeApi } from '../../utility/utility';
 
 export interface OrderNodePropertyPanelProps {
     node: IOrderNode;
@@ -15,9 +16,9 @@ export interface OrderNodePropertyPanelProps {
 export const OrderNodePropertyPanel: React.FC<OrderNodePropertyPanelProps> = (props) => {
     const [attribute, setAttribute] = useState<string>(props.node.name);
     const [descending, setDescending] = useState<boolean>(props.node.descending ?? false);
+    const [attributes, setAttributes] = useState<string[]>([]);
+    const vscode = getVSCodeApi();
 
-
-    const attributes = ["name", "emailaddress1", "telephone1", "address1_city"];
     const handleAttributeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newAttribute = event.target.value;
         setAttribute(newAttribute);
@@ -31,6 +32,24 @@ export const OrderNodePropertyPanel: React.FC<OrderNodePropertyPanelProps> = (pr
         const updatedNode = new OrderNode(props.node.id, attribute, newDescending);
         props.onPropertyUpdate(updatedNode);
     };
+
+    const messageHandler = (event: MessageEvent) => {
+        if (event.data.type === 'getAttributes') {
+            console.log(event.data.attributes);
+            setAttributes(event.data.attributes);
+        }
+    };
+
+    React.useEffect(() => {
+        window.addEventListener('message', messageHandler);
+
+        // Request attributes for the selected entity
+        vscode.postMessage({ type: 'entitySelected', entity: ''});
+
+        return () => {
+        window.removeEventListener('message', messageHandler);
+        };
+    }, []);
 
     return (
         <div>
