@@ -4,7 +4,7 @@
  */
 
 import { INode } from "../../interfaces/Node";
-import { addAttribute, addOrder, deleteNode, moveDown, moveUp } from "./Actions/Actions";
+import { addAttribute, addEntity, addOrder, deleteNode, moveDown, moveUp } from "./Actions/Actions";
 
 export const Options = {
     'Entity': [
@@ -81,6 +81,17 @@ export const Options = {
         {
             label: 'Move Down',
             action: (node: INode) => moveDown(node),
+        }
+    ],
+    'Fetch': [
+        {
+            label: 'Add',
+            subMenuItems: [
+                {
+                    label: 'Entity',
+                    action: (node: INode) => addEntity(node),
+                }
+            ]
         }
     ]
 }

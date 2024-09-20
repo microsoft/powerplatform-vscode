@@ -29,6 +29,7 @@ export const ContextMenu: React.FC<IContextMenuProps> = (props) => {
     };
 
     const menuItems = getMenuItems(props.node);
+    if (!menuItems.length) return null;
     return (
         <ul style={{ top: `${props.position.y}px`, left: `${props.position.x}px`, position: "absolute", ...menuStyle }}>
             {menuItems.map((item, index) => (

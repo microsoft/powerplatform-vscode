@@ -23,7 +23,7 @@ export interface IEntityNode extends INode {
 }
 
 export interface IFetchNode extends INode {
-    entity: IEntityNode;
+    getEntity: () => IEntityNode | null;
     top: number;
     distinct: boolean;
 }

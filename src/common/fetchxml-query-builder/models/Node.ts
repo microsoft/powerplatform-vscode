@@ -49,17 +49,17 @@ export class Node implements INode {
 }
 
 export class FetchNode extends Node implements IFetchNode {
-    entity: IEntityNode;
     top: number;
     distinct: boolean;
 
-    constructor(entity: IEntityNode, top?: number, distinct?: boolean) {
+    constructor(entity: IEntityNode|null, top?: number, distinct?: boolean) {
         super(NodeType.Fetch, 'fetch');
-        this.entity = entity;
         this.top = top || 50;
         this.distinct = distinct || false;
-        this._children = [entity];
-        entity.parent = this;
+        this._children = entity ? [entity] : [];
+        if (entity) {
+            entity.parent = this;
+        }
     }
 
     getOpeningTag() {
@@ -72,6 +72,17 @@ export class FetchNode extends Node implements IFetchNode {
 
     getLabel() {
         return `Fetch top: ${this.top} distinct: ${this.distinct}`;
+    }
+
+    getEntity() {
+        if (!this._children) return null;
+
+        return this._children[0] as IEntityNode;
+    }
+
+    setEntity(entity: IEntityNode) {
+        this._children = [entity];
+        entity.parent = this;
     }
 }
 

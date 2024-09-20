@@ -19,6 +19,11 @@ export const getMenuItems = (node: INode): IMenuItem[] => {
         case 'Order':
         case 'Filter':
             return Options[node.type];
+        case 'Fetch':
+            if (node.getChildren().length > 0) {
+                return Options[node.type].filter(item => item.label !== 'Add');
+            }
+            return Options[node.type];
         default:
             return [];
     }
