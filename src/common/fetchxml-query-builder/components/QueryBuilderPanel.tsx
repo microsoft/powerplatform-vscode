@@ -9,6 +9,9 @@ import { INode } from '../interfaces/Node';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { ContextMenu } from './ContextMenu/ContextMenu';
+import StorageRoundedIcon from '@mui/icons-material/StorageRounded';
+import { NodeType } from '../constants/constants';
+import { BackupTableRounded, CommitRounded, SwapVertRounded } from '@mui/icons-material';
 
 interface QueryBuilderPanelProps {
     tree: ITree;
@@ -67,7 +70,7 @@ const renderTree = (nodes: INode[], onNodeSelect: (node: INode) => void, onConte
                 <TreeItem
                     key={node.id}
                     itemId={node.id}
-                    label={node.getLabel()}
+                    label={getNodeLabel(node)}
                     onClick={() => onNodeSelect(node)}
                     onContextMenu={(e) => onContextMenu(e, node)}
                 >
@@ -76,4 +79,39 @@ const renderTree = (nodes: INode[], onNodeSelect: (node: INode) => void, onConte
             </SimpleTreeView>
         </div>
     );
+}
+
+const getNodeLabel = (node: INode) => {
+    switch (node.type) {
+        case NodeType.Entity:
+            return(
+                <div style={{ display: 'flex', alignItems: 'center', fontSize: '13px' }}>
+                    <BackupTableRounded style={{marginRight: '5px', fontSize: '15px'}}/>
+                    {node.getLabel()}
+                </div>
+            );
+        case NodeType.Attribute:
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', fontSize: '13px' }}>
+                    <CommitRounded style={{marginRight: '5px', fontSize: '15px'}}/>
+                    {node.getLabel()}
+                </div>
+            );
+        case NodeType.Fetch:
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', fontSize: '13px' }}>
+                    <StorageRoundedIcon style={{marginRight: '5px', fontSize: '15px'}}/>
+                    {node.getLabel()}
+                </div>
+            );
+        case NodeType.Order:
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', fontSize: '13px' }}>
+                    <SwapVertRounded style={{marginRight: '5px', fontSize: '15px'}}/>
+                    {node.getLabel()}
+                </div>
+            );
+        default:
+            return '';
+    } 
 }
