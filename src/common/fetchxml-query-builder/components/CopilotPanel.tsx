@@ -87,7 +87,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ style}) => {
     return (
         <div style={style}>
         <h4>FetchXml Copilot</h4>
-        <p>Welcome <b>John!</b> Use this tool to effortlessly generate queries and streamline your workflow. If you need assistance, simply type your query requirement below and hit the send button.</p>
+        <p>Welcome <b>John!</b> Use this tool to effortlessly generate queries. Simply type your query requirement below and hit the send button.</p>
         <br/>
         <div style={styles.chatInput} id="input-component">
             <label htmlFor="chat-input" style={styles.inputLabel} id="input-label-id"></label>
