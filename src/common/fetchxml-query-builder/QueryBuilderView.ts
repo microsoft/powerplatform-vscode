@@ -155,9 +155,9 @@ export class FetchXmlQueryBuilderPanel {
                 {
                     const query = message.query;
                     const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
-                    let queryResult = await executeFetchXml(this.entityName ? this.entityName : "mspp_webfile", query, orgUrl, dataverseToken, this.telemetry, '')
-                    queryResult = ['Query Result Placeholdr']
-                    webView.postMessage({type: 'setQueryResult', queryResult: queryResult.toString()})
+                    const entityName = this.entityName + 's';
+                    const queryResult = await executeFetchXml(this.entityName ? entityName : "contacts", query, orgUrl, dataverseToken, this.telemetry, '')
+                    webView.postMessage({type: 'setQueryResult', queryResult: queryResult})
                     break;
                 }
             // Add more cases to handle other message types

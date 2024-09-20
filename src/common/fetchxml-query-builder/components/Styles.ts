@@ -75,3 +75,29 @@ export const actionButtonStyle: React.CSSProperties = {
     padding: '8px',
     borderRadius: '4px',
   };
+
+  // Inline styles for the table and elements using React.CSSProperties
+export const tableStyles: React.CSSProperties = {
+    width: '100%',
+    borderCollapse: 'collapse',
+    marginBottom: '20px',
+    fontSize: '14px',
+    textAlign: 'left',
+  };
+
+  export const thStyles: React.CSSProperties = {
+    backgroundColor: '#f4f4f4',
+    padding: '10px',
+    border: '1px solid #ddd',
+    textTransform: 'capitalize',
+  };
+
+  export const tdStyles: React.CSSProperties = {
+    padding: '10px',
+    border: '1px solid #ddd',
+  };
+
+  export const headerRowStyles: React.CSSProperties = {
+    backgroundColor: '#f9fafb',
+    fontWeight: 'bold',
+  };

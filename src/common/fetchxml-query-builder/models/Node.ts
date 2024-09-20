@@ -63,7 +63,7 @@ export class FetchNode extends Node implements IFetchNode {
     }
 
     getOpeningTag() {
-        return `<fetch top="${this.top}" distinct="${this.distinct}">`;
+        return `<fetch distinct="${this.distinct}">`;
     }
 
     getClosingTag() {
@@ -71,7 +71,7 @@ export class FetchNode extends Node implements IFetchNode {
     }
 
     getLabel() {
-        return `Fetch top: ${this.top} distinct: ${this.distinct}`;
+        return `Fetch distinct: ${this.distinct}`;
     }
 
     getEntity() {
