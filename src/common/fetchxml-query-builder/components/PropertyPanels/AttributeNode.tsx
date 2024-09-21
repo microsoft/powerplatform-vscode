@@ -47,8 +47,8 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
     return (
         <div style={{...containerStyle, marginTop: '10px'} }>
             <label htmlFor="dropdown" style={labelStyle}>Attribute Name:</label>
-            <select id="dropdown" 
-                value={selectedAttribute} 
+            <select id="dropdown"
+                value={selectedAttribute}
                 onChange={handleChange}
                 style={selectStyle}
             >
@@ -59,7 +59,6 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
                     </option>
                 ))}
             </select>
-            {!selectedAttribute && <p style={{ color: 'red' }}>Please select an attribute name.</p>}
         </div>
     )
 }

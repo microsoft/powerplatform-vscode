@@ -56,7 +56,6 @@ export const EntityNodePropertyPanel: React.FC<EntityNodePropertyPanelProps> = (
                     </option>
                 ))}
             </select>
-            {!selectedEntity && <p style={{ color: 'red' }}>Please select an entity name.</p>}
         </div>
     )
 }
