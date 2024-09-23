@@ -19,6 +19,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     const [activeTab, setActiveTab] = useState<string>("execute");
     const [isConvertHovered, setIsConvertHovered] = useState<boolean>(false);
     const [isExecuteHovered, setIsExecuteHovered] = useState<boolean>(false);
+    const [isQueryExecuted, setIsQueryExecuted] = useState<boolean>(false);
     const query = props.query;
     const vscode = getVSCodeApi();
 
@@ -26,11 +27,13 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
         if (event.data.type === 'setQueryResult') {
             console.log(event.data.queryResult);
             setQueryResult(event.data.queryResult);
+            setIsQueryExecuted(false);
         }
     };
 
     const executeQuery = () => {
         console.log(query);
+        setIsQueryExecuted(true);
         vscode.postMessage({ type: 'executeQuery', query: query });
         setActiveTab("execute");
     };
@@ -149,7 +152,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
                 {activeTab === "execute" && (
                     <div style={ResultStyle}>
                         <h3>Execute Result</h3>
-                        <></>
+                        {isQueryExecuted && <p>Executing query...</p>}
                         <table style={tableStyles}>
                             <thead>
                                 <tr style={headerRowStyles}>
