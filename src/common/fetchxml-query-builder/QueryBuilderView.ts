@@ -13,6 +13,7 @@ import { executeFetchXml, getEntities, getEntityColumns } from '../copilot/datav
 import { PacWrapper } from '../../client/pac/PacWrapper';
 import { SUCCESS } from '../constants';
 import { createAuthProfileExp } from '../copilot/utils/copilotUtil';
+import { IOrgInfo } from '../copilot/model';
 
 export class FetchXmlQueryBuilderPanel {
     public static currentPanel: FetchXmlQueryBuilderPanel | undefined;
@@ -27,7 +28,7 @@ export class FetchXmlQueryBuilderPanel {
 
 
 
-    public static createOrShow(extensionUri: vscode.Uri, telementry: ITelemetry | TelemetryReporter, pacWrapper: PacWrapper) {
+    public static createOrShow(extensionUri: vscode.Uri, telementry: ITelemetry | TelemetryReporter, pacWrapper?: PacWrapper, orgInfo?: IOrgInfo ) {
         const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
         // If we already have a panel, show it.
@@ -48,21 +49,21 @@ export class FetchXmlQueryBuilderPanel {
             }
         );
 
-        FetchXmlQueryBuilderPanel.currentPanel = new FetchXmlQueryBuilderPanel(panel, extensionUri, telementry, pacWrapper);
+        FetchXmlQueryBuilderPanel.currentPanel = new FetchXmlQueryBuilderPanel(panel, extensionUri, telementry, pacWrapper, orgInfo);
     }
 
 
-    constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, telemetry: ITelemetry, pacWrapper: PacWrapper) {
+    constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, telemetry: ITelemetry, pacWrapper?: PacWrapper, orgInfo?:IOrgInfo) {
         this._panel = panel;
         this._extensionUri = extensionUri;
         this.telemetry = telemetry;
         this._pacWrapper = pacWrapper;
 
         // Call the async initialization method
-        this.initialize();
+        this.initialize(orgInfo);
     }
 
-    private async initialize() {
+    private async initialize(orgInfo?: IOrgInfo) {
         // Set the HTML content for the webview
         this._panel.webview.html = this._getHtmlForWebview(this._panel.webview);
 
@@ -70,7 +71,11 @@ export class FetchXmlQueryBuilderPanel {
         this._panel.webview.onDidReceiveMessage(this._handleMessage.bind(this));
 
         // Wait for handleOrgChange to complete
-        await this.handleOrgChange();
+        if(orgInfo) {
+            this.orgUrl = orgInfo.activeOrgUrl;
+        } else {
+            await this.handleOrgChange();
+        }
 
         // Dispose of the panel when it's closed
         this._panel.onDidDispose(() => this.dispose(), null, []);

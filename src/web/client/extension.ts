@@ -45,6 +45,7 @@ import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { ServiceEndpointCategory } from "../../common/services/Constants";
 import { EXTENSION_ID } from "../../common/constants";
+import { FetchXmlQueryBuilderPanel } from "../../common/fetchxml-query-builder/QueryBuilderView";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -602,6 +603,12 @@ export function registerCopilot(context: vscode.ExtensionContext) {
             WebExtensionContext.telemetry.getTelemetryReporter(),
             undefined,
             orgInfo);
+
+        context.subscriptions.push(
+            vscode.commands.registerCommand('fetchXMLQueryBuilder.open', () => {
+                FetchXmlQueryBuilderPanel.createOrShow(context.extensionUri, WebExtensionContext.telemetry.getTelemetryReporter(), undefined, orgInfo);
+            })
+        );
 
         context.subscriptions.push(vscode.window.registerWebviewViewProvider(copilot.PowerPagesCopilot.viewType, copilotPanel, {
             webviewOptions: {
