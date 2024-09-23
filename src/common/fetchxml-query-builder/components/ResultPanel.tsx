@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { resultSectionStyle, buttonHoverStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle, headerRowStyles, tableStyles, tdStyles, thStyles, tabButtonStyle, activeTabButtonStyle, tabContentStyle, ResultStyle } from "./Styles";
+import { resultSectionStyle, buttonHoverStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle, headerRowStyles, tableStyles, tdStyles, thStyles, tabButtonStyle, activeTabButtonStyle, tabContentStyle, ResultStyle, buttonDisabledStyle } from "./Styles";
 import { getVSCodeApi } from "../utility/utility";
 
 interface ResultPanelProps {
@@ -99,19 +99,29 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
                 />
                 {/* Convert and Execute Buttons */}
                 <div>
-                    <button
-                        style={{ ...convertButtonStyle, ...(isConvertHovered ? buttonHoverStyle : {}) }}
+                <button
+                        style={{
+                            ...convertButtonStyle,
+                            ...(isConvertHovered ? buttonHoverStyle : {}),
+                            ...(query ? {} : buttonDisabledStyle)
+                        }}
                         onMouseEnter={() => setIsConvertHovered(true)}
                         onMouseLeave={() => setIsConvertHovered(false)}
                         onClick={convertQueryToTemplate}
+                        disabled={!query}
                     >
                         Convert
                     </button>
                     <button
-                        style={{ ...executeButtonStyle, ...(isExecuteHovered ? buttonHoverStyle : {}) }}
+                        style={{
+                            ...executeButtonStyle,
+                            ...(isExecuteHovered ? buttonHoverStyle : {}),
+                            ...(query ? {} : buttonDisabledStyle)
+                        }}
                         onMouseEnter={() => setIsExecuteHovered(true)}
                         onMouseLeave={() => setIsExecuteHovered(false)}
                         onClick={executeQuery}
+                        disabled={!query}
                     >
                         Execute
                     </button>
@@ -139,6 +149,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
                 {activeTab === "execute" && (
                     <div style={ResultStyle}>
                         <h3>Execute Result</h3>
+                        <></>
                         <table style={tableStyles}>
                             <thead>
                                 <tr style={headerRowStyles}>

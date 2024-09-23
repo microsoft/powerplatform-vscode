@@ -76,6 +76,11 @@ export const buttonHoverStyle: React.CSSProperties = {
     color: 'var(--vscode-button-foreground)',
 };
 
+export const buttonDisabledStyle: React.CSSProperties = {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+};
+
 export const resultSectionStyle: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
