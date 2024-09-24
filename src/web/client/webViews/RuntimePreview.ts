@@ -103,6 +103,7 @@ export class RuntimePreview extends Disposable {
 					font-src ${this._panel.webview.cspSource};
 					style-src ${this._panel.webview.cspSource};
 					script-src 'nonce-${nonce}';
+                    frame-src 'self' ${this._runtimeUri} ${this._panel.webview.cspSource};
 				">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
