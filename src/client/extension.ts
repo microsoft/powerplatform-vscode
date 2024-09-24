@@ -187,6 +187,17 @@ export async function activate(
     _context.subscriptions.push(cli);
     _context.subscriptions.push(pacTerminal);
 
+    // Init OrgChangeNotifier instance
+    OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
+
+    let copilotNotificationShown = false;
+
+    const workspaceFolders =
+        vscode.workspace.workspaceFolders?.map(
+            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+        ) || [];
+
+
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
@@ -221,30 +232,34 @@ export async function activate(
                 }
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }
+
+            if (!copilotNotificationShown) {
+                if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+                    let telemetryData = '';
+                    let listOfActivePortals = [];
+                    try {
+                        listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
+                        telemetryData = JSON.stringify(listOfActivePortals);
+                        _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
+                        oneDSLoggerWrapper.getLogger().traceInfo("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
+                    } catch (exception) {
+                        const exceptionError = exception as Error;
+                        _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
+                        oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
+                    }
+
+                    // Show Copilot notification after ECS initialization and workspace check
+                    showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
+                    copilotNotificationShown = true;
+                }
+            }
+
         })
     );
 
 
-    const workspaceFolders =
-        vscode.workspace.workspaceFolders?.map(
-            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
-        ) || [];
-    // TODO: Handle for VSCode.dev also
+
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-        let telemetryData = '';
-        let listOfActivePortals = [];
-        try {
-            listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
-            telemetryData = JSON.stringify(listOfActivePortals);
-            _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
-            oneDSLoggerWrapper.getLogger().traceInfo("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
-        } catch (exception) {
-            const exceptionError = exception as Error;
-            _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
-            oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
-        }
-        // Init OrgChangeNotifier instance
-        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
 
         vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
         vscode.workspace.textDocuments.forEach(didOpenTextDocument);
@@ -253,7 +268,6 @@ export async function activate(
         oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
-        showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
