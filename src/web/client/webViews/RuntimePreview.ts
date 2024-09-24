@@ -41,41 +41,15 @@ export class RuntimePreview extends Disposable {
                 this._handleWebviewMessage(message)
             )
         );
-        this.loadContent();
-    }
 
-    private async loadContent() {
-        try {
-            const response = await fetch(this._runtimeUri);
-            let content = await response.text();
-            console.log("content as initially fetched", content);
-
-            // Modify the content to resolve relative URLs
-            content = this.resolveRelativeUrls(content, this._runtimeUri);
-            console.log("After path resolve content", content);
-
-            this._panel.webview.html = this._getHtmlForWebview(content);
-        } catch (error) {
-            this._panel.webview.html = this._getHtmlForWebview('<h1>Failed to load content</h1>');
-        }
-    }
-
-
-    private resolveRelativeUrls(content: string, baseUrl: string): string {
-        return content.replace(/(href|src)="([^"]*)"/g, (match, p1, p2) => {
-            if (p2.startsWith('http') || p2.startsWith('https')) {
-                return match;
-            }
-            const absoluteUrl = new URL(p2, baseUrl).toString();
-            return `${p1}="${absoluteUrl}"`;
-        });
+        this._panel.webview.html = this._getHtmlForWebview();
     }
 
     /**
      * @description generate the HTML to load in the webview; this will contain the full-page iframe with the hosted content,
      *  in addition to the top navigation bar.
      */
-    private _getHtmlForWebview(content: string): string {
+    private _getHtmlForWebview(): string {
         // Local path to main script run in the webview
         const scriptPathOnDisk = vscode.Uri.joinPath(
             this._extensionUri,
@@ -129,7 +103,6 @@ export class RuntimePreview extends Disposable {
 					font-src ${this._panel.webview.cspSource};
 					style-src ${this._panel.webview.cspSource};
 					script-src 'nonce-${nonce}';
-                    frame-src ${this._runtimeUri};
 				">
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -214,15 +187,14 @@ export class RuntimePreview extends Disposable {
 					</div>
 				</div>
 				<div class="content">
-                    ${content}
-                    <!--<iframe id="hostedContent" src="${this._runtimeUri}" sandbox="allow-scripts allow-same-origin" width="100%" height="100%" frameborder="0"></iframe>-->
+                    <iframe id="hostedContent" src="${this._runtimeUri}" sandbox="allow-popups allow-top-navigation allow-scripts allow-same-origin" width="100%" height="100%" frameborder="0"></iframe>
 				</div>
 			</div>
 			<div id="link-preview"></div>
-				<script nonce="${nonce}">
-					const WS_URL= "${"test url"}";
-				</script>
-				<script nonce="${nonce}" src="${scriptUri}"></script>
+            <script nonce="${nonce}">
+                const WS_URL= "${"test url"}";
+            </script>
+            <script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 		</html>`;
     }
