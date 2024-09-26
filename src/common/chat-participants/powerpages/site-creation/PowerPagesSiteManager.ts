@@ -5,8 +5,9 @@
 
 import { nl2SiteJson } from "./Nl2SiteTemplate";
 import { PowerPagesParsedJson } from "./PowerPagesSiteModel";
-import { reGuidPowerPagesSite } from "./PowerPagesSiteUtils";
-
+import { getCDSEntityRequestURLPath, reGuidPowerPagesSite } from "./PowerPagesSiteUtils";
+import * as entityNames from "./EntityNames";
+import { PowerPagesComponent } from "./PowerPagesComponent";
 
 
   type IPowerPagesSiteFromJsonActions = {
@@ -37,7 +38,7 @@ import { reGuidPowerPagesSite } from "./PowerPagesSiteUtils";
       this.siteData = reGuidPowerPagesSite(ppJsonBlob as PowerPagesParsedJson);
     }
 
-    function getBatchAndFileUploads(
+    private getBatchAndFileUploads(
         siteData: PowerPagesParsedJson
       ): [
         Array<Changeset | DeleteOperation | GetOperation | PatchOperation | PostOperation>,

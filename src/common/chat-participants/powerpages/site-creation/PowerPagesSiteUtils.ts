@@ -6,8 +6,8 @@
 
 
 import { v4 as uuidv4 } from 'uuid';
-import { PresetThemeIds } from './PowerPagesSiteConstants';
-import { PowerPagesParsedJson } from './PowerPagesSiteModel';
+import { CDS_API_BASE_URL, CDS_API_VERSION, PresetThemeIds } from './PowerPagesSiteConstants';
+import { IURLParams, PowerPagesParsedJson } from './PowerPagesSiteModel';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -90,4 +90,37 @@ export const reGuidPowerPagesSite = (site: PowerPagesParsedJson): PowerPagesPars
       powerpagesite: powerPagesSites,
       powerpagesitelanguage: powerPagesSiteLanguages,
     };
+  };
+
+  /**
+ * Get the request URL
+ * @param URLParams IURLParams
+ */
+export const getCDSEntityRequestURL = (URLParams: IURLParams): string => {
+    const { entityId, entityName, query, apiVersion, additionalPathTokens } = URLParams;
+    let url = `${CDS_API_BASE_URL}/${apiVersion ? apiVersion : CDS_API_VERSION}`;
+    if (entityName) {
+      url = `${url}/${entityName}`;
+      if (entityId) {
+        url = `${url}(${entityId})`;
+      }
+    }
+    if (additionalPathTokens && additionalPathTokens.length > 0) {
+      url = `${url}/${additionalPathTokens.join('/')}`;
+    }
+    if (query) {
+      url = `${url}?${query}`;
+    }
+    return url;
+  };
+
+  /**
+ * Get the path for the CDS Entity URL
+ * @param URLParams
+ * @returns path of the URL
+ */
+export const getCDSEntityRequestURLPath = (URLParams: IURLParams): string => {
+    const url = getCDSEntityRequestURL(URLParams);
+    const urlObj = new URL(url);
+    return urlObj.pathname;
   };

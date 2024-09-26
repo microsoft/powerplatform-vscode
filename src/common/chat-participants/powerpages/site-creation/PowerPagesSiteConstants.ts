@@ -19,3 +19,9 @@ export enum PresetThemeIds {
     DARK_BLUE = '656c3ab7-eba6-4496-8de6-2e8c22310f98',
     DARK_YELLOW = '4fce2c5f-d5fc-4e47-8f0b-77be5bd05cce',
   }
+
+export const CDS_BASE_URL = 'https://cds-org';
+export const CDS_URL_PREFIX = '/api/data';
+export const CDS_API_BASE_URL = `${CDS_BASE_URL}${CDS_URL_PREFIX}`;
+export const CDS_API_VERSION = 'v9.2';
+export const CDS_API_VERSION_9_2 = `${CDS_API_BASE_URL}/${CDS_API_VERSION}`;

@@ -8,3 +8,11 @@ export type PowerPagesParsedJson = {
     powerpagesite: any[];
     powerpagesitelanguage: any[];
 };
+
+export interface IURLParams {
+    entityName?: string;
+    entityId?: string;
+    query?: string;
+    apiVersion?: string;
+    additionalPathTokens?: string[];
+  }
