@@ -37,7 +37,8 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
 
     openSpecificURLWithoutAuth(context: vscode.ExtensionContext): void {
         //const websitePreviewUrl = "https://site-cwc5h.powerappsportals.com/"; //public site
-        const websitePreviewUrl = "https://sitemtsanitytestv2.powerappsportals.com/"; //private site
+        const websitePreviewUrl = "https://site-zg8n0.powerappsportals.com/"; //private site
+
         // const browserLiteExtensionId = 'antfu.browse-lite';
         // const browserLiteExtension = vscode.extensions.getExtension(browserLiteExtensionId);
 
@@ -60,11 +61,11 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
         if (edgeToolsExtension) {
             if (edgeToolsExtension.isActive) {
                 this.updateLaunchJsonConfig(websitePreviewUrl).then(() => {
-                    vscode.commands.executeCommand('vscode-edge-devtools.launch');
+                    vscode.commands.executeCommand('vscode-edge-devtools-view.launchProject');
                 });
             } else {
                 edgeToolsExtension.activate().then(() => {
-                    vscode.commands.executeCommand('vscode-edge-devtools.launch', context , vscode.Uri.parse(websitePreviewUrl));
+                    vscode.commands.executeCommand('vscode-edge-devtools-view.launchProject');
                 });
             }
         } else {
