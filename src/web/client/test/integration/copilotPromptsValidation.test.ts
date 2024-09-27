@@ -3,17 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as chai from 'chai';
-import { AIB_ENDPOINT, ExpectedResponses, CreateAndExecuteAPIRequest, getIntelligenceAPIAccessToken, log, ITestLogParams, getFormattedDateTime, writeHeading, writeTableHeaders, closeHtmlFile, ReturnFormattedAPIResponse } from '../../utilities/copilotAutomationUtil';
-const chaiExpect = chai.expect;
+import { AIB_ENDPOINT, CreateAndExecuteAPIRequest, getIntelligenceAPIAccessToken, log, ITestLogParams, getFormattedDateTime, writeHeading, writeTableHeaders, closeHtmlFile, ReturnFormattedAPIResponse, SuggestedPromptsConstants, formatString, verifyAPIResponse, uploadPortal, LaunchRunTime } from '../../utilities/copilotAutomationUtil';
 const aibEndPoint = AIB_ENDPOINT;
 let accessToken : string;
-const violationOrUnclearResponseCodes : string[] = ["violation", "unclear", "unsupported"];
 import fs from 'fs';
 import path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import { chromium } from 'playwright';
 import { expect } from 'playwright/test';
 const testReportPath = path.resolve(__dirname, `../test-reports`); // testReportPath => ..\powerplatform-vscode\out\web\client\test\test-reports
 
@@ -128,53 +122,25 @@ before(async function () {
 // Run tests for Copilot SUGGESTED prompts
 describe('Copilot SUGGESTED prompts integration tests', async function () {   
     const testName = "Write JavaScript code for name field validation in form.";
-    it.skip(testName, async () => {
-      const testStartTime = new Date();
+    it(testName, async () => {
+      // const testStartTime = new Date();
       
       // Actual values to replace placeholders from API request JSON.
       const actualValues = [
         testName, // question
-        ["adx_contactemail"],
+        // ["adx_createdbycontact"],
+        "Name,adx_createdbycontact,,Email,adx_contactemail,,Subject,title,,Message,comments,,Maximum Rating,maxrating,,Minimum Rating,minrating,,Status Reason,statuscode","adx_entityform","","","feedback"
       ];
 
-      const response = await CreateAndExecuteAPIRequest(testName, actualValues, accessToken, logStream);
-      // Record end time after test execution
-      const testEndTime = new Date();
+      const response = await CreateAndExecuteAPIRequest(testName, actualValues, accessToken, logStream);      
 
       // Assert API response
-      chaiExpect(response).to.have.property('status');
-      chaiExpect(response.status).to.equal(200);
-      chaiExpect(response).to.have.property('data');
-      chaiExpect(response.data).to.not.null;
-      chaiExpect(response.data.operationStatus).to.be.equal('Success');
-      const apiResponse = response.data.additionalData[0].properties.response;
-      chaiExpect(JSON.stringify(apiResponse.useCase)).to.not.equal('unsupported');
-
-      // Expect that apiResponse.Code is either undefined or does not include any value from the array
-      chaiExpect(JSON.stringify(apiResponse.Code)).to.satisfy((code: string | unknown[] | undefined) => {
-        return code === undefined || violationOrUnclearResponseCodes.every((value: string) => !code.includes(value));
-      }, 'API response code should be either undefined or not include any of the violation codes');
-      chaiExpect(JSON.stringify(apiResponse.displayText)).not.to.equal(ExpectedResponses.COPILOT_IT_UNSUPPORTED_EXPECTED_RESPONSE.displayText);
-
-      console.log('apiResponse code '+ ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code))
-      fs.writeFileSync('C:\\Downloads\\CopilotSite\\site-for-copilot---site-boc8w\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
-      const options = {
-      cwd: 'C:\\Users\\v-ankopuri.FAREAST\\AppData\\Local\\Microsoft\\PowerAppsCli',
-      };
-
-      // Execute a shell command with custom options
-      const execAsync = promisify(exec);      
-      const { stdout, stderr } = await execAsync('pac paportal upload -p C:/Downloads/CopilotSite/site-for-copilot---site-boc8w -mv 2',options);
-      chaiExpect(stdout.trim()).to.contain('Power Pages website upload succeeded');
-      chaiExpect(stderr).to.be.empty;
+      await verifyAPIResponse(response);
+      fs.writeFileSync('C:\\Users\\v-ankopuri\\Downloads\\CopilotSiteLatest\\latest-site-for-copilot---site-ej93f\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
+      await uploadPortal();
 
       console.log('Launch browser and navigate to run time');
-      const browser = await chromium.launch({ headless: false }); // Set headless: false to see the browser UI
-      const page = await browser.newPage();
-
-      await page.goto('https://site-boc8w.powerappsportals.com/contact-us/',{timeout:60000});
-      await page.waitForLoadState();
-      await page.waitForLoadState('domcontentloaded');
+      const page = await LaunchRunTime('contact-us')
 
       await page.locator('[aria-label="Email"]').fill('abcd@abc.com');
       await page.locator('[id="title"]').fill('Test title');
@@ -182,8 +148,12 @@ describe('Copilot SUGGESTED prompts integration tests', async function () {
 
       await page.locator('[id="InsertButton"]').click();
       await expect(page.locator("//li[text()='Name is a required field.']")).toBeVisible();
+      await page.close();
 
-      const testLogParams: ITestLogParams = {
+      // Record end time after test execution
+      // const testEndTime = new Date();
+
+      /* const testLogParams: ITestLogParams = {
         testName: testName,
         testStartTime: testStartTime,
         testEndTime: testEndTime,
@@ -191,14 +161,14 @@ describe('Copilot SUGGESTED prompts integration tests', async function () {
         status: 'PASSED',
         logStream: logStream
       }
-      log(testLogParams);
+      log(testLogParams); */
 
     }).timeout(120000);
 });
 
 describe('Copilot SUGGESTED prompts integration tests', async function () {  
     const testName = "Write JavaScript code to hide email field in form.";
-    it.skip(testName, async () => {
+    it(testName, async () => {
       const testStartTime = new Date();
       
       // Actual values to replace placeholders from API request JSON.
@@ -212,43 +182,17 @@ describe('Copilot SUGGESTED prompts integration tests', async function () {
       const testEndTime = new Date();
 
       // Assert API response
-      chaiExpect(response).to.have.property('status');
-      chaiExpect(response.status).to.equal(200);
-      chaiExpect(response).to.have.property('data');
-      chaiExpect(response.data).to.not.null;
-      chaiExpect(response.data.operationStatus).to.be.equal('Success');
-      const apiResponse = response.data.additionalData[0].properties.response;
-      chaiExpect(JSON.stringify(apiResponse.useCase)).to.not.equal('unsupported');
-      
-      // Expect that apiResponse.Code is either undefined or does not include any value from the array
-      chaiExpect(JSON.stringify(apiResponse.Code)).to.satisfy((code: string | unknown[] | undefined) => {
-        return code === undefined || violationOrUnclearResponseCodes.every((value: string) => !code.includes(value));
-      }, 'API response code should be either undefined or not include any of the violation codes');
-      chaiExpect(JSON.stringify(apiResponse.displayText)).not.to.equal(ExpectedResponses.COPILOT_IT_UNSUPPORTED_EXPECTED_RESPONSE.displayText);
-      console.log('apiResponse code '+ ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code))
-
-      fs.writeFileSync('C:\\Downloads\\CopilotSite\\site-for-copilot---site-boc8w\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
-      const options = {
-        cwd: 'C:\\Users\\v-ankopuri.FAREAST\\AppData\\Local\\Microsoft\\PowerAppsCli',
-      };
-      const execAsync = promisify(exec);
-      // Execute a shell command with custom options
-      const { stdout, stderr } = await execAsync('pac paportal upload -p C:/Downloads/CopilotSite/site-for-copilot---site-boc8w -mv 2',options);
-      chaiExpect(stdout.trim()).to.contain('Power Pages website upload succeeded');
-      chaiExpect(stderr).to.be.empty;
+      await verifyAPIResponse(response);
+      fs.writeFileSync('C:\\Users\\v-ankopuri\\Downloads\\CopilotSiteLatest\\latest-site-for-copilot---site-ej93f\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
+      await uploadPortal();
 
       console.log('Launch browser and navigate to run time');
-      const browser = await chromium.launch({ headless: false });
-      const page = await browser.newPage();
-
-      await page.goto('https://site-boc8w.powerappsportals.com/contact-us/',{timeout:60000});
-      await page.waitForLoadState();
-      await page.waitForLoadState('domcontentloaded');
-
+      const page = await LaunchRunTime('contact-us')
       await page.locator('input[id="adx_createdbycontact"]').fill('Text name');
       await page.locator('[id="title"]').fill('Test title');
       await page.locator('[aria-label="Message"]').fill('Message');
-      await expect(page.locator('[aria-label="Email"]')).toBeHidden()
+      await expect(page.locator('[aria-label="Email"]')).toBeHidden();
+      await page.close();
 
       const testLogParams: ITestLogParams = {
         testName: testName,
@@ -265,13 +209,14 @@ describe('Copilot SUGGESTED prompts integration tests', async function () {
 
 describe('Copilot SUGGESTED prompts integration tests', async function () {   
     const testName = "Write JavaScript code to disable email field in form.";
-    it.skip(testName, async () => {
+    it(testName, async () => {
       const testStartTime = new Date();
       
       // Actual values to replace placeholders from API request JSON.
       const actualValues = [
         testName, // question
-        ["adx_contactemail"],
+        // ["adx_contactemail"],
+        "Name,adx_createdbycontact,,Email,adx_contactemail,,Subject,title,,Message,comments,,Maximum Rating,maxrating,,Minimum Rating,minrating,,Status Reason,statuscode","adx_entityform","","","feedback"
       ];
 
       const response = await CreateAndExecuteAPIRequest(testName, actualValues, accessToken, logStream);
@@ -279,44 +224,19 @@ describe('Copilot SUGGESTED prompts integration tests', async function () {
       const testEndTime = new Date();
 
       // Assert API response
-      chaiExpect(response).to.have.property('status');
-      chaiExpect(response.status).to.equal(200);
-      chaiExpect(response).to.have.property('data');
-      chaiExpect(response.data).to.not.null;
-      chaiExpect(response.data.operationStatus).to.be.equal('Success');
-      const apiResponse = response.data.additionalData[0].properties.response;
-      chaiExpect(JSON.stringify(apiResponse.useCase)).to.not.equal('unsupported');
-      // Expect that apiResponse.Code is either undefined or does not include any value from the array
-      chaiExpect(JSON.stringify(apiResponse.Code)).to.satisfy((code: string | unknown[] | undefined) => {
-        return code === undefined || violationOrUnclearResponseCodes.every((value: string) => !code.includes(value));
-      }, 'API response code should be either undefined or not include any of the violation codes');
-      chaiExpect(JSON.stringify(apiResponse.displayText)).not.to.equal(ExpectedResponses.COPILOT_IT_UNSUPPORTED_EXPECTED_RESPONSE.displayText);
-      console.log('apiResponse code '+ ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code))
-
-      fs.writeFileSync('C:\\Downloads\\CopilotSite\\site-for-copilot---site-boc8w\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
-      const options = {
-          cwd: 'C:\\Users\\v-ankopuri.FAREAST\\AppData\\Local\\Microsoft\\PowerAppsCli',
-      };
-      const execAsync = promisify(exec);
-
-      // Execute a shell command with custom options
-      const { stdout, stderr } = await execAsync('pac paportal upload -p C:/Downloads/CopilotSite/site-for-copilot---site-boc8w -mv 2',options);
-      chaiExpect(stdout.trim()).to.contain('Power Pages website upload succeeded');
-      chaiExpect(stderr).to.be.empty;
+      await verifyAPIResponse(response);
+      fs.writeFileSync('C:\\Users\\v-ankopuri\\Downloads\\CopilotSiteLatest\\latest-site-for-copilot---site-ej93f\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
+      await uploadPortal();
 
       console.log('Launch browser and navigate to run time');
-      const browser = await chromium.launch({ headless: false });
-      const page = await browser.newPage();
-
-      await page.goto('https://site-boc8w.powerappsportals.com/contact-us/',{timeout:60000});
-      await page.waitForLoadState();
-      await page.waitForLoadState('domcontentloaded');
+      const page = await LaunchRunTime('contact-us')
 
       await page.locator('input[id="adx_createdbycontact"]').fill('Text name');
       await page.locator('[id="title"]').fill('Test title');
       await page.locator('[aria-label="Message"]').fill('Message');
 
-      await expect(page.locator('[aria-label="Email"]')).toBeDisabled()
+      await expect(page.locator('[aria-label="Email"]')).toBeDisabled();
+      await page.close();
 
       const testLogParams: ITestLogParams = {
         testName: testName,
@@ -333,13 +253,14 @@ describe('Copilot SUGGESTED prompts integration tests', async function () {
 
 describe('Copilot SUGGESTED prompts integration tests', async function () { 
     const testName = "Write JavaScript code for form field validation to check email field value is in the valid format.";
-    it.only(testName, async () => {
+    it(testName, async () => {
       const testStartTime = new Date();
       
       // Actual values to replace placeholders from API request JSON.
       const actualValues = [
         testName, // question
-        ["adx_contactemail"],"adx_entityform","","","feedback"
+        //["adx_contactemail"],"adx_entityform","","","feedback"
+        "Name,adx_createdbycontact,,Email,adx_contactemail,,Subject,title,,Message,comments,,Maximum Rating,maxrating,,Minimum Rating,minrating,,Status Reason,statuscode","adx_entityform","","","feedback"
       ];
 
       const response = await CreateAndExecuteAPIRequest(testName, actualValues, accessToken, logStream);
@@ -347,39 +268,12 @@ describe('Copilot SUGGESTED prompts integration tests', async function () {
       const testEndTime = new Date();
 
       // Assert API response
-      chaiExpect(response).to.have.property('status');
-      chaiExpect(response.status).to.equal(200);
-      chaiExpect(response).to.have.property('data');
-      chaiExpect(response.data).to.not.null;
-      chaiExpect(response.data.operationStatus).to.be.equal('Success');
-      const apiResponse = response.data.additionalData[0].properties.response;
-      chaiExpect(JSON.stringify(apiResponse.useCase)).to.not.equal('unsupported');
-      
-      // Expect that apiResponse.Code is either undefined or does not include any value from the array
-      chaiExpect(JSON.stringify(apiResponse.Code)).to.satisfy((code: string | unknown[] | undefined) => {
-        return code === undefined || violationOrUnclearResponseCodes.every((value: string) => !code.includes(value));
-      }, 'API response code should be either undefined or not include any of the violation codes');
-      chaiExpect(JSON.stringify(apiResponse.displayText)).not.to.equal(ExpectedResponses.COPILOT_IT_UNSUPPORTED_EXPECTED_RESPONSE.displayText);
-      console.log('apiResponse code '+ ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code))
-      fs.writeFileSync('C:\\Downloads\\CopilotSite\\site-for-copilot---site-boc8w\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
-
-      const options = {
-        cwd: 'C:\\Users\\v-ankopuri.FAREAST\\AppData\\Local\\Microsoft\\PowerAppsCli',
-      };
-      const execAsync = promisify(exec);
-
-      // Execute a shell command with custom options
-      const { stdout, stderr } = await execAsync('pac paportal upload -p C:/Downloads/CopilotSite/site-for-copilot---site-boc8w -mv 2',options);
-      chaiExpect(stdout.trim()).to.contain('Power Pages website upload succeeded');
-      chaiExpect(stderr).to.be.empty;
+      await verifyAPIResponse(response);
+      fs.writeFileSync('C:\\Users\\v-ankopuri\\Downloads\\CopilotSiteLatest\\latest-site-for-copilot---site-ej93f\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
+      await uploadPortal();
 
       console.log('Launch browser and navigate to run time');
-      const browser = await chromium.launch({ headless: false }); // Set headless: false to see the browser UI
-      const page = await browser.newPage();
-
-      await page.goto('https://site-boc8w.powerappsportals.com/contact-us/',{timeout:60000});
-      await page.waitForLoadState();
-      await page.waitForLoadState('domcontentloaded');
+      const page = await LaunchRunTime('contact-us')
 
       await page.locator('input[id="adx_createdbycontact"]').fill('Text name');
       await page.locator('[id="title"]').fill('Test title');
@@ -388,7 +282,7 @@ describe('Copilot SUGGESTED prompts integration tests', async function () {
 
       await page.locator('[id="InsertButton"]').click();
       await expect(page.locator("//li[text()='Please enter a valid email address.']")).toBeVisible();
-
+      await page.close();
 
       const testLogParams: ITestLogParams = {
         testName: testName,
@@ -402,6 +296,243 @@ describe('Copilot SUGGESTED prompts integration tests', async function () {
 
     }).timeout(120000);
 });
+
+describe('Copilot SUGGESTED prompts integration tests', async function () {
+  Object.keys(SuggestedPromptsConstants).forEach(function (promptKey) {
+    const testName = `${SuggestedPromptsConstants[promptKey]}`;
+  it(testName, async () => {
+    const testStartTime = new Date();
+    
+    // Actual values to replace placeholders from API request JSON.
+    const actualValues = [
+      testName, // question
+      "Name,adx_createdbycontact,,Email,adx_contactemail,,Subject,title,,Message,comments,,Maximum Rating,maxrating,,Minimum Rating,minrating,,Status Reason,statuscode","adx_entityform","","","feedback"
+    ];
+    const response = await CreateAndExecuteAPIRequest(testName, actualValues, accessToken, logStream);
+    // Record end time after test execution
+    const testEndTime = new Date();
+    
+    // Assert API response
+    await verifyAPIResponse(response);
+    fs.writeFileSync('C:\\Users\\v-ankopuri\\Downloads\\CopilotSiteLatest\\latest-site-for-copilot---site-ej93f\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
+    await uploadPortal();
+
+    console.log('Launch browser and navigate to run time');
+    const page = await LaunchRunTime('contact-us')
+
+    await page.locator('input[id="adx_createdbycontact"]').fill('Test name!@#$%^&*()');
+    await page.locator('[id="title"]').fill('Test title@%&%&');
+    await page.locator('[aria-label="Message"]').fill('Message');
+    await page.locator('[aria-label="Email"]').fill('abcd@abc.com');
+    await page.locator('[id="InsertButton"]').click();
+   
+    await expect(page.locator(formatString("//li[text()='{0} cannot contain special characters.']",promptKey))).toBeVisible();
+    await page.locator('[id="title"]').fill('Test title');
+    await page.locator('input[id="adx_createdbycontact"]').fill('Test name');
+      await page.locator('[id="InsertButton"]').click();
+      await expect(page.locator(formatString("//li[text()='{0} cannot contain special characters.']",promptKey))).not.toBeVisible();
+    await expect(page.locator("//span[text()='Submission completed successfully.']")).toBeVisible();
+    await page.close();
+
+    const testLogParams: ITestLogParams = {
+      testName: testName,
+      testStartTime: testStartTime,
+      testEndTime: testEndTime,
+      actualResponse: ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response),
+      status: 'PASSED',
+      logStream: logStream
+    }
+    log(testLogParams);
+  }).timeout(120000);
+});
+});
+
+describe('Copilot SUGGESTED prompts integration tests', async function () { 
+  const testName = "Write JavaScript code to add field validation to check for the length of the name field to be less than 5";
+  it(testName, async () => {
+    const testStartTime = new Date();
+    
+    // Actual values to replace placeholders from API request JSON.
+    const actualValues = [
+      testName, // question
+      "Name,adx_createdbycontact","adx_entityform","","","feedback"
+    ];
+    const response = await CreateAndExecuteAPIRequest(testName, actualValues, accessToken, logStream);
+    // Record end time after test execution
+    const testEndTime = new Date();
+    
+    // Assert API response
+    await verifyAPIResponse(response);
+    fs.writeFileSync('C:\\Users\\v-ankopuri\\Downloads\\CopilotSiteLatest\\latest-site-for-copilot---site-ej93f\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
+    await uploadPortal();
+
+    console.log('Launch browser and navigate to run time');
+    const page = await LaunchRunTime('contact-us');
+
+    await page.locator('input[id="adx_createdbycontact"]').fill('Text name');
+    await page.locator('[id="title"]').fill('Test title');
+    await page.locator('[aria-label="Message"]').fill('Message');
+    await page.locator('[aria-label="Email"]').fill('abcd');
+    await page.locator('[id="InsertButton"]').click();
+    await expect(page.locator("//li[text()='Name must be less than 5 characters.']")).toBeVisible();
+    await page.close();
+    
+    const testLogParams: ITestLogParams = {
+      testName: testName,
+      testStartTime: testStartTime,
+      testEndTime: testEndTime,
+      actualResponse: ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response),
+      status: 'PASSED',
+      logStream: logStream
+    }
+    log(testLogParams);
+  }).timeout(120000);
+});
+describe('Copilot SUGGESTED prompts integration tests', async function () { 
+  const testName = "Write Javascript code to add field validation to check for the value of the minimum rating field to not to be less than 10.";
+  it(testName, async () => {
+    const testStartTime = new Date();
+    
+    // Actual values to replace placeholders from API request JSON.
+    const actualValues = [
+      testName, // question
+      "Minimum Rating,minrating","adx_entityform","","","feedback"
+    ];
+    const response = await CreateAndExecuteAPIRequest(testName, actualValues, accessToken, logStream);
+    // Record end time after test execution
+    const testEndTime = new Date();
+    
+    // Assert API response
+    await verifyAPIResponse(response);
+    fs.writeFileSync('C:\\Users\\v-ankopuri\\Downloads\\CopilotSiteLatest\\latest-site-for-copilot---site-ej93f\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
+    await uploadPortal();
+
+    console.log('Launch browser and navigate to run time');
+    const page = await LaunchRunTime('contact-us')
+
+    await page.locator('input[id="adx_createdbycontact"]').fill('Text name');
+    await page.locator('[id="title"]').fill('Test title');
+    await page.locator('[aria-label="Message"]').fill('Message');
+    await page.locator('[aria-label="Email"]').fill('abcd@abc.com');
+    await page.locator('input[id="minrating"]').fill('9');
+    await page.locator('[id="InsertButton"]').click();
+
+    expect((await page.locator('[class*="validation-summary"]').innerText()).toLowerCase()).toContain('minimum rating must be at least 10.');
+    await page.locator('input[id="minrating"]').fill('10');
+    await page.locator('[id="InsertButton"]').click();
+    await expect(page.locator("//li[text()='Minimum rating must be at least 10.']")).not.toBeVisible();
+    await expect(page.locator("//span[text()='Submission completed successfully.']")).toBeVisible();
+    
+    await page.close();
+    const testLogParams: ITestLogParams = {
+      testName: testName,
+      testStartTime: testStartTime,
+      testEndTime: testEndTime,
+      actualResponse: ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response),
+      status: 'PASSED',
+      logStream: logStream
+    }
+    log(testLogParams);
+  }).timeout(120000);
+});
+describe('Copilot SUGGESTED prompts integration tests', async function () { 
+  const testName = "Write Javascript code to add field validation to check for the value of the maximum rating field to not to be greater than 95.";
+  it(testName, async () => {
+    const testStartTime = new Date();
+    
+    // Actual values to replace placeholders from API request JSON.
+    const actualValues = [
+      testName, // question
+      "Maximum Rating,maxrating","adx_entityform","","","feedback"
+    ];
+    const response = await CreateAndExecuteAPIRequest(testName, actualValues, accessToken, logStream);
+    // Record end time after test execution
+    const testEndTime = new Date();
+    // Assert API response
+      await verifyAPIResponse(response);
+      fs.writeFileSync('C:\\Users\\v-ankopuri\\Downloads\\CopilotSiteLatest\\latest-site-for-copilot---site-ej93f\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
+      await uploadPortal();
+
+      console.log('Launch browser and navigate to run time');
+      const page = await LaunchRunTime('contact-us')
+
+    await page.locator('input[id="adx_createdbycontact"]').fill('Text name');
+    await page.locator('[id="title"]').fill('Test title');
+    await page.locator('[aria-label="Message"]').fill('Message');
+    await page.locator('[aria-label="Email"]').fill('abcd@abc.com');
+    await page.locator('input[id="maxrating"]').fill('96');
+    await page.locator('[id="InsertButton"]').click();
+    await expect(page.locator("//li[text()='Maximum Rating must not be greater than 95.']")).toBeVisible();
+    await page.locator('input[id="maxrating"]').fill('95');
+    await page.locator('[id="InsertButton"]').click();
+    await expect(page.locator("//li[text()='Maximum Rating must not be greater than 95.']")).not.toBeVisible();
+    await expect(page.locator("//span[text()='Submission completed successfully.']")).toBeVisible();
+    await page.close();
+
+    const testLogParams: ITestLogParams = {
+      testName: testName,
+      testStartTime: testStartTime,
+      testEndTime: testEndTime,
+      actualResponse: ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response),
+      status: 'PASSED',
+      logStream: logStream
+    }
+    log(testLogParams);
+  }).timeout(120000);
+});
+describe('Copilot SUGGESTED prompts integration tests', async function () { 
+  const testName = "Write Javascript code to add field validation to check for the value of the minimum rating field to not to be less than 5 and maximum rating not to be greater than 95.";
+  it(testName, async () => {
+    const testStartTime = new Date();
+    
+    // Actual values to replace placeholders from API request JSON.
+    const actualValues = [
+      testName, // question
+      "Maximum Rating,maxrating,Minimum Rating,minrating","adx_entityform","","","feedback"
+    ];
+    const response = await CreateAndExecuteAPIRequest(testName, actualValues, accessToken, logStream);
+    // Record end time after test execution
+    const testEndTime = new Date();
+    
+    // Assert API response
+    await verifyAPIResponse(response);
+    fs.writeFileSync('C:\\Users\\v-ankopuri\\Downloads\\CopilotSiteLatest\\latest-site-for-copilot---site-ej93f\\basic-forms\\simple-contact-us-form\\simple-contact-us-form.basicform.custom_javascript.js', ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response[0].code));
+    await uploadPortal();
+
+    console.log('Launch browser and navigate to run time');
+    const page = await LaunchRunTime('contact-us')
+
+    await page.locator('input[id="adx_createdbycontact"]').fill('Text name');
+    await page.locator('[id="title"]').fill('Test title');
+    await page.locator('[aria-label="Message"]').fill('Message');
+    await page.locator('[aria-label="Email"]').fill('abcd@abc.com');
+    await page.locator('input[id="minrating"]').fill('4');
+    await page.locator('input[id="maxrating"]').fill('96');
+    await page.locator('[id="InsertButton"]').click();
+
+    await expect(page.locator("//li[text()='Minimum Rating must be at least 5.']")).toBeVisible();
+    await expect(page.locator("//li[text()='Maximum Rating must be at most 95.']")).toBeVisible();
+    await page.locator('input[id="minrating"]').fill('10');
+    await page.locator('input[id="maxrating"]').fill('90');
+    await page.locator('[id="InsertButton"]').click();
+
+    await expect(page.locator("//li[text()='Minimum Rating must be at least 5.']")).not.toBeVisible();
+    await expect(page.locator("//li[text()='Maximum Rating must be at most 95.']")).not.toBeVisible();
+    await expect(page.locator("//span[text()='Submission completed successfully.']")).toBeVisible();    
+    await page.close();
+
+    const testLogParams: ITestLogParams = {
+      testName: testName,
+      testStartTime: testStartTime,
+      testEndTime: testEndTime,
+      actualResponse: ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response),
+      status: 'PASSED',
+      logStream: logStream
+    }
+    log(testLogParams);
+  }).timeout(120000);
+});
+
 
 // Close the HTML file with closing tags after all asynchronous code has completed
 // Assuming your tests are using Promises, you can return a Promise from your test
