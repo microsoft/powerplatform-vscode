@@ -160,7 +160,8 @@ export class FetchXmlQueryBuilderPanel {
                 {
                     const query = message.query;
                     const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
-                    const entityName = this.entityName + 's';
+                    //if entityName ends with 's' then add 'es', else add 's'
+                    const entityName = this.entityName?.endsWith('s') ? this.entityName + 'es' : this.entityName + 's';
                     const queryResult = await executeFetchXml(this.entityName ? entityName : "contacts", query, orgUrl, dataverseToken, this.telemetry, '')
                     webView.postMessage({type: 'setQueryResult', queryResult: queryResult})
                     break;

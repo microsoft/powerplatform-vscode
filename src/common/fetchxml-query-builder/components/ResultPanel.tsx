@@ -43,20 +43,6 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
         {% fetchxml Example %}
         ${query}
         {% endfetchxml %}
-        <table>
-            <thead>
-                <tr>
-                    ${attributes.map(attr => `<th>${attr}</th>`).join('')}
-                </tr>
-            </thead>
-            <tbody>
-                {% for result in Example.results.entities %}
-                <tr>
-                    ${attributes.map(attr => `<td>{{result.${attr}}}</td>`).join('')}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
         `;
         setTemplate(template);
         setActiveTab("convert");
