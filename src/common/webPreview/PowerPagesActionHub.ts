@@ -35,25 +35,9 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
         return nodes;
     }
 
-    openSpecificURLWithoutAuth(context: vscode.ExtensionContext): void {
+    async openSpecificURLWithoutAuth(): Promise<void> {
         //const websitePreviewUrl = "https://site-cwc5h.powerappsportals.com/"; //public site
-        const websitePreviewUrl = "https://site-zg8n0.powerappsportals.com/"; //private site
-
-        // const browserLiteExtensionId = 'antfu.browse-lite';
-        // const browserLiteExtension = vscode.extensions.getExtension(browserLiteExtensionId);
-
-        // if (browserLiteExtension) {
-        //     if (browserLiteExtension.isActive) {
-        //         vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
-        //     } else {
-        //         browserLiteExtension.activate().then(() => {
-        //             vscode.commands.executeCommand('browse-lite.open', websitePreviewUrl);
-        //             vscode.commands.executeCommand('workbench.action.webview.openDeveloperTools');
-        //         });
-        //     }
-        // } else {
-        //     vscode.window.showErrorMessage('Browser Lite extension is not installed.');
-        // }
+        const websitePreviewUrl = "https://site-ibgbb.powerappsportals.com/"; //private site
 
         const edgeToolsExtensionId = 'ms-edgedevtools.vscode-edge-devtools';
         const edgeToolsExtension = vscode.extensions.getExtension(edgeToolsExtensionId);
@@ -69,7 +53,18 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
                 });
             }
         } else {
-            vscode.window.showErrorMessage('Ms Edge Tools extension is not installed.');
+
+            const install = await vscode.window.showWarningMessage(
+                `The extension "${edgeToolsExtensionId}" is required to run this command. Do you want to install it now?`,
+                'Install', 'Cancel'
+            );
+
+            if (install === 'Install') {
+                // Open the Extensions view with the specific extension
+                vscode.commands.executeCommand('workbench.extensions.search', edgeToolsExtensionId);
+            }
+
+            return;
         }
 
     }
