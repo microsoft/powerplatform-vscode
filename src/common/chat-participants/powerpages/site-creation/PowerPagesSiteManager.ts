@@ -11,12 +11,33 @@ import { PowerPagesComponent, PowerPagesComponentType } from "./PowerPagesCompon
 import { v4 as uuidv4 } from 'uuid';
 import { BASE_PAGE } from "./PowerPagesSiteConstants";
 
+export interface IPowerPagesSiteFromJsonActions {
+    updateSiteName: (name: string) => void;
+    addComponents: (components: PowerPagesComponent[]) => void;
+    updateComponent: (component: PowerPagesComponent) => void;
+    findComponents: (
+        filter: (value: PowerPagesComponent, index: number, obj: PowerPagesComponent[]) => boolean
+    ) => PowerPagesComponent[] | undefined;
+    findComponent: (
+        filter: (value: PowerPagesComponent, index: number, obj: PowerPagesComponent[]) => boolean
+    ) => PowerPagesComponent | undefined;
+    addOrUpdatePage: (pageName: string, pageCopy: string, isHomePage: boolean) => Promise<string>;
+    getWebPageRootId: (pageName: string) => string;
+    addWebRole: (roleName: string, webRoleContent: object) => string;
+    save: () => Promise<void>;
+}
 
-type IPowerPagesSiteFromJsonActions = {
-    // Define actions that will be returned
-};
+/**
+ * This function allows you to initialize a blank template and mutate the various entities in memory before writing them to
+ * dataverse. Currently this function only supports provisioning but could potentially be updated to send upserts instead of
+ * inserts. That would also help with retrying failed requests.
+ * @param {string} templateName Template to start from. Could potentially be used to start with a template other than
+ * Blank.
+ * @param {string} language The language code to provision in. Only 1033 is supported currently
+ * @returns site data and actions to allow the caller to mutate site data
+ */
 
-class PowerPagesSiteManager {
+export class PowerPagesSiteManager {
     private siteData: PowerPagesParsedJson;
     private templateName: string;
     private language: string;
@@ -40,29 +61,27 @@ class PowerPagesSiteManager {
         this.siteData = reGuidPowerPagesSite(ppJsonBlob as PowerPagesParsedJson);
     }
 
-    private getBatchAndFileUploads(
-        siteData: PowerPagesParsedJson
-    ): [
-            Array<Changeset | DeleteOperation | GetOperation | PatchOperation | PostOperation>,
-            Array<Changeset | DeleteOperation | GetOperation | PatchOperation | PostOperation>,
-            PowerPagesComponent[]
-        ] {
+    private getBatchAndFileUploads(): [
+        Array<Changeset | DeleteOperation | GetOperation | PatchOperation | PostOperation>,
+        Array<Changeset | DeleteOperation | GetOperation | PatchOperation | PostOperation>,
+        PowerPagesComponent[]
+    ] {
         // We need site and language to already be created before creating other components in a batch
-        const siteAndLanguages: Array<Changeset | DeleteOperation | GetOperation | PatchOperation | PostOperation> = [];
-        const operations: Array<Changeset | DeleteOperation | GetOperation | PatchOperation | PostOperation> = [];
+        const data = this.siteData;
+        const siteAndLanguages = [];
+        const operations: any[] = [];
 
-        // Add site data
         siteAndLanguages.push({
             method: 'POST',
             url: getCDSEntityRequestURLPath({ entityName: entityNames.PowerPagesSites }),
             headers: {
                 'Content-Type': 'application/json; type=entry',
             },
-            body: JSON.stringify(siteData.powerpagesite[0]),
+            body: JSON.stringify(data.powerpagesite[0]),
         });
 
-        // Add languages
-        siteData.powerpagesitelanguage.forEach((ppSiteLang) => {
+        // Languages
+        data.powerpagesitelanguage.forEach((ppSiteLang) => {
             const entity = {
                 ...ppSiteLang,
                 [`powerpagesiteid@odata.bind`]: `/${entityNames.PowerPagesSites}(${ppSiteLang.powerpagesiteid!})`,
@@ -80,8 +99,8 @@ class PowerPagesSiteManager {
 
         const filesToUpload: PowerPagesComponent[] = [];
 
-        // Add components
-        siteData.powerpagecomponent.forEach((component) => {
+        // Components
+        data.powerpagecomponent.forEach((component) => {
             if (component.powerpagecomponenttype === PowerPagesComponentType.WebFile && component.filecontent) {
                 filesToUpload.push(component);
             }
@@ -328,6 +347,7 @@ class PowerPagesSiteManager {
                 .sort()
                 .pop();
             const homeRootPage = this.getHomeRootPage();
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
             const homeRootPageContent = JSON.parse(homeRootPage?.content!);
             const publishingStateId = this.getPublishingStateId();
             const pageTemplate = this.findComponent(
@@ -416,14 +436,14 @@ class PowerPagesSiteManager {
         }
         return rootPageID;
     }
-    private getWebPageRootId(pageName: string): string | undefined {
+    private getWebPageRootId(pageName: string): string {
         const webPageRoot = this.findComponent(
             (c) =>
                 c.powerpagecomponenttype === PowerPagesComponentType.WebPage &&
                 c.name === pageName &&
                 c.powerpagesitelanguageid !== undefined
         );
-        return webPageRoot?.powerpagecomponentid;
+        return webPageRoot?.powerpagecomponentid ?? '';
     }
 
     private addWebRole(roleName: string, webRoleContent: object): string {
@@ -447,16 +467,24 @@ class PowerPagesSiteManager {
         return {
             ppSiteData: this.siteData,
             actions: {
-                // Implement and return actions
-            },
+                updateSiteName: (name: string) => this.updateSiteName(name),
+                addComponents: (components: PowerPagesComponent[]) => this.addComponents(components),
+                updateComponent: (component: PowerPagesComponent) => this.updateComponent(component),
+                findComponents: (
+                    filter: (value: PowerPagesComponent, index: number, obj: PowerPagesComponent[]) => boolean
+                ) => this.findComponents(filter),
+                findComponent: (
+                    filter: (value: PowerPagesComponent, index: number, obj: PowerPagesComponent[]) => boolean
+                ) => this.findComponent(filter),
+                addOrUpdatePage: (pageName: string, pageCopy: string, isHomePage: boolean) =>
+                    this.addOrUpdatePage(pageName, pageCopy, isHomePage),
+                getWebPageRootId: (pageName: string) => this.getWebPageRootId(pageName) ?? '',
+                addWebRole: (roleName: string, webRoleContent: object) => this.addWebRole(roleName, webRoleContent),
+                save: async () => {
+                    // Implement save logic if needed
+                },
+            }
         };
     }
 }
 
-// Usage
-const manager = new PowerPagesSiteManager('templateName', 'English');
-manager.loadTemplate().then(() => {
-    const { ppSiteData, actions } = manager.getSiteDataAndActions();
-    console.log(ppSiteData);
-    // Perform actions
-});
