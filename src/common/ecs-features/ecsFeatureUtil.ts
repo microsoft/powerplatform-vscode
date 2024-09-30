@@ -14,7 +14,8 @@ export function createECSRequestURL(filters: ECSAPIFeatureFlagFilters, clientNam
         EnvironmentID: filters.EnvID,
         UserID: filters.UserID,
         TenantID: filters.TenantID,
-        region: filters.Region
+        region: filters.Region,
+        location: filters.Location,
     };
 
     const queryString = Object.keys(queryParams)

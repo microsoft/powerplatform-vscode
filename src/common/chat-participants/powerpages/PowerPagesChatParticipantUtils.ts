@@ -6,11 +6,12 @@
 import { ADX_ENTITYFORM } from "../../copilot/constants";
 import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/dataverseMetadata";
 import { IActiveFileParams } from "../../copilot/model";
+import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
 import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
-import { EXPLAIN_CODE_PROMPT, FORM_PROMPT, LIST_PROMPT, STATER_PROMPTS, SUPPORTED_ENTITIES, WEB_API_PROMPT } from "./PowerPagesChatParticipantConstants";
+import { SUPPORTED_ENTITIES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, EXPLAIN_CODE_PROMPT, FORM_PROMPT, LIST_PROMPT, STATER_PROMPTS, WEB_API_PROMPT  } from "./PowerPagesChatParticipantConstants";
 import { IComponentInfo, IPowerPagesChatResult } from "./PowerPagesChatParticipantTypes";
 import * as vscode from 'vscode';
 
@@ -57,6 +58,26 @@ export function isEntityInSupportedList(entity: string): boolean {
     return SUPPORTED_ENTITIES.includes(entity);
 }
 
+export function handleChatParticipantFeedback (feedback: vscode.ChatResultFeedback, sessionId: string, telemetry: ITelemetry) {
+    const scenario = feedback.result.metadata?.scenario;
+    const orgId = feedback.result.metadata?.orgId;
+    if (feedback.kind === 1) {
+        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, { feedback: feedback.kind.toString(), scenario: scenario, orgId:orgId, sessionId: sessionId });
+        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId });
+    } else if (feedback.kind === 0) {
+        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId});
+        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId });
+    }
+}
+export function createAndReferenceLocation(activeFileUri: vscode.Uri, startLine: number, endLine: number): vscode.Location {
+
+    const positionStart = new vscode.Position(startLine, 0),
+          positionEnd = new vscode.Position(endLine, 0),
+          activeFileRange = new vscode.Range(positionStart, positionEnd),
+          location = new vscode.Location(activeFileUri, activeFileRange);
+
+    return location;
+}
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function provideChatParticipantFollowups(result: IPowerPagesChatResult, _context: vscode.ChatContext, _token: vscode.CancellationToken) {
     if (result.metadata.command === STATER_PROMPTS) {
@@ -67,4 +88,41 @@ export function provideChatParticipantFollowups(result: IPowerPagesChatResult, _
             { prompt: FORM_PROMPT }
         ];
     }
+}
+
+export function createErrorResult(message: string, scenario: string, orgId: string): IPowerPagesChatResult {
+    return {
+        metadata: {
+            command: '',
+            scenario: scenario,
+            orgId: orgId
+        },
+        errorDetails: {
+            message: message
+        }
+    };
+}
+
+export function createSuccessResult(command: string, scenario: string, orgId: string): IPowerPagesChatResult {
+    return {
+        metadata: {
+            command: command,
+            scenario: scenario,
+            orgId: orgId
+        }
+    };
+}
+
+export function removeChatVariables(userPrompt: string): string {
+    const variablesToRemove = [
+        '#editor',
+        '#selection',
+        '#terminalLastCommand',
+        '#terminalSelection',
+        '#vscodeAPI'
+    ];
+
+    const regex = new RegExp(variablesToRemove.join('|'), 'g');
+
+    return userPrompt.replace(regex, '').trim();
 }
