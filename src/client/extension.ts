@@ -253,8 +253,6 @@ export async function activate(
         })
     );
 
-
-
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
 
         // Init OrgChangeNotifier instance
