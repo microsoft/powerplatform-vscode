@@ -187,9 +187,6 @@ export async function activate(
     _context.subscriptions.push(cli);
     _context.subscriptions.push(pacTerminal);
 
-    // Init OrgChangeNotifier instance
-    OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
-
     let copilotNotificationShown = false;
 
     const workspaceFolders =
@@ -234,24 +231,23 @@ export async function activate(
             }
 
             if (!copilotNotificationShown) {
-                if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-                    let telemetryData = '';
-                    let listOfActivePortals = [];
-                    try {
-                        listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
-                        telemetryData = JSON.stringify(listOfActivePortals);
-                        _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
-                        oneDSLoggerWrapper.getLogger().traceInfo("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
-                    } catch (exception) {
-                        const exceptionError = exception as Error;
-                        _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
-                        oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
-                    }
-
-                    // Show Copilot notification after ECS initialization and workspace check
-                    showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
-                    copilotNotificationShown = true;
+                let telemetryData = '';
+                let listOfActivePortals = [];
+                try {
+                    listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
+                    telemetryData = JSON.stringify(listOfActivePortals);
+                    _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
+                    oneDSLoggerWrapper.getLogger().traceInfo("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
+                } catch (exception) {
+                    const exceptionError = exception as Error;
+                    _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
+                    oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
                 }
+
+                // Show Copilot notification after ECS initialization and workspace check
+                showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
+                copilotNotificationShown = true;
+
             }
 
         })
@@ -260,6 +256,9 @@ export async function activate(
 
 
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+
+        // Init OrgChangeNotifier instance
+        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
 
         vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
         vscode.workspace.textDocuments.forEach(didOpenTextDocument);
