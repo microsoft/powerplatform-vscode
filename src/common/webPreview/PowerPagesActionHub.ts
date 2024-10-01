@@ -37,7 +37,7 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
 
     async openSpecificURLWithoutAuth(): Promise<void> {
         //const websitePreviewUrl = "https://site-cwc5h.powerappsportals.com/"; //public site
-        const websitePreviewUrl = "https://site-ibgbb.powerappsportals.com/"; //private site
+        const websitePreviewUrl = "https://demoportalsearch.powerappsportals.com/"; //private site
 
         const edgeToolsExtensionId = 'ms-edgedevtools.vscode-edge-devtools';
         const edgeToolsExtension = vscode.extensions.getExtension(edgeToolsExtensionId);
