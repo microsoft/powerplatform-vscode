@@ -33,7 +33,7 @@ import { disposeDiagnostics } from "./power-pages/validationDiagnostics";
 import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
-import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
+import { COPILOT_NOTIFICATION_DISABLED, EXTENSION_VERSION_KEY } from "../common/copilot/constants";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { OrgChangeNotifier, orgChangeEvent } from "./OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
@@ -41,8 +41,11 @@ import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/clien
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
-import { SUCCESS } from "../common/constants";
-import { AadIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
+import { EXTENSION_ID, SUCCESS } from "../common/constants";
+import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
+import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
+import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
+import { getECSOrgLocationValue } from "../common/utilities/Utils";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -183,22 +186,34 @@ export async function activate(
     const pacTerminal = new PacTerminal(_context, _telemetry, cliPath);
     _context.subscriptions.push(cli);
     _context.subscriptions.push(pacTerminal);
-    const workspaceFolders =
-        vscode.workspace.workspaceFolders?.map(
-            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
-        ) || [];
 
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
             const artemisResponse = await ArtemisService.getArtemisResponse(orgID, _telemetry, "");
             if (artemisResponse !== null && artemisResponse.response !== null) {
+                const { geoName, geoLongName, clusterName, clusterNumber } = artemisResponse.response;
                 const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-                let AadIdObject;
+                let AadIdObject, EnvID, TenantID;
                 if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
                     AadIdObject = pacActiveAuth.Results?.filter(obj => obj.Key === AadIdKey);
+                    EnvID = pacActiveAuth.Results?.filter(obj => obj.Key === EnvIdKey);
+                    TenantID = pacActiveAuth.Results?.filter(obj => obj.Key === TenantIdKey);
                 }
-                const { geoName, geoLongName } = artemisResponse.response;
+
+                if (EnvID?.[0]?.Value && TenantID?.[0]?.Value && AadIdObject?.[0]?.Value) {
+                    await ECSFeaturesClient.init(_telemetry,
+                        {
+                            AppName: PowerPagesAppName,
+                            EnvID: EnvID[0].Value,
+                            UserID: AadIdObject[0].Value,
+                            TenantID: TenantID[0].Value,
+                            Region: artemisResponse.stamp,
+                            Location: getECSOrgLocationValue(clusterName, clusterNumber)
+                        },
+                        PowerPagesClientName, true);
+                }
+
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
                 let initContext: object = { ...orgDetails, orgGeo: geoName };
                 if (AadIdObject?.[0]?.Value) {
@@ -209,6 +224,11 @@ export async function activate(
         })
     );
 
+
+    const workspaceFolders =
+        vscode.workspace.workspaceFolders?.map(
+            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+        ) || [];
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
         let telemetryData = '';
@@ -416,6 +436,20 @@ function handleWorkspaceFolderChange() {
 
 function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals: string) {
     if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
+        return;
+    }
+
+    const currentVersion = vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON.version;
+    const storedVersion = _context.globalState.get(EXTENSION_VERSION_KEY);
+
+    if (!storedVersion || storedVersion !== currentVersion) {
+        // Show notification panel for the first load or after an update
+        telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
+        oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
+        copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
+
+        // Update the stored version to the current version
+        _context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
         return;
     }
 

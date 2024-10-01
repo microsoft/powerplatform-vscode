@@ -3,59 +3,55 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ExtensionContext } from 'vscode';
 import { ActiveOrgOutput } from '../../client/pac/PacTypes';
 import { PacWrapper } from '../../client/pac/PacWrapper';
 import { IOrgDetails } from '../chat-participants/powerpages/PowerPagesChatParticipantTypes';
 import { SUCCESS } from '../constants';
 import { createAuthProfileExp } from '../copilot/utils/copilotUtil';
+import { ERROR_CONSTANTS } from '../ErrorConstants';
 
 export const ORG_DETAILS_KEY = 'orgDetails';
 
 export function handleOrgChangeSuccess(
     orgDetails: ActiveOrgOutput,
-    extensionContext: ExtensionContext
 ): IOrgDetails {
-    const orgID = orgDetails.OrgId;
-    const orgUrl = orgDetails.OrgUrl;
-    const environmentID = orgDetails.EnvironmentId;
-
-    extensionContext.globalState.update(ORG_DETAILS_KEY, { orgID, orgUrl, environmentID });
+    const { OrgId: orgID, OrgUrl: orgUrl, EnvironmentId: environmentID } = orgDetails;
 
     return { orgID, orgUrl, environmentID };
 }
 
+async function fetchOrgDetailsFromPac(pacWrapper: PacWrapper): Promise<IOrgDetails> {
+    const pacActiveOrg = await pacWrapper.activeOrg();
+    if (pacActiveOrg && pacActiveOrg.Status === SUCCESS) {
+        return handleOrgChangeSuccess(pacActiveOrg.Results);
+    }
+    throw new Error(ERROR_CONSTANTS.PAC_AUTH_FAILED);
+}
+
 export async function initializeOrgDetails(
     isOrgDetailsInitialized: boolean,
-    extensionContext: ExtensionContext,
     pacWrapper?: PacWrapper
-): Promise<{ orgID: string, orgUrl: string, environmentID: string }> {
+): Promise<IOrgDetails> {
+    const orgDetails: IOrgDetails = { orgID: '', orgUrl: '', environmentID: '' };
+
     if (isOrgDetailsInitialized) {
-        return { orgID: '', orgUrl: '', environmentID: '' };
+        return orgDetails;
     }
 
-    const orgDetails: IOrgDetails | undefined = extensionContext.globalState.get(ORG_DETAILS_KEY);
-    let orgID = '';
-    let orgUrl = '';
-    let environmentID = '';
-
-    if (orgDetails && orgDetails.orgID && orgDetails.orgUrl && orgDetails.environmentID) {
-        orgID = orgDetails.orgID;
-        orgUrl = orgDetails.orgUrl;
-        environmentID = orgDetails.environmentID;
-    } else {
-        if (pacWrapper) {
-            const pacActiveOrg = await pacWrapper.activeOrg();
-            if (pacActiveOrg && pacActiveOrg.Status === SUCCESS) {
-                const orgDetails = handleOrgChangeSuccess(pacActiveOrg.Results, extensionContext);
-                orgID = orgDetails.orgID;
-                orgUrl = orgDetails.orgUrl;
-                environmentID = orgDetails.environmentID;
-            } else {
-                await createAuthProfileExp(pacWrapper);
-            }
+    if (pacWrapper) {
+        try {
+            const fetchedOrgDetails = await fetchOrgDetailsFromPac(pacWrapper);
+            orgDetails.orgID = fetchedOrgDetails.orgID;
+            orgDetails.orgUrl = fetchedOrgDetails.orgUrl;
+            orgDetails.environmentID = fetchedOrgDetails.environmentID;
+        } catch (error) {
+            await createAuthProfileExp(pacWrapper);
+            const fetchedOrgDetails = await fetchOrgDetailsFromPac(pacWrapper);
+            orgDetails.orgID = fetchedOrgDetails.orgID;
+            orgDetails.orgUrl = fetchedOrgDetails.orgUrl;
+            orgDetails.environmentID = fetchedOrgDetails.environmentID;
         }
     }
 
-    return { orgID, orgUrl, environmentID };
+    return orgDetails;
 }

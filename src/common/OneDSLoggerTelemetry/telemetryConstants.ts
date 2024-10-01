@@ -40,3 +40,5 @@ export enum GeoNames {
 export const CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME = 'enableTelemetry';
 
 export const AadIdKey= 'Entra ID Object Id:';
+export const EnvIdKey = "Environment Id:";
+export const TenantIdKey = "Tenant Id:";
