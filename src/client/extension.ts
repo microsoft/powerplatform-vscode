@@ -40,13 +40,15 @@ import { ActiveOrgOutput } from "./pac/PacTypes";
 import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
-import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
+import { getPortalsOrgURLs, getWebsiteID } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { EXTENSION_ID, SUCCESS } from "../common/constants";
 import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue } from "../common/utilities/Utils";
 import { PowerPagesActionHub } from "../common/webPreview/PowerPagesActionHub";
+import { PPAPIService } from "../common/services/PPAPIService";
+import { ServiceEndpointCategory } from "../common/services/Constants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -255,7 +257,7 @@ export async function activate(
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
-        powerPagesActions();
+        powerPagesActions(workspaceFolders, pacTerminal, _telemetry);
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -272,10 +274,12 @@ export async function activate(
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
 }
 
-export function powerPagesActions(){
+export async function powerPagesActions(workspaceFolders: WorkspaceFolder[], pacTerminal: PacTerminal, telemetry: ITelemetry) {
+
+    const websiteURL = await getWebSiteURL(workspaceFolders, pacTerminal, telemetry);
     const powerPagesActionHub = new PowerPagesActionHub();
     vscode.window.registerTreeDataProvider('powerPagesActionHubView', powerPagesActionHub);
-    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesActionHub.openSpecificURLWithoutAuth());
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesActionHub.openSpecificURLWithoutAuth(websiteURL));
 }
 
 export async function deactivate(): Promise<void> {
@@ -294,6 +298,28 @@ export async function deactivate(): Promise<void> {
     disposeDiagnostics();
     deactivateDebugger();
     disposeNotificationPanel();
+}
+
+async function getWebSiteURL(workspaceFolders: WorkspaceFolder[], pacTerminal: PacTerminal, telemetry: ITelemetry): Promise<string | undefined> {
+
+    const envId = await getEnvId(pacTerminal);
+    const stamp = await getStamp(pacTerminal);
+
+    const websiteId = getWebsiteID(workspaceFolders, telemetry);
+    console.log("websiteId", websiteId);
+    const websiteDetails = await PPAPIService.getWebsiteDetailsById(stamp, envId, websiteId, _telemetry);
+    return websiteDetails?.websiteUrl;
+}
+
+async function getStamp(pacTerminal: PacTerminal): Promise<ServiceEndpointCategory> {
+    const orgDetails = (await pacTerminal.getWrapper().activeOrg()).Results;
+    const artemisResponse = await ArtemisService.getArtemisResponse(orgDetails.OrgId, _telemetry, "");
+    return artemisResponse?.stamp || ServiceEndpointCategory.PROD;
+}
+
+async function getEnvId(pacTerminal: PacTerminal): Promise<string> {
+    const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
+    return pacActiveAuth.Results?.filter(obj => obj.Key === EnvIdKey)?.[0]?.Value;
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {

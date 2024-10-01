@@ -5,8 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { dataverseAuthentication } from '../../common/services/AuthenticationProvider';
-import { ITelemetry } from '../OneDSLoggerTelemetry/telemetry/ITelemetry';
 
 export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -35,9 +33,13 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
         return nodes;
     }
 
-    async openSpecificURLWithoutAuth(): Promise<void> {
-        //const websitePreviewUrl = "https://site-cwc5h.powerappsportals.com/"; //public site
-        const websitePreviewUrl = "https://demoportalsearch.powerappsportals.com/"; //private site
+    async openSpecificURLWithoutAuth(websitePreviewUrl: string | undefined): Promise<void> {
+
+        //const websitePreviewUrl = "https://site-ibgbb.powerappsportals.com/"; //private site
+        if(websitePreviewUrl == undefined){
+            vscode.window.showErrorMessage('Website URL is undefined, debug it and try again.');
+            return;
+        }
 
         const edgeToolsExtensionId = 'ms-edgedevtools.vscode-edge-devtools';
         const edgeToolsExtension = vscode.extensions.getExtension(edgeToolsExtensionId);
@@ -175,29 +177,6 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
         } catch (exception) {
             const error = exception as Error;
             vscode.window.showErrorMessage('Failed to update launch.json: ' + error.message);
-        }
-    }
-
-    async openSpecificURLWithAuth(telemetry: ITelemetry): Promise<void>{
-        const websitePreviewUrl = "https://site-wug4q.powerappsportals.com/";  // update the site URL with your private site
-        const dataverseOrgURL = 'https://orgf2f8b607.crm.dynamics.com/';
-
-        try {
-            const { accessToken } = await dataverseAuthentication(telemetry, dataverseOrgURL);
-            await dataverseAuthentication(telemetry, dataverseOrgURL);
-
-            if (accessToken) {
-                await vscode.commands.executeCommand('simpleBrowser.show', vscode.Uri.parse(websitePreviewUrl), {
-                    headers: {
-                        "Authorization": `Bearer ${accessToken}`
-                    }
-                });
-            } else {
-                vscode.window.showErrorMessage('Failed to authenticate.');
-            }
-        } catch (exception) {
-            const error = exception as Error;
-            vscode.window.showErrorMessage('An error occurred: ' + error.message);
         }
     }
 }
