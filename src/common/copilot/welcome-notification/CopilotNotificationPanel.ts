@@ -6,7 +6,7 @@
 import * as vscode from "vscode";
 import { getNonce } from "../../utilities/Utils";
 import TelemetryReporter from "@vscode/extension-telemetry";
-import { CopilotNotificationDoNotShowChecked, CopilotTryNotificationClickedEvent, CopilotNotificationDoNotShowUnchecked, CopilotNotificationTryGitHubCopilotClicked } from "../telemetry/telemetryConstants";
+import { CopilotNotificationDoNotShowChecked, CopilotTryNotificationClickedEvent, CopilotNotificationDoNotShowUnchecked, CopilotNotificationTryGitHubCopilotClicked, VSCodeExtensionGitHubChatPanelOpened, VSCodeExtensionGitHubChatNotFound } from "../telemetry/telemetryConstants";
 import { COPILOT_IN_POWERPAGES, COPILOT_NOTIFICATION_DISABLED, PowerPagesParticipantDocLink, PowerPagesParticipantPrompt } from "../constants";
 import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
@@ -59,8 +59,12 @@ export async function copilotNotificationPanel(context: vscode.ExtensionContext,
                     telemetry.sendTelemetryEvent(CopilotNotificationTryGitHubCopilotClicked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
                     oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationTryGitHubCopilotClicked, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
                     if (isGitHubCopilotPresent) {
+                        telemetry.sendTelemetryEvent(VSCodeExtensionGitHubChatPanelOpened, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+                        oneDSLoggerWrapper.getLogger().traceInfo(VSCodeExtensionGitHubChatPanelOpened, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
                         vscode.commands.executeCommand('workbench.action.chat.open', PowerPagesParticipantPrompt);
                     } else {
+                        telemetry.sendTelemetryEvent(VSCodeExtensionGitHubChatNotFound, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
+                        oneDSLoggerWrapper.getLogger().traceInfo(VSCodeExtensionGitHubChatNotFound, { listOfOrgs: telemetryData, countOfActivePortals: countOfActivePortals as string });
                         vscode.env.openExternal(vscode.Uri.parse(PowerPagesParticipantDocLink));
                     }
             }

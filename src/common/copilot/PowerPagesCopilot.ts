@@ -15,7 +15,7 @@ import { IOrgInfo } from './model';
 import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
 import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
-import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig, CopilotPanelTryGitHubCopilotClicked } from "./telemetry/telemetryConstants";
+import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig, CopilotPanelTryGitHubCopilotClicked, VSCodeExtensionGitHubChatPanelOpened, VSCodeExtensionGitHubChatNotFound } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
@@ -297,8 +297,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     //Open the GitHub Copilot Chat with @powerpages if GitHub Copilot Chat is installed
                     sendTelemetryEvent(this.telemetry, { eventName: CopilotPanelTryGitHubCopilotClicked, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                     if (vscode.extensions.getExtension(GITHUB_COPILOT_CHAT_EXT)) {
+                        sendTelemetryEvent(this.telemetry, { eventName: VSCodeExtensionGitHubChatPanelOpened, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                         vscode.commands.executeCommand('workbench.action.chat.open', PowerPagesParticipantPrompt);
                     } else {
+                        sendTelemetryEvent(this.telemetry, { eventName: VSCodeExtensionGitHubChatNotFound, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                         vscode.env.openExternal(vscode.Uri.parse(PowerPagesParticipantDocLink));
                     }
                 }
