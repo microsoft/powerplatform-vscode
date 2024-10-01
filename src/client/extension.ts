@@ -46,6 +46,7 @@ import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue } from "../common/utilities/Utils";
+import { PowerPagesActionHub } from "../common/webPreview/PowerPagesActionHub";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -254,6 +255,7 @@ export async function activate(
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
+        powerPagesActions();
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -268,6 +270,12 @@ export async function activate(
 
     _telemetry.sendTelemetryEvent("activated");
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
+}
+
+export function powerPagesActions(){
+    const powerPagesActionHub = new PowerPagesActionHub();
+    vscode.window.registerTreeDataProvider('powerPagesActionHubView', powerPagesActionHub);
+    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesActionHub.openSpecificURLWithoutAuth());
 }
 
 export async function deactivate(): Promise<void> {

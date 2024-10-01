@@ -169,6 +169,10 @@
     ],
     "commands": [
       {
+        "command": "powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode",
+        "title": "Preview site in VSCode"
+      },
+      {
         "command": "powerpages.collaboration.openTeamsChat",
         "title": "Open Teams Chat",
         "icon": {
@@ -967,6 +971,10 @@
           "when": "isWeb && virtualWorkspace",
           "contextualTitle": "People On The Site",
           "visibility": "visible"
+        },
+        {
+          "id": "powerPagesActionHubView",
+          "name": "Power Pages Actions"
         }
       ]
     },
