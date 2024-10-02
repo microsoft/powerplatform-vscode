@@ -5,6 +5,7 @@
 
 import { INode } from "../interfaces/Node";
 import { ITree } from "../interfaces/Tree";
+import { AttributeNode, EntityNode, FetchNode, OrderNode } from "../models/Node";
 
 export const getFetchXmlFromQueryTree = (queryTree: ITree) => {
     let query = "";
@@ -58,4 +59,57 @@ export const prettifyXml = (xml: string) =>{
       }
       return padding + match;
     });
-}  
+}
+
+export const getTreeFromFetchXml = (fetchXml: string) => {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(fetchXml, 'application/xml');
+    const root = parseNode(xmlDoc.documentElement);
+    const tree: ITree = {
+        root
+    };
+    return tree;
+}
+
+const parseNode = (node: Element, parentNode?: INode) => {
+  const parser = parsers.get(node.nodeName);
+  if (!parser) {
+    throw new Error(`No parser found for node ${node.nodeName}`);
+  }
+  const newNode = parser(node);
+  if (parentNode && newNode) {
+    parentNode.addChild(newNode);
+  }
+  for (let i = 0; i < node.children.length; i++) {
+    const child = node.children[i];
+    parseNode(child, newNode);
+  }
+  return newNode;
+}
+
+const parseFetch = (node: Element): INode => {
+  const topValue = node.getAttribute('top');
+  const top = topValue? parseInt(topValue) : undefined
+  const distinct = Boolean(node.getAttribute('distinct'));
+  return new FetchNode(null,top, distinct);
+};
+
+const parseEntity = (node: Element): INode => {
+  const name = node.getAttribute('name') || undefined;
+  return new EntityNode(name);
+};
+
+const parseAttribute = (node: Element): INode => {
+  return new AttributeNode(generateId(), node.getAttribute('name') || '');
+};
+
+const parseOrder = (node: Element): INode => {
+  return new OrderNode(generateId(), node.getAttribute('attribute') || '', node.getAttribute('descending') === 'true');
+};
+
+const parsers = new Map([
+  ['fetch', parseFetch],
+  ['entity', parseEntity],
+  ['attribute', parseAttribute],
+  ['order', parseOrder]
+]);
