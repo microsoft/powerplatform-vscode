@@ -10,9 +10,10 @@ import { IEntityNode, IFetchNode, INode } from '../interfaces/Node';
 import { ITree } from '../interfaces/Tree';
 import { EntityNode, FetchNode } from '../models/Node';
 import { containerStyle, fetchXmlStyle, resizer, showQueryButton, sidebar, sidebarPanel } from './Styles';
-import { getFetchXmlFromQueryTree, getTreeFromFetchXml, prettifyXml } from '../utility/utility';
+import { getFetchXmlFromQueryTree, getTreeFromFetchXml, getVSCodeApi, prettifyXml } from '../utility/utility';
 import { ResultPanel } from './ResultPanel';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import { useEffect } from 'react';
 
 export const FetchXmlQueryBuilderApp = () => {
     const [tree, setTree] = React.useState<ITree>(getInitTree());
@@ -20,6 +21,22 @@ export const FetchXmlQueryBuilderApp = () => {
     const [selectedNode, setSelectedNode] = React.useState<INode>(tree.root);
     const [sidebarWidth, setSidebarWidth] = React.useState<number>(300);
     const isResizing = React.useRef(false);
+    const vscode = getVSCodeApi();
+
+    const messageHandler = (event: MessageEvent) => {
+        if (event.data.type === 'fetchXmlCode') {
+            console.log(event.data.code);
+            onQueryChange(event.data.code);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('message', messageHandler);
+        vscode.postMessage({ type: 'ready' });
+        return () => {
+            window.removeEventListener('message', messageHandler);
+        };
+    }, [messageHandler]);
 
     const onNodeSelect = (node: INode) => {
         setSelectedNode(node);
