@@ -10,7 +10,7 @@ import { IEntityNode, IFetchNode, INode } from '../interfaces/Node';
 import { ITree } from '../interfaces/Tree';
 import { EntityNode, FetchNode } from '../models/Node';
 import { containerStyle, fetchXmlStyle, resizer, showQueryButton, sidebar, sidebarPanel } from './Styles';
-import { getFetchXmlFromQueryTree, prettifyXml } from '../utility/utility';
+import { getFetchXmlFromQueryTree, getTreeFromFetchXml, prettifyXml } from '../utility/utility';
 import { ResultPanel } from './ResultPanel';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 
@@ -42,6 +42,13 @@ export const FetchXmlQueryBuilderApp = () => {
         query = prettifyXml(query);
         setFetchXml(query);
     };
+
+    const onQueryChange = (query: string) => {
+        query = prettifyXml(query);
+        setFetchXml(query);
+        const newTree = getTreeFromFetchXml(query);
+        setTree(newTree);
+    }
 
     const handleMouseDown = (_: React.MouseEvent) => {
         isResizing.current = true;
@@ -89,7 +96,7 @@ export const FetchXmlQueryBuilderApp = () => {
                 onMouseDown={handleMouseDown}
             />
             <div style={fetchXmlStyle}>
-                <ResultPanel query={fetchXml} />
+                <ResultPanel query={fetchXml} onQueryChange={onQueryChange} />
             </div>
         </div>
     );

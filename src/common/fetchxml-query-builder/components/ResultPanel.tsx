@@ -9,6 +9,7 @@ import { getVSCodeApi } from "../utility/utility";
 
 interface ResultPanelProps {
     query: string;
+    onQueryChange: (query: string) => void;
 }
 
 export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
@@ -87,7 +88,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
                     style={editorTextareaStyle}
                     placeholder="Click on Show Query button to see the FetchXML query"
                     value={query}
-                    readOnly // Assuming the query is not editable
+                    onChange={(e) => props.onQueryChange(e.target.value)} // Assuming the query is not editable
                 />
                 {/* Convert and Execute Buttons */}
                 <div>
