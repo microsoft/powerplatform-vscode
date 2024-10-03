@@ -226,6 +226,16 @@ export async function activate(
     context.subscriptions.push(
         vscode.commands.registerCommand('fetchXMLQueryBuilder.open', () => {
             FetchXmlQueryBuilderPanel.createOrShow(context.extensionUri, _telemetry, pacTerminal.getWrapper());
+        }),
+
+        vscode.commands.registerCommand('powerpages.copilot.fetchXml', (args) => {
+            const  code  = args;
+            FetchXmlQueryBuilderPanel.createOrShow(context.extensionUri, _telemetry, pacTerminal.getWrapper());
+            if (FetchXmlQueryBuilderPanel.currentPanel) {
+                FetchXmlQueryBuilderPanel.currentPanel.onReady(() => {
+                    FetchXmlQueryBuilderPanel.currentPanel?.postMessage({ type: 'fetchXmlCode', code: decodeURIComponent(code) });
+                });
+            }
         })
     );
     const workspaceFolders =

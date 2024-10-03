@@ -211,6 +211,15 @@ export class PowerPagesChatParticipant {
                         stream.markdown('\n```javascript\n' + response.code + '\n```');
                     }
                     stream.markdown('\n');
+                    if(response.code.includes('<fetch') || response.code.includes('</fetch>')){
+                        if (response.code.startsWith('<fetch') && response.code.endsWith('</fetch>')) {
+                            stream.button({
+                                command: 'powerpages.copilot.fetchXml',
+                                title: 'Edit in FetchXML Builder',
+                                arguments: [response.code]
+                            });
+                        }
+                    }
                 });
 
                 stream.markdown(DISCLAIMER_MESSAGE);

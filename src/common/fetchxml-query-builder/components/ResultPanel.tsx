@@ -20,7 +20,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     const [isConvertHovered, setIsConvertHovered] = useState<boolean>(false);
     const [isExecuteHovered, setIsExecuteHovered] = useState<boolean>(false);
     const [isQueryExecuted, setIsQueryExecuted] = useState<boolean>(false);
-    const query = props.query;
+    const [query, setQuery] = useState<string>(props.query);
     const vscode = getVSCodeApi();
 
     const messageHandler = (event: MessageEvent) => {
@@ -28,6 +28,9 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
             console.log(event.data.queryResult);
             setQueryResult(event.data.queryResult);
             setIsQueryExecuted(false);
+        } else if (event.data.type === 'fetchXmlCode') {
+            console.log(event.data.code);
+            setQuery(event.data.code);
         }
     };
 
@@ -50,7 +53,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
 
     useEffect(() => {
         window.addEventListener('message', messageHandler);
-
+        vscode.postMessage({ type: 'ready' });
         return () => {
             window.removeEventListener('message', messageHandler);
         };

@@ -25,6 +25,8 @@ export class FetchXmlQueryBuilderPanel {
     private telemetry: ITelemetry | TelemetryReporter;
     private attributes: string[] = [];
     private entityName: string | undefined;
+    private ready = false;
+    private readyCallbacks: (() => void)[] = [];
 
 
 
@@ -136,6 +138,13 @@ export class FetchXmlQueryBuilderPanel {
         const webView = this._panel.webview;
         const orgUrl = this.orgUrl;
         switch (message.type) {
+            case 'ready':
+                {
+                    this.ready = true;
+                    this.readyCallbacks.forEach(cb => cb());
+                    this.readyCallbacks = [];
+                    break;
+                }
             case 'getEntities':
                 {
                     const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
@@ -167,6 +176,19 @@ export class FetchXmlQueryBuilderPanel {
                     break;
                 }
             // Add more cases to handle other message types
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public postMessage(message: any) {
+        this._panel.webview.postMessage(message);
+    }
+
+    public onReady(callback: () => void) {
+        if (this.ready) {
+            callback();
+        } else {
+            this.readyCallbacks.push(callback);
         }
     }
 }
