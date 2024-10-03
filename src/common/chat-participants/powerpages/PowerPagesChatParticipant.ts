@@ -135,18 +135,18 @@ export class PowerPagesChatParticipant {
 
             userPrompt = removeChatVariables(userPrompt);
 
-            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
 
             if (userPrompt === WELCOME_PROMPT) {
                 stream.markdown(WELCOME_MESSAGE);
-                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
                 return createSuccessResult(STATER_PROMPTS, RESPONSE_SCENARIOS.WELCOME_PROMPT, this.orgID);
             } else if (!userPrompt) {
                 stream.markdown(NO_PROMPT_MESSAGE);
-                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
                 return createSuccessResult('', RESPONSE_SCENARIOS.NO_PROMPT, this.orgID);
             }
 
@@ -164,19 +164,19 @@ export class PowerPagesChatParticipant {
 
                 const relatedFiles: IRelatedFiles[] = [];
 
-            // Based on dataverse entity fetch required context for the active file
-            switch (activeFileParams.dataverseEntity) {
-                case ADX_WEBPAGE:
-                    if (activeFileUri) {
-                        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                        const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.telemetry, this.powerPagesAgentSessionId);
-                        relatedFiles.push(...files);
-                    }
-                    break;
-                default:
-                    break;
-            }
+                // Based on dataverse entity fetch required context for the active file
+                switch (activeFileParams.dataverseEntity) {
+                    case ADX_WEBPAGE:
+                        if (activeFileUri) {
+                            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                            const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.telemetry, this.powerPagesAgentSessionId);
+                            relatedFiles.push(...files);
+                        }
+                        break;
+                    default:
+                        break;
+                }
 
                 const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
@@ -209,9 +209,7 @@ export class PowerPagesChatParticipant {
                     }
                     if (response.code && !SKIP_CODES.includes(response.code)) {
                         stream.markdown('\n```javascript\n' + response.code + '\n```');
-                    }
-                    stream.markdown('\n');
-                    if(response.code.includes('<fetch') || response.code.includes('</fetch>')){
+
                         if (response.code.startsWith('<fetch') && response.code.endsWith('</fetch>')) {
                             stream.button({
                                 command: 'powerpages.copilot.fetchXml',
@@ -220,6 +218,8 @@ export class PowerPagesChatParticipant {
                             });
                         }
                     }
+
+                    stream.markdown('\n');
                 });
 
                 stream.markdown(DISCLAIMER_MESSAGE);
@@ -234,7 +234,7 @@ export class PowerPagesChatParticipant {
         }
     };
 
-      private async initializeOrgDetails(): Promise<void> {
+    private async initializeOrgDetails(): Promise<void> {
         try {
             const { orgID, orgUrl, environmentID } = await initializeOrgDetails(this.isOrgDetailsInitialized, this._pacWrapper);
 
