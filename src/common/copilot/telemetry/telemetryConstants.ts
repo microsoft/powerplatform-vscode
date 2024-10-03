@@ -39,4 +39,6 @@ export const CopilotExplainCodeSize = 'CopilotExplainCodeSize';
 export const CopilotNpsAuthenticationCompleted = "CopilotNpsAuthenticationCompleted";
 export const CopilotNotificationTryGitHubCopilotClicked = 'CopilotNotificationTryGitHubCopilotClicked';
 export const CopilotPanelTryGitHubCopilotClicked = 'CopilotPanelTryGitHubCopilotClicked ';
+export const VSCodeExtensionGitHubChatPanelOpened = 'VSCodeExtensionGitHubChatPanelOpened';
+export const VSCodeExtensionGitHubChatNotFound = 'VSCodeExtensionGitHubChatNotFound';
 
