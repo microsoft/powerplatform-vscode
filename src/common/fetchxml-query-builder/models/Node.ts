@@ -3,8 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NodeType } from "../constants/constants";
-import { IAttributeNode, IEntityNode, IFetchNode, ILinkEntityNode, INode, IOrderNode } from "../interfaces/Node";
+import { FilterType, NodeType } from "../constants/constants";
+import { IAttributeNode, IEntityNode, IFetchNode, IFilterNode, ILinkEntityNode, INode, IOrderNode } from "../interfaces/Node";
 
 export class Node implements INode {
     type: NodeType;
@@ -185,5 +185,26 @@ export class LinkEntityNode extends Node implements ILinkEntityNode {
 
     getLabel() {
         return `Link Entity: ${this.name}`;
+    }
+}
+
+export class FilterNode extends Node implements IFilterNode {
+    filterType: FilterType;
+
+    constructor(id: string, filterType: FilterType) {
+        super(NodeType.Filter, id);
+        this.filterType = filterType;
+    }
+
+    getOpeningTag() {
+        return `<filter type="${this.filterType}">`;
+    }
+
+    getClosingTag() {
+        return `</filter>`;
+    }
+
+    getLabel() {
+        return `Filter: ${this.filterType}`;
     }
 }

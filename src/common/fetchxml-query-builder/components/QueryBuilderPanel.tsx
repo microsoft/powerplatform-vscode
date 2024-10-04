@@ -12,6 +12,7 @@ import { ContextMenu } from './ContextMenu/ContextMenu';
 import StorageRoundedIcon from '@mui/icons-material/StorageRounded';
 import { NodeType } from '../constants/constants';
 import { BackupTableRounded, CommitRounded, SwapVertRounded } from '@mui/icons-material';
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 
 interface QueryBuilderPanelProps {
     tree: ITree;
@@ -115,6 +116,13 @@ const getNodeLabel = (node: INode) => {
             return (
                 <div style={{ display: 'flex', alignItems: 'center', fontSize: '13px' }}>
                     <StorageRoundedIcon style={{marginRight: '5px', fontSize: '15px'}}/>
+                    {node.getLabel()}
+                </div>
+            );
+        case NodeType.Filter:
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', fontSize: '13px' }}>
+                    <FilterAltOutlinedIcon style={{marginRight: '5px', fontSize: '15px'}}/>
                     {node.getLabel()}
                 </div>
             );

@@ -4,7 +4,7 @@
  */
 
 import { INode } from "../../interfaces/Node";
-import { addAttribute, addEntity, addLinkEntity, addOrder, deleteNode, moveDown, moveUp } from "./Actions/Actions";
+import { addAttribute, addEntity, addFilter, addLinkEntity, addOrder, deleteNode, moveDown, moveUp } from "./Actions/Actions";
 
 export const Options = {
     'Entity': [
@@ -17,6 +17,7 @@ export const Options = {
                 },
                 {
                     label: 'Filter',
+                    action: (node: INode) => addFilter(node),
                 },
                 {
                     label: 'Order',

@@ -7,11 +7,12 @@ import * as React from 'react';
 import { INode } from '../interfaces/Node';
 import { NodeType } from '../constants/constants';
 import { FetchNodePropertyPanel } from './PropertyPanels/FetchNode';
-import { AttributeNode, EntityNode, FetchNode, OrderNode } from '../models/Node';
+import { AttributeNode, EntityNode, FetchNode, FilterNode, OrderNode } from '../models/Node';
 import { EntityNodePropertyPanel } from './PropertyPanels/EntityNode';
 import { AttributeNodePropertyPanel } from './PropertyPanels/AttributeNode';
 import { OrderNodePropertyPanel } from './PropertyPanels/OrderNode';
 import LinkEntityNodePropertyPanel from './PropertyPanels/LinkEntityNode';
+import { FilterNodePropertyPanel } from './PropertyPanels/FilterNode';
 
 interface NodePropertyPanelProps {
     node: INode;
@@ -59,7 +60,13 @@ const panelFactory = (node: INode, onPropertyUpdate: (updatedNode: INode) => voi
                 <LinkEntityNodePropertyPanel
                     node={node as EntityNode}
                     onPropertyUpdate={onPropertyUpdate}/>
-            )
+            );
+        case NodeType.Filter:
+            return (
+                <FilterNodePropertyPanel
+                    node={node as FilterNode}
+                    onPropertyUpdate={onPropertyUpdate}/>
+            );
         default:
             return (
                 <p>selected id: {node.id} & type:{node.type}</p>

@@ -11,3 +11,8 @@ export enum NodeType {
     Order = 'Order',
     LinkEntity = 'LinkEntity'
 }
+
+export enum FilterType {
+    And = 'and',
+    Or = 'or'
+}

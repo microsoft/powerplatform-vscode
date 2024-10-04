@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NodeType } from "../constants/constants";
+import { FilterType, NodeType } from "../constants/constants";
 
 export interface INode {
     type: NodeType;
@@ -45,4 +45,8 @@ export interface ILinkEntityNode extends INode {
     attributes?: IAttributeNode[];
     from?: string;
     to?: string;
+}
+
+export interface IFilterNode extends INode {
+    filterType: FilterType;
 }
