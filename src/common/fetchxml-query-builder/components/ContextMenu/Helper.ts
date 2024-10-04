@@ -16,6 +16,7 @@ export const getMenuItems = (node: INode): IMenuItem[] => {
     switch (node.type) {
         case 'Entity':
         case 'Attribute':
+        case 'LinkEntity':
         case 'Order':
         case 'Filter':
             return Options[node.type];

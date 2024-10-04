@@ -41,7 +41,7 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
         return () => {
         window.removeEventListener('message', messageHandler);
         };
-    }, []);
+    }, [messageHandler]);
 
 
     return (

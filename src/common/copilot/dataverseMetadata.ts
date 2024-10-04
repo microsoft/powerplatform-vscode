@@ -239,6 +239,35 @@ function parseXML(formXml: string) {
     return result
 }
 
+export async function getEntityRelationships(entityName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string) {
+    try {
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.1/EntityDefinitions(LogicalName='${entityName}')?$select=LogicalName&$expand=OneToManyRelationships($select=SchemaName,ReferencingEntity,ReferencedEntity,ReferencingAttribute,ReferencedAttribute),ManyToOneRelationships($select=SchemaName,ReferencingEntity,ReferencedEntity,ReferencingAttribute,ReferencedAttribute),ManyToManyRelationships($select=SchemaName,Entity1LogicalName,Entity2LogicalName,Entity1IntersectAttribute,Entity2IntersectAttribute)`;
+        const requestInit: RequestInit = {
+            method: "GET",
+            headers: {
+                'Content-Type': "application/json",
+                Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": getUserAgent()
+            },
+        };
+
+        const startTime = performance.now();
+        const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
+        const endTime = performance.now();
+        const responseTime = endTime - startTime || 0;
+
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
+        return {
+            ManyToOneRelationships: jsonResponse.ManyToOneRelationships,
+            OneToManyRelationships: jsonResponse.OneToManyRelationships
+        };
+
+    } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
+        return [];
+    }
+}
+
 
 export async function getEntityName(telemetry: ITelemetry, sessionID: string, dataverseEntity: string): Promise<{ entityName: string, formName: string }> {
     let entityName = '';

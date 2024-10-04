@@ -4,7 +4,7 @@
  */
 
 import { NodeType } from "../constants/constants";
-import { IAttributeNode, IEntityNode, IFetchNode, INode, IOrderNode } from "../interfaces/Node";
+import { IAttributeNode, IEntityNode, IFetchNode, ILinkEntityNode, INode, IOrderNode } from "../interfaces/Node";
 
 export class Node implements INode {
     type: NodeType;
@@ -151,5 +151,39 @@ export class OrderNode extends Node implements IOrderNode {
 
     getLabel() {
         return `Order: ${this.name}`;
+    }
+}
+export class LinkEntityNode extends Node implements ILinkEntityNode {
+    name?: string;
+    relationship?: string;
+    joinType?: string;
+    alias?: string;
+    linkEntities?: ILinkEntityNode[];
+    attributes?: IAttributeNode[];
+    from?: string;
+    to?: string;
+
+    constructor(id: string, name?: string, relationship?: string, joinType?: string, alias?: string, from?: string, to?: string, linkEntities?: ILinkEntityNode[], attributes?: IAttributeNode[]) {
+        super(NodeType.LinkEntity, id);
+        this.name = name;
+        this.relationship = relationship;
+        this.joinType = joinType;
+        this.alias = alias;
+        this.from = from;
+        this.to = to;
+        this.linkEntities = linkEntities || [];
+        this.attributes = attributes || [];
+    }
+
+    getOpeningTag() {
+        return `<link-entity name="${this.name}" from="${this.from}" to="${this.to}" link-type="${this.joinType}" alias="${this.alias}">`;
+    }
+
+    getClosingTag() {
+        return `</link-entity>`;
+    }
+
+    getLabel() {
+        return `Link Entity: ${this.name}`;
     }
 }

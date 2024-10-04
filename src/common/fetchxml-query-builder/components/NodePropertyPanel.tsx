@@ -11,6 +11,7 @@ import { AttributeNode, EntityNode, FetchNode, OrderNode } from '../models/Node'
 import { EntityNodePropertyPanel } from './PropertyPanels/EntityNode';
 import { AttributeNodePropertyPanel } from './PropertyPanels/AttributeNode';
 import { OrderNodePropertyPanel } from './PropertyPanels/OrderNode';
+import LinkEntityNodePropertyPanel from './PropertyPanels/LinkEntityNode';
 
 interface NodePropertyPanelProps {
     node: INode;
@@ -53,6 +54,12 @@ const panelFactory = (node: INode, onPropertyUpdate: (updatedNode: INode) => voi
                     node={node as OrderNode}
                     onPropertyUpdate={onPropertyUpdate}/>
             );
+        case NodeType.LinkEntity:
+            return (
+                <LinkEntityNodePropertyPanel
+                    node={node as EntityNode}
+                    onPropertyUpdate={onPropertyUpdate}/>
+            )
         default:
             return (
                 <p>selected id: {node.id} & type:{node.type}</p>

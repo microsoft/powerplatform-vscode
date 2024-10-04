@@ -9,7 +9,7 @@ import { ActiveOrgOutput } from '../../client/pac/PacTypes';
 import { dataverseAuthentication } from '../services/AuthenticationProvider';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { ITelemetry } from '../OneDSLoggerTelemetry/telemetry/ITelemetry';
-import { executeFetchXml, getEntities, getEntityColumns } from '../copilot/dataverseMetadata';
+import { executeFetchXml, getEntities, getEntityColumns, getEntityRelationships } from '../copilot/dataverseMetadata';
 import { PacWrapper } from '../../client/pac/PacWrapper';
 import { SUCCESS } from '../constants';
 import { createAuthProfileExp } from '../copilot/utils/copilotUtil';
@@ -24,6 +24,7 @@ export class FetchXmlQueryBuilderPanel {
     private orgUrl = '';
     private telemetry: ITelemetry | TelemetryReporter;
     private attributes: string[] = [];
+    private entityRelationships: object = {};
     private entityName: string | undefined;
     private ready = false;
     private readyCallbacks: (() => void)[] = [];
@@ -157,11 +158,14 @@ export class FetchXmlQueryBuilderPanel {
                     const selectedEntity = message.entity;
                     if (selectedEntity === '') {
                         webView.postMessage({ type: 'getAttributes', attributes: this.attributes});
+                        webView.postMessage({ type: 'getRelationships', relationships: this.entityRelationships});
                     } else {
                         this.entityName = selectedEntity;
                         const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
                         this.attributes = await getEntityColumns(message.entity, orgUrl, dataverseToken, this.telemetry, '')
+                        this.entityRelationships = await getEntityRelationships(message.entity, orgUrl, dataverseToken, this.telemetry, '')
                         webView.postMessage({ type: 'getAttributes', attributes: this.attributes })
+                        webView.postMessage({ type: 'getRelationships', relationships: this.entityRelationships })
                     }
                     break;
                 }

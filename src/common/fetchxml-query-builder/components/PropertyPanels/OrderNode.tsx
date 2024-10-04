@@ -42,7 +42,6 @@ export const OrderNodePropertyPanel: React.FC<OrderNodePropertyPanelProps> = (pr
     };
 
     React.useEffect(() => {
-        window.addEventListener('message', messageHandler);
 
         // Request attributes for the selected entity
         vscode.postMessage({ type: 'entitySelected', entity: ''});

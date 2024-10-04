@@ -31,7 +31,7 @@ export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = (props) => {
           if (contextMenuVisible) setContextMenuVisible(false);
         };
         window.addEventListener("click", handleClickOutside);
-    
+
         return () => {
           window.removeEventListener("click", handleClickOutside);
         };
@@ -49,10 +49,10 @@ export const QueryBuilderPanel: React.FC<QueryBuilderPanelProps> = (props) => {
         <div style={props.style}>
             <span>Query Builder</span>
             {renderTree(nodes, props.onNodeSelect, handleContextMenu)}
-            {contextMenuVisible 
-                && selectedNode 
-                && (<ContextMenu 
-                        position={menuPosition} 
+            {contextMenuVisible
+                && selectedNode
+                && (<ContextMenu
+                        position={menuPosition}
                         node={selectedNode}
                         refreshTree={props.refreshTree}
                     />)
@@ -111,7 +111,14 @@ const getNodeLabel = (node: INode) => {
                     {node.getLabel()}
                 </div>
             );
+        case NodeType.LinkEntity:
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', fontSize: '13px' }}>
+                    <StorageRoundedIcon style={{marginRight: '5px', fontSize: '15px'}}/>
+                    {node.getLabel()}
+                </div>
+            );
         default:
             return '';
-    } 
+    }
 }

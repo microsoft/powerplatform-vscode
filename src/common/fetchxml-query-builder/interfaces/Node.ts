@@ -35,3 +35,14 @@ export interface IOrderNode extends INode {
     name: string;
     descending?: boolean;
 }
+
+export interface ILinkEntityNode extends INode {
+    name?: string;
+    relationship?: string;
+    joinType?: string;
+    alias?: string;
+    linkEntities?: ILinkEntityNode[];
+    attributes?: IAttributeNode[];
+    from?: string;
+    to?: string;
+}

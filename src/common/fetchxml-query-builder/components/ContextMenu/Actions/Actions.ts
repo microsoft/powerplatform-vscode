@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AttributeNode, EntityNode, OrderNode } from "../../../models/Node";
+import { AttributeNode, EntityNode, LinkEntityNode, OrderNode } from "../../../models/Node";
 import { INode } from "../../../interfaces/Node";
 import { generateId } from "../../../utility/utility";
 
@@ -15,6 +15,11 @@ export const addAttribute = (node: INode) => {
 export const addOrder = (node: INode) => {
     const attribute = new OrderNode(generateId());
     node.addChild(attribute);
+}
+
+export const addLinkEntity = (node: INode) => {
+    const linkEntity = new LinkEntityNode(generateId());
+    node.addChild(linkEntity);
 }
 
 export const addEntity = (node: INode) => {

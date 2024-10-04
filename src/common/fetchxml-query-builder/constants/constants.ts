@@ -8,5 +8,6 @@ export enum NodeType {
     Entity = 'Entity',
     Attribute = 'Attribute',
     Filter = 'Filter',
-    Order = 'Order'
+    Order = 'Order',
+    LinkEntity = 'LinkEntity'
 }

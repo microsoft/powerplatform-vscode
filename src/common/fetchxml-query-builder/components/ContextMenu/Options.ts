@@ -4,7 +4,7 @@
  */
 
 import { INode } from "../../interfaces/Node";
-import { addAttribute, addEntity, addOrder, deleteNode, moveDown, moveUp } from "./Actions/Actions";
+import { addAttribute, addEntity, addLinkEntity, addOrder, deleteNode, moveDown, moveUp } from "./Actions/Actions";
 
 export const Options = {
     'Entity': [
@@ -22,6 +22,10 @@ export const Options = {
                     label: 'Order',
                     action: (node: INode) => addOrder(node),
                 },
+                {
+                    label: 'Link Entity',
+                    action : (node: INode) => addLinkEntity(node)
+                }
             ]
         },
         {
@@ -54,6 +58,21 @@ export const Options = {
         }
     ],
     'Order': [
+        {
+            label: 'Delete',
+            action: (node: INode) => deleteNode(node),
+
+        },
+        {
+            label: 'Move Up',
+            action: (node: INode) => moveUp(node),
+        },
+        {
+            label: 'Move Down',
+            action: (node: INode) => moveDown(node),
+        }
+    ],
+    'LinkEntity': [
         {
             label: 'Delete',
             action: (node: INode) => deleteNode(node),
