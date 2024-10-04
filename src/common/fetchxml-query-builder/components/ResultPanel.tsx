@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { resultSectionStyle, buttonHoverStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle, headerRowStyles, tableStyles, tdStyles, thStyles, tabButtonStyle, activeTabButtonStyle, tabContentStyle, ResultStyle, buttonDisabledStyle } from "./Styles";
+import { resultSectionStyle, buttonHoverStyle, codeEditorStyle, editorTextareaStyle, convertButtonStyle, executeButtonStyle, headerRowStyles, tableStyles, tdStyles, thStyles, tabButtonStyle, activeTabButtonStyle, tabContentStyle, ResultStyle, buttonDisabledStyle, inputStyle, sendButtonStyle } from "./Styles";
 import { getVSCodeApi } from "../utility/utility";
 
 interface ResultPanelProps {
@@ -21,6 +21,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     const [isConvertHovered, setIsConvertHovered] = useState<boolean>(false);
     const [isExecuteHovered, setIsExecuteHovered] = useState<boolean>(false);
     const [isQueryExecuted, setIsQueryExecuted] = useState<boolean>(false);
+    const [inputValue, setInputValue] = useState<string>("");
     const query =props.query;
     const vscode = getVSCodeApi();
 
@@ -38,6 +39,13 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
         vscode.postMessage({ type: 'executeQuery', query: query });
         setActiveTab("execute");
     };
+
+    const sendInputValue = () => {
+        const combinedValue = `${inputValue}, FetchXml Query: ${query}`;
+        vscode.postMessage({ type: 'askCopilot', value: combinedValue });
+        setInputValue("");
+    };
+
 
     const convertQueryToTemplate = () => {
         const template = `
@@ -113,6 +121,19 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
                         disabled={!query}
                     >
                         Execute
+                    </button>
+                    <input
+                        type="text"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        style={inputStyle}
+                        placeholder="Let Copilot help you with your query..."
+                    />
+                    <button
+                        style={sendButtonStyle}
+                        onClick={sendInputValue}
+                    >
+                        Ask Copilot
                     </button>
                 </div>
             </div>

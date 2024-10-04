@@ -160,3 +160,23 @@ export const ResultStyle: React.CSSProperties = {
     backgroundColor: 'var(--vscode-editor-background)',
     overflow: 'auto',
 };
+
+export const inputStyle: React.CSSProperties = {
+    marginLeft: '10px',
+    padding: '5px',
+    fontSize: '14px',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    width: '300px',
+};
+
+export const sendButtonStyle: React.CSSProperties = {
+    marginLeft: '5px',
+    padding: '5px 10px',
+    fontSize: '14px',
+    borderRadius: '4px',
+    border: 'none',
+    backgroundColor: '#0078d4',
+    color: 'white',
+    cursor: 'pointer',
+};

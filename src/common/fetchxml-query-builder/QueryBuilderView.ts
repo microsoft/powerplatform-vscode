@@ -179,6 +179,12 @@ export class FetchXmlQueryBuilderPanel {
                     webView.postMessage({type: 'setQueryResult', queryResult: queryResult})
                     break;
                 }
+            case 'askCopilot':
+                {
+                    const prompt = message.value;
+                    vscode.commands.executeCommand('workbench.action.chat.open', prompt);
+                    break;
+                }
             // Add more cases to handle other message types
         }
     }
