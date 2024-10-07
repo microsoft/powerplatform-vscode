@@ -3,40 +3,24 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as vscode from 'vscode';
 import axios from 'axios';
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../../../common/services/Constants";
 import { ERROR_CONSTANTS } from "../../../common/ErrorConstants";
 import * as https from 'https'
-import { EXTENSION_NAME } from "../../../common/constants"
-import { getExtensionVersion } from '../../../common/utilities/Utils';
 import fs from 'fs';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { chromium } from 'playwright';
 import * as chai from 'chai';
+import path from 'path';
+import { AIB_ENDPOINT, ApiRequestJson, ExpectedResponses } from '../common/constants';
+import { IApiRequestParams, ITestLogParams } from '../common/interfaces';
 const chaiExpect = chai.expect;
 const violationOrUnclearResponseCodes : string[] = ["violation", "unclear", "unsupported"];
-
-// export const AIB_ENDPOINT = 'YOUR_API_ENDPOINT_HERE';
-
-export const AIB_ENDPOINT = 'https://aibuildertextapiservice.us-il108.gateway.prod.island.powerapps.com/v1.0/09c165e4-df13-ef11-9f83-000d3a342d10/appintelligence/chat'
-// 'https://aibuildertextapiservice.us-il109.gateway.Prod.island.powerapps.com/v1.0/63efacda-3db4-ee11-a564-000d3a106f1e/appintelligence/chat';
-
-export interface IApiRequestParams {
-    aibEndPoint: string;
-    apiToken: string;
-    data: unknown;
-}
-
-export interface ITestLogParams {
-    testName: string,
-    testStartTime: Date,
-    testEndTime: Date,
-    actualResponse: string,
-    status: string,
-    logStream: fs.WriteStream
-}
 
 // <summary>
 // Function to get the access token for the API
@@ -61,29 +45,6 @@ export async function getIntelligenceAPIAccessToken() : Promise<{ accessToken: s
     }
     return { accessToken };
 }
-
-// JSON request to be sent to the API.
-export const ApiRequestJson = {
-    "question": "{0}",
-    "top": 1,
-    "context": 
-    {
-        "scenario": "PowerPagesProDev",
-        "subScenario": "PowerPagesProDevGeneric",
-        "version": "V1",
-        "information": 
-        {
-            "activeFileContent": "{6}",
-            "dataverseEntity": "{2}",
-            "entityField": "{3}",
-            "fieldType": "{4}",
-            "targetEntity": "{5}",
-            "targetColumns": "{1}",  // Placeholder value for targetColumns
-            "clientType": EXTENSION_NAME + '-' + 'Desktop',
-            "clientVersion": getExtensionVersion()
-        }
-    }
-};
 
 // <summary>
 // Function to replace the placeholders in the JSON request with actual values
@@ -297,22 +258,9 @@ export function ReturnFormattedAPIResponse(responseData : []) {
     return appendedString;
   }
 
-export const ExpectedResponses = {
-    COPILOT_IT_UNSUPPORTED_EXPECTED_RESPONSE: {
-        "displayText":"Try a different prompt thatâ€™s related to writing code for Power Pages sites. You can get help with HTML, CSS, and JS languages.",
-        "Code":"violation",
-        "language":"text",
-        "useCase":"unsupported"
-    }
-};
-
-export const SuggestedPromptsConstants : Record<string, string> = { 
-    Name: "Write javascript code to validate name field to not accept special characters",
-    Subject: "Write javascript code to validate subject field to not accept special characters",
-}
-
 export const formatString = (str: string, ...args: string[] | number[]) =>
     str.replace(/{(\d+)}/g, (match, index) => args[index].toString() || '');
+
 
 export async function verifyAPIResponse(response:any) {
     chaiExpect(response).to.have.property('status');
@@ -337,17 +285,136 @@ export async function uploadPortal(){
         cwd: 'C:\\Users\\v-ankopuri\\AppData\\Local\\Microsoft\\PowerAppsCli',
       };
     const execAsync = promisify(exec);
-    const { stdout, stderr } = await execAsync('pac paportal upload -p C:/Users/v-ankopuri/Downloads/CopilotSiteLatest/latest-site-for-copilot---site-ej93f -mv 2',options);
+    const { stdout, stderr } = await execAsync('pac paportal upload -p C:/Users/v-ankopuri/Downloads/CopilotSiteLatest/latest-site-for-copilot---site-uo67k -mv 2',options);
       chaiExpect(stdout.trim()).to.contain('Power Pages website upload succeeded');
       chaiExpect(stderr).to.be.empty;
 }
 
-export async function LaunchRunTime(pageName:string){
+export async function LaunchRunTime(pageName:string, timeout = false){
     const browser = await chromium.launch({ headless: false }); // Set headless: false to see the browser UI
       const page = await browser.newPage();
-
-      await page.goto(formatString('https://site-ej93f.powerappsportals.com/{0}/',pageName),{timeout:60000});
+      if(timeout){
+        await page.waitForTimeout(20000);
+      }
+      if(pageName == 'Home'){
+        await page.goto('https://site-uo67k.powerappsportals.com/',{timeout:60000});
+      }
+      else{
+        await page.goto(formatString('https://site-uo67k.powerappsportals.com/{0}/',pageName),{timeout:60000});
+      }
+      
       await page.waitForLoadState();
       await page.waitForLoadState('domcontentloaded');
       return page;
 }
+
+export function reportingForTests(){
+    const testReportPath = path.resolve(__dirname, `../test-reports`); // testReportPath => ..\powerplatform-vscode\out\web\client\test\test-reports
+// Ensure the log directory exists
+if (!fs.existsSync(testReportPath)) {
+  fs.mkdirSync(testReportPath);
+}
+const formattedDateTime = getFormattedDateTime();
+// Create a write stream to the HTML file
+const logFilePath = path.join(testReportPath, `test-report-${formattedDateTime}.html`);
+const logStream = fs.createWriteStream(logFilePath, { flags: 'w' });
+// Open the HTML file with initial structure
+logStream.write(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Copilot Integration Test Report</title>
+  <style>
+  body {
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+    background-color: #f8f9fa;
+    font-size: 11px;
+    color: #333;
+  }
+  h1 {
+    color: #007bff;
+  }
+  h2 {
+    color: #007bff;
+  }
+  h4 {
+    margin-top: 20px;
+    color: #007bff;
+  }
+  // fieldset {
+  //   margin-top: 20px;
+  //   border: 1px solid #ddd;
+  //   padding: 10px;
+  //   border-radius: 5px;
+  // }
+  fieldset {
+    border: 1px dotted rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 20px;
+  }
+  legend {
+    padding: 0 10px;
+  }
+  .summary {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+  }
+  th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  th {
+    background-color: #007bff;
+    color: #fff;
+  }
+  .failed {
+    color: red;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+  <h2>Copilot Integration Test Report</h2>
+`);
+return logStream;
+}
+
+export async function reportAfterTestCompletes(testName:string,testStartTime: Date,response : any,logStream: fs.WriteStream) {
+    // Record end time after test execution
+    const testEndTime = new Date();
+    const testLogParams: ITestLogParams = {
+      testName: testName,
+      testStartTime: testStartTime,
+      testEndTime: testEndTime,
+      actualResponse: ReturnFormattedAPIResponse(response.data.additionalData[0].properties.response),
+      status: 'PASSED',
+      logStream: logStream
+    }
+    log(testLogParams);
+}
+
+export async function getAccessToken() {
+    const apiToken = await getIntelligenceAPIAccessToken();
+  return apiToken.accessToken;
+}
+
+export async function writeHeadingandTableHeaders(logStream:fs.WriteStream) {
+    writeHeading(logStream, `${AIB_ENDPOINT}`);
+    writeTableHeaders(logStream);
+}
+
+export { AIB_ENDPOINT, ITestLogParams };
