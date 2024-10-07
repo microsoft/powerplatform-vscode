@@ -24,7 +24,7 @@ export const Options = {
                 },
                 {
                     label: 'Link Entity',
-                    action : (node: INode) => addLinkEntity(node)
+                    action: (node: INode) => addLinkEntity(node)
                 }
             ]
         },
@@ -74,6 +74,26 @@ export const Options = {
     ],
     'LinkEntity': [
         {
+            label: 'Add',
+            subMenuItems: [
+                {
+                    label: 'Attribute',
+                    action: (node: INode) => addAttribute(node),
+                },
+                {
+                    label: 'Filter',
+                },
+                {
+                    label: 'Order',
+                    action: (node: INode) => addOrder(node),
+                },
+                {
+                    label: 'Link Entity',
+                    action: (node: INode) => addLinkEntity(node)
+                }
+            ]
+        },
+        {
             label: 'Delete',
             action: (node: INode) => deleteNode(node),
 
@@ -85,7 +105,7 @@ export const Options = {
         {
             label: 'Move Down',
             action: (node: INode) => moveDown(node),
-        }
+        },
     ],
     'Filter': [
         {
