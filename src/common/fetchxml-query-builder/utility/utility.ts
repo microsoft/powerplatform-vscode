@@ -5,7 +5,7 @@
 
 import { INode } from "../interfaces/Node";
 import { ITree } from "../interfaces/Tree";
-import { AttributeNode, EntityNode, FetchNode, OrderNode } from "../models/Node";
+import { AttributeNode, EntityNode, FetchNode, LinkEntityNode, OrderNode } from "../models/Node";
 
 export const getFetchXmlFromQueryTree = (queryTree: ITree) => {
     let query = "";
@@ -36,17 +36,17 @@ export const getVSCodeApi = () => {
 export const prettifyXml = (xml: string) =>{
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xml, 'application/xml');
-    
+
     // Check for any parsing errors
     const parserError = xmlDoc.getElementsByTagName('parsererror');
     if (parserError.length > 0) {
       throw new Error('Invalid XML format');
     }
-  
+
     // Serialize the DOM Document back to a string with proper indentation
     const serializer = new XMLSerializer();
     const serializedString = serializer.serializeToString(xmlDoc);
-  
+
     // Use regex to format the serialized XML with line breaks and indentation
     return serializedString.replace(/(>)(<)(\/*)/g, '$1\n$2$3').replace(/(<.+?>)/g, (match) => {
       let indent = 0;
@@ -107,9 +107,15 @@ const parseOrder = (node: Element): INode => {
   return new OrderNode(generateId(), node.getAttribute('attribute') || '', node.getAttribute('descending') === 'true');
 };
 
+const parseLinkEntity = (node: Element): INode => {
+    const name = node.getAttribute('name') || '';
+    return new LinkEntityNode(name);
+}
+
 const parsers = new Map([
   ['fetch', parseFetch],
   ['entity', parseEntity],
   ['attribute', parseAttribute],
-  ['order', parseOrder]
+  ['order', parseOrder],
+  ['link-entity', parseLinkEntity]
 ]);

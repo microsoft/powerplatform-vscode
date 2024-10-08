@@ -20,6 +20,7 @@ interface Relationship {
 interface LinkEntityNodePropertyPanelProps {
     node: ILinkEntityNode;
     onPropertyUpdate: (updatedNode: ILinkEntityNode) => void;
+    onEntityUpdate: (entity: string) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,6 +49,7 @@ const fetchRelationships = (response: any): Relationship[] => {
 const LinkEntityNodePropertyPanel: React.FC<LinkEntityNodePropertyPanelProps> = ({
     node,
     onPropertyUpdate,
+    onEntityUpdate,
 }) => {
     const [relationships, setRelationships] = useState<Relationship[]>([]);
     const [selectedRelationship, setSelectedRelationship] = useState<string>(node.relationship || '');
@@ -81,6 +83,7 @@ const LinkEntityNodePropertyPanel: React.FC<LinkEntityNodePropertyPanelProps> = 
         const selectedRel = relationships.find(rel => rel.schemaName=== value);
         const updatedNode = new LinkEntityNode(node.id, selectedRel?.linkEntityName, value, selectedJoinType, alias, selectedRel?.from, selectedRel?.to, node.linkEntities, node.attributes);
         onPropertyUpdate(updatedNode);
+        onEntityUpdate(selectedRel?.linkEntityName || '');
     };
 
     const handleJoinTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

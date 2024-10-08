@@ -95,7 +95,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
                     onChange={(e) => props.onQueryChange(e.target.value)} // Assuming the query is not editable
                 />
                 {/* Convert and Execute Buttons */}
-                <div>
+                <div style={{ display: 'flex' }}>
                 <button
                         style={{
                             ...convertButtonStyle,
