@@ -50,3 +50,9 @@ export interface ILinkEntityNode extends INode {
 export interface IFilterNode extends INode {
     filterType: FilterType;
 }
+
+export interface IConditionNode extends INode {
+    attribute?: string;
+    operator?: string;
+    value?: string;
+}

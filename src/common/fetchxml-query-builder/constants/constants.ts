@@ -9,7 +9,8 @@ export enum NodeType {
     Attribute = 'Attribute',
     Filter = 'Filter',
     Order = 'Order',
-    LinkEntity = 'LinkEntity'
+    LinkEntity = 'LinkEntity',
+    Condition = 'Condition'
 }
 
 export enum FilterType {

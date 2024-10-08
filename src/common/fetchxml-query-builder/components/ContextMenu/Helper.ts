@@ -19,6 +19,7 @@ export const getMenuItems = (node: INode): IMenuItem[] => {
         case 'LinkEntity':
         case 'Order':
         case 'Filter':
+        case 'Condition':
             return Options[node.type];
         case 'Fetch':
             if (node.getChildren().length > 0) {

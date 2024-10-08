@@ -4,7 +4,7 @@
  */
 
 import { INode } from "../../interfaces/Node";
-import { addAttribute, addEntity, addFilter, addLinkEntity, addOrder, deleteNode, moveDown, moveUp } from "./Actions/Actions";
+import { addAttribute, addCondition, addEntity, addFilter, addLinkEntity, addOrder, deleteNode, moveDown, moveUp } from "./Actions/Actions";
 
 export const Options = {
     'Entity': [
@@ -89,6 +89,30 @@ export const Options = {
         }
     ],
     'Filter': [
+        {
+            label: 'Add',
+            subMenuItems: [
+                {
+                    label: 'Condition',
+                    action: (node: INode) => addCondition(node),
+                }
+            ]
+        },
+        {
+            label: 'Delete',
+            action: (node: INode) => deleteNode(node),
+
+        },
+        {
+            label: 'Move Up',
+            action: (node: INode) => moveUp(node),
+        },
+        {
+            label: 'Move Down',
+            action: (node: INode) => moveDown(node),
+        }
+    ],
+    'Condition': [
         {
             label: 'Delete',
             action: (node: INode) => deleteNode(node),

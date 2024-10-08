@@ -7,12 +7,13 @@ import * as React from 'react';
 import { INode } from '../interfaces/Node';
 import { NodeType } from '../constants/constants';
 import { FetchNodePropertyPanel } from './PropertyPanels/FetchNode';
-import { AttributeNode, EntityNode, FetchNode, FilterNode, OrderNode } from '../models/Node';
+import { AttributeNode, ConditionNode, EntityNode, FetchNode, FilterNode, OrderNode } from '../models/Node';
 import { EntityNodePropertyPanel } from './PropertyPanels/EntityNode';
 import { AttributeNodePropertyPanel } from './PropertyPanels/AttributeNode';
 import { OrderNodePropertyPanel } from './PropertyPanels/OrderNode';
 import LinkEntityNodePropertyPanel from './PropertyPanels/LinkEntityNode';
 import { FilterNodePropertyPanel } from './PropertyPanels/FilterNode';
+import { ConditionNodePropertyPanel } from './PropertyPanels/ConditionNode';
 
 interface NodePropertyPanelProps {
     node: INode;
@@ -65,6 +66,12 @@ const panelFactory = (node: INode, onPropertyUpdate: (updatedNode: INode) => voi
             return (
                 <FilterNodePropertyPanel
                     node={node as FilterNode}
+                    onPropertyUpdate={onPropertyUpdate}/>
+            );
+        case NodeType.Condition:
+            return (
+                <ConditionNodePropertyPanel
+                    node={node as ConditionNode}
                     onPropertyUpdate={onPropertyUpdate}/>
             );
         default:

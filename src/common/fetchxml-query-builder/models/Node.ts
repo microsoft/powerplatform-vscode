@@ -4,7 +4,7 @@
  */
 
 import { FilterType, NodeType } from "../constants/constants";
-import { IAttributeNode, IEntityNode, IFetchNode, IFilterNode, ILinkEntityNode, INode, IOrderNode } from "../interfaces/Node";
+import { IAttributeNode, IConditionNode, IEntityNode, IFetchNode, IFilterNode, ILinkEntityNode, INode, IOrderNode } from "../interfaces/Node";
 
 export class Node implements INode {
     type: NodeType;
@@ -206,5 +206,30 @@ export class FilterNode extends Node implements IFilterNode {
 
     getLabel() {
         return `Filter: ${this.filterType}`;
+    }
+}
+
+export class ConditionNode extends Node implements IConditionNode {
+    attribute?: string;
+    operator?: string;
+    value?: string;
+
+    constructor(id: string, attribute?: string, operator?: string, value?: string) {
+        super(NodeType.Condition, id);
+        this.attribute = attribute;
+        this.operator = operator;
+        this.value = value;
+    }
+
+    getOpeningTag() {
+        return `<condition attribute="${this.attribute}" operator="${this.operator}" value="${this.value}" />`;
+    }
+
+    getClosingTag() {
+        return '';
+    }
+
+    getLabel() {
+        return `Condition: ${this.attribute}`;
     }
 }

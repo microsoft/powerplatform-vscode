@@ -13,6 +13,7 @@ import StorageRoundedIcon from '@mui/icons-material/StorageRounded';
 import { NodeType } from '../constants/constants';
 import { BackupTableRounded, CommitRounded, SwapVertRounded } from '@mui/icons-material';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import DragHandleRoundedIcon from '@mui/icons-material/DragHandleRounded';
 
 interface QueryBuilderPanelProps {
     tree: ITree;
@@ -123,6 +124,13 @@ const getNodeLabel = (node: INode) => {
             return (
                 <div style={{ display: 'flex', alignItems: 'center', fontSize: '13px' }}>
                     <FilterAltOutlinedIcon style={{marginRight: '5px', fontSize: '15px'}}/>
+                    {node.getLabel()}
+                </div>
+            );
+        case NodeType.Condition:
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', fontSize: '13px' }}>
+                    <DragHandleRoundedIcon style={{marginRight: '5px', fontSize: '15px'}}/>
                     {node.getLabel()}
                 </div>
             );
