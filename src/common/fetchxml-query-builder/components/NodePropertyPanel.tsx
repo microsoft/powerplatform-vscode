@@ -20,15 +20,23 @@ interface NodePropertyPanelProps {
 }
 
 export const NodePropertyPanel: React.FC<NodePropertyPanelProps> = (props) => {
+
+    const [selectedEntity, setSelectedEntity] = React.useState('');
+
+    const onEntityUpdate = (entity: string) => {
+        setSelectedEntity(entity);
+        console.log('Entity selected: ', selectedEntity);
+    }
+
     return (
         <div style={props.style}>
             <span>Node Properties</span>
-            {panelFactory(props.node, props.onPropertyUpdate)}
+            {panelFactory(props.node, props.onPropertyUpdate, onEntityUpdate, selectedEntity)}
         </div>
     );
 }
 
-const panelFactory = (node: INode, onPropertyUpdate: (updatedNode: INode) => void) => {
+const panelFactory = (node: INode, onPropertyUpdate: (updatedNode: INode) => void, onEntityUpdate: (entity: string) => void, selectedEntity: string) => {
     switch (node.type) {
         case NodeType.Fetch:
             return (
@@ -40,13 +48,15 @@ const panelFactory = (node: INode, onPropertyUpdate: (updatedNode: INode) => voi
             return (
                 <EntityNodePropertyPanel
                     node={node as EntityNode}
-                    onPropertyUpdate={onPropertyUpdate}/>
+                    onPropertyUpdate={onPropertyUpdate}
+                    onEntityUpdate={onEntityUpdate}/>
             );
         case NodeType.Attribute:
             return (
                 <AttributeNodePropertyPanel
                     node={node as AttributeNode}
-                    onPropertyUpdate={onPropertyUpdate}/>
+                    onPropertyUpdate={onPropertyUpdate}
+                    selectedEntity={selectedEntity}/>
             );
         case NodeType.Order:
             return (
@@ -58,7 +68,8 @@ const panelFactory = (node: INode, onPropertyUpdate: (updatedNode: INode) => voi
             return (
                 <LinkEntityNodePropertyPanel
                     node={node as EntityNode}
-                    onPropertyUpdate={onPropertyUpdate}/>
+                    onPropertyUpdate={onPropertyUpdate}
+                    onEntityUpdate={onEntityUpdate}/>
             )
         default:
             return (

@@ -12,6 +12,8 @@ import { containerStyle, labelStyle, optionStyle, selectStyle } from "./Styles";
 export interface EntityNodePropertyPanelProps {
     node: IEntityNode;
     onPropertyUpdate: (updatedNode: IEntityNode) => void;
+
+    onEntityUpdate: (entity: string) => void;
 }
 
 export const EntityNodePropertyPanel: React.FC<EntityNodePropertyPanelProps> = (props) => {
@@ -24,6 +26,7 @@ export const EntityNodePropertyPanel: React.FC<EntityNodePropertyPanelProps> = (
         setSelectedEntity(newSelectedEntity);
         const updateNode = new EntityNode(newSelectedEntity);
         props.onPropertyUpdate(updateNode);
+        props.onEntityUpdate(newSelectedEntity);
 
         // Send the selected entity to the VS Code extension
         vscode.postMessage({ type: 'entitySelected', entity: newSelectedEntity });

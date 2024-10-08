@@ -12,6 +12,7 @@ import { containerStyle, labelStyle, optionStyle, selectStyle } from "./Styles";
 export interface AttributeNodePropertyPanelProps {
     node: IAttributeNode;
     onPropertyUpdate: (updatedNode: IAttributeNode) => void;
+    selectedEntity: string;
 }
 
 export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProps> = (props) => {
@@ -35,13 +36,14 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
     React.useEffect(() => {
         window.addEventListener('message', messageHandler);
 
+        console.log('Requesting attributes for entity: ', props.selectedEntity);
         // Request attributes for the selected entity
-        vscode.postMessage({ type: 'entitySelected', entity: ''});
+        vscode.postMessage({ type: 'entitySelected', entity: props.selectedEntity});
 
         return () => {
         window.removeEventListener('message', messageHandler);
         };
-    }, [messageHandler]);
+    }, [props.selectedEntity]);
 
 
     return (

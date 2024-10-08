@@ -167,7 +167,8 @@ export const inputStyle: React.CSSProperties = {
     fontSize: '14px',
     borderRadius: '4px',
     border: '1px solid #ccc',
-    width: '300px',
+    marginTop: '16px',
+    flexGrow: 1, // Use flexGrow instead of flex to only increase width
 };
 
 export const sendButtonStyle: React.CSSProperties = {
@@ -179,4 +180,5 @@ export const sendButtonStyle: React.CSSProperties = {
     backgroundColor: '#0078d4',
     color: 'white',
     cursor: 'pointer',
+    marginTop: '16px',
 };
