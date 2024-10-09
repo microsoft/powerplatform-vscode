@@ -15,7 +15,7 @@ interface ResultPanelProps {
 export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     const [queryResult, setQueryResult] = useState<any[]>([]);
     const [headers, setHeaders] = useState<string[]>([]);
-    const [attributes, setAttributes] = useState<string[]>([]);
+    //const [attributes, setAttributes] = useState<string[]>([]);
     const [template, setTemplate] = useState<string>("");
     const [activeTab, setActiveTab] = useState<string>("execute");
     const [isConvertHovered, setIsConvertHovered] = useState<boolean>(false);
@@ -41,7 +41,7 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
     };
 
     const sendInputValue = () => {
-        const combinedValue = `${inputValue}, FetchXml Query: ${query}`;
+        const combinedValue = `@powerpages ${inputValue}, FetchXml Query: ${query}`;
         vscode.postMessage({ type: 'askCopilot', value: combinedValue });
         setInputValue("");
     };
@@ -64,24 +64,24 @@ export const ResultPanel: React.FC<ResultPanelProps> = (props) => {
         };
     }, [messageHandler]);
 
-    useEffect(() => {
-        // Extract attribute names from the query
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(query, "text/xml");
-        const attributeNodes = xmlDoc.getElementsByTagName("attribute");
-        const attributeNames = Array.from(attributeNodes).map(node => node.getAttribute("name") || "");
-        setAttributes(attributeNames);
-    }, [query]);
+    // useEffect(() => {
+    //     // Extract attribute names from the query
+    //     const parser = new DOMParser();
+    //     const xmlDoc = parser.parseFromString(query, "text/xml");
+    //     const attributeNodes = xmlDoc.getElementsByTagName("attribute");
+    //     const attributeNames = Array.from(attributeNodes).map(node => node.getAttribute("name") || "");
+    //     setAttributes(attributeNames);
+    // }, [query]);
 
     useEffect(() => {
         if (queryResult.length > 0) {
-            // Filter headers based on attributes present in the query
-            const filteredHeaders = Object.keys(queryResult[0]).filter(header => attributes.includes(header));
-            setHeaders(filteredHeaders);
+            // Extract headers from the queryResult
+            const headers = Object.keys(queryResult[0]);
+            setHeaders(headers);
         } else {
             setHeaders([]);
         }
-    }, [queryResult, attributes]);
+    }, [queryResult]);
 
     return (
         <div style={resultSectionStyle}>

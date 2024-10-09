@@ -166,9 +166,11 @@ export const inputStyle: React.CSSProperties = {
     padding: '5px',
     fontSize: '14px',
     borderRadius: '4px',
-    border: '1px solid #ccc',
+    border: '1px solid var(--vscode-input-border)',
     marginTop: '16px',
     flexGrow: 1, // Use flexGrow instead of flex to only increase width
+    backgroundColor: 'var(--vscode-input-background)',
+    color: 'var(--vscode-input-foreground)',
 };
 
 export const sendButtonStyle: React.CSSProperties = {
