@@ -52,6 +52,7 @@ export const FetchXmlQueryBuilderApp = () => {
         } else {
             setTree({root: updateNodeInTree(tree.root, updatedNode)});
         }
+        setSelectedNode(updatedNode);
     }
 
     const showQuery = () => {

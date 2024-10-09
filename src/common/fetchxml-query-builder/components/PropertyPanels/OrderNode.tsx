@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { IOrderNode } from '../../interfaces/Node';
-import { OrderNode } from '../../models/Node';
+import { EntityNode, LinkEntityNode, OrderNode } from '../../models/Node';
 import { getVSCodeApi } from '../../utility/utility';
 import { containerStyle, inputStyle, labelStyle, optionStyle, selectStyle } from './Styles';
 
@@ -36,20 +36,19 @@ export const OrderNodePropertyPanel: React.FC<OrderNodePropertyPanelProps> = (pr
 
     const messageHandler = (event: MessageEvent) => {
         if (event.data.type === 'getAttributes') {
-            console.log(event.data.attributes);
             setAttributes(event.data.attributes);
         }
     };
 
     React.useEffect(() => {
-
-        // Request attributes for the selected entity
-        vscode.postMessage({ type: 'entitySelected', entity: ''});
+        window.addEventListener('message', messageHandler);
+        const entityName = getEntityName(props.node);
+        vscode.postMessage({ type: 'entitySelected', entity: entityName});
 
         return () => {
         window.removeEventListener('message', messageHandler);
         };
-    }, []);
+    }, [props.node]);
 
     return (
         <div style={{marginTop: '10px'}}>
@@ -76,4 +75,14 @@ export const OrderNodePropertyPanel: React.FC<OrderNodePropertyPanelProps> = (pr
             </div>
         </div>
     );
+}
+
+const getEntityName = (node: IOrderNode): string | undefined => {
+    if (node.parent instanceof EntityNode) {
+        return (node.parent as EntityNode).name;
+    }
+    else if(node.parent instanceof LinkEntityNode) {
+        return (node.parent as LinkEntityNode).name;
+    }
+    throw new Error('Invalid parent node type');
 }

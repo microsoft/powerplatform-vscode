@@ -6,7 +6,8 @@
 import React, { useState } from "react";
 import { IConditionNode } from "../../interfaces/Node";
 import { containerStyle, inputStyle, labelStyle, optionStyle, propertyNode, selectStyle } from "./Styles";
-import { ConditionNode } from "../../models/Node";
+import { ConditionNode, EntityNode, LinkEntityNode } from "../../models/Node";
+import { getVSCodeApi } from "../../utility/utility";
 
 export interface ConditionNodePropertyPanelProps {
     node: IConditionNode;
@@ -18,10 +19,9 @@ export const ConditionNodePropertyPanel: React.FC<ConditionNodePropertyPanelProp
     const [selectedAttribute, setSelectedAttribute] = useState(props.node.attribute);
     const [selectedOperator, setSelectedOperator] = useState(props.node.operator);
     const [selectedValue, setSelectedValue] = useState(props.node.value);
+    const vscode = getVSCodeApi();
 
-    // TODO: Need to populate the attributes based on the selected entity
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [attributes, _] = useState<string[]>([]);
+    const [attributes, setAttributes] = useState<string[]>([]);
 
     const handleAttributeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedAttribute(event.target.value);
@@ -40,6 +40,22 @@ export const ConditionNodePropertyPanel: React.FC<ConditionNodePropertyPanelProp
         const updateNode = new ConditionNode(props.node.id, props.node.attribute, props.node.operator, event.target.value);
         props.onPropertyUpdate(updateNode);
     };
+
+    const messageHandler = (event: MessageEvent) => {
+        if (event.data.type === 'getAttributes') {
+            setAttributes(event.data.attributes);
+        }
+    };
+
+    React.useEffect(() => {
+        window.addEventListener('message', messageHandler);
+        const entityName = getEntityName(props.node);
+        vscode.postMessage({ type: 'entitySelected', entity: entityName});
+
+        return () => {
+            window.removeEventListener('message', messageHandler);
+        };
+    }, [props.node]);
 
     return (
         <div style={propertyNode}>
@@ -65,7 +81,7 @@ export const ConditionNodePropertyPanel: React.FC<ConditionNodePropertyPanelProp
                     onChange={handleOperatorChange}
                     style={selectStyle}
                 >
-                    {!selectedAttribute && <option value="" style={optionStyle}></option>}
+                    {!selectedOperator && <option value="" style={optionStyle}></option>}
                     {operators.map(operator => (
                         <option key={operator} value={operator} style={optionStyle}>
                             {operator}
@@ -74,7 +90,7 @@ export const ConditionNodePropertyPanel: React.FC<ConditionNodePropertyPanelProp
                 </select>
             </div>
             <div style={containerStyle}>
-                <label style={labelStyle}>Descending:</label>
+                <label style={labelStyle}>Value:</label>
                 <input
                     type="text"
                     onChange={handleValueChange}
@@ -90,4 +106,14 @@ export const ConditionNodePropertyPanel: React.FC<ConditionNodePropertyPanelProp
             </div>
         </div>
     );
+}
+
+const getEntityName = (node: IConditionNode): string | undefined => {
+    if (node.parent?.parent instanceof EntityNode) {
+        return (node.parent.parent as EntityNode).name;
+    }
+    else if(node.parent?.parent instanceof LinkEntityNode) {
+        return (node.parent.parent as LinkEntityNode).name;
+    }
+    throw new Error('Invalid parent node type');
 }

@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ILinkEntityNode } from '../../interfaces/Node';
-import { LinkEntityNode } from '../../models/Node';
+import { EntityNode, LinkEntityNode } from '../../models/Node';
 import { getVSCodeApi } from '../../utility/utility';
 import { containerStyle, inputStyle, labelStyle, optionStyle, selectStyle } from './Styles';
 
@@ -20,7 +20,6 @@ interface Relationship {
 interface LinkEntityNodePropertyPanelProps {
     node: ILinkEntityNode;
     onPropertyUpdate: (updatedNode: ILinkEntityNode) => void;
-    onEntityUpdate: (entity: string) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,7 +48,6 @@ const fetchRelationships = (response: any): Relationship[] => {
 const LinkEntityNodePropertyPanel: React.FC<LinkEntityNodePropertyPanelProps> = ({
     node,
     onPropertyUpdate,
-    onEntityUpdate,
 }) => {
     const [relationships, setRelationships] = useState<Relationship[]>([]);
     const [selectedRelationship, setSelectedRelationship] = useState<string>(node.relationship || '');
@@ -69,13 +67,13 @@ const LinkEntityNodePropertyPanel: React.FC<LinkEntityNodePropertyPanelProps> = 
 
         window.addEventListener('message', messageHandler);
 
-        // Request relationsshis for the selected entity
-        vscode.postMessage({ type: 'entitySelected', entity: ''});
+        const entityName = getEntityName(node);
+        vscode.postMessage({ type: 'entitySelected', entity: entityName});
 
         return () => {
-        window.removeEventListener('message', messageHandler);
+            window.removeEventListener('message', messageHandler);
         };
-    }, []);
+    }, [node]);
 
     const handleRelationshipChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = event.target.value;
@@ -83,7 +81,6 @@ const LinkEntityNodePropertyPanel: React.FC<LinkEntityNodePropertyPanelProps> = 
         const selectedRel = relationships.find(rel => rel.schemaName=== value);
         const updatedNode = new LinkEntityNode(node.id, selectedRel?.linkEntityName, value, selectedJoinType, alias, selectedRel?.from, selectedRel?.to, node.linkEntities, node.attributes);
         onPropertyUpdate(updatedNode);
-        onEntityUpdate(selectedRel?.linkEntityName || '');
     };
 
     const handleJoinTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -145,5 +142,15 @@ const LinkEntityNodePropertyPanel: React.FC<LinkEntityNodePropertyPanelProps> = 
         </div>
     );
 };
+
+const getEntityName = (node: ILinkEntityNode): string | undefined => {
+    if (node.parent instanceof EntityNode) {
+        return (node.parent as EntityNode).name;
+    }
+    else if(node.parent instanceof LinkEntityNode) {
+        return (node.parent as LinkEntityNode).name;
+    }
+    throw new Error('Invalid parent node type');
+}
 
 export default LinkEntityNodePropertyPanel;

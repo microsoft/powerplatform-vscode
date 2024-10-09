@@ -5,14 +5,13 @@
 
 import React, { useState } from "react";
 import { IAttributeNode } from "../../interfaces/Node";
-import { AttributeNode} from "../../models/Node";
+import { AttributeNode, EntityNode, LinkEntityNode} from "../../models/Node";
 import { getVSCodeApi } from "../../utility/utility";
 import { containerStyle, labelStyle, optionStyle, selectStyle } from "./Styles";
 
 export interface AttributeNodePropertyPanelProps {
     node: IAttributeNode;
     onPropertyUpdate: (updatedNode: IAttributeNode) => void;
-    selectedEntity: string;
 }
 
 export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProps> = (props) => {
@@ -35,15 +34,15 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
 
     React.useEffect(() => {
         window.addEventListener('message', messageHandler);
-
-        console.log('Requesting attributes for entity: ', props.selectedEntity);
+        const entityName = getEntityName(props.node);
+        console.log('Requesting attributes for entity: ', entityName);
         // Request attributes for the selected entity
-        vscode.postMessage({ type: 'entitySelected', entity: props.selectedEntity});
+        vscode.postMessage({ type: 'entitySelected', entity: entityName});
 
         return () => {
         window.removeEventListener('message', messageHandler);
         };
-    }, [props.selectedEntity]);
+    }, [props.node]);
 
 
     return (
@@ -63,4 +62,14 @@ export const AttributeNodePropertyPanel: React.FC<AttributeNodePropertyPanelProp
             </select>
         </div>
     )
+}
+
+const getEntityName = (node: IAttributeNode): string | undefined => {
+    if (node.parent instanceof EntityNode) {
+        return (node.parent as EntityNode).name;
+    }
+    else if(node.parent instanceof LinkEntityNode) {
+        return (node.parent as LinkEntityNode).name;
+    }
+    throw new Error('Invalid parent node type');
 }
