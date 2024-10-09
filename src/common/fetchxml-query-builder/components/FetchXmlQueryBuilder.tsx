@@ -122,6 +122,12 @@ export const FetchXmlQueryBuilderApp = () => {
 
 const updateNodeInTree = (currentNode: INode, newNode: INode): INode => {
     if (currentNode.id === newNode.id) {
+        newNode.parent = currentNode.parent;
+        const children = currentNode.getChildren().map(child => {
+            child.parent = newNode;
+            return child;
+        });
+        newNode.setChildren(children);
         return newNode;
     }
 

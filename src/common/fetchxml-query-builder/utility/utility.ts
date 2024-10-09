@@ -109,7 +109,12 @@ const parseOrder = (node: Element): INode => {
 
 const parseLinkEntity = (node: Element): INode => {
     const name = node.getAttribute('name') || '';
-    return new LinkEntityNode(name);
+    const relationship = '';
+    const from = node.getAttribute('from') || '';
+    const to = node.getAttribute('to') || '';
+    const joinType = node.getAttribute('link-type') || 'inner';
+    const alias = node.getAttribute('alias') || '';
+    return new LinkEntityNode(generateId(), name, relationship, joinType, alias, from, to);
 }
 
 const parsers = new Map([

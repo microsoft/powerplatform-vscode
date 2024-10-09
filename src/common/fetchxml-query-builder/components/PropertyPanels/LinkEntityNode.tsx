@@ -25,7 +25,6 @@ interface LinkEntityNodePropertyPanelProps {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetchRelationships = (response: any): Relationship[] => {
 
-
     const manyToOneRelationships = response.ManyToOneRelationships.map((rel: any) => ({
         schemaName: rel.SchemaName,
         linkEntityName: rel.ReferencedEntity,
@@ -59,6 +58,15 @@ const LinkEntityNodePropertyPanel: React.FC<LinkEntityNodePropertyPanelProps> = 
         if (event.data.type === 'getRelationships') {
             const fetchedRelationships = fetchRelationships(event.data.relationships);
             setRelationships(fetchedRelationships);
+            // TODO: Need to refactor this, adding this as a quick fix for the demo
+            if (node.to && node.from) {
+                const selectedRel = fetchedRelationships.find(rel => rel.from === node.from && rel.to === node.to);
+                if (selectedRel) {
+                    setSelectedRelationship(selectedRel.schemaName);
+                    const updatedNode = new LinkEntityNode(node.id, node.name, selectedRel.schemaName, node.joinType, node.alias, node.from, node.to, node.linkEntities, node.attributes);
+                    onPropertyUpdate(updatedNode);
+                }
+            }
         }
     };
 
