@@ -10,11 +10,11 @@ import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { sendApiRequest } from '../../copilot/IntelligenceApiService';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
-import { intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
+import { dataverseAuthentication, intelligenceAPIAuthentication } from '../../services/AuthenticationProvider';
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, COPILOT_NOT_RELEASED_MSG, DISCLAIMER_MESSAGE, INVALID_RESPONSE, NO_PROMPT_MESSAGE, PAC_AUTH_INPUT, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, RESPONSE_SCENARIOS, SKIP_CODES, STATER_PROMPTS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups, handleChatParticipantFeedback, createErrorResult, createSuccessResult, removeChatVariables } from './PowerPagesChatParticipantUtils';
+import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups, handleChatParticipantFeedback, createErrorResult, createSuccessResult, removeChatVariables, extractFetchXml, extractEntityNames } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, fetchRelatedFiles, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,6 +22,8 @@ import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNo
 import { isPowerPagesGitHubCopilotEnabled } from '../../copilot/utils/copilotUtil';
 import { ADX_WEBPAGE, IApiRequestParams, IRelatedFiles } from '../../constants';
 import { oneDSLoggerWrapper } from '../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
+import { getEntityMetadataObject } from '../../copilot/dataverseMetadata';
+//import { getEntityMetadataObject } from '../../copilot/dataverseMetadata';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -180,6 +182,45 @@ export class PowerPagesChatParticipant {
 
                 const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
+
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const entityMetadataMap: { [key: string]: any } = {};
+                const dataverseToken = (await dataverseAuthentication(this.telemetry, this.orgUrl ?? '', true)).accessToken;
+
+                if (userPrompt.includes('<fetch') && userPrompt.includes('</fetch>')) {
+                    //pick entity name from fetchxml
+                    const fetchXML = extractFetchXml(userPrompt);
+
+                    const entityNames = fetchXML ? extractEntityNames(fetchXML) : [];
+
+                    //for each entity fetch entity metadata and create object of {{entityName1: entityMetadata}, {entityName2: entityMetadata}}
+                    for (const entityName of entityNames) {
+                        const entityMetadata = await getEntityMetadataObject(entityName, this.orgUrl ?? '', dataverseToken, this.telemetry,  this.powerPagesAgentSessionId);
+                        if (entityMetadata) {
+                            entityMetadataMap[entityName] = JSON.stringify(entityMetadata);
+                        }
+                    }
+
+                    // entityNames.forEach(entityName => {
+                    //     entityMetadataMap[entityName] = 'entityName';
+                    // });
+
+                    console.log(dataverseToken);
+                    console.log(entityNames);
+
+                    // You can now use entityMetadataMap as needed
+                    console.log(entityMetadataMap);
+                } else {
+                    //fetch entity Names
+                    //const entityNames = await getEntities(this.orgUrl ?? '', dataverseToken, this.telemetry, this.powerPagesAgentSessionId);
+                    const entityNames = ['cr363_creditcard', 'cr363_offer'];
+
+                    entityNames.forEach(entityName => {
+                        entityMetadataMap[entityName] = 'entityName';
+                    });
+
+                }
+
                 const apiRequestParams: IApiRequestParams = {
                     userPrompt: [{ displayText: userPrompt, code: activeFileContent }],
                     activeFileParams: activeFileParams,
@@ -192,7 +233,8 @@ export class PowerPagesChatParticipant {
                     aibEndpoint: intelligenceAPIEndpointInfo.intelligenceEndpoint,
                     geoName: intelligenceAPIEndpointInfo.geoName,
                     crossGeoDataMovementEnabledPPACFlag: intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag,
-                    relatedFiles: relatedFiles
+                    relatedFiles: relatedFiles,
+                    entityMetadata: entityMetadataMap
                 };
 
                 const llmResponse = await sendApiRequest(apiRequestParams);
@@ -210,11 +252,12 @@ export class PowerPagesChatParticipant {
                     if (response.code && !SKIP_CODES.includes(response.code)) {
                         stream.markdown('\n```javascript\n' + response.code + '\n```');
 
-                        if (response.code.startsWith('<fetch') && response.code.endsWith('</fetch>')) {
+                        if (response.code.includes('<fetch') && response.code.includes('</fetch>')) {
+                            const fetchXml = extractFetchXml(response.code);
                             stream.button({
                                 command: 'powerpages.copilot.fetchXml',
                                 title: 'Edit in FetchXML Builder',
-                                arguments: [response.code]
+                                arguments: [fetchXml]
                             });
                         }
                     }

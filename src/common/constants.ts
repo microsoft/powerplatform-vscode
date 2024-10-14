@@ -83,6 +83,8 @@ export interface IApiRequestParams {
     geoName: string | null;
     crossGeoDataMovementEnabledPPACFlag?: boolean;
     relatedFiles?: IRelatedFiles[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    entityMetadata?: any;
 }
 
 export const VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED = "VSCodeExtensionCopilotContextRelatedFilesFetchFailed";

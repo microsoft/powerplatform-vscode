@@ -126,3 +126,25 @@ export function removeChatVariables(userPrompt: string): string {
 
     return userPrompt.replace(regex, '').trim();
 }
+
+export function extractFetchXml(input: string): string | null {
+    const fetchXmlRegex = /<fetch[\s\S]*?<\/fetch>/g;
+    const match = fetchXmlRegex.exec(input);
+    return match ? match[0] : null;
+}
+
+export function extractEntityNames(fetchXml: string): string[] {
+    const entityNames: string[] = [];
+    const entityRegex = /<entity[^>]*name=['"]([^'"]+)['"]/g;
+    const linkEntityRegex = /<link-entity[^>]*name=['"]([^'"]+)['"]/g;
+
+    let match;
+    while ((match = entityRegex.exec(fetchXml)) !== null) {
+        entityNames.push(match[1]);
+    }
+    while ((match = linkEntityRegex.exec(fetchXml)) !== null) {
+        entityNames.push(match[1]);
+    }
+
+    return entityNames;
+}

@@ -76,6 +76,33 @@ export async function getEntities(orgUrl: string, apiToken: string, telemetry: I
     }
 }
 
+export async function getEntityMetadataObject(entityName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string) {
+    try {
+        const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$select=LogicalName&$expand=OneToManyRelationships($select=SchemaName,ReferencingEntity,ReferencedEntity,ReferencingAttribute,ReferencedAttribute),ManyToOneRelationships($select=SchemaName,ReferencingEntity,ReferencedEntity,ReferencingAttribute,ReferencedAttribute),ManyToManyRelationships($select=SchemaName,Entity1LogicalName,Entity2LogicalName,Entity1IntersectAttribute,Entity2IntersectAttribute),Attributes($select=LogicalName,AttributeType)`;
+        const requestInit: RequestInit = {
+            method: "GET",
+            headers: {
+                'Content-Type': "application/json",
+                Authorization: `Bearer ${apiToken}`,
+                "x-ms-user-agent": getUserAgent()
+            },
+        };
+
+        const startTime = performance.now();
+        const jsonResponse = await fetchJsonResponse(dataverseURL, requestInit);
+        const endTime = performance.now();
+        const responseTime = endTime - startTime || 0;
+
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
+        return jsonResponse;
+
+    } catch (error) {
+        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
+        return {};
+    }
+}
+
+
 //Function to execute fetchxml query to get results from Dataverse
 export async function executeFetchXml(entityName: string, fetchXml: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
     try {
