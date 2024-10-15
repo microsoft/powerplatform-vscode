@@ -25,5 +25,11 @@ export interface ECSAPIFeatureFlagFilters {
      */
     Region: string;
 
+    /**
+     * Deployment cluster location
+     * @example NDE, WCDE, NCH, WCH, CAE, NAE, SBR, SCUS, ECA, CCA, SIN, CIN, CFR, SFR
+     */
+    Location: string;
+
     // TBD - more API call filters to be added later
 }

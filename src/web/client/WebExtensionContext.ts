@@ -109,6 +109,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _websiteLanguageCode: string;
     private _geoName: string;
     private _geoLongName: string;
+    private _clusterLocation: string;
     private _serviceEndpointCategory: ServiceEndpointCategory;
     private _telemetry: WebExtensionTelemetry;
     private _npsEligibility: boolean;
@@ -206,6 +207,12 @@ class WebExtensionContext implements IWebExtensionContext {
     public set geoLongName(name: string) {
         this._geoLongName = name;
     }
+    public get clusterLocation() {
+        return this._clusterLocation;
+    }
+    public set clusterLocation(name: string) {
+        this._clusterLocation = name;
+    }
     public get serviceEndpointCategory() {
         return this._serviceEndpointCategory;
     }
@@ -281,6 +288,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._websiteLanguageCode = "";
         this._geoName = "";
         this._geoLongName = "";
+        this._clusterLocation = "";
         this._serviceEndpointCategory = ServiceEndpointCategory.NONE;
         this._telemetry = new WebExtensionTelemetry();
         this._npsEligibility = false;

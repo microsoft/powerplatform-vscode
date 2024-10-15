@@ -43,8 +43,8 @@ import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-featur
 import { IPortalWebExtensionInitQueryParametersTelemetryData } from "../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
 import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
-import { ServiceEndpointCategory } from "../../common/services/Constants";
 import { EXTENSION_ID } from "../../common/constants";
+import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -156,7 +156,8 @@ export function activate(context: vscode.ExtensionContext): void {
                                                 EnvID: queryParamsMap.get(queryParameters.ENV_ID) as string,
                                                 UserID: WebExtensionContext.userId,
                                                 TenantID: queryParamsMap.get(queryParameters.TENANT_ID) as string,
-                                                Region: queryParamsMap.get(queryParameters.REGION) as string
+                                                Region: queryParamsMap.get(queryParameters.REGION) as string,
+                                                Location: queryParamsMap.get(queryParameters.GEO) as string
                                             },
                                             PowerPagesClientName);
 
@@ -666,17 +667,19 @@ function isActiveDocument(fileFsPath: string): boolean {
 
 async function fetchArtemisData(orgId: string) {
     const artemisResponse = await ArtemisService.getArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter(), "");
-    if (artemisResponse === null) {
+    if (artemisResponse === null || artemisResponse.response === null) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
             fetchArtemisData.name,
             ARTEMIS_RESPONSE_FAILED
         );
+        return;
     }
 
-    WebExtensionContext.geoName = artemisResponse?.response?.geoName ?? "";
-    WebExtensionContext.geoLongName = artemisResponse?.response?.geoLongName ?? "";
-    WebExtensionContext.serviceEndpointCategory = artemisResponse?.stamp ?? ServiceEndpointCategory.NONE;
+    WebExtensionContext.geoName = artemisResponse.response.geoName;
+    WebExtensionContext.geoLongName = artemisResponse.response.geoLongName;
+    WebExtensionContext.serviceEndpointCategory = artemisResponse.stamp;
+    WebExtensionContext.clusterLocation = getECSOrgLocationValue(artemisResponse.response.clusterName, artemisResponse.response.clusterNumber);
 }
 
 function logOneDSLogger(queryParamsMap: Map<string, string>) {
