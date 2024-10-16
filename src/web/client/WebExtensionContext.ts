@@ -28,7 +28,7 @@ import { EntityDataMap } from "./context/entityDataMap";
 import { FileDataMap } from "./context/fileDataMap";
 import { IAttributePath, IEntityInfo } from "./common/interfaces";
 import { ConcurrencyHandler } from "./dal/concurrencyHandler";
-import { getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
+import { getEnvironmentIdFromUrl, getMailToPath, getTeamChatURL, isMultifileEnabled } from "./utilities/commonUtil";
 import { IConnectionData, UserDataMap } from "./context/userDataMap";
 import { EntityForeignKeyDataMap } from "./context/entityForeignKeyDataMap";
 import { QuickPickProvider } from "./webViews/QuickPickProvider";
@@ -73,6 +73,8 @@ export interface IWebExtensionContext {
     geoName: string;
     geoLongName: string;
     serviceEndpointCategory: ServiceEndpointCategory;
+    organizationId: string;
+    environmentId: string;
 
     // Telemetry and survey
     telemetry: WebExtensionTelemetry;
@@ -111,6 +113,8 @@ class WebExtensionContext implements IWebExtensionContext {
     private _geoLongName: string;
     private _clusterLocation: string;
     private _serviceEndpointCategory: ServiceEndpointCategory;
+    private _organizationId: string;
+    private _environmentId: string;
     private _telemetry: WebExtensionTelemetry;
     private _npsEligibility: boolean;
     private _userId: string;
@@ -219,6 +223,18 @@ class WebExtensionContext implements IWebExtensionContext {
     public set serviceEndpointCategory(name: ServiceEndpointCategory) {
         this._serviceEndpointCategory = name;
     }
+    public get organizationId() {
+        return this._organizationId;
+    }
+    public set organizationId(name: string) {
+        this._organizationId = name;
+    }
+    public get environmentId() {
+        return this._environmentId;
+    }
+    public set environmentId(name: string) {
+        this._environmentId = name;
+    }
     public get telemetry() {
         return this._telemetry;
     }
@@ -290,6 +306,8 @@ class WebExtensionContext implements IWebExtensionContext {
         this._geoLongName = "";
         this._clusterLocation = "";
         this._serviceEndpointCategory = ServiceEndpointCategory.NONE;
+        this._organizationId = "";
+        this._environmentId = "";
         this._telemetry = new WebExtensionTelemetry();
         this._npsEligibility = false;
         this._userId = "";
@@ -343,6 +361,10 @@ class WebExtensionContext implements IWebExtensionContext {
             this.schemaEntitiesMap
         );
         this._isContextSet = true;
+
+        // Initialize org details
+        this._organizationId = queryParamsMap.get(Constants.queryParameters.ORG_ID) as string ?? "";
+        this._environmentId = getEnvironmentIdFromUrl();
     }
 
     public setVscodeWorkspaceState(workspaceState: vscode.Memento) {

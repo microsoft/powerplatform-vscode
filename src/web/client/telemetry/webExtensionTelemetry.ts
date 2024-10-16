@@ -9,7 +9,7 @@ import { queryParameters } from "../common/constants";
 import { sanitizeURL } from "../utilities/urlBuilderUtil";
 import { webExtensionTelemetryEventNames } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { IPortalWebExtensionInitQueryParametersTelemetryData, IWebExtensionAPITelemetryData, IWebExtensionExceptionTelemetryData, IWebExtensionInitPathTelemetryData, IWebExtensionPerfTelemetryData } from "../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
-import { isNullOrUndefined } from '../utilities/commonUtil';
+import { getEnvironmentIdFromUrl, isNullOrUndefined } from '../utilities/commonUtil';
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export class WebExtensionTelemetry {
@@ -56,7 +56,7 @@ export class WebExtensionTelemetry {
                 siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
                 region: queryParamsMap.get(queryParameters.REGION),
                 geo: queryParamsMap.get(queryParameters.GEO),
-                envId: queryParamsMap.get(queryParameters.ENV_ID),
+                envId: getEnvironmentIdFromUrl(),
                 referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
                 sku: queryParamsMap.get(queryParameters.SKU)
             }
