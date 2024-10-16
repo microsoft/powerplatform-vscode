@@ -40,7 +40,6 @@ import { GeoNames } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { sendingMessageToWebWorkerForCoPresence } from "./utilities/collaborationUtils";
 import { ECSFeaturesClient } from "../../common/ecs-features/ecsFeatureClient";
 import { PowerPagesAppName, PowerPagesClientName } from "../../common/ecs-features/constants";
-import { IPortalWebExtensionInitQueryParametersTelemetryData } from "../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryInterface";
 import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { EXTENSION_ID } from "../../common/constants";
@@ -115,11 +114,11 @@ export function activate(context: vscode.ExtensionContext): void {
                     queryParamsMap,
                     context.extensionUri
                 );
-                logOneDSLogger(queryParamsMap);
+
                 const orgId = queryParamsMap.get(queryParameters.ORG_ID) as string;
                 await fetchArtemisData(orgId);
                 WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_ORG_GEO, { orgId: orgId, orgGeo: WebExtensionContext.geoName });
-                oneDSLoggerWrapper.instantiate(WebExtensionContext.geoLongName, WebExtensionContext.geoLongName);
+                oneDSLoggerWrapper.instantiate(WebExtensionContext.geoName, WebExtensionContext.geoLongName);
 
                 WebExtensionContext.telemetry.sendExtensionInitPathParametersTelemetry(
                     appName,
@@ -153,7 +152,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                         await ECSFeaturesClient.init(WebExtensionContext.telemetry.getTelemetryReporter(),
                                             {
                                                 AppName: PowerPagesAppName,
-                                                EnvID: queryParamsMap.get(queryParameters.ENV_ID) as string,
+                                                EnvID: WebExtensionContext.environmentId,
                                                 UserID: WebExtensionContext.userId,
                                                 TenantID: queryParamsMap.get(queryParameters.TENANT_ID) as string,
                                                 Region: queryParamsMap.get(queryParameters.REGION) as string,
@@ -680,32 +679,4 @@ async function fetchArtemisData(orgId: string) {
     WebExtensionContext.geoLongName = artemisResponse.response.geoLongName;
     WebExtensionContext.serviceEndpointCategory = artemisResponse.stamp;
     WebExtensionContext.clusterLocation = getECSOrgLocationValue(artemisResponse.response.clusterName, artemisResponse.response.clusterNumber);
-}
-
-function logOneDSLogger(queryParamsMap: Map<string, string>) {
-    const telemetryData: IPortalWebExtensionInitQueryParametersTelemetryData = {
-        eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
-        properties: {
-            orgId: queryParamsMap.get(queryParameters.ORG_ID),
-            tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
-            portalId: queryParamsMap.get(queryParameters.PORTAL_ID),
-            websiteId: queryParamsMap.get(queryParameters.WEBSITE_ID),
-            dataSource: queryParamsMap.get(queryParameters.DATA_SOURCE),
-            schema: queryParamsMap.get(queryParameters.SCHEMA),
-            referrerSessionId: queryParamsMap.get(queryParameters.REFERRER_SESSION_ID),
-            referrer: queryParamsMap.get(queryParameters.REFERRER),
-            siteVisibility: queryParamsMap.get(queryParameters.SITE_VISIBILITY),
-            region: queryParamsMap.get(queryParameters.REGION),
-            geo: queryParamsMap.get(queryParameters.GEO),
-            envId: queryParamsMap.get(queryParameters.ENV_ID),
-            referrerSource: queryParamsMap.get(queryParameters.REFERRER_SOURCE),
-            sku: queryParamsMap.get(queryParameters.SKU)
-        }
-    }
-
-    if (queryParamsMap.has(queryParameters.ENTITY) && queryParamsMap.has(queryParameters.ENTITY_ID)) {
-        telemetryData.properties.entity = queryParamsMap.get(queryParameters.ENTITY);
-        telemetryData.properties.entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
-    }
-    oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
 }
