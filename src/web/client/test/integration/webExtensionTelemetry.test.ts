@@ -9,6 +9,7 @@ import { sanitizeURL } from "../../utilities/urlBuilderUtil";
 import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
 import { vscodeExtAppInsightsResourceProvider } from "../../../../common/telemetry-generated/telemetryConfiguration";
+import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
 
 describe("webExtensionTelemetry", () => {
@@ -128,6 +129,10 @@ describe("webExtensionTelemetry", () => {
             sku: queryParamsMap.get(queryParameters.SKU),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any;
+
+        stub(commonUtil, "getEnvironmentIdFromUrl").returns(
+            "c4dc3686-1e6b-e428-b886-16cd0b9f4918"
+        );
 
         //Action
         webExtensionTelemetry.sendExtensionInitQueryParametersTelemetry(
