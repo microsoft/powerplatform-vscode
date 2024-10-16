@@ -219,13 +219,13 @@ export function getWorkSpaceName(websiteId: string): string {
 
 // ENV_ID is the last part of the parameter value sent in the vscode URL from studio
 export function getEnvironmentIdFromUrl() {
-    return (WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID) as string).split("/")?.pop() as string;
+    return (WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID))?.toString().split("/")?.pop() as string;
 }
 
 export function getBackToStudioURL() {
     const region = WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string;
 
-    if (isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID)) ||
+    if (isStringUndefinedOrEmpty(getEnvironmentIdFromUrl()) ||
         isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.REGION)) ||
         isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID))) {
         return undefined;
@@ -307,7 +307,7 @@ export function getRangeForMultilineMatch(text: string, pattern: string, index: 
 }
 
 export async function validateWebsitePreviewURL(): Promise<boolean> {
-    const envId = WebExtensionContext.urlParametersMap?.get(queryParameters.ENV_ID);
+    const envId = getEnvironmentIdFromUrl();
     const serviceEndpointStamp = WebExtensionContext.serviceEndpointCategory;
     const websitePreviewId = WebExtensionContext.urlParametersMap?.get(queryParameters.PORTAL_ID);
 
