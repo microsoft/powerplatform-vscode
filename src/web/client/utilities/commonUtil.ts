@@ -219,7 +219,7 @@ export function getWorkSpaceName(websiteId: string): string {
 
 // ENV_ID is the last part of the parameter value sent in the vscode URL from studio
 export function getEnvironmentIdFromUrl() {
-    return (WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID) as string).split("/")?.pop() as string;
+    return (WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID))?.toString().split("/")?.pop() as string;
 }
 
 export function getBackToStudioURL() {
