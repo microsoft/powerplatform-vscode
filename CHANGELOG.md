@@ -1,13 +1,18 @@
 # Change Log - Power Platform Extension
 
-## 2.0.64
+## 2.0.74
+- pac CLI 1.35.1, (September 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
+- Bug Fixes
+  - Copilot for Power Pages: "Not yet available in your region." [Issue #1046](https://github.com/microsoft/powerplatform-vscode/issues/1046) [Fix #1044](https://github.com/microsoft/powerplatform-vscode/pull/1044)
+
+## 2.0.66
 - pac CLI 1.34.4, (August 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Power Pages Chat participant release in GitHub Copilot Chat for Visual Studio Code
 - Web extension updates
   - Bug Fixes
     - Dual authentication on Web extension
 
-## 2.0.62
+## 2.0.63
 - pac CLI 1.33.5, (July 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes
   - HTML/YML server crash issue
