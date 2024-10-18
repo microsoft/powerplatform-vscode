@@ -18,7 +18,7 @@ export async function getNL2PageData(aibEndpoint: string, aibToken: string, user
             "information": {
                 "scope": "Page",
                 "includeImages": true,
-                "pageType": pageType === 'FAQ' ? 'FAQ' : 'Home',
+                "pageType": pageType === 'FAQ' ? 'FAQ' : 'Home', //FAQ and About us have specific page types
                 "title": siteName,
                 "pageName": pageType,
                 "colorNumber": 7,

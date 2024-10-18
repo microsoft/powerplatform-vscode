@@ -46,4 +46,5 @@ export interface PowerPagesComponent extends PowerPagesSiteEntity {
     powerpagecomponenttype: PowerPagesComponentType;
     powerpagesitelanguageid?: string | null;
     filecontent?: string;
+    filename?: string;
 }

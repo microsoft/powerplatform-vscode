@@ -62,8 +62,8 @@ export class PowerPagesSiteManager {
     }
 
     private getBatchAndFileUploads(): [
-        Array<Changeset | DeleteOperation | GetOperation | PatchOperation | PostOperation>,
-        Array<Changeset | DeleteOperation | GetOperation | PatchOperation | PostOperation>,
+        any,
+        any,
         PowerPagesComponent[]
     ] {
         // We need site and language to already be created before creating other components in a batch
@@ -137,31 +137,6 @@ export class PowerPagesSiteManager {
 * Gets parent page id
 * @returns {string} Parent page id
 */
-
-    /**
-     * Updates html with new image urls
-     * @param pageCopy
-     * @param mapping
-     * @param uploadMap
-     * @returns {string} Updated html
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    private updateHTML(pageCopy: string, mapping: Map<string, string>, uploadMap: Map<string, boolean>): string {
-        const element = document.createElement('div');
-        element.innerHTML = pageCopy;
-        // const images = getImagesAndBackgroundImages(element);
-        // images.forEach((image) => {
-        //     const src = image.getAttribute('src');
-        //     const backgroundImage = image.style.backgroundImage;
-        //     if (src && mapping.has(src) && uploadMap.get(src)) {
-        //         image.setAttribute('src', mapping.get(src)!);
-        //     }
-        //     if (backgroundImage && mapping.has(backgroundImage) && uploadMap.get(backgroundImage)) {
-        //         image.style.backgroundImage = `url(${mapping.get(backgroundImage)!})`;
-        //     }
-        // });
-        return element.innerHTML;
-    }
 
     private updateSiteName(name: string): void {
         this.siteData.powerpagesite[0].name = name;
@@ -251,71 +226,10 @@ export class PowerPagesSiteManager {
         return publishingState?.powerpagecomponentid;
     }
 
-    private async getBlobAndAddComponent(blobUrl: string, fileName: string, uploadMap: Map<string, boolean>): Promise<void> {
-        const blob = await this.getBlobFromUrl(blobUrl);
-        if (blob && blob.size < 5242880) {
-            const uploadImageBase64Value = await this.getBase64FromBlob(blob);
-            uploadMap.set(blobUrl, true);
-            this.addComponents([
-                {
-                    powerpagecomponentid: this.generateUUID(),
-                    powerpagesiteid: this.siteData.powerpagesite[0].powerpagesiteid,
-                    name: fileName,
-                    powerpagecomponenttype: PowerPagesComponentType.WebFile,
-                    content: JSON.stringify({
-                        name: fileName,
-                        parentPageId: this.getHomeRootPage()?.powerpagecomponentid,
-                        publishingStateId: this.getPublishingStateId(),
-                        partialUrl: fileName,
-                        title: '',
-                        summary: '',
-                        isEnableTracking: false,
-                        isExcludeFromSearch: false,
-                        isHiddenFormSiteMap: false,
-                    }),
-                    filecontent: uploadImageBase64Value,
-                },
-            ]);
-        } else if (blob && blob.size >= 5242880) {
-            // Log error message
-        }
-    }
-
     private async addOrUpdatePage(pageName: string, copy: string, isHomePage: boolean): Promise<string> {
         let rootPageID = '';
 
-        /**
-         * Parses html and adds images
-         * @param pageName
-         * @param pageCopy
-         * @returns {string} Updated html
-         */
-        const parseHTMLandAddImages = async (_pageName: string, _pageCopy: string): Promise<string> => {
-            const element = document.createElement('div');
-            element.innerHTML = _pageCopy;
-            const images = getImagesAndBackgroundImages(element);
-            const hubbleUrls = getSourceUrlsFromImages(images);
-            const mapping = getFileNamesFromSourceUrls(hubbleUrls, _pageName);
-            const uploadMap = new Map<string, boolean>();
-            const promises = Array.from(mapping, ([hubbleUrl, fileName]) =>
-                this.getBlobAndAddComponent(hubbleUrl, fileName, uploadMap)
-            );
-            await Promise.all(promises);
-            return this.updateHTML(_pageCopy, mapping, uploadMap);
-        };
-
-        let pageCopy = copy;
-        try {
-            pageCopy = enableNL2SiteUploadImagesToDataverse
-                ? await parseHTMLandAddImages(pageName, pageCopy)
-                : pageCopy;
-        } catch (e: unknown) {
-            // TelemetryService.getInstance().error(
-            //     UPLOAD_HUBBLE_IMAGE_TO_DATAVERSE_FILE_BLOB,
-            //     'Failed to upload images',
-            //     e as Error
-            // );
-        }
+        const pageCopy = copy;
 
         const component = isHomePage
             ? this.getHomePage()
@@ -459,6 +373,53 @@ export class PowerPagesSiteManager {
         return webRoleId;
     }
 
+    private save = async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const [siteAndLanguages, components, fileComponents] = this.getBatchAndFileUploads();
+
+        const optionalHeaders = { 'x-ms-ppages-options': 'skipDependencyChecker=true;' }
+
+
+        const fetchOptions = (operation: any) => ({
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...optionalHeaders,
+            },
+            body: JSON.stringify(operation.body),
+        });
+
+        try {
+            // Process siteAndLanguages operations
+            for (const operation of siteAndLanguages) {
+                await fetch(operation.url, fetchOptions(operation));
+            }
+
+            // Process components operations
+            for (const operation of components) {
+                await fetch(operation.url, fetchOptions(operation));
+            }
+
+            //   if (fileComponents.length > 0) {
+            //     await Promise.all(
+            //       fileComponents.map((f) =>
+            //         fetch(getCDSEntityRequestURLPath({
+            //           entityName: f.,
+            //           entityId: f.entityId,
+            //           additionalPathTokens: [f.columnName],
+            //         }), {
+            //           method: 'PATCH',
+            //           headers: getFileUploadHeaders(f.fileName),
+            //           body: base64ToArrayBuffer(f.fileContent),
+            //         })
+            //       )
+            //     );
+            //   }
+        } catch (error) {
+            console.error('Error during save operation:', error);
+        }
+    };
+
     // Method to expose site data and actions
     public getSiteDataAndActions(): {
         ppSiteData: PowerPagesParsedJson;
@@ -480,9 +441,7 @@ export class PowerPagesSiteManager {
                     this.addOrUpdatePage(pageName, pageCopy, isHomePage),
                 getWebPageRootId: (pageName: string) => this.getWebPageRootId(pageName) ?? '',
                 addWebRole: (roleName: string, webRoleContent: object) => this.addWebRole(roleName, webRoleContent),
-                save: async () => {
-                    // Implement save logic if needed
-                },
+                save: this.save,
             }
         };
     }
