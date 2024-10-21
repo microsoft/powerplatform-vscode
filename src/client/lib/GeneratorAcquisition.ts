@@ -69,7 +69,7 @@ export class GeneratorAcquisition implements IDisposable {
     }
 
     private npm(args: string[]) {
-        return spawnSync(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', args, { cwd: this._ppagesGlobalPath });
+        return spawnSync(this.npmCommand, args, { cwd: this._ppagesGlobalPath, shell: true });
     }
 
     public ensureInstalled(): string | null {
@@ -141,4 +141,3 @@ export class GeneratorAcquisition implements IDisposable {
         }
     }
 }
-
