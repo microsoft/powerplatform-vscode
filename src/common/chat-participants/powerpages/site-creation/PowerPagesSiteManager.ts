@@ -3,13 +3,18 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { nl2SiteJson } from "./Nl2SiteTemplate";
 import { PowerPagesParsedJson } from "./PowerPagesSiteModel";
-import { getCDSEntityRequestURLPath, reGuidPowerPagesSite } from "./PowerPagesSiteUtils";
+import { reGuidPowerPagesSite } from "./PowerPagesSiteUtils";
 import * as entityNames from "./EntityNames";
 import { PowerPagesComponent, PowerPagesComponentType } from "./PowerPagesComponent";
 import { v4 as uuidv4 } from 'uuid';
 import { BASE_PAGE } from "./PowerPagesSiteConstants";
+import { dataverseAuthentication } from "../../../services/AuthenticationProvider";
+import { ITelemetry } from "../../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 
 export interface IPowerPagesSiteFromJsonActions {
     updateSiteName: (name: string) => void;
@@ -41,8 +46,9 @@ export class PowerPagesSiteManager {
     private siteData: PowerPagesParsedJson;
     private templateName: string;
     private language: string;
+    private telemetry: ITelemetry;
 
-    constructor(templateName: string, language: string) {
+    constructor(templateName: string, language: string, telemetry: ITelemetry) {
         this.siteData = {
             powerpagecomponent: [],
             powerpagesite: [],
@@ -50,6 +56,7 @@ export class PowerPagesSiteManager {
         };
         this.templateName = templateName;
         this.language = language;
+        this.telemetry = telemetry;
     }
 
     // Function to fetch and load the template data
@@ -73,7 +80,7 @@ export class PowerPagesSiteManager {
 
         siteAndLanguages.push({
             method: 'POST',
-            url: getCDSEntityRequestURLPath({ entityName: entityNames.PowerPagesSites }),
+            url: 'https://org06ff0f46.crm10.dynamics.com/api/data/v9.2/powerpagesites',
             headers: {
                 'Content-Type': 'application/json; type=entry',
             },
@@ -89,7 +96,7 @@ export class PowerPagesSiteManager {
             delete entity.powerpagesiteid;
             siteAndLanguages.push({
                 method: 'POST',
-                url: getCDSEntityRequestURLPath({ entityName: entityNames.PowerPagesSiteLanguages }),
+                url: 'https://org06ff0f46.crm10.dynamics.com/api/data/v9.2/powerpagesitelanguages',
                 headers: {
                     'Content-Type': 'application/json; type=entry',
                 },
@@ -116,7 +123,7 @@ export class PowerPagesSiteManager {
             delete entity.filecontent;
             operations.push({
                 method: 'POST',
-                url: getCDSEntityRequestURLPath({ entityName: entityNames.PowerPagesComponents }),
+                url: 'https://org06ff0f46.crm10.dynamics.com/api/data/v9.2/powerpagecomponents',
                 headers: {
                     'Content-Type': 'application/json; type=entry',
                 },
@@ -377,27 +384,33 @@ export class PowerPagesSiteManager {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [siteAndLanguages, components, fileComponents] = this.getBatchAndFileUploads();
 
-        const optionalHeaders = { 'x-ms-ppages-options': 'skipDependencyChecker=true;' }
+        //const optionalHeaders = { 'x-ms-ppages-options': 'skipDependencyChecker=true;' }
 
+        const orgUrl = 'https://org06ff0f46.crm10.dynamics.com/';
+
+        const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl ?? '', true)).accessToken;
 
         const fetchOptions = (operation: any) => ({
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...optionalHeaders,
+                Authorization: `Bearer ${dataverseToken}`,
             },
-            body: JSON.stringify(operation.body),
+            body: operation.body,
         });
 
         try {
             // Process siteAndLanguages operations
             for (const operation of siteAndLanguages) {
-                await fetch(operation.url, fetchOptions(operation));
+                const response = await fetch(operation.url, fetchOptions(operation));
+                console.log('Site and languages operation:', response);
             }
 
             // Process components operations
             for (const operation of components) {
-                await fetch(operation.url, fetchOptions(operation));
+                console.log('Components operation:', operation.body);
+                const compResponse = await fetch(operation.url, fetchOptions(operation));
+                console.log('Components operation:', compResponse.json());
             }
 
             //   if (fileComponents.length > 0) {

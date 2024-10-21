@@ -14,14 +14,12 @@ import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, CREATE_SITE_INPUTS, ENV_NOT_FOUND, NO_PROMPT_MESSAGE, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, RESPONSE_AWAITED_MSG, SKIP_CODES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
 import { getComponentInfo, getEndpointInfo, getSiteCreationInputs } from './PowerPagesChatParticipantUtils';
-import { checkCopilotAvailability, getActiveEditorContent, getEnvList } from '../../utilities/Utils';
+import { checkCopilotAvailability, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { ITelemetry } from '../../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
-import { getNL2PageData } from './NL2PageService';
-import { getNL2SiteData } from './NL2SiteService';
-import { DynamicContentProvider } from './FileSystemProvider';
+import { createSite } from './site-creation/PowerPagesCreateSite';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -146,88 +144,116 @@ export class PowerPagesChatParticipant {
             //TODO: Handle command scenarios
             switch (request.command) {
                 case 'create-site': {
-                    //TODO: Update the strings
                     stream.progress('Generating a new Power Pages site...');
-
-                    //TODO: Call NL2Site
-
-                    // stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
-
-                    //Make call to intelligence API to get the site content
-                    const siteContent = await getNL2SiteData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, this.powerPagesAgentSessionId);
-
-                    if (!siteContent) {
-                        stream.markdown('Failed to get the site content. Please try again later.');
+                    try {
+                        const result = await createSite(
+                            intelligenceAPIEndpointInfo.intelligenceEndpoint,
+                            intelligenceApiToken,
+                            userPrompt,
+                            'sitedge4574',
+                            this.powerPagesAgentSessionId,
+                            stream,
+                            this.telemetry
+                        );
+                        stream.markdown(`Site created successfully with portal:`);
+                        console.log(result);
+                        return {
+                            metadata: {
+                                command: 'create-site',
+                            }
+                        };
+                    } catch (error) {
+                        stream.markdown('Failed to create the site. Please try again later.');
                         return {
                             metadata: {
                                 command: ''
                             }
                         };
                     }
-
-                    const siteName = siteContent.siteName;
-
-                    const sitePagesList = siteContent.pages.map((page: { pageName: string; }) => page.pageName);
-
-                    stream.progress('Generating webpages...');
-
-                    const sitePages = await getNL2PageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, request.prompt, siteName, sitePagesList, this.powerPagesAgentSessionId);
-
-                    if (!sitePages) {
-                        stream.markdown('Failed to get the site pages. Please try again later.');
-                        return {
-                            metadata: {
-                                command: ''
-                            }
-                        };
-                    }
-
-                    const sitePagesContent: { name: string; content: string }[] = [];
-                    sitePages.forEach((page: any) => {
-                        sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
-                    });
-
-                    stream.markdown('\nHere is the name of the site: ' + siteName);
-
-
-                    const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
-                    const contentProvider = new DynamicContentProvider();
-                    const scheme = 'readonly';
-                    // Register the content provider
-                    this.extensionContext.subscriptions.push(
-                        vscode.workspace.registerTextDocumentContentProvider(scheme, contentProvider)
-                    );
-
-                    const baseUri = vscode.Uri.parse('readonly:/');
-
-                    sitePagesContent.forEach((page: { name: string; content: string; }) => {
-                        sitePagesFolder.push({ name: page.name + '.html' });
-                        const pageUri = vscode.Uri.joinPath(baseUri, page.name + '.html');
-                        contentProvider.updateFileContent(pageUri.path, page.content);
-
-                    });
-
-                    //TODO: pass uri of current workspace as second parameter
-                    stream.filetree(sitePagesFolder, baseUri);
-
-                    //API call to get list of the environments
-                    const envInfo = await getEnvList(this.telemetry, intelligenceAPIEndpointInfo.endpointStamp!);
-
-                    const createSiteArgumentsArray = [siteName, envInfo, false];
-
-                    stream.button({
-                        command: CREATE_SITE_INPUTS,
-                        title: vscode.l10n.t('Create Site'),
-                        tooltip: vscode.l10n.t('Create a new Power Pages site'),
-                        arguments: createSiteArgumentsArray
-                    })
-
-                    return {
-                        metadata: {
-                            command: request.command //TODO: Review the command
-                        }
-                    };
                 }
+                // case 'create-site': {
+                //     //TODO: Update the strings
+                //     stream.progress('Generating a new Power Pages site...');
+
+                //     //TODO: Call NL2Site
+
+                //     // stream.markdown('Below is the markdown content for the new Power Pages site. You can copy this content and paste it in the markdown file to create a new Power Pages site.');
+
+                //     //Make call to intelligence API to get the site content
+                //     const siteContent = await getNL2SiteData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, this.powerPagesAgentSessionId);
+
+                //     if (!siteContent) {
+                //         stream.markdown('Failed to get the site content. Please try again later.');
+                //         return {
+                //             metadata: {
+                //                 command: ''
+                //             }
+                //         };
+                //     }
+
+                //     const siteName = siteContent.siteName;
+
+                //     const sitePagesList = siteContent.pages.map((page: { pageName: string; }) => page.pageName);
+
+                //     stream.progress('Generating webpages...');
+
+                //     const sitePages = await getNL2PageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, request.prompt, siteName, sitePagesList, this.powerPagesAgentSessionId);
+
+                //     if (!sitePages) {
+                //         stream.markdown('Failed to get the site pages. Please try again later.');
+                //         return {
+                //             metadata: {
+                //                 command: ''
+                //             }
+                //         };
+                //     }
+
+                //     const sitePagesContent: { name: string; content: string }[] = [];
+                //     sitePages.forEach((page: any) => {
+                //         sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
+                //     });
+
+                //     stream.markdown('\nHere is the name of the site: ' + siteName);
+
+
+                //     const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
+                //     const contentProvider = new DynamicContentProvider();
+                //     const scheme = 'readonly';
+                //     // Register the content provider
+                //     this.extensionContext.subscriptions.push(
+                //         vscode.workspace.registerTextDocumentContentProvider(scheme, contentProvider)
+                //     );
+
+                //     const baseUri = vscode.Uri.parse('readonly:/');
+
+                //     sitePagesContent.forEach((page: { name: string; content: string; }) => {
+                //         sitePagesFolder.push({ name: page.name + '.html' });
+                //         const pageUri = vscode.Uri.joinPath(baseUri, page.name + '.html');
+                //         contentProvider.updateFileContent(pageUri.path, page.content);
+
+                //     });
+
+                //     //TODO: pass uri of current workspace as second parameter
+                //     stream.filetree(sitePagesFolder, baseUri);
+
+                //     //API call to get list of the environments
+                //     const envInfo = await getEnvList(this.telemetry, intelligenceAPIEndpointInfo.endpointStamp!);
+
+                //     const createSiteArgumentsArray = [siteName, envInfo, false];
+
+                //     stream.button({
+                //         command: CREATE_SITE_INPUTS,
+                //         title: vscode.l10n.t('Create Site'),
+                //         tooltip: vscode.l10n.t('Create a new Power Pages site'),
+                //         arguments: createSiteArgumentsArray
+                //     })
+
+                //     return {
+                //         metadata: {
+                //             command: request.command //TODO: Review the command
+                //         }
+                //     };
+                // }
                 default:
                     break;
             }

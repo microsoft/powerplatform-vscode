@@ -58,6 +58,7 @@ export const reGuidPowerPagesSite = (site: PowerPagesParsedJson): PowerPagesPars
         },
     ];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const powerPagesSiteLanguages = site.powerpagesitelanguage.map((language: any) => {
         if (!guidMap.has(language.powerpagesitelanguageid)) {
             guidMap.set(language.powerpagesitelanguageid, uuidv4());
@@ -70,6 +71,7 @@ export const reGuidPowerPagesSite = (site: PowerPagesParsedJson): PowerPagesPars
         };
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const powerPagesComponents = site.powerpagecomponent.map((component: any) => {
         if (!guidMap.has(component.powerpagecomponentid)) {
             guidMap.set(component.powerpagecomponentid, uuidv4());

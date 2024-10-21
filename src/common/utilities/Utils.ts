@@ -206,6 +206,7 @@ export async function getEnvList(telemetry: ITelemetry, endpointStamp: BAPServic
 
         if (envListResponse.ok) {
             const envListJson = await envListResponse.json();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             envListJson.value.forEach((env: any) => {
                 envInfo.push({ envId: env.properties.linkedEnvironmentMetadata.instanceUrl, envDisplayName: env.properties.displayName });
             });
