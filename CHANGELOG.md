@@ -4,6 +4,7 @@
 - pac CLI 1.35.1, (September 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
 - Bug Fixes
   - Copilot for Power Pages: "Not yet available in your region." [Issue #1046](https://github.com/microsoft/powerplatform-vscode/issues/1046) [Fix #1044](https://github.com/microsoft/powerplatform-vscode/pull/1044)
+  - Power Pages generator installation issue [Issue #1018](https://github.com/microsoft/powerplatform-vscode/issues/1018) [Fix #1049](https://github.com/microsoft/powerplatform-vscode/pull/1049)
 
 ## 2.0.66
 - pac CLI 1.34.4, (August 2024 refresh, see release notes on [nuget.org](https://www.nuget.org/packages/Microsoft.PowerApps.CLI/))
