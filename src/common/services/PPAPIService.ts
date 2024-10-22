@@ -15,8 +15,9 @@ export class PPAPIService {
     public static async getWebsiteDetailsById(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websitePreviewId: string, telemetry: ITelemetry): Promise<IWebsiteDetails | null> { // websitePreviewId aka portalId
 
         try {
-            const accessToken = await powerPlatformAPIAuthentication(telemetry, true);
-            const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId, websitePreviewId), {
+            const ppapiEndpoint = await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId);
+            const accessToken = await powerPlatformAPIAuthentication(telemetry, ppapiEndpoint, true);
+            const response = await fetch(ppapiEndpoint, {
                 method: 'GET',
                 headers: getCommonHeaders(accessToken)
             });
@@ -41,11 +42,13 @@ export class PPAPIService {
         websiteLanguage: number,
         telemetry: ITelemetry) { // websitePreviewId aka portalId
 
+        const ppapiEndpoint = await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId);
+
         try {
             console.log("Creating website");
-            const accessToken = await powerPlatformAPIAuthentication(telemetry, true);
+            const accessToken = await powerPlatformAPIAuthentication(telemetry, ppapiEndpoint, true);
             const siteSuffix = uuidv4();
-            const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId), {
+            const response = await fetch(ppapiEndpoint, {
                 method: 'POST',
                 headers: getCommonHeaders(accessToken),
                 body: JSON.stringify({
@@ -57,8 +60,6 @@ export class PPAPIService {
                     websiteRecordId: siteSuffix // If this ID is passed package installation is not done and portal is associated with the passed ID - we should use this option
                 })
             });
-
-            console.log(response);
 
             if (response.ok) {
                 sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_CREATE_WEBSITE_COMPLETED, data: `environmentId:${environmentId}, orgId:${orgId}, websiteName:${websiteName}` });

@@ -307,7 +307,7 @@ export function getRangeForMultilineMatch(text: string, pattern: string, index: 
 }
 
 export async function validateWebsitePreviewURL(): Promise<boolean> {
-    const envId = WebExtensionContext.urlParametersMap?.get(queryParameters.ENV_ID);
+    const envId = getEnvironmentIdFromUrl();
     const serviceEndpointStamp = WebExtensionContext.serviceEndpointCategory;
     const websitePreviewId = WebExtensionContext.urlParametersMap?.get(queryParameters.PORTAL_ID);
 

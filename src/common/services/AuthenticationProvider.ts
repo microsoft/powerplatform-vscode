@@ -23,7 +23,7 @@ import {
     VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_FAILED
 } from "./TelemetryConstants";
 import { ERROR_CONSTANTS } from "../ErrorConstants";
-import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL } from "./Constants";
+import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL } from "./Constants";
 import jwt_decode from 'jwt-decode';
 import { showErrorDialog } from "../utilities/errorHandlerUtil";
 
@@ -296,10 +296,12 @@ export function getOIDFromToken(token: string, telemetry: ITelemetry) {
 
 export async function powerPlatformAPIAuthentication(
     telemetry: ITelemetry,
+    ppapiEndpoint: string,
     firstTimeAuth = false
 ): Promise<string> {
     let accessToken = "";
     try {
+        const PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT = `${ppapiEndpoint}${SCOPE_OPTION_DEFAULT}`;
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
             [PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT],
