@@ -28,7 +28,7 @@ export const BASE_PAGE = {
     sharedpageconfiguration: false,
 };
 
-export const CDS_BASE_URL = 'https://cds-org';
+export const CDS_BASE_URL = 'https://org06ff0f46.crm10.dynamics.com'; // This is a placeholder URL
 export const CDS_URL_PREFIX = '/api/data';
 export const CDS_API_BASE_URL = `${CDS_BASE_URL}${CDS_URL_PREFIX}`;
 export const CDS_API_VERSION = 'v9.2';

@@ -8,7 +8,7 @@
 
 import { nl2SiteJson } from "./Nl2SiteTemplate";
 import { PowerPagesParsedJson } from "./PowerPagesSiteModel";
-import { reGuidPowerPagesSite } from "./PowerPagesSiteUtils";
+import { base64ToArrayBuffer, getCDSEntityRequestURL, getFileUploadHeaders, reGuidPowerPagesSite } from "./PowerPagesSiteUtils";
 import * as entityNames from "./EntityNames";
 import { PowerPagesComponent, PowerPagesComponentType } from "./PowerPagesComponent";
 import { v4 as uuidv4 } from 'uuid';
@@ -413,21 +413,31 @@ export class PowerPagesSiteManager {
                 console.log('Components operation:', compResponse.json());
             }
 
-            //   if (fileComponents.length > 0) {
-            //     await Promise.all(
-            //       fileComponents.map((f) =>
-            //         fetch(getCDSEntityRequestURLPath({
-            //           entityName: f.,
-            //           entityId: f.entityId,
-            //           additionalPathTokens: [f.columnName],
-            //         }), {
-            //           method: 'PATCH',
-            //           headers: getFileUploadHeaders(f.fileName),
-            //           body: base64ToArrayBuffer(f.fileContent),
-            //         })
-            //       )
-            //     );
-            //   }
+            if (fileComponents.length > 0) {
+                await Promise.all(
+                    fileComponents.map(async (f) => {
+                        const response = await fetch(
+                            getCDSEntityRequestURL({
+                                entityName: entityNames.PowerPagesComponents,
+                                entityId: f.powerpagecomponentid,
+                                additionalPathTokens: ['filecontent'],
+                            }),
+                            {
+                                method: 'PATCH',
+                                headers: getFileUploadHeaders(f.name, dataverseToken),
+                                body: base64ToArrayBuffer(f.filecontent!),
+                            }
+                        );
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            console.log('File component operation response:', response.json());
+                            throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+                        }
+
+                    })
+                );
+            }
         } catch (error) {
             console.error('Error during save operation:', error);
         }
