@@ -301,6 +301,8 @@ export async function powerPlatformAPIAuthentication(
 ): Promise<string> {
     let accessToken = "";
     try {
+        
+        ppapiEndpoint = ppapiEndpoint.split("/powerpages")[0];
         const PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT = `${ppapiEndpoint}${SCOPE_OPTION_DEFAULT}`;
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
