@@ -33,6 +33,37 @@ export class PPAPIService {
         return null;
     }
 
+    public static async getWebsiteDetailsByWebsiteRecordId(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websiteRecordId: string, telemetry: ITelemetry): Promise<IWebsiteDetails | null> {
+
+        const websiteDetailsArray = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId, telemetry);
+        const websiteDetails = websiteDetailsArray?.find((website) => website.websiteRecordId === websiteRecordId);
+
+        if (websiteDetails) {
+            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
+            return websiteDetails;
+        }
+        return null;
+    }
+
+    static async getWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, telemetry: ITelemetry): Promise<IWebsiteDetails[] | null> {
+        try {
+            const accessToken = await powerPlatformAPIAuthentication(telemetry, true);
+            const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId), {
+                method: 'GET',
+                headers: getCommonHeaders(accessToken)
+            });
+
+            if (response.ok) {
+                const websiteDetailsArray = await response.json() as unknown as IWebsiteDetails[];
+                return websiteDetailsArray;
+            }
+        }
+        catch (error) {
+            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, errorMsg: (error as Error).message });
+        }
+        return null;
+    }
+
     static async getPPAPIServiceEndpoint(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry, environmentId: string, websitePreviewId?: string): Promise<string> {
 
         let ppapiEndpoint = "";
