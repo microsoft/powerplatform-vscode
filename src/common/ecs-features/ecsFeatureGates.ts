@@ -48,3 +48,13 @@ export const {
         enablePowerpagesInGithubCopilot: false,
     },
 });
+
+export const {
+    feature: EnableSiteRuntimePreview
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Site Runtime Preview in VS Code Desktop',
+    fallback: {
+        enableSiteRuntimePreview: false,
+    },
+});
