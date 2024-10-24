@@ -276,8 +276,9 @@ export async function activate(
 
 export async function powerPagesActions(workspaceFolders: WorkspaceFolder[], pacTerminal: PacTerminal, telemetry: ITelemetry) {
 
-    //const websiteURL = await getWebSiteURL(workspaceFolders, pacTerminal, telemetry);
+    const websiteURL = await getWebSiteURL(workspaceFolders, pacTerminal, telemetry);
     const powerPagesActionHub = new PowerPagesActionHub();
+    console.log(websiteURL);
     vscode.window.registerTreeDataProvider('powerPagesActionHubView', powerPagesActionHub);
     vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesActionHub.openSpecificURLWithoutAuth());
 }

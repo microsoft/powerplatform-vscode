@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as crypto from 'crypto';
 
 export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNode> {
 
@@ -35,9 +36,68 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
     }
 
 
+    private unsavedChanges: Set<string> = new Set();
+
+    constructor() {
+        // Watch for file changes
+        vscode.workspace.onDidChangeTextDocument((event) => {
+            const document = event.document;
+            const filePath = document.uri.fsPath;
+
+            this.unsavedChanges.add(filePath);
+        });
+
+        // Watch for file saves
+        vscode.workspace.onDidSaveTextDocument((document) => {
+            const filePath = document.uri.fsPath;
+
+            if (this.unsavedChanges.has(filePath)) {
+                this.unsavedChanges.delete(filePath);
+            }
+        });
+
+        // Watch for terminal output to detect pac upload command
+        // vscode.window.onDidWriteTerminalData((event) => {
+        //     const terminalData = event.data;
+
+        //     if (terminalData.includes('pac pages upload')) {
+        //         this.handlePacUploadCommand();
+        //     }
+        // });
+    }
+    // Function to handle pac upload command
+    // private handlePacUploadCommand(): void {
+    //     // Clear the unsaved changes set
+    //     this.unsavedChanges.clear();
+    //     vscode.window.showInformationMessage('Changes have been uploaded successfully.');
+    // }
+
+    // Function to check for unsaved changes before executing a command
+    async checkForUnsavedChangesAndExecute(command: () => void): Promise<void> {
+        if (this.unsavedChanges.size > 0) {
+            const result = await vscode.window.showWarningMessage(
+                'There are some changes. Kindly upload them from terminal within VSCode ?',
+                'Ok',
+                'Nahh, I will do it later'
+            );
+
+            if (result === 'Ok') {
+                // Save all documents
+                await vscode.workspace.saveAll();
+            } else {
+                await vscode.window.showInformationMessage('Preview site in VSCode command has been cancelled.');
+                return;
+            }
+        }
+
+        // Execute the command
+        command();
+    }
+
     async openSpecificURLWithoutAuth(): Promise<void> {
+
         // The desired website preview URL
-        const websitePreviewUrl = "https://demoportalsearch.powerappsportals.com/"; // private site
+        const websitePreviewUrl = "https://site-ael6h.powerappsportals.com/"; // private site
 
         const edgeToolsExtensionId = 'ms-edgedevtools.vscode-edge-devtools';
         const edgeToolsExtension = vscode.extensions.getExtension(edgeToolsExtensionId);
@@ -62,7 +122,9 @@ export class PowerPagesActionHub implements vscode.TreeDataProvider<PowerPagesNo
             try {
                 // Add a 2-second delay before executing the launchProject command
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                await vscode.commands.executeCommand('vscode-edge-devtools-view.launchProject');
+                await this.checkForUnsavedChangesAndExecute(async () => {
+                    await vscode.commands.executeCommand('vscode-edge-devtools-view.launchProject');
+                });
             } finally {
                 // Revert the changes made to the launch.json file and remove the .vscode folder if it was created
                 await new Promise(resolve => setTimeout(resolve, 2000));

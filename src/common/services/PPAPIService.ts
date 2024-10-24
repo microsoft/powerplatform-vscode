@@ -13,6 +13,9 @@ import { IWebsiteDetails } from "./Interfaces";
 export class PPAPIService {
     public static async getWebsiteDetailsById(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websitePreviewId: string, telemetry: ITelemetry): Promise<IWebsiteDetails | null> { // websitePreviewId aka portalId
 
+        // serviceEndpointStamp = ServiceEndpointCategory.PROD;
+        // environmentId = "ce04f819-d706-ec67-8d6f-f79f6c12e409";
+        websitePreviewId = "1687de7b-a866-41c4-9df5-62616a9db086";
         try {
             const accessToken = await powerPlatformAPIAuthentication(telemetry, true);
             const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId, websitePreviewId), {
