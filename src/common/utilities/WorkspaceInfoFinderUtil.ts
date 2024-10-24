@@ -40,7 +40,7 @@ export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null
     return output;
 }
 
-export function getWebsiteID(workspaceFolders: { uri: string }[], telemetry: ITelemetry): string {
+export function getWebsiteRecordID(workspaceFolders: { uri: string }[], telemetry: ITelemetry): string {
     try {
         if (!workspaceFolders || workspaceFolders.length === 0) {
             return "";
@@ -56,7 +56,7 @@ export function getWebsiteID(workspaceFolders: { uri: string }[], telemetry: ITe
             }
         }
     } catch (exception) {
-        sendTelemetryEvent(telemetry, { methodName: getWebsiteID.name, eventName: 'getWebsiteID', exception: exception as Error });
+        sendTelemetryEvent(telemetry, { methodName: getWebsiteRecordID.name, eventName: 'getWebsiteRecordID', exception: exception as Error });
     }
     return "";
 }

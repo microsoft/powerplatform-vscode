@@ -40,15 +40,16 @@ import { ActiveOrgOutput } from "./pac/PacTypes";
 import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
-import { getPortalsOrgURLs, getWebsiteID } from "../common/utilities/WorkspaceInfoFinderUtil";
+import { getPortalsOrgURLs, getWebsiteRecordID } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { EXTENSION_ID, SUCCESS } from "../common/constants";
 import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue } from "../common/utilities/Utils";
-import { PowerPagesActionHub } from "../common/webPreview/PowerPagesActionHub";
+import { PreviewSite } from "./runtimeSitePreview/PreviewSite";
 import { PPAPIService } from "../common/services/PPAPIService";
 import { ServiceEndpointCategory } from "../common/services/Constants";
+import { EnableSiteRuntimePreview } from "../common/ecs-features/ecsFeatureGates";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -103,22 +104,6 @@ export async function activate(
             "true"
         );
     }
-
-    // portal web view panel
-    _context.subscriptions.push(
-        vscode.commands.registerCommand(
-            "microsoft-powerapps-portals.preview-show",
-            () => {
-                _telemetry.sendTelemetryEvent("StartCommand", {
-                    commandId: "microsoft-powerapps-portals.preview-show",
-                });
-                oneDSLoggerWrapper.getLogger().traceInfo("StartCommand", {
-                    commandId: "microsoft-powerapps-portals.preview-show"
-                });
-                PortalWebView.createOrShow();
-            }
-        )
-    );
 
     // registering bootstrapdiff command
     _context.subscriptions.push(
@@ -227,13 +212,14 @@ export async function activate(
         })
     );
 
-
+    let websiteURL: string | undefined;
     const workspaceFolders =
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
+        websiteURL = await getWebSiteURL(workspaceFolders, pacTerminal, _telemetry);
         let telemetryData = '';
         let listOfActivePortals = [];
         try {
@@ -257,11 +243,50 @@ export async function activate(
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
         showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
-        powerPagesActions(workspaceFolders, pacTerminal, _telemetry);
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
     }
+
+    const registerPreviewShowCommand = async () => {
+        const isEnabled = isSiteRuntimePreviewEnabled();
+
+        _telemetry.sendTelemetryEvent("EnableSiteRuntimePreview", {
+            isEnabled: isEnabled.toString(),
+            websiteURL: websiteURL? websiteURL: ""
+        });
+        oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
+            isEnabled: isEnabled.toString(),
+            websiteURL: websiteURL? websiteURL: ""
+        });
+
+        if (!isEnabled || !websiteURL) {
+            // portal web view panel
+            _context.subscriptions.push(
+                vscode.commands.registerCommand(
+                    "microsoft-powerapps-portals.preview-show",
+                    () => {
+                        _telemetry.sendTelemetryEvent("StartCommand", {
+                            commandId: "microsoft-powerapps-portals.preview-show",
+                        });
+                        oneDSLoggerWrapper.getLogger().traceInfo("StartCommand", {
+                            commandId: "microsoft-powerapps-portals.preview-show"
+                        });
+                        PortalWebView.createOrShow();
+                    }
+                )
+            );
+        } else {
+            _context.subscriptions.push(
+                vscode.commands.registerCommand(
+                    "microsoft-powerapps-portals.preview-show",
+                    () => PreviewSite.launchBrowserAndDevToolsWithinVsCode(websiteURL)
+                )
+            );
+        }
+    };
+
+    await registerPreviewShowCommand();
 
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
@@ -272,15 +297,6 @@ export async function activate(
 
     _telemetry.sendTelemetryEvent("activated");
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
-}
-
-export async function powerPagesActions(workspaceFolders: WorkspaceFolder[], pacTerminal: PacTerminal, telemetry: ITelemetry) {
-
-    const websiteURL = await getWebSiteURL(workspaceFolders, pacTerminal, telemetry);
-    const powerPagesActionHub = new PowerPagesActionHub();
-    console.log(websiteURL);
-    vscode.window.registerTreeDataProvider('powerPagesActionHubView', powerPagesActionHub);
-    vscode.commands.registerCommand('powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode', () => powerPagesActionHub.openSpecificURLWithoutAuth());
 }
 
 export async function deactivate(): Promise<void> {
@@ -306,9 +322,8 @@ async function getWebSiteURL(workspaceFolders: WorkspaceFolder[], pacTerminal: P
     const envId = await getEnvId(pacTerminal);
     const stamp = await getStamp(pacTerminal);
 
-    const websiteId = getWebsiteID(workspaceFolders, telemetry);
-    console.log("websiteId", websiteId);
-    const websiteDetails = await PPAPIService.getWebsiteDetailsById(stamp, envId, websiteId, _telemetry);
+    const websiteRecordId = getWebsiteRecordID(workspaceFolders, telemetry);
+    const websiteDetails = await PPAPIService.getWebsiteDetailsByWebsiteRecordId(stamp, envId, websiteRecordId, _telemetry);
     return websiteDetails?.websiteUrl;
 }
 
@@ -321,6 +336,16 @@ async function getStamp(pacTerminal: PacTerminal): Promise<ServiceEndpointCatego
 async function getEnvId(pacTerminal: PacTerminal): Promise<string> {
     const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
     return pacActiveAuth.Results?.filter(obj => obj.Key === EnvIdKey)?.[0]?.Value;
+}
+
+function isSiteRuntimePreviewEnabled() {
+    const enableSiteRuntimePreview = ECSFeaturesClient.getConfig(EnableSiteRuntimePreview).enableSiteRuntimePreview
+
+    if(enableSiteRuntimePreview === undefined) {
+        return false;
+    }
+
+    return enableSiteRuntimePreview;
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {

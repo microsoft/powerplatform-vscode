@@ -2,7 +2,7 @@
   "name": "powerplatform-vscode",
   "displayName": "Power Platform Tools",
   "description": "Tooling to create Power Platform solutions & packages, manage Power Platform environments and edit Power Apps Portals",
-  "version": "1.0.1-dev",
+  "version": "4.0.1-ash",
   "enabledApiProposals": [
     "fileSearchProvider",
     "textSearchProvider"
@@ -168,10 +168,6 @@
       }
     ],
     "commands": [
-      {
-        "command": "powerpages.powerPagesFileExplorer.openSpecificURLwithinVSCode",
-        "title": "Preview site in VSCode"
-      },
       {
         "command": "powerpages.collaboration.openTeamsChat",
         "title": "Open Teams Chat",
@@ -971,10 +967,6 @@
           "when": "isWeb && virtualWorkspace",
           "contextualTitle": "People On The Site",
           "visibility": "visible"
-        },
-        {
-          "id": "powerPagesActionHubView",
-          "name": "Power Pages Actions"
         }
       ]
     },
