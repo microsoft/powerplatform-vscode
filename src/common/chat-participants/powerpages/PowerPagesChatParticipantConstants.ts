@@ -42,6 +42,8 @@ export const DISCLAIMER_MESSAGE = vscode.l10n.t('Make sure AI-generated content 
 export const NO_PROMPT_MESSAGE = vscode.l10n.t('Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.');
 export const PAC_AUTH_INPUT = vscode.l10n.t("Checking for active auth profile...");
 export const COPILOT_NOT_RELEASED_MSG = vscode.l10n.t("@PowerPages is not yet available in your region.")
+export const NL2PAGE_REQUEST_FAILED = 'Request failed for page type:';
+export const NL2SITE_INVALID_RESPONSE = 'Invalid response structure';
 
 // Telemetry Event Names
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'VSCodeExtensionGitHubPowerPagesAgentInvoked';
@@ -57,5 +59,8 @@ export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT = 'VSCodeExtens
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT = 'VSCodeExtensionGitHubPowerPagesAgentWelcomePrompt';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT = 'VSCodeExtensionGitHubPowerPagesAgentSuccessfulPrompt';
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS = 'VSCodeExtensionGitHubPowerPagesAgentNotAvailableECS';
-
+export const VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED = 'VSCodeExtensionNL2PageRequestFailed';
+export const VSCODE_EXTENSION_NL2PAGE_REQUEST_SUCCESS = 'VSCodeExtensionNL2PageRequestSuccess';
+export const VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED = 'VSCodeExtensionNL2SiteRequestFailed';
+export const VSCODE_EXTENSION_NL2SITE_REQUEST_SUCCESS = 'VSCodeExtensionNL2SiteRequestSuccess';
 
