@@ -22,6 +22,11 @@ import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNo
 import { isPowerPagesGitHubCopilotEnabled } from '../../copilot/utils/copilotUtil';
 import { ADX_WEBPAGE, IApiRequestParams, IRelatedFiles } from '../../constants';
 import { oneDSLoggerWrapper } from '../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
+import { CommandRegistry } from '../CommandRegistry';
+
+// Initialize Command Registry and Register Commands
+const commandRegistry = new CommandRegistry();
+//Register Commands
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -154,7 +159,19 @@ export class PowerPagesChatParticipant {
             const location = activeFileUri ? createAndReferenceLocation(activeFileUri, startLine, endLine) : undefined;
 
             if (request.command) {
-                //TODO: Handle command scenarios
+                const command = commandRegistry.get(request.command);
+
+                const commandRequest = {
+                    request,
+                    stream,
+                    intelligenceAPIEndpointInfo,
+                    intelligenceApiToken,
+                    powerPagesAgentSessionId: this.powerPagesAgentSessionId,
+                    telemetry: this.telemetry
+                };
+                
+                return await command.execute(commandRequest, stream);
+
             } else {
                 if (location) {
                     this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
@@ -217,7 +234,6 @@ export class PowerPagesChatParticipant {
                 return createSuccessResult('', scenario.toString(), this.orgID);
             }
 
-            return createSuccessResult('', '', this.orgID);
         } catch (error) {
             this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, { sessionId: this.powerPagesAgentSessionId, error: error as string });
             oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, error as string, error as Error, { sessionId: this.powerPagesAgentSessionId }, {});
