@@ -650,8 +650,8 @@ function isActiveDocument(fileFsPath: string): boolean {
 }
 
 async function fetchArtemisData(orgId: string): Promise<IArtemisAPIOrgResponse> {
-    const artemisResponse = await ArtemisService.fetchArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter());
-    if (artemisResponse === null || artemisResponse.length === 0) {
+    const artemisResponse = await ArtemisService.getArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter(), "");
+    if (artemisResponse === null || artemisResponse.response === null) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
             fetchArtemisData.name,

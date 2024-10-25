@@ -6,12 +6,12 @@
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { bapServiceAuthentication, getCommonHeaders } from "./AuthenticationProvider";
 import { VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_COMPLETED, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED } from "./TelemetryConstants";
-import { BAPServiceStamp, BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT } from "./Constants";
+import { BAP_API_VERSION, BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL, BAP_SERVICE_ENDPOINT, ServiceEndpointCategory } from "./Constants";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getBAPEndpoint } from "../utilities/Utils";
 
 export class BAPService {
-    public static async getCrossGeoCopilotDataMovementEnabledFlag(serviceEndpointStamp: BAPServiceStamp, telemetry: ITelemetry, environmentId: string): Promise<boolean> {
+    public static async getCrossGeoCopilotDataMovementEnabledFlag(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry, environmentId: string): Promise<boolean> {
 
         try {
             const accessToken = await bapServiceAuthentication(telemetry, true);
@@ -34,7 +34,7 @@ export class BAPService {
         return false;
     }
 
-    static async getBAPCopilotCrossGeoFlagEndpoint(serviceEndpointStamp: BAPServiceStamp, telemetry: ITelemetry, environmentId: string): Promise<string> {
+    static async getBAPCopilotCrossGeoFlagEndpoint(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry, environmentId: string): Promise<string> {
 
         const bapEndpoint = await getBAPEndpoint(serviceEndpointStamp, telemetry);
 

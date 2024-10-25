@@ -20,6 +20,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { ITelemetry } from '../../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { orgChangeErrorEvent, orgChangeEvent } from '../../../client/OrgChangeNotifier';
 import { createSite } from './site-creation/PowerPagesCreateSite';
+import { ArtemisService } from '../../services/ArtemisService';
+import { ServiceEndpointCategory } from '../../services/Constants';
+import { PPAPIService } from '../../services/PPAPIService';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -31,6 +34,7 @@ export class PowerPagesChatParticipant {
     private readonly _disposables: vscode.Disposable[] = [];
     private cachedEndpoint: IIntelligenceAPIEndpointInformation | null = null;
     private powerPagesAgentSessionId: string;
+    private serviceEndpointStamp: ServiceEndpointCategory | undefined;
 
     private orgID: string | undefined;
     private orgUrl: string | undefined;
@@ -145,6 +149,20 @@ export class PowerPagesChatParticipant {
             switch (request.command) {
                 case 'create-site': {
                     stream.progress('Generating a new Power Pages site...');
+
+                    const artemisResponse = await ArtemisService.getArtemisResponse(this.orgID, this.telemetry, this.powerPagesAgentSessionId);
+
+                    if (!artemisResponse) {
+                        stream.markdown('Failed to get the Artemis response. Please try again later.');
+                        return {
+                            metadata: {
+                                command: ''
+                            }
+                        };
+                    }
+
+                    this.serviceEndpointStamp = artemisResponse.stamp;
+
                     try {
                         const result = await createSite(
                             intelligenceAPIEndpointInfo.intelligenceEndpoint,
@@ -155,13 +173,29 @@ export class PowerPagesChatParticipant {
                             stream,
                             this.telemetry
                         );
-                        stream.markdown(`Site created successfully with portal:`);
-                        console.log(result);
-                        return {
-                            metadata: {
-                                command: 'create-site',
-                            }
-                        };
+
+                        if(!result) {
+                            stream.markdown('Failed to create the site. Please try again later.');
+                            return {
+                                metadata: {
+                                    command: ''
+                                }
+                            };
+                        }
+
+
+                        await PPAPIService.createWebsite(this.serviceEndpointStamp, this.environmentID, this.orgID, result.siteName, 1033, result.websiteId, this.telemetry);
+
+                        const websiteResponse = await PPAPIService.getWebsiteDetailsById(this.serviceEndpointStamp, this.environmentID, result.websiteId, this.telemetry);
+
+                        if(websiteResponse) {
+                            stream.markdown(`Site created successfully with portal: ${websiteResponse.websiteUrl}`);
+                            return {
+                                metadata: {
+                                    command: 'create-site',
+                                }
+                            };
+                        }
                     } catch (error) {
                         stream.markdown('Failed to create the site. Please try again later.');
                         return {
@@ -171,6 +205,7 @@ export class PowerPagesChatParticipant {
                         };
                     }
                 }
+                break;
                 // case 'create-site': {
                 //     //TODO: Update the strings
                 //     stream.progress('Generating a new Power Pages site...');

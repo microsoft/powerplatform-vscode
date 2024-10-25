@@ -18,7 +18,9 @@ import {
     VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
     VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED,
     VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_FAILED,
-    VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED
+    VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED,
+    VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_FAILED,
+    VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_COMPLETED
 } from "./TelemetryConstants";
 import { ERROR_CONSTANTS } from "../ErrorConstants";
 import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL } from "./Constants";
@@ -291,4 +293,58 @@ export function getOIDFromToken(token: string, telemetry: ITelemetry) {
         )
     }
     return "";
+}
+
+export async function powerPlatformAPIAuthentication(
+    telemetry: ITelemetry,
+    ppapiEndpoint: string,
+    firstTimeAuth = false
+): Promise<string> {
+    let accessToken = "";
+    try {
+        //https://api.preprod.powerplatform.com/powerpages/environments/1538a5fc-6583-ef69-8a14-99808eaa981a/websites?api-version=2022-03-01-preview
+        //get the endpoint till .com
+        ppapiEndpoint = ppapiEndpoint.split("/powerpages")[0];
+        const PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT = `${ppapiEndpoint}${SCOPE_OPTION_DEFAULT}`;
+        let session = await vscode.authentication.getSession(
+            PROVIDER_ID,
+            [PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT],
+            { silent: true }
+        );
+
+        if (!session) {
+            session = await vscode.authentication.getSession(
+                PROVIDER_ID,
+                [PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT],
+                { createIfNone: true }
+            );
+        }
+
+        accessToken = session?.accessToken ?? "";
+        if (!accessToken) {
+            throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
+        }
+
+        if (firstTimeAuth) {
+            sendTelemetryEvent(telemetry, {
+                eventName: VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_COMPLETED,
+                userId:
+                    session?.account.id.split("/").pop() ??
+                    session?.account.id ??
+                    "",
+            });
+        }
+    } catch (error) {
+        showErrorDialog(
+            vscode.l10n.t(
+                "Authorization Failed. Please run again to authorize it"
+            ),
+            vscode.l10n.t("There was a permissions problem with the server")
+        );
+        sendTelemetryEvent(telemetry,
+            { eventName: VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_FAILED, errorMsg: (error as Error).message }
+        )
+    }
+
+    return accessToken;
 }
