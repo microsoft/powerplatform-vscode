@@ -40,16 +40,13 @@ import { ActiveOrgOutput } from "./pac/PacTypes";
 import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
-import { getPortalsOrgURLs, getWebsiteRecordID } from "../common/utilities/WorkspaceInfoFinderUtil";
+import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { EXTENSION_ID, SUCCESS } from "../common/constants";
 import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue } from "../common/utilities/Utils";
 import { PreviewSite } from "./runtimeSitePreview/PreviewSite";
-import { PPAPIService } from "../common/services/PPAPIService";
-import { ServiceEndpointCategory } from "../common/services/Constants";
-import { EnableSiteRuntimePreview } from "../common/ecs-features/ecsFeatureGates";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -175,6 +172,7 @@ export async function activate(
     _context.subscriptions.push(cli);
     _context.subscriptions.push(pacTerminal);
 
+    let websiteURL = "";
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
@@ -209,17 +207,18 @@ export async function activate(
                 }
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }
+            if(artemisResponse!==null && PreviewSite.isSiteRuntimePreviewEnabled()) {
+                websiteURL = await PreviewSite.getWebSiteURL(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
+            }
         })
     );
 
-    let websiteURL: string | undefined;
     const workspaceFolders =
         vscode.workspace.workspaceFolders?.map(
             (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
         ) || [];
     // TODO: Handle for VSCode.dev also
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-        websiteURL = await getWebSiteURL(workspaceFolders, pacTerminal, _telemetry);
         let telemetryData = '';
         let listOfActivePortals = [];
         try {
@@ -249,18 +248,18 @@ export async function activate(
     }
 
     const registerPreviewShowCommand = async () => {
-        const isEnabled = isSiteRuntimePreviewEnabled();
+        const isEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
 
         _telemetry.sendTelemetryEvent("EnableSiteRuntimePreview", {
             isEnabled: isEnabled.toString(),
-            websiteURL: websiteURL? websiteURL: ""
+            websiteURL: websiteURL
         });
         oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
             isEnabled: isEnabled.toString(),
-            websiteURL: websiteURL? websiteURL: ""
+            websiteURL: websiteURL
         });
 
-        if (!isEnabled || !websiteURL) {
+        if (!isEnabled) {
             // portal web view panel
             _context.subscriptions.push(
                 vscode.commands.registerCommand(
@@ -315,37 +314,6 @@ export async function deactivate(): Promise<void> {
     disposeDiagnostics();
     deactivateDebugger();
     disposeNotificationPanel();
-}
-
-async function getWebSiteURL(workspaceFolders: WorkspaceFolder[], pacTerminal: PacTerminal, telemetry: ITelemetry): Promise<string | undefined> {
-
-    const envId = await getEnvId(pacTerminal);
-    const stamp = await getStamp(pacTerminal);
-
-    const websiteRecordId = getWebsiteRecordID(workspaceFolders, telemetry);
-    const websiteDetails = await PPAPIService.getWebsiteDetailsByWebsiteRecordId(stamp, envId, websiteRecordId, _telemetry);
-    return websiteDetails?.websiteUrl;
-}
-
-async function getStamp(pacTerminal: PacTerminal): Promise<ServiceEndpointCategory> {
-    const orgDetails = (await pacTerminal.getWrapper().activeOrg()).Results;
-    const artemisResponse = await ArtemisService.getArtemisResponse(orgDetails.OrgId, _telemetry, "");
-    return artemisResponse?.stamp || ServiceEndpointCategory.PROD;
-}
-
-async function getEnvId(pacTerminal: PacTerminal): Promise<string> {
-    const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-    return pacActiveAuth.Results?.filter(obj => obj.Key === EnvIdKey)?.[0]?.Value;
-}
-
-function isSiteRuntimePreviewEnabled() {
-    const enableSiteRuntimePreview = ECSFeaturesClient.getConfig(EnableSiteRuntimePreview).enableSiteRuntimePreview
-
-    if(enableSiteRuntimePreview === undefined) {
-        return false;
-    }
-
-    return enableSiteRuntimePreview;
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {

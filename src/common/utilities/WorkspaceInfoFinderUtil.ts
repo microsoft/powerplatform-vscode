@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { parse } from 'yaml';
 import { ITelemetry } from '../OneDSLoggerTelemetry/telemetry/ITelemetry';
-import { sendTelemetryEvent } from '../OneDSLoggerTelemetry/telemetry/telemetry';
+import { GetWebsiteRecordID, sendTelemetryEvent } from '../OneDSLoggerTelemetry/telemetry/telemetry';
 
 export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null, telemetry: ITelemetry) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,7 +56,7 @@ export function getWebsiteRecordID(workspaceFolders: { uri: string }[], telemetr
             }
         }
     } catch (exception) {
-        sendTelemetryEvent(telemetry, { methodName: getWebsiteRecordID.name, eventName: 'getWebsiteRecordID', exception: exception as Error });
+        sendTelemetryEvent(telemetry, { methodName: getWebsiteRecordID.name, eventName: GetWebsiteRecordID, exception: exception as Error });
     }
     return "";
 }
