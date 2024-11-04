@@ -9,7 +9,8 @@ export async function updateLaunchJsonConfig(url: string): Promise<void> {
 
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders) {
-        vscode.window.showErrorMessage('No workspace folder is open.');
+        vscode.window.showErrorMessage(
+            vscode.l10n.t('No workspace folder is open.'));
         return;
     }
 
@@ -82,7 +83,8 @@ export async function updateLaunchJsonConfig(url: string): Promise<void> {
         await vscode.workspace.fs.writeFile(launchJsonPath, Buffer.from(launchJsonContent, 'utf8'));
     } catch (e) {
         if(e instanceof Error) {
-            vscode.window.showErrorMessage(`Failed to update launch.json: ${e.message}`);
+            vscode.window.showErrorMessage(
+                vscode.l10n.t(`Failed to update launch.json: ${e.message}`));
         }
     }
 }

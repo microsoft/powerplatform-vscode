@@ -5,8 +5,8 @@
 
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { getCommonHeaders, powerPlatformAPIAuthentication } from "./AuthenticationProvider";
-import { VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION, VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED } from "./TelemetryConstants";
-import { ServiceEndpointCategory, PPAPI_WEBSITES_ENDPOINT, PPAPI_WEBSITES_API_VERSION } from "./Constants";
+import { VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION,
+VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED, VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED } from "./TelemetryConstants";import { ServiceEndpointCategory, PPAPI_WEBSITES_ENDPOINT, PPAPI_WEBSITES_API_VERSION } from "./Constants";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { IWebsiteDetails } from "./Interfaces";
 
@@ -35,11 +35,16 @@ export class PPAPIService {
 
     public static async getWebsiteDetailsByWebsiteRecordId(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websiteRecordId: string, telemetry: ITelemetry): Promise<IWebsiteDetails | null> {
 
+        if (!serviceEndpointStamp) {
+            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, data: serviceEndpointStamp });
+            return null;
+        }
+
         const websiteDetailsArray = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId, telemetry);
         const websiteDetails = websiteDetailsArray?.find((website) => website.websiteRecordId === websiteRecordId);
 
         if (websiteDetails) {
-            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
+            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
             return websiteDetails;
         }
         return null;
@@ -59,7 +64,7 @@ export class PPAPIService {
             }
         }
         catch (error) {
-            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, errorMsg: (error as Error).message });
+            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED, errorMsg: (error as Error).message });
         }
         return null;
     }

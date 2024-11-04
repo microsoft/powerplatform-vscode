@@ -239,8 +239,8 @@ export async function activate(
                 copilotNotificationShown = true;
 
             }
-            if(artemisResponse!==null && isSiteRuntimePreviewEnabled()) {
-                websiteURL = await getWebSiteURL(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
+            if(artemisResponse!==null && PreviewSite.isSiteRuntimePreviewEnabled()) {
+                websiteURL = await PreviewSite.getWebSiteURL(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
             }
 
         })
@@ -264,7 +264,7 @@ export async function activate(
     }
 
     const registerPreviewShowCommand = async () => {
-        const isEnabled = isSiteRuntimePreviewEnabled();
+        const isEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
 
         _telemetry.sendTelemetryEvent("EnableSiteRuntimePreview", {
             isEnabled: isEnabled.toString(),
@@ -331,23 +331,6 @@ export async function deactivate(): Promise<void> {
     disposeDiagnostics();
     deactivateDebugger();
     disposeNotificationPanel();
-}
-
-async function getWebSiteURL(workspaceFolders: WorkspaceFolder[], stamp: ServiceEndpointCategory, envId: string, telemetry: ITelemetry): Promise<string> {
-
-    const websiteRecordId = getWebsiteRecordID(workspaceFolders, telemetry);
-    const websiteDetails = await PPAPIService.getWebsiteDetailsByWebsiteRecordId(stamp, envId, websiteRecordId, _telemetry);
-    return websiteDetails?.websiteUrl || "";
-}
-
-function isSiteRuntimePreviewEnabled() {
-    const enableSiteRuntimePreview = ECSFeaturesClient.getConfig(EnableSiteRuntimePreview).enableSiteRuntimePreview
-
-    if(enableSiteRuntimePreview === undefined) {
-        return false;
-    }
-
-    return enableSiteRuntimePreview;
 }
 
 function didOpenTextDocument(document: vscode.TextDocument): void {
