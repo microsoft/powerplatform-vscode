@@ -14,6 +14,7 @@ import { WorkspaceFolder } from 'vscode-languageclient/node';
 import { getWebsiteRecordID } from '../../common/utilities/WorkspaceInfoFinderUtil';
 import { ServiceEndpointCategory } from '../../common/services/Constants';
 import { PPAPIService } from '../../common/services/PPAPIService';
+import { VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY } from '../../common/services/TelemetryConstants';
 
 export class PreviewSite {
 
@@ -30,6 +31,12 @@ export class PreviewSite {
     static async getWebSiteURL(workspaceFolders: WorkspaceFolder[], stamp: ServiceEndpointCategory, envId: string, telemetry: ITelemetry): Promise<string> {
 
         const websiteRecordId = getWebsiteRecordID(workspaceFolders, telemetry);
+        if (!websiteRecordId) {
+            telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY, {
+                websiteRecordId: websiteRecordId
+            });
+            return "";
+        }
         const websiteDetails = await PPAPIService.getWebsiteDetailsByWebsiteRecordId(stamp, envId, websiteRecordId, telemetry);
         return websiteDetails?.websiteUrl || "";
     }
@@ -84,11 +91,11 @@ export class PreviewSite {
         } else {
             const install = await vscode.window.showWarningMessage(
                 vscode.l10n.t(
-                `The extension "${edgeToolsExtensionId}" is required to run this command. Do you want to install it now?`,
+                `The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?`,
                 'Install', 'Cancel'
             ));
 
-            if (install === 'Install') {
+            if (install === vscode.l10n.t('Install')) {
                 // Open the Extensions view with the specific extension
                 vscode.commands.executeCommand('workbench.extensions.search', edgeToolsExtensionId);
             }

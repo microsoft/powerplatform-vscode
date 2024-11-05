@@ -84,7 +84,7 @@ export async function updateLaunchJsonConfig(url: string): Promise<void> {
     } catch (e) {
         if(e instanceof Error) {
             vscode.window.showErrorMessage(
-                vscode.l10n.t(`Failed to update launch.json: ${e.message}`));
+                vscode.l10n.t("Failed to update launch.json: ${0}", e.message));
         }
     }
 }

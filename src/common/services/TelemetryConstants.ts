@@ -29,3 +29,4 @@ export const VSCODE_EXTENSION_GET_ENV_LIST_FAILED = "VSCodeExtensionGetEnvListFa
 export const VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND = "VSCodeExtensionServiceStampNotFound";
 export const VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED = "VSCodeExtensionPPAPIGetWebsiteDetailsFailed";
 export const VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED = "VSCodeExtensionPPAPIGetWebsiteByRecordIdCompleted";
+export const VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY = "VSCodeExtensionGetWebsiteRecordIdEmpty";

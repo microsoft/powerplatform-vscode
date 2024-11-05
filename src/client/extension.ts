@@ -40,15 +40,12 @@ import { ActiveOrgOutput } from "./pac/PacTypes";
 import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
-import { getPortalsOrgURLs, getWebsiteRecordID } from "../common/utilities/WorkspaceInfoFinderUtil";
+import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { EXTENSION_ID, SUCCESS } from "../common/constants";
 import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue } from "../common/utilities/Utils";
-import { ServiceEndpointCategory } from "../common/services/Constants";
-import { PPAPIService } from "../common/services/PPAPIService";
-import { EnableSiteRuntimePreview } from "../common/ecs-features/ecsFeatureGates";
 import { PreviewSite } from "./runtimeSitePreview/PreviewSite";
 
 let client: LanguageClient;
