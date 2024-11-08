@@ -33,15 +33,17 @@ export class PPAPIService {
         return null;
     }
 
-    public static async getWebsiteDetailsByWebsiteRecordId(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websiteRecordId: string, telemetry: ITelemetry): Promise<IWebsiteDetails | null> {
+    public static async getWebsiteDetailsByWebsiteRecordId(serviceEndpointStamp: ServiceEndpointCategory | undefined, environmentId: string, websiteRecordId: string, telemetry: ITelemetry): Promise<IWebsiteDetails | null> {
 
         if (!serviceEndpointStamp) {
             sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, data: serviceEndpointStamp });
             return null;
         }
 
-        const websiteDetailsArray = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId, telemetry);
-        const websiteDetails = websiteDetailsArray?.find((website) => website.websiteRecordId === websiteRecordId);
+        const websiteDetailsResponse = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId, telemetry);
+        const websiteDetailsArray = websiteDetailsResponse?.value; // Access all the websites
+        const websiteDetails = websiteDetailsArray?.find((website) => website.websiteRecordId === websiteRecordId); // selecting 1st websiteDetails whose websiteRecordId matches
+
 
         if (websiteDetails) {
             sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
@@ -50,16 +52,16 @@ export class PPAPIService {
         return null;
     }
 
-    static async getWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, telemetry: ITelemetry): Promise<IWebsiteDetails[] | null> {
+    static async getWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, telemetry: ITelemetry): Promise<{ value: IWebsiteDetails[] } | null> {
         try {
-            const accessToken = await powerPlatformAPIAuthentication(telemetry, true);
+            const accessToken = await powerPlatformAPIAuthentication(telemetry, serviceEndpointStamp, true);
             const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId), {
                 method: 'GET',
                 headers: getCommonHeaders(accessToken)
             });
 
             if (response.ok) {
-                const websiteDetailsArray = await response.json() as unknown as IWebsiteDetails[];
+                const websiteDetailsArray = await response.json() as { value: IWebsiteDetails[] };
                 return websiteDetailsArray;
             }
         }
