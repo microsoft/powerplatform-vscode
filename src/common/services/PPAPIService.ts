@@ -13,7 +13,7 @@ import { IWebsiteDetails } from "./Interfaces";
 export class PPAPIService {
     public static async getWebsiteDetailsById(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websitePreviewId: string, telemetry: ITelemetry): Promise<IWebsiteDetails | null> { // websitePreviewId aka portalId
         try {
-            const accessToken = await powerPlatformAPIAuthentication(telemetry, true);
+            const accessToken = await powerPlatformAPIAuthentication(telemetry, serviceEndpointStamp, true);
             const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId, websitePreviewId), {
                 method: 'GET',
                 headers: getCommonHeaders(accessToken)
@@ -39,8 +39,10 @@ export class PPAPIService {
             return null;
         }
 
-        const websiteDetailsArray = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId, telemetry);
-        const websiteDetails = websiteDetailsArray?.find((website) => website.websiteRecordId === websiteRecordId);
+        const websiteDetailsResponse = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId, telemetry);
+    const websiteDetailsArray = websiteDetailsResponse?.value; // Access the 'value' property here
+    const websiteDetails = websiteDetailsArray?.find((website) => website.websiteRecordId === websiteRecordId);
+
 
         if (websiteDetails) {
             sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
@@ -49,16 +51,16 @@ export class PPAPIService {
         return null;
     }
 
-    static async getWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, telemetry: ITelemetry): Promise<IWebsiteDetails[] | null> {
+    static async getWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, telemetry: ITelemetry): Promise<{ value: IWebsiteDetails[] } | null> {
         try {
-            const accessToken = await powerPlatformAPIAuthentication(telemetry, true);
+            const accessToken = await powerPlatformAPIAuthentication(telemetry, serviceEndpointStamp, true);
             const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId), {
                 method: 'GET',
                 headers: getCommonHeaders(accessToken)
             });
 
             if (response.ok) {
-                const websiteDetailsArray = await response.json() as unknown as IWebsiteDetails[];
+                const websiteDetailsArray = await response.json() as { value: IWebsiteDetails[] };
                 return websiteDetailsArray;
             }
         }
