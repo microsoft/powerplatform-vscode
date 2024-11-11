@@ -4,10 +4,11 @@
  */
 
 import { ITelemetry } from "../../../../OneDSLoggerTelemetry/telemetry/ITelemetry";
-import { NL2PAGE_REQUEST_FAILED, VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, VSCODE_EXTENSION_NL2PAGE_REQUEST_SUCCESS } from "../../PowerPagesChatParticipantConstants";
+import { ABOUT_PAGE_TYPE, FAQ_PAGE_TYPE, HOME_PAGE_TYPE, INFO_PAGE_TYPE, NL2PAGE_REQUEST_FAILED, VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, VSCODE_EXTENSION_NL2PAGE_REQUEST_SUCCESS } from "../../PowerPagesChatParticipantConstants";
 
 export async function getNL2PageData(aibEndpoint: string, aibToken: string, userPrompt: string, siteName: string, sitePagesList: string[], sessionId: string, telemetry: ITelemetry) {
-    const constructRequestBody = (pageType: string) => ({
+
+    const constructRequestBody = (pageType: string, colorNumber:number, exampleNumber: number) => ({
         "crossGeoOptions": {
             "enableCrossGeoCall": true
         },
@@ -21,18 +22,20 @@ export async function getNL2PageData(aibEndpoint: string, aibToken: string, user
             "information": {
                 "scope": "Page",
                 "includeImages": true,
-                "pageType": pageType === 'FAQ' ? 'FAQ' : 'Home',
+                "pageType": pageType === 'FAQ' ? 'FAQ' : 'Home', //Verify if this is correct
                 "title": siteName,
                 "pageName": pageType,
-                "colorNumber": 7, // Add a function to get a random number
+                "colorNumber": colorNumber,
                 "shuffleImages": false,
-                "exampleNumber": 2 // Add a function to get a random number
+                "exampleNumber": exampleNumber
             }
         }
     });
 
     const requests = sitePagesList.map(async pageType => {
-        const requestBody = constructRequestBody(pageType);
+        const colorNumber = generateRandomColorNumber();
+        const exampleNumber = generateRandomExampleNumber(pageType);
+        const requestBody = constructRequestBody(pageType, colorNumber, exampleNumber);
 
         const requestInit: RequestInit = {
             method: "POST",
@@ -68,3 +71,22 @@ export async function getNL2PageData(aibEndpoint: string, aibToken: string, user
     // TODO: Home page is mandatory, so if it is not generated, return null
     return responses.filter(response => response !== null);
 }
+
+export const generateRandomColorNumber = () => {
+    const colorNumbers = [1, 2, 3, 5, 6, 7, 8];
+    return colorNumbers[Math.floor(Math.random() * colorNumbers.length)];
+  };
+
+  export const generateRandomExampleNumber = (pageType: string) => {
+    const isFaqOrAboutPage = pageType === FAQ_PAGE_TYPE || pageType === ABOUT_PAGE_TYPE;
+    if (isFaqOrAboutPage) {
+      return 0;
+    } else if (pageType === HOME_PAGE_TYPE) {
+      const homeExampleNumbers = [1, 2, 3, 4];
+      return homeExampleNumbers[Math.floor(Math.random() * homeExampleNumbers.length)];
+    } else if (pageType === INFO_PAGE_TYPE) {
+      const infoExampleNumbers = [1, 2, 3];
+      return infoExampleNumbers[Math.floor(Math.random() * infoExampleNumbers.length)];
+    }
+    return 0;
+  };

@@ -44,6 +44,10 @@ export const PAC_AUTH_INPUT = vscode.l10n.t("Checking for active auth profile...
 export const COPILOT_NOT_RELEASED_MSG = vscode.l10n.t("@PowerPages is not yet available in your region.")
 export const NL2PAGE_REQUEST_FAILED = 'Request failed for page type:';
 export const NL2SITE_INVALID_RESPONSE = 'Invalid response structure';
+export const HOME_PAGE_TYPE = 'Home';
+export const ABOUT_PAGE_TYPE = 'AboutUs';
+export const FAQ_PAGE_TYPE = 'FAQ';
+export const INFO_PAGE_TYPE = 'Informational';
 
 // Telemetry Event Names
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED = 'VSCodeExtensionGitHubPowerPagesAgentInvoked';
