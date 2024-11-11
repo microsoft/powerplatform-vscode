@@ -4,7 +4,8 @@
  */
 
 import { ITelemetry } from "../../../../OneDSLoggerTelemetry/telemetry/ITelemetry";
-import { ABOUT_PAGE_TYPE, FAQ_PAGE_TYPE, HOME_PAGE_TYPE, INFO_PAGE_TYPE, NL2PAGE_REQUEST_FAILED, VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, VSCODE_EXTENSION_NL2PAGE_REQUEST_SUCCESS } from "../../PowerPagesChatParticipantConstants";
+import { ABOUT_PAGE_TYPE, FAQ_PAGE_TYPE, HOME_PAGE_TYPE, INFO_PAGE_TYPE, NL2PAGE_GENERATE_NEW_PAGE, NL2PAGE_REQUEST_FAILED, NL2PAGE_SCENARIO, NL2PAGE_SCOPE} from "../../PowerPagesChatParticipantConstants";
+import { VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, VSCODE_EXTENSION_NL2PAGE_REQUEST_SUCCESS } from "../../PowerPagesChatParticipantTelemetryConstants";
 
 export async function getNL2PageData(aibEndpoint: string, aibToken: string, userPrompt: string, siteName: string, sitePagesList: string[], sessionId: string, telemetry: ITelemetry) {
 
@@ -16,11 +17,11 @@ export async function getNL2PageData(aibEndpoint: string, aibToken: string, user
         "context": {
             "shouldCheckBlockList": false,
             "sessionId": sessionId,
-            "scenario": "NL2Page",
-            "subScenario": "GenerateNewPage",
+            "scenario": NL2PAGE_SCENARIO,
+            "subScenario": NL2PAGE_GENERATE_NEW_PAGE,
             "version": "V1",
             "information": {
-                "scope": "Page",
+                "scope": NL2PAGE_SCOPE,
                 "includeImages": true,
                 "pageType": pageType === 'FAQ' ? 'FAQ' : 'Home', //Verify if this is correct
                 "title": siteName,

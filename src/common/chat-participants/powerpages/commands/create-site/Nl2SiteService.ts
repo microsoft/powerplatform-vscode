@@ -4,7 +4,8 @@
  */
 
 import { ITelemetry } from "../../../../OneDSLoggerTelemetry/telemetry/ITelemetry";
-import { NL2SITE_INVALID_RESPONSE, VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED, VSCODE_EXTENSION_NL2SITE_REQUEST_SUCCESS } from "../../PowerPagesChatParticipantConstants";
+import { NL2SITE_GENERATE_NEW_SITE, NL2SITE_INVALID_RESPONSE, NL2SITE_SCENARIO} from "../../PowerPagesChatParticipantConstants";
+import { VSCODE_EXTENSION_NL2SITE_REQUEST_SUCCESS, VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED } from "../../PowerPagesChatParticipantTelemetryConstants";
 
 export async function getNL2SiteData(aibEndpoint: string, aibToken: string, userPrompt: string, sessionId: string, telemetry: ITelemetry) {
     const requestBody = {
@@ -14,8 +15,8 @@ export async function getNL2SiteData(aibEndpoint: string, aibToken: string, user
         "question": userPrompt,
         "context": {
             "sessionId": sessionId,
-            "scenario": "NL2Site",
-            "subScenario": "GenerateNewSite",
+            "scenario": NL2SITE_SCENARIO,
+            "subScenario": NL2SITE_GENERATE_NEW_SITE,
             // "shouldCheckBlockList": false, //TODO: Check if this is needed
             "version": "V1",
             "information": {
