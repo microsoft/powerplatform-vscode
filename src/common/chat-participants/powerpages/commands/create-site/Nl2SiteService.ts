@@ -6,6 +6,7 @@
 import { ITelemetry } from "../../../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { NL2SITE_GENERATE_NEW_SITE, NL2SITE_INVALID_RESPONSE, NL2SITE_SCENARIO} from "../../PowerPagesChatParticipantConstants";
 import { VSCODE_EXTENSION_NL2SITE_REQUEST_SUCCESS, VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED } from "../../PowerPagesChatParticipantTelemetryConstants";
+import { getCommonHeaders } from "../../../../services/AuthenticationProvider";
 
 export async function getNL2SiteData(aibEndpoint: string, aibToken: string, userPrompt: string, sessionId: string, telemetry: ITelemetry) {
     const requestBody = {
@@ -28,10 +29,7 @@ export async function getNL2SiteData(aibEndpoint: string, aibToken: string, user
 
     const requestInit: RequestInit = {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${aibToken}`
-        },
+        headers: getCommonHeaders(aibToken),
         body: JSON.stringify(requestBody)
     };
 
