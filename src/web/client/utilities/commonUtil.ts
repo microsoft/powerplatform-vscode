@@ -322,6 +322,9 @@ export async function validateWebsitePreviewURL(): Promise<boolean> {
 
     const siteDetails = await PPAPIService.getWebsiteDetailsById(serviceEndpointStamp, envId, websitePreviewId, WebExtensionContext.telemetry.getTelemetryReporter());
 
+    // test site create
+    await PPAPIService.createWebsite(serviceEndpointStamp, envId, WebExtensionContext.urlParametersMap?.get(queryParameters.ORG_ID) ?? "", "testWebName", 1033, WebExtensionContext.telemetry.getTelemetryReporter());
+
     if (siteDetails == null) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_SITE_DETAILS_FETCH_FAILED,
