@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { createSite } from "./CreateSiteHelper";
 
 export class CreateSiteCommand implements Command {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async execute(request: any, stream: vscode.ChatResponseStream): Promise<any> {
         const { prompt, intelligenceAPIEndpointInfo, intelligenceApiToken, powerPagesAgentSessionId, telemetry } = request;
 
