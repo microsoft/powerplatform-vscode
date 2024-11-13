@@ -159,6 +159,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
       <source xml:lang="en">Failed to get file ready for edit: {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++41405814c44fb391a3f8e31d1a3bc20299cd2e87979ebfbd1eb9488be12c617a">
+      <source xml:lang="en">Failed to get site content from NL2Site service</source>
+    </trans-unit>
     <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
       <source xml:lang="en">Feature is not enabled for this geo.</source>
     </trans-unit>
@@ -177,6 +180,12 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++7184a5edf42e6fc9ef8f53fc1dd73f10b3f6196a23f6d340c4f434e60c366e45">
       <source xml:lang="en">GETTING STARTED</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c4c059b39483b39ccf3cb056feaa5e400e252a9c558deecdf8d301c1dac9485b">
+      <source xml:lang="en">Generating a new Power Pages site...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++46be031ab391443c1736cb8c7032c5b07b159164f48f5b86fe135465e3255571">
+      <source xml:lang="en">Generating webpages...</source>
     </trans-unit>
     <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
       <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
