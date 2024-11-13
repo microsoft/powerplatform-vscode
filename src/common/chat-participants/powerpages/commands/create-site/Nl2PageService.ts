@@ -3,12 +3,13 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { oneDSLoggerWrapper } from "../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { ITelemetry } from "../../../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { getCommonHeaders } from "../../../../services/AuthenticationProvider";
 import { ABOUT_PAGE_TYPE, FAQ_PAGE_TYPE, HOME_PAGE_TYPE, INFO_PAGE_TYPE, NL2PAGE_GENERATE_NEW_PAGE, NL2PAGE_REQUEST_FAILED, NL2PAGE_SCENARIO, NL2PAGE_SCOPE} from "../../PowerPagesChatParticipantConstants";
 import { VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, VSCODE_EXTENSION_NL2PAGE_REQUEST_SUCCESS } from "../../PowerPagesChatParticipantTelemetryConstants";
 
-export async function getNL2PageData(aibEndpoint: string, aibToken: string, userPrompt: string, siteName: string, sitePagesList: string[], sessionId: string, telemetry: ITelemetry) {
+export async function getNL2PageData(aibEndpoint: string, aibToken: string, userPrompt: string, siteName: string, sitePagesList: string[], sessionId: string, telemetry: ITelemetry, orgId: string, envId: string, userId: string) {
 
     const constructRequestBody = (pageType: string, colorNumber:number, exampleNumber: number) => ({
         "crossGeoOptions": {
@@ -59,6 +60,7 @@ export async function getNL2PageData(aibEndpoint: string, aibToken: string, user
             return null;
         } catch (error) {
             telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, { error: (error as Error)?.message, pageType });
+            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, error as string, error as Error, { sessionId: sessionId, orgId:orgId, envId: envId, userId: userId, pageType: pageType}, {});
             return null;
         }
     });

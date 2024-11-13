@@ -23,7 +23,7 @@ import { isPowerPagesGitHubCopilotEnabled } from '../../copilot/utils/copilotUti
 import { ADX_WEBPAGE, IApiRequestParams, IRelatedFiles } from '../../constants';
 import { oneDSLoggerWrapper } from '../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { CommandRegistry } from '../CommandRegistry';
-import { VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR } from './PowerPagesChatParticipantTelemetryConstants';
+import { VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED } from './PowerPagesChatParticipantTelemetryConstants';
 
 // Initialize Command Registry and Register Commands
 const commandRegistry = new CommandRegistry();
@@ -141,18 +141,18 @@ export class PowerPagesChatParticipant {
 
             userPrompt = removeChatVariables(userPrompt);
 
-            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
 
             if (userPrompt === WELCOME_PROMPT) {
                 stream.markdown(WELCOME_MESSAGE);
-                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
                 return createSuccessResult(STATER_PROMPTS, RESPONSE_SCENARIOS.WELCOME_PROMPT, this.orgID);
             } else if (!userPrompt) {
                 stream.markdown(NO_PROMPT_MESSAGE);
-                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, {sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
                 return createSuccessResult('', RESPONSE_SCENARIOS.NO_PROMPT, this.orgID);
             }
 
@@ -160,6 +160,9 @@ export class PowerPagesChatParticipant {
             const location = activeFileUri ? createAndReferenceLocation(activeFileUri, startLine, endLine) : undefined;
 
             if (request.command) {
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, { commandName: request.command, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, {  commandName: request.command, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+
                 const command = commandRegistry.get(request.command);
 
                 const commandRequest = {
@@ -168,11 +171,13 @@ export class PowerPagesChatParticipant {
                     intelligenceAPIEndpointInfo,
                     intelligenceApiToken,
                     powerPagesAgentSessionId: this.powerPagesAgentSessionId,
-                    telemetry: this.telemetry
+                    telemetry: this.telemetry,
+                    orgID: this.orgID,
+                    envID: this.environmentID,
+                    userId: userId
                 };
 
                 return await command.execute(commandRequest, stream);
-
             } else {
                 if (location) {
                     this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
@@ -182,19 +187,19 @@ export class PowerPagesChatParticipant {
 
                 const relatedFiles: IRelatedFiles[] = [];
 
-            // Based on dataverse entity fetch required context for the active file
-            switch (activeFileParams.dataverseEntity) {
-                case ADX_WEBPAGE:
-                    if (activeFileUri) {
-                        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                        const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.telemetry, this.powerPagesAgentSessionId);
-                        relatedFiles.push(...files);
-                    }
-                    break;
-                default:
-                    break;
-            }
+                // Based on dataverse entity fetch required context for the active file
+                switch (activeFileParams.dataverseEntity) {
+                    case ADX_WEBPAGE:
+                        if (activeFileUri) {
+                            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                            const files = await fetchRelatedFiles(activeFileUri, activeFileParams.dataverseEntity, activeFileParams.fieldType, this.telemetry, this.powerPagesAgentSessionId);
+                            relatedFiles.push(...files);
+                        }
+                        break;
+                    default:
+                        break;
+                }
 
                 const { componentInfo, entityName }: IComponentInfo = await getComponentInfo(this.telemetry, this.orgUrl, activeFileParams, this.powerPagesAgentSessionId);
 
@@ -242,7 +247,7 @@ export class PowerPagesChatParticipant {
         }
     };
 
-      private async initializeOrgDetails(): Promise<void> {
+    private async initializeOrgDetails(): Promise<void> {
         try {
             const { orgID, orgUrl, environmentID } = await initializeOrgDetails(this.isOrgDetailsInitialized, this._pacWrapper);
 

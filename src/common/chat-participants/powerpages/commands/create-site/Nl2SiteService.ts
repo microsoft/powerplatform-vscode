@@ -5,10 +5,11 @@
 
 import { ITelemetry } from "../../../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { NL2SITE_GENERATE_NEW_SITE, NL2SITE_INVALID_RESPONSE, NL2SITE_SCENARIO} from "../../PowerPagesChatParticipantConstants";
-import { VSCODE_EXTENSION_NL2SITE_REQUEST_SUCCESS, VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED } from "../../PowerPagesChatParticipantTelemetryConstants";
+import {VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED, VSCODE_EXTENSION_NL2SITE_REQUEST_SUCCESS } from "../../PowerPagesChatParticipantTelemetryConstants";
 import { getCommonHeaders } from "../../../../services/AuthenticationProvider";
+import { oneDSLoggerWrapper } from "../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
-export async function getNL2SiteData(aibEndpoint: string, aibToken: string, userPrompt: string, sessionId: string, telemetry: ITelemetry) {
+export async function getNL2SiteData(aibEndpoint: string, aibToken: string, userPrompt: string, sessionId: string, telemetry: ITelemetry, orgId: string, envId: string, userId: string) {
     const requestBody = {
         "crossGeoOptions": {
             "enableCrossGeoCall": true
@@ -43,12 +44,14 @@ export async function getNL2SiteData(aibEndpoint: string, aibToken: string, user
 
         if (responseBody && responseBody.additionalData[0]?.website) {
             telemetry.sendTelemetryEvent(VSCODE_EXTENSION_NL2SITE_REQUEST_SUCCESS, {sessionId: sessionId});
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_NL2SITE_REQUEST_SUCCESS, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
             return responseBody.additionalData[0].website; // Contains the pages, siteName & site description
         } else {
             throw new Error(NL2SITE_INVALID_RESPONSE);
         }
     } catch (error) {
-        telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED, { error: (error as Error)?.message });
+        telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED, { sessionId: sessionId, error: (error as Error)?.message });
+        oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED, error as string, error as Error, { sessionId: sessionId, orgId:orgId, envId: envId, userId: userId}, {});
         return null;
     }
 }
