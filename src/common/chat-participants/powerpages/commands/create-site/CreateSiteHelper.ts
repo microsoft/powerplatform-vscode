@@ -20,7 +20,7 @@ export const createSite = async (intelligenceEndpoint: string, intelligenceApiTo
         };
 
     } catch (error) {
-        stream.markdown(`Error: ${(error as Error).message}`);
+        stream.markdown(`${(error as Error).message}`);
         throw error;
     }
 };

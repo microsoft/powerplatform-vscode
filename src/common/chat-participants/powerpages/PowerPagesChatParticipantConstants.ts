@@ -56,3 +56,4 @@ export const NL2PAGE_SCOPE = 'Page';
 export const NL2SITE_REQUEST_FAILED = vscode.l10n.t('Failed to get site content from NL2Site service');
 export const NL2PAGE_GENERATING_WEBPAGES = vscode.l10n.t("Generating webpages...");
 export const NL2PAGE_RESPONSE_FAILED = 'Failed to get page content from NL2Page service';
+export const NL2SITE_GENERATING_SITE = vscode.l10n.t("Generating a new Power Pages site...");

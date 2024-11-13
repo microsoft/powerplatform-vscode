@@ -6,13 +6,14 @@
 import { Command } from "../../../CommandRegistry";
 import * as vscode from 'vscode';
 import { createSite } from "./CreateSiteHelper";
+import { NL2SITE_GENERATING_SITE } from "../../PowerPagesChatParticipantConstants";
 
 export class CreateSiteCommand implements Command {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async execute(request: any, stream: vscode.ChatResponseStream): Promise<any> {
         const { prompt, intelligenceAPIEndpointInfo, intelligenceApiToken, powerPagesAgentSessionId, telemetry } = request;
 
-        stream.progress('Generating a new Power Pages site...');
+        stream.progress(NL2SITE_GENERATING_SITE);
         try {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const result = await createSite(
