@@ -16,6 +16,7 @@ import { CREATE_SITE_BTN_CMD, CREATE_SITE_BTN_TITLE, CREATE_SITE_BTN_TOOLTIP, ED
 import { ICreateSiteOptions, IPreviewSitePagesContentOptions, ISiteInputState } from './CreateSiteTypes';
 import { MultiStepInput } from '../../../../utilities/MultiStepInput';
 import { getEnvList } from '../../../../utilities/Utils';
+import { PowerPagesSiteManager } from './CreateSiteManager';
 
 export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     const {
@@ -188,3 +189,4 @@ export async function collectSiteCreationInputs(siteName: string, envList: IEnvI
     // Return the collected site creation inputs including site name, environment name, and domain name
     return siteInputState;
 }
+
