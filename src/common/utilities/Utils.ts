@@ -341,6 +341,7 @@ export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEn
 
         if (envListResponse.ok) {
             const envListJson = await envListResponse.json();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             envListJson.value.forEach((env: any) => {
                 envInfo.push({
                     envId: env.properties.linkedEnvironmentMetadata.instanceUrl,
