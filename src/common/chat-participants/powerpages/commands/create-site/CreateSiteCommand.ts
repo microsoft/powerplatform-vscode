@@ -13,7 +13,7 @@ import { VSCODE_EXTENSION_CREATE_SITE_COMMAND_FAILED} from "../../PowerPagesChat
 export class CreateSiteCommand implements Command {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async execute(request: any, stream: vscode.ChatResponseStream): Promise<any> {
-        const { prompt, intelligenceAPIEndpointInfo, intelligenceApiToken, powerPagesAgentSessionId, telemetry, orgId, envId, userId } = request;
+        const { prompt, intelligenceAPIEndpointInfo, intelligenceApiToken, powerPagesAgentSessionId, telemetry, orgId, envId, userId, extensionContext } = request;
 
         stream.progress(NL2SITE_GENERATING_SITE);
         try {
@@ -27,7 +27,8 @@ export class CreateSiteCommand implements Command {
                 telemetry,
                 orgId,
                 envId,
-                userId
+                userId,
+                extensionContext
             );
             // Process the result
 

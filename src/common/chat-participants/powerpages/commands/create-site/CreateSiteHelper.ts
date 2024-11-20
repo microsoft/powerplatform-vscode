@@ -10,9 +10,17 @@ import { getNL2SiteData } from './Nl2SiteService';
 import { NL2SITE_REQUEST_FAILED, NL2PAGE_GENERATING_WEBPAGES, NL2PAGE_RESPONSE_FAILED } from '../../PowerPagesChatParticipantConstants';
 import { oneDSLoggerWrapper } from '../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST } from '../../PowerPagesChatParticipantTelemetryConstants';
+import { ReadonlyFileSystemProvider } from '../../../../utilities/ReadonlyFileSystemProvider';
 
-export const createSite = async (intelligenceEndpoint: string, intelligenceApiToken: string, userPrompt: string, sessionId: string, stream: vscode.ChatResponseStream, telemetry: ITelemetry, orgId: string, envID: string, userId: string) => {
-    const { siteName, siteDescription } = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envID, userId);
+export const createSite = async (intelligenceEndpoint: string, intelligenceApiToken: string, userPrompt: string, sessionId: string, stream: vscode.ChatResponseStream, telemetry: ITelemetry, orgId: string, envID: string, userId: string, extensionContext: vscode.ExtensionContext) => {
+    const { siteName, siteDescription, sitePages} = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envID, userId);
+
+    previewSitePagesContent(siteName, sitePages, stream, extensionContext);
+
+    stream.button({
+        title: 'Create Site',
+        command: 'open-site',
+    });
 
     return {
         siteName,
@@ -45,4 +53,37 @@ async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceAp
     }
 
     return { siteName, sitePagesList, sitePages, siteDescription };
+}
+
+function previewSitePagesContent(
+    siteName: string,
+    sitePages: any[],
+    stream: vscode.ChatResponseStream,
+    extensionContext: vscode.ExtensionContext
+) {
+    const sitePagesContent: { name: string; content: string }[] = [];
+    sitePages.forEach((page: any) => {
+        sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
+    });
+
+    stream.markdown('\nHere is the name of the site: ' + siteName);
+
+    const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
+    const contentProvider = new ReadonlyFileSystemProvider();
+    const scheme = 'readonly';
+    // Register the content provider
+    extensionContext.subscriptions.push(
+        vscode.workspace.registerTextDocumentContentProvider(scheme, contentProvider)
+    );
+
+    const baseUri = vscode.Uri.parse('readonly:/');
+
+    sitePagesContent.forEach((page: { name: string; content: string; }) => {
+        sitePagesFolder.push({ name: page.name + '.html' });
+        const pageUri = vscode.Uri.joinPath(baseUri, page.name + '.html');
+        contentProvider.updateFileContent(pageUri.path, page.content);
+    });
+
+    // TODO: pass uri of current workspace as second parameter
+    stream.filetree(sitePagesFolder, baseUri);
 }
