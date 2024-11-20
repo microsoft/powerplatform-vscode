@@ -19,3 +19,5 @@ export const VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED = 
 export const VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_COMPLETED = "VSCodeExtensionGetCrossGeoDataMovementEnabledFlagCompleted";
 export const VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION = "VSCodeExtensionGetBAPEndpointUnsupportedRegion";
 export const VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED = "VSCodeExtensionDecodeJWTTokenFailed";
+export const VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS = "VSCodeExtensionGetEnvListSuccess";
+export const VSCODE_EXTENSION_GET_ENV_LIST_FAILED = "VSCodeExtensionGetEnvListFailed";

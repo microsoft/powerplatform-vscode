@@ -14,6 +14,8 @@ import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copi
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
 import { bapServiceAuthentication } from "../services/AuthenticationProvider";
 import { BAP_ENVIRONMENT_LIST_URL, BAP_SERVICE_ENDPOINT, BAPServiceStamp } from "../services/Constants";
+import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS } from "../services/TelemetryConstants";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -195,7 +197,7 @@ export async function getEnvList(telemetry: ITelemetry, endpointStamp: BAPServic
     try {
         const bapAuthToken = await bapServiceAuthentication(telemetry, true);
         const bapEndpoint = getBAPEndpoint(endpointStamp, telemetry);
-        const envListEndpoint = bapEndpoint + BAP_ENVIRONMENT_LIST_URL;
+        const envListEndpoint = `${bapEndpoint}${BAP_ENVIRONMENT_LIST_URL}`;
 
         const envListResponse = await fetch(envListEndpoint, {
             method: "GET",
@@ -207,16 +209,28 @@ export async function getEnvList(telemetry: ITelemetry, endpointStamp: BAPServic
         if (envListResponse.ok) {
             const envListJson = await envListResponse.json();
             envListJson.value.forEach((env: any) => {
-                envInfo.push({ envId: env.properties.linkedEnvironmentMetadata.instanceUrl, envDisplayName: env.properties.displayName });
+                envInfo.push({
+                    envId: env.properties.linkedEnvironmentMetadata.instanceUrl,
+                    envDisplayName: env.properties.displayName
+                });
             });
+            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS);
         } else {
-            //TODO: Add telemetry for this API call
+            sendTelemetryEvent(telemetry, {
+                eventName: VSCODE_EXTENSION_GET_ENV_LIST_FAILED,
+                errorMsg: envListResponse.statusText
+            });
+            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_ENV_LIST_FAILED, new Error(envListResponse.statusText));
         }
-        return envInfo;
     } catch (error) {
-        //TODO: Add telemetry for this API call
-        return envInfo;
+        sendTelemetryEvent(telemetry, {
+            eventName: VSCODE_EXTENSION_GET_ENV_LIST_FAILED,
+            errorMsg: (error as Error).message
+        });
+        oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_ENV_LIST_FAILED, error as Error);
     }
+    return envInfo;
 }
 
 export function getBAPEndpoint(serviceEndpointStamp: BAPServiceStamp, telemetry: ITelemetry): string {
