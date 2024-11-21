@@ -324,7 +324,7 @@ export function getECSOrgLocationValue(clusterName: string, clusterNumber: strin
     return extractedSubstring;
 }
 
-//API call to get env list for a org
+//API call to get env list for an org
 export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEndpointCategory): Promise<{ envId: string, envDisplayName: string }[]> {
     const envInfo: { envId: string, envDisplayName: string }[] = [];
     try {
