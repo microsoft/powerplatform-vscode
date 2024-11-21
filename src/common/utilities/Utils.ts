@@ -15,7 +15,7 @@ import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/te
 import path from "path";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { bapServiceAuthentication } from "../services/AuthenticationProvider";
-import { BAP_ENVIRONMENT_LIST_URL, BAP_SERVICE_ENDPOINT, ServiceEndpointCategory } from "../services/Constants";
+import { BAP_API_VERSION, BAP_ENVIRONMENT_LIST_URL, BAP_SERVICE_ENDPOINT, ServiceEndpointCategory } from "../services/Constants";
 import { VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS, VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION } from "../services/TelemetryConstants";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
@@ -330,7 +330,7 @@ export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEn
     try {
         const bapAuthToken = await bapServiceAuthentication(telemetry, true);
         const bapEndpoint = getBAPEndpoint(endpointStamp, telemetry);
-        const envListEndpoint = `${bapEndpoint}${BAP_ENVIRONMENT_LIST_URL}`;
+        const envListEndpoint = `${bapEndpoint}${BAP_ENVIRONMENT_LIST_URL.replace('{apiVersion}', BAP_API_VERSION)}`;
 
         const envListResponse = await fetch(envListEndpoint, {
             method: "GET",
