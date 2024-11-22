@@ -25,3 +25,4 @@ export const VSCODE_EXTENSION_CREATE_SITE_COMMAND_FAILED = 'VSCodeExtensionNL2Si
 export const VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED = 'VSCodeExtensionGitHubPowerPagesAgentCommandTriggered';
 export const VSCODE_EXTENSION_NL2PAGE_REQUEST = 'VSCodeExtensionNL2PageRequest';
 export const VSCODE_EXTENSION_NL2SITE_REQUEST = 'VSCodeExtensionNL2SiteRequest';
+export const VSCODE_EXTENSION_PREVIEW_SITE_PAGES = 'VSCodeExtensionPreviewSitePages';

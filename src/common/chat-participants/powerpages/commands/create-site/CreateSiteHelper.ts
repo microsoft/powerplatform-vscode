@@ -9,35 +9,18 @@ import { getNL2PageData } from './Nl2PageService';
 import { getNL2SiteData } from './Nl2SiteService';
 import { NL2SITE_REQUEST_FAILED, NL2PAGE_GENERATING_WEBPAGES, NL2PAGE_RESPONSE_FAILED } from '../../PowerPagesChatParticipantConstants';
 import { oneDSLoggerWrapper } from '../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
-import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST } from '../../PowerPagesChatParticipantTelemetryConstants';
-//import { ReadonlyFileSystemProvider } from '../../../../utilities/ReadonlyFileSystemProvider';
+import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST, VSCODE_EXTENSION_PREVIEW_SITE_PAGES } from '../../PowerPagesChatParticipantTelemetryConstants';
 import { EditableFileSystemProvider } from '../../../../utilities/EditableFileSystemProvider';
+import { HTML_FILE_EXTENSION, UTF8_ENCODING } from '../../../../constants';
+import { EDITABLE_SCHEME } from './CreateSiteConstants';
 
 export const createSite = async (intelligenceEndpoint: string, intelligenceApiToken: string, userPrompt: string, sessionId: string, stream: vscode.ChatResponseStream, telemetry: ITelemetry, orgId: string, envID: string, userId: string, extensionContext: vscode.ExtensionContext) => {
     const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envID, userId);
 
-    const contentProvider = previewSitePagesContent(siteName, sitePages, stream, extensionContext);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const contentProvider = previewSitePagesContent(siteName, sitePages, stream, extensionContext, telemetry, sessionId, orgId, envID, userId);
 
-    stream.button({
-        //command: 'create-site-inputs', 
-        title: 'Create Site',
-        command: 'create-site-command',
-        arguments: [contentProvider, sitePages.map(page => ({ name: page.metadata.pageTitle, content: page.code }))]
-    });
-
-    extensionContext.subscriptions.push(
-        vscode.commands.registerCommand('create-site-command', async (contentProvider: EditableFileSystemProvider, sitePagesContent: { name: string; content: string }[]) => {
-            const updatedPages = sitePagesContent.map(page => ({
-                name: page.name,
-                content: getUpdatedPageContent(contentProvider, page.name)
-            }));
-
-            // Process the updated pages as needed
-            console.log('Updated Pages:', updatedPages);
-
-            // You can add further logic here to handle the updated pages, such as sending them to a server or saving them.
-        })
-    );
+    // TODO: Implement the create site button click handler
 
     return {
         siteName,
@@ -77,32 +60,35 @@ function previewSitePagesContent(
     siteName: string,
     sitePages: any[],
     stream: vscode.ChatResponseStream,
-    extensionContext: vscode.ExtensionContext
+    extensionContext: vscode.ExtensionContext,
+    telemetry: ITelemetry,
+    sessionId: string,
+    orgId: string,
+    envId: string,
+    userId: string
 ): EditableFileSystemProvider {
     const sitePagesContent: { name: string; content: string }[] = [];
     sitePages.forEach((page: any) => {
         sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
     });
 
-    stream.markdown('\nHere is the name of the site: ' + siteName);
-
     const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
     const contentProvider = new EditableFileSystemProvider();
-    const scheme = 'editable';
     // Register the content provider
     extensionContext.subscriptions.push(
-        vscode.workspace.registerFileSystemProvider(scheme, contentProvider, { isCaseSensitive: true })
+        vscode.workspace.registerFileSystemProvider(EDITABLE_SCHEME, contentProvider, { isCaseSensitive: true })
     );
 
-    const baseUri = vscode.Uri.parse('editable:/');
+    const baseUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/`);
 
     sitePagesContent.forEach((page: { name: string; content: string; }) => {
-        sitePagesFolder.push({ name: page.name + '.html' });
-        const pageUri = vscode.Uri.joinPath(baseUri, page.name + '.html');
-        contentProvider.writeFile(pageUri, Buffer.from(page.content, 'utf8'));
+        sitePagesFolder.push({ name: page.name + HTML_FILE_EXTENSION });
+        const pageUri = vscode.Uri.joinPath(baseUri, page.name + HTML_FILE_EXTENSION);
+        contentProvider.writeFile(pageUri, Buffer.from(page.content, UTF8_ENCODING));
     });
 
-    // TODO: pass uri of current workspace as second parameter
+    telemetry.sendTelemetryEvent(VSCODE_EXTENSION_PREVIEW_SITE_PAGES, {sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId});
+
     stream.filetree(sitePagesFolder, baseUri);
 
     return contentProvider;
@@ -110,7 +96,7 @@ function previewSitePagesContent(
 
 // Function to get updated content
 export function getUpdatedPageContent(contentProvider: EditableFileSystemProvider, pageName: string): string {
-    const pageUri = vscode.Uri.parse(`editable:/${pageName}.html`);
+    const pageUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/${pageName}${HTML_FILE_EXTENSION}`);
     return contentProvider.getFileContent(pageUri);
 }
 
