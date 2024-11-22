@@ -24,3 +24,5 @@ export const VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION = "
 export const VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED = "VSCodeExtensionDecodeJWTTokenFailed";
 export const VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED = "VSCodeExtensionPPAPIGetWebsiteByIdCompleted";
 export const VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_FAILED = "VSCodeExtensionPPAPIGetWebsiteByIdFailed";
+export const VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS = "VSCodeExtensionGetEnvListSuccess";
+export const VSCODE_EXTENSION_GET_ENV_LIST_FAILED = "VSCodeExtensionGetEnvListFailed";
