@@ -20,11 +20,7 @@ export class EditableFileSystemProvider implements vscode.FileSystemProvider {
     }
 
     copy(source: vscode.Uri, destination: vscode.Uri, options: { readonly overwrite: boolean; }): void | Thenable<void> {
-        if (!options.overwrite && this.fileContentMap[destination.path]) {
-            throw vscode.FileSystemError.FileExists(destination);
-        }
-        this.fileContentMap[destination.path] = this.fileContentMap[source.path];
-        this._onDidChangeEmitter.fire([{ type: vscode.FileChangeType.Created, uri: destination }]);
+        // Copy is not supported in this implementation
     }
 
     // Read file content
