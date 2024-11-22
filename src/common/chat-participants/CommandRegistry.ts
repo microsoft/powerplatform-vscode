@@ -4,7 +4,6 @@
  */
 
 import * as vscode from "vscode";
-import { CreateSiteCommand } from "./powerpages/commands/create-site/CreateSiteCommand";
 
 export interface Command {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,7 +11,7 @@ export interface Command {
 }
 
 export class CommandRegistry {
-    private commands: { [key: string]: Command } = {'create-site': new CreateSiteCommand()};
+    private commands: { [key: string]: Command } = {};
 
     register(commandName: string, command: Command) {
         this.commands[commandName] = command;
