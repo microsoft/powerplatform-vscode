@@ -23,14 +23,14 @@ export interface IPowerPagesSiteFromJsonActions {
     updateComponent: (component: PowerPagesComponent) => void;
     findComponents: (
         filter: (value: PowerPagesComponent, index: number, obj: PowerPagesComponent[]) => boolean
-    ) => PowerPagesComponent[] | undefined;
+    ) => PowerPagesComponent[];
     findComponent: (
         filter: (value: PowerPagesComponent, index: number, obj: PowerPagesComponent[]) => boolean
     ) => PowerPagesComponent | undefined;
     addOrUpdatePage: (pageName: string, pageCopy: string, isHomePage: boolean) => Promise<string>;
     getWebPageRootId: (pageName: string) => string;
     addWebRole: (roleName: string, webRoleContent: object) => string;
-    save: () => Promise<void>;
+    save: (orgUrl: string) => Promise<void>;
 }
 
 /**
@@ -69,7 +69,7 @@ export class PowerPagesSiteManager {
         this.siteData = reGuidPowerPagesSite(ppJsonBlob as PowerPagesParsedJson);
     }
 
-    private getBatchAndFileUploads(): [
+    private getBatchAndFileUploads(orgUrl: string): [
         any,
         any,
         PowerPagesComponent[]
@@ -81,7 +81,7 @@ export class PowerPagesSiteManager {
 
         siteAndLanguages.push({
             method: 'POST',
-            url: 'https://org06ff0f46.crm10.dynamics.com/api/data/v9.2/powerpagesites',
+            url: orgUrl + 'api/data/v9.2/powerpagesites',
             headers: {
                 'Content-Type': 'application/json; type=entry',
             },
@@ -97,7 +97,7 @@ export class PowerPagesSiteManager {
             delete entity.powerpagesiteid;
             siteAndLanguages.push({
                 method: 'POST',
-                url: 'https://org06ff0f46.crm10.dynamics.com/api/data/v9.2/powerpagesitelanguages',
+                url: orgUrl + 'api/data/v9.2/powerpagesitelanguages',
                 headers: {
                     'Content-Type': 'application/json; type=entry',
                 },
@@ -124,7 +124,7 @@ export class PowerPagesSiteManager {
             delete entity.filecontent;
             operations.push({
                 method: 'POST',
-                url: 'https://org06ff0f46.crm10.dynamics.com/api/data/v9.2/powerpagecomponents',
+                url: orgUrl + 'api/data/v9.2/powerpagecomponents',
                 headers: {
                     'Content-Type': 'application/json; type=entry',
                 },
@@ -184,7 +184,6 @@ export class PowerPagesSiteManager {
 
     private getHomeRootPage(): PowerPagesComponent | undefined {
         // Get the Home root (metadata) page.
-
         // All templates should have a SiteMarker with the same name of 'Home'.
         // Use this component to obtain the pageid.
         const siteMarker = this.findComponent(
@@ -270,7 +269,10 @@ export class PowerPagesSiteManager {
                 .pop();
             const homeRootPage = this.getHomeRootPage();
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-            const homeRootPageContent = JSON.parse(homeRootPage?.content!);
+            if (!homeRootPage) {
+                throw new Error('Home root page not found');
+            }
+            const homeRootPageContent = JSON.parse(homeRootPage.content);
             const publishingStateId = this.getPublishingStateId();
             const pageTemplate = this.findComponent(
                 (c) =>
@@ -381,15 +383,14 @@ export class PowerPagesSiteManager {
         return webRoleId;
     }
 
-    private save = async () => {
+    private save = async (orgUrl: string) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [siteAndLanguages, components, fileComponents] = this.getBatchAndFileUploads();
+        const [siteAndLanguages, components, fileComponents] = this.getBatchAndFileUploads(orgUrl);
 
         //const optionalHeaders = { 'x-ms-ppages-options': 'skipDependencyChecker=true;' }
 
-        const orgUrl = 'https://org06ff0f46.crm10.dynamics.com/';
-
-        const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl ?? '', true)).accessToken;
+        // cspell:ignore dataverse
+        const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
 
         const fetchOptions = (operation: any) => ({
             method: 'POST',
@@ -408,11 +409,11 @@ export class PowerPagesSiteManager {
             }
 
             // Process components operations
-            for (const operation of components) {
-                console.log('Components operation:', operation.body);
-                const compResponse = await fetch(operation.url, fetchOptions(operation));
-                console.log('Components operation:', compResponse.json());
-            }
+            // for (const operation of components) {
+            //     console.log('Components operation:', operation.body);
+            //     console.log('Components operation:', await compResponse.json());
+            //     console.log('Components operation:', compResponse.json());
+            // }
 
             if (fileComponents.length > 0) {
                 await Promise.all(
@@ -432,7 +433,7 @@ export class PowerPagesSiteManager {
 
                         if (!response.ok) {
                             const errorText = await response.text();
-                            console.log('File component operation response:', response.json());
+                            console.log('File component operation response:', await response.json());
                             throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
                         }
 
@@ -463,9 +464,9 @@ export class PowerPagesSiteManager {
                 ) => this.findComponent(filter),
                 addOrUpdatePage: (pageName: string, pageCopy: string, isHomePage: boolean) =>
                     this.addOrUpdatePage(pageName, pageCopy, isHomePage),
-                getWebPageRootId: (pageName: string) => this.getWebPageRootId(pageName) ?? '',
+                getWebPageRootId: (pageName: string) => this.getWebPageRootId(pageName),
                 addWebRole: (roleName: string, webRoleContent: object) => this.addWebRole(roleName, webRoleContent),
-                save: this.save,
+                save: (orgUrl: string) => this.save(orgUrl),
             }
         };
     }
