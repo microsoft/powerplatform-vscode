@@ -14,11 +14,12 @@ import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST } fr
 import { EditableFileSystemProvider } from '../../../../utilities/EditableFileSystemProvider';
 
 export const createSite = async (intelligenceEndpoint: string, intelligenceApiToken: string, userPrompt: string, sessionId: string, stream: vscode.ChatResponseStream, telemetry: ITelemetry, orgId: string, envID: string, userId: string, extensionContext: vscode.ExtensionContext) => {
-    const { siteName, siteDescription, sitePages} = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envID, userId);
+    const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envID, userId);
 
     const contentProvider = previewSitePagesContent(siteName, sitePages, stream, extensionContext);
 
     stream.button({
+        //command: 'create-site-inputs', 
         title: 'Create Site',
         command: 'create-site-command',
         arguments: [contentProvider, sitePages.map(page => ({ name: page.metadata.pageTitle, content: page.code }))]

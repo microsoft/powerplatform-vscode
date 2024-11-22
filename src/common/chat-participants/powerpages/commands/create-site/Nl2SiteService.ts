@@ -23,7 +23,9 @@ export async function getNL2SiteData(aibEndpoint: string, aibToken: string, user
             "version": "V1",
             "information": {
                 "minPages": 7,
-                "maxPages": 7
+                "maxPages": 7,
+                "language": "English"
+
             }
         }
     };

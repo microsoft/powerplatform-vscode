@@ -26,7 +26,7 @@ import { CommandRegistry } from '../CommandRegistry';
 import { VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED } from './PowerPagesChatParticipantTelemetryConstants';
 
 // Initialize Command Registry and Register Commands
-const commandRegistry = new CommandRegistry();
+
 //Register Commands
 
 export class PowerPagesChatParticipant {
@@ -97,6 +97,8 @@ export class PowerPagesChatParticipant {
         try {
             this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, { sessionId: this.powerPagesAgentSessionId });
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, { sessionId: this.powerPagesAgentSessionId });
+
+            const commandRegistry = new CommandRegistry();
 
             if (!this.isOrgDetailsInitialized) {
                 stream.progress(PAC_AUTH_INPUT);
@@ -174,7 +176,8 @@ export class PowerPagesChatParticipant {
                     telemetry: this.telemetry,
                     orgID: this.orgID,
                     envID: this.environmentID,
-                    userId: userId
+                    userId: userId,
+                    extensionContext: this.extensionContext
                 };
 
                 return await command.execute(commandRequest, stream);

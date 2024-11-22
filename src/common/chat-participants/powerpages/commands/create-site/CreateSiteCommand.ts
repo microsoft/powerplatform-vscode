@@ -12,8 +12,8 @@ import { VSCODE_EXTENSION_CREATE_SITE_COMMAND_FAILED} from "../../PowerPagesChat
 
 export class CreateSiteCommand implements Command {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async execute(request: any, stream: vscode.ChatResponseStream): Promise<any> {
-        const { prompt, intelligenceAPIEndpointInfo, intelligenceApiToken, powerPagesAgentSessionId, telemetry, orgId, envId, userId, extensionContext } = request;
+    async execute(requestObject: any, stream: vscode.ChatResponseStream): Promise<any> {
+        const { request, intelligenceAPIEndpointInfo, intelligenceApiToken, powerPagesAgentSessionId, telemetry, orgID, envID, userId, extensionContext } = requestObject;
 
         stream.progress(NL2SITE_GENERATING_SITE);
         try {
@@ -21,12 +21,12 @@ export class CreateSiteCommand implements Command {
             const result = await createSite(
                 intelligenceAPIEndpointInfo.intelligenceEndpoint,
                 intelligenceApiToken,
-                prompt,
+                request.prompt,
                 powerPagesAgentSessionId,
                 stream,
                 telemetry,
-                orgId,
-                envId,
+                orgID,
+                envID,
                 userId,
                 extensionContext
             );
@@ -39,8 +39,8 @@ export class CreateSiteCommand implements Command {
             };
         } catch (error) {
             stream.markdown(FAILED_TO_CREATE_SITE);
-            telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE_COMMAND_FAILED, { sessionId: powerPagesAgentSessionId, orgId:orgId, envId: envId, userId: userId, error: error as string });
-            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_CREATE_SITE_COMMAND_FAILED, error as string, error as Error, { sessionId: powerPagesAgentSessionId, orgId:orgId, envId: envId, userId: userId}, {});
+            telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE_COMMAND_FAILED, { sessionId: powerPagesAgentSessionId, orgId:orgID, envId: envID, userId: userId, error: error as string });
+            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_CREATE_SITE_COMMAND_FAILED, error as string, error as Error, { sessionId: powerPagesAgentSessionId, orgId:orgID, envId: envID, userId: userId}, {});
             return {
                 metadata: {
                     command: ''
