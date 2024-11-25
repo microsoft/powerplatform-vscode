@@ -18,18 +18,18 @@ export class CreateSiteCommand implements Command {
         stream.progress(NL2SITE_GENERATING_SITE);
         try {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const result = await createSite(
-                intelligenceAPIEndpointInfo.intelligenceEndpoint,
+            const result = await createSite({
+                intelligenceEndpoint: intelligenceAPIEndpointInfo.intelligenceEndpoint,
                 intelligenceApiToken,
-                request.prompt,
-                powerPagesAgentSessionId,
+                userPrompt: request.prompt,
+                sessionId: powerPagesAgentSessionId,
                 stream,
                 telemetry,
-                orgID,
-                envID,
+                orgId: orgID,
+                envId: envID,
                 userId,
                 extensionContext
-            );
+            });
             // Process the result
 
             return {

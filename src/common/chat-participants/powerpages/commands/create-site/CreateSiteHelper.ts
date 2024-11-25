@@ -13,12 +13,26 @@ import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST, VSC
 import { EditableFileSystemProvider } from '../../../../utilities/EditableFileSystemProvider';
 import { HTML_FILE_EXTENSION, UTF8_ENCODING } from '../../../../constants';
 import { EDITABLE_SCHEME } from './CreateSiteConstants';
+import { ICreateSiteOptions, IPreviewSitePagesContentOptions } from './CreateSiteTypes';
 
-export const createSite = async (intelligenceEndpoint: string, intelligenceApiToken: string, userPrompt: string, sessionId: string, stream: vscode.ChatResponseStream, telemetry: ITelemetry, orgId: string, envID: string, userId: string, extensionContext: vscode.ExtensionContext) => {
-    const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envID, userId);
+export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
+    const {
+        intelligenceEndpoint,
+        intelligenceApiToken,
+        userPrompt,
+        sessionId,
+        stream,
+        telemetry,
+        orgId,
+        envId,
+        userId,
+        extensionContext
+    } = createSiteOptions;
+
+    const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const contentProvider = previewSitePagesContent(siteName, sitePages, stream, extensionContext, telemetry, sessionId, orgId, envID, userId);
+    const contentProvider = previewSitePagesContent({sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId});
 
     // TODO: Implement the create site button click handler
 
@@ -57,16 +71,18 @@ async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceAp
 
 
 function previewSitePagesContent(
-    siteName: string,
-    sitePages: any[],
-    stream: vscode.ChatResponseStream,
-    extensionContext: vscode.ExtensionContext,
-    telemetry: ITelemetry,
-    sessionId: string,
-    orgId: string,
-    envId: string,
-    userId: string
+ options: IPreviewSitePagesContentOptions
 ): EditableFileSystemProvider {
+    const {
+        sitePages,
+        stream,
+        extensionContext,
+        telemetry,
+        sessionId,
+        orgId,
+        envId,
+        userId
+    } = options;
     const sitePagesContent: { name: string; content: string }[] = [];
     sitePages.forEach((page: any) => {
         sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
