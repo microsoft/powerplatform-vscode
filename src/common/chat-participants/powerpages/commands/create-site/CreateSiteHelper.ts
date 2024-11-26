@@ -9,7 +9,7 @@ import { getNL2PageData } from './Nl2PageService';
 import { getNL2SiteData } from './Nl2SiteService';
 import { NL2SITE_REQUEST_FAILED, NL2PAGE_GENERATING_WEBPAGES, NL2PAGE_RESPONSE_FAILED } from '../../PowerPagesChatParticipantConstants';
 import { oneDSLoggerWrapper } from '../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
-import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST, VSCODE_EXTENSION_PREVIEW_SITE_PAGES } from '../../PowerPagesChatParticipantTelemetryConstants';
+import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST, VSCODE_EXTENSION_PREVIEW_SITE_PAGES, VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR } from '../../PowerPagesChatParticipantTelemetryConstants';
 import { EditableFileSystemProvider } from '../../../../utilities/EditableFileSystemProvider';
 import { HTML_FILE_EXTENSION, UTF8_ENCODING } from '../../../../constants';
 import { EDITABLE_SCHEME } from './CreateSiteConstants';
@@ -71,7 +71,7 @@ async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceAp
 
 
 function previewSitePagesContent(
- options: IPreviewSitePagesContentOptions
+    options: IPreviewSitePagesContentOptions
 ): EditableFileSystemProvider {
     const {
         sitePages,
@@ -83,33 +83,39 @@ function previewSitePagesContent(
         envId,
         userId
     } = options;
-    const sitePagesContent: { name: string; content: string }[] = [];
-    sitePages.forEach((page: any) => {
-        sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
-    });
 
-    const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
-    const contentProvider = new EditableFileSystemProvider();
-    // Register the content provider
-    extensionContext.subscriptions.push(
-        vscode.workspace.registerFileSystemProvider(EDITABLE_SCHEME, contentProvider, { isCaseSensitive: true })
-    );
+    try {
+        const sitePagesContent: { name: string; content: string }[] = [];
+        sitePages.forEach((page: any) => {
+            sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
+        });
 
-    const baseUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/`);
+        const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
+        const contentProvider = new EditableFileSystemProvider();
+        // Register the content provider
+        extensionContext.subscriptions.push(
+            vscode.workspace.registerFileSystemProvider(EDITABLE_SCHEME, contentProvider, { isCaseSensitive: true })
+        );
 
-    sitePagesContent.forEach((page: { name: string; content: string; }) => {
-        sitePagesFolder.push({ name: page.name + HTML_FILE_EXTENSION });
-        const pageUri = vscode.Uri.joinPath(baseUri, page.name + HTML_FILE_EXTENSION);
-        contentProvider.writeFile(pageUri, Buffer.from(page.content, UTF8_ENCODING));
-    });
+        const baseUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/`);
 
-    telemetry.sendTelemetryEvent(VSCODE_EXTENSION_PREVIEW_SITE_PAGES, {sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId});
+        sitePagesContent.forEach((page: { name: string; content: string; }) => {
+            sitePagesFolder.push({ name: page.name + HTML_FILE_EXTENSION });
+            const pageUri = vscode.Uri.joinPath(baseUri, page.name + HTML_FILE_EXTENSION);
+            contentProvider.writeFile(pageUri, Buffer.from(page.content, UTF8_ENCODING));
+        });
 
-    stream.filetree(sitePagesFolder, baseUri);
+        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_PREVIEW_SITE_PAGES, { sessionId, orgId, environmentId: envId, userId });
 
-    return contentProvider;
+        stream.filetree(sitePagesFolder, baseUri);
+
+        return contentProvider;
+    } catch (error) {
+        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR, { sessionId, orgId, environmentId: envId, userId, error: (error as Error).message });
+        oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR, (error as Error).message, error as Error, { sessionId, orgId, environmentId: envId, userId }, {});
+        throw error;
+    }
 }
-
 // Function to get updated content
 export function getUpdatedPageContent(contentProvider: EditableFileSystemProvider, pageName: string): string {
     const pageUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/${pageName}${HTML_FILE_EXTENSION}`);
