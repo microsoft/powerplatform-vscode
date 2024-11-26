@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 
 
 export class EditableFileSystemProvider implements vscode.FileSystemProvider {
-    private fileContentMap: { [key: string]: Uint8Array } = {};
+    private _fileContentMap: { [key: string]: Uint8Array } = {};
     private _onDidChangeEmitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
     readonly onDidChangeFile = this._onDidChangeEmitter.event;
 
@@ -26,19 +26,19 @@ export class EditableFileSystemProvider implements vscode.FileSystemProvider {
     // Read file content
     readFile(uri: vscode.Uri): Uint8Array {
         const filePath = uri.path;
-        return this.fileContentMap[filePath] || new Uint8Array();
+        return this._fileContentMap[filePath] || new Uint8Array();
     }
 
     // Write file content
     writeFile(uri: vscode.Uri, content: Uint8Array): void {
         const filePath = uri.path;
-        this.fileContentMap[filePath] = content;
+        this._fileContentMap[filePath] = content;
         this._onDidChangeEmitter.fire([{ type: vscode.FileChangeType.Changed, uri }]);
     }
 
     // Other required methods for FileSystemProvider
     stat(uri: vscode.Uri): vscode.FileStat {
-        return { type: vscode.FileType.File, ctime: Date.now(), mtime: Date.now(), size: this.fileContentMap[uri.path]?.length || 0 };
+        return { type: vscode.FileType.File, ctime: Date.now(), mtime: Date.now(), size: this._fileContentMap[uri.path]?.length || 0 };
     }
 
     readDirectory(uri: vscode.Uri): [string, vscode.FileType][] {
@@ -59,7 +59,7 @@ export class EditableFileSystemProvider implements vscode.FileSystemProvider {
     // Method to get file content as string
     getFileContent(uri: vscode.Uri): string {
         const filePath = uri.path;
-        const content = this.fileContentMap[filePath];
+        const content = this._fileContentMap[filePath];
         return content ? Buffer.from(content).toString('utf8') : '';
     }
 }
