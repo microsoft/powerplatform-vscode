@@ -239,6 +239,7 @@ export async function activate(
             if(artemisResponse!==null && PreviewSite.isSiteRuntimePreviewEnabled()) {
                 websiteURL = await PreviewSite.getWebSiteURL(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
             }
+            await registerPreviewShowCommand();
 
         })
     );
@@ -297,9 +298,6 @@ export async function activate(
             );
         }
     };
-
-    await registerPreviewShowCommand();
-
 
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
