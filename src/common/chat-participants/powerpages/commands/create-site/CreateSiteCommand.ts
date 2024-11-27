@@ -19,7 +19,7 @@ export class CreateSiteCommand implements Command {
         try {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const result = await createSite({
-                intelligenceEndpoint: intelligenceAPIEndpointInfo.intelligenceEndpoint,
+                intelligenceAPIEndpointInfo,
                 intelligenceApiToken,
                 userPrompt: request.prompt,
                 sessionId: powerPagesAgentSessionId,
