@@ -21,6 +21,7 @@ export interface ICreateSiteOptions {
 
 export interface IPreviewSitePagesContentOptions {
     // siteName: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sitePages: any[];
     stream: vscode.ChatResponseStream;
     extensionContext: vscode.ExtensionContext;
