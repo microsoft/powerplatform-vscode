@@ -14,6 +14,7 @@ import { EditableFileSystemProvider } from '../../../../utilities/EditableFileSy
 import { HTML_FILE_EXTENSION, UTF8_ENCODING } from '../../../../constants';
 import { EDITABLE_SCHEME } from './CreateSiteConstants';
 import { ICreateSiteOptions, IPreviewSitePagesContentOptions } from './CreateSiteTypes';
+import { MultiStepInput } from '../../../../utilities/MultiStepInput';
 
 export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     const {
@@ -35,6 +36,21 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     const contentProvider = previewSitePagesContent({sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId});
 
     // TODO: Implement the create site button click handler
+    stream.button({
+        command: 'create-site-inputs',
+        title: 'Create Site',
+        tooltip: 'Create a new Power Pages site',
+        arguments: [siteName, false],
+    })
+
+    vscode.commands.registerCommand('create-site-inputs', async (siteName: string, isCreateSiteInputsReceived) => {
+        if (!isCreateSiteInputsReceived) {
+            const siteCreateInputs = await collectSiteCreationInputs(siteName);
+            if (siteCreateInputs) {
+                isCreateSiteInputsReceived = true;
+            }
+        }
+    });
 
     return {
         siteName,
@@ -122,3 +138,66 @@ export function getUpdatedPageContent(contentProvider: EditableFileSystemProvide
     return contentProvider.getFileContent(pageUri);
 }
 
+
+
+async function collectSiteCreationInputs(siteName: string) {
+    const envNames: vscode.QuickPickItem[] = [
+        { label: 'EnvONe' },
+        { label: 'EnvTwo' },
+        { label: 'EnvThree' }
+    ];
+
+    const title = vscode.l10n.t("New Power Pages Site");
+
+    interface ISiteInputState {
+        siteName: string;
+        envName: string;
+        domainName: string;
+        title: string;
+        step: number;
+        totalSteps: number;
+    }
+
+    async function collectInputs() {
+        const state = {} as Partial<ISiteInputState>;
+        await MultiStepInput.run((input) => selectEnvName(input, state));
+        return state as ISiteInputState;
+    }
+
+    async function selectEnvName(
+        input: MultiStepInput,
+        state: Partial<ISiteInputState>
+    ) {
+        const pick = await input.showQuickPick({
+            title,
+            step: 1,
+            totalSteps: 2,
+            placeholder: vscode.l10n.t("Choose Environment"),
+            items: envNames,
+            activeItem:
+                typeof state.envName !== "string"
+                    ? state.envName
+                    : undefined,
+        });
+        state.envName = pick.label;
+        return (input: MultiStepInput) => inputSiteName(input, state);
+    }
+
+    async function inputSiteName(
+        input: MultiStepInput,
+        state: Partial<ISiteInputState>
+    ) {
+        state.siteName = await input.showInputBox({
+            title,
+            step: 2,
+            totalSteps: 2,
+            value: state.siteName || siteName,
+            placeholder: vscode.l10n.t("Enter site name"),
+            validate: async (value) => (value ? undefined : vscode.l10n.t("Site Name is required")),
+        });
+    }
+
+    const siteInputState = await collectInputs();
+    // Return the collected site creation inputs including site name, environment name, and domain name
+    return siteInputState;
+}
