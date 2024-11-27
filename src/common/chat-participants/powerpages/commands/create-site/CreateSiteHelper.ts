@@ -116,9 +116,4 @@ function previewSitePagesContent(
         throw error;
     }
 }
-// Function to get updated content
-export function getUpdatedPageContent(contentProvider: EditableFileSystemProvider, pageName: string): string {
-    const pageUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/${pageName}${HTML_FILE_EXTENSION}`);
-    return contentProvider.getFileContent(pageUri);
-}
 
