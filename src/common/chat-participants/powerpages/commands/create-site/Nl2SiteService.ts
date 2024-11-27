@@ -8,6 +8,7 @@ import { NL2SITE_GENERATE_NEW_SITE, NL2SITE_INVALID_RESPONSE, NL2SITE_SCENARIO} 
 import {VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED, VSCODE_EXTENSION_NL2SITE_REQUEST_SUCCESS } from "../../PowerPagesChatParticipantTelemetryConstants";
 import { getCommonHeaders } from "../../../../services/AuthenticationProvider";
 import { oneDSLoggerWrapper } from "../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { ENGLISH, MAX_PAGES, MIN_PAGES } from "./CreateSiteConstants";
 
 export async function getNL2SiteData(aibEndpoint: string, aibToken: string, userPrompt: string, sessionId: string, telemetry: ITelemetry, orgId: string, envId: string, userId: string) {
     const requestBody = {
@@ -22,8 +23,10 @@ export async function getNL2SiteData(aibEndpoint: string, aibToken: string, user
             // "shouldCheckBlockList": false, //TODO: Check if this is needed
             "version": "V1",
             "information": {
-                "minPages": 7,
-                "maxPages": 7
+                "minPages": MIN_PAGES,
+                "maxPages": MAX_PAGES,
+                "language": ENGLISH
+
             }
         }
     };

@@ -9,10 +9,32 @@ import { getNL2PageData } from './Nl2PageService';
 import { getNL2SiteData } from './Nl2SiteService';
 import { NL2SITE_REQUEST_FAILED, NL2PAGE_GENERATING_WEBPAGES, NL2PAGE_RESPONSE_FAILED } from '../../PowerPagesChatParticipantConstants';
 import { oneDSLoggerWrapper } from '../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
-import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST } from '../../PowerPagesChatParticipantTelemetryConstants';
+import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST, VSCODE_EXTENSION_PREVIEW_SITE_PAGES, VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR } from '../../PowerPagesChatParticipantTelemetryConstants';
+import { EditableFileSystemProvider } from '../../../../utilities/EditableFileSystemProvider';
+import { HTML_FILE_EXTENSION, UTF8_ENCODING } from '../../../../constants';
+import { EDITABLE_SCHEME } from './CreateSiteConstants';
+import { ICreateSiteOptions, IPreviewSitePagesContentOptions } from './CreateSiteTypes';
 
-export const createSite = async (intelligenceEndpoint: string, intelligenceApiToken: string, userPrompt: string, sessionId: string, stream: vscode.ChatResponseStream, telemetry: ITelemetry, orgId: string, envID: string, userId: string) => {
-    const { siteName, siteDescription } = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envID, userId);
+export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
+    const {
+        intelligenceEndpoint,
+        intelligenceApiToken,
+        userPrompt,
+        sessionId,
+        stream,
+        telemetry,
+        orgId,
+        envId,
+        userId,
+        extensionContext
+    } = createSiteOptions;
+
+    const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const contentProvider = previewSitePagesContent({sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId});
+
+    // TODO: Implement the create site button click handler
 
     return {
         siteName,
@@ -46,3 +68,53 @@ async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceAp
 
     return { siteName, sitePagesList, sitePages, siteDescription };
 }
+
+
+function previewSitePagesContent(
+    options: IPreviewSitePagesContentOptions
+): EditableFileSystemProvider {
+    const {
+        sitePages,
+        stream,
+        extensionContext,
+        telemetry,
+        sessionId,
+        orgId,
+        envId,
+        userId
+    } = options;
+
+    try {
+        const sitePagesContent: { name: string; content: string }[] = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        sitePages.forEach((page: any) => {
+            sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
+        });
+
+        const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
+        const contentProvider = new EditableFileSystemProvider();
+        // Register the content provider
+        extensionContext.subscriptions.push(
+            vscode.workspace.registerFileSystemProvider(EDITABLE_SCHEME, contentProvider, { isCaseSensitive: true })
+        );
+
+        const baseUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/`);
+
+        sitePagesContent.forEach((page: { name: string; content: string; }) => {
+            sitePagesFolder.push({ name: page.name + HTML_FILE_EXTENSION });
+            const pageUri = vscode.Uri.joinPath(baseUri, page.name + HTML_FILE_EXTENSION);
+            contentProvider.writeFile(pageUri, Buffer.from(page.content, UTF8_ENCODING));
+        });
+
+        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_PREVIEW_SITE_PAGES, { sessionId, orgId, environmentId: envId, userId });
+
+        stream.filetree(sitePagesFolder, baseUri);
+
+        return contentProvider;
+    } catch (error) {
+        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR, { sessionId, orgId, environmentId: envId, userId, error: (error as Error).message });
+        oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR, (error as Error).message, error as Error, { sessionId, orgId, environmentId: envId, userId }, {});
+        throw error;
+    }
+}
+
