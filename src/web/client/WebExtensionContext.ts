@@ -116,6 +116,7 @@ class WebExtensionContext implements IWebExtensionContext {
     private _organizationId: string;
     private _environmentId: string;
     private _telemetry: WebExtensionTelemetry;
+    private _npsAccessToken: string;
     private _npsEligibility: boolean;
     private _userId: string;
     private _formsProEligibilityId: string;
@@ -238,6 +239,9 @@ class WebExtensionContext implements IWebExtensionContext {
     public get telemetry() {
         return this._telemetry;
     }
+    public get npsAccessToken() {
+        return this._npsAccessToken;
+    }
     public get npsEligibility() {
         return this._npsEligibility;
     }
@@ -309,6 +313,7 @@ class WebExtensionContext implements IWebExtensionContext {
         this._organizationId = "";
         this._environmentId = "";
         this._telemetry = new WebExtensionTelemetry();
+        this._npsAccessToken = "";
         this._npsEligibility = false;
         this._userId = "";
         this._formsProEligibilityId = "";
@@ -740,6 +745,10 @@ class WebExtensionContext implements IWebExtensionContext {
         );
     }
 
+    public setNPSAccessToken(npsAccessToken: string) {
+        this._npsAccessToken = npsAccessToken;
+    }
+
     public setNPSEligibility(eligibility: boolean) {
         this._npsEligibility = eligibility;
     }
@@ -774,33 +783,33 @@ class WebExtensionContext implements IWebExtensionContext {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public async getWorkerScript(workerUrl: URL): Promise<any> {
+    public async fetchLocalScriptContent(scriptUrl: URL): Promise<any> {
         try {
             this.telemetry.sendInfoTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT
             );
 
             const response = await this.concurrencyHandler.handleRequest(
-                workerUrl
+                scriptUrl
             )
 
             if (!response.ok) {
                 throw new Error(
-                    `Failed to fetch worker script '${workerUrl.toString()}': ${response.statusText}`
+                    `Failed to fetch script '${scriptUrl.toString()}': ${response.statusText}`
                 );
             }
 
             this.telemetry.sendInfoTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_SUCCESS,
-                { workerUrl: workerUrl.toString() }
+                { workerUrl: scriptUrl.toString() }
             );
 
             return await response.text();
         } catch (error) {
             this.telemetry.sendErrorTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
-                this.getWorkerScript.name,
-                Constants.WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED,
+                this.fetchLocalScriptContent.name,
+                Constants.WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_FAILED,
                 error as Error
             );
         }
