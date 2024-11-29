@@ -14,10 +14,6 @@ export const SITE_NAME_REQUIRED = 'Site Name is required';
 export const CREATE_SITE_BTN_CMD = 'create-site-inputs';
 export const CREATE_SITE_BTN_TITLE = 'Create Site';
 export const CREATE_SITE_BTN_TOOLTIP = 'Create a new Power Pages site';
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- */
 
 export enum PresetThemeIds {
     ORANGE = '329a43fa-5471-4678-8330-d3a0b404e9bb',
