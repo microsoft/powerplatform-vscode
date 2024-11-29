@@ -10,12 +10,14 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ITelemetry } from '../../../../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { dataverseAuthentication } from '../../../../services/AuthenticationProvider';
-import { BASE_PAGE } from './CreateSiteConstants';
 import { PowerPagesComponent, PowerPagesParsedJson, PowerPagesComponentType } from './CreateSiteModel';
-import { reGuidPowerPagesSite, getCDSEntityRequestURL, getFileUploadHeaders, base64ToArrayBuffer } from './CreateSiteUtils';
+import { reGuidPowerPagesSite, getCDSEntityRequestURL, getFileUploadHeaders, base64ToArrayBuffer, createHttpRequestOptions } from './CreateSiteUtils';
 import { nl2SiteJson } from './site-templates/Nl2Site';
 import * as entityNames from "./SiteEntityNames";
-
+import { API_VERSION, BASE_PAGE, CDS_API_VERSION, CDS_BASE_URL, CDS_URL_PREFIX, DEFAULT_TEMPLATE_NAME, HOME_SITE_MARKER_NAME, PUBLISHED_STATE_NAME } from './CreateSiteConstants';
+import { oneDSLoggerWrapper } from '../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
+import { HTTP_METHODS } from '../../../../constants';
+import { VSCODE_EXTENSION_CREATE_SITE_SAVE_OPERATION_ERROR, VSCODE_EXTENSION_CREATE_SITE_OPERATION_ERROR, VSCODE_EXTENSION_CREATE_SITE_OPERATION_SUCCESS, VSCODE_EXTENSION_CREATE_SITE_COMPONENT_OPERATION_ERROR, VSCODE_EXTENSION_CREATE_SITE_COMPONENT_OPERATION_SUCCESS, VSCODE_EXTENSION_CREATE_SITE_COMPONENT_PROCESSING_ERROR, VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_OPERATION_ERROR, VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_OPERATION_SUCCESS, VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_PROCESSING_ERROR } from '../../PowerPagesChatParticipantTelemetryConstants';
 
 export interface IPowerPagesSiteFromJsonActions {
     updateSiteName: (name: string) => void;
@@ -33,21 +35,12 @@ export interface IPowerPagesSiteFromJsonActions {
     save: (orgUrl: string) => Promise<void>;
 }
 
-/**
- * This function allows you to initialize a blank template and mutate the various entities in memory before writing them to
- * dataverse. Currently this function only supports provisioning but could potentially be updated to send upserts instead of
- * inserts. That would also help with retrying failed requests.
- * @param {string} templateName Template to start from. Could potentially be used to start with a template other than
- * Blank.
- * @param {string} language The language code to provision in. Only 1033 is supported currently
- * @returns site data and actions to allow the caller to mutate site data
- */
-
 export class PowerPagesSiteManager {
     private siteData: PowerPagesParsedJson;
-    private templateName: string;
-    private language: string;
     private telemetry: ITelemetry;
+    // Add for multiple language & template support
+    // private templateName: string;
+    // private language: string;
 
     constructor(templateName: string, language: string, telemetry: ITelemetry) {
         this.siteData = {
@@ -55,59 +48,58 @@ export class PowerPagesSiteManager {
             powerpagesite: [],
             powerpagesitelanguage: [],
         };
-        this.templateName = templateName;
-        this.language = language;
         this.telemetry = telemetry;
     }
 
     // Function to fetch and load the template data
     public async loadTemplate(): Promise<void> {
-        //const languageCode = 1033 //Only English is supported for now
-
         const ppJsonBlob = nl2SiteJson;
-
         this.siteData = reGuidPowerPagesSite(ppJsonBlob as PowerPagesParsedJson);
     }
 
-    private getBatchAndFileUploads(orgUrl: string): [
-        any,
-        any,
-        PowerPagesComponent[]
-    ] {
-        // We need site and language to already be created before creating other components in a batch
-        const data = this.siteData;
-        const siteAndLanguages = [];
+    private getBatchAndFileUploads(orgUrl: string): [any[], any[], PowerPagesComponent[]] {
+        const siteAndLanguages: any[] = [];
         const operations: any[] = [];
+        const filesToUpload: PowerPagesComponent[] = [];
 
-        siteAndLanguages.push({
-            method: 'POST',
-            url: orgUrl + 'api/data/v9.2/powerpagesites',
-            headers: {
-                'Content-Type': 'application/json; type=entry',
-            },
-            body: JSON.stringify(data.powerpagesite[0]),
-        });
+        // Add site and languages
+        this.addSiteAndLanguages(orgUrl, siteAndLanguages);
 
-        // Languages
+        // Add components
+        this.addComponentsToOperations(orgUrl, operations, filesToUpload);
+
+        return [siteAndLanguages, operations, filesToUpload];
+    }
+
+    /**
+     * Adds site and language data to the provided array for batch processing.
+     * @param orgUrl - The organization URL.
+     * @param siteAndLanguages - The array to which site and language data will be added. Each element is an HTTP request option object.
+     */
+    private addSiteAndLanguages(orgUrl: string, siteAndLanguages: any[]): void {
+        const data = this.siteData;
+
+        const siteUrl = `${orgUrl}${CDS_URL_PREFIX}/${CDS_API_VERSION}/powerpagesites`;
+        siteAndLanguages.push(
+            createHttpRequestOptions(HTTP_METHODS.POST, siteUrl, data.powerpagesite[0])
+        );
+
         data.powerpagesitelanguage.forEach((ppSiteLang) => {
             const entity = {
                 ...ppSiteLang,
                 [`powerpagesiteid@odata.bind`]: `/${entityNames.PowerPagesSites}(${ppSiteLang.powerpagesiteid!})`,
             };
             delete entity.powerpagesiteid;
-            siteAndLanguages.push({
-                method: 'POST',
-                url: orgUrl + 'api/data/v9.2/powerpagesitelanguages',
-                headers: {
-                    'Content-Type': 'application/json; type=entry',
-                },
-                body: JSON.stringify(entity),
-            });
+            const languageUrl = `${orgUrl}${CDS_URL_PREFIX}/${API_VERSION}/powerpagesitelanguages`;
+            siteAndLanguages.push(
+                createHttpRequestOptions(HTTP_METHODS.POST, languageUrl, entity)
+            );
         });
+    }
 
-        const filesToUpload: PowerPagesComponent[] = [];
+    private addComponentsToOperations(orgUrl: string, operations: any[], filesToUpload: PowerPagesComponent[]): void {
+        const data = this.siteData;
 
-        // Components
         data.powerpagecomponent.forEach((component) => {
             if (component.powerpagecomponenttype === PowerPagesComponentType.WebFile && component.filecontent) {
                 filesToUpload.push(component);
@@ -122,17 +114,11 @@ export class PowerPagesSiteManager {
             delete entity.powerpagesiteid;
             delete entity.powerpagesitelanguageid;
             delete entity.filecontent;
-            operations.push({
-                method: 'POST',
-                url: orgUrl + 'api/data/v9.2/powerpagecomponents',
-                headers: {
-                    'Content-Type': 'application/json; type=entry',
-                },
-                body: JSON.stringify(entity),
-            });
+            const componentUrl = `${orgUrl}${CDS_URL_PREFIX}/${API_VERSION}/powerpagecomponents`;
+            operations.push(
+                createHttpRequestOptions(HTTP_METHODS.POST, componentUrl, entity)
+            );
         });
-
-        return [siteAndLanguages, operations, filesToUpload];
     }
 
     private findComponent(
@@ -141,16 +127,8 @@ export class PowerPagesSiteManager {
         return this.siteData.powerpagecomponent.find(filter);
     }
 
-    /**
-* Gets parent page id
-* @returns {string} Parent page id
-*/
-
     private updateSiteName(name: string): void {
         this.siteData.powerpagesite[0].name = name;
-        // The snippet named 'Site name' is hardcoded to the value 'Company name' in the template JSON.
-        // Assign the real site name so that the Header reflects site name.
-        // Find the index of the 'site name' snippet in the draft
         const snippetIndex = this.siteData.powerpagecomponent.findIndex(
             (c) =>
                 c.powerpagecomponenttype === PowerPagesComponentType.ContentSnippet &&
@@ -165,8 +143,9 @@ export class PowerPagesSiteManager {
     }
 
     private addComponents(components: PowerPagesComponent[]): void {
-        this.siteData.powerpagecomponent = this.siteData.powerpagecomponent.concat(components);
+        this.siteData.powerpagecomponent = [...this.siteData.powerpagecomponent, ...components];
     }
+
     private updateComponent(component: PowerPagesComponent): void {
         const index = this.siteData.powerpagecomponent.findIndex(
             (c) => c.powerpagecomponentid === component.powerpagecomponentid
@@ -182,12 +161,17 @@ export class PowerPagesSiteManager {
         return this.siteData.powerpagecomponent.filter(filter);
     }
 
+    /**
+     * Retrieves the home root page component.
+     * The method first finds the site marker component with the name 'HOME_SITE_MARKER_NAME'.
+     * It then parses the content of the site marker to get the page ID.
+     * Finally, it finds and returns the home root page component using the page ID.
+     *
+     * @returns {PowerPagesComponent | undefined} The home root page component or undefined if not found.
+     */
     private getHomeRootPage(): PowerPagesComponent | undefined {
-        // Get the Home root (metadata) page.
-        // All templates should have a SiteMarker with the same name of 'Home'.
-        // Use this component to obtain the pageid.
         const siteMarker = this.findComponent(
-            (c) => c.powerpagecomponenttype === PowerPagesComponentType.SiteMarker && c.name === 'Home'
+            (c) => c.powerpagecomponenttype === PowerPagesComponentType.SiteMarker && c.name === HOME_SITE_MARKER_NAME
         );
         const pageId = siteMarker ? JSON.parse(siteMarker.content).pageid : undefined;
 
@@ -195,7 +179,6 @@ export class PowerPagesSiteManager {
             return undefined;
         }
 
-        // Find the Home root (metadata) page. Ensure it is the root component.
         const homeRootPage = this.findComponent(
             (c) =>
                 c.powerpagecomponenttype === PowerPagesComponentType.WebPage &&
@@ -206,9 +189,6 @@ export class PowerPagesSiteManager {
     }
 
     private getHomePage(): PowerPagesComponent | undefined {
-        // To get the home page, we first need to get the root page.
-        // We then use the root page to obtain the correct home page.
-        // The name of the component will differ per locale, which is why we can't use the literal 'Home'.
         const homeRootPage = this.getHomeRootPage();
         if (!homeRootPage) {
             return undefined;
@@ -222,13 +202,9 @@ export class PowerPagesSiteManager {
         return homePage;
     }
 
-    /**
- * Gets publishing state id
- * @returns {string} Publishing state id
- */
     private getPublishingStateId(): string | undefined {
         const publishingState = this.findComponent(
-            (c) => c.powerpagecomponenttype === PowerPagesComponentType.PublishingState && c.name === 'Published'
+            (c) => c.powerpagecomponenttype === PowerPagesComponentType.PublishingState && c.name === PUBLISHED_STATE_NAME
         );
         return publishingState?.powerpagecomponentid;
     }
@@ -252,14 +228,12 @@ export class PowerPagesSiteManager {
                 (c) => c.powerpagecomponentid === JSON.parse(component.content).rootwebpageid
             );
             rootPageID = rootComponent?.powerpagecomponentid ?? '';
-            // update
             const next = { ...component };
             const pageContent = JSON.parse(next.content);
             pageContent.copy = pageCopy;
             next.content = JSON.stringify(pageContent);
             this.updateComponent(next);
         } else {
-            // Fetch all the dependencies
             let displayOrder = this.findComponents(
                 (c) => c.powerpagecomponenttype === PowerPagesComponentType.WebPage && JSON.parse(c.content).isroot
             )
@@ -268,7 +242,6 @@ export class PowerPagesSiteManager {
                 .sort()
                 .pop();
             const homeRootPage = this.getHomeRootPage();
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
             if (!homeRootPage) {
                 throw new Error('Home root page not found');
             }
@@ -277,7 +250,7 @@ export class PowerPagesSiteManager {
             const pageTemplate = this.findComponent(
                 (c) =>
                     c.powerpagecomponenttype === PowerPagesComponentType.PageTemplate &&
-                    c.name === 'Default studio template'
+                    c.name === DEFAULT_TEMPLATE_NAME
             );
             const homeWebLink = this.findComponent(
                 (c) =>
@@ -285,7 +258,6 @@ export class PowerPagesSiteManager {
                     JSON.parse(c.content).pageid === homeRootPage?.powerpagecomponentid
             );
 
-            // Add root page
             rootPageID = uuidv4();
             const rootPageComponent = {
                 powerpagecomponentid: rootPageID,
@@ -305,7 +277,6 @@ export class PowerPagesSiteManager {
             };
             const componentsToAdd = [rootPageComponent];
 
-            // Add content page
             const contentPageComponent = {
                 powerpagecomponentid: uuidv4(),
                 powerpagesiteid: this.siteData.powerpagesite[0].powerpagesiteid,
@@ -325,7 +296,6 @@ export class PowerPagesSiteManager {
             };
             componentsToAdd.push(contentPageComponent);
 
-            // Add site marker
             componentsToAdd.push({
                 powerpagecomponentid: uuidv4(),
                 powerpagesiteid: this.siteData.powerpagesite[0].powerpagesiteid,
@@ -336,7 +306,6 @@ export class PowerPagesSiteManager {
                 }),
             });
 
-            // Add web link
             if (homeWebLink !== undefined) {
                 componentsToAdd.push({
                     powerpagecomponentid: uuidv4(),
@@ -360,6 +329,7 @@ export class PowerPagesSiteManager {
         }
         return rootPageID;
     }
+
     private getWebPageRootId(pageName: string): string {
         const webPageRoot = this.findComponent(
             (c) =>
@@ -383,17 +353,16 @@ export class PowerPagesSiteManager {
         return webRoleId;
     }
 
-    private save = async (orgUrl: string) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    private async save(orgUrl: string): Promise<void> {
+        // Get the batch and file uploads
         const [siteAndLanguages, components, fileComponents] = this.getBatchAndFileUploads(orgUrl);
 
-        //const optionalHeaders = { 'x-ms-ppages-options': 'skipDependencyChecker=true;' }
-
-        // cspell:ignore dataverse
+        // Authenticate and get the Dataverse token
         const dataverseToken = (await dataverseAuthentication(this.telemetry, orgUrl, true)).accessToken;
 
+        // Define fetch options for the operations
         const fetchOptions = (operation: any) => ({
-            method: 'POST',
+            method: HTTP_METHODS.POST,
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${dataverseToken}`,
@@ -402,30 +371,73 @@ export class PowerPagesSiteManager {
         });
 
         try {
-            // Process siteAndLanguages operations
-            for (const operation of siteAndLanguages) {
-                const response = await fetch(operation.url, fetchOptions(operation));
-                console.log('Site and languages operation:', response);
+            // Process site and language operations
+            await this.processOperations(siteAndLanguages, fetchOptions);
+
+            // Process component operations
+            await this.processComponents(components, fetchOptions);
+
+            // Process file components
+            await this.processFileComponents(fileComponents, dataverseToken, orgUrl);
+        } catch (error) {
+            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE_SAVE_OPERATION_ERROR, { orgUrl, error: (error as Error).message });
+            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_CREATE_SITE_SAVE_OPERATION_ERROR, (error as Error).message, error as Error, { orgUrl }, {});
+            throw new Error(`Save operation failed: ${(error as Error).message}`);
+        }
+    }
+    private async processOperations(operations: any[], fetchOptions: (operation: any) => RequestInit): Promise<void> {
+        for (const operation of operations) {
+            const response = await fetch(operation.url, fetchOptions(operation));
+            if (!response.ok) {
+                const errorText = await response.text();
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE_OPERATION_ERROR, { url: operation.url, error: errorText });
+                oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_CREATE_SITE_OPERATION_ERROR, errorText, new Error(errorText), { url: operation.url }, {});
+                throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
             }
+            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE_OPERATION_SUCCESS, { url: operation.url });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_CREATE_SITE_OPERATION_SUCCESS, { url: operation.url });
+        }
+    }
 
-            // Process components operations
-            // for (const operation of components) {
-            //     console.log('Components operation:', operation.body);
-            //     console.log('Components operation:', await compResponse.json());
-            //     console.log('Components operation:', compResponse.json());
-            // }
+    private async processComponents(components: any[], fetchOptions: (operation: any) => RequestInit): Promise<void> {
+        for (const operation of components) {
+            try {
+                const response = await fetch(operation.url, fetchOptions(operation));
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE_COMPONENT_OPERATION_ERROR, { url: operation.url, error: errorText });
+                    oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_CREATE_SITE_COMPONENT_OPERATION_ERROR, errorText, new Error(errorText), { url: operation.url }, {});
+                    throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+                }
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE_COMPONENT_OPERATION_SUCCESS, { url: operation.url });
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_CREATE_SITE_COMPONENT_OPERATION_SUCCESS, { url: operation.url });
+            } catch (error) {
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE_COMPONENT_PROCESSING_ERROR, { error: (error as Error).message });
+                oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_CREATE_SITE_COMPONENT_PROCESSING_ERROR, (error as Error).message, error as Error, {}, {});
+                throw error;
+            }
+        }
+    }
 
-            if (fileComponents.length > 0) {
-                await Promise.all(
-                    fileComponents.map(async (f) => {
+    /**
+    * Processes file components by uploading their content to the specified organization URL.
+    * @param fileComponents - An array of PowerPagesComponent objects representing file components to be uploaded.
+    * @param dataverseToken - The authentication token for Dataverse.
+    * @param orgUrl - The organization URL.
+    */
+    private async processFileComponents(fileComponents: PowerPagesComponent[], dataverseToken: string, orgUrl: string): Promise<void> {
+        if (fileComponents.length > 0) {
+            await Promise.all(
+                fileComponents.map(async (f) => {
+                    try {
                         const response = await fetch(
                             getCDSEntityRequestURL({
                                 entityName: entityNames.PowerPagesComponents,
                                 entityId: f.powerpagecomponentid,
                                 additionalPathTokens: ['filecontent'],
-                            }),
+                            }).replace(CDS_BASE_URL, orgUrl),
                             {
-                                method: 'PATCH',
+                                method: HTTP_METHODS.PATCH,
                                 headers: getFileUploadHeaders(f.name, dataverseToken),
                                 body: base64ToArrayBuffer(f.filecontent!),
                             }
@@ -433,17 +445,27 @@ export class PowerPagesSiteManager {
 
                         if (!response.ok) {
                             const errorText = await response.text();
-                            console.log('File component operation response:', await response.json());
+                            this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_OPERATION_ERROR, { url: response.url, error: errorText });
+                            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_OPERATION_ERROR, errorText, new Error(errorText), { url: response.url }, {});
                             throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
                         }
 
-                    })
-                );
-            }
-        } catch (error) {
-            console.error('Error during save operation:', error);
+                        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_OPERATION_SUCCESS, { url: response.url });
+                        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_OPERATION_SUCCESS, { url: response.url });
+                    } catch (error) {
+                        const errorText = (error as Error).message;
+                        this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_PROCESSING_ERROR, { error: errorText });
+                        oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_PROCESSING_ERROR, errorText, error as Error, {}, {});
+                        throw new Error(`File component operation failed: ${errorText}`);
+                    }
+                })
+            ).catch((error) => {
+                this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_PROCESSING_ERROR, { error: (error as Error).message });
+                oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_CREATE_SITE__FILE_COMPONENT_PROCESSING_ERROR, (error as Error).message, error as Error, {}, {});
+                throw error;
+            });
         }
-    };
+    }
 
     // Method to expose site data and actions
     public getSiteDataAndActions(): {

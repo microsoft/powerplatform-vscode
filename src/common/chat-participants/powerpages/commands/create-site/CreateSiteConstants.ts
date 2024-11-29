@@ -14,6 +14,7 @@ export const SITE_NAME_REQUIRED = 'Site Name is required';
 export const CREATE_SITE_BTN_CMD = 'create-site-inputs';
 export const CREATE_SITE_BTN_TITLE = 'Create Site';
 export const CREATE_SITE_BTN_TOOLTIP = 'Create a new Power Pages site';
+export const INVALIDE_PAGE_CONTENT = 'Invalid page content';
 
 export enum PresetThemeIds {
     ORANGE = '329a43fa-5471-4678-8330-d3a0b404e9bb',
@@ -40,8 +41,14 @@ export const BASE_PAGE = {
     sharedpageconfiguration: false,
 };
 
-export const CDS_BASE_URL = 'https://org06ff0f46.crm10.dynamics.com'; // This is a placeholder URL
-export const CDS_URL_PREFIX = '/api/data';
+export const CDS_BASE_URL = 'https://cds-org'; // Replace with actual CDS URL in calling code
+export const CDS_URL_PREFIX = 'api/data';
 export const CDS_API_BASE_URL = `${CDS_BASE_URL}${CDS_URL_PREFIX}`;
 export const CDS_API_VERSION = 'v9.2';
 export const CDS_API_VERSION_9_2 = `${CDS_API_BASE_URL}/${CDS_API_VERSION}`;
+export const API_VERSION = 'v9.2';
+export const CONTENT_TYPE_JSON = 'application/json; type=entry';
+export const HOME_SITE_MARKER_NAME = 'Home';
+export const PUBLISHED_STATE_NAME = 'Published';
+export const DEFAULT_TEMPLATE_NAME = 'Default studio template';
+export const BLANK_TEMPLATE_NAME = 'BlankTemplate';

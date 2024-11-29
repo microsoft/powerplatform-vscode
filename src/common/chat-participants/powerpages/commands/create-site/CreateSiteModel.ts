@@ -3,6 +3,12 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { ITelemetry } from "../../../../OneDSLoggerTelemetry/telemetry/ITelemetry";
+import * as vscode from 'vscode';
+import { IIntelligenceAPIEndpointInformation } from "../../../../services/Interfaces";
+import { EditableFileSystemProvider } from "../../../../utilities/EditableFileSystemProvider";
+import { IEnvInfo } from "../../../../constants";
+
 export interface PowerPagesParsedJson {
     powerpagesite: PowerPagesSite[];
     powerpagecomponent: PowerPagesComponent[];
@@ -80,3 +86,49 @@ export interface IURLParams {
     filecontent?: string;
     filename?: string;
   }
+
+  export interface ICreateSiteOptions {
+    intelligenceAPIEndpointInfo: IIntelligenceAPIEndpointInformation;
+    intelligenceApiToken: string;
+    userPrompt: string;
+    sessionId: string;
+    stream: vscode.ChatResponseStream;
+    telemetry: ITelemetry;
+    orgId: string;
+    envId: string;
+    userId: string;
+    extensionContext: vscode.ExtensionContext;
+}
+
+export interface IPreviewSitePagesContentOptions {
+    // siteName: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sitePages: any[];
+    stream: vscode.ChatResponseStream;
+    extensionContext: vscode.ExtensionContext;
+    telemetry: ITelemetry;
+    sessionId: string;
+    orgId: string;
+    envId: string;
+    userId: string;
+}
+
+export interface ISiteInputState {
+    siteName: string;
+    envName: string;
+    OrgUrl: string;
+    domainName: string;
+    title: string;
+    step: number;
+    totalSteps: number;
+}
+
+export interface ICreateSiteCommandArgs {
+    siteName: string;
+    sitePages: any[];
+    sitePagesList: string[];
+    envList: IEnvInfo[];
+    contentProvider: EditableFileSystemProvider;
+    telemetry: ITelemetry;
+    isCreateSiteInputsReceived: boolean;
+}

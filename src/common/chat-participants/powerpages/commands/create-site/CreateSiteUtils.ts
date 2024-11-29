@@ -6,7 +6,7 @@
 
 
 import { v4 as uuidv4 } from 'uuid';
-import { PresetThemeIds, CDS_API_BASE_URL, CDS_API_VERSION } from './CreateSiteConstants';
+import { PresetThemeIds, CDS_API_BASE_URL, CDS_API_VERSION, CONTENT_TYPE_JSON } from './CreateSiteConstants';
 import { PowerPagesParsedJson, IURLParams } from './CreateSiteModel';
 
 
@@ -154,3 +154,15 @@ export const getFileUploadHeaders = (fileName: string, dataverseToken: string) =
         Authorization: `Bearer ${dataverseToken}`
     };
 };
+
+export function createHttpRequestOptions(method: string, url: string, body: any, headers?: Record<string, string>): any {
+    return {
+        method,
+        url,
+        headers: {
+            'Content-Type': CONTENT_TYPE_JSON,
+            ...headers,
+        },
+        body: JSON.stringify(body),
+    };
+}
