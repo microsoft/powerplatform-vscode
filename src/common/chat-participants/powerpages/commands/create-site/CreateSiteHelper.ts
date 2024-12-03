@@ -46,7 +46,7 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
         title: CREATE_SITE_BTN_TITLE,
         tooltip: CREATE_SITE_BTN_TOOLTIP,
         arguments: [siteName, envList, contentProvider, false],
-    })
+    });
 
     return {
         siteName,
