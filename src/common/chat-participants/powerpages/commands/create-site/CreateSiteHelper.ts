@@ -61,7 +61,7 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
 
     return {
         siteName,
-        websiteId,
+        //websiteId,
         siteDescription,
     };
 };
