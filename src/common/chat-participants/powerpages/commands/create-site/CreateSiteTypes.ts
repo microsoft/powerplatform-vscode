@@ -36,7 +36,7 @@ export interface IPreviewSitePagesContentOptions {
 export interface ISiteInputState {
     siteName: string;
     envName: string;
-    OrgUrl: string;
+    orgUrl: string;
     domainName: string;
     title: string;
     step: number;
