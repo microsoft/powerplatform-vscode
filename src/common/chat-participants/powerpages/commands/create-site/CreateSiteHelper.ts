@@ -39,7 +39,7 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const contentProvider = previewSitePagesContent({ sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId });
 
-    const envList = await getEnvList(telemetry, intelligenceAPIEndpointInfo.endpointStamp)
+    const envList = await getEnvList(telemetry, intelligenceAPIEndpointInfo.endpointStamp);
 
     stream.button({
         command: CREATE_SITE_BTN_CMD,
