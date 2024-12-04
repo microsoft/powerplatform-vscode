@@ -117,6 +117,10 @@
       "Do not translate 'dotnet' or 'sdk'"
     ]
   },
+  "The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?": "The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?",
+  "Install": "Install",
+  "No workspace folder is open.": "No workspace folder is open.",
+  "Failed to update launch.json: ${0}": "Failed to update launch.json: ${0}",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
