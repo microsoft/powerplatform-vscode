@@ -52,3 +52,12 @@ export const HOME_SITE_MARKER_NAME = 'Home';
 export const PUBLISHED_STATE_NAME = 'Published';
 export const DEFAULT_TEMPLATE_NAME = 'Default studio template';
 export const BLANK_TEMPLATE_NAME = 'BlankTemplate';
+
+export const HOME_PAGE_KEY = 'Home';
+export const ABOUT_PAGE_KEY = 'AboutUs';
+export const FAQ_PAGE_KEY = 'FAQ';
+
+export const HOME_PAGE_TYPE = 'Home';
+export const ABOUT_PAGE_TYPE = 'AboutUs';
+export const FAQ_PAGE_TYPE = 'FAQ';
+export const INFO_PAGE_TYPE = 'Informational';

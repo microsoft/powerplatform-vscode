@@ -13,41 +13,41 @@ export interface PowerPagesParsedJson {
     powerpagesite: PowerPagesSite[];
     powerpagecomponent: PowerPagesComponent[];
     powerpagesitelanguage: PowerPagesSiteLanguage[];
-  }
+}
 
-  export interface IFileUpload {
+export interface IFileUpload {
     fileName: string;
     entityId: string;
     fileContent: string;
     entityName: string;
     columnName: string;
-  }
+}
 export interface IURLParams {
     entityName?: string;
     entityId?: string;
     query?: string;
     apiVersion?: string;
     additionalPathTokens?: string[];
-  }
+}
 
-  export interface PowerPagesSiteEntity {
+export interface PowerPagesSiteEntity {
     powerpagesiteid?: string | null;
     content: string;
     name: string;
-  }
+}
 
-  export interface PowerPagesSite extends PowerPagesSiteEntity {
+export interface PowerPagesSite extends PowerPagesSiteEntity {
     datamodelversion: string;
-  }
+}
 
-  export interface PowerPagesSiteLanguage extends PowerPagesSiteEntity {
+export interface PowerPagesSiteLanguage extends PowerPagesSiteEntity {
     powerpagesitelanguageid: string;
     displayname: string;
     languagecode: string;
     lcid: string;
-  }
+}
 
-  export enum PowerPagesComponentType {
+export enum PowerPagesComponentType {
     PublishingState = '1',
     WebPage = '2',
     WebFile = '3',
@@ -77,17 +77,17 @@ export interface IURLParams {
     PublishingStateTransitionRule = '31',
     Shortcut = '32',
     PowerAutomate = '33',
-  }
+}
 
-  export interface PowerPagesComponent extends PowerPagesSiteEntity {
+export interface PowerPagesComponent extends PowerPagesSiteEntity {
     powerpagecomponentid: string;
     powerpagecomponenttype: PowerPagesComponentType;
     powerpagesitelanguageid?: string | null;
     filecontent?: string;
     filename?: string;
-  }
+}
 
-  export interface ICreateSiteOptions {
+export interface ICreateSiteOptions {
     intelligenceAPIEndpointInfo: IIntelligenceAPIEndpointInformation;
     intelligenceApiToken: string;
     userPrompt: string;
@@ -132,3 +132,22 @@ export interface ICreateSiteCommandArgs {
     telemetry: ITelemetry;
     isCreateSiteInputsReceived: boolean;
 }
+
+export type Page = PageDataDetails & {
+    pageKey: string;
+    pageName: string;
+    pageSummary: string;
+    pageType?: string;
+};
+
+export type PageDataDetails = {
+    includesForm?: boolean;
+    includesList?: boolean;
+    suggestedColumns?: string;
+};
+
+export type Website = {
+    siteName: string;
+    pages: Page[];
+    siteDescription?: string;
+};

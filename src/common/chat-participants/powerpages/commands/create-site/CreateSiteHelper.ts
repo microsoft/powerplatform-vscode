@@ -70,11 +70,11 @@ async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceAp
     // Call NL2Site service to get initial site content
     telemetry.sendTelemetryEvent(VSCODE_EXTENSION_NL2SITE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
     oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_NL2SITE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
-    const { siteName, pages, siteDescription } = await getNL2SiteData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, orgId, envId, userId);
-
-    if (!siteName) {
+    const siteData = await getNL2SiteData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, orgId, envId, userId);
+    if (!siteData) {
         throw new Error(NL2SITE_REQUEST_FAILED);
     }
+    const { siteName, pages, siteDescription } = siteData;
 
     const sitePagesList = pages.map((page: { pageName: string; }) => page.pageName);
 
@@ -83,7 +83,7 @@ async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceAp
     // Call NL2Page service to get page content
     telemetry.sendTelemetryEvent(VSCODE_EXTENSION_NL2PAGE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
     oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_NL2PAGE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
-    const sitePages = await getNL2PageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, siteName, sitePagesList, sessionId, telemetry, orgId, envId, userId);
+    const sitePages = await getNL2PageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, siteName, pages, sessionId, telemetry, orgId, envId, userId);
 
     if (!sitePages) {
         throw new Error(NL2PAGE_RESPONSE_FAILED);
