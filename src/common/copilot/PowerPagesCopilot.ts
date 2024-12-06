@@ -426,6 +426,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
         const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId);
+        if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
+            this.sendMessageToWebview({ type: 'Unavailable' });
+            return;
+        }
         this.aibEndpoint = intelligenceAPIEndpointInfo.intelligenceEndpoint;
         this.geoName = intelligenceAPIEndpointInfo.geoName;
         this.crossGeoDataMovementEnabledPPACFlag = intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag;

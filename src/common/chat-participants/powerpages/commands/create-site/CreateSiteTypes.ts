@@ -5,9 +5,10 @@
 
 import { ITelemetry } from "../../../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import * as vscode from 'vscode';
+import { IIntelligenceAPIEndpointInformation } from "../../../../services/Interfaces";
 
 export interface ICreateSiteOptions {
-    intelligenceEndpoint: string;
+    intelligenceAPIEndpointInfo: IIntelligenceAPIEndpointInformation;
     intelligenceApiToken: string;
     userPrompt: string;
     sessionId: string;
@@ -30,4 +31,14 @@ export interface IPreviewSitePagesContentOptions {
     orgId: string;
     envId: string;
     userId: string;
+}
+
+export interface ISiteInputState {
+    siteName: string;
+    envName: string;
+    orgUrl: string;
+    domainName: string;
+    title: string;
+    step: number;
+    totalSteps: number;
 }
