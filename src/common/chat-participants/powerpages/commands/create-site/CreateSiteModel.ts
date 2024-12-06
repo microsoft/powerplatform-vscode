@@ -98,6 +98,7 @@ export interface ICreateSiteOptions {
     envId: string;
     userId: string;
     extensionContext: vscode.ExtensionContext;
+    contentProvider: EditableFileSystemProvider;
 }
 
 export interface IPreviewSitePagesContentOptions {
@@ -111,6 +112,7 @@ export interface IPreviewSitePagesContentOptions {
     orgId: string;
     envId: string;
     userId: string;
+    contentProvider: EditableFileSystemProvider;
 }
 
 export interface ISiteInputState {

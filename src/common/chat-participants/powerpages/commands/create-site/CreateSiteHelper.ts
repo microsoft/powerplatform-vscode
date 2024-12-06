@@ -29,7 +29,8 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
         orgId,
         envId,
         userId,
-        extensionContext
+        extensionContext,
+        contentProvider
     } = createSiteOptions;
 
     if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
@@ -38,7 +39,7 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     const { siteName, siteDescription, sitePages, sitePagesList } = await fetchSiteAndPageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const contentProvider = previewSitePagesContent({ sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId });
+    previewSitePagesContent({ sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId, contentProvider });
 
     const envList = await getEnvList(telemetry, intelligenceAPIEndpointInfo.endpointStamp)
 
@@ -99,12 +100,12 @@ function previewSitePagesContent(
     const {
         sitePages,
         stream,
-        extensionContext,
         telemetry,
         sessionId,
         orgId,
         envId,
-        userId
+        userId,
+        contentProvider
     } = options;
 
     try {
@@ -114,11 +115,6 @@ function previewSitePagesContent(
         });
 
         const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
-        const contentProvider = new EditableFileSystemProvider();
-        // Register the content provider
-        extensionContext.subscriptions.push(
-            vscode.workspace.registerFileSystemProvider(EDITABLE_SCHEME, contentProvider, { isCaseSensitive: true })
-        );
 
         const baseUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/`);
 

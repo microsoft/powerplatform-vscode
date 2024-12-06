@@ -9,10 +9,11 @@ import { createSite } from "./CreateSiteHelper";
 import { FAILED_TO_CREATE_SITE, NL2SITE_GENERATING_SITE } from "../../PowerPagesChatParticipantConstants";
 import { oneDSLoggerWrapper } from "../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { VSCODE_EXTENSION_CREATE_SITE_COMMAND_FAILED} from "../../PowerPagesChatParticipantTelemetryConstants";
+import { EditableFileSystemProvider } from "../../../../utilities/EditableFileSystemProvider";
 
 export class CreateSiteCommand implements Command {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async execute(requestObject: any, stream: vscode.ChatResponseStream): Promise<any> {
+    async execute(requestObject: any, stream: vscode.ChatResponseStream, contentProvider: EditableFileSystemProvider): Promise<any> {
         const { request, intelligenceAPIEndpointInfo, intelligenceApiToken, powerPagesAgentSessionId, telemetry, orgID, envID, userId, extensionContext } = requestObject;
 
         stream.progress(NL2SITE_GENERATING_SITE);
@@ -28,7 +29,8 @@ export class CreateSiteCommand implements Command {
                 orgId: orgID,
                 envId: envID,
                 userId,
-                extensionContext
+                extensionContext,
+                contentProvider
             });
             // Process the result
 

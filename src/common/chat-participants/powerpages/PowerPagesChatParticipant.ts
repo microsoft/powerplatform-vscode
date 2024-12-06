@@ -24,6 +24,8 @@ import { ADX_WEBPAGE, IApiRequestParams, IRelatedFiles } from '../../constants';
 import { oneDSLoggerWrapper } from '../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { CommandRegistry } from '../CommandRegistry';
 import { VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_INVOKED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS_NOT_FOUND, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ORG_DETAILS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NOT_AVAILABLE_ECS, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SUCCESSFUL_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WELCOME_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_NO_PROMPT, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_WEBPAGE_RELATED_FILES, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_ERROR, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED } from './PowerPagesChatParticipantTelemetryConstants';
+import { EditableFileSystemProvider } from '../../utilities/EditableFileSystemProvider';
+import { EDITABLE_SCHEME } from './commands/create-site/CreateSiteConstants';
 
 export class PowerPagesChatParticipant {
     private static instance: PowerPagesChatParticipant | null = null;
@@ -35,6 +37,7 @@ export class PowerPagesChatParticipant {
     private readonly _disposables: vscode.Disposable[] = [];
     private cachedEndpoint: IIntelligenceAPIEndpointInformation | null = null;
     private powerPagesAgentSessionId: string;
+    private contentProvider: EditableFileSystemProvider;
 
     private orgID: string | undefined;
     private orgUrl: string | undefined;
@@ -62,6 +65,13 @@ export class PowerPagesChatParticipant {
         this.extensionContext = context;
 
         this._pacWrapper = pacWrapper;
+
+        this.contentProvider = new EditableFileSystemProvider();
+
+        // Register the content provider
+        this.extensionContext.subscriptions.push(
+            vscode.workspace.registerFileSystemProvider(EDITABLE_SCHEME, this.contentProvider, { isCaseSensitive: true })
+        );
 
         registerButtonCommands();
 
@@ -167,7 +177,7 @@ export class PowerPagesChatParticipant {
 
             if (request.command) {
                 this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, { commandName: request.command, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
-                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, {  commandName: request.command, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
+                oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_COMMAND_TRIGGERED, { commandName: request.command, sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
 
                 const command = commandRegistry.get(request.command);
 
@@ -184,7 +194,7 @@ export class PowerPagesChatParticipant {
                     extensionContext: this.extensionContext
                 };
 
-                return await command.execute(commandRequest, stream);
+                return await command.execute(commandRequest, stream, this.contentProvider);
             } else {
                 if (location) {
                     this.telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_LOCATION_REFERENCED, { sessionId: this.powerPagesAgentSessionId, orgId: this.orgID, environmentId: this.environmentID, userId: userId });
