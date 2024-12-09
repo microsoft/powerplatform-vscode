@@ -128,4 +128,10 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_SEARCH_TEXT_RESULTS = "WebExtensionSearchTextResults",
     WEB_EXTENSION_SEARCH_TEXT = "WebExtensionSearchText",
     WEB_EXTENSION_SEARCH_FILE = "WebExtensionSearchFile",
+    WEB_EXTENSION_NPS_WEBVIEW_FAILED_TO_INITIALIZE = "WebExtensionNPSWebViewFailedToInitialize",
+    WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT = "webExtensionFetchLocalScriptContent",
+    WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_SUCCESS = "webExtensionFetchLocalScriptContentSuccess",
+    WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_FAILED = "webExtensionFetchLocalScriptContentFailed",
+    WEB_EXTENSION_NPS_SUBMIT_FEEDBACK_FAILED = "webExtensionNpsSubmitFeedbackFailed",
+    WEB_EXTENSION_NPS_SUBMIT_FEEDBACK_SUCCESS = "webExtensionNpsSubmitFeedbackSuccess",
 }

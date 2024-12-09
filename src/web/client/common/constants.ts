@@ -26,11 +26,11 @@ export const BACK_TO_STUDIO_URL_TEMPLATE = "https://make{.region}.powerpages.mic
 export const STUDIO_PROD_REGION = "prod";
 export const ARTEMIS_RESPONSE_FAILED = "Artemis response failed";
 export const WEB_EXTENSION_GET_FROM_GRAPH_CLIENT_FAILED = "Web extension get from graph client failed";
-export const WEB_EXTENSION_FETCH_WORKER_SCRIPT_FAILED = "Web extension fetch worker script failed";
 export const WEB_EXTENSION_POPULATE_SHARED_WORKSPACE_SYSTEM_ERROR = "Web extension populate shared workspace system error";
 export const WEB_EXTENSION_WEB_WORKER_REGISTRATION_FAILED = "Web extension web worker registration failed";
 export const WEB_EXTENSION_FETCH_GET_OR_CREATE_SHARED_WORK_SPACE_ERROR = "Web extension fetch get or create shared workspace error";
 export const WEB_EXTENSION_QUICK_PICK_DEFAULT_STRING = "No users are currently viewing this page";
+export const WEB_EXTENSION_FETCH_LOCAL_SCRIPT_CONTENT_FAILED = "Web extension fetch local script content failed";
 
 // Web extension constants
 export const BASE_64 = 'base64';
