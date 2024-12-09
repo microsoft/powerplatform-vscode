@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import { ADX_ENTITYFORM, ADX_ENTITYLIST } from '../../copilot/constants';
+import { CreateSiteCommand } from './commands/create-site/CreateSiteCommand';
 
 // Constants
 export const POWERPAGES_CHAT_PARTICIPANT_ID = 'powerpages';
@@ -58,3 +59,6 @@ export const NL2PAGE_GENERATING_WEBPAGES = vscode.l10n.t("Generating webpages...
 export const NL2PAGE_RESPONSE_FAILED = 'Failed to get page content from NL2Page service';
 export const NL2SITE_GENERATING_SITE = vscode.l10n.t("Generating a new Power Pages site...");
 export const FAILED_TO_CREATE_SITE = vscode.l10n.t('Failed to create a new Power Pages site. Please try again.');
+export const POWERPAGES_COMMANDS = {
+    'create-site': new CreateSiteCommand()
+}
