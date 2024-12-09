@@ -91,9 +91,11 @@ export class PreviewSite {
         } else {
             const install = await vscode.window.showWarningMessage(
                 vscode.l10n.t(
-                `The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?`,
-                'Install', 'Cancel'
-            ));
+                    `The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?`
+                ),
+                vscode.l10n.t('Install'),
+                vscode.l10n.t('Cancel')
+            );
 
             if (install === vscode.l10n.t('Install')) {
                 // Open the Extensions view with the specific extension

@@ -46,7 +46,7 @@ import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue } from "../common/utilities/Utils";
-import { PreviewSite } from "./runtimeSitePreview/PreviewSite";
+import { PreviewSite } from "./runtime-site-preview/PreviewSite";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -236,7 +236,7 @@ export async function activate(
                 copilotNotificationShown = true;
 
             }
-            if(artemisResponse!==null && PreviewSite.isSiteRuntimePreviewEnabled()) {
+            if(artemisResponse !== null && PreviewSite.isSiteRuntimePreviewEnabled()) {
                 websiteURL = await PreviewSite.getWebSiteURL(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
             }
             await registerPreviewShowCommand();
