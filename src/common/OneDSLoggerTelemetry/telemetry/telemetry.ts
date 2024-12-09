@@ -18,6 +18,7 @@ export const CleanupRelatedFilesEvent = 'CleanupRelatedFilesEvent';
 export const UpdateEntityNameInYmlEvent = 'UpdateEntityNameInYmlEvent';
 export const UserFileCreateEvent = 'UserFileCreateEvent';
 export const FileCreateEvent = 'FileCreateEvent';
+export const GetWebsiteRecordID = 'getWebsiteRecordID';
 
 interface ITelemetryData {
     eventName: string,
