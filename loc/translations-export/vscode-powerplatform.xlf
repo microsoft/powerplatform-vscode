@@ -461,6 +461,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
       <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
     </trans-unit>
+    <trans-unit id="++CODE++4ed689987736ce09e17c67eb32f441ca7d0f7ed013a282aafd1ebcf302e6386b">
+      <source xml:lang="en">Website not found in the environment. Please check the credentials and root folder path.</source>
+    </trans-unit>
     <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
       <source xml:lang="en">What do you need help with?</source>
     </trans-unit>

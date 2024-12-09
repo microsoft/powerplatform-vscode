@@ -33,6 +33,7 @@
   },
   "Enter the environment URL": "Enter the environment URL",
   "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.": "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.",
+  "Website not found in the environment. Please check the credentials and root folder path.": "Website not found in the environment. Please check the credentials and root folder path.",
   "Selection is empty.": "Selection is empty.",
   "PREVIEW": "PREVIEW",
   "Explain the following code snippet:": "Explain the following code snippet:",

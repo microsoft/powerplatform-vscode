@@ -3,6 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as vscode from 'vscode';
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { getCommonHeaders, powerPlatformAPIAuthentication } from "./AuthenticationProvider";
 import { VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION,
@@ -48,6 +49,13 @@ export class PPAPIService {
         if (websiteDetails) {
             sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
             return websiteDetails;
+        } else {
+            // Showing a warning message when the website is not found in the environment
+            vscode.window.showWarningMessage(
+                vscode.l10n.t(
+                    `Website not found in the environment. Please check the credentials and root folder path.`
+                )
+            );
         }
         return null;
     }
