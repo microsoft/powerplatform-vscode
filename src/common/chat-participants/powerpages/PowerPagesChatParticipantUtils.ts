@@ -11,6 +11,9 @@ import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
 import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
+import { EditableFileSystemProvider } from "../../utilities/EditableFileSystemProvider";
+import { CREATE_SITE_BTN_CMD } from "./commands/create-site/CreateSiteConstants";
+import { collectSiteCreationInputs, getUpdatedPageContent } from "./commands/create-site/CreateSiteHelper";
 import { SUPPORTED_ENTITIES, EXPLAIN_CODE_PROMPT, FORM_PROMPT, LIST_PROMPT, STATER_PROMPTS, WEB_API_PROMPT  } from "./PowerPagesChatParticipantConstants";
 import { VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN } from "./PowerPagesChatParticipantTelemetryConstants";
 import { IComponentInfo, IPowerPagesChatResult } from "./PowerPagesChatParticipantTypes";
@@ -126,4 +129,23 @@ export function removeChatVariables(userPrompt: string): string {
     const regex = new RegExp(variablesToRemove.join('|'), 'g');
 
     return userPrompt.replace(regex, '').trim();
+}
+
+export function registerButtonCommands() {
+    vscode.commands.registerCommand(CREATE_SITE_BTN_CMD, async (siteName: string, sitePages, envList, contentProvider: EditableFileSystemProvider, isCreateSiteInputsReceived) => {
+        if (!isCreateSiteInputsReceived) {
+            //Update Page Content will be used for the site creation
+           // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           sitePages.map((page: any) => {
+                return {
+                    ...page,
+                    code: getUpdatedPageContent(contentProvider, page.metadata.pageTitle)
+                }
+            });
+            const siteCreateInputs = await collectSiteCreationInputs(siteName, envList);
+            if (siteCreateInputs) {
+                isCreateSiteInputsReceived = true;
+            }
+        }
+    });
 }
