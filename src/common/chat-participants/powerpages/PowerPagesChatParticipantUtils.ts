@@ -135,6 +135,7 @@ export function registerButtonCommands() {
     vscode.commands.registerCommand(CREATE_SITE_BTN_CMD, async (siteName: string, sitePages, envList, contentProvider: EditableFileSystemProvider, isCreateSiteInputsReceived) => {
         if (!isCreateSiteInputsReceived) {
             //Update Page Content will be used for the site creation
+           // eslint-disable-next-line @typescript-eslint/no-explicit-any
            sitePages.map((page: any) => {
                 return {
                     ...page,
