@@ -23,9 +23,20 @@ import {
     VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_FAILED
 } from "./TelemetryConstants";
 import { ERROR_CONSTANTS } from "../ErrorConstants";
-import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PPAPI_PREPROD_WEBSITES_SERVICE_SCOPE_DEFAULT, PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL, ServiceEndpointCategory } from "./Constants";
+import { BAP_SERVICE_SCOPE_DEFAULT, INTELLIGENCE_SCOPE_DEFAULT, PPAPI_GCC_HIGH_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT, PPAPI_MOONCAKE_WEBSITES_SERVICE_SCOPE_DEFAULT, PPAPI_PREPROD_WEBSITES_SERVICE_SCOPE_DEFAULT, PPAPI_TEST_WEBSITES_SERVICE_SCOPE_DEFAULT, PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT, PROVIDER_ID, SCOPE_OPTION_CONTACTS_READ, SCOPE_OPTION_DEFAULT, SCOPE_OPTION_OFFLINE_ACCESS, SCOPE_OPTION_USERS_READ_BASIC_ALL, ServiceEndpointCategory } from "./Constants";
 import jwt_decode from 'jwt-decode';
 import { showErrorDialog } from "../utilities/errorHandlerUtil";
+
+const serviceScopeMapping: { [key in ServiceEndpointCategory]: string } = {
+    [ServiceEndpointCategory.NONE]: "",
+    [ServiceEndpointCategory.PROD]: PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    [ServiceEndpointCategory.PREPROD]: PPAPI_PREPROD_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    [ServiceEndpointCategory.TEST]: PPAPI_TEST_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    [ServiceEndpointCategory.MOONCAKE]: PPAPI_MOONCAKE_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    [ServiceEndpointCategory.GCC]: PPAPI_GCC_HIGH_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    [ServiceEndpointCategory.DOD]: PPAPI_GCC_HIGH_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT,
+    [ServiceEndpointCategory.HIGH]: PPAPI_GCC_HIGH_DOD_WEBSITES_SERVICE_SCOPE_DEFAULT,
+};
 
 export function getCommonHeadersForDataverse(
     accessToken: string,
@@ -300,7 +311,7 @@ export async function powerPlatformAPIAuthentication(
     firstTimeAuth = false
 ): Promise<string> {
     let accessToken = "";
-    const PPAPI_WEBSITES_ENDPOINT = [ServiceEndpointCategory.TEST, ServiceEndpointCategory.PREPROD].includes(serviceEndpointStamp) ? PPAPI_PREPROD_WEBSITES_SERVICE_SCOPE_DEFAULT : PPAPI_WEBSITES_SERVICE_SCOPE_DEFAULT;
+    const PPAPI_WEBSITES_ENDPOINT = serviceScopeMapping[serviceEndpointStamp];
     try {
         let session = await vscode.authentication.getSession(
             PROVIDER_ID,
