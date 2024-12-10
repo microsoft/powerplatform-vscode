@@ -34,7 +34,7 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     } = createSiteOptions;
 
     if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
-        return;
+        throw new Error(NL2SITE_REQUEST_FAILED);
     }
     const { siteName, siteDescription, sitePages, sitePagesList } = await fetchSiteAndPageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
 
