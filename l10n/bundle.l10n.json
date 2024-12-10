@@ -83,9 +83,9 @@
   "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.": "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.",
   "Checking for active auth profile...": "Checking for active auth profile...",
   "@PowerPages is not yet available in your region.": "@PowerPages is not yet available in your region.",
-  "Failed to get site content from NL2Site service": "Failed to get site content from NL2Site service",
   "Generating webpages...": "Generating webpages...",
   "Generating a new Power Pages site...": "Generating a new Power Pages site...",
+  "Failed to create a new Power Pages site. Please try again.": "Failed to create a new Power Pages site. Please try again.",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [
