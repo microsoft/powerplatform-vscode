@@ -85,6 +85,9 @@
       <source xml:lang="en">Cloud Instance: {0}</source>
       <note>The {0} represents profile's Azure Cloud Instances</note>
     </trans-unit>
+    <trans-unit id="++CODE++232fbb1fd818bb971f55d74ece29929d519b9d60c09149ffad2159564220157b">
+      <source xml:lang="en">Collecting site creation inputs...</source>
+    </trans-unit>
     <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
       <source xml:lang="en">Confirm</source>
     </trans-unit>
@@ -96,6 +99,9 @@
     </trans-unit>
     <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
       <source xml:lang="en">Copy to clipboard</source>
+    </trans-unit>
+    <trans-unit id="++CODE++47a9444e762cb06cfcc4726dc398abcbdeeab17ea793dc160c11b4227efde4b7">
+      <source xml:lang="en">Creating site:</source>
     </trans-unit>
     <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
       <source xml:lang="en">Creating {0}...</source>
@@ -122,6 +128,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++183c7081100618aebb39219dd011d8d9961649aad278be8fe49c0d1a8874684f">
       <source xml:lang="en">Do not show again</source>
     </trans-unit>
+    <trans-unit id="++CODE++bacf6f8423d6601b9b631d68d5771457d14b1b7f6d2fbe91636f122f55651465">
+      <source xml:lang="en">Download and Edit</source>
+    </trans-unit>
     <trans-unit id="++CODE++ac72407b10d30bf47faf11da09b605a85fc649bd3f2e33acb281655cb9021d9d">
       <source xml:lang="en">Edit the site</source>
     </trans-unit>
@@ -143,6 +152,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++f9e17ed11037dab93f8820c30db63b2ff2a045b5761f71818b7291afae60f199">
       <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
     </trans-unit>
+    <trans-unit id="++CODE++80d074d5d3c19a11c19f905f0ed005a708a1dd2ac7904998a2f00afb996953ba">
+      <source xml:lang="en">Failed to create a new Power Pages site.</source>
+    </trans-unit>
     <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
       <source xml:lang="en">Failed to create: {0}.</source>
       <note>{0} will be replaced by the error message.</note>
@@ -158,9 +170,6 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
       <source xml:lang="en">Failed to get file ready for edit: {0}</source>
-    </trans-unit>
-    <trans-unit id="++CODE++41405814c44fb391a3f8e31d1a3bc20299cd2e87979ebfbd1eb9488be12c617a">
-      <source xml:lang="en">Failed to get site content from NL2Site service</source>
     </trans-unit>
     <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
       <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -330,6 +339,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++7f6276dc63b573d177b7d6e17f787b108e3c8c7d449324ac13a6d06b1be59d8e">
       <source xml:lang="en">Please enter a name for the webpage.</source>
     </trans-unit>
+    <trans-unit id="++CODE++c2b2f3e07809c513105ae6bd9bba67e6576baf2ea9dfe3aff6a56c4f1188c86f">
+      <source xml:lang="en">Populating site records...</source>
+    </trans-unit>
     <trans-unit id="++CODE++1bac158cc07a75506df3774db0ad7c188c19ccad4943c4cf03da8b6700ef9ce4">
       <source xml:lang="en">Power Pages Copilot is now connected to the environment: {0} : {1}</source>
       <note>{0} represents the environment name</note>
@@ -340,6 +352,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++777d5f3afd46e18d42c0baad6d9a0c7a6867cdf31ae4d342ad5e695486f05ae7">
       <source xml:lang="en">Preparing pac CLI (v{0})...</source>
       <note>{0} represents the version number</note>
+    </trans-unit>
+    <trans-unit id="++CODE++bf984d5f33f516d40fb2f3b4c43436cc0675ac42289b7f500f3ed7f453df89d0">
+      <source xml:lang="en">Preview Site</source>
     </trans-unit>
     <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
       <source xml:lang="en">Preview site</source>
@@ -353,6 +368,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++7a6098eb5ff2c2401890216bb502ce6583ff7bddc99e62f8751551eab45ae1b4">
       <source xml:lang="en">Profile Kind: {0}</source>
       <note>The {0} represents the profile type (Admin vs Dataverse)</note>
+    </trans-unit>
+    <trans-unit id="++CODE++fea9e589539fae1436a406f918e785b212b3c84195229a4e5c7502d98ec93ee2">
+      <source xml:lang="en">Provisioning website...</source>
     </trans-unit>
     <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
       <source xml:lang="en">Response data is empty</source>
@@ -375,6 +393,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
+    </trans-unit>
+    <trans-unit id="++CODE++26c7bbaceaeadb3653e49d7f46715d4a70269efb7657ffa43ec3baeb6b54fd98">
+      <source xml:lang="en">Site with following pages will be created. You can preview and edit the content by clicking on the page names below.</source>
     </trans-unit>
     <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
       <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
@@ -433,6 +454,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
       <source xml:lang="en">Unmanaged</source>
     </trans-unit>
+    <trans-unit id="++CODE++aa06a231d721429043d58ef6e47e4625f215cbd107180181009bf03f515db951">
+      <source xml:lang="en">Updating page content...</source>
+    </trans-unit>
     <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
       <source xml:lang="en">User: {0}</source>
       <note>The {0} represents auth profile's user name (email address))</note>
@@ -448,6 +472,15 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
       <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++64007810cce44a4d57dcfa7aec919e7df1799c0582656e804c325484c50066c6">
+      <source xml:lang="en">Website provisioning failed.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++930257bb5815e0bfa3b551df08f0501651df4638868022ef18f6f3ffea756fc4">
+      <source xml:lang="en">Website provisioning is taking longer than expected.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++32b89688d09b79f4d08e2bd4769e907981e54516d1b6a9e19cf1643478383c29">
+      <source xml:lang="en">Website provisioning status is unknown: </source>
     </trans-unit>
     <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
       <source xml:lang="en">What do you need help with?</source>
@@ -472,6 +505,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
       <source xml:lang="en">You can use this in &lt;a href=&quot;#&quot; id=&quot;github-copilot-link&quot;&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++bf8d477ee4871fff721056359f5b4b8f126f272125019869d90d52a463085d5b">
+      <source xml:lang="en">Your site is successfully created at</source>
     </trans-unit>
     <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
       <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
