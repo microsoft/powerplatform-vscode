@@ -271,7 +271,7 @@ export async function provisionWebsite(
     orgId: string,
     userId: string,
     telemetry: ITelemetry
-): Promise<any> {
+): Promise<IWebsiteDetails | null> {
     const websiteId = siteManager.getSiteDataAndActions().ppSiteData.powerpagesite[0].powerpagesiteid ?? '';
 
     // Start website creation
