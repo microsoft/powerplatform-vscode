@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { IIntelligenceAPIEndpointInformation } from "../../../../services/Interfaces";
 import { EditableFileSystemProvider } from "../../../../utilities/EditableFileSystemProvider";
 import { IEnvInfo } from "../../../../constants";
+import { ServiceEndpointCategory } from "../../../../services/Constants";
 
 export interface PowerPagesParsedJson {
     powerpagesite: PowerPagesSite[];
@@ -133,6 +134,10 @@ export interface ICreateSiteCommandArgs {
     contentProvider: EditableFileSystemProvider;
     telemetry: ITelemetry;
     isCreateSiteInputsReceived: boolean;
+    endPointStamp: ServiceEndpointCategory,
+    envId: string;
+    orgId: string;
+    userId: string;
 }
 
 export type Page = PageDataDetails & {

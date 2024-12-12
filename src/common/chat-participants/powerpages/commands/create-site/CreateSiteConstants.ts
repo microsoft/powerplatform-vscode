@@ -3,6 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as vscode from 'vscode';
+
 export const EDITABLE_SCHEME = 'editable';
 export const ENGLISH = "English";
 export const ENGLISH_LCID = 1033;
@@ -62,3 +64,28 @@ export const HOME_PAGE_TYPE = 'Home';
 export const ABOUT_PAGE_TYPE = 'AboutUs';
 export const FAQ_PAGE_TYPE = 'FAQ';
 export const INFO_PAGE_TYPE = 'Informational';
+
+export const MESSAGE_SITE_CREATED = 'Your site is successfully created at';
+export const BUTTON_DOWNLOAD_EDIT = 'Download and Edit';
+export const BUTTON_PREVIEW_SITE = 'Preview Site';
+
+export const CREATE_SITE_PROGRESS_MESSAGES = {
+    updatingPageContent: 'Updating page content...',
+    collectingSiteCreationInputs: 'Collecting site creation inputs...',
+    populatingSiteRecords: 'Populating site records...',
+    provisioningWebsite: 'Provisioning website...'
+};
+
+export const CREATE_SITE_OPERATION_COMPLETE = 'OperationComplete';
+export const CREATE_SITE_OPERATION_FAILED = 'OperationFailed';
+export const CREATE_SITE_OPERATION_IN_PROGRESS = 'OperationInProgress';
+export const CREATE_SITE_OPERATION_NOT_STARTED = 'OperationNotStarted';
+
+export const POLLING_INTERVAL_MS = 5000; // Poll every 5 seconds
+export const MAX_POLLING_TIME_MS = 180000; // Maximum polling time of 3 minutes
+
+export const WEBSITE_PROVISIONING_FAILED = 'Website provisioning failed.'
+export const WEBSITE_PROVISIONING_UNKNOWN_STATUS = 'Website provisioning status is unknown: ';
+export const WEBSITE_PROVISIONING_TIMEOUT = 'Website provisioning is taking longer than expected.'; //Add PP Home page info
+
+export const SITE_CREATION_CONFIRMATION_CHAT_MSG = vscode.l10n.t('Site with following pages will be created. You can preview and edit the content by clicking on the page names below.');

@@ -58,7 +58,8 @@ export const NL2SITE_REQUEST_FAILED = 'Failed to get site content from NL2Site s
 export const NL2PAGE_GENERATING_WEBPAGES = vscode.l10n.t("Generating webpages...");
 export const NL2PAGE_RESPONSE_FAILED = 'Failed to get page content from NL2Page service';
 export const NL2SITE_GENERATING_SITE = vscode.l10n.t("Generating a new Power Pages site...");
-export const FAILED_TO_CREATE_SITE = vscode.l10n.t('Failed to create a new Power Pages site. Please try again.');
+export const FAILED_TO_CREATE_SITE = vscode.l10n.t('Failed to create a new Power Pages site.');
 export const POWERPAGES_COMMANDS = {
     'create-site': new CreateSiteCommand()
 }
+export const CREATING_SITE = vscode.l10n.t('Creating site:');

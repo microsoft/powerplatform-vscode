@@ -40,3 +40,5 @@ export enum WebsiteApplicationType {
     Production = "Production",
     Trial = "Trial",
 }
+
+export const DEFAULT_PORTAL_TEMPLATE = "DefaultPortalTemplate";
