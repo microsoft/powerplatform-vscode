@@ -5,6 +5,7 @@
 
 export const EDITABLE_SCHEME = 'editable';
 export const ENGLISH = "English";
+export const ENGLISH_LCID = 1033;
 export const MIN_PAGES = 7;
 export const MAX_PAGES = 7;
 export const SITE_CREATE_INPUTS = 'New Power Pages Site';
