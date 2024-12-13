@@ -11,7 +11,7 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import { PORTAL_YEOMAN_GENERATOR_PACKAGE_NAME, PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME } from '../../common/constants';
-import { ICliAcquisitionContext } from './CliAcquisition';
+import { ICliAcquisitionContext } from './CliAcquisitionContext';
 import { glob } from 'glob';
 import commandExists from 'command-exists';
 import { oneDSLoggerWrapper } from '../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
