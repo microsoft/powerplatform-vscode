@@ -370,6 +370,10 @@
         "command": "powerPlatform.previewCurrentActiveUsers",
         "title": "Current Active Users",
         "icon": "$(person)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.preview-site",
+        "title": "%powerplatform.pages.previewSite.title%"
       }
     ],
     "configuration": {
