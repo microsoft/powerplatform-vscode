@@ -167,7 +167,7 @@ export async function collectSiteCreationInputs(siteName: string, envList: IEnvI
                     : undefined,
         });
         state.envName = pick.label;
-        state.OrgUrl = pick.description;
+        state.orgUrl = pick.description;
         return (input: MultiStepInput) => inputSiteName(input, state);
     }
 
