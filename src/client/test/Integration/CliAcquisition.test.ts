@@ -5,7 +5,8 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { CliAcquisition, ICliAcquisitionContext } from '../../lib/CliAcquisition';
+import { CliAcquisition } from '../../lib/CliAcquisition';
+import { ICliAcquisitionContext } from '../../lib/CliAcquisitionContext';
 import { expect } from 'chai';
 import { ITelemetry } from '../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { NoopTelemetryInstance } from '../../telemetry/NoopTelemetry';

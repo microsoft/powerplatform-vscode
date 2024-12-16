@@ -14,7 +14,7 @@ import { intelligenceAPIAuthentication } from '../../services/AuthenticationProv
 import { ActiveOrgOutput } from '../../../client/pac/PacTypes';
 import { AUTHENTICATION_FAILED_MSG, COPILOT_NOT_AVAILABLE_MSG, COPILOT_NOT_RELEASED_MSG, DISCLAIMER_MESSAGE, INVALID_RESPONSE, NO_PROMPT_MESSAGE, PAC_AUTH_INPUT, PAC_AUTH_NOT_FOUND, POWERPAGES_CHAT_PARTICIPANT_ID, POWERPAGES_COMMANDS, RESPONSE_AWAITED_MSG, RESPONSE_SCENARIOS, SKIP_CODES, STATER_PROMPTS, WELCOME_MESSAGE, WELCOME_PROMPT } from './PowerPagesChatParticipantConstants';
 import { ORG_DETAILS_KEY, handleOrgChangeSuccess, initializeOrgDetails } from '../../utilities/OrgHandlerUtils';
-import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups, handleChatParticipantFeedback, createErrorResult, createSuccessResult, removeChatVariables } from './PowerPagesChatParticipantUtils';
+import { createAndReferenceLocation, getComponentInfo, getEndpoint, provideChatParticipantFollowups, handleChatParticipantFeedback, createErrorResult, createSuccessResult, removeChatVariables, registerButtonCommands } from './PowerPagesChatParticipantUtils';
 import { checkCopilotAvailability, fetchRelatedFiles, getActiveEditorContent } from '../../utilities/Utils';
 import { IIntelligenceAPIEndpointInformation } from '../../services/Interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -62,6 +62,8 @@ export class PowerPagesChatParticipant {
         this.extensionContext = context;
 
         this._pacWrapper = pacWrapper;
+
+        registerButtonCommands();
 
         this._disposables.push(orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             await this.handleOrgChangeSuccess(orgDetails);
@@ -131,9 +133,13 @@ export class PowerPagesChatParticipant {
             const userId = intelligenceApiAuthResponse.userId;
             const intelligenceAPIEndpointInfo = await getEndpoint(this.orgID, this.environmentID, this.telemetry, this.cachedEndpoint, this.powerPagesAgentSessionId);
 
+            if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
+                return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
+            }
+
             const copilotAvailabilityStatus = checkCopilotAvailability(intelligenceAPIEndpointInfo.intelligenceEndpoint, this.orgID, this.telemetry, this.powerPagesAgentSessionId);
 
-            if (!copilotAvailabilityStatus || !intelligenceAPIEndpointInfo.intelligenceEndpoint) {
+            if (!copilotAvailabilityStatus) {
                 return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
             }
 

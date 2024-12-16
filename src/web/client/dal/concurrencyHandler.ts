@@ -26,7 +26,7 @@ export class ConcurrencyHandler {
                     this.handleRequest.name,
                     this._bulkhead.executionSlots.toString(),
                 );
-                throw new Error(ERROR_CONSTANTS.SUBURI_EMPTY);
+                throw new Error(ERROR_CONSTANTS.BULKHEAD_LIMITS_EXCEEDED);
             } else {
                 throw e;
             }

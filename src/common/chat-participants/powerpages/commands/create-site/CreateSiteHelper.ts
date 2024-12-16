@@ -11,13 +11,15 @@ import { NL2SITE_REQUEST_FAILED, NL2PAGE_GENERATING_WEBPAGES, NL2PAGE_RESPONSE_F
 import { oneDSLoggerWrapper } from '../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST, VSCODE_EXTENSION_PREVIEW_SITE_PAGES, VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR } from '../../PowerPagesChatParticipantTelemetryConstants';
 import { EditableFileSystemProvider } from '../../../../utilities/EditableFileSystemProvider';
-import { HTML_FILE_EXTENSION, UTF8_ENCODING } from '../../../../constants';
-import { EDITABLE_SCHEME } from './CreateSiteConstants';
-import { ICreateSiteOptions, IPreviewSitePagesContentOptions } from './CreateSiteTypes';
+import { HTML_FILE_EXTENSION, IEnvInfo, UTF8_ENCODING } from '../../../../constants';
+import { CREATE_SITE_BTN_CMD, CREATE_SITE_BTN_TITLE, CREATE_SITE_BTN_TOOLTIP, EDITABLE_SCHEME, ENVIRONMENT_FOR_SITE_CREATION, SITE_CREATE_INPUTS, SITE_NAME, SITE_NAME_REQUIRED } from './CreateSiteConstants';
+import { ICreateSiteOptions, IPreviewSitePagesContentOptions, ISiteInputState } from './CreateSiteTypes';
+import { MultiStepInput } from '../../../../utilities/MultiStepInput';
+import { getEnvList } from '../../../../utilities/Utils';
 
 export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     const {
-        intelligenceEndpoint,
+        intelligenceAPIEndpointInfo,
         intelligenceApiToken,
         userPrompt,
         sessionId,
@@ -29,12 +31,22 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
         extensionContext
     } = createSiteOptions;
 
-    const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
+    if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
+        return;
+    }
+    const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const contentProvider = previewSitePagesContent({sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId});
+    const contentProvider = previewSitePagesContent({ sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId });
 
-    // TODO: Implement the create site button click handler
+    const envList = await getEnvList(telemetry, intelligenceAPIEndpointInfo.endpointStamp);
+
+    stream.button({
+        command: CREATE_SITE_BTN_CMD,
+        title: CREATE_SITE_BTN_TITLE,
+        tooltip: CREATE_SITE_BTN_TOOLTIP,
+        arguments: [siteName, envList, contentProvider, false],
+    });
 
     return {
         siteName,
@@ -117,4 +129,63 @@ function previewSitePagesContent(
         throw error;
     }
 }
+// Function to get updated content
+export function getUpdatedPageContent(contentProvider: EditableFileSystemProvider, pageName: string): string {
+    const pageUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/${pageName}${HTML_FILE_EXTENSION}`);
+    return contentProvider.getFileContent(pageUri);
+}
 
+export async function collectSiteCreationInputs(siteName: string, envList: IEnvInfo[]) {
+    const envNames: vscode.QuickPickItem[] = envList.map((env: IEnvInfo) => {
+        return {
+            label: env.envDisplayName,
+            description: env.orgUrl,
+        };
+    });
+
+    const title = vscode.l10n.t(SITE_CREATE_INPUTS);
+
+    async function collectInputs() {
+        const state = {} as Partial<ISiteInputState>;
+        await MultiStepInput.run((input) => selectEnvName(input, state));
+        return state as ISiteInputState;
+    }
+
+    async function selectEnvName(
+        input: MultiStepInput,
+        state: Partial<ISiteInputState>
+    ) {
+        const pick = await input.showQuickPick({
+            title,
+            step: 1,
+            totalSteps: 2,
+            placeholder: vscode.l10n.t(ENVIRONMENT_FOR_SITE_CREATION),
+            items: envNames,
+            activeItem:
+                typeof state.envName !== "string"
+                    ? state.envName
+                    : undefined,
+        });
+        state.envName = pick.label;
+        state.orgUrl = pick.description;
+        return (input: MultiStepInput) => inputSiteName(input, state);
+    }
+
+    async function inputSiteName(
+        input: MultiStepInput,
+        state: Partial<ISiteInputState>
+    ) {
+        state.siteName = await input.showInputBox({
+            title,
+            step: 2,
+            totalSteps: 2,
+            value: state.siteName || siteName,
+            placeholder: vscode.l10n.t(SITE_NAME),
+            validate: async (value) => (value ? undefined : vscode.l10n.t(SITE_NAME_REQUIRED)),
+        });
+    }
+
+    const siteInputState = await collectInputs();
+    // Return the collected site creation inputs including site name, environment name, and domain name
+    return siteInputState;
+}

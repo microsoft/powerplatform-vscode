@@ -9,10 +9,9 @@ import * as vscode from "vscode";
 import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
 import { vscodeExtAppInsightsResourceProvider } from "../common/telemetry-generated/telemetryConfiguration";
 import { ITelemetryData } from "../common/TelemetryData";
-import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
+import { CliAcquisition } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import { PortalWebView } from "./PortalWebView";
-import { ITelemetry } from "../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 
 import {
     LanguageClient,
@@ -46,6 +45,7 @@ import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue } from "../common/utilities/Utils";
+import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
 import { PreviewSite } from "./runtime-site-preview/PreviewSite";
 
 let client: LanguageClient;
@@ -492,71 +492,4 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
         copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
     }
 
-}
-
-// allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
-class CliAcquisitionContext implements ICliAcquisitionContext {
-    public constructor(
-        private readonly _context: vscode.ExtensionContext,
-        private readonly _telemetry: ITelemetry
-    ) { }
-
-    public get extensionPath(): string {
-        return this._context.extensionPath;
-    }
-    public get globalStorageLocalPath(): string {
-        return this._context.globalStorageUri.fsPath;
-    }
-    public get telemetry(): ITelemetry {
-        return this._telemetry;
-    }
-
-    showInformationMessage(message: string, ...items: string[]): void {
-        vscode.window.showInformationMessage(message, ...items);
-    }
-
-    showErrorMessage(message: string, ...items: string[]): void {
-        vscode.window.showErrorMessage(message, ...items);
-    }
-
-    showCliPreparingMessage(version: string): void {
-        vscode.window.showInformationMessage(
-            vscode.l10n.t({
-                message: "Preparing pac CLI (v{0})...",
-                args: [version],
-                comment: ["{0} represents the version number"]
-            })
-        );
-    }
-
-    showCliReadyMessage(): void {
-        vscode.window.showInformationMessage(
-            vscode.l10n.t('The pac CLI is ready for use in your VS Code terminal!'));
-    }
-
-    showCliInstallFailedError(err: string): void {
-        vscode.window.showErrorMessage(
-            vscode.l10n.t({
-                message: "Cannot install pac CLI: {0}",
-                args: [err],
-                comment: ["{0} represents the error message returned from the exception"]
-            })
-        );
-    }
-
-    showGeneratorInstallingMessage(version: string): void {
-        vscode.window.showInformationMessage(
-            vscode.l10n.t({
-                message: "Installing Power Pages generator(v{0})...",
-                args: [version],
-                comment: ["{0} represents the version number"]
-            }))
-    }
-
-    locDotnetNotInstalledOrInsufficient(): string {
-        return vscode.l10n.t({
-            message: "dotnet sdk 6.0 or greater must be installed",
-            comment: ["Do not translate 'dotnet' or 'sdk'"]
-        });
-    }
 }
