@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME, VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED } from "../constants";
+import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, IEnvInfo, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME, VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData } from "../copilot/model";
@@ -325,8 +325,11 @@ export function getECSOrgLocationValue(clusterName: string, clusterNumber: strin
 }
 
 //API call to get env list for an org
-export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEndpointCategory): Promise<{ envId: string, envDisplayName: string }[]> {
-    const envInfo: { envId: string, envDisplayName: string }[] = [];
+export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEndpointCategory | undefined): Promise<IEnvInfo[]> {
+    if(!endpointStamp) {
+        return [];
+    }
+    const envInfo: IEnvInfo[] = [];
     try {
         const bapAuthToken = await bapServiceAuthentication(telemetry, true);
         const bapEndpoint = getBAPEndpoint(endpointStamp, telemetry);
@@ -344,7 +347,7 @@ export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEn
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             envListJson.value.forEach((env: any) => {
                 envInfo.push({
-                    envId: env.properties.linkedEnvironmentMetadata.instanceUrl,
+                    orgUrl: env.properties.linkedEnvironmentMetadata.instanceUrl,
                     envDisplayName: env.properties.displayName
                 });
             });
