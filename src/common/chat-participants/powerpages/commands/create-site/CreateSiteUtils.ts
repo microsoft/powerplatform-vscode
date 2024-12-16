@@ -155,6 +155,7 @@ export const getFileUploadHeaders = (fileName: string, dataverseToken: string) =
     };
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createHttpRequestOptions(method: string, url: string, body: any, headers?: Record<string, string>): any {
     return {
         method,

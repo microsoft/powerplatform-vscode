@@ -110,6 +110,7 @@ function previewSitePagesContent(
 
     try {
         const sitePagesContent: { name: string; content: string }[] = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         sitePages.forEach((page: any) => {
             sitePagesContent.push({ name: page.metadata.pageTitle, content: page.code });
         });
@@ -198,6 +199,7 @@ export async function collectSiteCreationInputs(siteName: string, envList: IEnvI
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function populateSiteRecords(siteName: string, sitePagesList: string[], sitePages: any, orgUrl: string, telemetry: ITelemetry) {
     return vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
@@ -240,7 +242,9 @@ export async function populateSiteRecords(siteName: string, sitePagesList: strin
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createSitePagesMap(sitePagesList: string[], sitePages: any): Record<string, any> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return sitePagesList.reduce((acc: Record<string, any>, pageName: string, index: number) => {
         acc[pageName] = sitePages[index];
         return acc;
@@ -248,6 +252,7 @@ function createSitePagesMap(sitePagesList: string[], sitePages: any): Record<str
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function processSitePages(sitePagesMap: Record<string, any>, siteManager: PowerPagesSiteManager): Promise<void> {
     const { actions } = siteManager.getSiteDataAndActions();
     const promises = Object.entries(sitePagesMap).map(([pageName, pageContent]) => {

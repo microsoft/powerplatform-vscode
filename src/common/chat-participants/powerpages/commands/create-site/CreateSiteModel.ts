@@ -127,6 +127,7 @@ export interface ISiteInputState {
 
 export interface ICreateSiteCommandArgs {
     siteName: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sitePages: any[];
     sitePagesList: string[];
     envList: IEnvInfo[];

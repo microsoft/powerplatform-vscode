@@ -135,6 +135,7 @@ export function registerButtonCommands() {
     vscode.commands.registerCommand(CREATE_SITE_BTN_CMD, async ({ siteName, sitePages, sitePagesList, envList, contentProvider, telemetry, isCreateSiteInputsReceived }: ICreateSiteCommandArgs) => {
         if (!isCreateSiteInputsReceived) {
             // Update Page Content will be used for the site creation
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const updatedPages = sitePages.map((page: any) => {
                 return {
                     ...page,
