@@ -26,7 +26,7 @@ export class PreviewSite {
             return false;
         }
 
-        return true;
+        return enableSiteRuntimePreview;
     }
 
     static async getWebSiteURL(workspaceFolders: WorkspaceFolder[], stamp: ServiceEndpointCategory, envId: string, telemetry: ITelemetry): Promise<string> {
