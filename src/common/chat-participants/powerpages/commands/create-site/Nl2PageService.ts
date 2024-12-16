@@ -8,37 +8,42 @@ import { ITelemetry } from "../../../../OneDSLoggerTelemetry/telemetry/ITelemetr
 import { getCommonHeaders } from "../../../../services/AuthenticationProvider";
 import { ABOUT_PAGE_TYPE, FAQ_PAGE_TYPE, HOME_PAGE_TYPE, INFO_PAGE_TYPE, NL2PAGE_GENERATE_NEW_PAGE, NL2PAGE_REQUEST_FAILED, NL2PAGE_SCENARIO, NL2PAGE_SCOPE} from "../../PowerPagesChatParticipantConstants";
 import { VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, VSCODE_EXTENSION_NL2PAGE_REQUEST_SUCCESS } from "../../PowerPagesChatParticipantTelemetryConstants";
+import { ABOUT_PAGE_KEY, FAQ_PAGE_KEY, HOME_PAGE_KEY } from "./CreateSiteConstants";
+import { Page } from "./CreateSiteModel";
 
-export async function getNL2PageData(aibEndpoint: string, aibToken: string, userPrompt: string, siteName: string, sitePagesList: string[], sessionId: string, telemetry: ITelemetry, orgId: string, envId: string, userId: string) {
+export async function getNL2PageData(aibEndpoint: string, aibToken: string, userPrompt: string, siteName: string, sitePagesList: Page[], sessionId: string, telemetry: ITelemetry, orgId: string, envId: string, userId: string) {
 
-    const constructRequestBody = (pageType: string, colorNumber:number, exampleNumber: number) => ({
+    const constructRequestBody = (pageType: string, pageName: string, colorNumber:number, exampleNumber: number, subScenario: string, isNotHomePage:boolean) => ({
         "crossGeoOptions": {
             "enableCrossGeoCall": true
         },
-        "question": `${userPrompt} - ${pageType} page`,
+        "question": `${userPrompt} - ${pageName} page`,
         "context": {
             "shouldCheckBlockList": false,
             "sessionId": sessionId,
             "scenario": NL2PAGE_SCENARIO,
-            "subScenario": NL2PAGE_GENERATE_NEW_PAGE,
+            "subScenario": subScenario,
             "version": "V1",
             "information": {
                 "scope": NL2PAGE_SCOPE,
                 "includeImages": true,
-                "pageType": pageType === 'FAQ' ? 'FAQ' : 'Home', //Verify if this is correct
+                "pageType": pageType,
                 "title": siteName,
-                "pageName": pageType,
+                "pageName": pageName,
                 "colorNumber": colorNumber,
-                "shuffleImages": false,
+                "shuffleImages": isNotHomePage,
                 "exampleNumber": exampleNumber
             }
         }
     });
 
-    const requests = sitePagesList.map(async pageType => {
+    const requests = sitePagesList.map(async page => {
+        const isNotHomePage = page.pageKey !== HOME_PAGE_KEY;
+        const subScenario = isNotHomePage ?  'GeneratePageWithLayout': NL2PAGE_GENERATE_NEW_PAGE;
         const colorNumber = generateRandomColorNumber();
-        const exampleNumber = generateRandomExampleNumber(pageType);
-        const requestBody = constructRequestBody(pageType, colorNumber, exampleNumber);
+        const pageTypeFinal = generatePageType(page.pageKey);
+        const exampleNumber = generateRandomExampleNumber(pageTypeFinal);
+        const requestBody = constructRequestBody(pageTypeFinal, page.pageName, colorNumber, exampleNumber, subScenario, isNotHomePage);
 
         const requestInit: RequestInit = {
             method: "POST",
@@ -49,7 +54,7 @@ export async function getNL2PageData(aibEndpoint: string, aibToken: string, user
         try {
             const response = await fetch(aibEndpoint, requestInit);
             if (!response.ok) {
-                throw new Error(`${NL2PAGE_REQUEST_FAILED} ${pageType}`);
+                throw new Error(`${NL2PAGE_REQUEST_FAILED} ${pageTypeFinal}`);
             }
 
             const responseData = await response.json();
@@ -59,8 +64,8 @@ export async function getNL2PageData(aibEndpoint: string, aibToken: string, user
             }
             return null;
         } catch (error) {
-            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, { error: (error as Error)?.message, pageType });
-            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, error as string, error as Error, { sessionId: sessionId, orgId:orgId, envId: envId, userId: userId, pageType: pageType}, {});
+            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, { error: (error as Error)?.message, pageTypeFinal });
+            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_NL2PAGE_REQUEST_FAILED, error as string, error as Error, { sessionId: sessionId, orgId:orgId, envId: envId, userId: userId, pageType: pageTypeFinal}, {});
             return null;
         }
     });
@@ -90,4 +95,17 @@ export const generateRandomColorNumber = () => {
       return infoExampleNumbers[Math.floor(Math.random() * infoExampleNumbers.length)];
     }
     return 0;
+  };
+
+  export const generatePageType = (pageKey: string) => {
+    switch (pageKey) {
+      case HOME_PAGE_KEY:
+        return HOME_PAGE_TYPE;
+      case ABOUT_PAGE_KEY:
+        return ABOUT_PAGE_TYPE;
+      case FAQ_PAGE_KEY:
+        return FAQ_PAGE_TYPE;
+      default:
+        return HOME_PAGE_TYPE;
+    }
   };

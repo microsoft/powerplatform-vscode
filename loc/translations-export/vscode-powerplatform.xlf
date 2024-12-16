@@ -97,6 +97,9 @@
     <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
       <source xml:lang="en">Copy to clipboard</source>
     </trans-unit>
+    <trans-unit id="++CODE++6dc7db56b51f2fb60ba165717916e54647dd57ed444c8e4f9224aa37fc1a9f40">
+      <source xml:lang="en">Creating Site Records</source>
+    </trans-unit>
     <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
       <source xml:lang="en">Creating {0}...</source>
       <note>{0} will be replaced by the entity type.</note>
@@ -143,6 +146,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++f9e17ed11037dab93f8820c30db63b2ff2a045b5761f71818b7291afae60f199">
       <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
     </trans-unit>
+    <trans-unit id="++CODE++b985f1515c42b4b5b0c11a3d7b3286fc9d66997d476668ab1f93a4a11499fef5">
+      <source xml:lang="en">Failed to create a new Power Pages site. Please try again.</source>
+    </trans-unit>
     <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
       <source xml:lang="en">Failed to create: {0}.</source>
       <note>{0} will be replaced by the error message.</note>
@@ -158,9 +164,6 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
       <source xml:lang="en">Failed to get file ready for edit: {0}</source>
-    </trans-unit>
-    <trans-unit id="++CODE++41405814c44fb391a3f8e31d1a3bc20299cd2e87979ebfbd1eb9488be12c617a">
-      <source xml:lang="en">Failed to get site content from NL2Site service</source>
     </trans-unit>
     <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
       <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -213,6 +216,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     </trans-unit>
     <trans-unit id="++CODE++08295f3385931e35c850b945e2ae04882452c4bf0dd575f70e95aaa6ed00daa9">
       <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++76b6e817a87a4f7034544e174c3d44a0a6ecf2418a585b2c9d613cade58806d0">
+      <source xml:lang="en">Initializing site manager...</source>
     </trans-unit>
     <trans-unit id="++CODE++e992151b1efc99f93484c7d7f3076b66ab072a8af2383e96104cc597c971339c">
       <source xml:lang="en">Insert code into editor</source>
@@ -356,6 +362,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++b62120c5416487f4c793d75aee7fea083971e5ac665a3f35767023f408f482e5">
       <source xml:lang="en">Response data is empty</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c9e3c5bda1d9c4ccdf4ae79e0026c22152a6d39a81630aeb19b2f193562003f5">
+      <source xml:lang="en">Saving site...</source>
     </trans-unit>
     <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
       <source xml:lang="en">Saving your file ...</source>

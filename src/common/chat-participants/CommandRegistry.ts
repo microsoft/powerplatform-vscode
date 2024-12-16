@@ -4,10 +4,11 @@
  */
 
 import * as vscode from "vscode";
+import { EditableFileSystemProvider } from "../utilities/EditableFileSystemProvider";
 
 export interface Command {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    execute(request: any, stream: vscode.ChatResponseStream): Promise<any>;
+    execute(request: any, stream: vscode.ChatResponseStream, contentProvider: EditableFileSystemProvider): Promise<any>;
 }
 
 export class CommandRegistry {

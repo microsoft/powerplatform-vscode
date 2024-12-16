@@ -9,13 +9,14 @@ import { getNL2PageData } from './Nl2PageService';
 import { getNL2SiteData } from './Nl2SiteService';
 import { NL2SITE_REQUEST_FAILED, NL2PAGE_GENERATING_WEBPAGES, NL2PAGE_RESPONSE_FAILED } from '../../PowerPagesChatParticipantConstants';
 import { oneDSLoggerWrapper } from '../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper';
-import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST, VSCODE_EXTENSION_PREVIEW_SITE_PAGES, VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR } from '../../PowerPagesChatParticipantTelemetryConstants';
+import { VSCODE_EXTENSION_NL2PAGE_REQUEST, VSCODE_EXTENSION_NL2SITE_REQUEST, VSCODE_EXTENSION_POPULATE_SITE_RECORDS_ERROR, VSCODE_EXTENSION_POPULATE_SITE_RECORDS_START, VSCODE_EXTENSION_POPULATE_SITE_RECORDS_SUCCESS, VSCODE_EXTENSION_PREVIEW_SITE_PAGES, VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR } from '../../PowerPagesChatParticipantTelemetryConstants';
 import { EditableFileSystemProvider } from '../../../../utilities/EditableFileSystemProvider';
 import { HTML_FILE_EXTENSION, IEnvInfo, UTF8_ENCODING } from '../../../../constants';
-import { CREATE_SITE_BTN_CMD, CREATE_SITE_BTN_TITLE, CREATE_SITE_BTN_TOOLTIP, EDITABLE_SCHEME, ENVIRONMENT_FOR_SITE_CREATION, SITE_CREATE_INPUTS, SITE_NAME, SITE_NAME_REQUIRED } from './CreateSiteConstants';
-import { ICreateSiteOptions, IPreviewSitePagesContentOptions, ISiteInputState } from './CreateSiteTypes';
+import { BLANK_TEMPLATE_NAME, CREATE_SITE_BTN_CMD, CREATE_SITE_BTN_TITLE, CREATE_SITE_BTN_TOOLTIP, EDITABLE_SCHEME, ENGLISH, ENVIRONMENT_FOR_SITE_CREATION, INVALIDE_PAGE_CONTENT, SITE_CREATE_INPUTS, SITE_NAME, SITE_NAME_REQUIRED } from './CreateSiteConstants';
 import { MultiStepInput } from '../../../../utilities/MultiStepInput';
 import { getEnvList } from '../../../../utilities/Utils';
+import { PowerPagesSiteManager } from './CreateSiteManager';
+import { ICreateSiteCommandArgs, ICreateSiteOptions, IPreviewSitePagesContentOptions, ISiteInputState } from './CreateSiteModel';
 
 export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     const {
@@ -28,24 +29,35 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
         orgId,
         envId,
         userId,
-        extensionContext
+        extensionContext,
+        contentProvider
     } = createSiteOptions;
 
     if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
-        return;
+        throw new Error(NL2SITE_REQUEST_FAILED);
     }
-    const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
+    const { siteName, siteDescription, sitePages, sitePagesList } = await fetchSiteAndPageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const contentProvider = previewSitePagesContent({ sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId });
+    previewSitePagesContent({ sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId, contentProvider });
 
-    const envList = await getEnvList(telemetry, intelligenceAPIEndpointInfo.endpointStamp);
+    const envList = await getEnvList(telemetry, intelligenceAPIEndpointInfo.endpointStamp)
+
+    const args: ICreateSiteCommandArgs = {
+        siteName,
+        sitePages,
+        sitePagesList,
+        envList,
+        contentProvider,
+        telemetry,
+        isCreateSiteInputsReceived: false
+    };
 
     stream.button({
         command: CREATE_SITE_BTN_CMD,
         title: CREATE_SITE_BTN_TITLE,
         tooltip: CREATE_SITE_BTN_TOOLTIP,
-        arguments: [siteName, envList, contentProvider, false],
+        arguments: [args],
     });
 
     return {
@@ -59,11 +71,11 @@ async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceAp
     // Call NL2Site service to get initial site content
     telemetry.sendTelemetryEvent(VSCODE_EXTENSION_NL2SITE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
     oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_NL2SITE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
-    const { siteName, pages, siteDescription } = await getNL2SiteData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, orgId, envId, userId);
-
-    if (!siteName) {
+    const siteData = await getNL2SiteData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, orgId, envId, userId);
+    if (!siteData) {
         throw new Error(NL2SITE_REQUEST_FAILED);
     }
+    const { siteName, pages, siteDescription } = siteData;
 
     const sitePagesList = pages.map((page: { pageName: string; }) => page.pageName);
 
@@ -72,7 +84,7 @@ async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceAp
     // Call NL2Page service to get page content
     telemetry.sendTelemetryEvent(VSCODE_EXTENSION_NL2PAGE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
     oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_NL2PAGE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
-    const sitePages = await getNL2PageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, siteName, sitePagesList, sessionId, telemetry, orgId, envId, userId);
+    const sitePages = await getNL2PageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, siteName, pages, sessionId, telemetry, orgId, envId, userId);
 
     if (!sitePages) {
         throw new Error(NL2PAGE_RESPONSE_FAILED);
@@ -88,12 +100,12 @@ function previewSitePagesContent(
     const {
         sitePages,
         stream,
-        extensionContext,
         telemetry,
         sessionId,
         orgId,
         envId,
-        userId
+        userId,
+        contentProvider
     } = options;
 
     try {
@@ -104,11 +116,6 @@ function previewSitePagesContent(
         });
 
         const sitePagesFolder: vscode.ChatResponseFileTree[] = [];
-        const contentProvider = new EditableFileSystemProvider();
-        // Register the content provider
-        extensionContext.subscriptions.push(
-            vscode.workspace.registerFileSystemProvider(EDITABLE_SCHEME, contentProvider, { isCaseSensitive: true })
-        );
 
         const baseUri = vscode.Uri.parse(`${EDITABLE_SCHEME}:/`);
 
@@ -119,6 +126,7 @@ function previewSitePagesContent(
         });
 
         telemetry.sendTelemetryEvent(VSCODE_EXTENSION_PREVIEW_SITE_PAGES, { sessionId, orgId, environmentId: envId, userId });
+        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_PREVIEW_SITE_PAGES, { sessionId, orgId, environmentId: envId, userId });
 
         stream.filetree(sitePagesFolder, baseUri);
 
@@ -188,4 +196,71 @@ export async function collectSiteCreationInputs(siteName: string, envList: IEnvI
     const siteInputState = await collectInputs();
     // Return the collected site creation inputs including site name, environment name, and domain name
     return siteInputState;
+}
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function populateSiteRecords(siteName: string, sitePagesList: string[], sitePages: any, orgUrl: string, telemetry: ITelemetry) {
+    return vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: vscode.l10n.t('Creating Site Records'),
+        cancellable: false
+    }, async (progress) => {
+        try {
+            telemetry.sendTelemetryEvent(VSCODE_EXTENSION_POPULATE_SITE_RECORDS_START , { siteName, orgUrl });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_POPULATE_SITE_RECORDS_START , { siteName, orgUrl });
+
+            progress.report({ message: vscode.l10n.t('Initializing site manager...') });
+
+            // Create a map of sitePagesList and sitePages
+            const sitePagesMap = createSitePagesMap(sitePagesList, sitePages);
+
+            // Initialize PowerPagesSiteManager
+            const siteManager = new PowerPagesSiteManager(BLANK_TEMPLATE_NAME, ENGLISH, telemetry);
+
+            // Load the template
+            await siteManager.loadTemplate();
+            const { actions } = siteManager.getSiteDataAndActions();
+            actions.updateSiteName(siteName);
+
+            await processSitePages(sitePagesMap, siteManager);
+
+            // Save the site
+            progress.report({ message: vscode.l10n.t('Saving site...') });
+            await actions.save(orgUrl);
+
+            telemetry.sendTelemetryEvent(VSCODE_EXTENSION_POPULATE_SITE_RECORDS_SUCCESS, { siteName, orgUrl });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_POPULATE_SITE_RECORDS_SUCCESS, { siteName, orgUrl });
+
+            return siteManager;
+        } catch (error) {
+            telemetry.sendTelemetryEvent(VSCODE_EXTENSION_POPULATE_SITE_RECORDS_ERROR, { siteName, orgUrl, error: (error as Error).message });
+            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_POPULATE_SITE_RECORDS_ERROR, (error as Error).message, error as Error, { siteName, orgUrl }, {});
+            throw error;
+        }
+    });
+}
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createSitePagesMap(sitePagesList: string[], sitePages: any): Record<string, any> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return sitePagesList.reduce((acc: Record<string, any>, pageName: string, index: number) => {
+        acc[pageName] = sitePages[index];
+        return acc;
+    }, {});
+}
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function processSitePages(sitePagesMap: Record<string, any>, siteManager: PowerPagesSiteManager): Promise<void> {
+    const { actions } = siteManager.getSiteDataAndActions();
+    const promises = Object.entries(sitePagesMap).map(([pageName, pageContent]) => {
+        if (typeof pageContent === 'object' && pageContent !== null && 'code' in pageContent) {
+            return actions.addOrUpdatePage(pageName, (pageContent as { code: string }).code, pageName === 'Home');
+        } else {
+            throw new Error(`${INVALIDE_PAGE_CONTENT}: ${pageName}`);
+        }
+    });
+    await Promise.all(promises);
 }

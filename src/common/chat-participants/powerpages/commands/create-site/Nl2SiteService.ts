@@ -9,8 +9,9 @@ import {VSCODE_EXTENSION_NL2SITE_REQUEST_FAILED, VSCODE_EXTENSION_NL2SITE_REQUES
 import { getCommonHeaders } from "../../../../services/AuthenticationProvider";
 import { oneDSLoggerWrapper } from "../../../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { ENGLISH, MAX_PAGES, MIN_PAGES } from "./CreateSiteConstants";
+import { Website } from "./CreateSiteModel";
 
-export async function getNL2SiteData(aibEndpoint: string, aibToken: string, userPrompt: string, sessionId: string, telemetry: ITelemetry, orgId: string, envId: string, userId: string) {
+export async function getNL2SiteData(aibEndpoint: string, aibToken: string, userPrompt: string, sessionId: string, telemetry: ITelemetry, orgId: string, envId: string, userId: string): Promise<Website | null> {
     const requestBody = {
         "crossGeoOptions": {
             "enableCrossGeoCall": true
