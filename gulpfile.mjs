@@ -215,17 +215,8 @@ function testUnitTests() {
         );
 }
 
-function testWeb() {
-    return gulp.src(["src/web/client/test/unit/**/*.ts"], { read: false }).pipe(
-        mocha({
-            require: ["ts-node/register"],
-            ui: "bdd",
-        })
-    );
-}
-
 // unit tests without special test runner
-const test = gulp.series(testUnitTests, testWeb);
+const test = gulp.series(testUnitTests);
 
 /**
  * Compiles the integration tests and transpiles the results to /out
@@ -434,7 +425,6 @@ export {
     snapshot,
     lint,
     test,
-    testWeb,
     compileIntegrationTests,
     testInt,
     testWebInt,
