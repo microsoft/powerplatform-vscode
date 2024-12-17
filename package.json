@@ -372,6 +372,7 @@
       },
       {
         "command": "microsoft.powerplatform.pages.preview-site",
+        "category": "Powerpages",
         "title": "%powerplatform.pages.previewSite.title%"
       }
     ],

@@ -214,6 +214,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++08295f3385931e35c850b945e2ae04882452c4bf0dd575f70e95aaa6ed00daa9">
       <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
     </trans-unit>
+    <trans-unit id="++CODE++15b09c32b0337229ff64c72f2ea9a3f8422fa20975ae494da863fd738554b1de">
+      <source xml:lang="en">Initializing site preview. Please try again after few seconds.</source>
+    </trans-unit>
     <trans-unit id="++CODE++e992151b1efc99f93484c7d7f3076b66ab072a8af2383e96104cc597c971339c">
       <source xml:lang="en">Insert code into editor</source>
     </trans-unit>

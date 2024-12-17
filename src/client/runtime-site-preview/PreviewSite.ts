@@ -89,7 +89,12 @@ export class PreviewSite {
             return;
         }
 
-        if (!websiteURL || websiteURL === "") {
+        if (websiteURL === undefined) {
+            await vscode.window.showWarningMessage(vscode.l10n.t("Initializing site preview. Please try again after few seconds."));
+            return;
+        }
+
+        if (websiteURL === "") {
             await vscode.window.showErrorMessage(vscode.l10n.t("Website URL not found."));
             return;
         }
