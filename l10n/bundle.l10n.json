@@ -33,6 +33,7 @@
   },
   "Enter the environment URL": "Enter the environment URL",
   "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.": "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.",
+  "Website not found in the environment. Please check the credentials and root folder path.": "Website not found in the environment. Please check the credentials and root folder path.",
   "Selection is empty.": "Selection is empty.",
   "PREVIEW": "PREVIEW",
   "Explain the following code snippet:": "Explain the following code snippet:",
@@ -83,40 +84,22 @@
   "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.": "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.",
   "Checking for active auth profile...": "Checking for active auth profile...",
   "@PowerPages is not yet available in your region.": "@PowerPages is not yet available in your region.",
-  "Failed to get site content from NL2Site service": "Failed to get site content from NL2Site service",
   "Generating webpages...": "Generating webpages...",
   "Generating a new Power Pages site...": "Generating a new Power Pages site...",
+  "Failed to create a new Power Pages site. Please try again.": "Failed to create a new Power Pages site. Please try again.",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [
       "Do not translate 'PCF' as it is a product name."
     ]
   },
-  "Preparing pac CLI (v{0}).../{0} represents the version number": {
-    "message": "Preparing pac CLI (v{0})...",
-    "comment": [
-      "{0} represents the version number"
-    ]
-  },
-  "The pac CLI is ready for use in your VS Code terminal!": "The pac CLI is ready for use in your VS Code terminal!",
-  "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": {
-    "message": "Cannot install pac CLI: {0}",
-    "comment": [
-      "{0} represents the error message returned from the exception"
-    ]
-  },
-  "Installing Power Pages generator(v{0}).../{0} represents the version number": {
-    "message": "Installing Power Pages generator(v{0})...",
-    "comment": [
-      "{0} represents the version number"
-    ]
-  },
-  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": {
-    "message": "dotnet sdk 6.0 or greater must be installed",
-    "comment": [
-      "Do not translate 'dotnet' or 'sdk'"
-    ]
-  },
+  "The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?": "The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?",
+  "Install": "Install",
+  "Cancel": "Cancel",
+  "Site runtime preview feature is not enabled.": "Site runtime preview feature is not enabled.",
+  "No workspace folder opened. Please open a site folder to preview.": "No workspace folder opened. Please open a site folder to preview.",
+  "Website URL not found.": "Website URL not found.",
+  "Opening site preview...": "Opening site preview...",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
@@ -188,6 +171,12 @@
       "Do not translate 'npm'"
     ]
   },
+  "Installing Power Pages generator(v{0}).../{0} represents the version number": {
+    "message": "Installing Power Pages generator(v{0})...",
+    "comment": [
+      "{0} represents the version number"
+    ]
+  },
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": {
     "message": "Cannot install Power Pages generator: {0}",
     "comment": [
@@ -217,9 +206,27 @@
       "The {3} represents Dataverse Environment's Organization ID (GUID)"
     ]
   },
+  "Preparing pac CLI (v{0}).../{0} represents the version number": {
+    "message": "Preparing pac CLI (v{0})...",
+    "comment": [
+      "{0} represents the version number"
+    ]
+  },
+  "The pac CLI is ready for use in your VS Code terminal!": "The pac CLI is ready for use in your VS Code terminal!",
+  "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": {
+    "message": "Cannot install pac CLI: {0}",
+    "comment": [
+      "{0} represents the error message returned from the exception"
+    ]
+  },
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": {
+    "message": "dotnet sdk 6.0 or greater must be installed",
+    "comment": [
+      "Do not translate 'dotnet' or 'sdk'"
+    ]
+  },
   "Confirm": "Confirm",
   "Are you sure you want to clear all the Auth Profiles?": "Are you sure you want to clear all the Auth Profiles?",
-  "Cancel": "Cancel",
   "Are you sure you want to delete the Auth Profile {0}-{1}?/{0} is the user name, {1} is the URL of environment of the auth profile": {
     "message": "Are you sure you want to delete the Auth Profile {0}-{1}?",
     "comment": [

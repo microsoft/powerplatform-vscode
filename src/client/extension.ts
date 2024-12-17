@@ -46,6 +46,7 @@ import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue } from "../common/utilities/Utils";
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
+import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./runtime-site-preview/PreviewSite";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -195,6 +196,9 @@ export async function activate(
         ) || [];
 
 
+    let websiteURL: string | undefined = "";
+    const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
+
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
@@ -250,6 +254,10 @@ export async function activate(
 
             }
 
+            if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
+                websiteURL = await PreviewSite.getWebSiteURL(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
+            }
+
         })
     );
 
@@ -269,6 +277,22 @@ export async function activate(
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
     }
+
+    _telemetry.sendTelemetryEvent("EnableSiteRuntimePreview", {
+        isEnabled: isSiteRuntimePreviewEnabled.toString(),
+        websiteURL: websiteURL
+    });
+    oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
+        isEnabled: isSiteRuntimePreviewEnabled.toString(),
+        websiteURL: websiteURL
+    });
+
+    _context.subscriptions.push(
+        vscode.commands.registerCommand(
+            SITE_PREVIEW_COMMAND_ID,
+            async () => await PreviewSite.handlePreviewRequest(isSiteRuntimePreviewEnabled, websiteURL, _telemetry)
+        )
+    );
 
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);

@@ -143,6 +143,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++f9e17ed11037dab93f8820c30db63b2ff2a045b5761f71818b7291afae60f199">
       <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
     </trans-unit>
+    <trans-unit id="++CODE++b985f1515c42b4b5b0c11a3d7b3286fc9d66997d476668ab1f93a4a11499fef5">
+      <source xml:lang="en">Failed to create a new Power Pages site. Please try again.</source>
+    </trans-unit>
     <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
       <source xml:lang="en">Failed to create: {0}.</source>
       <note>{0} will be replaced by the error message.</note>
@@ -158,9 +161,6 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
       <source xml:lang="en">Failed to get file ready for edit: {0}</source>
-    </trans-unit>
-    <trans-unit id="++CODE++41405814c44fb391a3f8e31d1a3bc20299cd2e87979ebfbd1eb9488be12c617a">
-      <source xml:lang="en">Failed to get site content from NL2Site service</source>
     </trans-unit>
     <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
       <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -216,6 +216,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     </trans-unit>
     <trans-unit id="++CODE++e992151b1efc99f93484c7d7f3076b66ab072a8af2383e96104cc597c971339c">
       <source xml:lang="en">Insert code into editor</source>
+    </trans-unit>
+    <trans-unit id="++CODE++569ca49f4aaf7846e952c1d4aeca72febd0b79fa1c4f9db08fd3127551218572">
+      <source xml:lang="en">Install</source>
     </trans-unit>
     <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
       <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
@@ -294,6 +297,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6da29e062697a9f26659ef14ebda075afe939756af5d8e1d3451eb7d6d6e1a8a">
       <source xml:lang="en">No workspace folder found</source>
     </trans-unit>
+    <trans-unit id="++CODE++6c0242ffba2aababcb4e45831de1492e8bccae2cb0f3387dfe9c16620f6928ef">
+      <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
+    </trans-unit>
     <trans-unit id="++CODE++bda6bda1e902d120a7f4515ceac8546c3112e3cb9351df1d8b9713b8f86e0370">
       <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
     </trans-unit>
@@ -302,6 +308,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++dac0ee62a5197a3722a9e7e9e851e80504cced8a13ce8b17842d78e8313578c2">
       <source xml:lang="en">Opening preview site...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++e61c4ac3c692e3cfdc02717db82d18b1e9d51242710031f20af35b33d149fa7a">
+      <source xml:lang="en">Opening site preview...</source>
     </trans-unit>
     <trans-unit id="++CODE++5cac0147c19013eb88b1fc8dc0d066b48e9f5cfcdbc9737a29d544d9bd61db55">
       <source xml:lang="en">Operation failed. See output panel for details.</source>
@@ -376,6 +385,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
     </trans-unit>
+    <trans-unit id="++CODE++f7094162bd4c4b59aa706387714347223e1569c79c5b37eb19ac754a33a0fdd0">
+      <source xml:lang="en">Site runtime preview feature is not enabled.</source>
+    </trans-unit>
     <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
       <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
     </trans-unit>
@@ -390,6 +402,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
       <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
+    </trans-unit>
+    <trans-unit id="++CODE++538ecf1398703f8a2048b99a2b2a533012b06ee88d67a0fd6fbbcd716cfbd663">
+      <source xml:lang="en">The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?</source>
     </trans-unit>
     <trans-unit id="++CODE++e4a2396fd7a366292a40abc87b18a2329458c258f4d0e0e593e6189dff19a117">
       <source xml:lang="en">The name you want to give to this authentication profile</source>
@@ -448,6 +463,12 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
       <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++968729c173b0e6967fc054251835e9196b1e09ad7c55ab7b0acafb3402a9d5d6">
+      <source xml:lang="en">Website URL not found.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++4ed689987736ce09e17c67eb32f441ca7d0f7ed013a282aafd1ebcf302e6386b">
+      <source xml:lang="en">Website not found in the environment. Please check the credentials and root folder path.</source>
     </trans-unit>
     <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
       <source xml:lang="en">What do you need help with?</source>
@@ -616,6 +637,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.preview-show.title">
       <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
+    </trans-unit>
+    <trans-unit id="powerplatform.pages.previewSite.title">
+      <source xml:lang="en">Preview Site</source>
     </trans-unit>
     <trans-unit id="pacCLI.envAndSolutionsPanel.refresh.title">
       <source xml:lang="en">Refresh</source>
