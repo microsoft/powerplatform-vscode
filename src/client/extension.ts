@@ -199,6 +199,8 @@ export async function activate(
     let websiteURL: string | undefined = "";
     const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
 
+    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", isSiteRuntimePreviewEnabled);
+
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
