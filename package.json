@@ -183,8 +183,7 @@
       },
       {
         "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
-        "title": "Preview site",
-        "when": "never"
+        "title": "Preview site"
       },
       {
         "command": "powerpages.powerPagesFileExplorer.backToStudio",
@@ -812,6 +811,14 @@
         {
           "command": "microsoft-powerapps-portals.pagetemplate",
           "when": "config.powerPlatform.generatorInstalled"
+        },
+        {
+          "command": "powerpages.powerPagesFileExplorer.powerPagesRuntimePreview",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.preview-site",
+          "when": "microsoft.powerplatform.pages.siteRuntimePreviewEnabled"
         }
       ],
       "view/title": [
