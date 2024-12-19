@@ -196,7 +196,7 @@ export async function activate(
         ) || [];
 
 
-    let websiteURL: string | undefined = "";
+    let websiteURL: string | undefined = undefined;
     const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
 
     vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", isSiteRuntimePreviewEnabled);
@@ -282,11 +282,11 @@ export async function activate(
 
     _telemetry.sendTelemetryEvent("EnableSiteRuntimePreview", {
         isEnabled: isSiteRuntimePreviewEnabled.toString(),
-        websiteURL: websiteURL
+        websiteURL: websiteURL || "undefined"
     });
     oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
         isEnabled: isSiteRuntimePreviewEnabled.toString(),
-        websiteURL: websiteURL
+        websiteURL: websiteURL || "undefined"
     });
 
     _context.subscriptions.push(
