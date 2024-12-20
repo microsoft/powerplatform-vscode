@@ -246,11 +246,16 @@ async function createContentFiles(
             schemaEntityKey.LANGUAGE_FIELD
         );
 
+        let languageCode = WebExtensionContext.websiteLanguageCode;
+
         if (languageCodeAttribute && result[languageCodeAttribute] === null) {
-            throw new Error(ERROR_CONSTANTS.LANGUAGE_CODE_ID_VALUE_NULL);
+            if (entityName !== schemaEntityName.CONTENTSNIPPETS) {
+                throw new Error(ERROR_CONSTANTS.LANGUAGE_CODE_ID_VALUE_NULL);
+            } else {
+                languageCode = Constants.DEFAULT_LANGUAGE_CODE; // Handles the case where language code is null for content snippets
+            }
         }
 
-        let languageCode = WebExtensionContext.websiteLanguageCode;
         if (defaultFileInfo?.fileName === undefined &&
             languageCodeAttribute &&
             result[languageCodeAttribute]) {
