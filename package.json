@@ -368,7 +368,8 @@
       {
         "command": "powerPlatform.previewCurrentActiveUsers",
         "title": "Current Active Users",
-        "icon": "$(person)"
+        "icon": "$(person)",
+        "when": "isWeb && virtualWorkspace"
       },
       {
         "command": "microsoft.powerplatform.pages.preview-site",
@@ -662,12 +663,10 @@
         {
           "when": "resourceLangId == html && !virtualWorkspace",
           "command": "microsoft-powerapps-portals.preview-show",
-          "alt": "microsoft-powerapps-portals.preview-show",
           "group": "navigation"
         },
         {
           "command": "powerPlatform.previewCurrentActiveUsers",
-          "alt": "current active users",
           "group": "navigation",
           "when": "isWeb && virtualWorkspace"
         }
@@ -820,6 +819,10 @@
         {
           "command": "microsoft.powerplatform.pages.preview-site",
           "when": "microsoft.powerplatform.pages.siteRuntimePreviewEnabled"
+        },
+        {
+           "command": "powerPlatform.previewCurrentActiveUsers",
+           "when": "isWeb && virtualWorkspace"
         }
       ],
       "view/title": [
