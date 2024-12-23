@@ -98,6 +98,7 @@
   "Cancel": "Cancel",
   "Site runtime preview feature is not enabled.": "Site runtime preview feature is not enabled.",
   "No workspace folder opened. Please open a site folder to preview.": "No workspace folder opened. Please open a site folder to preview.",
+  "Initializing site preview. Please try again after few seconds.": "Initializing site preview. Please try again after few seconds.",
   "Website URL not found.": "Website URL not found.",
   "Opening site preview...": "Opening site preview...",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
