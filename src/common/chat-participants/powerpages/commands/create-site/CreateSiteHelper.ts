@@ -14,7 +14,7 @@ import { EditableFileSystemProvider } from '../../../../utilities/EditableFileSy
 import { HTML_FILE_EXTENSION, IEnvInfo, UTF8_ENCODING } from '../../../../constants';
 import { BLANK_TEMPLATE_NAME, CREATE_SITE_BTN_CMD, CREATE_SITE_BTN_TITLE, CREATE_SITE_BTN_TOOLTIP, EDITABLE_SCHEME, ENGLISH, ENVIRONMENT_FOR_SITE_CREATION, INVALIDE_PAGE_CONTENT, SITE_CREATE_INPUTS, SITE_NAME, SITE_NAME_REQUIRED } from './CreateSiteConstants';
 import { MultiStepInput } from '../../../../utilities/MultiStepInput';
-import { getEnvList } from '../../../../utilities/Utils';
+import { getEnvList, showProgressWithNotification } from '../../../../utilities/Utils';
 import { PowerPagesSiteManager } from './CreateSiteManager';
 import { ICreateSiteCommandArgs, ICreateSiteOptions, IPreviewSitePagesContentOptions, ISiteInputState } from './CreateSiteModel';
 
@@ -38,7 +38,6 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     }
     const { siteName, siteDescription, sitePages, sitePagesList } = await fetchSiteAndPageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     previewSitePagesContent({ sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId, contentProvider });
 
     const envList = await getEnvList(telemetry, intelligenceAPIEndpointInfo.endpointStamp)
@@ -201,16 +200,12 @@ export async function collectSiteCreationInputs(siteName: string, envList: IEnvI
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function populateSiteRecords(siteName: string, sitePagesList: string[], sitePages: any, orgUrl: string, telemetry: ITelemetry) {
-    return vscode.window.withProgress({
-        location: vscode.ProgressLocation.Notification,
-        title: vscode.l10n.t('Creating Site Records'),
-        cancellable: false
-    }, async (progress) => {
+    return await showProgressWithNotification( vscode.l10n.t('Creating Site Records') , async (progress) => {
         try {
             telemetry.sendTelemetryEvent(VSCODE_EXTENSION_POPULATE_SITE_RECORDS_START , { siteName, orgUrl });
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_POPULATE_SITE_RECORDS_START , { siteName, orgUrl });
 
-            progress.report({ message: vscode.l10n.t('Initializing site manager...') });
+            progress?.report({ message: vscode.l10n.t('Initializing site manager...') });
 
             // Create a map of sitePagesList and sitePages
             const sitePagesMap = createSitePagesMap(sitePagesList, sitePages);
@@ -226,7 +221,7 @@ export async function populateSiteRecords(siteName: string, sitePagesList: strin
             await processSitePages(sitePagesMap, siteManager);
 
             // Save the site
-            progress.report({ message: vscode.l10n.t('Saving site...') });
+            progress?.report({ message: vscode.l10n.t('Saving site...') });
             await actions.save(orgUrl);
 
             telemetry.sendTelemetryEvent(VSCODE_EXTENSION_POPULATE_SITE_RECORDS_SUCCESS, { siteName, orgUrl });

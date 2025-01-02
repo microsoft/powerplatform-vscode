@@ -104,13 +104,13 @@ export async function showInputBoxAndGetOrgUrl() {
     });
 }
 
-export async function showProgressWithNotification<T>(title: string, task: () => Promise<T>): Promise<T> {
+export async function showProgressWithNotification<T>(title: string, task: (progress?: vscode.Progress<{ message?: string; increment?: number }>) => Promise<T>): Promise<T> {
     return await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: title,
         cancellable: false
-    }, async () => {
-        return await task();
+    }, async (progress) => {
+        return await task(progress);
     });
 }
 
@@ -396,4 +396,15 @@ export function getBAPEndpoint(serviceEndpointStamp: ServiceEndpointCategory, te
     }
 
     return BAP_SERVICE_ENDPOINT.replace('{rootURL}', bapEndpoint)
+}
+
+/**
+ * Converts base-64 encoded string to an array buffer
+ * @param base64String the string containing data to convert
+ * @returns ArrayBuffer
+ */
+export function base64ToArrayBuffer(base64String: string): ArrayBuffer {
+    const binaryString = atob(base64String);
+    const bytes = new Uint8Array(binaryString.length).map((_, i) => binaryString.charCodeAt(i));
+    return bytes.buffer;
 }

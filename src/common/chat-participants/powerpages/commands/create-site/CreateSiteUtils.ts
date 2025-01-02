@@ -3,8 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-
-
 import { v4 as uuidv4 } from 'uuid';
 import { PresetThemeIds, CDS_API_BASE_URL, CDS_API_VERSION, CONTENT_TYPE_JSON } from './CreateSiteConstants';
 import { PowerPagesParsedJson, IURLParams } from './CreateSiteModel';
@@ -133,17 +131,6 @@ export const generateRandomColorNumber = () => {
     const colorNumbers = [1, 2, 3, 5, 6, 7, 8];
     return colorNumbers[Math.floor(Math.random() * colorNumbers.length)];
 };
-
-/**
- * Converts base-64 encoded string to an array buffer
- * @param base64String the string containing data to convert
- * @returns ArrayBuffer
- */
-export function base64ToArrayBuffer(base64String: string): ArrayBuffer {
-    const binaryString = atob(base64String);
-    const bytes = new Uint8Array(binaryString.length).map((_, i) => binaryString.charCodeAt(i));
-    return bytes.buffer;
-}
 
 export const getFileUploadHeaders = (fileName: string, dataverseToken: string) => {
     return {

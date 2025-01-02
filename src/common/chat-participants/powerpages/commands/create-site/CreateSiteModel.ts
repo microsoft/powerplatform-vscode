@@ -47,6 +47,7 @@ export interface PowerPagesSiteLanguage extends PowerPagesSiteEntity {
     lcid: string;
 }
 
+// In enhanced (V2) data model, the component type is used to determine the type of the component/entity.
 export enum PowerPagesComponentType {
     PublishingState = '1',
     WebPage = '2',
@@ -154,3 +155,17 @@ export type Website = {
     pages: Page[];
     siteDescription?: string;
 };
+
+export interface PowerPagesSiteEntity {
+    powerpagesiteid?: string | null;
+    content: string;
+    name: string;
+}
+
+export interface PowerPagesComponent extends PowerPagesSiteEntity {
+    powerpagecomponentid: string;
+    powerpagecomponenttype: PowerPagesComponentType;
+    powerpagesitelanguageid?: string | null;
+    filecontent?: string;
+    filename?: string;
+}
