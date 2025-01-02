@@ -317,7 +317,9 @@
                 const thinking = document.createElement("div");
                 thinking.classList.add("thinking");
                 thinking.innerText = thinkingMessage;
-                thinking.setAttribute("aria-live", "assertive"); // Add aria-live attribute
+                thinking.setAttribute("tabindex", "0"); // Make the element focusable
+                thinking.setAttribute("role", "status"); // Add ARIA role
+                thinking.setAttribute("aria-live", "polite"); // Ensure screen readers announce updates
 
                 messageElement.appendChild(thinking);
                 chatMessages.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight;
