@@ -145,6 +145,10 @@ export function registerButtonCommands() {
 
             const siteCreateInputs = await collectSiteCreationInputs(siteName, envList);
 
+            if (!siteCreateInputs) {
+                return;
+            }
+
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const siteManager = await populateSiteRecords(siteName, sitePagesList, updatedPages, siteCreateInputs.OrgUrl, telemetry);
 
