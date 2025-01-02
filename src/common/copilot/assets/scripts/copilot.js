@@ -134,6 +134,7 @@
         copyButton.classList.add("action-button");
         copyButton.classList.add("copy-button");
         copyButton.title = copilotStrings.COPY_TO_CLIPBOARD_MESSAGE;
+        copyButton.setAttribute("aria-label", copilotStrings.COPY_TO_CLIPBOARD_MESSAGE);
         copyButton.addEventListener("click", () => {
             copyCodeToClipboard(code);
         });
@@ -144,11 +145,11 @@
         insertButton.classList.add("action-button");
         insertButton.classList.add("insert-button");
         insertButton.title = copilotStrings.INSERT_CODE_MESSAGE;
+        insertButton.setAttribute("aria-label", copilotStrings.INSERT_CODE_MESSAGE);
         insertButton.addEventListener("click", () => {
             insertCode(code);
         });
         actionWrapper.appendChild(insertButton);
-
 
         return actionWrapper;
     }
@@ -159,7 +160,6 @@
         const truncatedInitials = initials.slice(0, 2);
         return truncatedInitials.join("").toUpperCase();
     }
-
 
     function handleUserMessage(message) {
         const messageWrapper = document.createElement("div");
@@ -259,21 +259,21 @@
         const listPrompt = copilotStrings.LIST_PROMPT;
 
         suggestedPrompt.innerHTML = `<p class="suggested-title">${copilotStrings.SUGGESTIONS_MESSAGE}</p>
-                                <a href='#' class="suggested-prompt">
+                                <a href='#' class="suggested-prompt" tabindex="0" aria-label="${formPrompt}">
                                 <span class="icon-container">
                                     ${starIconSvg}
                                 </span>
                                     ${formPrompt}
                                 </a>
                                 <br>
-                                <a href='#' class="suggested-prompt">
+                                <a href='#' class="suggested-prompt" tabindex="0" aria-label="${webApiPrompt}">
                                 <span class="icon-container">
                                     ${starIconSvg}
                                 </span>
                                     ${webApiPrompt}
                                 </a>
                                 <br>
-                                <a href='#' class="suggested-prompt">
+                                <a href='#' class="suggested-prompt" tabindex="0" aria-label="${listPrompt}">
                                 <span class="icon-container">
                                     ${starIconSvg}
                                 </span>
@@ -287,7 +287,7 @@
         const walkthrough = document.createElement("div");
         walkthrough.classList.add("walkthrough-div");
         walkthrough.innerHTML = `<p class="walkthrough-title">${copilotStrings.GETTING_STARTED_MESSAGE}</p>
-                            <a href="#" class="walkthrough-content">
+                            <a href="#" class="walkthrough-content" tabindex="0" aria-label="${copilotStrings.LEARN_MORE_MESSAGE}">
                                 ${bookIconSvg}
                                 <span id="walk-text">${copilotStrings.LEARN_MORE_MESSAGE}</span>
                             </a>`;
@@ -344,6 +344,7 @@
                 messageIndex++;
 
                 const apiResponseElement = parseCodeBlocks(apiResponse);
+                apiResponseElement.setAttribute("aria-live", "assertive"); // Add aria-live attribute to response
                 messageElement.appendChild(apiResponseElement);
 
                 messageWrapper.dataset.id = message.id;
@@ -378,7 +379,7 @@
                 notLoggedIn.classList.add("not-loggedIn");
                 notLoggedIn.innerHTML = `<p id="greeting"></p>
         <p>${copilotStrings.LOGIN_MESSAGE}</p>
-        <button id="loginButton" >${copilotStrings.LOGIN_BUTTON}</button>`;
+        <button id="loginButton" aria-label="${copilotStrings.LOGIN_BUTTON}">${copilotStrings.LOGIN_BUTTON}</button>`;
 
                 messageElement.appendChild(notLoggedIn);
 
@@ -406,13 +407,18 @@
                     vscode.postMessage({ type: "openGitHubCopilotLink" });
                 });
 
-
                 const suggestedPromptDiv = createSuggestedPromptDiv();
                 messageElement.appendChild(suggestedPromptDiv);
 
                 const suggestedPrompts = document.querySelectorAll(".suggested-prompt");
                 suggestedPrompts.forEach((suggestedPrompt) => {
                     suggestedPrompt.addEventListener("click", handleSuggestionsClick);
+                    suggestedPrompt.addEventListener("keydown", (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            handleSuggestionsClick.call(suggestedPrompt);
+                        }
+                    });
                 });
 
                 const walkthroughDiv = createWalkthroughDiv();
@@ -420,7 +426,12 @@
 
                 const walkthroughContent = document.getElementById("walk-text");
                 walkthroughContent.addEventListener("click", handleWalkthroughClick);
-
+                walkthroughContent.addEventListener("keydown", (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        handleWalkthroughClick.call(walkthroughContent);
+                    }
+                });
             }
         };
     }
@@ -446,7 +457,6 @@
     <p>${copilotStrings.DOCUMENTATION_LINK}<a></p>`;
 
         messageElement.appendChild(notAvailabel);
-
     }
 
     // Handle messages sent from the extension to the webview
