@@ -9,12 +9,12 @@ import { EnableSiteRuntimePreview } from '../../common/ecs-features/ecsFeatureGa
 import { ITelemetry } from '../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { WorkspaceFolder } from 'vscode-languageclient/node';
 import { getWebsiteRecordId } from '../../common/utilities/WorkspaceInfoFinderUtil';
-import { ServiceEndpointCategory } from '../../common/services/Constants';
+import { PROVIDER_ID, ServiceEndpointCategory } from '../../common/services/Constants';
 import { PPAPIService } from '../../common/services/PPAPIService';
 import { VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY } from '../../common/services/TelemetryConstants';
 import { EDGE_TOOLS_EXTENSION_ID } from '../../common/constants';
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { showProgressNotification } from '../../common/controls/ShowProgressNotification';
+import { showProgressWithNotification } from '../../common/utilities/Utils';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
@@ -64,11 +64,16 @@ export class PreviewSite {
             return;
         }
 
-        const settings = vscode.workspace.getConfiguration('vscode-edge-devtools');
-        const currentDefaultUrl = await settings.get('defaultUrl');
-        await settings.update('defaultUrl', webSitePreviewURL);
-        await vscode.commands.executeCommand('vscode-edge-devtools-view.launch');
-        await settings.update('defaultUrl', currentDefaultUrl);
+        await showProgressWithNotification(
+            vscode.l10n.t('Opening site preview...'),
+            async () => {
+                const settings = vscode.workspace.getConfiguration('vscode-edge-devtools');
+                const currentDefaultUrl = await settings.get('defaultUrl');
+                await settings.update('defaultUrl', webSitePreviewURL);
+                await vscode.commands.executeCommand('vscode-edge-devtools-view.launch');
+                await settings.update('defaultUrl', currentDefaultUrl);
+            }
+        );
     }
 
     static async handlePreviewRequest(isSiteRuntimePreviewEnabled: boolean, websiteURL: string | undefined, telemetry: ITelemetry) {
@@ -95,13 +100,19 @@ export class PreviewSite {
         }
 
         if (websiteURL === "") {
-            await vscode.window.showErrorMessage(vscode.l10n.t("Website URL not found."));
+            const shouldInitiateLogin = await vscode.window.showErrorMessage(
+                vscode.l10n.t(
+                    `Website not found in the environment. Please check the credentials and login with correct account.`
+                ),
+                vscode.l10n.t('Login')
+            );
+
+            if (shouldInitiateLogin === vscode.l10n.t('Login')) {
+                await vscode.authentication.getSession(PROVIDER_ID, [], { })
+            }
             return;
         }
 
-        await showProgressNotification(
-            vscode.l10n.t('Opening site preview...'),
-            async () => await PreviewSite.launchBrowserAndDevToolsWithinVsCode(websiteURL)
-        );
+        await PreviewSite.launchBrowserAndDevToolsWithinVsCode(websiteURL);
     }
 }
