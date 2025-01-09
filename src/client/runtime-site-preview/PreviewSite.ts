@@ -14,11 +14,16 @@ import { PPAPIService } from '../../common/services/PPAPIService';
 import { VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY } from '../../common/services/TelemetryConstants';
 import { EDGE_TOOLS_EXTENSION_ID } from '../../common/constants';
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { showProgressWithNotification } from '../../common/utilities/Utils';
+import { getWorkspaceFolders, showProgressWithNotification } from '../../common/utilities/Utils';
+import { PacTerminal } from '../lib/PacTerminal';
+import { initializeOrgDetails } from '../../common/utilities/OrgHandlerUtils';
+import { ArtemisService } from '../../common/services/ArtemisService';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
 export class PreviewSite {
+    private static _websiteUrl: string | undefined = undefined;
+
     static isSiteRuntimePreviewEnabled(): boolean {
         const enableSiteRuntimePreview = ECSFeaturesClient.getConfig(EnableSiteRuntimePreview).enableSiteRuntimePreview
 
@@ -26,10 +31,25 @@ export class PreviewSite {
             return false;
         }
 
-        return enableSiteRuntimePreview;
+        return true;
     }
 
-    static async getWebSiteURL(workspaceFolders: WorkspaceFolder[], stamp: ServiceEndpointCategory, envId: string, telemetry: ITelemetry): Promise<string> {
+    static async loadSiteUrl(
+        workspaceFolders: WorkspaceFolder[],
+        stamp: ServiceEndpointCategory,
+        envId: string,
+        telemetry: ITelemetry)
+        : Promise<void> {
+        const websiteUrl = await PreviewSite.getWebSiteUrl(workspaceFolders, stamp, envId, telemetry);
+
+        this._websiteUrl = websiteUrl;
+    }
+
+    static getSiteUrl(): string | undefined {
+        return this._websiteUrl;
+    }
+
+    private static async getWebSiteUrl(workspaceFolders: WorkspaceFolder[], stamp: ServiceEndpointCategory, envId: string, telemetry: ITelemetry): Promise<string> {
         const websiteRecordId = getWebsiteRecordId(workspaceFolders, telemetry);
         if (!websiteRecordId) {
             telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY, {
@@ -74,9 +94,15 @@ export class PreviewSite {
                 await settings.update('defaultUrl', currentDefaultUrl);
             }
         );
+
+        await vscode.window.showInformationMessage(vscode.l10n.t('The preview shown is for published changes.'));
     }
 
-    static async handlePreviewRequest(isSiteRuntimePreviewEnabled: boolean, websiteURL: string | undefined, telemetry: ITelemetry) {
+    static async handlePreviewRequest(
+        isSiteRuntimePreviewEnabled: boolean,
+        telemetry: ITelemetry,
+        pacTerminal: PacTerminal) {
+
         telemetry.sendTelemetryEvent("StartCommand", {
             commandId: SITE_PREVIEW_COMMAND_ID,
         });
@@ -94,25 +120,66 @@ export class PreviewSite {
             return;
         }
 
-        if (websiteURL === undefined) {
+        if (this._websiteUrl === undefined) {
             await vscode.window.showWarningMessage(vscode.l10n.t("Initializing site preview. Please try again after few seconds."));
             return;
         }
 
-        if (websiteURL === "") {
-            const shouldInitiateLogin = await vscode.window.showErrorMessage(
-                vscode.l10n.t(
-                    `Website not found in the environment. Please check the credentials and login with correct account.`
-                ),
-                vscode.l10n.t('Login')
-            );
+        if (this._websiteUrl === "") {
+            let shouldRepeatLoginFlow = true;
 
-            if (shouldInitiateLogin === vscode.l10n.t('Login')) {
-                await vscode.authentication.getSession(PROVIDER_ID, [], { })
+            while (shouldRepeatLoginFlow) {
+                shouldRepeatLoginFlow = await PreviewSite.handleEmptyWebsiteUrl(pacTerminal, telemetry);
             }
-            return;
         }
 
-        await PreviewSite.launchBrowserAndDevToolsWithinVsCode(websiteURL);
+        await PreviewSite.launchBrowserAndDevToolsWithinVsCode(this._websiteUrl);
+    }
+
+    private static async handleEmptyWebsiteUrl(pacTerminal: PacTerminal, telemetry: ITelemetry): Promise<boolean> {
+        const shouldInitiateLogin = await vscode.window.showErrorMessage(
+            vscode.l10n.t(
+                `Website not found in the environment. Please check the credentials and login with correct account.`
+            ),
+            vscode.l10n.t('Login'),
+            vscode.l10n.t('Cancel')
+        );
+
+        let shouldRepeatLoginFlow = false;
+
+        if (shouldInitiateLogin === vscode.l10n.t('Login')) {
+            await vscode.authentication.getSession(PROVIDER_ID, [], { forceNewSession: true, clearSessionPreference: true });
+
+            await showProgressWithNotification(
+                vscode.l10n.t('Initializing site preview'),
+                async (progress) => {
+                    progress.report({ message: vscode.l10n.t('Getting org details...') });
+
+                    const orgDetails = await initializeOrgDetails(false, pacTerminal.getWrapper());
+
+                    progress.report({ message: vscode.l10n.t('Getting region information...') });
+
+                    const artemisResponse = await ArtemisService.getArtemisResponse(orgDetails.orgID, telemetry, "");
+
+                    if (artemisResponse === null || artemisResponse.response === null) {
+                        vscode.window.showErrorMessage(vscode.l10n.t("Failed to get website endpoint. Please try again later"));
+                        return;
+                    }
+
+                    progress.report({ message: vscode.l10n.t('Getting website endpoint...') });
+
+                    const websiteUrl = await PreviewSite.getWebSiteUrl(getWorkspaceFolders(), artemisResponse?.stamp, orgDetails.environmentID, telemetry);
+
+                    if (websiteUrl === "") {
+                        shouldRepeatLoginFlow = true;
+                    }
+                    else {
+                        this._websiteUrl = websiteUrl;
+                    }
+                }
+            );
+        }
+
+        return shouldRepeatLoginFlow;
     }
 }

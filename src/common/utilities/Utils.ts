@@ -17,6 +17,8 @@ import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { bapServiceAuthentication } from "../services/AuthenticationProvider";
 import { BAP_API_VERSION, BAP_ENVIRONMENT_LIST_URL, BAP_SERVICE_ENDPOINT, ServiceEndpointCategory } from "../services/Constants";
 import { VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS, VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION } from "../services/TelemetryConstants";
+import { WorkspaceFolder } from "vscode-languageserver";
+import { Progress } from "vscode";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -104,13 +106,16 @@ export async function showInputBoxAndGetOrgUrl() {
     });
 }
 
-export async function showProgressWithNotification<T>(title: string, task: () => Promise<T>): Promise<T> {
+export async function showProgressWithNotification<T>(title: string, task: (progress: Progress<{
+    message?: string;
+    increment?: number;
+}>) => Promise<T>): Promise<T> {
     return await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: title,
         cancellable: false
-    }, async () => {
-        return await task();
+    }, async (progress) => {
+        return await task(progress);
     });
 }
 
@@ -396,4 +401,10 @@ export function getBAPEndpoint(serviceEndpointStamp: ServiceEndpointCategory, te
     }
 
     return BAP_SERVICE_ENDPOINT.replace('{rootURL}', bapEndpoint)
+}
+
+export function getWorkspaceFolders(): WorkspaceFolder[] {
+    return vscode.workspace.workspaceFolders?.map(
+                (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+            ) || [];
 }
