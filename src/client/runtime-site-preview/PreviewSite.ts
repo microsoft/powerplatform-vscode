@@ -90,7 +90,7 @@ export class PreviewSite {
                 const settings = vscode.workspace.getConfiguration('vscode-edge-devtools');
                 const currentDefaultUrl = await settings.get('defaultUrl');
                 await settings.update('defaultUrl', webSitePreviewURL);
-                await vscode.commands.executeCommand('vscode-edge-devtools-view.launch');
+                await vscode.commands.executeCommand('vscode-edge-devtools.launch');
                 await settings.update('defaultUrl', currentDefaultUrl);
             }
         );
