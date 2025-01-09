@@ -162,6 +162,9 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
       <source xml:lang="en">Failed to get file ready for edit: {0}</source>
     </trans-unit>
+    <trans-unit id="++CODE++51e1f5c5757cfd25a390293a7d8e9eb583943b66211fae1cbe25d07bfcb767f1">
+      <source xml:lang="en">Failed to get website endpoint. Please try again later</source>
+    </trans-unit>
     <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
       <source xml:lang="en">Feature is not enabled for this geo.</source>
     </trans-unit>
@@ -190,6 +193,15 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
       <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
     </trans-unit>
+    <trans-unit id="++CODE++68e1b7e92c5520ace7e24c69c89bd599053323522fc402d50d154fab5e7261dc">
+      <source xml:lang="en">Getting org details...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++6f1bba10af9069a03da80d629b97c40fc4bedaf90a23496a2bdef0c512a92959">
+      <source xml:lang="en">Getting region information...</source>
+    </trans-unit>
+    <trans-unit id="++CODE++0087988cdb71080f2525354e125366c6db7d85a36f199e2f80d14a44b3fd0340">
+      <source xml:lang="en">Getting website endpoint...</source>
+    </trans-unit>
     <trans-unit id="++CODE++b9f4adbdfa2deef1eaa415a914f63329ee06c604b5a1bf34645175b9e28a9712">
       <source xml:lang="en">Here are a few suggestions to get you started</source>
     </trans-unit>
@@ -213,6 +225,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     </trans-unit>
     <trans-unit id="++CODE++08295f3385931e35c850b945e2ae04882452c4bf0dd575f70e95aaa6ed00daa9">
       <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a22418694e3938cc42976630bcd24822ed4f671b168708e0641171440ca8f6dd">
+      <source xml:lang="en">Initializing site preview</source>
     </trans-unit>
     <trans-unit id="++CODE++15b09c32b0337229ff64c72f2ea9a3f8422fa20975ae494da863fd738554b1de">
       <source xml:lang="en">Initializing site preview. Please try again after few seconds.</source>
@@ -415,6 +430,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++5eccedc8c04d2137a9eb74edf18ea469b4b63e7315de4b8fe49c48bb8d0780e9">
       <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
     </trans-unit>
+    <trans-unit id="++CODE++db00163e0e6fed2e319e28785c537befb88ded272d245e503d9580322ab2fec8">
+      <source xml:lang="en">The preview shown is for published changes.</source>
+    </trans-unit>
     <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
       <source xml:lang="en">There was a permissions problem with the server</source>
     </trans-unit>
@@ -467,11 +485,8 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
       <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
     </trans-unit>
-    <trans-unit id="++CODE++968729c173b0e6967fc054251835e9196b1e09ad7c55ab7b0acafb3402a9d5d6">
-      <source xml:lang="en">Website URL not found.</source>
-    </trans-unit>
-    <trans-unit id="++CODE++4ed689987736ce09e17c67eb32f441ca7d0f7ed013a282aafd1ebcf302e6386b">
-      <source xml:lang="en">Website not found in the environment. Please check the credentials and root folder path.</source>
+    <trans-unit id="++CODE++aa64cfbb63d3382bc0530c6e599467b1cc5c1ef8ff3b573d37ad628f9058b2aa">
+      <source xml:lang="en">Website not found in the environment. Please check the credentials and login with correct account.</source>
     </trans-unit>
     <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
       <source xml:lang="en">What do you need help with?</source>
