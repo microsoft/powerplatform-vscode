@@ -18,6 +18,7 @@ import { getWorkspaceFolders, showProgressWithNotification } from '../../common/
 import { PacTerminal } from '../lib/PacTerminal';
 import { initializeOrgDetails } from '../../common/utilities/OrgHandlerUtils';
 import { ArtemisService } from '../../common/services/ArtemisService';
+import { Messages } from './Constants';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
@@ -70,14 +71,12 @@ export class PreviewSite {
 
         if (!edgeToolsExtension) {
             const install = await vscode.window.showWarningMessage(
-                vscode.l10n.t(
-                    `The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?`
-                ),
-                vscode.l10n.t('Install'),
-                vscode.l10n.t('Cancel')
+                Messages.EDGE_DEV_TOOLS_NOT_INSTALLED_MESSAGE,
+                Messages.INSTALL,
+                Messages.CANCEL
             );
 
-            if (install === vscode.l10n.t('Install')) {
+            if (install === Messages.INSTALL) {
                 await vscode.commands.executeCommand('workbench.extensions.search', EDGE_TOOLS_EXTENSION_ID);
             }
 
@@ -85,7 +84,7 @@ export class PreviewSite {
         }
 
         await showProgressWithNotification(
-            vscode.l10n.t('Opening site preview...'),
+            Messages.OPENING_SITE_PREVIEW,
             async () => {
                 const settings = vscode.workspace.getConfiguration('vscode-edge-devtools');
                 const currentDefaultUrl = await settings.get('defaultUrl');
@@ -95,7 +94,7 @@ export class PreviewSite {
             }
         );
 
-        await vscode.window.showInformationMessage(vscode.l10n.t('The preview shown is for published changes.'));
+        await vscode.window.showInformationMessage(Messages.PREVIEW_SHOWN_FOR_PUBLISHED_CHANGES);
     }
 
     static async handlePreviewRequest(
@@ -111,17 +110,17 @@ export class PreviewSite {
         });
 
         if (!isSiteRuntimePreviewEnabled) {
-            await vscode.window.showInformationMessage(vscode.l10n.t("Site runtime preview feature is not enabled."));
+            await vscode.window.showInformationMessage(Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED);
             return;
         }
 
         if (!vscode.workspace.workspaceFolders) {
-            await vscode.window.showErrorMessage(vscode.l10n.t("No workspace folder opened. Please open a site folder to preview."));
+            await vscode.window.showErrorMessage(Messages.NO_FOLDER_OPENED);
             return;
         }
 
         if (this._websiteUrl === undefined) {
-            await vscode.window.showWarningMessage(vscode.l10n.t("Initializing site preview. Please try again after few seconds."));
+            await vscode.window.showWarningMessage(Messages.INITIALIZING_PREVIEW_TRY_AGAIN);
             return;
         }
 
@@ -138,35 +137,33 @@ export class PreviewSite {
 
     private static async handleEmptyWebsiteUrl(pacTerminal: PacTerminal, telemetry: ITelemetry): Promise<boolean> {
         const shouldInitiateLogin = await vscode.window.showErrorMessage(
-            vscode.l10n.t(
-                `Website not found in the environment. Please check the credentials and login with correct account.`
-            ),
-            vscode.l10n.t('Login'),
-            vscode.l10n.t('Cancel')
+            Messages.WEBSITE_NOT_FOUND_IN_ENVIRONMENT,
+            Messages.LOGIN,
+            Messages.CANCEL
         );
 
         let shouldRepeatLoginFlow = false;
 
-        if (shouldInitiateLogin === vscode.l10n.t('Login')) {
+        if (shouldInitiateLogin === Messages.LOGIN) {
             await vscode.authentication.getSession(PROVIDER_ID, [], { forceNewSession: true, clearSessionPreference: true });
 
             await showProgressWithNotification(
-                vscode.l10n.t('Initializing site preview'),
+                Messages.INITIALIZING_PREVIEW,
                 async (progress) => {
-                    progress.report({ message: vscode.l10n.t('Getting org details...') });
+                    progress.report({ message: Messages.GETTING_ORG_DETAILS });
 
                     const orgDetails = await initializeOrgDetails(false, pacTerminal.getWrapper());
 
-                    progress.report({ message: vscode.l10n.t('Getting region information...') });
+                    progress.report({ message: Messages.GETTING_REGION_INFORMATION });
 
                     const artemisResponse = await ArtemisService.getArtemisResponse(orgDetails.orgID, telemetry, "");
 
                     if (artemisResponse === null || artemisResponse.response === null) {
-                        vscode.window.showErrorMessage(vscode.l10n.t("Failed to get website endpoint. Please try again later"));
+                        vscode.window.showErrorMessage(Messages.FAILED_TO_GET_ENDPOINT);
                         return;
                     }
 
-                    progress.report({ message: vscode.l10n.t('Getting website endpoint...') });
+                    progress.report({ message: Messages.GETTING_WEBSITE_ENDPOINT });
 
                     const websiteUrl = await PreviewSite.getWebSiteUrl(getWorkspaceFolders(), artemisResponse?.stamp, orgDetails.environmentID, telemetry);
 

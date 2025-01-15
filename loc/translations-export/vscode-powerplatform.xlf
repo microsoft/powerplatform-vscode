@@ -193,8 +193,8 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
       <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
     </trans-unit>
-    <trans-unit id="++CODE++68e1b7e92c5520ace7e24c69c89bd599053323522fc402d50d154fab5e7261dc">
-      <source xml:lang="en">Getting org details...</source>
+    <trans-unit id="++CODE++1a1075387e5e1674a11f58f6aadd4e0abc63e1e3d201ae980b12a37e6d5a584b">
+      <source xml:lang="en">Getting organization details...</source>
     </trans-unit>
     <trans-unit id="++CODE++6f1bba10af9069a03da80d629b97c40fc4bedaf90a23496a2bdef0c512a92959">
       <source xml:lang="en">Getting region information...</source>
@@ -421,8 +421,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
       <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
     </trans-unit>
-    <trans-unit id="++CODE++538ecf1398703f8a2048b99a2b2a533012b06ee88d67a0fd6fbbcd716cfbd663">
-      <source xml:lang="en">The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?</source>
+    <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
+      <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
+      <note>Do not translate 'Microsoft Edge Tools' </note>
     </trans-unit>
     <trans-unit id="++CODE++e4a2396fd7a366292a40abc87b18a2329458c258f4d0e0e593e6189dff19a117">
       <source xml:lang="en">The name you want to give to this authentication profile</source>
