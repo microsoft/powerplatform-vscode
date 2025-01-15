@@ -46,7 +46,7 @@ import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities/Utils";
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
-import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./runtime-site-preview/PreviewSite";
+import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./preview-site/PreviewSite";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
