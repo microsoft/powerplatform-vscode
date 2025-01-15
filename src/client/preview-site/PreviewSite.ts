@@ -62,7 +62,18 @@ export class PreviewSite {
         return websiteDetails?.websiteUrl || "";
     }
 
-    static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined): Promise<void> {
+    private static async promptInstallEdgeTools(): Promise<void> {
+        const install = await vscode.window.showWarningMessage(
+            Messages.EDGE_DEV_TOOLS_NOT_INSTALLED_MESSAGE,
+            Messages.INSTALL,
+            Messages.CANCEL
+        );
+        if (install === Messages.INSTALL) {
+            await vscode.commands.executeCommand('workbench.extensions.search', EDGE_TOOLS_EXTENSION_ID);
+        }
+    }
+
+    private static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined): Promise<void> {
         if (!webSitePreviewURL || webSitePreviewURL === "") {
             return;
         }
@@ -70,16 +81,7 @@ export class PreviewSite {
         const edgeToolsExtension = vscode.extensions.getExtension(EDGE_TOOLS_EXTENSION_ID);
 
         if (!edgeToolsExtension) {
-            const install = await vscode.window.showWarningMessage(
-                Messages.EDGE_DEV_TOOLS_NOT_INSTALLED_MESSAGE,
-                Messages.INSTALL,
-                Messages.CANCEL
-            );
-
-            if (install === Messages.INSTALL) {
-                await vscode.commands.executeCommand('workbench.extensions.search', EDGE_TOOLS_EXTENSION_ID);
-            }
-
+            await this.promptInstallEdgeTools();
             return;
         }
 
