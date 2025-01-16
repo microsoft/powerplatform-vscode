@@ -74,35 +74,32 @@ export class PPAPIService {
 
     static async getPPAPIServiceEndpoint(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry, environmentId: string, websitePreviewId?: string): Promise<string> {
 
-        let ppapiEndpoint = "";
+        let ppApiEndpoint = "";
 
         switch (serviceEndpointStamp) {
             case ServiceEndpointCategory.TEST:
-                ppapiEndpoint = "https://api.test.powerplatform.com";
+                ppApiEndpoint = "https://api.test.powerplatform.com";
                 break;
             case ServiceEndpointCategory.PREPROD:
-                ppapiEndpoint = "https://api.preprod.powerplatform.com";
+                ppApiEndpoint = "https://api.preprod.powerplatform.com";
                 break;
             case ServiceEndpointCategory.PROD:
-                ppapiEndpoint = "https://api.powerplatform.com";
+                ppApiEndpoint = "https://api.powerplatform.com";
                 break;
             case ServiceEndpointCategory.DOD:
-                ppapiEndpoint = "https://api.powerplatform.us";
-                break;
             case ServiceEndpointCategory.GCC:
-                ppapiEndpoint = "https://api.powerplatform.us";
+            case ServiceEndpointCategory.HIGH:
+                ppApiEndpoint = "https://api.powerplatform.us";
                 break;
             case ServiceEndpointCategory.MOONCAKE:
-                ppapiEndpoint = "https://api.powerplatform.cn";
+                ppApiEndpoint = "https://api.powerplatform.cn";
                 break;
-            // Below endpoints are not supported yet
-            case ServiceEndpointCategory.HIGH:
             default:
                 sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });
                 break;
         }
 
-        return PPAPI_WEBSITES_ENDPOINT.replace("{rootURL}", ppapiEndpoint)
+        return PPAPI_WEBSITES_ENDPOINT.replace("{rootURL}", ppApiEndpoint)
             .replace("{environmentId}", environmentId) +
             (websitePreviewId ? `/${websitePreviewId}` : '') +
             `?api-version=${PPAPI_WEBSITES_API_VERSION}`;
