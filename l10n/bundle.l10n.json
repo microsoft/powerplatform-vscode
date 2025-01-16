@@ -33,7 +33,6 @@
   },
   "Enter the environment URL": "Enter the environment URL",
   "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.": "Active auth profile is not found or has expired. To create a new auth profile, enter the environment URL.",
-  "Website not found in the environment. Please check the credentials and root folder path.": "Website not found in the environment. Please check the credentials and root folder path.",
   "Selection is empty.": "Selection is empty.",
   "PREVIEW": "PREVIEW",
   "Explain the following code snippet:": "Explain the following code snippet:",
@@ -93,13 +92,25 @@
       "Do not translate 'PCF' as it is a product name."
     ]
   },
-  "The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?": "The extension Microsoft Edge Tools is required to run this command. Do you want to install it now?",
-  "Install": "Install",
   "Cancel": "Cancel",
+  "Install": "Install",
+  "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?/Do not translate 'Microsoft Edge Tools' ": {
+    "message": "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?",
+    "comment": [
+      "Do not translate 'Microsoft Edge Tools' "
+    ]
+  },
+  "Opening site preview...": "Opening site preview...",
+  "The preview shown is for published changes.": "The preview shown is for published changes.",
   "Site runtime preview feature is not enabled.": "Site runtime preview feature is not enabled.",
   "No workspace folder opened. Please open a site folder to preview.": "No workspace folder opened. Please open a site folder to preview.",
-  "Website URL not found.": "Website URL not found.",
-  "Opening site preview...": "Opening site preview...",
+  "Initializing site preview. Please try again after few seconds.": "Initializing site preview. Please try again after few seconds.",
+  "Website not found in the environment. Please check the credentials and login with correct account.": "Website not found in the environment. Please check the credentials and login with correct account.",
+  "Initializing site preview": "Initializing site preview",
+  "Getting organization details...": "Getting organization details...",
+  "Getting region information...": "Getting region information...",
+  "Failed to get website endpoint. Please try again later": "Failed to get website endpoint. Please try again later",
+  "Getting website endpoint...": "Getting website endpoint...",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [

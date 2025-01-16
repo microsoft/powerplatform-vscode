@@ -373,6 +373,7 @@
       },
       {
         "command": "microsoft.powerplatform.pages.preview-site",
+        "category": "Powerpages",
         "title": "%powerplatform.pages.previewSite.title%"
       }
     ],
@@ -817,7 +818,7 @@
         },
         {
           "command": "microsoft.powerplatform.pages.preview-site",
-          "when": "microsoft.powerplatform.pages.siteRuntimePreviewEnabled"
+          "when": "microsoft.powerplatform.pages.siteRuntimePreviewEnabled && workspaceFolderCount == 1 && !isWeb"
         },
         {
            "command": "powerPlatform.previewCurrentActiveUsers",
