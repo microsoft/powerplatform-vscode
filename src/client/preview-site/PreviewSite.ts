@@ -11,7 +11,7 @@ import { WorkspaceFolder } from 'vscode-languageclient/node';
 import { getWebsiteRecordId } from '../../common/utilities/WorkspaceInfoFinderUtil';
 import { PROVIDER_ID, ServiceEndpointCategory } from '../../common/services/Constants';
 import { PPAPIService } from '../../common/services/PPAPIService';
-import { VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY } from '../../common/services/TelemetryConstants';
+import { VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY, VSCODE_EXTENSION_SITE_PREVIEW_ERROR } from '../../common/services/TelemetryConstants';
 import { EDGE_TOOLS_EXTENSION_ID } from '../../common/constants';
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { getWorkspaceFolders, showProgressWithNotification } from '../../common/utilities/Utils';
@@ -19,6 +19,8 @@ import { PacTerminal } from '../lib/PacTerminal';
 import { initializeOrgDetails } from '../../common/utilities/OrgHandlerUtils';
 import { ArtemisService } from '../../common/services/ArtemisService';
 import { Messages } from './Constants';
+import { dataverseAuthentication } from '../../common/services/AuthenticationProvider';
+import { IOrgDetails } from '../../common/chat-participants/powerpages/PowerPagesChatParticipantTypes';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
@@ -112,17 +114,39 @@ export class PreviewSite {
         });
 
         if (!isSiteRuntimePreviewEnabled) {
+            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED });
             await vscode.window.showInformationMessage(Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED);
             return;
         }
 
         if (!vscode.workspace.workspaceFolders) {
+            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.NO_FOLDER_OPENED });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.NO_FOLDER_OPENED });
             await vscode.window.showErrorMessage(Messages.NO_FOLDER_OPENED);
             return;
         }
 
         if (this._websiteUrl === undefined) {
+            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.INITIALIZING_PREVIEW_TRY_AGAIN });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.INITIALIZING_PREVIEW_TRY_AGAIN });
             await vscode.window.showWarningMessage(Messages.INITIALIZING_PREVIEW_TRY_AGAIN);
+            return;
+        }
+
+        let orgDetails: IOrgDetails | undefined = undefined;
+        await showProgressWithNotification(
+            Messages.INITIALIZING_PREVIEW,
+            async (progress) => {
+                progress.report({ message: Messages.GETTING_ORG_DETAILS });
+
+                orgDetails = await initializeOrgDetails(false, pacTerminal.getWrapper());
+            });
+
+        if (!orgDetails) {
+            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.ORG_DETAILS_ERROR });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.ORG_DETAILS_ERROR });
+            await vscode.window.showWarningMessage(Messages.ORG_DETAILS_ERROR);
             return;
         }
 
@@ -130,14 +154,48 @@ export class PreviewSite {
             let shouldRepeatLoginFlow = true;
 
             while (shouldRepeatLoginFlow) {
-                shouldRepeatLoginFlow = await PreviewSite.handleEmptyWebsiteUrl(pacTerminal, telemetry);
+                shouldRepeatLoginFlow = await PreviewSite.handleEmptyWebsiteUrl(orgDetails, telemetry);
             }
         }
+
+        await PreviewSite.clearCache(telemetry, orgDetails);
 
         await PreviewSite.launchBrowserAndDevToolsWithinVsCode(this._websiteUrl);
     }
 
-    private static async handleEmptyWebsiteUrl(pacTerminal: PacTerminal, telemetry: ITelemetry): Promise<boolean> {
+    private static async clearCache(telemetry: ITelemetry, orgDetails: IOrgDetails): Promise<void> {
+        if (!this._websiteUrl) {
+            return;
+        }
+
+        const requestUrl = `${this._websiteUrl.endsWith('/') ? this._websiteUrl : this._websiteUrl.concat('/')}_services/cache/config`;
+
+        await showProgressWithNotification(
+            Messages.INITIALIZING_PREVIEW,
+            async (progress) => {
+                progress.report({ message: Messages.CLEARING_CACHE });
+
+                const authResponse = await dataverseAuthentication(telemetry, orgDetails.orgUrl);
+
+                const clearCacheResponse = await fetch(requestUrl, {
+                    headers: {
+                        authorization: "Bearer " + authResponse.accessToken,
+                        'Accept': '*/*',
+                        'Content-Type': 'text/plain',
+                    },
+                    method: 'DELETE'
+                });
+
+                if (!clearCacheResponse.ok) {
+                    telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.UNABLE_TO_CLEAR_CACHE, response: await clearCacheResponse.json(), statusCode: clearCacheResponse.status.toString() });
+                    oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.UNABLE_TO_CLEAR_CACHE, response: await clearCacheResponse.json(), statusCode: clearCacheResponse.status.toString() });
+                }
+            }
+        );
+
+    }
+
+    private static async handleEmptyWebsiteUrl(orgDetails: IOrgDetails, telemetry: ITelemetry): Promise<boolean> {
         const shouldInitiateLogin = await vscode.window.showErrorMessage(
             Messages.WEBSITE_NOT_FOUND_IN_ENVIRONMENT,
             Messages.LOGIN,
@@ -152,10 +210,6 @@ export class PreviewSite {
             await showProgressWithNotification(
                 Messages.INITIALIZING_PREVIEW,
                 async (progress) => {
-                    progress.report({ message: Messages.GETTING_ORG_DETAILS });
-
-                    const orgDetails = await initializeOrgDetails(false, pacTerminal.getWrapper());
-
                     progress.report({ message: Messages.GETTING_REGION_INFORMATION });
 
                     const artemisResponse = await ArtemisService.getArtemisResponse(orgDetails.orgID, telemetry, "");
