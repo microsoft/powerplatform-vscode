@@ -34,7 +34,7 @@ export class PreviewSite {
             return false;
         }
 
-        return true;
+        return enableSiteRuntimePreview;
     }
 
     static async loadSiteUrl(
