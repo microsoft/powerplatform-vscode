@@ -295,8 +295,7 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
-    //TODO: Initialize this based on ECS feature flag
-    ActionsHubTreeDataProvider.initialize(context, _telemetry);
+    initializeActionsHub(context);
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
@@ -304,6 +303,17 @@ export async function activate(
 
     _telemetry.sendTelemetryEvent("activated");
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
+}
+
+function initializeActionsHub(context: vscode.ExtensionContext) {
+    //TODO: Initialize this based on ECS feature flag
+    const actionsHubEnabled = true;
+
+    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
+
+    if (actionsHubEnabled) {
+        ActionsHubTreeDataProvider.initialize(context, _telemetry);
+    }
 }
 
 export async function deactivate(): Promise<void> {
