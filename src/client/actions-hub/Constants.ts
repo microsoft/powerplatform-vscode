@@ -3,12 +3,23 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import * as vscode from "vscode";
+
 export const Constants = {
     ContextValues: {
         ENVIRONMENT_GROUP: "environmentGroup",
         ACTIVE_SITES_GROUP: "activeSitesGroup",
         INACTIVE_SITES_GROUP: "inactiveSitesGroup",
         ACTIVE_SITE: "activeSite",
-        INACTIVE_SITE: "inactiveSite"
+        INACTIVE_SITE: "inactiveSite",
+        OTHER_SITES_GROUP: "otherSitesGroup"
+    },
+    Icons: {
+        SITE: new vscode.ThemeIcon('globe'),
+        SITE_GROUP: new vscode.ThemeIcon('folder'),
+        OTHER_SITES: new vscode.ThemeIcon('archive')
+    },
+    Strings: {
+        OTHER_SITES: vscode.l10n.t("Other Sites")
     }
 };

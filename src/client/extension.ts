@@ -47,6 +47,7 @@ import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities/Utils";
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
 import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./preview-site/PreviewSite";
+import { ActionsHubTreeDataProvider } from "./actions-hub/ActionsHubTreeDataProvider";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -293,6 +294,8 @@ export async function activate(
 
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
+
+    ActionsHubTreeDataProvider.initialize();
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);

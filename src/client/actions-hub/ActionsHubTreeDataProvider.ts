@@ -5,37 +5,41 @@
 
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "./ActionsHubTreeItem";
+import { Constants } from "./Constants";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
+    private readonly _disposables: vscode.Disposable[] = [];
+
+    private constructor() {
+        this._disposables.push(
+            vscode.window.registerTreeDataProvider("powerpages.actionsHub", this)
+        );
+    }
+
+    public static initialize(): ActionsHubTreeDataProvider {
+        return new ActionsHubTreeDataProvider();
+    }
 
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;
     }
 
     getChildren(element?: ActionsHubTreeItem | undefined): vscode.ProviderResult<ActionsHubTreeItem[]> {
-        if (element) {
-            return element.children;
-        } else {
+        if (!element) {
             return [
                 new ActionsHubTreeItem(
-                    "Environment Group",
-                    vscode.TreeItemCollapsibleState.Expanded,
-                    { light: "light/path/to/icon.svg", dark: "dark/path/to/icon.svg" },
-                    "environmentGroup"
-                ),
-                new ActionsHubTreeItem(
-                    "Active Sites Group",
-                    vscode.TreeItemCollapsibleState.Expanded,
-                    { light: "light/path/to/icon.svg", dark: "dark/path/to/icon.svg" },
-                    "activeSitesGroup"
-                ),
-                new ActionsHubTreeItem(
-                    "Inactive Sites Group",
-                    vscode.TreeItemCollapsibleState.Expanded,
-                    { light: "light/path/to/icon.svg", dark: "dark/path/to/icon.svg" },
-                    "inactiveSitesGroup"
+                    Constants.Strings.OTHER_SITES,
+                    vscode.TreeItemCollapsibleState.Collapsed,
+                    Constants.Icons.OTHER_SITES,
+                    Constants.ContextValues.OTHER_SITES_GROUP
                 )
             ];
+        } else {
+            return [];
         }
+    }
+
+    public dispose(): void {
+        this._disposables.forEach(d => d.dispose());
     }
 }
