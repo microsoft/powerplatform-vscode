@@ -276,5 +276,8 @@
     "comment": [
       "The {0} represents profile's Azure Cloud Instances"
     ]
-  }
+  },
+  "Other Sites": "Other Sites",
+  "Active Sites": "Active Sites",
+  "Inactive Sites": "Inactive Sites"
 }

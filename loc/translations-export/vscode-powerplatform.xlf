@@ -22,6 +22,9 @@
     <trans-unit id="++CODE++8d35e64354d3db3df1df4ef8e6068b6b9dd58514fcf980f7071e10ed160db95a">
       <source xml:lang="en">AI-generated content can contain mistakes</source>
     </trans-unit>
+    <trans-unit id="++CODE++b82f83283cc4275cf0d58b4f55d1242fe46227ee1da9db4b81b6b08804dcbf01">
+      <source xml:lang="en">Active Sites</source>
+    </trans-unit>
     <trans-unit id="++CODE++5f9c7a14b3c0c2971e4a8f4471af5071dbd3cf37f96fa09fe1257124c0b7e921">
       <source xml:lang="en">Active auth profile is not found or has expired. Please try again.</source>
     </trans-unit>
@@ -226,6 +229,9 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++08295f3385931e35c850b945e2ae04882452c4bf0dd575f70e95aaa6ed00daa9">
       <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
     </trans-unit>
+    <trans-unit id="++CODE++3dbd55d3a97fd4cb21b3c56d8413a25157e099b74e2315575af1cce16bde65d5">
+      <source xml:lang="en">Inactive Sites</source>
+    </trans-unit>
     <trans-unit id="++CODE++a22418694e3938cc42976630bcd24822ed4f671b168708e0641171440ca8f6dd">
       <source xml:lang="en">Initializing site preview</source>
     </trans-unit>
@@ -332,6 +338,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++5cac0147c19013eb88b1fc8dc0d066b48e9f5cfcdbc9737a29d544d9bd61db55">
       <source xml:lang="en">Operation failed. See output panel for details.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b3d5416b4e83d803e6f238f1d31a637450f12c9370113871d15bd48c72435cd2">
+      <source xml:lang="en">Other Sites</source>
     </trans-unit>
     <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
       <source xml:lang="en">PAC Telemetry disabled</source>
@@ -647,6 +656,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.overview.title">
       <source xml:lang="en">Overview</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.title">
+      <source xml:lang="en">POWER PAGES ACTIONS</source>
     </trans-unit>
     <trans-unit id="microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title">
       <source xml:lang="en">POWER PAGES ACTIONS</source>
