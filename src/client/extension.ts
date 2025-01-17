@@ -295,6 +295,7 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
+    //TODO: Initialize this based on ECS feature flag
     ActionsHubTreeDataProvider.initialize(context, _telemetry);
 
     if (shouldEnableDebugger()) {
