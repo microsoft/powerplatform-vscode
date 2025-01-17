@@ -9,5 +9,5 @@ export interface IWebsiteInfo {
     name: string;
     dataModelVersion: 1 | 2;
     websiteUrl: string;
-    status: WebsiteStatus;
+    status: WebsiteStatus | undefined;
 }
