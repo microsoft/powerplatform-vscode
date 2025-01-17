@@ -315,6 +315,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6bf857113b9224708e98b1bacf5b0711a8eefd9c9c3ff1217557ce00d8e00cc7">
       <source xml:lang="en">No parent pages found for adding webfile</source>
     </trans-unit>
+    <trans-unit id="++CODE++b8a162cd305ec78bd85f8e1b5a31a3e2c944fd560aa5f0e17e6b76de4c008e6b">
+      <source xml:lang="en">No sites found</source>
+    </trans-unit>
     <trans-unit id="++CODE++abb85d7bb3ea846c90ad6348fd3a1154436cdde8f06db3d86711dd6e23cf1e21">
       <source xml:lang="en">No webpages found</source>
     </trans-unit>
