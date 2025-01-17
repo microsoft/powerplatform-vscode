@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as vscode from 'vscode';
 import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { getCommonHeaders, powerPlatformAPIAuthentication } from "./AuthenticationProvider";
 import { VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION,
@@ -49,14 +48,8 @@ export class PPAPIService {
         if (websiteDetails) {
             sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
             return websiteDetails;
-        } else {
-            // Showing a warning message when the website is not found in the environment
-            vscode.window.showWarningMessage(
-                vscode.l10n.t(
-                    `Website not found in the environment. Please check the credentials and root folder path.`
-                )
-            );
         }
+
         return null;
     }
 
@@ -81,29 +74,32 @@ export class PPAPIService {
 
     static async getPPAPIServiceEndpoint(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry, environmentId: string, websitePreviewId?: string): Promise<string> {
 
-        let ppapiEndpoint = "";
+        let ppApiEndpoint = "";
 
         switch (serviceEndpointStamp) {
             case ServiceEndpointCategory.TEST:
-                ppapiEndpoint = "https://api.test.powerplatform.com";
+                ppApiEndpoint = "https://api.test.powerplatform.com";
                 break;
             case ServiceEndpointCategory.PREPROD:
-                ppapiEndpoint = "https://api.preprod.powerplatform.com";
+                ppApiEndpoint = "https://api.preprod.powerplatform.com";
                 break;
             case ServiceEndpointCategory.PROD:
-                ppapiEndpoint = "https://api.powerplatform.com";
+                ppApiEndpoint = "https://api.powerplatform.com";
                 break;
-            // All below endpoints are not supported yet
             case ServiceEndpointCategory.DOD:
             case ServiceEndpointCategory.GCC:
             case ServiceEndpointCategory.HIGH:
+                ppApiEndpoint = "https://api.powerplatform.us";
+                break;
             case ServiceEndpointCategory.MOONCAKE:
+                ppApiEndpoint = "https://api.powerplatform.cn";
+                break;
             default:
                 sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });
                 break;
         }
 
-        return PPAPI_WEBSITES_ENDPOINT.replace("{rootURL}", ppapiEndpoint)
+        return PPAPI_WEBSITES_ENDPOINT.replace("{rootURL}", ppApiEndpoint)
             .replace("{environmentId}", environmentId) +
             (websitePreviewId ? `/${websitePreviewId}` : '') +
             `?api-version=${PPAPI_WEBSITES_API_VERSION}`;
