@@ -39,7 +39,6 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     getChildren(element?: ActionsHubTreeItem | undefined): vscode.ProviderResult<ActionsHubTreeItem[]> {
         if (!element) {
             return [
-                new EnvironmentGroupTreeItem({ currentEnvironmentName: "foo" }, this._context),
                 new OtherSitesGroupTreeItem()
             ];
         } else {
