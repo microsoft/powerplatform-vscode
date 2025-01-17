@@ -13,7 +13,8 @@ export const Constants = {
         ACTIVE_SITE: "activeSite",
         INACTIVE_SITE: "inactiveSite",
         OTHER_SITE: "otherSite",
-        OTHER_SITES_GROUP: "otherSitesGroup"
+        OTHER_SITES_GROUP: "otherSitesGroup",
+        NO_SITES: "noSites"
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
@@ -23,7 +24,8 @@ export const Constants = {
     Strings: {
         OTHER_SITES: vscode.l10n.t("Other Sites"),
         ACTIVE_SITES: vscode.l10n.t("Active Sites"),
-        INACTIVE_SITES: vscode.l10n.t("Inactive Sites")
+        INACTIVE_SITES: vscode.l10n.t("Inactive Sites"),
+        NO_SITES_FOUND: vscode.l10n.t("No sites found")
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized"
