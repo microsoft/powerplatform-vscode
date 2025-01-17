@@ -42,6 +42,9 @@
       <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
       <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
     </trans-unit>
+    <trans-unit id="++CODE++e149c8c84127919560017a77982c24d21203ea0835f21dc45f34682f5e65840d">
+      <source xml:lang="en">Arrow icon</source>
+    </trans-unit>
     <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
       <source xml:lang="en">Authentication failed. Please try again.</source>
     </trans-unit>
@@ -93,6 +96,9 @@
     </trans-unit>
     <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
       <source xml:lang="en">Copied to clipboard!</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b04e6767bf84555605710be1a94e48ddcbcb820353b859da427d189cf25395b4">
+      <source xml:lang="en">Copilot illustration</source>
     </trans-unit>
     <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
       <source xml:lang="en">Copy to clipboard</source>
@@ -473,8 +479,8 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
       <source xml:lang="en">What do you need help with?</source>
     </trans-unit>
-    <trans-unit id="++CODE++6f65376f47dd6d9867102ea8c57d776161ac941091f2a9d52fdd4c8228575e7b">
-      <source xml:lang="en">Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. </source>
+    <trans-unit id="++CODE++ab06f2880f954cfbc6788988300346315e8372cc05d92ce26ff6635c607e1406">
+      <source xml:lang="en">Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
     </trans-unit>
     <trans-unit id="++CODE++47a853b9f140a6f231de8498ec559d7d882536070b83c1e45c16671fd48a0b65">
       <source xml:lang="en">Working on it...</source>

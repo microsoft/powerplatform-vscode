@@ -34,22 +34,23 @@
     let messageIndex = 1;
 
 
-    const clipboardSvg = `<svg  width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z"  class="copyIcon"/>
+    const clipboardSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-labelledby="clipboardTitle" role="img">
+        <title id="clipboardTitle">Clipboard Icon</title>
+        <path d="M2 3L3.01333 1.98667H8.4L12.0267 5.56V12.9733L11.0133 13.9867H3.01333L2 12.9733V3ZM11.0133 5.98667L8.02667 3H3.01333V12.9733H11.0133V5.98667ZM0.986667 0.0133333L0.0266666 0.973333V11L0.986667 12.0133V0.973333H7.44L6.42667 0.0133333H0.986667Z" class="copyIcon"/>
     </svg>`;
 
-
-    const insertSvg = `<svg  width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g clip-path="url(#clip0_7_7)">
-    <path d="M14 6H5C4.73487 5.99972 4.48068 5.89428 4.2932 5.7068C4.10572 5.51932 4.00028 5.26513 4 5V2C4.00028 1.73487 4.10572 1.48068 4.2932 1.2932C4.48068 1.10572 4.73487 1.00028 5 1H14C14.2651 1.00028 14.5193 1.10572 14.7068 1.2932C14.8943 1.48068 14.9997 1.73487 15 2V5C14.9997 5.26513 14.8943 5.51932 14.7068 5.7068C14.5193 5.89428 14.2651 5.99972 14 6ZM5 2V5H14V2H5Z" class="insertIcon"/>
-    <path d="M14 15H5C4.73487 14.9997 4.48068 14.8943 4.2932 14.7068C4.10572 14.5193 4.00028 14.2651 4 14V11C4.00028 10.7349 4.10572 10.4807 4.2932 10.2932C4.48068 10.1057 4.73487 10.0003 5 10H14C14.2651 10.0003 14.5193 10.1057 14.7068 10.2932C14.8943 10.4807 14.9997 10.7349 15 11V14C14.9997 14.2651 14.8943 14.5193 14.7068 14.7068C14.5193 14.8943 14.2651 14.9997 14 15ZM5 11V14H14V11H5Z" class="insertIcon"/>
-    <path d="M4.5 8L1.707 5.207L1 5.914L3.086 8L1 10.086L1.707 10.793L4.5 8Z" class="insertIcon"/>
-    </g>
-    <defs>
-    <clipPath id="clip0_7_7">
-    <rect width="16" height="16" fill="white"/>
-    </clipPath>
-    </defs>
+    const insertSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-labelledby="insertTitle" role="img">
+        <title id="insertTitle">Insert Icon</title>
+        <g clip-path="url(#clip0_7_7)">
+        <path d="M14 6H5C4.73487 5.99972 4.48068 5.89428 4.2932 5.7068C4.10572 5.51932 4.00028 5.26513 4 5V2C4.00028 1.73487 4.10572 1.48068 4.2932 1.2932C4.48068 1.10572 4.73487 1.00028 5 1H14C14.2651 1.00028 14.5193 1.10572 14.7068 1.2932C14.8943 1.48068 14.9997 1.73487 15 2V5C14.9997 5.26513 14.8943 5.51932 14.7068 5.7068C14.5193 5.89428 14.2651 5.99972 14 6ZM5 2V5H14V2H5Z" class="insertIcon"/>
+        <path d="M14 15H5C4.73487 14.9997 4.48068 14.8943 4.2932 14.7068C4.10572 14.5193 4.00028 14.2651 4 14V11C4.00028 10.7349 4.10572 10.4807 4.2932 10.2932C4.48068 10.1057 4.73487 10.0003 5 10H14C14.2651 10.0003 14.5193 10.1057 14.7068 10.2932C14.8943 10.4807 14.9997 10.7349 15 11V14C14.9997 14.2651 14.8943 14.5193 14.7068 14.7068C14.5193 14.8943 14.2651 14.9997 14 15ZM5 11V14H14V11H5Z" class="insertIcon"/>
+        <path d="M4.5 8L1.707 5.207L1 5.914L3.086 8L1 10.086L1.707 10.793L4.5 8Z" class="insertIcon"/>
+        </g>
+        <defs>
+        <clipPath id="clip0_7_7">
+        <rect width="16" height="16" fill="white"/>
+        </clipPath>
+        </defs>
     </svg>`;
 
     const copilotSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <rect width="24" height="24" rx="12" fill="white"/> <path d="M16.1442 5.34932C15.9106 4.54966 15.1775 4 14.3444 4L13.7432 4C12.8472 4 12.0763 4.634 11.9034 5.51321L10.854 10.8501L11.1514 9.89102C11.3948 9.1063 12.1207 8.57143 12.9423 8.57143L16.2356 8.57143L17.6357 9.74347L18.8823 8.57143H18.491C17.6579 8.57143 16.9247 8.02177 16.6912 7.22211L16.1442 5.34932Z" fill="url(#paint0_radial_7700_35114)"/> <path d="M8.0492 18.6427C8.28017 19.4462 9.01519 19.9997 9.85121 19.9997H11.075C12.0844 19.9997 12.9126 19.2006 12.9488 18.1918L13.1295 13.1426L12.842 14.0951C12.6031 14.8867 11.8738 15.4283 11.047 15.4283L7.73383 15.4283L6.34959 14.5431L5.32812 15.4283H5.71324C6.54926 15.4283 7.28427 15.9818 7.51524 16.7853L8.0492 18.6427Z" fill="url(#paint1_radial_7700_35114)"/> <path d="M14.25 4H7.6876C5.81262 4 4.68763 6.39748 3.93763 8.79497C3.04909 11.6354 1.8864 15.4342 5.25012 15.4342H8.11121C8.94326 15.4342 9.67523 14.8878 9.911 14.0899C10.4044 12.4199 11.2647 9.52162 11.9408 7.31373C12.2855 6.18837 12.5726 5.22188 13.0131 4.62001C13.2601 4.28258 13.6718 4 14.25 4Z" fill="url(#paint2_linear_7700_35114)"/> <path d="M14.25 4H7.6876C5.81262 4 4.68763 6.39748 3.93763 8.79497C3.04909 11.6354 1.8864 15.4342 5.25012 15.4342H8.11121C8.94326 15.4342 9.67523 14.8878 9.911 14.0899C10.4044 12.4199 11.2647 9.52162 11.9408 7.31373C12.2855 6.18837 12.5726 5.22188 13.0131 4.62001C13.2601 4.28258 13.6718 4 14.25 4Z" fill="url(#paint3_linear_7700_35114)" fill-opacity="0.4"/> <path d="M9.74878 20.0006H16.3112C18.1862 20.0006 19.3112 17.6039 20.0612 15.2073C20.9497 12.3678 22.1124 8.57031 18.7487 8.57031H15.8875C15.0555 8.57031 14.3236 9.11657 14.0877 9.91444C13.5943 11.5839 12.7341 14.481 12.058 16.688C11.7133 17.813 11.4263 18.7792 10.9857 19.3808C10.7387 19.7181 10.327 20.0006 9.74878 20.0006Z" fill="url(#paint4_radial_7700_35114)"/> <path d="M9.74878 20.0006H16.3112C18.1862 20.0006 19.3112 17.6039 20.0612 15.2073C20.9497 12.3678 22.1124 8.57031 18.7487 8.57031H15.8875C15.0555 8.57031 14.3236 9.11657 14.0877 9.91444C13.5943 11.5839 12.7341 14.481 12.058 16.688C11.7133 17.813 11.4263 18.7792 10.9857 19.3808C10.7387 19.7181 10.327 20.0006 9.74878 20.0006Z" fill="url(#paint5_linear_7700_35114)"/> <defs> <radialGradient id="paint0_radial_7700_35114" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(16.8577 8.74671) rotate(-134.481) scale(5.88527 5.79516)"> <stop stop-color="#7D7DF2"/> <stop offset="0.633728" stop-color="#4A40D4"/> <stop offset="0.923392" stop-color="#2F27A5"/> </radialGradient> <radialGradient id="paint1_radial_7700_35114" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(6.74347 15.4005) rotate(51.7328) scale(6.58647 6.39483)"> <stop stop-color="#A072EE"/> <stop offset="0.633728" stop-color="#6C31D3"/> <stop offset="0.923392" stop-color="#491D9F"/> </radialGradient> <linearGradient id="paint2_linear_7700_35114" x1="7.59011" y1="17.8763" x2="8.50426" y2="2.96646" gradientUnits="userSpaceOnUse"> <stop offset="0.0499437" stop-color="#00CCF9"/> <stop offset="0.415501" stop-color="#4A94FC"/> <stop offset="0.764894" stop-color="#7D7DF2"/> <stop offset="1" stop-color="#A071EE"/> </linearGradient> <linearGradient id="paint3_linear_7700_35114" x1="8.11312" y1="4" x2="8.59177" y2="15.4355" gradientUnits="userSpaceOnUse"> <stop stop-color="#B5BCFD"/> <stop offset="0.246674" stop-color="#9B9FF8" stop-opacity="0"/> </linearGradient> <radialGradient id="paint4_radial_7700_35114" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(19.2001 7.91153) rotate(116.336) scale(13.4892 16.5648)"> <stop stop-color="#6462E4"/> <stop offset="0.554591" stop-color="#6462E4"/> <stop offset="1" stop-color="#A071EE"/> </radialGradient> <linearGradient id="paint5_linear_7700_35114" x1="18.0639" y1="8.02199" x2="17.3559" y2="11.8607" gradientUnits="userSpaceOnUse"> <stop stop-color="#B791F7"/> <stop offset="1" stop-color="#A071EE" stop-opacity="0"/> </linearGradient> </defs> </svg>'
@@ -203,7 +204,7 @@
         profileIcon.innerHTML = copilotSvg;
         profileIcon.classList.add('profile-icon');
 
-        const usernameSpan = document.createElement('span');
+        const usernameSpan = document.createElement('h4');
         usernameSpan.classList.add('username');
         usernameSpan.textContent = 'Copilot';
 
@@ -221,13 +222,13 @@
         }
         feedback.innerHTML = `<p class="feedback-statement">${copilotStrings.AI_CONTENT_MISTAKES_MESSAGE}</p>
           <div class="feedback-icons">
-          <svg class="thumbsup" cursor="pointer" width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0" aria-label="${copilotStrings.THUMBS_UP_MESSAGE}">
+          <svg class="thumbsup" cursor="pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0" aria-label="${copilotStrings.THUMBS_UP_MESSAGE}">
             <title>${copilotStrings.THUMBS_UP_MESSAGE}</title>
             <path d="M13.5584 5.47363C13.8428 5.50919 14.1095 5.61586 14.3584 5.79363C14.6073 5.97141 14.7673 6.2203 14.8384 6.5403C14.9451 6.82474 14.9273 7.12697 14.7851 7.44697L13.8251 9.63363H16.5984C16.8473 9.59808 17.0784 9.65141 17.2917 9.79363C17.5051 9.9003 17.6651 10.0603 17.7717 10.2736C17.914 10.4514 17.9851 10.6647 17.9851 10.9136C18.0206 11.127 17.9851 11.3403 17.8784 11.5536C16.634 14.1847 15.8695 15.9092 15.5851 16.727C15.4784 16.9759 15.3006 17.1892 15.0517 17.367C14.8384 17.5447 14.5895 17.6336 14.3051 17.6336H5.39839C5.00728 17.5981 4.6695 17.4559 4.38506 17.207C4.13617 16.9225 4.01172 16.5847 4.01172 16.1936V12.6736C4.01172 12.3181 4.13617 12.0159 4.38506 11.767C4.6695 11.4825 5.00728 11.3403 5.39839 11.3403H6.78506L12.5984 5.84697C12.8828 5.63363 13.2028 5.50919 13.5584 5.47363ZM14.3051 16.6203C14.4828 16.6203 14.6073 16.5314 14.6784 16.3536C15.0695 15.2514 15.8517 13.5092 17.0251 11.127C17.0606 10.9847 17.0428 10.8603 16.9717 10.7536C16.9006 10.6114 16.7762 10.5581 16.5984 10.5936H13.3451L12.8117 9.95363V9.47363L13.8784 7.0203C13.914 6.94919 13.914 6.87808 13.8784 6.80697C13.8784 6.7003 13.8428 6.62919 13.7717 6.59363C13.7006 6.52252 13.6117 6.48697 13.5051 6.48697C13.434 6.48697 13.3628 6.52252 13.2917 6.59363L7.21172 12.1403L6.73172 12.3003H5.39839C5.29172 12.3003 5.18506 12.3359 5.07839 12.407C5.00728 12.4781 4.9895 12.567 5.02506 12.6736V16.1936C4.9895 16.3003 5.00728 16.407 5.07839 16.5136C5.18506 16.5847 5.29172 16.6203 5.39839 16.6203H14.3051Z" class = "thumbsup-clicked" />
             <path d="M14.3051 16.6203C14.4828 16.6203 14.6073 16.5314 14.6784 16.3536C15.0695 15.2514 15.8517 13.5092 17.0251 11.127C17.0606 10.9847 17.0428 10.8603 16.9717 10.7536C16.9006 10.6114 16.7762 10.5581 16.5984 10.5936H13.3451L12.8117 9.95363V9.47363L13.8784 7.0203C13.914 6.94919 13.914 6.87808 13.8784 6.80697C13.8784 6.7003 13.8428 6.62919 13.7717 6.59363C13.7006 6.52252 13.6117 6.48697 13.5051 6.48697C13.434 6.48697 13.3628 6.52252 13.2917 6.59363L7.21172 12.1403L6.73172 12.3003H5.39839C5.29172 12.3003 5.18506 12.3359 5.07839 12.407C5.00728 12.4781 4.9895 12.567 5.02506 12.6736V16.1936C4.9895 16.3003 5.00728 16.407 5.07839 16.5136C5.18506 16.5847 5.29172 16.6203 5.39839 16.6203H14.3051Z" fill="none" id="thumbsup-path"/>
           </svg>
 
-          <svg class="thumbsdown" cursor="pointer" width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0" aria-label="${copilotStrings.THUMBS_DOWN_MESSAGE}">
+          <svg class="thumbsdown" cursor="pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0" aria-label="${copilotStrings.THUMBS_DOWN_MESSAGE}">
             <title>${copilotStrings.THUMBS_DOWN_MESSAGE}</title>
             <path d="M8.48 17.6336C8.19556 17.6336 7.92889 17.5447 7.68 17.367C7.43111 17.1536 7.25333 16.9047 7.14667 16.6203C7.07556 16.3003 7.11111 15.9803 7.25333 15.6603L8.21333 13.4736H5.44C5.19111 13.5092 4.96 13.4736 4.74667 13.367C4.53333 13.2603 4.35556 13.1181 4.21333 12.9403C4.10667 12.727 4.03556 12.4959 4 12.247C4 11.9981 4.05333 11.767 4.16 11.5536C5.40444 8.92252 6.16889 7.19808 6.45333 6.3803C6.56 6.13141 6.72 5.93586 6.93333 5.79363C7.18222 5.61586 7.44889 5.50919 7.73333 5.47363H16.64C17.0311 5.50919 17.3511 5.66919 17.6 5.95363C17.8844 6.20252 18.0267 6.52252 18.0267 6.91363V10.4336C18.0267 10.7892 17.8844 11.1092 17.6 11.3936C17.3511 11.6425 17.0311 11.767 16.64 11.767H15.3067L9.44 17.2603C9.15556 17.5092 8.83556 17.6336 8.48 17.6336ZM7.73333 6.48697C7.55556 6.48697 7.43111 6.57586 7.36 6.75363C6.96889 7.85586 6.20444 9.59808 5.06667 11.9803C4.99556 12.1225 4.99556 12.2647 5.06667 12.407C5.13778 12.5136 5.26222 12.5492 5.44 12.5136H8.74667L9.22667 13.1536V13.6336L8.16 16.087C8.12444 16.1581 8.10667 16.247 8.10667 16.3536C8.14222 16.4247 8.19556 16.4959 8.26667 16.567C8.33778 16.6025 8.40889 16.6203 8.48 16.6203C8.58667 16.6203 8.67556 16.5847 8.74667 16.5136L14.8267 10.967L15.3067 10.807H16.64C16.7467 10.807 16.8356 10.7714 16.9067 10.7003C17.0133 10.6292 17.0667 10.5403 17.0667 10.4336V6.91363C17.0667 6.80697 17.0133 6.71808 16.9067 6.64697C16.8356 6.5403 16.7467 6.48697 16.64 6.48697H7.73333Z" class = "thumbsdown-clicked"/>
             <path d="M7.73333 6.48697C7.55556 6.48697 7.43111 6.57586 7.36 6.75363C6.96889 7.85586 6.20444 9.59808 5.06667 11.9803C4.99556 12.1225 4.99556 12.2647 5.06667 12.407C5.13778 12.5136 5.26222 12.5492 5.44 12.5136H8.74667L9.22667 13.1536V13.6336L8.16 16.087C8.12444 16.1581 8.10667 16.247 8.10667 16.3536C8.14222 16.4247 8.19556 16.4959 8.26667 16.567C8.33778 16.6025 8.40889 16.6203 8.48 16.6203C8.58667 16.6203 8.67556 16.5847 8.74667 16.5136L14.8267 10.967L15.3067 10.807H16.64C16.7467 10.807 16.8356 10.7714 16.9067 10.7003C17.0133 10.6292 17.0667 10.5403 17.0667 10.4336V6.91363C17.0667 6.80697 17.0133 6.71808 16.9067 6.64697C16.8356 6.5403 16.7467 6.48697 16.64 6.48697H7.73333Z" fill="none" id="thumbsdown-path"/>
@@ -286,7 +287,7 @@
     function createWalkthroughDiv() {
         const walkthrough = document.createElement("div");
         walkthrough.classList.add("walkthrough-div");
-        walkthrough.innerHTML = `<p class="walkthrough-title">${copilotStrings.GETTING_STARTED_MESSAGE}</p>
+        walkthrough.innerHTML = `<h1 class="walkthrough-title">${copilotStrings.GETTING_STARTED_MESSAGE}</h1>
                             <a href="#" class="walkthrough-content" tabindex="0" aria-label="${copilotStrings.LEARN_MORE_MESSAGE}">
                                 ${bookIconSvg}
                                 <span id="walk-text">${copilotStrings.LEARN_MORE_MESSAGE}</span>
@@ -357,7 +358,7 @@
         };
     }
 
-    function setWelcomeScreen() {
+        function setWelcomeScreen() {
         const messageWrapper = document.createElement("div");
         messageWrapper.classList.add("message-wrapper");
 
@@ -376,8 +377,8 @@
                 const notLoggedIn = document.createElement("div");
                 notLoggedIn.classList.add("not-loggedIn");
                 notLoggedIn.innerHTML = `<p id="greeting"></p>
-        <p>${copilotStrings.LOGIN_MESSAGE}</p>
-        <button id="loginButton" aria-label="${copilotStrings.LOGIN_BUTTON}">${copilotStrings.LOGIN_BUTTON}</button>`;
+                <p>${copilotStrings.LOGIN_MESSAGE}</p>
+                <button id="loginButton" aria-label="${copilotStrings.LOGIN_BUTTON}">${copilotStrings.LOGIN_BUTTON}</button>`;
 
                 messageElement.appendChild(notLoggedIn);
 
@@ -391,12 +392,10 @@
                 }
                 const loggedInDiv = document.createElement("div");
                 loggedInDiv.classList.add("loggedIn");
-                loggedInDiv.innerHTML = `<p id="greeting">${copilotStrings.HI} <strong>${userName}!</strong> ${copilotStrings.WELCOME_MESSAGE}</p>
-                                `;
+                loggedInDiv.innerHTML = `<p id="greeting">${copilotStrings.HI} <strong>${userName}!</strong> ${copilotStrings.WELCOME_MESSAGE}</p>`;
                 messageElement.appendChild(loggedInDiv);
 
                 // Add GitHub Copilot link
-
                 const gitHubCopilotLink = createGitHubCopilotLinkDiv();
                 messageElement.appendChild(gitHubCopilotLink);
 
@@ -410,6 +409,7 @@
 
                 const suggestedPrompts = document.querySelectorAll(".suggested-prompt");
                 suggestedPrompts.forEach((suggestedPrompt) => {
+                    suggestedPrompt.setAttribute("tabindex", "0");
                     suggestedPrompt.addEventListener("click", handleSuggestionsClick);
                     suggestedPrompt.addEventListener("keydown", (event) => {
                         if (event.key === "Enter" || event.key === " ") {
@@ -423,6 +423,7 @@
                 messageElement.appendChild(walkthroughDiv);
 
                 const walkthroughContent = document.getElementById("walk-text");
+                walkthroughContent.setAttribute("tabindex", "0");
                 walkthroughContent.addEventListener("click", handleWalkthroughClick);
                 walkthroughContent.addEventListener("keydown", (event) => {
                     if (event.key === "Enter" || event.key === " ") {
