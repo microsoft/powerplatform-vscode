@@ -295,7 +295,7 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
-    ActionsHubTreeDataProvider.initialize();
+    ActionsHubTreeDataProvider.initialize(context, _telemetry);
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);

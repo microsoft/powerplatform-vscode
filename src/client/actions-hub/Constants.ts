@@ -12,6 +12,7 @@ export const Constants = {
         INACTIVE_SITES_GROUP: "inactiveSitesGroup",
         ACTIVE_SITE: "activeSite",
         INACTIVE_SITE: "inactiveSite",
+        OTHER_SITE: "otherSite",
         OTHER_SITES_GROUP: "otherSitesGroup"
     },
     Icons: {
@@ -20,6 +21,11 @@ export const Constants = {
         OTHER_SITES: new vscode.ThemeIcon('archive')
     },
     Strings: {
-        OTHER_SITES: vscode.l10n.t("Other Sites")
+        OTHER_SITES: vscode.l10n.t("Other Sites"),
+        ACTIVE_SITES: vscode.l10n.t("Active Sites"),
+        INACTIVE_SITES: vscode.l10n.t("Inactive Sites")
+    },
+    EventNames: {
+        ACTIONS_HUB_INITIALIZED: "actionsHubInitialized"
     }
 };
