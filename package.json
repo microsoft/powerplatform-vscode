@@ -978,6 +978,14 @@
           "when": "isWeb && virtualWorkspace",
           "contextualTitle": "People On The Site",
           "visibility": "visible"
+        },
+        {
+          "id": "powerpages.actionsHub",
+          "name": "%microsoft.powerplatform.pages.actionsHub.title%",
+          "when": "microsoft.powerplatform.pages.actionsHubEnabled && !isWeb",
+          "icon": "./src/client/assets/powerPages.svg",
+          "contextualTitle": "%microsoft.powerplatform.pages.actionsHub.title%",
+          "visibility": "visible"
         }
       ]
     },
