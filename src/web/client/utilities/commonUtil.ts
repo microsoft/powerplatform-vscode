@@ -310,7 +310,7 @@ export function getRangeForMultilineMatch(text: string, pattern: string, index: 
     return range;
 }
 
-export async function validateWebsitePreviewURL(): Promise<boolean> {
+export async function validateWebsitePreviewURL(): Promise<{ websiteUrl: string, isValid: boolean }> {
     const envId = getEnvironmentIdFromUrl();
     const serviceEndpointStamp = WebExtensionContext.serviceEndpointCategory;
     const websitePreviewId = WebExtensionContext.urlParametersMap?.get(queryParameters.PORTAL_ID);
@@ -321,7 +321,7 @@ export async function validateWebsitePreviewURL(): Promise<boolean> {
             validateWebsitePreviewURL.name,
             `serviceEndpointStamp:${serviceEndpointStamp}, envId:${envId}, websitePreviewId:${websitePreviewId}`
         );
-        return false;
+        return { websiteUrl: '', isValid: false };
     }
 
     const siteDetails = await PPAPIService.getWebsiteDetailsById(serviceEndpointStamp, envId, websitePreviewId, WebExtensionContext.telemetry.getTelemetryReporter());
@@ -331,11 +331,12 @@ export async function validateWebsitePreviewURL(): Promise<boolean> {
             webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_SITE_DETAILS_FETCH_FAILED,
             validateWebsitePreviewURL.name,
         );
-        return false;
+        return { websiteUrl: '', isValid: false };
     }
 
-    return siteDetails.websiteUrl.length !== 0 &&
-        WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) !== undefined &&
-        siteDetails.websiteUrl.toLocaleLowerCase().trim() === WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL)?.toLocaleLowerCase().trim();
-}
+    if (siteDetails.websiteUrl.length !== 0) {
+        return { websiteUrl: siteDetails.websiteUrl, isValid: true };
+    }
 
+    return { websiteUrl: '', isValid: false };
+}

@@ -6,15 +6,15 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import WebExtensionContext from "../WebExtensionContext";
-import { httpMethod, queryParameters } from '../common/constants';
-import { getBackToStudioURL, isStringUndefinedOrEmpty, validateWebsitePreviewURL } from '../utilities/commonUtil';
+import { httpMethod } from '../common/constants';
+import { getBackToStudioURL, validateWebsitePreviewURL } from '../utilities/commonUtil';
 import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
     private _onDidChangeTreeData: vscode.EventEmitter<PowerPagesNode | undefined | void> = new vscode.EventEmitter<PowerPagesNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<PowerPagesNode | undefined | void> = this._onDidChangeTreeData.event;
-    private isWebsitePreviewURLValid: Promise<boolean> = validateWebsitePreviewURL();
+    private isWebsitePreviewURLValid: Promise<{ websiteUrl: string, isValid: boolean }> = validateWebsitePreviewURL();
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
@@ -63,33 +63,22 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
 
     async previewPowerPageSite(): Promise<void> {
         let requestSentAtTime = new Date().getTime();
-        const websitePreviewUrl = WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) as string;
 
-        if (isStringUndefinedOrEmpty(websitePreviewUrl)) {
-            vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not available"));
+        const validationResult = await this.isWebsitePreviewURLValid;
 
-            WebExtensionContext.telemetry.sendErrorTelemetry(
-                webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_UNAVAILABLE,
-                this.previewPowerPageSite.name,
-                `websitePreviewUrl:${websitePreviewUrl}`
-            );
-            return;
-        }
-
-        const isValid = await this.isWebsitePreviewURLValid;
-        if (!isValid) {
+        if (!validationResult.isValid) {
             vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not valid"));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_INVALID,
                 this.previewPowerPageSite.name,
-                `websitePreviewUrl:${websitePreviewUrl}`
+                `websitePreviewUrl:${validationResult.websiteUrl}`
             );
             return;
         }
 
         // Runtime clear cache call
-        const requestUrl = `${websitePreviewUrl.endsWith('/') ? websitePreviewUrl : websitePreviewUrl.concat('/')}_services/cache/config`;
+        const requestUrl = `${validationResult.websiteUrl.endsWith('/') ? validationResult.websiteUrl : validationResult.websiteUrl.concat('/')}_services/cache/config`;
 
         WebExtensionContext.telemetry.sendAPITelemetry(
             requestUrl,
@@ -141,7 +130,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             }
         );
 
-        vscode.env.openExternal(vscode.Uri.parse(websitePreviewUrl));
+        vscode.env.openExternal(vscode.Uri.parse(validationResult.websiteUrl));
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
     }
 
