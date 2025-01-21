@@ -64,8 +64,10 @@
   "Try @powerpages with GitHub Copilot": "Try @powerpages with GitHub Copilot",
   "Get GitHub Copilot to try @powerpages": "Get GitHub Copilot to try @powerpages",
   "Let Copilot help you code": "Let Copilot help you code",
-  "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ": "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ",
+  "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.": "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.",
   "Continue with Copilot for Power Pages": "Continue with Copilot for Power Pages",
+  "Arrow icon": "Arrow icon",
+  "Copilot illustration": "Copilot illustration",
   "Do not show again": "Do not show again",
   "Like something? Tell us more.": "Like something? Tell us more.",
   "Dislike something? Tell us more.": "Dislike something? Tell us more.",
@@ -111,6 +113,10 @@
   "Getting region information...": "Getting region information...",
   "Failed to get website endpoint. Please try again later": "Failed to get website endpoint. Please try again later",
   "Getting website endpoint...": "Getting website endpoint...",
+  "Failed to get organization details. Please try again later": "Failed to get organization details. Please try again later",
+  "Clearing cache...": "Clearing cache...",
+  "Authenticating...": "Authenticating...",
+  "Unable to clear cache": "Unable to clear cache",
   "File might be referenced by name {0} here./{0} represents the name of the file": {
     "message": "File might be referenced by name {0} here.",
     "comment": [
