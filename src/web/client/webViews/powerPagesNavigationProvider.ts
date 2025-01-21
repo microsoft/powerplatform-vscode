@@ -64,21 +64,21 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
     async previewPowerPageSite(): Promise<void> {
         let requestSentAtTime = new Date().getTime();
 
-        const validationResult = await this.isWebsitePreviewURLValid;
+        const { isValid, websiteUrl } = await this.isWebsitePreviewURLValid;
 
-        if (!validationResult.isValid) {
+        if (!isValid) {
             vscode.window.showErrorMessage(vscode.l10n.t("Preview site URL is not valid"));
 
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_INVALID,
                 this.previewPowerPageSite.name,
-                `websitePreviewUrl:${validationResult.websiteUrl}`
+                `websitePreviewUrl:${websiteUrl}`
             );
             return;
         }
 
         // Runtime clear cache call
-        const requestUrl = `${validationResult.websiteUrl.endsWith('/') ? validationResult.websiteUrl : validationResult.websiteUrl.concat('/')}_services/cache/config`;
+        const requestUrl = `${websiteUrl.endsWith('/') ? websiteUrl : websiteUrl.concat('/')}_services/cache/config`;
 
         WebExtensionContext.telemetry.sendAPITelemetry(
             requestUrl,
@@ -130,7 +130,7 @@ export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<Pow
             }
         );
 
-        vscode.env.openExternal(vscode.Uri.parse(validationResult.websiteUrl));
+        vscode.env.openExternal(vscode.Uri.parse(websiteUrl));
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_PREVIEW_SITE_TRIGGERED);
     }
 
