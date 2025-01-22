@@ -54,7 +54,7 @@ export function GetFileNameWithExtension(
 }
 
 export function isLanguageCodeNeededInFileName(entity: string) {
-    return entity === schemaEntityName.WEBPAGES ||entity === schemaEntityName.CONTENTSNIPPETS;
+    return entity === schemaEntityName.WEBPAGES || entity === schemaEntityName.CONTENTSNIPPETS;
 }
 
 export function isExtensionNeededInFileName(entity: string) {
@@ -310,7 +310,7 @@ export function getRangeForMultilineMatch(text: string, pattern: string, index: 
     return range;
 }
 
-export async function validateWebsitePreviewURL(): Promise<boolean> {
+export async function getValidWebsitePreviewUrl(): Promise<{ websiteUrl: string, isValid: boolean }> {
     const envId = getEnvironmentIdFromUrl();
     const serviceEndpointStamp = WebExtensionContext.serviceEndpointCategory;
     const websitePreviewId = WebExtensionContext.urlParametersMap?.get(queryParameters.PORTAL_ID);
@@ -318,10 +318,10 @@ export async function validateWebsitePreviewURL(): Promise<boolean> {
     if (serviceEndpointStamp === ServiceEndpointCategory.NONE || !envId || !websitePreviewId) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_INSUFFICIENT_PARAMETERS,
-            validateWebsitePreviewURL.name,
+            getValidWebsitePreviewUrl.name,
             `serviceEndpointStamp:${serviceEndpointStamp}, envId:${envId}, websitePreviewId:${websitePreviewId}`
         );
-        return false;
+        return { websiteUrl: '', isValid: false };
     }
 
     const siteDetails = await PPAPIService.getWebsiteDetailsById(serviceEndpointStamp, envId, websitePreviewId, WebExtensionContext.telemetry.getTelemetryReporter());
@@ -329,13 +329,14 @@ export async function validateWebsitePreviewURL(): Promise<boolean> {
     if (siteDetails == null) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_SITE_DETAILS_FETCH_FAILED,
-            validateWebsitePreviewURL.name,
+            getValidWebsitePreviewUrl.name,
         );
-        return false;
+        return { websiteUrl: '', isValid: false };
     }
 
-    return siteDetails.websiteUrl.length !== 0 &&
-        WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL) !== undefined &&
-        siteDetails.websiteUrl.toLocaleLowerCase().trim() === WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_PREVIEW_URL)?.toLocaleLowerCase().trim();
-}
+    if (siteDetails.websiteUrl.length !== 0) {
+        return { websiteUrl: siteDetails.websiteUrl, isValid: true };
+    }
 
+    return { websiteUrl: '', isValid: false };
+}

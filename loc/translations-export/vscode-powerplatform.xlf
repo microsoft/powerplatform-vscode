@@ -398,9 +398,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++f6412ced721a26ac3e3cb55d3ff713d8403c3dfc2efa0cff07b48478bdd57555">
       <source xml:lang="en">Preview site</source>
     </trans-unit>
-    <trans-unit id="++CODE++f190e8061b8cbadd991ff217210525eff0000a8c6ddc2d44baec8388b7bd1a3e">
-      <source xml:lang="en">Preview site URL is not available</source>
-    </trans-unit>
     <trans-unit id="++CODE++1cc20af81855b8570858ea1ac0491000d230bcf2ac53c1c1b30243a9b58a2036">
       <source xml:lang="en">Preview site URL is not valid</source>
     </trans-unit>
