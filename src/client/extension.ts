@@ -47,6 +47,7 @@ import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities/Utils";
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
 import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./preview-site/PreviewSite";
+import { ActionsHubTreeDataProvider } from "./actions-hub/ActionsHubTreeDataProvider";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -294,12 +295,25 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
+    initializeActionsHub(context);
+
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
     }
 
     _telemetry.sendTelemetryEvent("activated");
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
+}
+
+function initializeActionsHub(context: vscode.ExtensionContext) {
+    //TODO: Initialize this based on ECS feature flag
+    const actionsHubEnabled = true;
+
+    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
+
+    if (actionsHubEnabled) {
+        ActionsHubTreeDataProvider.initialize(context, _telemetry);
+    }
 }
 
 export async function deactivate(): Promise<void> {
