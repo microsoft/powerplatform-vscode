@@ -619,7 +619,7 @@ export class PortalsFS implements vscode.FileSystemProvider {
             );
 
             // Fire and forget
-            vscode.window.showTextDocument(WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
+            vscode.commands.executeCommand('vscode.open', WebExtensionContext.defaultFileUri, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.Active });
 
             WebExtensionContext.telemetry.sendInfoTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_VSCODE_START_COMMAND,
