@@ -46,8 +46,8 @@ import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities/Utils";
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
-import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./preview-site/PreviewSite";
-import { ActionsHubTreeDataProvider } from "./actions-hub/ActionsHubTreeDataProvider";
+import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./power-pages/preview-site/PreviewSite";
+import { ActionsHubTreeDataProvider } from "./power-pages/actions-hub/ActionsHubTreeDataProvider";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -307,7 +307,7 @@ export async function activate(
 
 function initializeActionsHub(context: vscode.ExtensionContext) {
     //TODO: Initialize this based on ECS feature flag
-    const actionsHubEnabled = true;
+    const actionsHubEnabled = false;
 
     vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
 

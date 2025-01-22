@@ -5,9 +5,9 @@
 
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { ActionsHubTreeItem } from "../../../../../actions-hub/tree-items/ActionsHubTreeItem";
+import { ActionsHubTreeItem } from "../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 
-class MockTreeItem extends ActionsHubTreeItem{
+class MockTreeItem extends ActionsHubTreeItem {
     constructor() {
         super(
             "Foo",

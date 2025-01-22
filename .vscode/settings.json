@@ -1,10 +1,12 @@
 {
-    "cSpell.words": [
-      "lcid",
-      "nupkg",
-      "powerapps",
-      "powerpages",
-      "powerplatform"
-    ],
-    "sarif-viewer.connectToGithubCodeScanning": "off"
+  "cSpell.words": [
+    "dataverse",
+    "lcid",
+    "nupkg",
+    "powerapps",
+    "powerpages",
+    "powerplatform",
+    "PPAPI"
+  ],
+  "sarif-viewer.connectToGithubCodeScanning": "off"
 }
