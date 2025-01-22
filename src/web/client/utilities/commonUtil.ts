@@ -10,7 +10,6 @@ import {
     CO_PRESENCE_FEATURE_SETTING_NAME,
     DATA,
     MULTI_FILE_FEATURE_SETTING_NAME,
-    NO_CONTENT,
     STUDIO_PROD_REGION,
     VERSION_CONTROL_FOR_WEB_EXTENSION_SETTING_NAME,
     portalSchemaVersion,
@@ -63,12 +62,12 @@ export function isExtensionNeededInFileName(entity: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getAttributeContent(result: any, attributePath: IAttributePath, entityName: string, entityId: string) {
-    let value = result[attributePath.source] ?? NO_CONTENT;
+    let value = result[attributePath.source];
 
     try {
         if (result[attributePath.source] && attributePath.relativePath.length) {
             value =
-                JSON.parse(result[attributePath.source])[attributePath.relativePath] ?? NO_CONTENT;
+                JSON.parse(result[attributePath.source])[attributePath.relativePath];
         }
     }
     catch (error) {
@@ -76,6 +75,7 @@ export function getAttributeContent(result: any, attributePath: IAttributePath, 
         WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_ATTRIBUTE_CONTENT_ERROR,
             getAttributeContent.name,
             `For ${entityName} with entityId ${entityId} and attributePath ${JSON.stringify(attributePath)} error: ${errorMsg}`);
+        return undefined;
     }
 
     return value;
@@ -151,9 +151,7 @@ export function isCoPresenceEnabled() {
         );
     }
 
-    // return isCoPresenceEnabled as boolean;
-    // Co-presence feature is disabled for now
-    return false;
+    return isCoPresenceEnabled;
 }
 
 /**
@@ -164,6 +162,10 @@ export function isCoPresenceEnabled() {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function isNullOrUndefined(object: any | null | undefined): boolean {
     return object === null || object === undefined;
+}
+
+export function isStringUndefinedOrEmpty(value: string | undefined): boolean {
+    return value === undefined || value === '';
 }
 
 // Clean up the file name to remove special characters
@@ -221,11 +223,18 @@ export function getEnvironmentIdFromUrl() {
 export function getBackToStudioURL() {
     const region = WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string;
 
+    if (isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.ENV_ID)) ||
+        isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.REGION)) ||
+        isStringUndefinedOrEmpty(WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID))) {
+        return undefined;
+    }
+
     return BACK_TO_STUDIO_URL_TEMPLATE
         .replace("{environmentId}", getEnvironmentIdFromUrl())
         .replace("{.region}", region.toLowerCase() === STUDIO_PROD_REGION ? "" : `.${WebExtensionContext.urlParametersMap.get(queryParameters.REGION) as string}`)
         .replace("{webSiteId}", WebExtensionContext.urlParametersMap.get(queryParameters.WEBSITE_ID) as string);
 }
+
 export function getSupportedImageFileExtensionsForEdit() {
     return ['png', 'jpg', 'webp', 'bmp', 'tga', 'ico', 'jpeg', 'bmp', 'dib', 'jif', 'jpe', 'tpic']; // Luna paint supported image file extensions
 }
@@ -267,11 +276,11 @@ export function getImageFileContent(fileFsPath: string, fileContent: Uint8Array)
     return webFileV2 ? fileContent : convertContentToString(fileContent, true);
 }
 
-export function getTeamChatURL (mail: string) {
-    return new URL(mail, "https://teams.microsoft.com/l/chat/0/0?users=");
+export function getTeamChatURL(mail: string) {
+    return "https://teams.microsoft.com/l/chat/0/0?users=" + encodeURIComponent(mail);
 }
 
-export function getMailToPath (mail: string) {
+export function getMailToPath(mail: string) {
     return `mailto:${mail}`;
 }
 

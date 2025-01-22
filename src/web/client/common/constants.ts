@@ -11,9 +11,6 @@ export const DEFAULT_LANGUAGE_CODE = " ";
 export const NO_CONTENT = " ";
 export const EMPTY_FILE_NAME = "defaultfilename";
 export const CHARSET = "utf-8";
-export const PROVIDER_ID = "microsoft";
-export const SCOPE_OPTION_DEFAULT = "/.default";
-export const SCOPE_OPTION_OFFLINE_ACCESS = "offline_access";
 export const BAD_REQUEST = "BAD_REQUEST";
 export const PUBLIC = "public";
 export const MIMETYPE = "mimetype";
@@ -25,7 +22,6 @@ export const ODATA_COUNT = "@odata.count";
 export const MAX_ENTITY_FETCH_COUNT = 100;
 export const MAX_CONCURRENT_REQUEST_COUNT = 50;
 export const MAX_CONCURRENT_REQUEST_QUEUE_COUNT = 1000;
-export const INTELLIGENCE_SCOPE_DEFAULT = "https://text.pai.dynamics.com/.default";
 export const BACK_TO_STUDIO_URL_TEMPLATE = "https://make{.region}.powerpages.microsoft.com/e/{environmentId}/sites/{webSiteId}/pages";
 export const STUDIO_PROD_REGION = "prod";
 export const ARTEMIS_RESPONSE_FAILED = "Artemis response failed";
@@ -126,10 +122,6 @@ export enum portalSchemaVersion {
     V2 = "portalschemav2",
 }
 
-// Microsoft Graph Client constants
-export const SCOPE_OPTION_CONTACTS_READ = "Contacts.Read";
-export const SCOPE_OPTION_USERS_READ_BASIC_ALL = "User.ReadBasic.All";
-
 export const MICROSOFT_GRAPH_USERS_BASE_URL = "https://graph.microsoft.com/v1.0/users/";
 
 export enum GraphService {
@@ -147,3 +139,6 @@ export const START_TEAMS_CHAT = "Start Teams Chat";
 export const SEND_AN_EMAIL = "Send an email";
 export const WEB_EXTENSION_TEAMS_CHAT_NOT_AVAILABLE = "Teams chat is not available for this user";
 export const WEB_EXTENSION_SEND_EMAIL_NOT_AVAILABLE = "Send email is not available for this user";
+export const WEB_EXTENSION_QUICK_PICK_TITLE = "People on this file"
+export const WEB_EXTENSION_QUICK_PICK_PLACEHOLDER = "Search for people";
+export const WEB_EXTENSION_COLLABORATION_OPTIONS_CONTACT = "Contact";

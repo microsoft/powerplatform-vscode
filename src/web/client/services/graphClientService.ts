@@ -5,7 +5,7 @@
 
 import path from "path";
 import WebExtensionContext from "../WebExtensionContext";
-import { getCommonHeaders, graphClientAuthentication } from "../common/authenticationProvider";
+import { getCommonHeaders, graphClientAuthentication } from "../../../common/services/AuthenticationProvider";
 import * as Constants from "../common/constants";
 import { telemetryEventNames } from "../telemetry/constants";
 
@@ -21,7 +21,20 @@ export class GraphClientService {
     }
 
     public async graphClientAuthentication(firstTimeAuth = false) {
-        const accessToken = await graphClientAuthentication(firstTimeAuth);
+        const accessToken = await graphClientAuthentication(WebExtensionContext.telemetry.getTelemetryReporter(), firstTimeAuth);
+        if (!accessToken) {
+            WebExtensionContext.telemetry.sendErrorTelemetry(
+                telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
+                graphClientAuthentication.name
+            );
+        }
+
+        if (firstTimeAuth && accessToken) {
+            WebExtensionContext.telemetry.sendInfoTelemetry(
+                telemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED
+            );
+        }
+
         this._graphToken = accessToken;
     }
 

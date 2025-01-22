@@ -17,7 +17,7 @@ import {
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
 
-import { MultiStepInput } from "./utils/MultiStepInput";
+import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import { TableFolder, Tables, YoSubGenerator } from "./CreateOperationConstants";
 import path from "path";
 import { ITelemetry } from "../../telemetry/ITelemetry";
@@ -184,6 +184,9 @@ async function getWebpageInputs(
     async function validateNameIsUnique(name: string) {
         if (!name) {
             return vscode.l10n.t("Please enter a name for the webpage.");
+        }
+        if (!/^[A-Za-z0-9-_]+$/.test(name)) {
+            return vscode.l10n.t("Webpage names should contain only letters, numbers, hyphens, or underscores.");
         }
         if (
             webpageNames

@@ -13,11 +13,12 @@ import {
     isPortalVersionV2,
     isWebfileContentLoadNeeded,
     setFileContent,
+    isNullOrUndefined,
 } from "../utilities/commonUtil";
 import { getCustomRequestURL, getMappingEntityContent, getMetadataInfo, getMappingEntityId, getMimeType, getRequestURL } from "../utilities/urlBuilderUtil";
-import { getCommonHeaders } from "../common/authenticationProvider";
+import { getCommonHeadersForDataverse } from "../../../common/services/AuthenticationProvider";
 import * as Constants from "../common/constants";
-import { ERRORS, showErrorDialog } from "../common/errorHandler";
+import { showErrorDialog } from "../common/errorHandler";
 import { PortalsFS } from "./fileSystemProvider";
 import {
     encodeAsBase64,
@@ -32,6 +33,7 @@ import { EntityMetadataKeyCore, SchemaEntityMetadata, folderExportType, schemaEn
 import { getEntityNameForExpandedEntityContent, getRequestUrlForEntities } from "../utilities/folderHelperUtility";
 import { IAttributePath, IFileInfo } from "../common/interfaces";
 import { portal_schema_V2 } from "../schema/portalSchema";
+import { ERRORS } from "../../../common/ErrorConstants";
 
 export async function fetchDataFromDataverseAndUpdateVFS(
     portalFs: PortalsFS,
@@ -94,7 +96,7 @@ async function fetchFromDataverseAndCreateFiles(
             requestSentAtTime = new Date().getTime();
             const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
                 headers: {
-                    ...getCommonHeaders(
+                    ...getCommonHeadersForDataverse(
                         WebExtensionContext.dataverseAccessToken
                     ),
                     Prefer: `odata.maxpagesize=${Constants.MAX_ENTITY_FETCH_COUNT}, odata.include-annotations="Microsoft.Dynamics.CRM.*"`,
@@ -332,7 +334,7 @@ async function processDataAndCreateFile(
         if (fileExtension === undefined) {
             const expandedContent = getAttributeContent(result, attributePath, entityName, entityId);
 
-            if (expandedContent !== Constants.NO_CONTENT) {
+            if (!isNullOrUndefined(expandedContent)) {
                 await processExpandedData(
                     entityName,
                     expandedContent,
@@ -458,7 +460,7 @@ async function createFile(
     await createVirtualFile(
         portalsFS,
         fileUri,
-        convertContentToUint8Array(fileContent, base64Encoded),
+        convertContentToUint8Array(fileContent ?? Constants.NO_CONTENT, base64Encoded),
         entityId,
         attributePath,
         encodeAsBase64(entityName, attribute),
@@ -506,7 +508,7 @@ async function fetchMappingEntityContent(
     requestSentAtTime = new Date().getTime();
 
     const response = await WebExtensionContext.concurrencyHandler.handleRequest(requestUrl, {
-        headers: getCommonHeaders(accessToken),
+        headers: getCommonHeadersForDataverse(accessToken),
     });
 
     if (!response.ok) {
@@ -575,20 +577,28 @@ export async function preprocessData(
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data?.forEach((dataItem: any) => {
-                const webFormSteps = getAttributeContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
+                try {
+                    const webFormSteps = getAttributeContent(dataItem, attributePath, entityType, fetchedFileId as string) as [];
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const steps: any[] = [];
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const steps: any[] = [];
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                webFormSteps?.forEach((step: any) => {
-                    const formStepData = advancedFormStepData.get(step);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    !isNullOrUndefined(webFormSteps) && webFormSteps?.forEach((step: any) => {
+                        const formStepData = advancedFormStepData.get(step);
 
-                    if (formStepData) {
-                        steps.push(formStepData);
-                    }
-                });
-                setFileContent(dataItem, attributePath, steps);
+                        if (formStepData) {
+                            steps.push(formStepData);
+                        }
+                    });
+                    setFileContent(dataItem, attributePath, steps);
+                }
+                catch (error) {
+                    const errorMsg = (error as Error)?.message;
+                    WebExtensionContext.telemetry.sendErrorTelemetry(telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_WEBFORM_STEPS_FAILED,
+                        preprocessData.name,
+                        errorMsg);
+                }
             });
             WebExtensionContext.telemetry.sendInfoTelemetry(telemetryEventNames.WEB_EXTENSION_PREPROCESS_DATA_SUCCESS, { entityType: entityType });
         }

@@ -56,7 +56,7 @@
     "email": "PPTools@microsoft.com"
   },
   "engines": {
-    "vscode": "^1.73.0",
+    "vscode": "^1.89.0",
     "npm": ">=8.3.0"
   },
   "extensionKind": [
@@ -99,7 +99,9 @@
     "onStartupFinished",
     "workspaceContains:**/**.portalconfig",
     "onDebug",
-    "onFileSystem:powerplatform-vfs"
+    "onFileSystem:powerplatform-vfs",
+    "onCommand:extension.openWebpage",
+    "onCommand:extension.openFile"
   ],
   "capabilities": {
     "untrustedWorkspaces": {
@@ -167,6 +169,18 @@
           "dark": "src/web/client/assets/microsoftTeamsIcon/dark/microsoftTeams.svg"
         }
       },
+      {
+        "command": "extension.openWebpage",
+        "title": "Open Webpage"
+    },
+    {
+      "command": "extension.openFile",
+      "title": "Open File"
+    },
+    {
+      "command": "extension.activateDirectory",
+      "title": "Activate Directory"
+  },
       {
         "command": "powerpages.collaboration.openMail",
         "title": "Open Mail",
@@ -353,7 +367,7 @@
       {
         "command": "powerpages.copilot.clearConversation",
         "category": "Copilot In Power Pages",
-        "title": "Clear Conversation",
+        "title": "%powerpages.copilotPanel.clearConversation.title%",
         "icon": "$(clear-all)"
       },
       {
@@ -481,7 +495,7 @@
         "powerPlatform.experimental.enableCoPresenceFeature": {
           "type": "boolean",
           "markdownDescription": "Enable co-presence in Visual Studio Code (Web extension only)",
-          "default": false
+          "default": true
         },
         "powerPlatform.experimental.enableTelemetry": {
           "type": "boolean",
@@ -660,7 +674,7 @@
           "command": "powerPlatform.previewCurrentActiveUsers",
           "alt": "current active users",
           "group": "navigation",
-          "when": "never"
+          "when": "isWeb && virtualWorkspace"
         }
       ],
       "commandPalette": [
@@ -937,13 +951,17 @@
         {
           "type": "webview",
           "id": "powerpages.copilot",
-          "name": "Copilot In Power Pages",
+          "name": "%powerpages.copilotPanel.title%",
           "initialSize": 6,
           "visibility": "visible",
           "when": "(!virtualWorkspace && powerpages.websiteYmlExists && config.powerPlatform.experimental.copilotEnabled) || (isWeb && config.powerPlatform.experimental.enableWebCopilot)"
         }
       ],
       "explorer": [
+        {
+          "id": "exampleView",
+           "name": "Example View"
+      },
         {
           "id": "powerpages.powerPagesFileExplorer",
           "name": "%microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title%",
@@ -955,7 +973,7 @@
         {
           "id": "powerpages.collaborationView",
           "name": "People On The Site",
-          "when": "never",
+          "when": "isWeb && virtualWorkspace",
           "contextualTitle": "People On The Site",
           "visibility": "visible"
         }
@@ -1037,7 +1055,7 @@
     "@types/sinon": "^10.0.12",
     "@types/unzip-stream": "^0.3.0",
     "@types/uuid": "^8.3.0",
-    "@types/vscode": "^1.73.0",
+    "@types/vscode": "^1.89.0",
     "@types/vscode-webview": "^1.57.1",
     "@types/webpack": "^5.28.0",
     "@types/webpack-env": "^1.17.0",
@@ -1053,7 +1071,7 @@
     "eslint": "^8.11.0",
     "eslint-plugin-header": "^3.1.1",
     "fancy-log": "^1.3.3",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^9.1.0",
     "get-func-name": "^2.0.2",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
@@ -1085,21 +1103,23 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
-    "@fluidframework/azure-client": "^1.1.1",
+    "@fluidframework/azure-client": "^1.2.0",
     "@microsoft/1ds-core-js": "4.0.5",
     "@microsoft/1ds-post-js": "4.0.5",
+    "@maker-studio/powerportals-preview-engine": "^3.7.24",
     "@microsoft/generator-powerpages": "1.21.19",
     "@types/jwt-decode": "2.2.0",
     "@types/node-fetch": "^2.6.2",
-    "@types/xmldom": "^0.1.34",
     "@vscode/extension-telemetry": "^0.6.2",
+    "@xmldom/xmldom": "^0.8.10",
     "cockatiel": "^3.1.1",
     "command-exists": "^1.2.9",
     "find-process": "^1.4.7",
-    "fluid-framework": "^1.3.3",
+    "fluid-framework": "^1.4.0",
     "glob": "^7.1.7",
     "gpt-tokenizer": "^2.1.1",
     "https-browserify": "^1.0.0",
+    "js-yaml": "^4.1.0",
     "liquidjs": "^10.2.0",
     "n-readlines": "^1.0.1",
     "puppeteer-core": "^14.4.1",
@@ -1112,7 +1132,6 @@
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
     "worker-loader": "^3.0.8",
-    "xmldom": "^0.6.0",
     "yaml": "^2.2.2"
   },
   "__metadata": {
@@ -1124,9 +1143,5 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
     "utf-8-validate": "^5.0.9"
-  },
-  "overrides": {
-    "jsrsasign": "^11.0.0",
-    "axios": "^0.28.0"
   }
 }

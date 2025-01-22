@@ -1,12 +1,13 @@
 # https://github.com/release-it/release-it/blob/master/config/release-it.json
 
-hooks: {}
+hooks:
+  'after:release': 'echo ##vso[task.setvariable variable=PPVSC_VERSION;]${version}'
 
 # https://github.com/release-it/release-it/blob/master/docs/git.md
 git:
   addUntrackedFiles: false
   commit: false
-  push: false # ADO build pushes the tag when build is complete, and fails if it's already there
+  push: true
   # need to specify pushRepo, since AzDO insists on disconnected refs, breaking upstream
   requireUpstream: false
   pushArgs: [ '--tags' ]

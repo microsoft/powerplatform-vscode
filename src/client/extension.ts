@@ -35,11 +35,13 @@ import { bootstrapDiff } from "./power-pages/bootstrapdiff/BootstrapDiff";
 import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryConstants";
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED } from "../common/copilot/constants";
-import { fetchArtemisResponse } from "../common/ArtemisService";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { OrgChangeNotifier, orgChangeEvent } from "../common/OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { telemetryEventNames } from "./telemetry/TelemetryEventNames";
+import { IArtemisAPIOrgResponse } from "../common/services/Interfaces";
+import { ArtemisService } from "../common/services/ArtemisService";
+import { treeView } from "../common/DataMapper";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -68,7 +70,7 @@ export async function activate(
     context.subscriptions.push(_telemetry);
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
-
+    await treeView();
     _telemetry.sendTelemetryEvent("Start", {
         "pac.userId": readUserSettings().uniqueId,
     });
@@ -94,9 +96,6 @@ export async function activate(
             "true"
         );
     }
-
-    vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
-    vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
     // portal web view panel
     _context.subscriptions.push(
@@ -191,11 +190,11 @@ export async function activate(
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
-            const artemisResponse = await fetchArtemisResponse(orgID, _telemetry);
-            if (artemisResponse) {
-                const { geoName } = artemisResponse[0];
-                oneDSLoggerWrapper.instantiate(geoName);
-                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, orgDetails);
+            const artemisResponse = await ArtemisService.fetchArtemisResponse(orgID, _telemetry);
+            if (artemisResponse !== null && artemisResponse.length > 0) {
+                const { geoName, geoLongName } = artemisResponse[0]?.response as unknown as IArtemisAPIOrgResponse;
+                oneDSLoggerWrapper.instantiate(geoName, geoLongName);
+                oneDSLoggerWrapper.getLogger().traceInfo(telemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, { ...orgDetails, orgGeo: geoName });
             }
         })
     );
@@ -216,6 +215,9 @@ export async function activate(
         }
         // Init OrgChangeNotifier instance
         OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
+
+        vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
+        vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
@@ -483,3 +485,47 @@ class CliAcquisitionContext implements ICliAcquisitionContext {
         });
     }
 }
+
+
+
+
+
+
+
+// class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
+//     onDidChangeTreeData?: vscode.Event<TreeItem|null|undefined>|undefined;
+  
+//     data: TreeItem[];
+  
+//     constructor() {
+//       this.data = [new TreeItem('cars', [
+//         new TreeItem(
+//             'Ford', [new TreeItem('Fiesta'), new TreeItem('Focus'), new TreeItem('Mustang')]),
+//         new TreeItem(
+//             'BMW', [new TreeItem('320'), new TreeItem('X3'), new TreeItem('X5')])
+//       ])];
+//     }
+  
+//     getTreeItem(element: TreeItem): vscode.TreeItem|Thenable<vscode.TreeItem> {
+//       return element;
+//     }
+  
+//     getChildren(element?: TreeItem|undefined): vscode.ProviderResult<TreeItem[]> {
+//       if (element === undefined) {
+//         return this.data;
+//       }
+//       return element.children;
+//     }
+//   }
+  
+//   class TreeItem extends vscode.TreeItem {
+//     children: TreeItem[]|undefined;
+  
+//     constructor(label: string, children?: TreeItem[]) {
+//       super(
+//           label,
+//           children === undefined ? vscode.TreeItemCollapsibleState.None :
+//                                    vscode.TreeItemCollapsibleState.Expanded);
+//       this.children = children;
+//     }
+//   }

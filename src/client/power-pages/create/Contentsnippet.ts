@@ -13,7 +13,7 @@ import {
     isNullOrEmpty,
 } from "./utils/CommonUtils";
 import { QuickPickItem } from "vscode";
-import { MultiStepInput } from "./utils/MultiStepInput";
+import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import path from "path";
 import { statSync } from "fs";
 import {
