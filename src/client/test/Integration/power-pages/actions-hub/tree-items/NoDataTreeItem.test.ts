@@ -5,8 +5,8 @@
 
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { NoDataTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/NoDataTreeItem";
-import { ActionsHubTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
+import { NoDataTreeItem } from "../../../../../power-pages/actions-hub/tree-items/NoDataTreeItem";
+import { ActionsHubTreeItem } from "../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 
 describe('NoDataTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {

@@ -5,9 +5,9 @@
 
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { SiteTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/SiteTreeItem";
-import { ActionsHubTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
-import { WebsiteStatus } from "../../../../../../power-pages/actions-hub/models/WebsiteStatus";
+import { SiteTreeItem } from "../../../../../power-pages/actions-hub/tree-items/SiteTreeItem";
+import { ActionsHubTreeItem } from "../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
+import { WebsiteStatus } from "../../../../../power-pages/actions-hub/models/WebsiteStatus";
 
 describe('SiteTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {
