@@ -5,8 +5,8 @@
 
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { ActionsHubTreeItem } from "../../../../../actions-hub/tree-items/ActionsHubTreeItem";
-import { OtherSitesGroupTreeItem } from "../../../../../actions-hub/tree-items/OtherSitesGroupTreeItem";
+import { ActionsHubTreeItem } from "../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
+import { OtherSitesGroupTreeItem } from "../../../../../power-pages/actions-hub/tree-items/OtherSitesGroupTreeItem";
 
 describe('OtherSitesGroupTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {

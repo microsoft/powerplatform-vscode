@@ -5,8 +5,8 @@
 
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { ActionsHubTreeItem } from "../../../../../actions-hub/tree-items/ActionsHubTreeItem";
-import { EnvironmentGroupTreeItem } from "../../../../../actions-hub/tree-items/EnvironmentGroupTreeItem";
+import { EnvironmentGroupTreeItem } from "../../../../../power-pages/actions-hub/tree-items/EnvironmentGroupTreeItem";
+import { ActionsHubTreeItem } from "../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 
 describe('EnvironmentGroupTreeItem', () => {
     it('should be of type EnvironmentGroupTreeItem', () => {
