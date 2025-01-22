@@ -7,14 +7,14 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import WebExtensionContext from "../WebExtensionContext";
 import { httpMethod } from '../common/constants';
-import { getBackToStudioURL, validateWebsitePreviewURL } from '../utilities/commonUtil';
+import { getBackToStudioURL, getValidWebsitePreviewUrl } from '../utilities/commonUtil';
 import { webExtensionTelemetryEventNames } from '../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents';
 
 export class PowerPagesNavigationProvider implements vscode.TreeDataProvider<PowerPagesNode> {
 
     private _onDidChangeTreeData: vscode.EventEmitter<PowerPagesNode | undefined | void> = new vscode.EventEmitter<PowerPagesNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<PowerPagesNode | undefined | void> = this._onDidChangeTreeData.event;
-    private isWebsitePreviewURLValid: Promise<{ websiteUrl: string, isValid: boolean }> = validateWebsitePreviewURL();
+    private isWebsitePreviewURLValid: Promise<{ websiteUrl: string, isValid: boolean }> = getValidWebsitePreviewUrl();
 
     refresh(): void {
         this._onDidChangeTreeData.fire();

@@ -54,7 +54,7 @@ export function GetFileNameWithExtension(
 }
 
 export function isLanguageCodeNeededInFileName(entity: string) {
-    return entity === schemaEntityName.WEBPAGES ||entity === schemaEntityName.CONTENTSNIPPETS;
+    return entity === schemaEntityName.WEBPAGES || entity === schemaEntityName.CONTENTSNIPPETS;
 }
 
 export function isExtensionNeededInFileName(entity: string) {
@@ -310,7 +310,7 @@ export function getRangeForMultilineMatch(text: string, pattern: string, index: 
     return range;
 }
 
-export async function validateWebsitePreviewURL(): Promise<{ websiteUrl: string, isValid: boolean }> {
+export async function getValidWebsitePreviewUrl(): Promise<{ websiteUrl: string, isValid: boolean }> {
     const envId = getEnvironmentIdFromUrl();
     const serviceEndpointStamp = WebExtensionContext.serviceEndpointCategory;
     const websitePreviewId = WebExtensionContext.urlParametersMap?.get(queryParameters.PORTAL_ID);
@@ -318,7 +318,7 @@ export async function validateWebsitePreviewURL(): Promise<{ websiteUrl: string,
     if (serviceEndpointStamp === ServiceEndpointCategory.NONE || !envId || !websitePreviewId) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_INSUFFICIENT_PARAMETERS,
-            validateWebsitePreviewURL.name,
+            getValidWebsitePreviewUrl.name,
             `serviceEndpointStamp:${serviceEndpointStamp}, envId:${envId}, websitePreviewId:${websitePreviewId}`
         );
         return { websiteUrl: '', isValid: false };
@@ -329,7 +329,7 @@ export async function validateWebsitePreviewURL(): Promise<{ websiteUrl: string,
     if (siteDetails == null) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_WEBSITE_PREVIEW_URL_VALIDATION_SITE_DETAILS_FETCH_FAILED,
-            validateWebsitePreviewURL.name,
+            getValidWebsitePreviewUrl.name,
         );
         return { websiteUrl: '', isValid: false };
     }
