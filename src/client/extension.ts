@@ -307,7 +307,7 @@ export async function activate(
 
 function initializeActionsHub(context: vscode.ExtensionContext) {
     //TODO: Initialize this based on ECS feature flag
-    const actionsHubEnabled = true;
+    const actionsHubEnabled = false;
 
     vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
 
