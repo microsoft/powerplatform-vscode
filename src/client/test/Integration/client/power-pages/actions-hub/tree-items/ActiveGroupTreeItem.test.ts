@@ -5,8 +5,8 @@
 
 import * as vscode from "vscode";
 import { expect } from "chai";
-import { ActiveGroupTreeItem } from "../../../../../actions-hub/tree-items/ActiveGroupTreeItem";
-import { ActionsHubTreeItem } from "../../../../../actions-hub/tree-items/ActionsHubTreeItem";
+import { ActiveGroupTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/ActiveGroupTreeItem";
+import { ActionsHubTreeItem } from "../../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 
 describe('ActiveGroupTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {

@@ -94,6 +94,13 @@
       "Do not translate 'PCF' as it is a product name."
     ]
   },
+  "File might be referenced by name {0} here./{0} represents the name of the file": {
+    "message": "File might be referenced by name {0} here.",
+    "comment": [
+      "{0} represents the name of the file"
+    ]
+  },
+  "Some references might be broken. Please check diagnostics for details.": "Some references might be broken. Please check diagnostics for details.",
   "Cancel": "Cancel",
   "Install": "Install",
   "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?/Do not translate 'Microsoft Edge Tools' ": {
@@ -117,13 +124,6 @@
   "Clearing cache...": "Clearing cache...",
   "Authenticating...": "Authenticating...",
   "Unable to clear cache": "Unable to clear cache",
-  "File might be referenced by name {0} here./{0} represents the name of the file": {
-    "message": "File might be referenced by name {0} here.",
-    "comment": [
-      "{0} represents the name of the file"
-    ]
-  },
-  "Some references might be broken. Please check diagnostics for details.": "Some references might be broken. Please check diagnostics for details.",
   "Enter the name of the web template": "Enter the name of the web template",
   "Please enter a name for the web template.": "Please enter a name for the web template.",
   "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
@@ -178,6 +178,10 @@
       "{0} will be replaced by the error message."
     ]
   },
+  "Other Sites": "Other Sites",
+  "Active Sites": "Active Sites",
+  "Inactive Sites": "Inactive Sites",
+  "No sites found": "No sites found",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",
   "PAC Telemetry disabled": "PAC Telemetry disabled",
@@ -282,9 +286,5 @@
     "comment": [
       "The {0} represents profile's Azure Cloud Instances"
     ]
-  },
-  "Other Sites": "Other Sites",
-  "Active Sites": "Active Sites",
-  "Inactive Sites": "Inactive Sites",
-  "No sites found": "No sites found"
+  }
 }

@@ -4,23 +4,23 @@
  */
 
 import * as vscode from 'vscode';
-import { ECSFeaturesClient } from '../../common/ecs-features/ecsFeatureClient';
-import { EnableSiteRuntimePreview } from '../../common/ecs-features/ecsFeatureGates';
-import { ITelemetry } from '../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
+import { ECSFeaturesClient } from '../../../common/ecs-features/ecsFeatureClient';
+import { EnableSiteRuntimePreview } from '../../../common/ecs-features/ecsFeatureGates';
+import { ITelemetry } from '../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { WorkspaceFolder } from 'vscode-languageclient/node';
-import { getWebsiteRecordId } from '../../common/utilities/WorkspaceInfoFinderUtil';
-import { PROVIDER_ID, ServiceEndpointCategory } from '../../common/services/Constants';
-import { PPAPIService } from '../../common/services/PPAPIService';
-import { VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY, VSCODE_EXTENSION_SITE_PREVIEW_ERROR } from '../../common/services/TelemetryConstants';
-import { EDGE_TOOLS_EXTENSION_ID } from '../../common/constants';
-import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { getWorkspaceFolders, showProgressWithNotification } from '../../common/utilities/Utils';
-import { PacTerminal } from '../lib/PacTerminal';
-import { initializeOrgDetails } from '../../common/utilities/OrgHandlerUtils';
-import { ArtemisService } from '../../common/services/ArtemisService';
+import { getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
+import { PROVIDER_ID, ServiceEndpointCategory } from '../../../common/services/Constants';
+import { PPAPIService } from '../../../common/services/PPAPIService';
+import { VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY, VSCODE_EXTENSION_SITE_PREVIEW_ERROR } from '../../../common/services/TelemetryConstants';
+import { EDGE_TOOLS_EXTENSION_ID } from '../../../common/constants';
+import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { getWorkspaceFolders, showProgressWithNotification } from '../../../common/utilities/Utils';
+import { PacTerminal } from '../../lib/PacTerminal';
+import { initializeOrgDetails } from '../../../common/utilities/OrgHandlerUtils';
+import { ArtemisService } from '../../../common/services/ArtemisService';
 import { Messages } from './Constants';
-import { dataverseAuthentication } from '../../common/services/AuthenticationProvider';
-import { IOrgDetails } from '../../common/chat-participants/powerpages/PowerPagesChatParticipantTypes';
+import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
+import { IOrgDetails } from '../../../common/chat-participants/powerpages/PowerPagesChatParticipantTypes';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
