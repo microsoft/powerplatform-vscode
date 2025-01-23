@@ -30,7 +30,8 @@ describe('EnvironmentGroupTreeItem', () => {
     it('should have the expected icon', () => {
         const treeItem = new EnvironmentGroupTreeItem({ currentEnvironmentName: "Test Environment" }, { extensionUri: vscode.Uri.parse("http://localhost") } as vscode.ExtensionContext);
 
-        expect((treeItem.iconPath as vscode.Uri).path).to.be.equal('/src/client/assets/environment.svg');
+        expect((treeItem.iconPath as { light: vscode.Uri, dark: vscode.Uri }).light).to.be.equal('/src/client/assets/environment-icon/light/environment.svg');
+        expect((treeItem.iconPath as { light: vscode.Uri, dark: vscode.Uri }).dark).to.be.equal('/src/client/assets/environment-icon/dark/environment.svg');
     });
 
     it('should have the expected contextValue', () => {

@@ -14,8 +14,8 @@ export class EnvironmentGroupTreeItem extends ActionsHubTreeItem {
             environmentInfo.currentEnvironmentName,
             vscode.TreeItemCollapsibleState.Collapsed,
             {
-                light: vscode.Uri.joinPath(context.extensionUri, 'src', 'client', 'assets', 'environment', 'light.svg'),
-                dark: vscode.Uri.joinPath(context.extensionUri, 'src', 'client', 'assets', 'environment', 'dark.svg')
+                light: vscode.Uri.joinPath(context.extensionUri, 'src', 'client', 'assets', 'environment-icon', 'light', 'environment.svg'),
+                dark: vscode.Uri.joinPath(context.extensionUri, 'src', 'client', 'assets', 'environment-icon', 'dark', 'environment.svg')
             },
             Constants.ContextValues.ENVIRONMENT_GROUP);
     }
