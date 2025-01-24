@@ -324,6 +324,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++b1061a7adf836619e40617bbbbe42d04a9c167b5756a2b4926c02d88e780a7f9">
       <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
     </trans-unit>
+    <trans-unit id="++CODE++80266a1ea7e6671d65c98a0624c254f5b9acfacddd05d69524b7f034eeba3268">
+      <source xml:lang="en">No environments found</source>
+    </trans-unit>
     <trans-unit id="++CODE++e0d2b29e6060c3d50691e6961835418fe6a24723c227dacf93250b94e21ed1bb">
       <source xml:lang="en">No page templates found</source>
     </trans-unit>

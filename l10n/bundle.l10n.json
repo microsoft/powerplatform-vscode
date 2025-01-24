@@ -181,6 +181,7 @@
   "Active Sites": "Active Sites",
   "Inactive Sites": "Inactive Sites",
   "No sites found": "No sites found",
+  "No environments found": "No environments found",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",
   "PAC Telemetry disabled": "PAC Telemetry disabled",
