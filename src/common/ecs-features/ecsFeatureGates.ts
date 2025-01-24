@@ -58,3 +58,13 @@ export const {
         enableSiteRuntimePreview: false,
     },
 });
+
+export const {
+    feature: EnableActionsHub
+} = getFeatureConfigs({
+    teamName: PowerPagesClientName,
+    description: 'Enable Actions Hub Panel in VS Code Desktop',
+    fallback: {
+        enableActionsHub: false,
+    },
+});
