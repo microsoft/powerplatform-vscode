@@ -10,6 +10,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const { dependencies } = require('./package.json');
+const copyWebpackPlugin = require('copy-webpack-plugin');
 
 
 /**@type {import('webpack').Configuration}*/
@@ -58,6 +59,7 @@ const nodeConfig = {
         }),
     ]
 };
+
 const webConfig = {
     mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
     target: 'webworker', // extensions run in a webworker context
@@ -108,6 +110,14 @@ const webConfig = {
         new webpack.DefinePlugin({
             IS_DESKTOP: false,
         }),
+        new copyWebpackPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'node_modules/@gia/survey-sdk/dist/survey.lib.umd.v1.0.10.min.js'),
+                    to: path.resolve(__dirname, 'dist/Nps-Survey-SDK')
+                },
+            ]
+        })
     ],
     externals: {
         'vscode': 'commonjs vscode', // ignored because it doesn't exist

@@ -4,8 +4,8 @@
  */
 
 export enum SurveyConstants {
-    TEAM_NAME = "PowerPages",
-    SURVEY_NAME = "PowerPages-NPS",
-    EVENT_NAME = "VscodeWeb",
+    TEAM_NAME = "powerpages",
+    SURVEY_NAME = "powerpages-nps",
+    EVENT_NAME = "vscodeweb",
     AUTHORIZATION_ENDPOINT = "https://microsoft.onmicrosoft.com/cessurvey/user",
 }
