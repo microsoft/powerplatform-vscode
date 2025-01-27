@@ -9,10 +9,9 @@ import { OtherSitesGroupTreeItem } from "./tree-items/OtherSitesGroupTreeItem";
 import { Constants } from "./Constants";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { SUCCESS } from "../../../common/constants";
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
-import { OrganizationFriendlyNameKey } from "../../../common/OneDSLoggerTelemetry/telemetryConstants";
+import { authManager } from "../../AuthManager";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -42,19 +41,15 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     async getChildren(element?: ActionsHubTreeItem): Promise<ActionsHubTreeItem[] | null | undefined> {
         if (!element) {
             try {
-                const pacWrapper = this._pacTerminal.getWrapper();
-                const pacActiveAuth = await pacWrapper?.activeAuth();
-                let orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
-                let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
 
-                if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
-                    // Currently only filtering out the OrganizationFriendlyNameKey, but we can all the keys for showing session info
-                    const result = pacActiveAuth.Results?.find(obj => obj.Key === OrganizationFriendlyNameKey);
-                    if (result) {
-                        orgFriendlyName = result.Value;
-                        currentEnvInfo = { currentEnvironmentName: orgFriendlyName };
-                    }
+                const orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
+                let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
+                const authInfo = authManager.getAuthInfo();
+                if (authInfo) {
+                    currentEnvInfo = { currentEnvironmentName: authInfo.organizationFriendlyName };
                 }
+
+                //TODO: Handle the case when the user is not logged in
 
                 return [
                     new EnvironmentGroupTreeItem(currentEnvInfo, this._context),

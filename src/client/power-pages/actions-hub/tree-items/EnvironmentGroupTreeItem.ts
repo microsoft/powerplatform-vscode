@@ -9,6 +9,7 @@ import { IEnvironmentInfo } from "../models/IEnvironmentInfo";
 import { Constants } from "../Constants";
 
 export class EnvironmentGroupTreeItem extends ActionsHubTreeItem {
+    environmentInfo: any;
     constructor(environmentInfo: IEnvironmentInfo, context: vscode.ExtensionContext) {
         super(
             environmentInfo.currentEnvironmentName,
