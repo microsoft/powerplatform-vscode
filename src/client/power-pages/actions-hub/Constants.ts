@@ -33,3 +33,22 @@ export const Constants = {
         ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED: "Actions Hub Current Environment Fetch Failed",
     }
 };
+
+export interface AuthInfo {
+    userType: string;
+    cloud: string;
+    tenantId: string;
+    tenantCountry: string;
+    user: string;
+    entraIdObjectId: string;
+    puid: string;
+    userCountryRegion: string;
+    tokenExpires: string;
+    authority: string;
+    environmentGeo: string;
+    environmentId: string;
+    environmentType: string;
+    organizationId: string;
+    organizationUniqueName: string;
+    organizationFriendlyName: string;
+}
