@@ -85,6 +85,11 @@ button {
     margin-left: 6x;
 }
 
+.checkbox-container:focus-within {
+    outline: 2px solid var(--vscode-textLink-activeForeground);
+    outline-offset: 2px;
+}
+
 input[type="checkbox"] {
     margin-right: 12px;
     background-color: var(--vscode-checkbox-background);
