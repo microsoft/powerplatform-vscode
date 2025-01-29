@@ -17,6 +17,9 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private readonly _disposables: vscode.Disposable[] = [];
     private readonly _context: vscode.ExtensionContext;
     private readonly _pacTerminal: PacTerminal;
+    private _onDidChangeTreeData: vscode.EventEmitter<ActionsHubTreeItem | undefined | void> = new vscode.EventEmitter<ActionsHubTreeItem | undefined | void>();
+    readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
+
 
     private constructor(context: vscode.ExtensionContext, pacTerminal: PacTerminal) {
         this._disposables.push(
@@ -25,6 +28,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
         this._context = context;
         this._pacTerminal = pacTerminal;
+
+        // Register an event listener for environment changes
+        authManager.onDidChangeEnvironment(() => this.refresh());
+        this._disposables.push(...this.registerPanel());
     }
 
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
@@ -64,7 +71,17 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         }
     }
 
+    public refresh(): void {
+        this._onDidChangeTreeData.fire();
+    }
+
     public dispose(): void {
         this._disposables.forEach(d => d.dispose());
+    }
+
+    private registerPanel(): vscode.Disposable[] {
+       return [
+            vscode.commands.registerCommand("powerpages.actionsHub.refresh", () => this.refresh())
+       ];
     }
 }

@@ -52,3 +52,5 @@ export interface AuthInfo {
     organizationUniqueName: string;
     organizationFriendlyName: string;
 }
+
+export const ENVIRONMENT_EXPIRED = vscode.l10n.t("Active Environment is expired or deleted. Please select a new environment.")

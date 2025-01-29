@@ -3,11 +3,14 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+import { EventEmitter, Event } from "vscode";
 import { AuthInfo } from "./power-pages/actions-hub/Constants";
 
 class AuthManager {
     private static instance: AuthManager;
     private authInfo: AuthInfo | null = null;
+    private _onDidChangeEnvironment: EventEmitter<void> = new EventEmitter<void>();
+    public readonly onDidChangeEnvironment: Event<void> = this._onDidChangeEnvironment.event;
 
     public static getInstance(): AuthManager {
         if (!AuthManager.instance) {
@@ -18,6 +21,7 @@ class AuthManager {
 
     public setAuthInfo(authInfo: AuthInfo): void {
         this.authInfo = authInfo;
+        this._onDidChangeEnvironment.fire();
     }
 
     public getAuthInfo(): AuthInfo | null {

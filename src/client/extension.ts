@@ -34,7 +34,7 @@ import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryC
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED, EXTENSION_VERSION_KEY } from "../common/copilot/constants";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { OrgChangeNotifier, orgChangeEvent } from "./OrgChangeNotifier";
+import { OrgChangeNotifier, orgChangeErrorEvent, orgChangeEvent } from "./OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
 import { ArtemisService } from "../common/services/ArtemisService";
@@ -50,6 +50,8 @@ import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./power-pages/preview-site
 import { ActionsHubTreeDataProvider } from "./power-pages/actions-hub/ActionsHubTreeDataProvider";
 import { authManager } from "./AuthManager";
 import { extractAuthInfo } from "./power-pages/commonUtility";
+import { showErrorDialog } from "../common/utilities/errorHandlerUtil";
+import { ENVIRONMENT_EXPIRED } from "./power-pages/actions-hub/Constants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -211,6 +213,8 @@ export async function activate(
                     AadIdObject = pacActiveAuth.Results?.filter(obj => obj.Key === AadIdKey);
                     EnvID = pacActiveAuth.Results?.filter(obj => obj.Key === EnvIdKey);
                     TenantID = pacActiveAuth.Results?.filter(obj => obj.Key === TenantIdKey);
+                    const authInfo = extractAuthInfo(pacActiveAuth.Results);
+                    authManager.setAuthInfo(authInfo);
                 }
 
                 if (EnvID?.[0]?.Value && TenantID?.[0]?.Value && AadIdObject?.[0]?.Value) {
@@ -258,6 +262,10 @@ export async function activate(
                 await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
             }
 
+        }),
+
+        orgChangeErrorEvent(() => {
+            showErrorDialog(ENVIRONMENT_EXPIRED);
         })
     );
 
