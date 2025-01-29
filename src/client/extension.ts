@@ -303,9 +303,9 @@ async function initializeSiteRuntimePreview(
                 async () => await PreviewSite.handlePreviewRequest(_telemetry, pacTerminal)
             )
         );
-        
-        await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+
         await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
+        await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
     }
 }
 
