@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient";
 import { EnableActionsHub } from "../../../common/ecs-features/ecsFeatureGates";
 import { ActionsHubTreeDataProvider } from "./ActionsHubTreeDataProvider";
+import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export class ActionsHub {
     static isEnabled(): boolean {
@@ -21,6 +22,11 @@ export class ActionsHub {
 
     static initialize(context: vscode.ExtensionContext): void {
         const isActionsHubEnabled = ActionsHub.isEnabled();
+
+        oneDSLoggerWrapper.getLogger().traceInfo("EnableActionsHub", {
+            isEnabled: isActionsHubEnabled.toString()
+        });
+
         vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", isActionsHubEnabled);
 
         if (!isActionsHubEnabled) {

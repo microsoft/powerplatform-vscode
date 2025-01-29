@@ -249,7 +249,9 @@ export async function activate(
 
             }
 
-            await initializeSiteRuntimePreview(artemisResponse, workspaceFolders, orgDetails, pacTerminal);
+            await PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context, _telemetry);
+
+            ActionsHub.initialize(context);
         })
     );
 
@@ -273,40 +275,12 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
-    ActionsHub.initialize(context);
-
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
     }
 
     _telemetry.sendTelemetryEvent("activated");
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
-}
-
-async function initializeSiteRuntimePreview(
-    artemisResponse: IArtemisServiceResponse | null,
-    workspaceFolders: WorkspaceFolder[],
-    orgDetails: ActiveOrgOutput,
-    pacTerminal: PacTerminal) {
-
-    const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
-
-    oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
-        isEnabled: isSiteRuntimePreviewEnabled.toString(),
-        websiteURL: PreviewSite.getSiteUrl() || "undefined"
-    });
-
-    if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
-        _context.subscriptions.push(
-            vscode.commands.registerCommand(
-                SITE_PREVIEW_COMMAND_ID,
-                async () => await PreviewSite.handlePreviewRequest(_telemetry, pacTerminal)
-            )
-        );
-
-        await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
-        await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
-    }
 }
 
 export async function deactivate(): Promise<void> {
