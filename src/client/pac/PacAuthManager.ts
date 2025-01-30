@@ -3,17 +3,19 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { AuthInfo } from "./power-pages/actions-hub/Constants";
+import { AuthInfo } from "./PacTypes";
 
-class AuthManager {
-    private static instance: AuthManager;
+
+
+class PacAuthManager {
+    private static instance: PacAuthManager;
     private authInfo: AuthInfo | null = null;
 
-    public static getInstance(): AuthManager {
-        if (!AuthManager.instance) {
-            AuthManager.instance = new AuthManager();
+    public static getInstance(): PacAuthManager {
+        if (!PacAuthManager.instance) {
+            PacAuthManager.instance = new PacAuthManager();
         }
-        return AuthManager.instance;
+        return PacAuthManager.instance;
     }
 
     public setAuthInfo(authInfo: AuthInfo): void {
@@ -25,4 +27,4 @@ class AuthManager {
     }
 }
 
-export const authManager = AuthManager.getInstance();
+export const authManager = PacAuthManager.getInstance();

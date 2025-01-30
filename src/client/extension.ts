@@ -48,7 +48,7 @@ import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
 import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./power-pages/preview-site/PreviewSite";
 import { ActionsHubTreeDataProvider } from "./power-pages/actions-hub/ActionsHubTreeDataProvider";
-import { authManager } from "./AuthManager";
+import { authManager } from "./pac/PacAuthManager";
 import { extractAuthInfo } from "./power-pages/commonUtility";
 
 let client: LanguageClient;
