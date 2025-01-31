@@ -388,9 +388,34 @@ async function processDataAndCreateFile(
     if (entityId === WebExtensionContext.defaultEntityId
         && defaultFileInfo !== undefined
         && defaultFileInfo.fileName === undefined) { // Triggered default file load defines this value
-        await WebExtensionContext.updateSingleFileUrisInContext(
-            vscode.Uri.parse(fileUri)
-        );
+
+        const sourceAttribute = WebExtensionContext.urlParametersMap.get(Constants.queryParameters.SOURCE_ATTRIBUTE);
+        let sourceAttributeExtension: string | undefined;
+
+        if (sourceAttribute) {
+            switch (sourceAttribute) {
+                case Constants.sourceAttribute.CUSTOM_CSS:
+                    sourceAttributeExtension = "customcss.css";
+                    break;
+                case Constants.sourceAttribute.CUSTOM_JAVASCRIPT:
+                    sourceAttributeExtension = "customjs.js";
+                    break;
+                default:
+                    WebExtensionContext.telemetry.sendErrorTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_SOURCE_ATTRIBUTE_INVALID, processDataAndCreateFile.name);
+                    sourceAttributeExtension = undefined;
+            }
+        }
+
+        if (sourceAttributeExtension) {
+            fileUri = filePathInPortalFS + GetFileNameWithExtension(entityName, fileName, languageCode, sourceAttributeExtension);
+            await WebExtensionContext.updateSingleFileUrisInContext(
+                vscode.Uri.parse(fileUri)
+            );
+        } else {
+            await WebExtensionContext.updateSingleFileUrisInContext(
+                vscode.Uri.parse(fileUri)
+            );
+        }
     }
 }
 

@@ -128,4 +128,5 @@ export enum webExtensionTelemetryEventNames {
     WEB_EXTENSION_SEARCH_TEXT_RESULTS = "WebExtensionSearchTextResults",
     WEB_EXTENSION_SEARCH_TEXT = "WebExtensionSearchText",
     WEB_EXTENSION_SEARCH_FILE = "WebExtensionSearchFile",
+    WEB_EXTENSION_SOURCE_ATTRIBUTE_INVALID = "WebExtensionSourceAttributeInvalid",
 }
