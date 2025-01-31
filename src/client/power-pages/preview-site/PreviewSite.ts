@@ -102,7 +102,6 @@ export class PreviewSite {
     }
 
     static async handlePreviewRequest(
-        isSiteRuntimePreviewEnabled: boolean,
         telemetry: ITelemetry,
         pacTerminal: PacTerminal) {
 
@@ -113,7 +112,7 @@ export class PreviewSite {
             commandId: SITE_PREVIEW_COMMAND_ID
         });
 
-        if (!isSiteRuntimePreviewEnabled) {
+        if (!PreviewSite.isSiteRuntimePreviewEnabled()) {
             telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED });
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED });
             await vscode.window.showInformationMessage(Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED);
