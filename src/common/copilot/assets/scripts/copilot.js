@@ -317,13 +317,16 @@
             updateThinking: function (thinkingMessage) {
                 const thinking = document.createElement("div");
                 thinking.classList.add("thinking");
-                thinking.innerText = thinkingMessage;
                 thinking.setAttribute("tabindex", "0"); // Make the element focusable
                 thinking.setAttribute("role", "status"); // Add ARIA role
-                thinking.setAttribute("aria-live", "polite"); // Ensure screen readers announce updates
-
                 messageElement.appendChild(thinking);
                 chatMessages.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight;
+
+                //This is necessary because
+// screen readers may not immediately detect content updates if they occur synchronously
+                setTimeout(() => {
+                    thinking.innerText = thinkingMessage;
+                }, 0);
             },
             updateResponse: function (apiResponse) {
                 const thinkingDiv = messageElement.querySelector(".thinking");
