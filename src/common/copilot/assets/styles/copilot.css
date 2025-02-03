@@ -247,7 +247,9 @@ a {
 }
 
 a:focus {
-  outline: none;
+  color: var(--vscode-textLink-foreground);   
+  outline: 2px solid var(--vscode-textLink-activeForeground);
+  outline-offset: 2px;
 }
 
 a:hover {

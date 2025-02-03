@@ -47,6 +47,5 @@ export interface IContextInfo {
     referrer?: string;
     envId?: string;
     referrerSource?: string;
-    orgGeo?: string;
     sku?: string;
 }

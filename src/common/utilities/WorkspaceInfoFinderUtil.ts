@@ -7,8 +7,11 @@ import {
     WorkspaceFolder
 } from 'vscode-languageserver/node';
 import { glob } from 'glob';
+import * as path from 'path';
+import * as fs from 'fs';
+import { parse } from 'yaml';
 import { ITelemetry } from '../OneDSLoggerTelemetry/telemetry/ITelemetry';
-import { sendTelemetryEvent } from '../OneDSLoggerTelemetry/telemetry/telemetry';
+import { GetWebsiteRecordID, sendTelemetryEvent } from '../OneDSLoggerTelemetry/telemetry/telemetry';
 
 export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null, telemetry: ITelemetry) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,4 +38,25 @@ export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null
         sendTelemetryEvent(telemetry, { methodName: getPortalsOrgURLs.name, eventName: 'getPortalsOrgURLs', exception: exception as Error });
     }
     return output;
+}
+
+export function getWebsiteRecordId(workspaceFolders: { uri: string }[], telemetry: ITelemetry): string {
+    try {
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            return "";
+        }
+
+        const workspaceRootFolder = workspaceFolders[0];
+        const websiteYmlPath = path.join(workspaceRootFolder.uri, 'website.yml');
+        if (fs.existsSync(websiteYmlPath)) {
+            const fileContent = fs.readFileSync(websiteYmlPath, 'utf8');
+            const parsedYaml = parse(fileContent);
+            if (parsedYaml && parsedYaml.adx_websiteid) {
+                return parsedYaml.adx_websiteid;
+            }
+        }
+    } catch (exception) {
+        sendTelemetryEvent(telemetry, { methodName: getWebsiteRecordId.name, eventName: GetWebsiteRecordID, exception: exception as Error });
+    }
+    return "";
 }

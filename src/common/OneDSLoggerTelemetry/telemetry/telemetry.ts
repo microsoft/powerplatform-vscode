@@ -18,6 +18,7 @@ export const CleanupRelatedFilesEvent = 'CleanupRelatedFilesEvent';
 export const UpdateEntityNameInYmlEvent = 'UpdateEntityNameInYmlEvent';
 export const UserFileCreateEvent = 'UserFileCreateEvent';
 export const FileCreateEvent = 'FileCreateEvent';
+export const GetWebsiteRecordID = 'getWebsiteRecordId';
 
 interface ITelemetryData {
     eventName: string,
@@ -68,4 +69,3 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: ITeleme
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
     }
 }
-

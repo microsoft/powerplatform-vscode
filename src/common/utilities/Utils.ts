@@ -4,7 +4,7 @@
  */
 
 import * as vscode from "vscode";
-import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME, VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED } from "../constants";
+import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, IEnvInfo, IRelatedFiles, relatedFilesSchema, SETTINGS_EXPERIMENTAL_STORE_NAME, VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED } from "../constants";
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData } from "../copilot/model";
@@ -14,6 +14,11 @@ import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copi
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
 import path from "path";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { bapServiceAuthentication } from "../services/AuthenticationProvider";
+import { BAP_API_VERSION, BAP_ENVIRONMENT_LIST_URL, BAP_SERVICE_ENDPOINT, ServiceEndpointCategory } from "../services/Constants";
+import { VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS, VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION } from "../services/TelemetryConstants";
+import { WorkspaceFolder } from "vscode-languageserver";
+import { Progress } from "vscode";
 
 export function getSelectedCode(editor: vscode.TextEditor): string {
     if (!editor) {
@@ -101,13 +106,16 @@ export async function showInputBoxAndGetOrgUrl() {
     });
 }
 
-export async function showProgressWithNotification<T>(title: string, task: () => Promise<T>): Promise<T> {
+export async function showProgressWithNotification<T>(title: string, task: (progress: Progress<{
+    message?: string;
+    increment?: number;
+}>) => Promise<T>): Promise<T> {
     return await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: title,
         cancellable: false
-    }, async () => {
-        return await task();
+    }, async (progress) => {
+        return await task(progress);
     });
 }
 
@@ -319,4 +327,84 @@ export function getECSOrgLocationValue(clusterName: string, clusterNumber: strin
     const extractedSubstring = clusterName.substring(startPosition);
 
     return extractedSubstring;
+}
+
+//API call to get env list for an org
+export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEndpointCategory | undefined): Promise<IEnvInfo[]> {
+    if(!endpointStamp) {
+        return [];
+    }
+    const envInfo: IEnvInfo[] = [];
+    try {
+        const bapAuthToken = await bapServiceAuthentication(telemetry, true);
+        const bapEndpoint = getBAPEndpoint(endpointStamp, telemetry);
+        const envListEndpoint = `${bapEndpoint}${BAP_ENVIRONMENT_LIST_URL.replace('{apiVersion}', BAP_API_VERSION)}`;
+
+        const envListResponse = await fetch(envListEndpoint, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${bapAuthToken}`
+            }
+        });
+
+        if (envListResponse.ok) {
+            const envListJson = await envListResponse.json();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            envListJson.value.forEach((env: any) => {
+                envInfo.push({
+                    orgUrl: env.properties.linkedEnvironmentMetadata.instanceUrl,
+                    envDisplayName: env.properties.displayName
+                });
+            });
+            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS);
+        } else {
+            sendTelemetryEvent(telemetry, {
+                eventName: VSCODE_EXTENSION_GET_ENV_LIST_FAILED,
+                errorMsg: envListResponse.statusText
+            });
+            oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_ENV_LIST_FAILED, new Error(envListResponse.statusText));
+        }
+    } catch (error) {
+        sendTelemetryEvent(telemetry, {
+            eventName: VSCODE_EXTENSION_GET_ENV_LIST_FAILED,
+            errorMsg: (error as Error).message
+        });
+        oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_ENV_LIST_FAILED, error as Error);
+    }
+    return envInfo;
+}
+
+
+export function getBAPEndpoint(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry): string {
+    let bapEndpoint = "";
+
+    switch (serviceEndpointStamp) {
+        case ServiceEndpointCategory.TEST:
+            bapEndpoint = "https://test.api.bap.microsoft.com";
+            break;
+        case ServiceEndpointCategory.PREPROD:
+            bapEndpoint = "https://preprod.api.bap.microsoft.com";
+            break;
+        case ServiceEndpointCategory.PROD:
+            bapEndpoint = "https://api.bap.microsoft.com";
+            break;
+        // All below endpoints are not supported yet
+        case ServiceEndpointCategory.DOD:
+        case ServiceEndpointCategory.GCC:
+        case ServiceEndpointCategory.HIGH:
+        case ServiceEndpointCategory.MOONCAKE:
+        default:
+            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION, { data: serviceEndpointStamp });
+            break;
+    }
+
+    return BAP_SERVICE_ENDPOINT.replace('{rootURL}', bapEndpoint)
+}
+
+export function getWorkspaceFolders(): WorkspaceFolder[] {
+    return vscode.workspace.workspaceFolders?.map(
+                (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
+            ) || [];
 }
