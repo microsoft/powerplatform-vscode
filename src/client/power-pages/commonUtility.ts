@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import { removeTrailingSlash } from "../../debugger/utils";
 import * as Constants from "./constants";
 import { AUTH_KEYS } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
-import { AuthInfo } from "./actions-hub/Constants";
+import { AuthInfo } from "../pac/PacTypes";
 
 export interface IFileProperties {
     fileCompleteName?: string,
@@ -200,6 +200,7 @@ export function getRegExPattern(fileNameArray: string[]): RegExp[] {
     return patterns;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function extractAuthInfo(results: any[]): AuthInfo {
     return {
         userType: findAuthValue(results, AUTH_KEYS.USER_TYPE),

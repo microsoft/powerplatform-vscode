@@ -11,7 +11,7 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { PacTerminal } from "../../lib/PacTerminal";
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
-import { authManager } from "../../AuthManager";
+import { authManager } from "../../pac/PacAuthManager";
 import { SUCCESS } from "../../../common/constants";
 import { extractAuthInfo } from "../commonUtility";
 

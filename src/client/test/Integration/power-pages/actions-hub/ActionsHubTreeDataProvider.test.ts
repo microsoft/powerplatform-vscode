@@ -3,17 +3,18 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { expect } from "chai";
- import * as sinon from "sinon";
- import * as vscode from "vscode";
- import { ActionsHubTreeDataProvider } from "../../../../power-pages/actions-hub/ActionsHubTreeDataProvider";
- import { oneDSLoggerWrapper } from "../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
- import { Constants } from "../../../../power-pages/actions-hub/Constants";
+import * as sinon from "sinon";
+import * as vscode from "vscode";
+import { ActionsHubTreeDataProvider } from "../../../../power-pages/actions-hub/ActionsHubTreeDataProvider";
+import { oneDSLoggerWrapper } from "../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { Constants } from "../../../../power-pages/actions-hub/Constants";
 import { EnvironmentGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/EnvironmentGroupTreeItem";
 import { OtherSitesGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/OtherSitesGroupTreeItem";
 import { ActionsHubTreeItem } from "../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { PacTerminal } from "../../../../lib/PacTerminal";
-import { authManager } from "../../../../AuthManager";
+import { authManager } from "../../../../pac/PacAuthManager";
 
 describe("ActionsHubTreeDataProvider", () => {
     let context: vscode.ExtensionContext;
