@@ -200,6 +200,7 @@ export function getRegExPattern(fileNameArray: string[]): RegExp[] {
     return patterns;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function extractAuthInfo(results: any[]): AuthInfo {
     return {
         userType: findAuthValue(results, AUTH_KEYS.USER_TYPE),
