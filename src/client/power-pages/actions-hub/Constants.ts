@@ -30,7 +30,8 @@ export const Constants = {
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",
-        ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED: "Actions Hub Current Environment Fetch Failed",
+        ACTIONS_HUB_INITIALIZATION_FAILED: "actionsHubInitializationFailed",
+        ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED: "actionsHubCurrentEnvFetchFailed",
     }
 };
 

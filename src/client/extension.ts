@@ -50,6 +50,7 @@ import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./power-pages/preview-site
 import { ActionsHubTreeDataProvider } from "./power-pages/actions-hub/ActionsHubTreeDataProvider";
 import { authManager } from "./pac/PacAuthManager";
 import { extractAuthInfo } from "./power-pages/commonUtility";
+import { Constants } from "./power-pages/actions-hub/Constants";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -311,19 +312,22 @@ async function initializeActionsHub(context: vscode.ExtensionContext, pacTermina
     //TODO: Initialize this based on ECS feature flag
     const actionsHubEnabled = false;
 
-    const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-    if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
-        const authInfo = extractAuthInfo(pacActiveAuth.Results);
-        authManager.setAuthInfo(authInfo);
-    }
+    try {
+        const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
+        if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
+            const authInfo = extractAuthInfo(pacActiveAuth.Results);
+            authManager.setAuthInfo(authInfo);
+        }
 
-    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
+        vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
 
-    if (actionsHubEnabled) {
-        ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+        if (actionsHubEnabled) {
+            ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+        }
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, error as string, error as Error, { methodName: initializeActionsHub.name }, {});
     }
 }
-
 export async function deactivate(): Promise<void> {
     if (_telemetry) {
         _telemetry.sendTelemetryEvent("End");
