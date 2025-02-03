@@ -12,6 +12,8 @@ import { PacTerminal } from "../../lib/PacTerminal";
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { authManager } from "../../AuthManager";
+import { SUCCESS } from "../../../common/constants";
+import { extractAuthInfo } from "../commonUtility";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -31,7 +33,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
         // Register an event listener for environment changes
         authManager.onDidChangeEnvironment(() => this.refresh());
-        this._disposables.push(...this.registerPanel());
+        this._disposables.push(...this.registerPanel(this._pacTerminal));
     }
 
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
@@ -79,9 +81,16 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         this._disposables.forEach(d => d.dispose());
     }
 
-    private registerPanel(): vscode.Disposable[] {
-       return [
-            vscode.commands.registerCommand("powerpages.actionsHub.refresh", () => this.refresh())
-       ];
+    private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
+        return [
+            vscode.commands.registerCommand("powerpages.actionsHub.refresh", async () => {
+                const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
+                if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
+                    const authInfo = extractAuthInfo(pacActiveAuth.Results);
+                    authManager.setAuthInfo(authInfo);
+                }
+                this.refresh();
+            }),
+        ];
     }
 }
