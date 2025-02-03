@@ -48,6 +48,9 @@ import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
 import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./power-pages/preview-site/PreviewSite";
 import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
+import { authManager } from "./pac/PacAuthManager";
+import { extractAuthInfo } from "./power-pages/commonUtility";
+import { Constants } from "./power-pages/actions-hub/Constants";
 import { IArtemisServiceResponse } from "../common/services/Interfaces";
 
 let client: LanguageClient;

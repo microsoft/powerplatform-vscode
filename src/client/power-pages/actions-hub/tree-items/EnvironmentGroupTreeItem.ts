@@ -9,6 +9,7 @@ import { IEnvironmentInfo } from "../models/IEnvironmentInfo";
 import { Constants } from "../Constants";
 
 export class EnvironmentGroupTreeItem extends ActionsHubTreeItem {
+    environmentInfo: IEnvironmentInfo = {} as IEnvironmentInfo;
     constructor(environmentInfo: IEnvironmentInfo, context: vscode.ExtensionContext) {
         super(
             environmentInfo.currentEnvironmentName,
@@ -18,5 +19,6 @@ export class EnvironmentGroupTreeItem extends ActionsHubTreeItem {
                 dark: vscode.Uri.joinPath(context.extensionUri, 'src', 'client', 'assets', 'environment-icon', 'dark', 'environment.svg')
             },
             Constants.ContextValues.ENVIRONMENT_GROUP);
+        this.environmentInfo = environmentInfo;
     }
 }

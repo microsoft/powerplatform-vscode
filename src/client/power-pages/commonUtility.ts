@@ -7,6 +7,8 @@ import path from "path";
 import * as vscode from "vscode";
 import { removeTrailingSlash } from "../../debugger/utils";
 import * as Constants from "./constants";
+import { AUTH_KEYS } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
+import { AuthInfo } from "../pac/PacTypes";
 
 export interface IFileProperties {
     fileCompleteName?: string,
@@ -196,4 +198,31 @@ export function getRegExPattern(fileNameArray: string[]): RegExp[] {
     }
 
     return patterns;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function extractAuthInfo(results: any[]): AuthInfo {
+    return {
+        userType: findAuthValue(results, AUTH_KEYS.USER_TYPE),
+        cloud: findAuthValue(results, AUTH_KEYS.CLOUD),
+        tenantId: findAuthValue(results, AUTH_KEYS.TENANT_ID),
+        tenantCountry: findAuthValue(results, AUTH_KEYS.TENANT_COUNTRY),
+        user: findAuthValue(results, AUTH_KEYS.USER),
+        entraIdObjectId: findAuthValue(results, AUTH_KEYS.ENTRA_ID_OBJECT_ID),
+        puid: findAuthValue(results, AUTH_KEYS.PUID),
+        userCountryRegion: findAuthValue(results, AUTH_KEYS.USER_COUNTRY_REGION),
+        tokenExpires: findAuthValue(results, AUTH_KEYS.TOKEN_EXPIRES),
+        authority: findAuthValue(results, AUTH_KEYS.AUTHORITY),
+        environmentGeo: findAuthValue(results, AUTH_KEYS.ENVIRONMENT_GEO),
+        environmentId: findAuthValue(results, AUTH_KEYS.ENVIRONMENT_ID),
+        environmentType: findAuthValue(results, AUTH_KEYS.ENVIRONMENT_TYPE),
+        organizationId: findAuthValue(results, AUTH_KEYS.ORGANIZATION_ID),
+        organizationUniqueName: findAuthValue(results, AUTH_KEYS.ORGANIZATION_UNIQUE_NAME),
+        organizationFriendlyName: findAuthValue(results, AUTH_KEYS.ORGANIZATION_FRIENDLY_NAME)
+    };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function findAuthValue(results: any[], key: string): string {
+    return results?.find(obj => obj.Key === key)?.Value ?? '';
 }
