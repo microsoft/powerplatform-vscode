@@ -42,3 +42,21 @@ export const CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME = 'enableTelemetry';
 export const AadIdKey= 'Entra ID Object Id:';
 export const EnvIdKey = "Environment Id:";
 export const TenantIdKey = "Tenant Id:";
+export const AUTH_KEYS = {
+    USER_TYPE: 'Type:',
+    CLOUD: 'Cloud:',
+    TENANT_ID: 'Tenant Id:',
+    TENANT_COUNTRY: 'Tenant Country:',
+    USER: 'User:',
+    ENTRA_ID_OBJECT_ID: 'Entra ID Object Id:',
+    PUID: 'PUID:',
+    USER_COUNTRY_REGION: 'User Country/Region:',
+    TOKEN_EXPIRES: 'Token Expires:',
+    AUTHORITY: 'Authority:',
+    ENVIRONMENT_GEO: 'Environment Geo:',
+    ENVIRONMENT_ID: 'Environment Id:',
+    ENVIRONMENT_TYPE: 'Environment Type:',
+    ORGANIZATION_ID: 'Organization Id:',
+    ORGANIZATION_UNIQUE_NAME: 'Organization Unique Name:',
+    ORGANIZATION_FRIENDLY_NAME: 'Organization Friendly Name:'
+};

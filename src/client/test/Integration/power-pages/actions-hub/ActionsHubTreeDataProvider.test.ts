@@ -1,0 +1,117 @@
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { expect } from "chai";
+import * as sinon from "sinon";
+import * as vscode from "vscode";
+import { ActionsHubTreeDataProvider } from "../../../../power-pages/actions-hub/ActionsHubTreeDataProvider";
+import { oneDSLoggerWrapper } from "../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { Constants } from "../../../../power-pages/actions-hub/Constants";
+import { EnvironmentGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/EnvironmentGroupTreeItem";
+import { OtherSitesGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/OtherSitesGroupTreeItem";
+import { ActionsHubTreeItem } from "../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
+import { PacTerminal } from "../../../../lib/PacTerminal";
+import { authManager } from "../../../../pac/PacAuthManager";
+
+describe("ActionsHubTreeDataProvider", () => {
+    let context: vscode.ExtensionContext;
+    let pacTerminal: PacTerminal;
+    let actionsHubTreeDataProvider: ActionsHubTreeDataProvider;
+
+    beforeEach(() => {
+        context = {} as vscode.ExtensionContext;
+        pacTerminal = {} as PacTerminal;
+        actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it("should initialize and log initialization event", () => {
+        const traceInfoStub = sinon.stub(oneDSLoggerWrapper.getLogger(), "traceInfo");
+        ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+        expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_INITIALIZED)).to.be.true;
+    });
+
+    it("should return the element in getTreeItem", () => {
+        const element = {} as ActionsHubTreeItem;
+        const result = actionsHubTreeDataProvider.getTreeItem(element);
+        expect(result).to.equal(element);
+    });
+
+    it("should return environment and other sites group tree items in getChildren when no element is passed", async () => {
+        const authInfoStub = sinon.stub(authManager, "getAuthInfo").returns({
+            organizationFriendlyName: "TestOrg",
+            userType: "",
+            cloud: "",
+            tenantId: "",
+            tenantCountry: "",
+            user: "",
+            entraIdObjectId: "",
+            puid: "",
+            userCountryRegion: "",
+            tokenExpires: "",
+            authority: "",
+            environmentGeo: "",
+            environmentId: "",
+            environmentType: "",
+            organizationId: "",
+            organizationUniqueName: ""
+        });
+        const result = await actionsHubTreeDataProvider.getChildren();
+
+        expect(result).to.not.be.null;
+        expect(result).to.not.be.undefined;
+        expect(result).to.have.lengthOf(2);
+        expect(result![0]).to.be.instanceOf(EnvironmentGroupTreeItem);
+        expect(result![1]).to.be.instanceOf(OtherSitesGroupTreeItem);
+
+        authInfoStub.restore();
+    });
+
+    it("should return environment group tree item with default name when no auth info is available", async () => {
+        const authInfoStub = sinon.stub(authManager, "getAuthInfo").returns(null);
+        const result = await actionsHubTreeDataProvider.getChildren();
+
+        expect(result).to.not.be.null;
+        expect(result).to.not.be.undefined;
+        expect(result).to.have.lengthOf(2);
+        expect(result![0]).to.be.instanceOf(EnvironmentGroupTreeItem);
+        expect((result![0] as EnvironmentGroupTreeItem).environmentInfo.currentEnvironmentName).to.equal(Constants.Strings.NO_ENVIRONMENTS_FOUND);
+        expect(result![1]).to.be.instanceOf(OtherSitesGroupTreeItem);
+
+        authInfoStub.restore();
+    });
+
+    it("should return null in getChildren when an error occurs", async () => {
+        const authInfoStub = sinon.stub(authManager, "getAuthInfo").throws(new Error("Test Error"));
+        const traceErrorStub = sinon.stub(oneDSLoggerWrapper.getLogger(), "traceError");
+
+        const result = await actionsHubTreeDataProvider.getChildren();
+        expect(result).to.be.null;
+        expect(traceErrorStub.calledWith(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED)).to.be.true;
+
+        authInfoStub.restore();
+        traceErrorStub.restore();
+    });
+
+    it("should return an empty array in getChildren when an element is passed", async () => {
+        const element = {} as ActionsHubTreeItem;
+        const result = await actionsHubTreeDataProvider.getChildren(element);
+        expect(result).to.be.an("array").that.is.empty;
+    });
+
+    it("should dispose all disposables", () => {
+        const disposable1 = { dispose: sinon.spy() };
+        const disposable2 = { dispose: sinon.spy() };
+        actionsHubTreeDataProvider["_disposables"].push(disposable1 as vscode.Disposable, disposable2 as vscode.Disposable);
+
+        actionsHubTreeDataProvider.dispose();
+        expect(disposable1.dispose.calledOnce).to.be.true;
+        expect(disposable2.dispose.calledOnce).to.be.true;
+    });
+});

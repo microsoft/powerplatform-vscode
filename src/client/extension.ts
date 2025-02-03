@@ -48,6 +48,9 @@ import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
 import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./power-pages/preview-site/PreviewSite";
 import { ActionsHubTreeDataProvider } from "./power-pages/actions-hub/ActionsHubTreeDataProvider";
+import { authManager } from "./pac/PacAuthManager";
+import { extractAuthInfo } from "./power-pages/commonUtility";
+import { Constants } from "./power-pages/actions-hub/Constants";
 import { IArtemisServiceResponse } from "../common/services/Interfaces";
 
 let client: LanguageClient;
@@ -273,7 +276,7 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
-    initializeActionsHub(context);
+    initializeActionsHub(context, pacTerminal);
 
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
@@ -309,17 +312,26 @@ async function initializeSiteRuntimePreview(
     }
 }
 
-function initializeActionsHub(context: vscode.ExtensionContext) {
+async function initializeActionsHub(context: vscode.ExtensionContext, pacTerminal: PacTerminal) {
     //TODO: Initialize this based on ECS feature flag
     const actionsHubEnabled = false;
 
-    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
+    try {
+        const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
+        if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
+            const authInfo = extractAuthInfo(pacActiveAuth.Results);
+            authManager.setAuthInfo(authInfo);
+        }
 
-    if (actionsHubEnabled) {
-        ActionsHubTreeDataProvider.initialize(context, _telemetry);
+        vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
+
+        if (actionsHubEnabled) {
+            ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+        }
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, error as string, error as Error, { methodName: initializeActionsHub.name }, {});
     }
 }
-
 export async function deactivate(): Promise<void> {
     if (_telemetry) {
         _telemetry.sendTelemetryEvent("End");

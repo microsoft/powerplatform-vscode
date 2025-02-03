@@ -80,3 +80,22 @@ export type ActiveAuthOutput = {
 }
 
 export type PacAuthWhoOutput = PacOutputWithResultList<ActiveAuthOutput>;
+
+export interface AuthInfo {
+    userType: string;
+    cloud: string;
+    tenantId: string;
+    tenantCountry: string;
+    user: string;
+    entraIdObjectId: string;
+    puid: string;
+    userCountryRegion: string;
+    tokenExpires: string;
+    authority: string;
+    environmentGeo: string;
+    environmentId: string;
+    environmentType: string;
+    organizationId: string;
+    organizationUniqueName: string;
+    organizationFriendlyName: string;
+}
