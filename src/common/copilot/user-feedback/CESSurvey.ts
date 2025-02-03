@@ -172,7 +172,7 @@ function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri
     <textarea id="feedbackText" name="feedbackText" rows="5" required></textarea>
     <br/>
     <p class="privacy-statement">"${vscode.l10n.t('Try and be as specific as possible. Your feedback will be used to improve Copilot. <a href="https://privacy.microsoft.com/en-US/data-privacy-notice"> View privacy details </a>')}"</p>
-    <button type="submit" class="submit-feedback">"${vscode.l10n.t('Submit')}"</button>
+    <button tabindex="0" type="submit" class="submit-feedback">"${vscode.l10n.t('Submit')}"</button>
   </form>
   <script type="module" nonce="${nonce}" src="${feedbackJsUri}"></script>
   </body>
@@ -182,4 +182,3 @@ function getWebviewContent(feedbackCssUri: vscode.Uri, feedbackJsUri: vscode.Uri
 function useEUEndpoint(geoName: string): boolean {
     return geoName === EUROPE_GEO || geoName === UK_GEO;
 }
-
