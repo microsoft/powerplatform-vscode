@@ -9,10 +9,9 @@ import * as vscode from "vscode";
 import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
 import { vscodeExtAppInsightsResourceProvider } from "../common/telemetry-generated/telemetryConfiguration";
 import { ITelemetryData } from "../common/TelemetryData";
-import { CliAcquisition, ICliAcquisitionContext } from "./lib/CliAcquisition";
+import { CliAcquisition } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
 import { PortalWebView } from "./PortalWebView";
-import { ITelemetry } from "../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 
 import {
     LanguageClient,
@@ -45,7 +44,11 @@ import { EXTENSION_ID, SUCCESS } from "../common/constants";
 import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
-import { getECSOrgLocationValue } from "../common/utilities/Utils";
+import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities/Utils";
+import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
+import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./power-pages/preview-site/PreviewSite";
+import { ActionsHubTreeDataProvider } from "./power-pages/actions-hub/ActionsHubTreeDataProvider";
+import { IArtemisServiceResponse } from "../common/services/Interfaces";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -189,11 +192,7 @@ export async function activate(
 
     let copilotNotificationShown = false;
 
-    const workspaceFolders =
-        vscode.workspace.workspaceFolders?.map(
-            (fl) => ({ ...fl, uri: fl.uri.fsPath } as WorkspaceFolder)
-        ) || [];
-
+    const workspaceFolders = getWorkspaceFolders();
 
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
@@ -250,6 +249,7 @@ export async function activate(
 
             }
 
+            await initializeSiteRuntimePreview(artemisResponse, workspaceFolders, orgDetails, pacTerminal);
         })
     );
 
@@ -273,12 +273,51 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
+    initializeActionsHub(context);
+
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
     }
 
     _telemetry.sendTelemetryEvent("activated");
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
+}
+
+async function initializeSiteRuntimePreview(
+    artemisResponse: IArtemisServiceResponse | null,
+    workspaceFolders: WorkspaceFolder[],
+    orgDetails: ActiveOrgOutput,
+    pacTerminal: PacTerminal) {
+
+    const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
+
+    oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
+        isEnabled: isSiteRuntimePreviewEnabled.toString(),
+        websiteURL: PreviewSite.getSiteUrl() || "undefined"
+    });
+
+    if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
+        _context.subscriptions.push(
+            vscode.commands.registerCommand(
+                SITE_PREVIEW_COMMAND_ID,
+                async () => await PreviewSite.handlePreviewRequest(_telemetry, pacTerminal)
+            )
+        );
+
+        await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
+        await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+    }
+}
+
+function initializeActionsHub(context: vscode.ExtensionContext) {
+    //TODO: Initialize this based on ECS feature flag
+    const actionsHubEnabled = false;
+
+    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
+
+    if (actionsHubEnabled) {
+        ActionsHubTreeDataProvider.initialize(context, _telemetry);
+    }
 }
 
 export async function deactivate(): Promise<void> {
@@ -472,71 +511,4 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
         copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
     }
 
-}
-
-// allow for DI without direct reference to vscode's d.ts file: that definintions file is being generated at VS Code runtime
-class CliAcquisitionContext implements ICliAcquisitionContext {
-    public constructor(
-        private readonly _context: vscode.ExtensionContext,
-        private readonly _telemetry: ITelemetry
-    ) { }
-
-    public get extensionPath(): string {
-        return this._context.extensionPath;
-    }
-    public get globalStorageLocalPath(): string {
-        return this._context.globalStorageUri.fsPath;
-    }
-    public get telemetry(): ITelemetry {
-        return this._telemetry;
-    }
-
-    showInformationMessage(message: string, ...items: string[]): void {
-        vscode.window.showInformationMessage(message, ...items);
-    }
-
-    showErrorMessage(message: string, ...items: string[]): void {
-        vscode.window.showErrorMessage(message, ...items);
-    }
-
-    showCliPreparingMessage(version: string): void {
-        vscode.window.showInformationMessage(
-            vscode.l10n.t({
-                message: "Preparing pac CLI (v{0})...",
-                args: [version],
-                comment: ["{0} represents the version number"]
-            })
-        );
-    }
-
-    showCliReadyMessage(): void {
-        vscode.window.showInformationMessage(
-            vscode.l10n.t('The pac CLI is ready for use in your VS Code terminal!'));
-    }
-
-    showCliInstallFailedError(err: string): void {
-        vscode.window.showErrorMessage(
-            vscode.l10n.t({
-                message: "Cannot install pac CLI: {0}",
-                args: [err],
-                comment: ["{0} represents the error message returned from the exception"]
-            })
-        );
-    }
-
-    showGeneratorInstallingMessage(version: string): void {
-        vscode.window.showInformationMessage(
-            vscode.l10n.t({
-                message: "Installing Power Pages generator(v{0})...",
-                args: [version],
-                comment: ["{0} represents the version number"]
-            }))
-    }
-
-    locDotnetNotInstalledOrInsufficient(): string {
-        return vscode.l10n.t({
-            message: "dotnet sdk 6.0 or greater must be installed",
-            comment: ["Do not translate 'dotnet' or 'sdk'"]
-        });
-    }
 }

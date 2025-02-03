@@ -7,7 +7,6 @@
   "You are editing a live, public site ": "You are editing a live, public site ",
   "Preview site": "Preview site",
   "Open in Power Pages studio": "Open in Power Pages studio",
-  "Preview site URL is not available": "Preview site URL is not available",
   "Preview site URL is not valid": "Preview site URL is not valid",
   "Opening preview site...": "Opening preview site...",
   "Power Pages studio URL is not available": "Power Pages studio URL is not available",
@@ -64,8 +63,10 @@
   "Try @powerpages with GitHub Copilot": "Try @powerpages with GitHub Copilot",
   "Get GitHub Copilot to try @powerpages": "Get GitHub Copilot to try @powerpages",
   "Let Copilot help you code": "Let Copilot help you code",
-  "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ": "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ",
+  "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.": "Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.",
   "Continue with Copilot for Power Pages": "Continue with Copilot for Power Pages",
+  "Arrow icon": "Arrow icon",
+  "Copilot illustration": "Copilot illustration",
   "Do not show again": "Do not show again",
   "Like something? Tell us more.": "Like something? Tell us more.",
   "Dislike something? Tell us more.": "Dislike something? Tell us more.",
@@ -83,35 +84,13 @@
   "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.": "Hi! Power Pages lets you build secure, professional websites that you can quickly configure and publish across web browsers and devices.\n\nTo create your website, visit the [Power Pages](https://powerpages.microsoft.com/).\nReturn to this chat and @powerpages can help you write and edit your website code.",
   "Checking for active auth profile...": "Checking for active auth profile...",
   "@PowerPages is not yet available in your region.": "@PowerPages is not yet available in your region.",
+  "Generating webpages...": "Generating webpages...",
+  "Generating a new Power Pages site...": "Generating a new Power Pages site...",
+  "Failed to create a new Power Pages site. Please try again.": "Failed to create a new Power Pages site. Please try again.",
   "Select Folder for new PCF Control/Do not translate 'PCF' as it is a product name.": {
     "message": "Select Folder for new PCF Control",
     "comment": [
       "Do not translate 'PCF' as it is a product name."
-    ]
-  },
-  "Preparing pac CLI (v{0}).../{0} represents the version number": {
-    "message": "Preparing pac CLI (v{0})...",
-    "comment": [
-      "{0} represents the version number"
-    ]
-  },
-  "The pac CLI is ready for use in your VS Code terminal!": "The pac CLI is ready for use in your VS Code terminal!",
-  "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": {
-    "message": "Cannot install pac CLI: {0}",
-    "comment": [
-      "{0} represents the error message returned from the exception"
-    ]
-  },
-  "Installing Power Pages generator(v{0}).../{0} represents the version number": {
-    "message": "Installing Power Pages generator(v{0})...",
-    "comment": [
-      "{0} represents the version number"
-    ]
-  },
-  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": {
-    "message": "dotnet sdk 6.0 or greater must be installed",
-    "comment": [
-      "Do not translate 'dotnet' or 'sdk'"
     ]
   },
   "File might be referenced by name {0} here./{0} represents the name of the file": {
@@ -121,6 +100,29 @@
     ]
   },
   "Some references might be broken. Please check diagnostics for details.": "Some references might be broken. Please check diagnostics for details.",
+  "Cancel": "Cancel",
+  "Install": "Install",
+  "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?/Do not translate 'Microsoft Edge Tools' ": {
+    "message": "The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?",
+    "comment": [
+      "Do not translate 'Microsoft Edge Tools' "
+    ]
+  },
+  "Opening site preview...": "Opening site preview...",
+  "The preview shown is for published changes.": "The preview shown is for published changes.",
+  "Site runtime preview feature is not enabled.": "Site runtime preview feature is not enabled.",
+  "No workspace folder opened. Please open a site folder to preview.": "No workspace folder opened. Please open a site folder to preview.",
+  "Initializing site preview. Please try again after few seconds.": "Initializing site preview. Please try again after few seconds.",
+  "Website not found in the environment. Please check the credentials and login with correct account.": "Website not found in the environment. Please check the credentials and login with correct account.",
+  "Initializing site preview": "Initializing site preview",
+  "Getting organization details...": "Getting organization details...",
+  "Getting region information...": "Getting region information...",
+  "Failed to get website endpoint. Please try again later": "Failed to get website endpoint. Please try again later",
+  "Getting website endpoint...": "Getting website endpoint...",
+  "Failed to get organization details. Please try again later": "Failed to get organization details. Please try again later",
+  "Clearing cache...": "Clearing cache...",
+  "Authenticating...": "Authenticating...",
+  "Unable to clear cache": "Unable to clear cache",
   "Enter the name of the web template": "Enter the name of the web template",
   "Please enter a name for the web template.": "Please enter a name for the web template.",
   "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
@@ -175,6 +177,10 @@
       "{0} will be replaced by the error message."
     ]
   },
+  "Other Sites": "Other Sites",
+  "Active Sites": "Active Sites",
+  "Inactive Sites": "Inactive Sites",
+  "No sites found": "No sites found",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",
   "PAC Telemetry disabled": "PAC Telemetry disabled",
@@ -183,6 +189,12 @@
     "message": "Cannot install Power Pages generator. Please install npm and try again.",
     "comment": [
       "Do not translate 'npm'"
+    ]
+  },
+  "Installing Power Pages generator(v{0}).../{0} represents the version number": {
+    "message": "Installing Power Pages generator(v{0})...",
+    "comment": [
+      "{0} represents the version number"
     ]
   },
   "Cannot install Power Pages generator: {0}/{0} represents the error message returned from the exception": {
@@ -214,9 +226,27 @@
       "The {3} represents Dataverse Environment's Organization ID (GUID)"
     ]
   },
+  "Preparing pac CLI (v{0}).../{0} represents the version number": {
+    "message": "Preparing pac CLI (v{0})...",
+    "comment": [
+      "{0} represents the version number"
+    ]
+  },
+  "The pac CLI is ready for use in your VS Code terminal!": "The pac CLI is ready for use in your VS Code terminal!",
+  "Cannot install pac CLI: {0}/{0} represents the error message returned from the exception": {
+    "message": "Cannot install pac CLI: {0}",
+    "comment": [
+      "{0} represents the error message returned from the exception"
+    ]
+  },
+  "dotnet sdk 6.0 or greater must be installed/Do not translate 'dotnet' or 'sdk'": {
+    "message": "dotnet sdk 6.0 or greater must be installed",
+    "comment": [
+      "Do not translate 'dotnet' or 'sdk'"
+    ]
+  },
   "Confirm": "Confirm",
   "Are you sure you want to clear all the Auth Profiles?": "Are you sure you want to clear all the Auth Profiles?",
-  "Cancel": "Cancel",
   "Are you sure you want to delete the Auth Profile {0}-{1}?/{0} is the user name, {1} is the URL of environment of the auth profile": {
     "message": "Are you sure you want to delete the Auth Profile {0}-{1}?",
     "comment": [

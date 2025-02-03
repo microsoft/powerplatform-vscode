@@ -25,15 +25,11 @@ export interface IArtemisAPIOrgResponse {
     clusterType: string,
 }
 
-export interface IArtemisServiceResponse {
-    stamp: ServiceEndpointCategory;
-    response: IArtemisAPIOrgResponse;
-}
-
 export interface IIntelligenceAPIEndpointInformation {
     intelligenceEndpoint: string | null,
     geoName: string | null,
-    crossGeoDataMovementEnabledPPACFlag: boolean
+    crossGeoDataMovementEnabledPPACFlag: boolean,
+    endpointStamp?: ServiceEndpointCategory,
 }
 
 export interface IWebsiteDetails {

@@ -113,35 +113,38 @@ function getWebviewURIs(context: vscode.ExtensionContext, NotificationPanel: vsc
 function getWebviewContent(notificationCssUri: vscode.Uri, notificationJsUri: vscode.Uri, copilotImageUri: vscode.Uri, arrowImageUri: vscode.Uri, nonce: string, webview: vscode.Webview, githubCopilotChat: string) {
 
     return `<!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <link href="${notificationCssUri}" rel="stylesheet">
-          </link>
-          <title>Feedback</title>
-      </head>
-      <body>
-      <div class="container">
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="${notificationCssUri}" rel="stylesheet" />
+        <title>Feedback</title>
+    </head>
+    <body>
+    <main class="container" role="region" aria-labelledby="heading">
         <div class="container-text">
-        <h1 id="heading">${vscode.l10n.t("Let Copilot help you code")}</h1>
-        <p id="welcome-text">${vscode.l10n.t("Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. ")}</p>
-        <button id="try-button">${vscode.l10n.t("Continue with Copilot for Power Pages")}</button>
-        <a href="#" class="walkthrough-content" id="walkthroughLink"> <span id="walk-text">${vscode.l10n.t(githubCopilotChat)} </span> <img src="${arrowImageUri}" id="arrow-icon"> </a>
+            <h1 id="heading">${vscode.l10n.t("Let Copilot help you code")}</h1>
+            <p id="welcome-text">${vscode.l10n.t("Whether it’s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.")}</p>
+            <button id="try-button" aria-label="${vscode.l10n.t("Continue with Copilot for Power Pages")}">
+                ${vscode.l10n.t("Continue with Copilot for Power Pages")}
+            </button>
+            <a href="#" class="walkthrough-content" id="walkthroughLink" aria-labelledby="walk-text">
+                <span id="walk-text">${vscode.l10n.t(githubCopilotChat)}</span>
+                <img src="${arrowImageUri}" id="arrow-icon" alt="${vscode.l10n.t("Arrow icon")}">
+            </a>
         </div>
         <div>
-        <img src="${copilotImageUri}" alt="Image">
+            <img src="${copilotImageUri}" alt="${vscode.l10n.t("Copilot illustration")}" role="img">
         </div>
-      </div>
-      <div class="checkbox-container">
-      <input type="checkbox" id="checkbox">
-      <label for="checkbox">${vscode.l10n.t("Do not show again")}</label>
-    </div>
-
-      <script type="module" nonce="${nonce}" src="${notificationJsUri}"></script>
+        <div class="checkbox-container">
+            <input type="checkbox" id="checkbox" aria-labelledby="checkbox-label"/>
+            <label id="checkbox-label" for="checkbox">${vscode.l10n.t("Do not show again")}</label>
+        </div>
+    </main>
+    <script type="module" nonce="${nonce}" src="${notificationJsUri}"></script>
     </body>
-      </html>`;
+    </html>`;
 }
 
 export function disposeNotificationPanel() {

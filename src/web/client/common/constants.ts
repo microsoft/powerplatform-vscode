@@ -96,11 +96,16 @@ export enum queryParameters {
     ENV_ID = "envid",
     GEO = "geo", // User geo location
     ENABLE_MULTIFILE = "enablemultifile",
-    WEBSITE_PREVIEW_URL = "websitepreviewurl",
     ENTITY = "entity",
     ENTITY_ID = "entityid",
     REFERRER_SOURCE = "referrersource",
     SKU = "sku",
+    SOURCE_ATTRIBUTE = "source_attribute"
+}
+
+export enum sourceAttribute {
+    CUSTOM_CSS = "customcss",
+    CUSTOM_JAVASCRIPT = "customjavascript",
 }
 
 export enum httpMethod {

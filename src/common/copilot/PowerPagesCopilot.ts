@@ -426,6 +426,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
         const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId);
+        if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
+            this.sendMessageToWebview({ type: 'Unavailable' });
+            return;
+        }
         this.aibEndpoint = intelligenceAPIEndpointInfo.intelligenceEndpoint;
         this.geoName = intelligenceAPIEndpointInfo.geoName;
         this.crossGeoDataMovementEnabledPPACFlag = intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag;
@@ -501,7 +505,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
               <label for="chat-input" class="input-label hide" id="input-label-id"></label>
               <div class="input-container">
               <textarea rows=1 placeholder="${vscode.l10n.t('What do you need help with?')}" id="chat-input" class="input-field"></textarea>
-                <button aria-label="Match Case" id="send-button" class="send-button">
+                <button aria-label="Send" id="send-button" class="send-button">
                   <span>
                     ${sendIconSvg}
                   </span>
