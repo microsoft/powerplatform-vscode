@@ -254,7 +254,7 @@ export async function activate(
 
             await PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context, _telemetry);
 
-            ActionsHub.initialize(context);
+            ActionsHub.initialize(context, pacTerminal);
         })
     );
 

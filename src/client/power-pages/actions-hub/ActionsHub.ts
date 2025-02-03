@@ -8,6 +8,7 @@ import { ECSFeaturesClient } from "../../../common/ecs-features/ecsFeatureClient
 import { EnableActionsHub } from "../../../common/ecs-features/ecsFeatureGates";
 import { ActionsHubTreeDataProvider } from "./ActionsHubTreeDataProvider";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { PacTerminal } from "../../lib/PacTerminal";
 
 export class ActionsHub {
     static isEnabled(): boolean {
@@ -20,7 +21,7 @@ export class ActionsHub {
         return enableActionsHub;
     }
 
-    static initialize(context: vscode.ExtensionContext): void {
+    static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): void {
         const isActionsHubEnabled = ActionsHub.isEnabled();
 
         oneDSLoggerWrapper.getLogger().traceInfo("EnableActionsHub", {
@@ -33,6 +34,6 @@ export class ActionsHub {
             return;
         }
 
-        ActionsHubTreeDataProvider.initialize(context)
+        ActionsHubTreeDataProvider.initialize(context, pacTerminal);
     }
 }
