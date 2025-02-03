@@ -100,6 +100,12 @@ export enum queryParameters {
     ENTITY_ID = "entityid",
     REFERRER_SOURCE = "referrersource",
     SKU = "sku",
+    SOURCE_ATTRIBUTE = "source_attribute"
+}
+
+export enum sourceAttribute {
+    CUSTOM_CSS = "customcss",
+    CUSTOM_JAVASCRIPT = "customjavascript",
 }
 
 export enum httpMethod {
