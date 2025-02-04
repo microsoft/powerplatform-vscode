@@ -46,12 +46,8 @@ import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities/Utils";
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
-import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./power-pages/preview-site/PreviewSite";
-import { ActionsHubTreeDataProvider } from "./power-pages/actions-hub/ActionsHubTreeDataProvider";
-import { authManager } from "./pac/PacAuthManager";
-import { extractAuthInfo } from "./power-pages/commonUtility";
-import { Constants } from "./power-pages/actions-hub/Constants";
-import { IArtemisServiceResponse } from "../common/services/Interfaces";
+import { PreviewSite } from "./power-pages/preview-site/PreviewSite";
+import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -252,7 +248,9 @@ export async function activate(
 
             }
 
-            await initializeSiteRuntimePreview(artemisResponse, workspaceFolders, orgDetails, pacTerminal);
+            await PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context, _telemetry);
+
+            await ActionsHub.initialize(context, pacTerminal);
         })
     );
 
@@ -276,8 +274,6 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
-    initializeActionsHub(context, pacTerminal);
-
     if (shouldEnableDebugger()) {
         activateDebugger(context, _telemetry);
     }
@@ -286,52 +282,6 @@ export async function activate(
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
 }
 
-async function initializeSiteRuntimePreview(
-    artemisResponse: IArtemisServiceResponse | null,
-    workspaceFolders: WorkspaceFolder[],
-    orgDetails: ActiveOrgOutput,
-    pacTerminal: PacTerminal) {
-
-    const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
-
-    oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
-        isEnabled: isSiteRuntimePreviewEnabled.toString(),
-        websiteURL: PreviewSite.getSiteUrl() || "undefined"
-    });
-
-    if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
-        _context.subscriptions.push(
-            vscode.commands.registerCommand(
-                SITE_PREVIEW_COMMAND_ID,
-                async () => await PreviewSite.handlePreviewRequest(_telemetry, pacTerminal)
-            )
-        );
-
-        await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
-        await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
-    }
-}
-
-async function initializeActionsHub(context: vscode.ExtensionContext, pacTerminal: PacTerminal) {
-    //TODO: Initialize this based on ECS feature flag
-    const actionsHubEnabled = false;
-
-    try {
-        const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-        if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
-            const authInfo = extractAuthInfo(pacActiveAuth.Results);
-            authManager.setAuthInfo(authInfo);
-        }
-
-        vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
-
-        if (actionsHubEnabled) {
-            ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-        }
-    } catch (error) {
-        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, error as string, error as Error, { methodName: initializeActionsHub.name }, {});
-    }
-}
 export async function deactivate(): Promise<void> {
     if (_telemetry) {
         _telemetry.sendTelemetryEvent("End");
