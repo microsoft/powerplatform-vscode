@@ -330,13 +330,13 @@ export function getECSOrgLocationValue(clusterName: string, clusterNumber: strin
 }
 
 //API call to get env list for an org
-export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEndpointCategory | undefined): Promise<IEnvInfo[]> {
+export async function getEnvList(endpointStamp: ServiceEndpointCategory | undefined): Promise<IEnvInfo[]> {
     if(!endpointStamp) {
         return [];
     }
     const envInfo: IEnvInfo[] = [];
     try {
-        const bapAuthToken = await bapServiceAuthentication(telemetry, true);
+        const bapAuthToken = await bapServiceAuthentication(true);
         const bapEndpoint = getBAPEndpoint(endpointStamp);
         const envListEndpoint = `${bapEndpoint}${BAP_ENVIRONMENT_LIST_URL.replace('{apiVersion}', BAP_API_VERSION)}`;
 

@@ -259,7 +259,6 @@ export async function graphClientAuthentication(
 }
 
 export async function bapServiceAuthentication(
-    telemetry: ITelemetry,
     firstTimeAuth = false
 ): Promise<string> {
     let accessToken = "";
