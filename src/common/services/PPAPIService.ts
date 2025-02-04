@@ -14,7 +14,7 @@ export class PPAPIService {
     public static async getWebsiteDetailsById(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websitePreviewId: string, telemetry: ITelemetry): Promise<IWebsiteDetails | null> { // websitePreviewId aka portalId
 
         try {
-            const accessToken = await powerPlatformAPIAuthentication(telemetry, serviceEndpointStamp, true);
+            const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
             const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId, websitePreviewId), {
                 method: 'GET',
                 headers: getCommonHeaders(accessToken)
@@ -55,7 +55,7 @@ export class PPAPIService {
 
     static async getWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, telemetry: ITelemetry): Promise<{ value: IWebsiteDetails[] } | null> {
         try {
-            const accessToken = await powerPlatformAPIAuthentication(telemetry, serviceEndpointStamp, true);
+            const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
             const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, telemetry, environmentId), {
                 method: 'GET',
                 headers: getCommonHeaders(accessToken)

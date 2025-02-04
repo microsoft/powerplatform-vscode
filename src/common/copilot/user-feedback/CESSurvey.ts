@@ -36,7 +36,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
 
     const feedbackData = initializeFeedbackData(sessionId, vscode.env.uiKind === vscode.UIKind.Web, geoName, messageScenario, tenantId);
 
-    const apiToken: string = await npsAuthentication(telemetry, SurveyConstants.AUTHORIZATION_ENDPOINT);
+    const apiToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
     if (apiToken) {
         sendTelemetryEvent({ eventName: CopilotNpsAuthenticationCompleted, feedbackType: thumbType, copilotSessionId: sessionId });

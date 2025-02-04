@@ -378,7 +378,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
                     metadataInfo = await getEntityName(this.telemetry, sessionID, activeFileParams.dataverseEntity);
 
-                    const dataverseToken = (await dataverseAuthentication(this.telemetry, activeOrgUrl, true)).accessToken;
+                    const dataverseToken = (await dataverseAuthentication(activeOrgUrl, true)).accessToken;
 
                     if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
                         const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, this.telemetry, sessionID);

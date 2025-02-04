@@ -43,7 +43,7 @@ export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | u
     if (isEntityInSupportedList(activeFileParams.dataverseEntity)) {
         metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
-        const dataverseToken = (await dataverseAuthentication(telemetry, orgUrl ?? '', true)).accessToken;
+        const dataverseToken = (await dataverseAuthentication(orgUrl ?? '', true)).accessToken;
 
         if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
             const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, orgUrl ?? '', dataverseToken, telemetry, sessionID);
