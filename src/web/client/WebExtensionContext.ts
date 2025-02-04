@@ -429,7 +429,6 @@ class WebExtensionContext implements IWebExtensionContext {
             Constants.queryParameters.ORG_URL
         ) as string;
         const { accessToken, userId } = await dataverseAuthentication(
-            this._telemetry.getTelemetryReporter(),
             dataverseOrgUrl,
             firstTimeAuth
         );

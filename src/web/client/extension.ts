@@ -665,7 +665,7 @@ function isActiveDocument(fileFsPath: string): boolean {
 }
 
 async function fetchArtemisData(orgId: string) {
-    const artemisResponse = await ArtemisService.getArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter(), "");
+    const artemisResponse = await ArtemisService.getArtemisResponse(orgId, "");
     if (artemisResponse === null || artemisResponse.response === null) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
