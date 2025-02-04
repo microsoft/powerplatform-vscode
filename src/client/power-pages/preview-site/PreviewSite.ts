@@ -21,6 +21,8 @@ import { ArtemisService } from '../../../common/services/ArtemisService';
 import { Messages } from './Constants';
 import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
 import { IOrgDetails } from '../../../common/chat-participants/powerpages/PowerPagesChatParticipantTypes';
+import { IArtemisServiceResponse } from '../../../common/services/Interfaces';
+import { ActiveOrgOutput } from '../../pac/PacTypes';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
@@ -35,6 +37,34 @@ export class PreviewSite {
         }
 
         return enableSiteRuntimePreview;
+    }
+
+    static async initialize(
+        artemisResponse: IArtemisServiceResponse | null,
+        workspaceFolders: WorkspaceFolder[],
+        orgDetails: ActiveOrgOutput,
+        pacTerminal: PacTerminal,
+        context: vscode.ExtensionContext,
+        telemetry: ITelemetry
+    ): Promise<void> {
+        const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
+
+        oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
+            isEnabled: isSiteRuntimePreviewEnabled.toString(),
+            websiteURL: PreviewSite.getSiteUrl() || "undefined"
+        });
+
+        if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
+            context.subscriptions.push(
+                vscode.commands.registerCommand(
+                    SITE_PREVIEW_COMMAND_ID,
+                    async () => await PreviewSite.handlePreviewRequest(telemetry, pacTerminal)
+                )
+            );
+
+            await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, telemetry);
+            await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+        }
     }
 
     static async loadSiteUrl(

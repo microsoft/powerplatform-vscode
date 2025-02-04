@@ -29,4 +29,4 @@ class AuthManager {
     }
 }
 
-export const authManager = AuthManager.getInstance();
+export const pacAuthManager = PacAuthManager.getInstance();

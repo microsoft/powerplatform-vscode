@@ -8,31 +8,29 @@ import { ActionsHubTreeItem } from "./tree-items/ActionsHubTreeItem";
 import { OtherSitesGroupTreeItem } from "./tree-items/OtherSitesGroupTreeItem";
 import { Constants } from "./Constants";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { PacTerminal } from "../../lib/PacTerminal";
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
-import { authManager } from "../../pac/PacAuthManager";
+import { pacAuthManager } from "../../pac/PacAuthManager";
 import { SUCCESS } from "../../../common/constants";
 import { extractAuthInfo } from "../commonUtility";
+import { PacTerminal } from "../../lib/PacTerminal";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
     private readonly _context: vscode.ExtensionContext;
-    private readonly _pacTerminal: PacTerminal;
     private _onDidChangeTreeData: vscode.EventEmitter<ActionsHubTreeItem | undefined | void> = new vscode.EventEmitter<ActionsHubTreeItem | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
 
-    private constructor(context: vscode.ExtensionContext, pacTerminal: PacTerminal) {
+    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
         this._disposables.push(
             vscode.window.registerTreeDataProvider("powerpages.actionsHub", this)
         );
 
         this._context = context;
-        this._pacTerminal = pacTerminal;
 
         // Register an event listener for environment changes
-        authManager.onDidChangeEnvironment(() => this.refresh());
+        pacAuthManager.onDidChangeEnvironment(() => this.refresh());
         this._disposables.push(...this.registerPanel(this._pacTerminal));
     }
 
@@ -53,7 +51,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
                 const orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
                 let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
-                const authInfo = authManager.getAuthInfo();
+                const authInfo = pacAuthManager.getAuthInfo();
                 if (authInfo) {
                     currentEnvInfo = { currentEnvironmentName: authInfo.organizationFriendlyName };
                 }
@@ -88,7 +86,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
                     if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
                         const authInfo = extractAuthInfo(pacActiveAuth.Results);
-                        authManager.setAuthInfo(authInfo);
+                        pacAuthManager.setAuthInfo(authInfo);
                     }
                     this.refresh();
                 } catch (error) {
