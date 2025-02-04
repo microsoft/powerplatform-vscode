@@ -121,8 +121,7 @@ describe("Authentication Provider", () => {
         //Assert
         sinon.assert.calledOnce(sendTelemetryEvent);
         sinon.assert.calledWith(
-            sendTelemetryEvent,
-            telemetry, {
+            sendTelemetryEvent, {
             eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
             errorMsg: errorMessage
         }
