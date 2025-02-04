@@ -80,10 +80,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
+        const pacWrapper = pacTerminal.getWrapper();
         return [
             vscode.commands.registerCommand("powerpages.actionsHub.refresh", async () => {
                 try {
-                    const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
+                    const pacActiveAuth = await pacWrapper.activeAuth();
                     if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
                         const authInfo = extractAuthInfo(pacActiveAuth.Results);
                         pacAuthManager.setAuthInfo(authInfo);
