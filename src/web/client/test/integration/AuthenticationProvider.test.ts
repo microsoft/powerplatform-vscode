@@ -13,9 +13,7 @@ import vscode from "vscode";
 import * as errorHandler from "../../../../common/utilities/errorHandlerUtil";
 import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import * as copilotTelemetry from "../../../../common/copilot/telemetry/copilotTelemetry";
-import { vscodeExtAppInsightsResourceProvider } from "../../../../common/telemetry-generated/telemetryConfiguration";
 import { VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED } from "../../../../common/services/TelemetryConstants";
-import TelemetryReporter from "@vscode/extension-telemetry";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let traceError: any
@@ -34,13 +32,6 @@ describe("Authentication Provider", () => {
         // Restore the default sandbox here
         sinon.restore();
     });
-
-    const appInsightsResource =
-        vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
-            undefined
-        );
-
-    const telemetry = new TelemetryReporter("", "", appInsightsResource.instrumentationKey);
 
     it("getHeader", () => {
         const accessToken = "f068ee9f-a010-47b9-b1e1-7e6353730e7d";
@@ -62,7 +53,7 @@ describe("Authentication Provider", () => {
                 scopes: [],
             });
 
-        const result = await dataverseAuthentication(telemetry, dataverseOrgURL);
+        const result = await dataverseAuthentication(dataverseOrgURL);
         sinon.assert.calledOnce(_mockgetSession);
         expect(result.accessToken).eq("f068ee9f-a010-47b9-b1e1-7e6353730e7d");
         expect(result.userId).empty;
@@ -90,7 +81,7 @@ describe("Authentication Provider", () => {
         );
 
         //Act
-        await dataverseAuthentication(telemetry, dataverseOrgURL);
+        await dataverseAuthentication(dataverseOrgURL);
 
         sinon.assert.calledWith(
             showErrorDialog,
@@ -116,12 +107,13 @@ describe("Authentication Provider", () => {
         );
 
         // Act
-        const result = await dataverseAuthentication(telemetry, dataverseOrgURL);
+        const result = await dataverseAuthentication(dataverseOrgURL);
 
         //Assert
         sinon.assert.calledOnce(sendTelemetryEvent);
         sinon.assert.calledWith(
-            sendTelemetryEvent, {
+            sendTelemetryEvent,
+            {
             eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
             errorMsg: errorMessage
         }

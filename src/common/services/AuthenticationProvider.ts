@@ -111,7 +111,6 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
 }
 
 export async function dataverseAuthentication(
-    telemetry: ITelemetry,
     dataverseOrgURL: string,
     firstTimeAuth = false
 ): Promise<{ accessToken: string, userId: string }> {
@@ -168,7 +167,6 @@ export async function dataverseAuthentication(
 }
 
 export async function npsAuthentication(
-    telemetry: ITelemetry,
     cesSurveyAuthorizationEndpoint: string
 ): Promise<string> {
     let accessToken = "";
@@ -207,7 +205,6 @@ export async function npsAuthentication(
 }
 
 export async function graphClientAuthentication(
-    telemetry: ITelemetry,
     firstTimeAuth = false
 ): Promise<string> {
     let accessToken = "";
@@ -316,7 +313,6 @@ export function getOIDFromToken(token: string) {
 }
 
 export async function powerPlatformAPIAuthentication(
-    telemetry: ITelemetry,
     serviceEndpointStamp: ServiceEndpointCategory,
     firstTimeAuth = false
 ): Promise<string> {
