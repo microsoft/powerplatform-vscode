@@ -6,17 +6,17 @@
 import { EventEmitter, Event } from "vscode";
 import { AuthInfo } from "./PacTypes";
 
-class AuthManager {
-    private static instance: AuthManager;
+class PacAuthManager {
+    private static instance: PacAuthManager;
     private authInfo: AuthInfo | null = null;
     private _onDidChangeEnvironment: EventEmitter<void> = new EventEmitter<void>();
     public readonly onDidChangeEnvironment: Event<void> = this._onDidChangeEnvironment.event;
 
-    public static getInstance(): AuthManager {
-        if (!AuthManager.instance) {
-            AuthManager.instance = new AuthManager();
+    public static getInstance(): PacAuthManager {
+        if (!PacAuthManager.instance) {
+            PacAuthManager.instance = new PacAuthManager();
         }
-        return AuthManager.instance;
+        return PacAuthManager.instance;
     }
 
     public setAuthInfo(authInfo: AuthInfo): void {
