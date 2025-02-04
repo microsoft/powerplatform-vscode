@@ -84,13 +84,17 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
         return [
             vscode.commands.registerCommand("powerpages.actionsHub.refresh", async () => {
-                const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-                if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
-                    const authInfo = extractAuthInfo(pacActiveAuth.Results);
-                    authManager.setAuthInfo(authInfo);
+                try {
+                    const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
+                    if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
+                        const authInfo = extractAuthInfo(pacActiveAuth.Results);
+                        authManager.setAuthInfo(authInfo);
+                    }
+                    this.refresh();
+                } catch (error) {
+                    oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
                 }
-                this.refresh();
-            }),
+            })
         ];
     }
 }
