@@ -424,7 +424,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         sessionID = uuidv4(); // Generate a new session ID on org change
         sendTelemetryEvent({ eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
-        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId);
+        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentId);
         if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
             this.sendMessageToWebview({ type: 'Unavailable' });
             return;
