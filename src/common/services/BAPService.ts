@@ -23,12 +23,12 @@ export class BAPService {
 
             if (response.ok) {
                 const data = await response.json();
-                sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_COMPLETED, data: data.properties.copilotPolicies?.crossGeoCopilotDataMovementEnabled });
+                sendTelemetryEvent({ eventName: VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_COMPLETED, data: data.properties.copilotPolicies?.crossGeoCopilotDataMovementEnabled });
                 return data.properties.copilotPolicies?.crossGeoCopilotDataMovementEnabled;
             }
 
         } catch (error) {
-            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, errorMsg: (error as Error).message });
+            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, errorMsg: (error as Error).message });
         }
 
         return false;
@@ -36,7 +36,7 @@ export class BAPService {
 
     static async getBAPCopilotCrossGeoFlagEndpoint(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry, environmentId: string): Promise<string> {
 
-        const bapEndpoint = await getBAPEndpoint(serviceEndpointStamp, telemetry);
+        const bapEndpoint = await getBAPEndpoint(serviceEndpointStamp);
 
         return BAP_SERVICE_ENDPOINT.replace('{rootURL}', bapEndpoint) +
             BAP_SERVICE_COPILOT_CROSS_GEO_FLAG_RELATIVE_URL.replace('{environmentID}', environmentId).replace('{apiVersion}', BAP_API_VERSION);

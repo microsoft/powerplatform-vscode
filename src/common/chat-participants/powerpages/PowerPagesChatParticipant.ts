@@ -218,7 +218,6 @@ export class PowerPagesChatParticipant {
                     sessionID: this.powerPagesAgentSessionId,
                     entityName: entityName,
                     entityColumns: componentInfo,
-                    telemetry: this.telemetry,
                     aibEndpoint: intelligenceAPIEndpointInfo.intelligenceEndpoint,
                     geoName: intelligenceAPIEndpointInfo.geoName,
                     crossGeoDataMovementEnabledPPACFlag: intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag,

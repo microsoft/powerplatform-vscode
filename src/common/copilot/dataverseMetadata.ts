@@ -36,11 +36,11 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
         const responseTime = endTime - startTime || 0;
         const attributes = getAttributesFromResponse(jsonResponse); //Display name and logical name fetching from response
 
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
+        sendTelemetryEvent({ eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return attributes
 
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
+        sendTelemetryEvent({ eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
         return [];
     }
 }
@@ -70,11 +70,11 @@ export async function getFormXml(entityName: string, formName: string, orgUrl: s
 
         const formxml = getFormXMLFromResponse(jsonResponse);
 
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
+        sendTelemetryEvent({ eventName: CopilotDataverseMetadataSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgUrl: orgUrl })
         return parseXML(formxml);
 
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
+        sendTelemetryEvent({ eventName: CopilotDataverseMetadataFailureEvent, copilotSessionId: sessionID, error: error as Error, orgUrl: orgUrl })
         return [];
     }
 }
@@ -193,7 +193,7 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
             }
         }
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotGetEntityFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
+        sendTelemetryEvent({ eventName: CopilotGetEntityFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         entityName = '';
     }
     return { entityName, formName };
@@ -215,7 +215,7 @@ function parseYamlContent(content: string, telemetry: ITelemetry, sessionID: str
     try {
         return yaml.parse(content);
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotYamlParsingFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
+        sendTelemetryEvent({ eventName: CopilotYamlParsingFailureEvent, copilotSessionId: sessionID, dataverseEntity: dataverseEntity, error: error as Error });
         return {};
     }
 }

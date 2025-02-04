@@ -24,7 +24,7 @@ export class ArtemisService {
 
         const endpointStamp = artemisResponse.stamp;
         const { geoName, environment, clusterNumber } = artemisResponse.response as IArtemisAPIOrgResponse;
-        sendTelemetryEvent(telemetry, { eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
+        sendTelemetryEvent({ eventName: CopilotArtemisSuccessEvent, copilotSessionId: sessionID, geoName: String(geoName), orgId: orgId });
 
         const crossGeoDataMovementEnabledPPACFlag = await BAPService.getCrossGeoCopilotDataMovementEnabledFlag(artemisResponse.stamp, telemetry, environmentId);
 
@@ -79,7 +79,7 @@ export class ArtemisService {
             const successfulResponses = results.filter(result => result !== null && result.response !== null);
             return successfulResponses as IArtemisServiceResponse[];
         } catch (error) {
-            sendTelemetryEvent(telemetry, { eventName: CopilotArtemisFailureEvent, copilotSessionId: sessionID, error: error as Error })
+            sendTelemetryEvent({ eventName: CopilotArtemisFailureEvent, copilotSessionId: sessionID, error: error as Error })
             return null;
         }
     }

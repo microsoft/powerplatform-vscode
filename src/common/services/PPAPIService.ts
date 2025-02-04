@@ -22,12 +22,12 @@ export class PPAPIService {
 
             if (response.ok) {
                 const websiteDetails = await response.json() as unknown as IWebsiteDetails;
-                sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
+                sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
                 return websiteDetails;
             }
         }
         catch (error) {
-            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, errorMsg: (error as Error).message });
+            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_GET_CROSS_GEO_DATA_MOVEMENT_ENABLED_FLAG_FAILED, errorMsg: (error as Error).message });
         }
 
         return null;
@@ -36,7 +36,7 @@ export class PPAPIService {
     public static async getWebsiteDetailsByWebsiteRecordId(serviceEndpointStamp: ServiceEndpointCategory | undefined, environmentId: string, websiteRecordId: string, telemetry: ITelemetry): Promise<IWebsiteDetails | null> {
 
         if (!serviceEndpointStamp) {
-            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, data: serviceEndpointStamp });
+            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_SERVICE_STAMP_NOT_FOUND, data: serviceEndpointStamp });
             return null;
         }
 
@@ -46,7 +46,7 @@ export class PPAPIService {
 
 
         if (websiteDetails) {
-            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
+            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
             return websiteDetails;
         }
 
@@ -67,7 +67,7 @@ export class PPAPIService {
             }
         }
         catch (error) {
-            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED, errorMsg: (error as Error).message });
+            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED, errorMsg: (error as Error).message });
         }
         return null;
     }
@@ -95,7 +95,7 @@ export class PPAPIService {
                 ppApiEndpoint = "https://api.powerplatform.cn";
                 break;
             default:
-                sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });
+                sendTelemetryEvent({ eventName: VSCODE_EXTENSION_GET_PPAPI_WEBSITES_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });
                 break;
         }
 
