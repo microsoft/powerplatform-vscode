@@ -204,7 +204,7 @@ export class PreviewSite {
             async (progress) => {
                 progress.report({ message: Messages.CLEARING_CACHE });
 
-                const authResponse = await dataverseAuthentication(telemetry, orgDetails.orgUrl);
+                const authResponse = await dataverseAuthentication(orgDetails.orgUrl);
 
                 const clearCacheResponse = await fetch(requestUrl, {
                     headers: {
@@ -241,7 +241,7 @@ export class PreviewSite {
                 async (progress) => {
                     progress.report({ message: Messages.GETTING_REGION_INFORMATION });
 
-                    const artemisResponse = await ArtemisService.getArtemisResponse(orgDetails.orgID, telemetry, "");
+                    const artemisResponse = await ArtemisService.getArtemisResponse(orgDetails.orgID, "");
 
                     if (artemisResponse === null || artemisResponse.response === null) {
                         vscode.window.showErrorMessage(Messages.FAILED_TO_GET_ENDPOINT);
