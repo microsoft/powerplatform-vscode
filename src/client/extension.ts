@@ -193,7 +193,7 @@ export async function activate(
                 }
 
                 if (EnvID?.[0]?.Value && TenantID?.[0]?.Value && AadIdObject?.[0]?.Value) {
-                    await ECSFeaturesClient.init(_telemetry,
+                    await ECSFeaturesClient.init(
                         {
                             AppName: PowerPagesAppName,
                             EnvID: EnvID[0].Value,
@@ -219,16 +219,14 @@ export async function activate(
                 try {
                     listOfActivePortals = getPortalsOrgURLs(workspaceFolders);
                     telemetryData = JSON.stringify(listOfActivePortals);
-                    _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
                     oneDSLoggerWrapper.getLogger().traceInfo("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
                 } catch (exception) {
                     const exceptionError = exception as Error;
-                    _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
                     oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
                 }
 
                 // Show Copilot notification after ECS initialization and workspace check
-                showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
+                showNotificationForCopilot(telemetryData, listOfActivePortals.length.toString());
                 copilotNotificationShown = true;
 
             }
@@ -247,7 +245,6 @@ export async function activate(
         vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
         vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
-        _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
         initializeGenerator(_context, cliContext); // Showing the create command only if website.yml exists
@@ -263,18 +260,11 @@ export async function activate(
         activateDebugger(context, _telemetry);
     }
 
-    _telemetry.sendTelemetryEvent("activated");
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
 }
 
 export async function deactivate(): Promise<void> {
-    if (_telemetry) {
-        _telemetry.sendTelemetryEvent("End");
-        oneDSLoggerWrapper.getLogger().traceInfo("End");
-        // dispose() will flush any events not sent
-        // Note, while dispose() returns a promise, we don't await it so that we can unblock the rest of unloading logic
-        _telemetry.dispose();
-    }
+    oneDSLoggerWrapper.getLogger().traceInfo("End");
 
     if (client) {
         await client.stop();
@@ -387,11 +377,6 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
         client.onNotification("telemetry/event", (payload: string) => {
             const serverTelemetry = JSON.parse(payload) as ITelemetryData;
             if (!!serverTelemetry && !!serverTelemetry.eventName) {
-                _telemetry.sendTelemetryEvent(
-                    serverTelemetry.eventName,
-                    serverTelemetry.properties,
-                    serverTelemetry.measurements
-                );
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     serverTelemetry.eventName,
                     serverTelemetry.properties,
@@ -431,7 +416,7 @@ function handleWorkspaceFolderChange() {
     }
 }
 
-function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals: string) {
+function showNotificationForCopilot(telemetryData: string, countOfActivePortals: string) {
     if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
         return;
     }
@@ -441,9 +426,8 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
 
     if (!storedVersion || storedVersion !== currentVersion) {
         // Show notification panel for the first load or after an update
-        telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
         oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
-        copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
+        copilotNotificationPanel(_context, telemetryData, countOfActivePortals);
 
         // Update the stored version to the current version
         _context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
@@ -453,9 +437,8 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
     const isCopilotNotificationDisabled = _context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
 
     if (!isCopilotNotificationDisabled) {
-        telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
         oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
-        copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
+        copilotNotificationPanel(_context, telemetryData, countOfActivePortals);
     }
 
 }

@@ -149,7 +149,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                         await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
 
                                         // Initialize ECS config in webExtensionContext
-                                        await ECSFeaturesClient.init(WebExtensionContext.telemetry.getTelemetryReporter(),
+                                        await ECSFeaturesClient.init(
                                             {
                                                 AppName: PowerPagesAppName,
                                                 EnvID: WebExtensionContext.environmentId,
@@ -631,7 +631,7 @@ function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: str
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
             { orgId: orgId });
         const telemetryData = JSON.stringify({ orgId: orgId });
-        copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+        copilotNotificationPanel(context, telemetryData);
 
         // Update the stored version to the current version
         context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
@@ -643,7 +643,7 @@ function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: str
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
             { orgId: orgId });
         const telemetryData = JSON.stringify({ orgId: orgId });
-        copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+        copilotNotificationPanel(context, telemetryData);
     }
 }
 
