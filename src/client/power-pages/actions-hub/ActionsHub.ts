@@ -9,11 +9,6 @@ import { EnableActionsHub } from "../../../common/ecs-features/ecsFeatureGates";
 import { ActionsHubTreeDataProvider } from "./ActionsHubTreeDataProvider";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { SUCCESS } from "../../../common/constants";
-import { extractAuthInfo } from "../commonUtility";
-import { pacAuthManager } from "../../pac/PacAuthManager";
-import { Constants } from "./Constants";
-
 export class ActionsHub {
     static isEnabled(): boolean {
         const enableActionsHub = ECSFeaturesClient.getConfig(EnableActionsHub).enableActionsHub
@@ -38,16 +33,6 @@ export class ActionsHub {
             return;
         }
 
-        try {
-            const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-            if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
-                const authInfo = extractAuthInfo(pacActiveAuth.Results);
-                pacAuthManager.setAuthInfo(authInfo);
-            }
-
-            ActionsHubTreeDataProvider.initialize(context);
-        } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, error as string, error as Error, { methodName: ActionsHub.initialize.name }, {});
-        }
+        ActionsHubTreeDataProvider.initialize(context, pacTerminal);
     }
 }

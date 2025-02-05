@@ -22,6 +22,9 @@
     <trans-unit id="++CODE++8d35e64354d3db3df1df4ef8e6068b6b9dd58514fcf980f7071e10ed160db95a">
       <source xml:lang="en">AI-generated content can contain mistakes</source>
     </trans-unit>
+    <trans-unit id="++CODE++b7a871816816225e2493a94b2b40d7c0ab9fa8a8d14666e68c00e5a511c9f4f6">
+      <source xml:lang="en">Active Environment is expired or deleted. Please select a new environment.</source>
+    </trans-unit>
     <trans-unit id="++CODE++b82f83283cc4275cf0d58b4f55d1242fe46227ee1da9db4b81b6b08804dcbf01">
       <source xml:lang="en">Active Sites</source>
     </trans-unit>
@@ -692,6 +695,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="powerplatform.pages.previewSite.title">
       <source xml:lang="en">Preview Site</source>
+    </trans-unit>
+    <trans-unit id="powerpages.actionsHub.refresh.title">
+      <source xml:lang="en">Refresh</source>
     </trans-unit>
     <trans-unit id="pacCLI.envAndSolutionsPanel.refresh.title">
       <source xml:lang="en">Refresh</source>
