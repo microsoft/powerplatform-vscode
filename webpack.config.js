@@ -56,6 +56,11 @@ const nodeConfig = {
         new webpack.DefinePlugin({
             IS_DESKTOP: true,
         }),
+    ],
+    ignoreWarnings: [
+        {
+            message: /dependency is an expression|require function is used in a way in which dependencies cannot be statically extracted/
+        }
     ]
 };
 const webConfig = {
@@ -120,6 +125,11 @@ const webConfig = {
     infrastructureLogging: {
         level: "log", // enables logging required for problem matchers
     },
+    ignoreWarnings: [
+        {
+            message: /dependency is an expression|require function is used in a way in which dependencies cannot be statically extracted/
+        }
+    ]
 };
 
 /** @type fluent container scripts web worker config */
@@ -174,6 +184,11 @@ const webWorkerConfig = {
         hints: false,
     },
     devtool: "source-map",
+    ignoreWarnings: [
+        {
+            message: /dependency is an expression|require function is used in a way in which dependencies cannot be statically extracted/
+        }
+    ]
 };
 
 module.exports = [nodeConfig, webConfig, webWorkerConfig];
