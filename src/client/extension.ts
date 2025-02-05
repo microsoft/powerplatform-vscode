@@ -180,7 +180,7 @@ export async function activate(
     }
 
     // Add CRUD related callback subscription here
-    await handleFileSystemCallbacks(_context, _telemetry);
+    await handleFileSystemCallbacks(_context);
 
     const cliContext = new CliAcquisitionContext(_context, _telemetry);
     const cli = new CliAcquisition(cliContext);
@@ -232,7 +232,7 @@ export async function activate(
                 let telemetryData = '';
                 let listOfActivePortals = [];
                 try {
-                    listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
+                    listOfActivePortals = getPortalsOrgURLs(workspaceFolders);
                     telemetryData = JSON.stringify(listOfActivePortals);
                     _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
                     oneDSLoggerWrapper.getLogger().traceInfo("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
@@ -248,7 +248,7 @@ export async function activate(
 
             }
 
-            await PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context, _telemetry);
+            await PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context);
 
             await ActionsHub.initialize(context, pacTerminal);
         })
@@ -265,7 +265,7 @@ export async function activate(
         _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
-        initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
+        initializeGenerator(_context, cliContext); // Showing the create command only if website.yml exists
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);

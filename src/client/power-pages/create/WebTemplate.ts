@@ -14,14 +14,12 @@ import {
 import path from "path";
 import { statSync } from "fs";
 import { TableFolder, Tables, YoSubGenerator } from "./CreateOperationConstants";
-import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 export const createWebTemplate = (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoPath: string | null,
-    telemetry: ITelemetry
+    yoPath: string | null
 ) => {
     try {
         if (!selectedWorkspaceFolder) {
@@ -57,14 +55,13 @@ export const createWebTemplate = (
                         Tables.WEBTEMPLATE,
                         command,
                         selectedWorkspaceFolder,
-                        watcher,
-                        telemetry
+                        watcher
                     );
                 }
             });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { methodName: createWebTemplate.name, eventName: UserFileCreateEvent, fileEntityType: Tables.WEBTEMPLATE, exception: error as Error })
+        sendTelemetryEvent({ methodName: createWebTemplate.name, eventName: UserFileCreateEvent, fileEntityType: Tables.WEBTEMPLATE, exception: error as Error })
         throw new Error(error);
     }
 };
