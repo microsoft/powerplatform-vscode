@@ -13,8 +13,22 @@ import {
     mockTabbedControlConfiguration,
 } from "../helpers";
 import { BrowserManager } from "../../browser/";
+import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 describe("BrowserManager", () => {
+    beforeEach(() => {
+        sinon.stub(oneDSLoggerWrapper, 'getLogger').returns({
+            traceInfo: sinon.stub(),
+            traceError: sinon.stub(),
+            traceWarning: sinon.stub(),
+            featureUsage: sinon.stub(),
+        });
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
     const getInstance = (
         fireBundleIntercepted: boolean,
         fireOnBrowserClose: boolean,

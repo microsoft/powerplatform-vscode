@@ -53,11 +53,7 @@ describe("BundleLoader", () => {
             getOpenTextDocumentMock(false)
         );
         await instance.loadFileContents();
-        sinon.assert.calledWith(
-            reporterSpy,
-            sinon.match.any,
-            "RequestInterceptor.warnIfNoSourceMap.error"
-        );
+        expect(reporterSpy.calledWith("RequestInterceptor.warnIfNoSourceMap.error", undefined, `Could not find inlined source map in 'mockFilePath'. Make sure you enable source maps in webpack with 'devtool: "inline-source-map"'. For local debugging, inlined source maps are required.`));
         reporterSpy.restore();
     });
 
