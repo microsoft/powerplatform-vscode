@@ -463,7 +463,7 @@ describe("WebExtensionContext", () => {
         );
 
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
-        assert.calledOnceWithExactly(dataverseAuthentication, WebExtensionContext.telemetry.getTelemetryReporter(), ORG_URL, true);
+        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
         assert.callCount(sendAPISuccessTelemetry, 3);
         assert.calledOnceWithExactly(
             getLcidCodeMap,
@@ -641,7 +641,7 @@ describe("WebExtensionContext", () => {
         );
 
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
-        assert.calledOnceWithExactly(dataverseAuthentication, WebExtensionContext.telemetry.getTelemetryReporter(), ORG_URL, true);
+        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
         assert.notCalled(getLcidCodeMap);
         assert.notCalled(getWebsiteIdToLcidMap);
         assert.notCalled(getPortalLanguageIdToLcidMap);
@@ -757,7 +757,7 @@ describe("WebExtensionContext", () => {
         );
         expect(WebExtensionContext.dataverseAccessToken).eq(accessToken);
 
-        assert.calledOnceWithExactly(dataverseAuthentication, WebExtensionContext.telemetry.getTelemetryReporter(), ORG_URL, true);
+        assert.calledOnceWithExactly(dataverseAuthentication, ORG_URL, true);
         //#region  Fetch
         const header = getCommonHeadersForDataverse(accessToken);
         assert.calledThrice(_mockFetch);

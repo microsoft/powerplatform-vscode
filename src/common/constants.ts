@@ -4,7 +4,6 @@
  */
 
 import { IActiveFileParams } from "./copilot/model";
-import { ITelemetry } from "./OneDSLoggerTelemetry/telemetry/ITelemetry";
 
 
 export const EXTENSION_ID = "microsoft-IsvExpTools.powerplatform-vscode";
@@ -78,7 +77,6 @@ export interface IApiRequestParams {
     sessionID: string;
     entityName: string;
     entityColumns: string[];
-    telemetry: ITelemetry;
     aibEndpoint: string | null;
     geoName: string | null;
     crossGeoDataMovementEnabledPPACFlag?: boolean;

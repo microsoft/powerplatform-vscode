@@ -22,12 +22,11 @@ import * as vscode from 'vscode';
 export async function getEndpoint(
     orgID: string,
     environmentID: string,
-    telemetry: ITelemetry,
     cachedEndpoint: IIntelligenceAPIEndpointInformation | null,
     sessionID: string
 ): Promise<IIntelligenceAPIEndpointInformation> {
     if (!cachedEndpoint) {
-        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, telemetry, sessionID, environmentID) as IIntelligenceAPIEndpointInformation; // TODO - add session ID
+        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentID) as IIntelligenceAPIEndpointInformation; // TODO - add session ID
     }
     return cachedEndpoint;
 }
@@ -44,7 +43,7 @@ export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | u
     if (isEntityInSupportedList(activeFileParams.dataverseEntity)) {
         metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
 
-        const dataverseToken = (await dataverseAuthentication(telemetry, orgUrl ?? '', true)).accessToken;
+        const dataverseToken = (await dataverseAuthentication(orgUrl ?? '', true)).accessToken;
 
         if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
             const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, orgUrl ?? '', dataverseToken, telemetry, sessionID);

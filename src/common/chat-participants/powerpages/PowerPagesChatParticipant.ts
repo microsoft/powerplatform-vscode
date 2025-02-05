@@ -131,7 +131,7 @@ export class PowerPagesChatParticipant {
 
             const intelligenceApiToken = intelligenceApiAuthResponse.accessToken;
             const userId = intelligenceApiAuthResponse.userId;
-            const intelligenceAPIEndpointInfo = await getEndpoint(this.orgID, this.environmentID, this.telemetry, this.cachedEndpoint, this.powerPagesAgentSessionId);
+            const intelligenceAPIEndpointInfo = await getEndpoint(this.orgID, this.environmentID, this.cachedEndpoint, this.powerPagesAgentSessionId);
 
             if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
                 return createErrorResult(COPILOT_NOT_AVAILABLE_MSG, RESPONSE_SCENARIOS.COPILOT_NOT_AVAILABLE, this.orgID);
@@ -218,7 +218,6 @@ export class PowerPagesChatParticipant {
                     sessionID: this.powerPagesAgentSessionId,
                     entityName: entityName,
                     entityColumns: componentInfo,
-                    telemetry: this.telemetry,
                     aibEndpoint: intelligenceAPIEndpointInfo.intelligenceEndpoint,
                     geoName: intelligenceAPIEndpointInfo.geoName,
                     crossGeoDataMovementEnabledPPACFlag: intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag,

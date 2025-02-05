@@ -196,7 +196,7 @@ export async function activate(
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
-            const artemisResponse = await ArtemisService.getArtemisResponse(orgID, _telemetry, "");
+            const artemisResponse = await ArtemisService.getArtemisResponse(orgID, "");
             if (artemisResponse !== null && artemisResponse.response !== null) {
                 const { geoName, geoLongName, clusterName, clusterNumber } = artemisResponse.response;
                 const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
