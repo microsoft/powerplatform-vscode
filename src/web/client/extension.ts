@@ -20,7 +20,6 @@ import {
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
 import { getEnvironmentIdFromUrl, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
-import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
 import {
     getFileEntityId,
@@ -46,23 +45,8 @@ import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 
 export function activate(context: vscode.ExtensionContext): void {
-    // setup telemetry
-    // TODO: Determine how to determine the user's dataBoundary
-    const dataBoundary = undefined;
-    const appInsightsResource =
-        vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
-            dataBoundary
-        );
     oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
-    WebExtensionContext.telemetry.setTelemetryReporter(
-        context.extension.id,
-        context.extension.packageJSON.version,
-        appInsightsResource
-    );
-    context.subscriptions.push(
-        WebExtensionContext.telemetry.getTelemetryReporter()
-    );
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
     const portalsFS = new PortalsFS();

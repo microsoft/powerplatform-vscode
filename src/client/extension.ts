@@ -3,11 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import TelemetryReporter from "@vscode/extension-telemetry";
 import * as path from "path";
 import * as vscode from "vscode";
-import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
-import { vscodeExtAppInsightsResourceProvider } from "../common/telemetry-generated/telemetryConfiguration";
 import { ITelemetryData } from "../common/TelemetryData";
 import { CliAcquisition } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
@@ -53,7 +50,6 @@ let client: LanguageClient;
 let _context: vscode.ExtensionContext;
 let htmlServerRunning = false;
 let yamlServerRunning = false;
-let _telemetry: TelemetryReporter;
 
 
 export async function activate(
@@ -61,19 +57,6 @@ export async function activate(
 ): Promise<void> {
     _context = context;
 
-    // setup telemetry
-    const telemetryEnv =
-        AppTelemetryConfigUtility.createGlobalTelemetryEnvironment();
-    const appInsightsResource =
-        vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
-            telemetryEnv.dataBoundary
-        );
-    _telemetry = new TelemetryReporter(
-        context.extension.id,
-        context.extension.packageJSON.version,
-        appInsightsResource.instrumentationKey
-    );
-    context.subscriptions.push(_telemetry);
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
 
