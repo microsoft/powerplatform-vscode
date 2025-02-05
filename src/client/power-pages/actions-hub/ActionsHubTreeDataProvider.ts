@@ -89,7 +89,6 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                         const authInfo = extractAuthInfo(pacActiveAuth.Results);
                         pacAuthManager.setAuthInfo(authInfo);
                     }
-                    this.refresh();
                 } catch (error) {
                     oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
                 }
