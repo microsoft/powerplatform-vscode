@@ -257,7 +257,7 @@ export async function activate(
     _context.subscriptions.push(workspaceFolderWatcher);
 
     if (shouldEnableDebugger()) {
-        activateDebugger(context, _telemetry);
+        activateDebugger(context);
     }
 
     oneDSLoggerWrapper.getLogger().traceInfo("activated");

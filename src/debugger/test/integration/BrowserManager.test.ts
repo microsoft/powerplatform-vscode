@@ -4,7 +4,6 @@
  */
 
 import sinon from "sinon";
-import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import {
     getMockBrowser,
     getMockBrowserLocator,
@@ -40,7 +39,6 @@ describe("BrowserManager", () => {
             controlLocator,
             browserLocator,
             mockTabbedControlConfiguration,
-            NoopTelemetryInstance,
             puppeteerLaunchMock
         );
     };

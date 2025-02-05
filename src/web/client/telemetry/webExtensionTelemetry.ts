@@ -37,7 +37,6 @@ export class WebExtensionTelemetry {
                 telemetryData.properties.entityId = this.getPathParameterValue(entityId)
         }
 
-        this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
     }
 
@@ -67,7 +66,6 @@ export class WebExtensionTelemetry {
             telemetryData.properties.entityId = queryParamsMap.get(queryParameters.ENTITY_ID);
         }
 
-        this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties);
     }
 
@@ -85,18 +83,15 @@ export class WebExtensionTelemetry {
         }
         if (errorMessage || error) {
             const error: Error = new Error(errorMessage);
-            this._telemetry?.sendTelemetryException(error, telemetryData.properties);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, error, telemetryData.properties);
         } else {
-            this._telemetry?.sendTelemetryException(new Error(), telemetryData.properties);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage!, new Error(), telemetryData.properties);
         }
     }
 
     public sendInfoTelemetry(eventName: string, properties?: Record<string, string>) {
-        this._telemetry?.sendTelemetryEvent(eventName, properties);
         oneDSLoggerWrapper.getLogger().traceInfo(eventName, properties);
     }
 
@@ -131,10 +126,8 @@ export class WebExtensionTelemetry {
         }
         if (errorMessage) {
             const error: Error = new Error(errorMessage);
-            this._telemetry?.sendTelemetryException(error, { ...telemetryData.properties, eventName: eventName }, telemetryData.measurements);
             oneDSLoggerWrapper.getLogger().traceError(eventName, errorMessage, error, telemetryData.properties, telemetryData.measurements);
         } else {
-            this._telemetry?.sendTelemetryEvent(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
             oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryData.properties, telemetryData.measurements);
         }
     }
@@ -193,7 +186,6 @@ export class WebExtensionTelemetry {
                 durationInMillis: (duration) ? duration : 0
             }
         }
-        this._telemetry?.sendTelemetryEvent(telemetryData.eventName, undefined, telemetryData.measurements);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, undefined, telemetryData.measurements);
     }
 
