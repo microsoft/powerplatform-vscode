@@ -77,9 +77,6 @@ export async function activate(
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
 
-    _telemetry.sendTelemetryEvent("Start", {
-        "pac.userId": readUserSettings().uniqueId,
-    });
     oneDSLoggerWrapper.getLogger().traceInfo("Start", {
         "pac.userId": readUserSettings().uniqueId
     });
@@ -108,9 +105,6 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent("StartCommand", {
-                    commandId: "microsoft-powerapps-portals.preview-show",
-                });
                 oneDSLoggerWrapper.getLogger().traceInfo("StartCommand", {
                     commandId: "microsoft-powerapps-portals.preview-show"
                 });
@@ -122,9 +116,6 @@ export async function activate(
     // registering bootstrapdiff command
     _context.subscriptions.push(
         vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async () => {
-            _telemetry.sendTelemetryEvent("StartCommand", {
-                commandId: "microsoft-powerapps-portals.bootstrap-diff",
-            });
             oneDSLoggerWrapper.getLogger().traceInfo("StartCommand", {
                 commandId: "microsoft-powerapps-portals.bootstrap-diff",
             });
@@ -142,9 +133,6 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
-                        page: "NewPage",
-                    });
                     oneDSLoggerWrapper.getLogger().traceInfo("PortalWebPagePreview", {
                         page: "NewPage",
                     });
@@ -159,9 +147,6 @@ export async function activate(
                 return;
             } else if (isCurrentDocumentEdited()) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
-                        page: "ExistingPage",
-                    });
                     oneDSLoggerWrapper.getLogger().traceInfo("PortalWebPagePreview", {
                         page: "ExistingPage",
                     });
@@ -182,10 +167,10 @@ export async function activate(
     // Add CRUD related callback subscription here
     await handleFileSystemCallbacks(_context);
 
-    const cliContext = new CliAcquisitionContext(_context, _telemetry);
+    const cliContext = new CliAcquisitionContext(_context);
     const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
-    const pacTerminal = new PacTerminal(_context, _telemetry, cliPath);
+    const pacTerminal = new PacTerminal(_context, cliPath);
     _context.subscriptions.push(cli);
     _context.subscriptions.push(pacTerminal);
 

@@ -599,7 +599,6 @@ export function registerCopilot(context: vscode.ExtensionContext) {
 
         const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
             context,
-            WebExtensionContext.telemetry.getTelemetryReporter(),
             undefined,
             orgInfo);
 
