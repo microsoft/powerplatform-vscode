@@ -91,7 +91,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     }
                     this.refresh();
                 } catch (error) {
-                    oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
+                    oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
                 }
             })
         ];
