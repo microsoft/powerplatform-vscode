@@ -378,7 +378,7 @@
       },
       {
         "command": "powerpages.actionsHub.refresh",
-        "title": "Refresh",
+        "title": "%powerpages.actionsHub.refresh.title%",
         "icon": "$(refresh)"
       }
     ],
