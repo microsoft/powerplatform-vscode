@@ -55,17 +55,6 @@ async function clean() {
     return fs.emptyDir(distdir);
 }
 
-function setTelemetryTarget() {
-    const telemetryConfigurationSource = isOfficialBuild
-        ? 'src/common/telemetry/telemetryConfigurationProd.ts'
-        : 'src/common/telemetry/telemetryConfigurationDev.ts';
-
-    return gulp
-        .src(telemetryConfigurationSource)
-        .pipe(rename('telemetryConfiguration.ts'))
-        .pipe(gulp.dest(path.join('src', 'common', 'telemetry-generated')));
-}
-
 function setBuildRegion() {
     const buildRegion = isOfficialBuild
         ? 'src/common/telemetry/buildRegionProd.ts'
@@ -354,7 +343,6 @@ const recompile = gulp.series(
     async () => nugetInstall(feedName, 'Microsoft.PowerApps.CLI.Tool', cliVersion, path.resolve(distdir, 'pac')),
     translationsExport,
     translationsImport,
-    setTelemetryTarget,
     setBuildRegion,
     compile,
     compileWeb,

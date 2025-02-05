@@ -4,7 +4,6 @@
  */
 
 import { DebugSession } from "vscode";
-import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import sinon from "sinon";
 import * as vscode from "vscode";
 import { Debugger } from "../../debugAdaptor/Debugger";
@@ -69,7 +68,6 @@ describe("Debugger", () => {
             browserManagerInstance,
             parentSession,
             workspace,
-            NoopTelemetryInstance,
             1,
             0,
             0

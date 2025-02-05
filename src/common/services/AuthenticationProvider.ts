@@ -4,7 +4,6 @@
  */
 
 import * as vscode from "vscode";
-import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../copilot/telemetry/telemetryConstants";
 import { getUserAgent } from "../utilities/Utils";
@@ -82,7 +81,7 @@ export function getCommonHeaders(
 }
 
 //Get access token for Intelligence API service
-export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string, orgId: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string, userId: string }> {
+export async function intelligenceAPIAuthentication(sessionID: string, orgId: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string, userId: string }> {
     let accessToken = '';
     let user = '';
     let userId = '';

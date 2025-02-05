@@ -7,7 +7,6 @@ import fetch, { RequestInit } from "node-fetch";
 import path from "path";
 import * as vscode from "vscode";
 import yaml from 'yaml';
-import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { CopilotDataverseMetadataFailureEvent, CopilotDataverseMetadataSuccessEvent, CopilotGetEntityFailureEvent, CopilotYamlParsingFailureEvent } from "./telemetry/telemetryConstants";
 import { getEntityMetadata } from "../../web/client/utilities/fileAndEntityUtil";
@@ -18,7 +17,7 @@ import { getUserAgent } from "../utilities/Utils";
 
 declare const IS_DESKTOP: string | undefined;
 
-export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<string[]> {
+export async function getEntityColumns(entityName: string, orgUrl: string, apiToken: string, sessionID: string): Promise<string[]> {
     try {
         const dataverseURL = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}api/data/v9.2/EntityDefinitions(LogicalName='${entityName}')?$expand=Attributes`;
         const requestInit: RequestInit = {
@@ -45,7 +44,7 @@ export async function getEntityColumns(entityName: string, orgUrl: string, apiTo
     }
 }
 
-export async function getFormXml(entityName: string, formName: string, orgUrl: string, apiToken: string, telemetry: ITelemetry, sessionID: string): Promise<(string[])> {
+export async function getFormXml(entityName: string, formName: string, orgUrl: string, apiToken: string, sessionID: string): Promise<(string[])> {
     try {
         // Ensure the orgUrl ends with a '/'
         const formattedOrgUrl = orgUrl.endsWith('/') ? orgUrl : `${orgUrl}/`;
@@ -163,7 +162,7 @@ function parseXML(formXml: string) {
 }
 
 
-export async function getEntityName(telemetry: ITelemetry, sessionID: string, dataverseEntity: string): Promise<{ entityName: string, formName: string }> {
+export async function getEntityName(sessionID: string, dataverseEntity: string): Promise<{ entityName: string, formName: string }> {
     let entityName = '';
     let formName = '';
 
@@ -183,7 +182,7 @@ export async function getEntityName(telemetry: ITelemetry, sessionID: string, da
                 const diskRead = await import('fs');
                 const yamlFilePath = path.join(activeFileFolderPath, matchingFiles[0]);
                 const yamlContent = diskRead.readFileSync(yamlFilePath, 'utf8');
-                const parsedData = parseYamlContent(yamlContent, telemetry, sessionID, dataverseEntity);
+                const parsedData = parseYamlContent(yamlContent, sessionID, dataverseEntity);
                 entityName = parsedData['adx_entityname'] || parsedData['adx_targetentitylogicalname'];
                 formName = parsedData['adx_formname'];
             } else if (!IS_DESKTOP) {
@@ -211,7 +210,7 @@ async function getMatchingFiles(folderPath: string, fileNameFirstPart: string): 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseYamlContent(content: string, telemetry: ITelemetry, sessionID: string, dataverseEntity: string): any {
+function parseYamlContent(content: string, sessionID: string, dataverseEntity: string): any {
     try {
         return yaml.parse(content);
     } catch (error) {
@@ -219,4 +218,3 @@ function parseYamlContent(content: string, telemetry: ITelemetry, sessionID: str
         return {};
     }
 }
-

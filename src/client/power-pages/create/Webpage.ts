@@ -20,7 +20,6 @@ import { QuickPickItem } from "vscode";
 import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import { TableFolder, Tables, YoSubGenerator } from "./CreateOperationConstants";
 import path from "path";
-import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 interface IWebpageInputState {
@@ -35,8 +34,7 @@ interface IWebpageInputState {
 export const createWebpage = async (
     context: vscode.ExtensionContext,
     selectedWorkspaceFolder: string | undefined,
-    yoGenPath: string | null,
-    telemetry: ITelemetry
+    yoGenPath: string | null
 ) => {
     try {
         if (!selectedWorkspaceFolder) {
@@ -97,12 +95,11 @@ export const createWebpage = async (
                 Tables.WEBPAGE,
                 command,
                 selectedWorkspaceFolder,
-                watcher,
-                telemetry
+                watcher
             );
         }
     } catch (error: any) {
-        sendTelemetryEvent(telemetry, { methodName: createWebpage.name, eventName: UserFileCreateEvent, fileEntityType: Tables.WEBPAGE, exception: error as Error })
+        sendTelemetryEvent({ methodName: createWebpage.name, eventName: UserFileCreateEvent, fileEntityType: Tables.WEBPAGE, exception: error as Error })
         throw new Error(error);
     }
 };

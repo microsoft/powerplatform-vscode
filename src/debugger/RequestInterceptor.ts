@@ -5,7 +5,6 @@
 
 import { EventEmitter, HTTPRequest, Page } from "puppeteer-core";
 import { Disposable } from "vscode";
-import { ITelemetry } from "../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
 import { BundleLoader } from "./BundleLoader";
 
@@ -44,8 +43,7 @@ export class RequestInterceptor implements Disposable {
      * @param logger The telemetry reporter to use for telemetry events.
      */
     constructor(
-        private readonly bundleLoader: BundleLoader,
-        private readonly logger: ITelemetry
+        private readonly bundleLoader: BundleLoader
     ) { }
 
     /**
@@ -120,7 +118,6 @@ export class RequestInterceptor implements Disposable {
             });
         } catch (error) {
             void ErrorReporter.report(
-                this.logger,
                 "RequestInterceptor.onRequest.respond.error",
                 error,
                 "Could not respond to request"
@@ -145,7 +142,6 @@ export class RequestInterceptor implements Disposable {
             await request.continue();
         } catch (error) {
             void ErrorReporter.report(
-                this.logger,
                 "RequestInterceptor.respondWithOriginalResource.error",
                 error,
                 "Could not respond to non-bundle request",

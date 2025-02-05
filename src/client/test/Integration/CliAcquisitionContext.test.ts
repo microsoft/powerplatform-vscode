@@ -4,14 +4,12 @@
  */
 
 import * as vscode from 'vscode';
-import { ITelemetry } from '../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { CliAcquisitionContext } from '../../lib/CliAcquisitionContext';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
 describe('CliAcquisitionContext', () => {
     let context: vscode.ExtensionContext;
-    let telemetry: ITelemetry;
     let showInformationMessageSpy: sinon.SinonSpy;
     let showErrorMessageSpy: sinon.SinonSpy;
 
@@ -23,8 +21,6 @@ describe('CliAcquisitionContext', () => {
             }
         } as vscode.ExtensionContext;
 
-        telemetry = {} as ITelemetry;
-
         showInformationMessageSpy = sinon.spy(vscode.window, "showInformationMessage");
         showErrorMessageSpy = sinon.spy(vscode.window, "showErrorMessage");
     });
@@ -35,26 +31,20 @@ describe('CliAcquisitionContext', () => {
     });
 
     it('should return the extension path', () => {
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
+        const cliAcquisitionContext = new CliAcquisitionContext(context);
 
         expect(cliAcquisitionContext.extensionPath).to.equal('testExtensionPath');
     });
 
     it('should return the global storage local path', () => {
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
+        const cliAcquisitionContext = new CliAcquisitionContext(context);
 
         expect(cliAcquisitionContext.globalStorageLocalPath).to.equal('testGlobalStorageUri');
     });
 
-    it('should return the telemetry', () => {
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
-
-        expect(cliAcquisitionContext.telemetry).to.equal(telemetry);
-    });
-
     it('should show information message', () => {
         const message = 'testMessage';
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
+        const cliAcquisitionContext = new CliAcquisitionContext(context);
 
         cliAcquisitionContext.showInformationMessage(message);
 
@@ -65,7 +55,7 @@ describe('CliAcquisitionContext', () => {
 
     it('should show error message', () => {
         const message = 'testMessage';
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
+        const cliAcquisitionContext = new CliAcquisitionContext(context);
 
         cliAcquisitionContext.showErrorMessage(message);
 
@@ -76,7 +66,7 @@ describe('CliAcquisitionContext', () => {
 
     it('should show cli preparing message', () => {
         const version = 'testVersion';
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
+        const cliAcquisitionContext = new CliAcquisitionContext(context);
 
         cliAcquisitionContext.showCliPreparingMessage(version);
 
@@ -86,7 +76,7 @@ describe('CliAcquisitionContext', () => {
     });
 
     it('should show cli ready message', () => {
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
+        const cliAcquisitionContext = new CliAcquisitionContext(context);
 
         cliAcquisitionContext.showCliReadyMessage();
 
@@ -97,7 +87,7 @@ describe('CliAcquisitionContext', () => {
 
     it('should show cli install failed error', () => {
         const err = 'testError';
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
+        const cliAcquisitionContext = new CliAcquisitionContext(context);
 
         cliAcquisitionContext.showCliInstallFailedError(err);
 
@@ -108,7 +98,7 @@ describe('CliAcquisitionContext', () => {
 
     it('should show generator installing message', () => {
         const version = 'testVersion';
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
+        const cliAcquisitionContext = new CliAcquisitionContext(context);
 
         cliAcquisitionContext.showGeneratorInstallingMessage(version);
 
@@ -118,7 +108,7 @@ describe('CliAcquisitionContext', () => {
     });
 
     it('should return loc dotnet not installed or insufficient', () => {
-        const cliAcquisitionContext = new CliAcquisitionContext(context, telemetry);
+        const cliAcquisitionContext = new CliAcquisitionContext(context);
 
         expect(cliAcquisitionContext.locDotnetNotInstalledOrInsufficient()).eq("dotnet sdk 6.0 or greater must be installed");
     });

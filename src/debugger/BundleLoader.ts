@@ -5,7 +5,6 @@
 
 import path from "path";
 import { TextDocument, Uri, workspace, WorkspaceFolder } from "vscode";
-import { ITelemetry } from "../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ErrorReporter } from "../common/ErrorReporter";
 import { SourceMapValidator } from "./SourceMapValidator";
 
@@ -32,7 +31,6 @@ export class BundleLoader {
     constructor(
         relativeFilePath: string,
         private readonly workspaceFolder: WorkspaceFolder,
-        private readonly logger: ITelemetry,
         private readonly openTextDocument = workspace.openTextDocument
     ) {
         this.filePath = this.getAbsoluteFilePath(relativeFilePath);
@@ -70,7 +68,6 @@ export class BundleLoader {
             return fileContent;
         } catch (error) {
             void ErrorReporter.report(
-                this.logger,
                 "RequestInterceptor.loadFileContents.error",
                 error,
                 "Could not load file contents"
@@ -94,7 +91,6 @@ export class BundleLoader {
         }
 
         void ErrorReporter.report(
-            this.logger,
             "RequestInterceptor.warnIfNoSourceMap.error",
             undefined,
             `Could not find inlined source map in '${this.fileName}'. Make sure you enable source maps in webpack with 'devtool: "inline-source-map"'. For local debugging, inlined source maps are required.`

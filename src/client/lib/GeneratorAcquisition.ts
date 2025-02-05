@@ -105,7 +105,6 @@ export class GeneratorAcquisition implements IDisposable {
 
             const child = this.npm(['install']);
             if (child.error) {
-                this._context.telemetry.sendTelemetryErrorEvent('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion }, {}, [String(child.error)]);
                 oneDSLoggerWrapper.getLogger().traceError(
                     'PowerPagesGeneratorInstallComplete',
                     String(child.error),
@@ -119,7 +118,6 @@ export class GeneratorAcquisition implements IDisposable {
                     comment: ["{0} represents the error message returned from the exception"]
                 }));
             } else {
-                this._context.telemetry.sendTelemetryEvent('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion });
                 oneDSLoggerWrapper.getLogger().traceInfo('PowerPagesGeneratorInstallComplete', { cliVersion: this._generatorVersion });
                 this._context.showInformationMessage(vscode.l10n.t('The Power Pages generator is ready for use in your VS Code extension!'));
             }

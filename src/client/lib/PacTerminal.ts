@@ -7,7 +7,6 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as os from 'os'
 import { PacInterop, PacWrapper } from '../pac/PacWrapper';
-import { ITelemetry } from '../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { RegisterPanels } from './PacActivityBarUI';
 import { PacWrapperContext } from '../pac/PacWrapperContext';
 import { RegisterUriHandler } from '../uriHandler';
@@ -21,9 +20,9 @@ export class PacTerminal implements vscode.Disposable {
         this._cmdDisposables.forEach(cmd => cmd.dispose());
     }
 
-    public constructor(context: vscode.ExtensionContext, telemetry: ITelemetry, cliPath: string) {
+    public constructor(context: vscode.ExtensionContext, cliPath: string) {
         this._context = context;
-        const pacContext = new PacWrapperContext(context, telemetry);
+        const pacContext = new PacWrapperContext(context);
         const interop = new PacInterop(pacContext, cliPath);
         this._pacWrapper = new PacWrapper(pacContext, interop);
 
@@ -65,7 +64,7 @@ export class PacTerminal implements vscode.Disposable {
             }
         }));
 
-        this._cmdDisposables.push(...RegisterPanels(this._pacWrapper, context, telemetry));
+        this._cmdDisposables.push(...RegisterPanels(this._pacWrapper, context));
         this._cmdDisposables.push(RegisterUriHandler(this._pacWrapper));
     }
 

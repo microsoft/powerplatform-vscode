@@ -3,7 +3,6 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import { BundleLoader } from "../../BundleLoader";
 import { expectThrowsAsync, getWorkspaceFolder } from "../helpers";
 import { TextDocument } from "vscode";
@@ -39,7 +38,6 @@ describe("BundleLoader", () => {
         const instance = new BundleLoader(
             mockFilePath,
             getWorkspaceFolder(),
-            NoopTelemetryInstance,
             getOpenTextDocumentMock(true)
         );
 
@@ -52,7 +50,6 @@ describe("BundleLoader", () => {
         const instance = new BundleLoader(
             mockFilePath,
             getWorkspaceFolder(),
-            NoopTelemetryInstance,
             getOpenTextDocumentMock(false)
         );
         await instance.loadFileContents();
@@ -68,7 +65,6 @@ describe("BundleLoader", () => {
         const instance = new BundleLoader(
             mockFilePath,
             getWorkspaceFolder(),
-            NoopTelemetryInstance,
             getOpenTextDocumentMock(false, true)
         );
 

@@ -9,7 +9,6 @@ import { sendApiRequest } from "./IntelligenceApiService";
 import { dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication } from "../services/AuthenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
-import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_IN_POWERPAGES, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, GITHUB_COPILOT_CHAT_EXT, PowerPagesParticipantDocLink, PowerPagesParticipantPrompt, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, WebViewMessage, sendIconSvg } from "./constants";
 import { IOrgInfo } from './model';
 import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
@@ -17,7 +16,6 @@ import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig, CopilotPanelTryGitHubCopilotClicked, VSCodeExtensionGitHubChatPanelOpened, VSCodeExtensionGitHubChatNotFound } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
-import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../../client/OrgChangeNotifier";
@@ -46,7 +44,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private _extensionContext: vscode.ExtensionContext;
     private readonly _disposables: vscode.Disposable[] = [];
     private loginButtonRendered = false;
-    private telemetry: ITelemetry;
     private aibEndpoint: string | null = null;
     private geoName: string | null = null;
     private crossGeoDataMovementEnabledPPACFlag = false;
@@ -54,10 +51,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     constructor(
         private readonly _extensionUri: vscode.Uri,
         _context: vscode.ExtensionContext,
-        telemetry: ITelemetry | TelemetryReporter,
         pacWrapper?: PacWrapper,
         orgInfo?: IOrgInfo) {
-        this.telemetry = telemetry;
         this._extensionContext = _context;
         sessionID = uuidv4();
         this._pacWrapper = pacWrapper;
@@ -276,11 +271,11 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     if (feedbackValue === THUMBS_UP) {
 
                         sendTelemetryEvent({ eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID, subScenario: String(messageScenario) });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_UP, this.telemetry, this.geoName as string, messageScenario, tenantId)
+                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_UP, this.geoName as string, messageScenario, tenantId)
                     } else if (feedbackValue === THUMBS_DOWN) {
 
                         sendTelemetryEvent({ eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID, subScenario: String(messageScenario) });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_DOWN, this.telemetry, this.geoName as string, messageScenario, tenantId)
+                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_DOWN, this.geoName as string, messageScenario, tenantId)
                     }
                     break;
                 }
@@ -321,7 +316,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (pacOutput && pacOutput.Status === SUCCESS) {
             this.handleOrgChangeSuccess.call(this, pacOutput.Results);
 
-            intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) => {
+            intelligenceAPIAuthentication(sessionID, orgID).then(({ accessToken, user, userId }) => {
                 this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId);
             });
 
@@ -340,7 +335,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             }
             const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
             pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS
-                ? intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) =>
+                ? intelligenceAPIAuthentication(sessionID, orgID).then(({ accessToken, user, userId }) =>
                     this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId)
                 )
                 : vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
@@ -362,7 +357,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     }
 
     private async authenticateAndSendAPIRequest(data: UserPrompt[], orgID: string) {
-        return intelligenceAPIAuthentication(this.telemetry, sessionID, orgID)
+        return intelligenceAPIAuthentication(sessionID, orgID)
             .then(async ({ accessToken, user, userId }) => {
                 intelligenceApiToken = accessToken;
                 userName = getUserName(user);
@@ -376,15 +371,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 let componentInfo: string[] = [];
 
                 if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
-                    metadataInfo = await getEntityName(this.telemetry, sessionID, activeFileParams.dataverseEntity);
+                    metadataInfo = await getEntityName(sessionID, activeFileParams.dataverseEntity);
 
                     const dataverseToken = (await dataverseAuthentication(activeOrgUrl, true)).accessToken;
 
                     if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
-                        const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, this.telemetry, sessionID);
+                        const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, sessionID);
                         componentInfo = formColumns;
                     } else {
-                        const entityColumns = await getEntityColumns(metadataInfo.entityName, activeOrgUrl, dataverseToken, this.telemetry, sessionID);
+                        const entityColumns = await getEntityColumns(metadataInfo.entityName, activeOrgUrl, dataverseToken, sessionID);
                         componentInfo = entityColumns;
                     }
 
@@ -434,7 +429,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this.crossGeoDataMovementEnabledPPACFlag = intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag;
 
 
-        const copilotAvailabilityStatus = checkCopilotAvailability(this.aibEndpoint, orgID, this.telemetry, sessionID, tenantId);
+        const copilotAvailabilityStatus = checkCopilotAvailability(this.aibEndpoint, orgID, sessionID, tenantId);
 
         if (!copilotAvailabilityStatus) {
             this.sendMessageToWebview({ type: 'Unavailable' });

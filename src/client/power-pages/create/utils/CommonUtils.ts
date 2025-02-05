@@ -7,7 +7,6 @@ import { exec } from "child_process";
 import { existsSync, stat } from "fs";
 import path from "path";
 import * as vscode from "vscode";
-import { ITelemetry } from "../../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { FileCreateEvent, sendTelemetryEvent } from "../../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 import {
     ERROR_MESSAGE,
@@ -163,8 +162,7 @@ export async function createRecord(
     entityType: string,
     execCommand: string,
     portalDirectory: string,
-    watcher: vscode.FileSystemWatcher,
-    telemetry: ITelemetry
+    watcher: vscode.FileSystemWatcher
 ) {
     const startTime = performance.now();
     await vscode.window.withProgress(
@@ -203,10 +201,10 @@ export async function createRecord(
                             args: [error.message],
                             comment: ["{0} will be replaced by the error message."]
                         }));
-                        sendTelemetryEvent(telemetry, { methodName: createRecord.name, eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime), exception: error as Error })
+                        sendTelemetryEvent({ methodName: createRecord.name, eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime), exception: error as Error })
                         reject(error);
                     } else {
-                        sendTelemetryEvent(telemetry, { methodName: createRecord.name, eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime) })
+                        sendTelemetryEvent({ methodName: createRecord.name, eventName: FileCreateEvent, fileEntityType: entityType, durationInMills: (performance.now() - startTime) })
                         progress.report({ increment: 100 });
                     }
                 });

@@ -8,8 +8,6 @@ import * as path from 'path';
 import { CliAcquisition } from '../../lib/CliAcquisition';
 import { ICliAcquisitionContext } from '../../lib/CliAcquisitionContext';
 import { expect } from 'chai';
-import { ITelemetry } from '../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
-import { NoopTelemetryInstance } from '../../telemetry/NoopTelemetry';
 
 const repoRootDir = path.resolve(__dirname, '../../../..');
 const outdir = path.resolve(repoRootDir, 'out');
@@ -30,7 +28,6 @@ class MockContext implements ICliAcquisitionContext {
 
     public get extensionPath(): string { return mockRootDir; }
     public get globalStorageLocalPath(): string { return this._testBaseDir; }
-    public get telemetry(): ITelemetry { return NoopTelemetryInstance; }
 
     public get infoMessages(): string[] { return this._infoMessages; }
     public get errorMessages(): string[] { return this._errorMessages; }
