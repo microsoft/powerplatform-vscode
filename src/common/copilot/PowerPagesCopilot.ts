@@ -66,7 +66,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
                 if (userName && orgID) {
                     sendTelemetryEvent({ eventName: CopilotClearChatEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
-                    sendTelemetryEvent({ eventName: CopilotClearChatEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                     this.sendMessageToWebview({ type: "clearConversation" });
                     sessionID = uuidv4();
                 }

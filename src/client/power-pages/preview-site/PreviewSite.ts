@@ -119,13 +119,7 @@ export class PreviewSite {
 
         await showProgressWithNotification(
             Messages.OPENING_SITE_PREVIEW,
-            async () => {
-                const settings = vscode.workspace.getConfiguration('vscode-edge-devtools');
-                const currentDefaultUrl = await settings.get('defaultUrl');
-                await settings.update('defaultUrl', webSitePreviewURL);
-                await vscode.commands.executeCommand('vscode-edge-devtools.launch');
-                await settings.update('defaultUrl', currentDefaultUrl);
-            }
+            async () => await vscode.commands.executeCommand('vscode-edge-devtools.launch', { launchUrl: webSitePreviewURL })
         );
 
         await vscode.window.showInformationMessage(Messages.PREVIEW_SHOWN_FOR_PUBLISHED_CHANGES);
@@ -216,8 +210,9 @@ export class PreviewSite {
                 });
 
                 if (!clearCacheResponse.ok) {
-                    telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.UNABLE_TO_CLEAR_CACHE, response: await clearCacheResponse.json(), statusCode: clearCacheResponse.status.toString() });
-                    oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.UNABLE_TO_CLEAR_CACHE, response: await clearCacheResponse.json(), statusCode: clearCacheResponse.status.toString() });
+                    const response = await clearCacheResponse.text();
+                    telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.UNABLE_TO_CLEAR_CACHE, response: response, statusCode: clearCacheResponse.status.toString() });
+                    oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.UNABLE_TO_CLEAR_CACHE, response: response, statusCode: clearCacheResponse.status.toString() });
                 }
             }
         );
