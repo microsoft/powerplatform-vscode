@@ -23,12 +23,16 @@ describe('ActionsHub', () => {
     beforeEach(() => {
         context = {} as vscode.ExtensionContext;
         pacTerminal = {} as PacTerminal;
+<<<<<<< HEAD
         loggerStub = sinon.stub(oneDSLoggerWrapper, 'getLogger').returns({
             traceInfo: sinon.stub(),
             traceWarning: sinon.stub(),
             traceError: sinon.stub(),
             featureUsage: sinon.stub()
         });
+=======
+        loggerStub = sinon.stub(oneDSLoggerWrapper.getLogger(), 'traceInfo');
+>>>>>>> fe78e41e3d27cfd7c71d7206ed90380e9d62c40d
         ecsFeaturesClientStub = sinon.stub(ECSFeaturesClient, 'getConfig');
         executeCommandStub = sinon.stub(vscode.commands, 'executeCommand');
     });

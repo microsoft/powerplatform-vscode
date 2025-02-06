@@ -39,10 +39,17 @@ describe("ActionsHubTreeDataProvider", () => {
             featureUsage: sinon.stub()
         });
         authInfoStub = sinon.stub(pacAuthManager, "getAuthInfo");
+<<<<<<< HEAD
         pacTerminal = sinon.createStubInstance(PacTerminal);
         pacWrapperStub = sinon.createStubInstance(PacWrapper);
         pacWrapperStub.activeAuth.resolves({ Status: SUCCESS, Results: [], Errors: [], Information: [] });
         (pacTerminal.getWrapper as sinon.SinonStub).returns(pacWrapperStub);
+=======
+        pacTerminal = {} as PacTerminal;
+        pacWrapperStub = sinon.createStubInstance(PacWrapper);
+        pacWrapperStub.activeAuth.resolves({ Status: SUCCESS, Results: [], Errors: [], Information: [] });
+        sinon.stub(pacTerminal, "getWrapper").returns(pacWrapperStub);
+>>>>>>> fe78e41e3d27cfd7c71d7206ed90380e9d62c40d
     });
 
     afterEach(() => {
