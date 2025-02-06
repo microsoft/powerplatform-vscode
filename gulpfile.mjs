@@ -231,6 +231,10 @@ function compileIntegrationTests() {
     return gulp.src(["src/**/*.ts"]).pipe(tsProject()).pipe(gulp.dest("out"));
 }
 
+function copyTestNugetPackages() {
+    return gulp.src(["src/**/*.nupkg"]).pipe(gulp.dest("out"));
+}
+
 /**
  * Tests the debugger integration tests after transpiling the source files to /out
  */
@@ -256,7 +260,7 @@ const testWebInt = gulp.series(testWebIntegration);
 /**
  * Tests the power-pages integration tests after transpiling the source files to /out
  */
-const testDesktopIntegration = gulp.series(compileIntegrationTests, async () => {
+const testDesktopIntegration = gulp.series(copyTestNugetPackages, compileIntegrationTests, async () => {
     const testRunner = require("./out/client/test/runTest");
     await testRunner.main();
 });
