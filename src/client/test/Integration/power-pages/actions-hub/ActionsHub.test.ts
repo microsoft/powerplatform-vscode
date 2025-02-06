@@ -70,7 +70,7 @@ describe('ActionsHub', () => {
 
             await ActionsHub.initialize(context, pacTerminal);
 
-            expect(loggerStub.calledOnceWithExactly("EnableActionsHub", { isEnabled: 'true' })).to.be.true;
+            expect(loggerStub.getCall(0).args[0].traceInfo.calledOnceWithExactly("EnableActionsHub", { isEnabled: 'true' })).to.be.true;
             expect(executeCommandStub.calledOnceWithExactly("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", true)).to.be.true;
             expect(actionsHubTreeDataProviderStub.calledOnceWithExactly(context, pacTerminal)).to.be.true;
         });
@@ -80,7 +80,7 @@ describe('ActionsHub', () => {
 
             await ActionsHub.initialize(context, pacTerminal);
 
-            expect(loggerStub.calledOnceWithExactly("EnableActionsHub", { isEnabled: 'false' })).to.be.true;
+            expect(loggerStub.getCall(0).args[0].traceInfo.calledOnceWithExactly("EnableActionsHub", { isEnabled: 'false' })).to.be.true;
             expect(executeCommandStub.calledOnceWithExactly("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", false)).to.be.true;
         });
     });
