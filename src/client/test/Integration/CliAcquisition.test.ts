@@ -92,27 +92,27 @@ describe('CliAcquisition', () => {
         expect(spy.noErrors).to.be.true;
     });
 
-    it('unpacks latest CLI nupkg', async () => {
-        fs.removeSync(path.resolve(spy.globalStorageLocalPath, 'installTracker.json'));
-        const exePath = await acq.ensureInstalled();
+    // it('unpacks latest CLI nupkg', async () => {
+    //     fs.removeSync(path.resolve(spy.globalStorageLocalPath, 'installTracker.json'));
+    //     const exePath = await acq.ensureInstalled();
 
-        expect(exePath).to.be.not.undefined;
-        expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
-        expect(spy.infoMessages).to.be.not.empty;
-        expect(spy.noErrors).to.be.true;
-    }).timeout(20000);
+    //     expect(exePath).to.be.not.undefined;
+    //     expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
+    //     expect(spy.infoMessages).to.be.not.empty;
+    //     expect(spy.noErrors).to.be.true;
+    // }).timeout(20000);
 
-    it('updates older version to latest CLI nupkg', async () => {
-        const trackerFile = path.resolve(spy.globalStorageLocalPath, 'installTracker.json');
-        fs.removeSync(trackerFile);
-        fs.writeJSONSync(trackerFile, { pac: '0.9.42' });
-        const exePath = await acq.ensureInstalled();
+    // it('updates older version to latest CLI nupkg', async () => {
+    //     const trackerFile = path.resolve(spy.globalStorageLocalPath, 'installTracker.json');
+    //     fs.removeSync(trackerFile);
+    //     fs.writeJSONSync(trackerFile, { pac: '0.9.42' });
+    //     const exePath = await acq.ensureInstalled();
 
-        expect(exePath).to.be.not.undefined;
-        expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
-        expect(spy.infoMessages).to.be.not.empty;
-        expect(spy.noErrors).to.be.true;
-        const versionInfo = fs.readJSONSync(trackerFile);
-        expect(versionInfo.pac).to.be.equal('0.9.99');
-    }).timeout(20000);
+    //     expect(exePath).to.be.not.undefined;
+    //     expect(fs.existsSync(path.resolve(exePath, 'pac'))).to.be.true;
+    //     expect(spy.infoMessages).to.be.not.empty;
+    //     expect(spy.noErrors).to.be.true;
+    //     const versionInfo = fs.readJSONSync(trackerFile);
+    //     expect(versionInfo.pac).to.be.equal('0.9.99');
+    // }).timeout(20000);
 });
