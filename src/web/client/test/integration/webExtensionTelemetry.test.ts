@@ -211,8 +211,10 @@ describe("webExtensionTelemetry", () => {
         const sendTelemetryExceptionCalls =
             traceErrorStub.getCalls()[0];
 
-        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(error);
-        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(eventName);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(errorMessage);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[3]).deep.eq(properties);
     });
 
     it("sendErrorTelemetry_whenErrorMessageNotPassed_shouldCallSendTelemetryExceptionWithNewError", () => {
@@ -233,8 +235,10 @@ describe("webExtensionTelemetry", () => {
         const sendTelemetryExceptionCalls =
             traceErrorStub.getCalls()[0];
 
-        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(new Error());
-        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(eventName);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(undefined);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(new Error());
+        expect(sendTelemetryExceptionCalls.args[3]).deep.eq(properties);
     });
 
     it("sendInfoTelemetry_whenPropertiesIsPassed_shouldCallSendTelemetryEvent", () => {
@@ -311,9 +315,10 @@ describe("webExtensionTelemetry", () => {
         const sendTelemetryExceptionCalls =
             traceErrorStub.getCalls()[0];
 
-        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(error);
-        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
-        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(measurements);
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(eventName);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(errorMessage);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[4]).deep.eq(measurements);
     });
 
     it("sendAPITelemetry_whenErrorMessageNotPassed_shouldCallSendTelemetryException", () => {
@@ -357,7 +362,7 @@ describe("webExtensionTelemetry", () => {
         };
         //Assert
         assert.calledOnceWithExactly(
-            traceErrorStub,
+            traceInfoStub,
             eventName,
             properties,
             measurements
@@ -405,7 +410,7 @@ describe("webExtensionTelemetry", () => {
         };
         //Assert
         assert.calledOnceWithExactly(
-            traceErrorStub,
+            traceInfoStub,
             eventName,
             properties,
             measurements
@@ -452,7 +457,7 @@ describe("webExtensionTelemetry", () => {
         };
         //Assert
         assert.calledOnceWithExactly(
-            traceErrorStub,
+            traceInfoStub,
             eventName,
             properties,
             measurements
@@ -493,7 +498,7 @@ describe("webExtensionTelemetry", () => {
 
         //Assert
         assert.calledOnceWithExactly(
-            traceErrorStub,
+            traceInfoStub,
             webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
             properties,
             measurements
@@ -542,9 +547,10 @@ describe("webExtensionTelemetry", () => {
         const sendTelemetryExceptionCalls =
             traceErrorStub.getCalls()[0];
 
-        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(error);
-        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
-        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(measurements);
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(errorMessage);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[4]).deep.eq(measurements);
     });
 
     it("sendPerfTelemetry_whenSendProperValues_shouldCallWithAllValidData", () => {
@@ -560,7 +566,7 @@ describe("webExtensionTelemetry", () => {
             durationInMillis: 3,
         };
         assert.calledOnceWithExactly(
-            traceErrorStub,
+            traceInfoStub,
             webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
             undefined,
             measurements
