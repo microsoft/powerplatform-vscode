@@ -15,6 +15,8 @@ import { OtherSitesGroupTreeItem } from "../../../../power-pages/actions-hub/tre
 import { ActionsHubTreeItem } from "../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { pacAuthManager } from "../../../../pac/PacAuthManager";
 import { PacTerminal } from "../../../../lib/PacTerminal";
+import { PacWrapper } from "../../../../pac/PacWrapper";
+import { SUCCESS } from "../../../../../common/constants";
 
 describe("ActionsHubTreeDataProvider", () => {
     let context: vscode.ExtensionContext;
@@ -22,6 +24,7 @@ describe("ActionsHubTreeDataProvider", () => {
     let traceErrorStub: sinon.SinonStub;
     let authInfoStub: sinon.SinonStub;
     let pacTerminal: PacTerminal;
+    let pacWrapperStub: sinon.SinonStubbedInstance<PacWrapper>;
 
     beforeEach(() => {
         context = {
@@ -37,6 +40,9 @@ describe("ActionsHubTreeDataProvider", () => {
         });
         authInfoStub = sinon.stub(pacAuthManager, "getAuthInfo");
         pacTerminal = {} as PacTerminal;
+        pacWrapperStub = sinon.createStubInstance(PacWrapper);
+        pacWrapperStub.activeAuth.resolves({ Status: SUCCESS, Results: [], Errors: [], Information: [] });
+        sinon.stub(pacTerminal, "getWrapper").returns(pacWrapperStub);
     });
 
     afterEach(() => {
@@ -132,6 +138,29 @@ describe("ActionsHubTreeDataProvider", () => {
             actionsHubTreeDataProvider.dispose();
             expect(disposable1.dispose.calledOnce).to.be.true;
             expect(disposable2.dispose.calledOnce).to.be.true;
+        });
+    });
+
+    describe('registerPanel', () => {
+        it("should register refresh command and handle errors", async () => {
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const refreshCommandStub = sinon.stub(vscode.commands, "registerCommand");
+            const refreshStub = sinon.stub(actionsHubTreeDataProvider, "refresh");
+
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            const refreshCommandCallback = refreshCommandStub.args[0][1];
+            await refreshCommandCallback();
+
+            expect(refreshCommandStub.calledOnceWith("powerpages.actionsHub.refresh", sinon.match.func)).to.be.true;
+            expect(refreshStub.calledOnce).to.be.true;
+            expect(traceErrorStub.called).to.be.false;
+
+            // Simulate error
+            pacWrapperStub.activeAuth.returns(Promise.reject(new Error("Test Error")));
+            await refreshCommandCallback();
+
+            expect(traceErrorStub.calledOnceWith(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED)).to.be.true;
         });
     });
 });
