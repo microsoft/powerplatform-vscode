@@ -57,6 +57,7 @@ jobs:
 
     - name: Run Desktop integration tests
       uses: coactions/setup-xvfb@v1
+      if: runner.os == 'windows-latest'
       with:
         run: |
          npm run test-desktop-int
