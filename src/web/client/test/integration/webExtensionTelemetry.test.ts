@@ -286,8 +286,7 @@ describe("webExtensionTelemetry", () => {
             entityFileExtensionType: entityFileExtensionType,
             methodName: "sendAPITelemetry_whenErrorMessageIsPassed_shouldCallSendTelemetryException",
             isSuccessful: "true",
-            status: "200",
-            eventName: eventName
+            status: "200"
         };
 
         //Action
@@ -318,6 +317,7 @@ describe("webExtensionTelemetry", () => {
         expect(sendTelemetryExceptionCalls.args[0]).deep.eq(eventName);
         expect(sendTelemetryExceptionCalls.args[1]).deep.eq(errorMessage);
         expect(sendTelemetryExceptionCalls.args[2]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[3]).deep.eq(properties);
         expect(sendTelemetryExceptionCalls.args[4]).deep.eq(measurements);
     });
 
@@ -518,7 +518,6 @@ describe("webExtensionTelemetry", () => {
             entity: entity,
             httpMethod: httpMethod,
             entityFileExtensionType: entityFileExtensionType,
-            eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
             isSuccessful: "false",
             status: "200",
             methodName: "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException"
@@ -550,6 +549,7 @@ describe("webExtensionTelemetry", () => {
         expect(sendTelemetryExceptionCalls.args[0]).deep.eq(webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
         expect(sendTelemetryExceptionCalls.args[1]).deep.eq(errorMessage);
         expect(sendTelemetryExceptionCalls.args[2]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[3]).deep.eq(properties);
         expect(sendTelemetryExceptionCalls.args[4]).deep.eq(measurements);
     });
 
