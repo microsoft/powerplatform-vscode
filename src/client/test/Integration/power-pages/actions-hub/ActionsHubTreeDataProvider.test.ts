@@ -52,11 +52,6 @@ describe("ActionsHubTreeDataProvider", () => {
     });
 
     describe('initialize', () => {
-        it("should initialize and log initialization event", () => {
-            ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_INITIALIZED)).to.be.true;
-        });
-
         it("should register refresh command", () => {
             // Initialize
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);

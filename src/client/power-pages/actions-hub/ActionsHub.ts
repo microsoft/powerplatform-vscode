@@ -9,7 +9,11 @@ import { EnableActionsHub } from "../../../common/ecs-features/ecsFeatureGates";
 import { ActionsHubTreeDataProvider } from "./ActionsHubTreeDataProvider";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { PacTerminal } from "../../lib/PacTerminal";
+import { Constants } from "./Constants";
+
 export class ActionsHub {
+    private static _isInitialized = false;
+
     static isEnabled(): boolean {
         const enableActionsHub = ECSFeaturesClient.getConfig(EnableActionsHub).enableActionsHub
 
@@ -21,18 +25,29 @@ export class ActionsHub {
     }
 
     static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
-        const isActionsHubEnabled = ActionsHub.isEnabled();
-
-        oneDSLoggerWrapper.getLogger().traceInfo("EnableActionsHub", {
-            isEnabled: isActionsHubEnabled.toString()
-        });
-
-        vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", isActionsHubEnabled);
-
-        if (!isActionsHubEnabled) {
+        if (ActionsHub._isInitialized) {
             return;
         }
 
-        ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+        try {
+            const isActionsHubEnabled = ActionsHub.isEnabled();
+
+            oneDSLoggerWrapper.getLogger().traceInfo("EnableActionsHub", {
+                isEnabled: isActionsHubEnabled.toString()
+            });
+
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", isActionsHubEnabled);
+
+            if (!isActionsHubEnabled) {
+                return;
+            }
+
+            ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            ActionsHub._isInitialized = true;
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED);
+        } catch (exception) {
+            const exceptionError = exception as Error;
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
+        }
     }
 }
