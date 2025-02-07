@@ -56,6 +56,15 @@ describe("ActionsHubTreeDataProvider", () => {
             ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_INITIALIZED)).to.be.true;
         });
+
+        it("should register refresh command", () => {
+            // Initialize
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            // Assert that the command was registered
+            expect(registerCommandStub.calledWith("powerpages.actionsHub.refresh")).to.be.true;
+        });
     });
 
     describe('getTreeItem', () => {
@@ -127,15 +136,6 @@ describe("ActionsHubTreeDataProvider", () => {
             const result = await provider.getChildren(element);
 
             expect(result).to.be.an("array").that.is.empty;
-        });
-
-        it("should register refresh command", () => {
-            // Initialize
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
-
-            // Assert that the command was registered
-            expect(registerCommandStub.calledWith("powerpages.actionsHub.refresh")).to.be.true;
         });
     });
 
