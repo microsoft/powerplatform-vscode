@@ -16,6 +16,7 @@ import { PacTerminal } from '../../../../lib/PacTerminal';
 describe('ActionsHub', () => {
     let context: vscode.ExtensionContext;
     let pacTerminal: PacTerminal;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let loggerStub: sinon.SinonStubbedInstance<any>;
     let ecsFeaturesClientStub: sinon.SinonStub;
     let executeCommandStub: sinon.SinonStub;
