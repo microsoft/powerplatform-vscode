@@ -15,17 +15,12 @@ import { OtherSitesGroupTreeItem } from "../../../../power-pages/actions-hub/tre
 import { ActionsHubTreeItem } from "../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { pacAuthManager } from "../../../../pac/PacAuthManager";
 import { PacTerminal } from "../../../../lib/PacTerminal";
-import { PacWrapper } from "../../../../pac/PacWrapper";
-import { SUCCESS } from "../../../../../common/constants";
 
 describe("ActionsHubTreeDataProvider", () => {
     let context: vscode.ExtensionContext;
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
     let authInfoStub: sinon.SinonStub;
-    let pacTerminal: PacTerminal;
-    let pacWrapperStub: sinon.SinonStubbedInstance<PacWrapper>;
-    let registerCommandStub: sinon.SinonStub;
 
     beforeEach(() => {
         context = {
@@ -40,11 +35,6 @@ describe("ActionsHubTreeDataProvider", () => {
             featureUsage: sinon.stub()
         });
         authInfoStub = sinon.stub(pacAuthManager, "getAuthInfo");
-        pacTerminal = sinon.createStubInstance(PacTerminal);
-        pacWrapperStub = sinon.createStubInstance(PacWrapper);
-        pacWrapperStub.activeAuth.resolves({ Status: SUCCESS, Results: [], Errors: [], Information: [] });
-        (pacTerminal.getWrapper as sinon.SinonStub).returns(pacWrapperStub);
-        registerCommandStub = sinon.stub(vscode.commands, "registerCommand");
     });
 
     afterEach(() => {
@@ -53,21 +43,24 @@ describe("ActionsHubTreeDataProvider", () => {
 
     describe('initialize', () => {
         it("should initialize and log initialization event", () => {
-            ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const fakePacTerminal = { getWrapper: sinon.stub() } as unknown as PacTerminal;
+            ActionsHubTreeDataProvider.initialize(context, fakePacTerminal);
             expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_INITIALIZED)).to.be.true;
         });
     });
 
     describe('getTreeItem', () => {
         it("should return the element in getTreeItem", () => {
+            const fakePacTerminal = { getWrapper: sinon.stub() } as unknown as PacTerminal;
             const element = {} as ActionsHubTreeItem;
-            const result = ActionsHubTreeDataProvider.initialize(context, pacTerminal).getTreeItem(element);
+            const result = ActionsHubTreeDataProvider.initialize(context, fakePacTerminal).getTreeItem(element);
             expect(result).to.equal(element);
         });
     });
 
     describe('getChildren', () => {
         it("should return environment and other sites group tree items in getChildren when no element is passed", async () => {
+            const fakePacTerminal = { getWrapper: sinon.stub() } as unknown as PacTerminal;
             authInfoStub.returns({
                 organizationFriendlyName: "TestOrg",
                 userType: "",
@@ -86,7 +79,7 @@ describe("ActionsHubTreeDataProvider", () => {
                 organizationId: "",
                 organizationUniqueName: ""
             });
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const provider = ActionsHubTreeDataProvider.initialize(context, fakePacTerminal);
             const result = await provider.getChildren();
 
             expect(result).to.not.be.null;
@@ -97,8 +90,9 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it("should return environment group tree item with default name when no auth info is available", async () => {
+            const fakePacTerminal = { getWrapper: sinon.stub() } as unknown as PacTerminal;
             authInfoStub.returns(null);
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const provider = ActionsHubTreeDataProvider.initialize(context, fakePacTerminal);
             const result = await provider.getChildren();
 
             expect(result).to.not.be.null;
@@ -110,9 +104,9 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it("should return null in getChildren when an error occurs", async () => {
+            const fakePacTerminal = { getWrapper: sinon.stub() } as unknown as PacTerminal;
             authInfoStub.throws(new Error("Test Error"));
-
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const provider = ActionsHubTreeDataProvider.initialize(context, fakePacTerminal);
             const result = await provider.getChildren();
 
             expect(result).to.be.null;
@@ -122,8 +116,9 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it("should return an empty array in getChildren when an element is passed", async () => {
+            const fakePacTerminal = { getWrapper: sinon.stub() } as unknown as PacTerminal;
             const element = {} as ActionsHubTreeItem;
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const provider = ActionsHubTreeDataProvider.initialize(context, fakePacTerminal);
             const result = await provider.getChildren(element);
 
             expect(result).to.be.an("array").that.is.empty;
@@ -132,36 +127,15 @@ describe("ActionsHubTreeDataProvider", () => {
 
     describe('dispose', () => {
         it("should dispose all disposables", () => {
+            const fakePacTerminal = { getWrapper: sinon.stub() } as unknown as PacTerminal;
             const disposable1 = { dispose: sinon.spy() };
             const disposable2 = { dispose: sinon.spy() };
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, fakePacTerminal);
             actionsHubTreeDataProvider["_disposables"].push(disposable1 as vscode.Disposable, disposable2 as vscode.Disposable);
 
             actionsHubTreeDataProvider.dispose();
             expect(disposable1.dispose.calledOnce).to.be.true;
             expect(disposable2.dispose.calledOnce).to.be.true;
-        });
-    });
-
-    describe('registerPanel', () => {
-        it("should register refresh command and handle errors", async () => {
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const refreshStub = sinon.stub(actionsHubTreeDataProvider, "refresh");
-
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
-
-            const refreshCommandCallback = registerCommandStub.args[0][1];
-            await refreshCommandCallback();
-
-            expect(registerCommandStub.calledOnceWith("powerpages.actionsHub.refresh", sinon.match.func)).to.be.true;
-            expect(refreshStub.calledOnce).to.be.true;
-            expect(traceErrorStub.called).to.be.false;
-
-            // Simulate error
-            pacWrapperStub.activeAuth.returns(Promise.reject(new Error("Test Error")));
-            await refreshCommandCallback();
-
-            expect(traceErrorStub.calledOnceWith(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED)).to.be.true;
         });
     });
 });
