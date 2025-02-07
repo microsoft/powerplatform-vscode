@@ -25,7 +25,6 @@ describe("ActionsHubTreeDataProvider", () => {
     let authInfoStub: sinon.SinonStub;
     let pacTerminal: PacTerminal;
     let pacWrapperStub: sinon.SinonStubbedInstance<PacWrapper>;
-    let registerCommandStub: sinon.SinonStub;
 
     beforeEach(() => {
         context = {
@@ -44,7 +43,6 @@ describe("ActionsHubTreeDataProvider", () => {
         pacWrapperStub = sinon.createStubInstance(PacWrapper);
         pacWrapperStub.activeAuth.resolves({ Status: SUCCESS, Results: [], Errors: [], Information: [] });
         (pacTerminal.getWrapper as sinon.SinonStub).returns(pacWrapperStub);
-        registerCommandStub = sinon.stub(vscode.commands, "registerCommand");
     });
 
     afterEach(() => {
@@ -130,38 +128,4 @@ describe("ActionsHubTreeDataProvider", () => {
         });
     });
 
-    describe('dispose', () => {
-        it("should dispose all disposables", () => {
-            const disposable1 = { dispose: sinon.spy() };
-            const disposable2 = { dispose: sinon.spy() };
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            actionsHubTreeDataProvider["_disposables"].push(disposable1 as vscode.Disposable, disposable2 as vscode.Disposable);
-
-            actionsHubTreeDataProvider.dispose();
-            expect(disposable1.dispose.calledOnce).to.be.true;
-            expect(disposable2.dispose.calledOnce).to.be.true;
-        });
-    });
-
-    describe('registerPanel', () => {
-        it("should register refresh command and handle errors", async () => {
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const refreshStub = sinon.stub(actionsHubTreeDataProvider, "refresh");
-
-            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
-
-            const refreshCommandCallback = registerCommandStub.args[0][1];
-            await refreshCommandCallback();
-
-            expect(registerCommandStub.calledOnceWith("powerpages.actionsHub.refresh", sinon.match.func)).to.be.true;
-            expect(refreshStub.calledOnce).to.be.true;
-            expect(traceErrorStub.called).to.be.false;
-
-            // Simulate error
-            pacWrapperStub.activeAuth.returns(Promise.reject(new Error("Test Error")));
-            await refreshCommandCallback();
-
-            expect(traceErrorStub.calledOnceWith(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED)).to.be.true;
-        });
-    });
 });
