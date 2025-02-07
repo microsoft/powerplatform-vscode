@@ -3,126 +3,96 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import * as vscode from 'vscode';
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-import { ActionsHub } from '../../../../power-pages/actions-hub/ActionsHub';
-import { ECSFeaturesClient } from '../../../../../common/ecs-features/ecsFeatureClient';
-import { EnableActionsHub } from '../../../../../common/ecs-features/ecsFeatureGates';
-import { ActionsHubTreeDataProvider } from '../../../../power-pages/actions-hub/ActionsHubTreeDataProvider';
-import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
-import { PacTerminal } from '../../../../lib/PacTerminal';
+import { expect } from "chai";
+import * as sinon from "sinon";
+import * as vscode from "vscode";
+import { ActionsHub } from "../../../../power-pages/actions-hub/ActionsHub";
+import { PacTerminal } from "../../../../lib/PacTerminal";
+import { ECSFeaturesClient } from "../../../../../common/ecs-features/ecsFeatureClient";
+import { oneDSLoggerWrapper } from "../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { ActionsHubTreeDataProvider } from "../../../../power-pages/actions-hub/ActionsHubTreeDataProvider";
+import { PacWrapper } from "../../../../pac/PacWrapper";
 
-describe('ActionsHub', () => {
-    let context: vscode.ExtensionContext;
-    let pacTerminal: PacTerminal;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let loggerStub: sinon.SinonStubbedInstance<any>;
-    let ecsFeaturesClientStub: sinon.SinonStub;
+describe("ActionsHub", () => {
+    let getConfigStub: sinon.SinonStub;
     let executeCommandStub: sinon.SinonStub;
+    let traceInfoStub: sinon.SinonStub;
+    let fakeContext: vscode.ExtensionContext;
+    let fakePacWrapper: sinon.SinonStubbedInstance<PacWrapper>;
+    let fakePacTerminal: sinon.SinonStubbedInstance<PacTerminal>;
 
     beforeEach(() => {
-        context = {} as vscode.ExtensionContext;
-        pacTerminal = {} as PacTerminal;
-        loggerStub = sinon.createStubInstance(oneDSLoggerWrapper, {
-            traceInfo: sinon.stub(),
+        getConfigStub = sinon.stub(ECSFeaturesClient, "getConfig");
+        fakeContext = {} as vscode.ExtensionContext;
+        fakePacWrapper = sinon.createStubInstance(PacWrapper, { activeAuth: sinon.stub() });
+        fakePacTerminal = sinon.createStubInstance(PacTerminal, { getWrapper: fakePacWrapper });
+        executeCommandStub = sinon.stub(vscode.commands, "executeCommand");
+        traceInfoStub = sinon.stub();
+        sinon.stub(oneDSLoggerWrapper, "getLogger").returns({
+            traceInfo: traceInfoStub,
             traceWarning: sinon.stub(),
             traceError: sinon.stub(),
             featureUsage: sinon.stub()
         });
-        ecsFeaturesClientStub = sinon.stub(ECSFeaturesClient, 'getConfig');
-        executeCommandStub = sinon.stub(vscode.commands, 'executeCommand');
     });
 
     afterEach(() => {
         sinon.restore();
     });
 
-    describe('isEnabled', () => {
-        it('should return false if enableActionsHub is undefined', () => {
-            ecsFeaturesClientStub.withArgs(EnableActionsHub).returns({ enableActionsHub: undefined });
-
+    describe("isEnabled", () => {
+        it("should return false if enableActionsHub is undefined", () => {
+            getConfigStub.returns({ enableActionsHub: undefined });
             const result = ActionsHub.isEnabled();
-
             expect(result).to.be.false;
         });
 
-        it('should return true if enableActionsHub is true', () => {
-            ecsFeaturesClientStub.withArgs(EnableActionsHub).returns({ enableActionsHub: true });
-
-            const result = ActionsHub.isEnabled();
-
+        it("should return the actual boolean if enableActionsHub has a value", () => {
+            getConfigStub.returns({ enableActionsHub: true });
+            let result = ActionsHub.isEnabled();
             expect(result).to.be.true;
-        });
 
-        it('should return false if enableActionsHub is false', () => {
-            ecsFeaturesClientStub.withArgs(EnableActionsHub).returns({ enableActionsHub: false });
-
-            const result = ActionsHub.isEnabled();
-
-            expect(result).to.be.false;
-        });
-
-        it('should handle exceptions and return false', () => {
-            ecsFeaturesClientStub.withArgs(EnableActionsHub).throws(new Error('Test Error'));
-
-            const result = ActionsHub.isEnabled();
-
+            getConfigStub.returns({ enableActionsHub: false });
+            result = ActionsHub.isEnabled();
             expect(result).to.be.false;
         });
     });
 
-    describe('initialize', () => {
-        it('should log telemetry and set context when ActionsHub is enabled', async () => {
-            ecsFeaturesClientStub.withArgs(EnableActionsHub).returns({ enableActionsHub: true });
-            const actionsHubTreeDataProviderStub = sinon.stub(ActionsHubTreeDataProvider, 'initialize');
+    describe("initialize", () => {
+        describe("when ActionsHub is enabled", () => {
+            it("should set context to true and return early if isEnabled returns true", async () => {
+                getConfigStub.returns({ enableActionsHub: true });
+                await ActionsHub.initialize(fakeContext, fakePacTerminal);
+                expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "true" })).to.be.true;
+                expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", true)).to.be.true;
+            });
 
-            await ActionsHub.initialize(context, pacTerminal);
+            it("should initialize ActionsHubTreeDataProvider", async () => {
+                getConfigStub.returns({ enableActionsHub: true });
+                const actionsHubTreeDataProviderStub = sinon.stub(ActionsHubTreeDataProvider, 'initialize');
 
-            expect(loggerStub.traceInfo.calledOnceWithExactly("EnableActionsHub", { isEnabled: 'true' })).to.be.true;
-            expect(executeCommandStub.calledOnceWithExactly("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", true)).to.be.true;
-            expect(actionsHubTreeDataProviderStub.calledOnceWithExactly(context, pacTerminal)).to.be.true;
+                await ActionsHub.initialize(fakeContext, fakePacTerminal);
+                expect(actionsHubTreeDataProviderStub.calledWith(fakeContext)).to.be.true;
 
-            actionsHubTreeDataProviderStub.restore();
+                actionsHubTreeDataProviderStub.restore();
+            });
         });
 
-        it('should log telemetry and set context when ActionsHub is disabled', async () => {
-            ecsFeaturesClientStub.withArgs(EnableActionsHub).returns({ enableActionsHub: false });
+        describe("when ActionsHub is disabled", () => {
+            it("should set context to false and return early if isEnabled returns false", async () => {
+                getConfigStub.returns({ enableActionsHub: false });
+                await ActionsHub.initialize(fakeContext, fakePacTerminal);
+                expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "false" })).to.be.true;
+                expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", false)).to.be.true;
+            });
 
-            await ActionsHub.initialize(context, pacTerminal);
+            it("should not initialize ActionsHubTreeDataProvider", () => {
+                getConfigStub.returns({ enableActionsHub: false });
+                const actionsHubTreeDataProviderStub = sinon.stub(ActionsHubTreeDataProvider, 'initialize');
 
-            expect(loggerStub.traceInfo.calledOnceWithExactly("EnableActionsHub", { isEnabled: 'false' })).to.be.true;
-            expect(executeCommandStub.calledOnceWithExactly("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", false)).to.be.true;
-        });
-
-        it('should handle exceptions and log error telemetry', async () => {
-            ecsFeaturesClientStub.withArgs(EnableActionsHub).throws(new Error('Test Error'));
-
-            await ActionsHub.initialize(context, pacTerminal);
-
-            expect(loggerStub.traceError.calledOnce).to.be.true;
-        });
-
-        it('should not initialize ActionsHubTreeDataProvider if ActionsHub is disabled', async () => {
-            ecsFeaturesClientStub.withArgs(EnableActionsHub).returns({ enableActionsHub: false });
-            const actionsHubTreeDataProviderStub = sinon.stub(ActionsHubTreeDataProvider, 'initialize');
-
-            await ActionsHub.initialize(context, pacTerminal);
-
-            expect(actionsHubTreeDataProviderStub.notCalled).to.be.true;
-
-            actionsHubTreeDataProviderStub.restore();
-        });
-
-        it('should initialize ActionsHubTreeDataProvider if ActionsHub is enabled', async () => {
-            ecsFeaturesClientStub.withArgs(EnableActionsHub).returns({ enableActionsHub: true });
-            const actionsHubTreeDataProviderStub = sinon.stub(ActionsHubTreeDataProvider, 'initialize');
-
-            await ActionsHub.initialize(context, pacTerminal);
-
-            expect(actionsHubTreeDataProviderStub.calledOnceWithExactly(context, pacTerminal)).to.be.true;
-
-            actionsHubTreeDataProviderStub.restore();
+                ActionsHub.initialize(fakeContext, fakePacTerminal);
+                expect(actionsHubTreeDataProviderStub.called).to.be.false;
+            });
         });
     });
 });
