@@ -50,6 +50,7 @@ export class OrgChangeNotifier {
             this._orgDetails = pacActiveOrg.Results;
             orgChangeEventEmitter.fire(this._orgDetails);
         } else {
+            //If org/env is expired or deleted, this event will be fired
             orgChangeErrorEventEmitter.fire();
         }
     }
