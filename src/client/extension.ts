@@ -31,7 +31,7 @@ import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryC
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED, EXTENSION_VERSION_KEY } from "../common/copilot/constants";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { OrgChangeNotifier, orgChangeEvent } from "./OrgChangeNotifier";
+import { OrgChangeNotifier, orgChangeErrorEvent, orgChangeEvent } from "./OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
 import { ArtemisService } from "../common/services/ArtemisService";
@@ -45,6 +45,10 @@ import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
 import { PreviewSite } from "./power-pages/preview-site/PreviewSite";
 import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
+import { pacAuthManager } from "./pac/PacAuthManager";
+import { showErrorDialog } from "../common/utilities/errorHandlerUtil";
+import { ENVIRONMENT_EXPIRED } from "./power-pages/actions-hub/Constants";
+import { extractAuthInfo } from "./power-pages/commonUtility";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -173,6 +177,8 @@ export async function activate(
                     AadIdObject = pacActiveAuth.Results?.filter(obj => obj.Key === AadIdKey);
                     EnvID = pacActiveAuth.Results?.filter(obj => obj.Key === EnvIdKey);
                     TenantID = pacActiveAuth.Results?.filter(obj => obj.Key === TenantIdKey);
+                    const authInfo = extractAuthInfo(pacActiveAuth.Results);
+                    pacAuthManager.setAuthInfo(authInfo);
                 }
 
                 if (EnvID?.[0]?.Value && TenantID?.[0]?.Value && AadIdObject?.[0]?.Value) {
@@ -217,6 +223,10 @@ export async function activate(
             await PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context);
 
             await ActionsHub.initialize(context, pacTerminal);
+        }),
+
+        orgChangeErrorEvent(() => {
+            showErrorDialog(ENVIRONMENT_EXPIRED);
         })
     );
 

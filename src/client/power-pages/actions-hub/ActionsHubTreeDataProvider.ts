@@ -11,21 +11,31 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { pacAuthManager } from "../../pac/PacAuthManager";
+import { SUCCESS } from "../../../common/constants";
+import { extractAuthInfo } from "../commonUtility";
+import { PacTerminal } from "../../lib/PacTerminal";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
     private readonly _context: vscode.ExtensionContext;
+    private _onDidChangeTreeData: vscode.EventEmitter<ActionsHubTreeItem | undefined | void> = new vscode.EventEmitter<ActionsHubTreeItem | undefined | void>();
+    readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
-    private constructor(context: vscode.ExtensionContext) {
+
+    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
         this._disposables.push(
             vscode.window.registerTreeDataProvider("powerpages.actionsHub", this)
         );
 
         this._context = context;
+
+        // Register an event listener for environment changes
+        pacAuthManager.onDidChangeEnvironment(() => this.refresh());
+        this._disposables.push(...this.registerPanel(this._pacTerminal));
     }
 
-    public static initialize(context: vscode.ExtensionContext): ActionsHubTreeDataProvider {
-        const actionsHubTreeDataProvider = new ActionsHubTreeDataProvider(context);
+    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
+        const actionsHubTreeDataProvider = new ActionsHubTreeDataProvider(context, pacTerminal);
         oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED);
 
         return actionsHubTreeDataProvider;
@@ -61,7 +71,28 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         }
     }
 
+    public refresh(): void {
+        this._onDidChangeTreeData.fire();
+    }
+
     public dispose(): void {
         this._disposables.forEach(d => d.dispose());
+    }
+
+    private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
+        const pacWrapper = pacTerminal.getWrapper();
+        return [
+            vscode.commands.registerCommand("powerpages.actionsHub.refresh", async () => {
+                try {
+                    const pacActiveAuth = await pacWrapper.activeAuth();
+                    if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
+                        const authInfo = extractAuthInfo(pacActiveAuth.Results);
+                        pacAuthManager.setAuthInfo(authInfo);
+                    }
+                } catch (error) {
+                    oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
+                }
+            })
+        ];
     }
 }
