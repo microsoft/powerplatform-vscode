@@ -13,6 +13,8 @@ import { SUCCESS } from "../../../common/constants";
 import { extractAuthInfo } from "../commonUtility";
 import { pacAuthManager } from "../../pac/PacAuthManager";
 import { Constants } from "./Constants";
+import { IArtemisServiceResponse } from "../../../common/services/Interfaces";
+import { ActiveOrgOutput } from "../../pac/PacTypes";
 
 export class ActionsHub {
     static isEnabled(): boolean {
@@ -25,7 +27,7 @@ export class ActionsHub {
         return enableActionsHub;
     }
 
-    static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): Promise<void> {
+    static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput): Promise<void> {
         const isActionsHubEnabled = ActionsHub.isEnabled();
 
         oneDSLoggerWrapper.getLogger().traceInfo("EnableActionsHub", {
@@ -45,7 +47,7 @@ export class ActionsHub {
                 pacAuthManager.setAuthInfo(authInfo);
             }
 
-            ActionsHubTreeDataProvider.initialize(context);
+            ActionsHubTreeDataProvider.initialize(context, artemisResponse, orgDetails);
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, error as string, error as Error, { methodName: ActionsHub.initialize.name }, {});
         }

@@ -62,11 +62,14 @@ export class PPAPIService {
             });
 
             if (response.ok) {
+                // TODO: Should we validate the response format?
                 const websiteDetailsArray = await response.json() as { value: IWebsiteDetails[] };
                 return websiteDetailsArray;
             }
+            throw new Error(`Failed to fetch website details. Status: ${response.status}`);
         }
         catch (error) {
+            // Question: Is it okay to use the copilot telemetry here in this file?
             sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED, errorMsg: (error as Error).message });
         }
         return null;
