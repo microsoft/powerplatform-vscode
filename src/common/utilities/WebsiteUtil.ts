@@ -6,7 +6,6 @@
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { ADX_WEBSITE_RECORDS_API_PATH, ADX_WEBSITE_RECORDS_FETCH_FAILED, GET_ALL_WEBSITES_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_API_PATH } from "../constants";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { dataverseAuthentication } from "../services/AuthenticationProvider";
 import { ServiceEndpointCategory, WebsiteDataModel } from "../services/Constants";
 import { IWebsiteDetails } from "../services/Interfaces";
@@ -26,7 +25,7 @@ type AdxWebsiteRecords = {
 }
 
 export async function getActiveWebsites(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<IWebsiteDetails[] | undefined> {
-    const websites = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId, {} as ITelemetry);
+    const websites = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId);
     return websites?.value;
 }
 

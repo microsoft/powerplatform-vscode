@@ -26,3 +26,8 @@ export const Messages = {
     AUTHENTICATING: vscode.l10n.t("Authenticating..."),
     UNABLE_TO_CLEAR_CACHE: vscode.l10n.t("Unable to clear cache"),
 };
+
+export const Events = {
+    PREVIEW_SITE_INITIALIZED: "PreviewSiteInitialized",
+    PREVIEW_SITE_INITIALIZATION_FAILED: "PreviewSiteInitializationFailed"
+}

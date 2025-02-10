@@ -4,7 +4,6 @@
  */
 
 import { oneDSLoggerWrapper } from "../oneDSLoggerWrapper";
-import { ITelemetry } from "./ITelemetry";
 
 // Telemetry Event Names
 export const FileDeleteEvent = 'FileDeleteEvent';
@@ -35,7 +34,7 @@ export enum TriggerPoint {
     COMMAND_PALETTE = "command-palette",
 }
 
-export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: ITelemetryData): void {
+export function sendTelemetryEvent(telemetryData: ITelemetryData): void {
     const telemetryDataProperties: Record<string, string> = {}
     const telemetryDataMeasurements: Record<string, number> = {}
 
@@ -62,10 +61,8 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: ITeleme
     if (telemetryData.exception) {
         telemetryDataProperties.eventName = telemetryData.eventName;
         telemetryDataProperties.errorMessage = telemetryData.exception?.message;
-        telemetry.sendTelemetryException(telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
         oneDSLoggerWrapper.getLogger().traceError(telemetryDataProperties.eventName, telemetryDataProperties.errorMessage, telemetryData.exception, telemetryDataProperties, telemetryDataMeasurements);
     } else {
-        telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
     }
 }

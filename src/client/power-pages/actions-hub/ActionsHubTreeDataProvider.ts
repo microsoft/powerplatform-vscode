@@ -11,6 +11,9 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { pacAuthManager } from "../../pac/PacAuthManager";
+import { SUCCESS } from "../../../common/constants";
+import { extractAuthInfo } from "../commonUtility";
+import { PacTerminal } from "../../lib/PacTerminal";
 import { IArtemisServiceResponse, IWebsiteDetails } from "../../../common/services/Interfaces";
 import { ActiveOrgOutput } from "../../pac/PacTypes";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
@@ -18,24 +21,28 @@ import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/Web
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
     private readonly _context: vscode.ExtensionContext;
+    private _onDidChangeTreeData: vscode.EventEmitter<ActionsHubTreeItem | undefined | void> = new vscode.EventEmitter<ActionsHubTreeItem | undefined | void>();
+    readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
+
     private readonly _artemisResponse: IArtemisServiceResponse | null;
     private readonly _orgDetails: ActiveOrgOutput;
 
-    private constructor(context: vscode.ExtensionContext, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput) {
+    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput) {
         this._disposables.push(
             vscode.window.registerTreeDataProvider("powerpages.actionsHub", this)
         );
 
         this._context = context;
+
+        // Register an event listener for environment changes
+        pacAuthManager.onDidChangeEnvironment(() => this.refresh());
+        this._disposables.push(...this.registerPanel(this._pacTerminal));
         this._artemisResponse = artemisResponse;
         this._orgDetails = orgDetails;
     }
 
-    public static initialize(context: vscode.ExtensionContext, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput): ActionsHubTreeDataProvider {
-        const actionsHubTreeDataProvider = new ActionsHubTreeDataProvider(context, artemisResponse, orgDetails);
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED);
-
-        return actionsHubTreeDataProvider;
+    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput): ActionsHubTreeDataProvider {
+        return new ActionsHubTreeDataProvider(context, pacTerminal, artemisResponse, orgDetails);
     }
 
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -52,7 +59,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 if (authInfo) {
                     currentEnvInfo = { currentEnvironmentName: authInfo.organizationFriendlyName };
                 }
-                
+
                 let activeSites: IWebsiteDetails[] = [];
                 let inactiveSites: IWebsiteDetails[] = [];
                 
@@ -83,7 +90,28 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         }
     }
 
+    public refresh(): void {
+        this._onDidChangeTreeData.fire();
+    }
+
     public dispose(): void {
         this._disposables.forEach(d => d.dispose());
+    }
+
+    private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
+        const pacWrapper = pacTerminal.getWrapper();
+        return [
+            vscode.commands.registerCommand("powerpages.actionsHub.refresh", async () => {
+                try {
+                    const pacActiveAuth = await pacWrapper.activeAuth();
+                    if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
+                        const authInfo = extractAuthInfo(pacActiveAuth.Results);
+                        pacAuthManager.setAuthInfo(authInfo);
+                    }
+                } catch (error) {
+                    oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
+                }
+            })
+        ];
     }
 }

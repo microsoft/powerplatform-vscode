@@ -10,10 +10,9 @@ import { glob } from 'glob';
 import * as path from 'path';
 import * as fs from 'fs';
 import { parse } from 'yaml';
-import { ITelemetry } from '../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { GetWebsiteRecordID, sendTelemetryEvent } from '../OneDSLoggerTelemetry/telemetry/telemetry';
 
-export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null, telemetry: ITelemetry) {
+export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let output: any[] = [];
     try {
@@ -35,12 +34,12 @@ export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null
             }
         });
     } catch (exception) {
-        sendTelemetryEvent(telemetry, { methodName: getPortalsOrgURLs.name, eventName: 'getPortalsOrgURLs', exception: exception as Error });
+        sendTelemetryEvent({ methodName: getPortalsOrgURLs.name, eventName: 'getPortalsOrgURLs', exception: exception as Error });
     }
     return output;
 }
 
-export function getWebsiteRecordId(workspaceFolders: { uri: string }[], telemetry: ITelemetry): string {
+export function getWebsiteRecordId(workspaceFolders: { uri: string }[]): string {
     try {
         if (!workspaceFolders || workspaceFolders.length === 0) {
             return "";
@@ -56,7 +55,7 @@ export function getWebsiteRecordId(workspaceFolders: { uri: string }[], telemetr
             }
         }
     } catch (exception) {
-        sendTelemetryEvent(telemetry, { methodName: getWebsiteRecordId.name, eventName: GetWebsiteRecordID, exception: exception as Error });
+        sendTelemetryEvent({ methodName: getWebsiteRecordId.name, eventName: GetWebsiteRecordID, exception: exception as Error });
     }
     return "";
 }

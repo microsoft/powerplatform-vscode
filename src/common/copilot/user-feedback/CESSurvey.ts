@@ -7,7 +7,6 @@ import * as vscode from "vscode";
 import { npsAuthentication } from "../../services/AuthenticationProvider";
 import fetch from "node-fetch";
 import { getNonce } from "../../utilities/Utils";
-import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { CopilotNpsAuthenticationCompleted, CopilotUserFeedbackFailureEvent, CopilotUserFeedbackSuccessEvent } from "../telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "../telemetry/copilotTelemetry";
 import { IFeedbackData } from "../model";
@@ -18,7 +17,7 @@ import { SurveyConstants } from "./constants";
 let feedbackPanel: vscode.WebviewPanel | undefined;
 
 
-export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, telemetry: ITelemetry, geoName: string, messageScenario: string, tenantId?: string) {
+export async function CESUserFeedback(context: vscode.ExtensionContext, sessionId: string, userID: string, thumbType: string, geoName: string, messageScenario: string, tenantId?: string) {
 
     if (feedbackPanel) {
         feedbackPanel.dispose();
@@ -59,7 +58,7 @@ export async function CESUserFeedback(context: vscode.ExtensionContext, sessionI
                     break;
                 }
                 case 'feedback':
-                    await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, telemetry, thumbType, sessionId);
+                    await handleFeedbackSubmission(message.text, endpointUrl, apiToken, feedbackData, thumbType, sessionId);
                     feedbackPanel?.dispose();
                     break;
             }
@@ -125,7 +124,7 @@ function initializeFeedbackData(sessionId: string, isWebExtension: boolean, geoN
     return feedbackData;
 }
 
-async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, telemetry: ITelemetry, thumbType: string, sessionID: string) {
+async function handleFeedbackSubmission(text: string, endpointUrl: string, apiToken: string, feedbackData: IFeedbackData, thumbType: string, sessionID: string) {
     feedbackData.Feedbacks[0].value = thumbType + " - " + text;
     try {
         const response = await fetch(endpointUrl, {

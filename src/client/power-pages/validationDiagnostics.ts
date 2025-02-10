@@ -4,7 +4,6 @@
  */
 
 import * as vscode from "vscode";
-import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent, ValidateTextDocumentEvent } from "../../common/OneDSLoggerTelemetry/telemetry/telemetry";
 
 // Create a diagnostics connection to output warning/error messages to "Problems" tab
@@ -12,8 +11,7 @@ const connection = vscode.languages.createDiagnosticCollection("FileDeleteEvent"
 
 export async function validateTextDocument(uri: vscode.Uri,
     patterns: RegExp[],
-    searchByName: boolean,
-    telemetry: ITelemetry
+    searchByName: boolean
 ): Promise<void> {
     try {
         const textDocument = await vscode.workspace.openTextDocument(uri);
@@ -45,7 +43,7 @@ export async function validateTextDocument(uri: vscode.Uri,
         connection.set(uri, diagnostics.concat(vscode.languages.getDiagnostics(uri)));
     }
     catch (error) {
-        sendTelemetryEvent(telemetry, { methodName: validateTextDocument.name, eventName: ValidateTextDocumentEvent, exception: error as Error });
+        sendTelemetryEvent({ methodName: validateTextDocument.name, eventName: ValidateTextDocumentEvent, exception: error as Error });
     }
 }
 

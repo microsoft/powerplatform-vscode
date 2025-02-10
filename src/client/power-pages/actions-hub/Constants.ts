@@ -32,6 +32,8 @@ export const Constants = {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",
         ACTIONS_HUB_INITIALIZATION_FAILED: "actionsHubInitializationFailed",
         ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED: "actionsHubCurrentEnvFetchFailed",
+        ACTIONS_HUB_REFRESH_FAILED: "actionsHubRefreshFailed"
     }
 };
 
+export const ENVIRONMENT_EXPIRED = vscode.l10n.t("Active Environment is expired or deleted. Please select a new environment.")

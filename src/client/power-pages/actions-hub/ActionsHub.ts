@@ -9,14 +9,13 @@ import { EnableActionsHub } from "../../../common/ecs-features/ecsFeatureGates";
 import { ActionsHubTreeDataProvider } from "./ActionsHubTreeDataProvider";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { SUCCESS } from "../../../common/constants";
-import { extractAuthInfo } from "../commonUtility";
-import { pacAuthManager } from "../../pac/PacAuthManager";
 import { Constants } from "./Constants";
 import { IArtemisServiceResponse } from "../../../common/services/Interfaces";
 import { ActiveOrgOutput } from "../../pac/PacTypes";
 
 export class ActionsHub {
+    private static _isInitialized = false;
+
     static isEnabled(): boolean {
         const enableActionsHub = ECSFeaturesClient.getConfig(EnableActionsHub).enableActionsHub
 
@@ -28,28 +27,29 @@ export class ActionsHub {
     }
 
     static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput): Promise<void> {
-        const isActionsHubEnabled = ActionsHub.isEnabled();
-
-        oneDSLoggerWrapper.getLogger().traceInfo("EnableActionsHub", {
-            isEnabled: isActionsHubEnabled.toString()
-        });
-
-        vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", isActionsHubEnabled);
-
-        if (!isActionsHubEnabled) {
+        if (ActionsHub._isInitialized) {
             return;
         }
 
         try {
-            const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-            if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
-                const authInfo = extractAuthInfo(pacActiveAuth.Results);
-                pacAuthManager.setAuthInfo(authInfo);
+            const isActionsHubEnabled = ActionsHub.isEnabled();
+
+            oneDSLoggerWrapper.getLogger().traceInfo("EnableActionsHub", {
+                isEnabled: isActionsHubEnabled.toString()
+            });
+
+            vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", isActionsHubEnabled);
+
+            if (!isActionsHubEnabled) {
+                return;
             }
 
-            ActionsHubTreeDataProvider.initialize(context, artemisResponse, orgDetails);
-        } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, error as string, error as Error, { methodName: ActionsHub.initialize.name }, {});
+            ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisResponse, orgDetails);
+            ActionsHub._isInitialized = true;
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED);
+        } catch (exception) {
+            const exceptionError = exception as Error;
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
         }
     }
 }

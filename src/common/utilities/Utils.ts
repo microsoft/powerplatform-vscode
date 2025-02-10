@@ -8,7 +8,6 @@ import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, IEnvInfo, IRelatedFi
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData } from "../copilot/model";
-import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
@@ -199,7 +198,6 @@ export function getActiveEditorContent(): IActiveFileData {
 export function checkCopilotAvailability(
     aibEndpoint: string | null,
     orgID: string,
-    telemetry: ITelemetry,
     sessionID: string,
     tenantId?: string | undefined,
 ): boolean {
@@ -272,7 +270,7 @@ async function getFileContentByType(activeFileUri: vscode.Uri, componentType: st
 }
 
 //fetchRelatedFiles function based on component type
-export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, telemetry: ITelemetry, sessionId: string): Promise<IRelatedFiles[]> {
+export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, sessionId: string): Promise<IRelatedFiles[]> {
     try {
         const relatedFileTypes = relatedFilesSchema[componentType]?.[fieldType];
         if (!relatedFileTypes) {
@@ -293,7 +291,6 @@ export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType
         return files;
     } catch (error) {
         const message = (error as Error)?.message;
-        telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED, { error: message, sessionId: sessionId });
         oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED, message, error as Error, { sessionId: sessionId }, {});
         return [];
     }

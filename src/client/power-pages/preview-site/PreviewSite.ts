@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 import { ECSFeaturesClient } from '../../../common/ecs-features/ecsFeatureClient';
 import { EnableSiteRuntimePreview } from '../../../common/ecs-features/ecsFeatureGates';
-import { ITelemetry } from '../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { WorkspaceFolder } from 'vscode-languageclient/node';
 import { getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
 import { PROVIDER_ID, ServiceEndpointCategory } from '../../../common/services/Constants';
@@ -18,7 +17,7 @@ import { getWorkspaceFolders, showProgressWithNotification } from '../../../comm
 import { PacTerminal } from '../../lib/PacTerminal';
 import { initializeOrgDetails } from '../../../common/utilities/OrgHandlerUtils';
 import { ArtemisService } from '../../../common/services/ArtemisService';
-import { Messages } from './Constants';
+import { Events, Messages } from './Constants';
 import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
 import { IOrgDetails } from '../../../common/chat-participants/powerpages/PowerPagesChatParticipantTypes';
 import { IArtemisServiceResponse } from '../../../common/services/Interfaces';
@@ -28,6 +27,7 @@ export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-si
 
 export class PreviewSite {
     private static _websiteUrl: string | undefined = undefined;
+    private static _isInitialized = false;
 
     static isSiteRuntimePreviewEnabled(): boolean {
         const enableSiteRuntimePreview = ECSFeaturesClient.getConfig(EnableSiteRuntimePreview).enableSiteRuntimePreview
@@ -44,36 +44,56 @@ export class PreviewSite {
         workspaceFolders: WorkspaceFolder[],
         orgDetails: ActiveOrgOutput,
         pacTerminal: PacTerminal,
-        context: vscode.ExtensionContext,
-        telemetry: ITelemetry
+        context: vscode.ExtensionContext
     ): Promise<void> {
-        const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
+        try {
+            const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
 
-        oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
-            isEnabled: isSiteRuntimePreviewEnabled.toString(),
-            websiteURL: PreviewSite.getSiteUrl() || "undefined"
-        });
+            oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
+                isEnabled: isSiteRuntimePreviewEnabled.toString(),
+                websiteURL: PreviewSite.getSiteUrl() || "undefined"
+            });
 
-        if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
-            context.subscriptions.push(
-                vscode.commands.registerCommand(
-                    SITE_PREVIEW_COMMAND_ID,
-                    async () => await PreviewSite.handlePreviewRequest(telemetry, pacTerminal)
-                )
-            );
+            if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
+                context.subscriptions.push(
+                    vscode.commands.registerCommand(
+                        SITE_PREVIEW_COMMAND_ID,
+                        async () => await PreviewSite.handlePreviewRequest(pacTerminal)
+                    )
+                );
 
-            await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, telemetry);
-            await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+                await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId);
+                await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+                if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
+                    // Load the site URL every time org is changed
+                    await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId);
+
+                    // Register the command only once during first initialization
+                    if (!PreviewSite._isInitialized) {
+                        context.subscriptions.push(
+                            vscode.commands.registerCommand(
+                                SITE_PREVIEW_COMMAND_ID,
+                                async () => await PreviewSite.handlePreviewRequest(pacTerminal)
+                            )
+                        );
+                        await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+                    }
+                }
+            }
+
+            PreviewSite._isInitialized = true;
+        } catch (exception) {
+            const exceptionError = exception as Error;
+            oneDSLoggerWrapper.getLogger().traceError(Events.PREVIEW_SITE_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
         }
     }
 
     static async loadSiteUrl(
         workspaceFolders: WorkspaceFolder[],
         stamp: ServiceEndpointCategory,
-        envId: string,
-        telemetry: ITelemetry)
+        envId: string)
         : Promise<void> {
-        const websiteUrl = await PreviewSite.getWebSiteUrl(workspaceFolders, stamp, envId, telemetry);
+        const websiteUrl = await PreviewSite.getWebSiteUrl(workspaceFolders, stamp, envId);
 
         this._websiteUrl = websiteUrl;
     }
@@ -82,15 +102,15 @@ export class PreviewSite {
         return this._websiteUrl;
     }
 
-    private static async getWebSiteUrl(workspaceFolders: WorkspaceFolder[], stamp: ServiceEndpointCategory, envId: string, telemetry: ITelemetry): Promise<string> {
-        const websiteRecordId = getWebsiteRecordId(workspaceFolders, telemetry);
+    private static async getWebSiteUrl(workspaceFolders: WorkspaceFolder[], stamp: ServiceEndpointCategory, envId: string): Promise<string> {
+        const websiteRecordId = getWebsiteRecordId(workspaceFolders);
         if (!websiteRecordId) {
-            telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY, {
+            oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GET_WEBSITE_RECORD_ID_EMPTY, {
                 websiteRecordId: websiteRecordId
             });
             return "";
         }
-        const websiteDetails = await PPAPIService.getWebsiteDetailsByWebsiteRecordId(stamp, envId, websiteRecordId, telemetry);
+        const websiteDetails = await PPAPIService.getWebsiteDetailsByWebsiteRecordId(stamp, envId, websiteRecordId);
         return websiteDetails?.websiteUrl || "";
     }
 
@@ -126,32 +146,25 @@ export class PreviewSite {
     }
 
     static async handlePreviewRequest(
-        telemetry: ITelemetry,
         pacTerminal: PacTerminal) {
 
-        telemetry.sendTelemetryEvent("StartCommand", {
-            commandId: SITE_PREVIEW_COMMAND_ID,
-        });
         oneDSLoggerWrapper.getLogger().traceInfo("StartCommand", {
             commandId: SITE_PREVIEW_COMMAND_ID
         });
 
         if (!PreviewSite.isSiteRuntimePreviewEnabled()) {
-            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED });
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED });
             await vscode.window.showInformationMessage(Messages.SITE_PREVIEW_FEATURE_NOT_ENABLED);
             return;
         }
 
         if (!vscode.workspace.workspaceFolders) {
-            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.NO_FOLDER_OPENED });
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.NO_FOLDER_OPENED });
             await vscode.window.showErrorMessage(Messages.NO_FOLDER_OPENED);
             return;
         }
 
         if (this._websiteUrl === undefined) {
-            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.INITIALIZING_PREVIEW_TRY_AGAIN });
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.INITIALIZING_PREVIEW_TRY_AGAIN });
             await vscode.window.showWarningMessage(Messages.INITIALIZING_PREVIEW_TRY_AGAIN);
             return;
@@ -167,7 +180,6 @@ export class PreviewSite {
             });
 
         if (!orgDetails) {
-            telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.ORG_DETAILS_ERROR });
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.ORG_DETAILS_ERROR });
             await vscode.window.showWarningMessage(Messages.ORG_DETAILS_ERROR);
             return;
@@ -177,16 +189,16 @@ export class PreviewSite {
             let shouldRepeatLoginFlow = true;
 
             while (shouldRepeatLoginFlow) {
-                shouldRepeatLoginFlow = await PreviewSite.handleEmptyWebsiteUrl(orgDetails, telemetry);
+                shouldRepeatLoginFlow = await PreviewSite.handleEmptyWebsiteUrl(orgDetails);
             }
         }
 
-        await PreviewSite.clearCache(telemetry, orgDetails);
+        await PreviewSite.clearCache(orgDetails);
 
         await PreviewSite.launchBrowserAndDevToolsWithinVsCode(this._websiteUrl);
     }
 
-    private static async clearCache(telemetry: ITelemetry, orgDetails: IOrgDetails): Promise<void> {
+    private static async clearCache(orgDetails: IOrgDetails): Promise<void> {
         if (!this._websiteUrl) {
             return;
         }
@@ -211,7 +223,6 @@ export class PreviewSite {
 
                 if (!clearCacheResponse.ok) {
                     const response = await clearCacheResponse.text();
-                    telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.UNABLE_TO_CLEAR_CACHE, response: response, statusCode: clearCacheResponse.status.toString() });
                     oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.UNABLE_TO_CLEAR_CACHE, response: response, statusCode: clearCacheResponse.status.toString() });
                 }
             }
@@ -219,7 +230,7 @@ export class PreviewSite {
 
     }
 
-    private static async handleEmptyWebsiteUrl(orgDetails: IOrgDetails, telemetry: ITelemetry): Promise<boolean> {
+    private static async handleEmptyWebsiteUrl(orgDetails: IOrgDetails): Promise<boolean> {
         const shouldInitiateLogin = await vscode.window.showErrorMessage(
             Messages.WEBSITE_NOT_FOUND_IN_ENVIRONMENT,
             Messages.LOGIN,
@@ -245,7 +256,7 @@ export class PreviewSite {
 
                     progress.report({ message: Messages.GETTING_WEBSITE_ENDPOINT });
 
-                    const websiteUrl = await PreviewSite.getWebSiteUrl(getWorkspaceFolders(), artemisResponse?.stamp, orgDetails.environmentID, telemetry);
+                    const websiteUrl = await PreviewSite.getWebSiteUrl(getWorkspaceFolders(), artemisResponse?.stamp, orgDetails.environmentID);
 
                     if (websiteUrl === "") {
                         shouldRepeatLoginFlow = true;
