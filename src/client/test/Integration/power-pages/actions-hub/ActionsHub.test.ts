@@ -15,8 +15,9 @@ import { ActionsHubTreeDataProvider } from "../../../../power-pages/actions-hub/
 import { SUCCESS } from "../../../../../common/constants";
 import { AUTH_KEYS } from "../../../../../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PacWrapper } from "../../../../pac/PacWrapper";
-import { AuthInfo, PacAuthWhoOutput } from "../../../../pac/PacTypes";
+import { ActiveOrgOutput, AuthInfo, PacAuthWhoOutput } from "../../../../pac/PacTypes";
 import { pacAuthManager } from "../../../../pac/PacAuthManager";
+import { IArtemisServiceResponse } from "../../../../../common/services/Interfaces";
 
 describe("ActionsHub", () => {
     let getConfigStub: sinon.SinonStub;
@@ -67,7 +68,7 @@ describe("ActionsHub", () => {
         describe("when ActionsHub is enabled", () => {
             it("should set context to true and return early if isEnabled returns true", async () => {
                 getConfigStub.returns({ enableActionsHub: true });
-                await ActionsHub.initialize(fakeContext, fakePacTerminal);
+                await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
                 expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "true" })).to.be.true;
                 expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", true)).to.be.true;
             });
@@ -79,7 +80,7 @@ describe("ActionsHub", () => {
                 const pacAuthSetInfoStub = sinon.stub(pacAuthManager, 'setAuthInfo');
                 fakePacWrapper.activeAuth.returns(Promise.resolve({ Status: SUCCESS, Results: [{ Key: AUTH_KEYS.ORGANIZATION_FRIENDLY_NAME, Value: 'Foo' }] }) as Promise<PacAuthWhoOutput>);
 
-                await ActionsHub.initialize(fakeContext, fakePacTerminal);
+                await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
                 expect(pacAuthSetInfoStub.calledWith(data)).to.be.true;
             });
 
@@ -88,7 +89,7 @@ describe("ActionsHub", () => {
                 const actionsHubTreeDataProviderStub = sinon.stub(ActionsHubTreeDataProvider, 'initialize');
                 fakePacWrapper.activeAuth.returns(Promise.resolve({ Status: SUCCESS, Results: [{ Key: AUTH_KEYS.ORGANIZATION_FRIENDLY_NAME, Value: 'Foo' }] }) as Promise<PacAuthWhoOutput>);
 
-                await ActionsHub.initialize(fakeContext, fakePacTerminal);
+                await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
                 expect(actionsHubTreeDataProviderStub.calledWith(fakeContext)).to.be.true;
             });
         });
@@ -96,7 +97,7 @@ describe("ActionsHub", () => {
         describe("when ActionsHub is disabled", () => {
             it("should set context to false and return early if isEnabled returns false", () => {
                 getConfigStub.returns({ enableActionsHub: false });
-                ActionsHub.initialize(fakeContext, fakePacTerminal);
+                ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
                 expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "false" })).to.be.true;
                 expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", false)).to.be.true;
             });
@@ -104,7 +105,7 @@ describe("ActionsHub", () => {
             it("should not initialize ActionsHubTreeDataProvider", () => {
                 getConfigStub.returns({ enableActionsHub: false });
                 const actionsHubTreeDataProviderStub = sinon.stub(ActionsHubTreeDataProvider, 'initialize');
-                ActionsHub.initialize(fakeContext, fakePacTerminal);
+                ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
                 expect(actionsHubTreeDataProviderStub.called).to.be.false;
             });
         });

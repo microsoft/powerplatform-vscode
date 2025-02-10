@@ -14,6 +14,10 @@ import { EnvironmentGroupTreeItem } from "../../../../power-pages/actions-hub/tr
 import { OtherSitesGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/OtherSitesGroupTreeItem";
 import { ActionsHubTreeItem } from "../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { pacAuthManager } from "../../../../pac/PacAuthManager";
+import { IArtemisServiceResponse } from "../../../../../common/services/Interfaces";
+import { ActiveOrgOutput } from "../../../../pac/PacTypes";
+import { SiteTreeItem } from "../../../../power-pages/actions-hub/tree-items/SiteTreeItem";
+import { IWebsiteInfo } from "../../../../power-pages/actions-hub/models/IWebsiteInfo";
 
 describe("ActionsHubTreeDataProvider", () => {
     let context: vscode.ExtensionContext;
@@ -42,7 +46,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
     describe('initialize', () => {
         it("should initialize and log initialization event", () => {
-            ActionsHubTreeDataProvider.initialize(context);
+            ActionsHubTreeDataProvider.initialize(context, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
             expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_INITIALIZED)).to.be.true;
         });
     });
@@ -50,7 +54,7 @@ describe("ActionsHubTreeDataProvider", () => {
     describe('getTreeItem', () => {
         it("should return the element in getTreeItem", () => {
             const element = {} as ActionsHubTreeItem;
-            const result = ActionsHubTreeDataProvider.initialize(context).getTreeItem(element);
+            const result = ActionsHubTreeDataProvider.initialize(context, {} as IArtemisServiceResponse, {} as ActiveOrgOutput).getTreeItem(element);
             expect(result).to.equal(element);
         });
     });
@@ -75,7 +79,7 @@ describe("ActionsHubTreeDataProvider", () => {
                 organizationId: "",
                 organizationUniqueName: ""
             });
-            const provider = ActionsHubTreeDataProvider.initialize(context);
+            const provider = ActionsHubTreeDataProvider.initialize(context, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
             const result = await provider.getChildren();
 
             expect(result).to.not.be.null;
@@ -87,7 +91,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
         it("should return environment group tree item with default name when no auth info is available", async () => {
             authInfoStub.returns(null);
-            const provider = ActionsHubTreeDataProvider.initialize(context);
+            const provider = ActionsHubTreeDataProvider.initialize(context, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
             const result = await provider.getChildren();
 
             expect(result).to.not.be.null;
@@ -101,7 +105,7 @@ describe("ActionsHubTreeDataProvider", () => {
         it("should return null in getChildren when an error occurs", async () => {
             authInfoStub.throws(new Error("Test Error"));
 
-            const provider = ActionsHubTreeDataProvider.initialize(context);
+            const provider = ActionsHubTreeDataProvider.initialize(context, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
             const result = await provider.getChildren();
 
             expect(result).to.be.null;
@@ -111,8 +115,8 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it("should return an empty array in getChildren when an element is passed", async () => {
-            const element = {} as ActionsHubTreeItem;
-            const provider = ActionsHubTreeDataProvider.initialize(context);
+            const element = new SiteTreeItem({} as IWebsiteInfo);
+            const provider = ActionsHubTreeDataProvider.initialize(context, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
             const result = await provider.getChildren(element);
 
             expect(result).to.be.an("array").that.is.empty;
@@ -123,7 +127,7 @@ describe("ActionsHubTreeDataProvider", () => {
         it("should dispose all disposables", () => {
             const disposable1 = { dispose: sinon.spy() };
             const disposable2 = { dispose: sinon.spy() };
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
             actionsHubTreeDataProvider["_disposables"].push(disposable1 as vscode.Disposable, disposable2 as vscode.Disposable);
 
             actionsHubTreeDataProvider.dispose();
