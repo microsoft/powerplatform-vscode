@@ -9,14 +9,12 @@ import * as readline from "readline";
 import * as fs from "fs-extra";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BlockingQueue } from "../../common/utilities/BlockingQueue";
-import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { PacOutput, PacAdminListOutput, PacAuthListOutput, PacSolutionListOutput, PacOrgListOutput, PacOrgWhoOutput, PacAuthWhoOutput } from "./PacTypes";
 import { v4 } from "uuid";
 import { oneDSLoggerWrapper } from "../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 export interface IPacWrapperContext {
     readonly globalStorageLocalPath: string;
-    readonly telemetry: ITelemetry;
     readonly automationAgent: string;
     IsTelemetryEnabled(): boolean;
     GetCloudSetting(): string;
@@ -56,7 +54,6 @@ export class PacInterop implements IPacInterop {
 
     private async proc(): Promise<ChildProcessWithoutNullStreams> {
         if (!(this._proc)) {
-            this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarting');
             oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessStarting');
 
             const env: NodeJS.ProcessEnv = { ...process.env, 'PP_TOOLS_AUTOMATION_AGENT': this.context.automationAgent };
@@ -82,7 +79,6 @@ export class PacInterop implements IPacInterop {
 
             // Grab the first output, which will be the PAC Version info
             await this.outputQueue.dequeue();
-            this.context.telemetry.sendTelemetryEvent('InternalPacProcessStarted');
             oneDSLoggerWrapper.getLogger().traceInfo('InternalPacProcessStarted');
         }
 

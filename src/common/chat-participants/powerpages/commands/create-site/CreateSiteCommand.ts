@@ -24,7 +24,6 @@ export class CreateSiteCommand implements Command {
                 userPrompt: request.prompt,
                 sessionId: powerPagesAgentSessionId,
                 stream,
-                telemetry,
                 orgId: orgID,
                 envId: envID,
                 userId,

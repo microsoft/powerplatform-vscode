@@ -4,7 +4,6 @@
  */
 
 import { RequestInterceptor } from "../../RequestInterceptor";
-import { NoopTelemetryInstance } from "../../../client/telemetry/NoopTelemetry";
 import { HTTPRequest, Page } from "puppeteer-core";
 import sinon from "sinon";
 import { getMockBundleLoader, getRequest } from "../helpers";
@@ -17,8 +16,7 @@ describe("RequestInterceptor", () => {
 
     beforeEach(() => {
         instance = new RequestInterceptor(
-            getMockBundleLoader(mockBundleContents),
-            NoopTelemetryInstance
+            getMockBundleLoader(mockBundleContents)
         );
 
         puppeteerPage = {
