@@ -17,7 +17,7 @@ import { getWorkspaceFolders, showProgressWithNotification } from '../../../comm
 import { PacTerminal } from '../../lib/PacTerminal';
 import { initializeOrgDetails } from '../../../common/utilities/OrgHandlerUtils';
 import { ArtemisService } from '../../../common/services/ArtemisService';
-import { Messages } from './Constants';
+import { Events, Messages } from './Constants';
 import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
 import { IOrgDetails } from '../../../common/chat-participants/powerpages/PowerPagesChatParticipantTypes';
 import { IArtemisServiceResponse } from '../../../common/services/Interfaces';
@@ -27,6 +27,7 @@ export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-si
 
 export class PreviewSite {
     private static _websiteUrl: string | undefined = undefined;
+    private static _isInitialized = false;
 
     static isSiteRuntimePreviewEnabled(): boolean {
         const enableSiteRuntimePreview = ECSFeaturesClient.getConfig(EnableSiteRuntimePreview).enableSiteRuntimePreview
@@ -45,23 +46,45 @@ export class PreviewSite {
         pacTerminal: PacTerminal,
         context: vscode.ExtensionContext
     ): Promise<void> {
-        const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
+        try {
+            const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
 
-        oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
-            isEnabled: isSiteRuntimePreviewEnabled.toString(),
-            websiteURL: PreviewSite.getSiteUrl() || "undefined"
-        });
+            oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
+                isEnabled: isSiteRuntimePreviewEnabled.toString(),
+                websiteURL: PreviewSite.getSiteUrl() || "undefined"
+            });
 
-        if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
-            context.subscriptions.push(
-                vscode.commands.registerCommand(
-                    SITE_PREVIEW_COMMAND_ID,
-                    async () => await PreviewSite.handlePreviewRequest(pacTerminal)
-                )
-            );
+            if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
+                context.subscriptions.push(
+                    vscode.commands.registerCommand(
+                        SITE_PREVIEW_COMMAND_ID,
+                        async () => await PreviewSite.handlePreviewRequest(pacTerminal)
+                    )
+                );
 
-            await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId);
-            await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+                await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId);
+                await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+                if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
+                    // Load the site URL every time org is changed
+                    await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId);
+
+                    // Register the command only once during first initialization
+                    if (!PreviewSite._isInitialized) {
+                        context.subscriptions.push(
+                            vscode.commands.registerCommand(
+                                SITE_PREVIEW_COMMAND_ID,
+                                async () => await PreviewSite.handlePreviewRequest(pacTerminal)
+                            )
+                        );
+                        await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+                    }
+                }
+            }
+
+            PreviewSite._isInitialized = true;
+        } catch (exception) {
+            const exceptionError = exception as Error;
+            oneDSLoggerWrapper.getLogger().traceError(Events.PREVIEW_SITE_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
         }
     }
 

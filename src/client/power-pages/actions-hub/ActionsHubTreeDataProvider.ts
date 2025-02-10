@@ -35,10 +35,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
-        const actionsHubTreeDataProvider = new ActionsHubTreeDataProvider(context, pacTerminal);
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED);
-
-        return actionsHubTreeDataProvider;
+        return new ActionsHubTreeDataProvider(context, pacTerminal);
     }
 
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
