@@ -324,7 +324,7 @@ export async function getValidWebsitePreviewUrl(): Promise<{ websiteUrl: string,
         return { websiteUrl: '', isValid: false };
     }
 
-    const siteDetails = await PPAPIService.getWebsiteDetailsById(serviceEndpointStamp, envId, websitePreviewId, WebExtensionContext.telemetry.getTelemetryReporter());
+    const siteDetails = await PPAPIService.getWebsiteDetailsById(serviceEndpointStamp, envId, websitePreviewId);
 
     if (siteDetails == null) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
