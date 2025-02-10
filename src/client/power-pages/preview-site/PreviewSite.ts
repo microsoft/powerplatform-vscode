@@ -54,29 +54,30 @@ export class PreviewSite {
                 websiteURL: PreviewSite.getSiteUrl() || "undefined"
             });
 
-        if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
-            context.subscriptions.push(
-                vscode.commands.registerCommand(
-                    SITE_PREVIEW_COMMAND_ID,
-                    async () => await PreviewSite.handlePreviewRequest(pacTerminal)
-                )
-            );
-
-            await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId);
-            await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
             if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
-                // Load the site URL every time org is changed
-                await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, telemetry);
+                context.subscriptions.push(
+                    vscode.commands.registerCommand(
+                        SITE_PREVIEW_COMMAND_ID,
+                        async () => await PreviewSite.handlePreviewRequest(pacTerminal)
+                    )
+                );
 
-                // Register the command only once during first initialization
-                if (!PreviewSite._isInitialized) {
-                    context.subscriptions.push(
-                        vscode.commands.registerCommand(
-                            SITE_PREVIEW_COMMAND_ID,
-                            async () => await PreviewSite.handlePreviewRequest(telemetry, pacTerminal)
-                        )
-                    );
-                    await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+                await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId);
+                await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+                if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
+                    // Load the site URL every time org is changed
+                    await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId);
+
+                    // Register the command only once during first initialization
+                    if (!PreviewSite._isInitialized) {
+                        context.subscriptions.push(
+                            vscode.commands.registerCommand(
+                                SITE_PREVIEW_COMMAND_ID,
+                                async () => await PreviewSite.handlePreviewRequest(pacTerminal)
+                            )
+                        );
+                        await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
+                    }
                 }
             }
 
