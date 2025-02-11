@@ -134,4 +134,71 @@ describe("ActionsHubTreeDataProvider", () => {
         });
     });
 
+    describe('registerPanel', () => {
+        it("should register the refresh command", async () => {
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const disposables = provider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("powerpages.actionsHub.refresh")).to.be.true;
+            expect(disposables).to.have.lengthOf(2);
+        });
+
+        it("should handle errors during refresh command execution", async () => {
+            //const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const error = new Error("Refresh Error");
+            const pacWrapperStub = sinon.stub(pacTerminal.getWrapper(), 'activeAuth').throws(error);
+
+            try {
+                await vscode.commands.executeCommand("powerpages.actionsHub.refresh");
+            } catch (err) {
+                if (err instanceof Error) {
+                    expect(err.message).to.equal("Refresh Error");
+                }
+            }
+
+            pacWrapperStub.restore();
+        });
+
+        it("should register the switch environment command", async () => {
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const disposables = provider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("powerpages.actionsHub.switchEnvironment")).to.be.true;
+            expect(disposables).to.have.lengthOf(2);
+        });
+
+        it("should handle errors during switch environment command execution", async () => {
+            //const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const error = new Error("Switch Environment Error");
+            const pacWrapperStub = sinon.stub(pacTerminal.getWrapper(), 'orgList').throws(error);
+
+            try {
+                await vscode.commands.executeCommand("powerpages.actionsHub.switchEnvironment");
+            } catch (err) {
+                if (err instanceof Error) {
+                    expect(err.message).to.equal("Switch Environment Error");
+                }
+            }
+
+            pacWrapperStub.restore();
+        });
+
+        // New test cases
+        it("should handle errors during refresh command registration", () => {
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const error = new Error("Registration Error");
+            const registerCommandStub = sinon.stub(vscode.commands, 'registerCommand').throws(error);
+
+            try {
+                provider["registerPanel"](pacTerminal);
+            } catch (err) {
+                if (err instanceof Error) {
+                    expect(err.message).to.equal("Registration Error");
+                }
+            }
+
+            registerCommandStub.restore();
+        });
+    });
+
 });

@@ -182,6 +182,7 @@
   "Inactive Sites": "Inactive Sites",
   "No sites found": "No sites found",
   "No environments found": "No environments found",
+  "Select an environment to switch to": "Select an environment to switch to",
   "Active Environment is expired or deleted. Please select a new environment.": "Active Environment is expired or deleted. Please select a new environment.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",

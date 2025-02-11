@@ -26,7 +26,8 @@ export const Constants = {
         ACTIVE_SITES: vscode.l10n.t("Active Sites"),
         INACTIVE_SITES: vscode.l10n.t("Inactive Sites"),
         NO_SITES_FOUND: vscode.l10n.t("No sites found"),
-        NO_ENVIRONMENTS_FOUND: vscode.l10n.t("No environments found")
+        NO_ENVIRONMENTS_FOUND: vscode.l10n.t("No environments found"),
+        SELECT_ENVIRONMENT: vscode.l10n.t("Select an environment to switch to")
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",
