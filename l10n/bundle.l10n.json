@@ -177,11 +177,66 @@
       "{0} will be replaced by the error message."
     ]
   },
+  "Timestamp: {0}/{0} is the timestamp": {
+    "message": "Timestamp: {0}",
+    "comment": [
+      "{0} is the timestamp"
+    ]
+  },
+  "Tenant ID: {0}/{0} is the Tenant ID": {
+    "message": "Tenant ID: {0}",
+    "comment": [
+      "{0} is the Tenant ID"
+    ]
+  },
+  "Object ID: {0}/{0} is the Object ID": {
+    "message": "Object ID: {0}",
+    "comment": [
+      "{0} is the Object ID"
+    ]
+  },
+  "Organization ID: {0}/{0} is the Organization ID": {
+    "message": "Organization ID: {0}",
+    "comment": [
+      "{0} is the Organization ID"
+    ]
+  },
+  "Unique name: {0}/{0} is the Unique name": {
+    "message": "Unique name: {0}",
+    "comment": [
+      "{0} is the Unique name"
+    ]
+  },
+  "Environment ID: {0}/{0} is the Environment ID": {
+    "message": "Environment ID: {0}",
+    "comment": [
+      "{0} is the Environment ID"
+    ]
+  },
+  "Cluster environment: {0}/{0} is the Cluster environment": {
+    "message": "Cluster environment: {0}",
+    "comment": [
+      "{0} is the Cluster environment"
+    ]
+  },
+  "Cluster category: {0}/{0} is the Cluster category": {
+    "message": "Cluster category: {0}",
+    "comment": [
+      "{0} is the Cluster category"
+    ]
+  },
+  "Cluster geo name: {0}/{0} is the cluster geo name": {
+    "message": "Cluster geo name: {0}",
+    "comment": [
+      "{0} is the cluster geo name"
+    ]
+  },
   "Other Sites": "Other Sites",
   "Active Sites": "Active Sites",
   "Inactive Sites": "Inactive Sites",
   "No sites found": "No sites found",
   "No environments found": "No environments found",
+  "Session Details": "Session Details",
   "Active Environment is expired or deleted. Please select a new environment.": "Active Environment is expired or deleted. Please select a new environment.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",

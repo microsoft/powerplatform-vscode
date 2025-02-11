@@ -14,6 +14,7 @@ import { pacAuthManager } from "../../pac/PacAuthManager";
 import { SUCCESS } from "../../../common/constants";
 import { extractAuthInfo } from "../commonUtility";
 import { PacTerminal } from "../../lib/PacTerminal";
+import { showEnvironmentDetails } from "./Utils";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -24,7 +25,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
         this._disposables.push(
-            vscode.window.registerTreeDataProvider("powerpages.actionsHub", this)
+            vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this)
         );
 
         this._context = context;
@@ -79,7 +80,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
         const pacWrapper = pacTerminal.getWrapper();
         return [
-            vscode.commands.registerCommand("powerpages.actionsHub.refresh", async () => {
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => {
                 try {
                     const pacActiveAuth = await pacWrapper.activeAuth();
                     if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
@@ -89,7 +90,9 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 } catch (error) {
                     oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
                 }
-            })
+            }),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails", showEnvironmentDetails)
         ];
     }
 }

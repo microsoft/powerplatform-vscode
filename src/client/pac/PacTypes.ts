@@ -81,9 +81,27 @@ export type ActiveAuthOutput = {
 
 export type PacAuthWhoOutput = PacOutputWithResultList<ActiveAuthOutput>;
 
+export enum CloudInstance {
+    Public,
+    Preprod,
+    Test,
+    UsGov,
+    UsGovHigh,
+    UsGovDod,
+    China
+}
+
+export enum EnvironmentType {
+    Unknown,
+    Regular,
+    Default,
+    Legacy,
+    Provisioning
+}
+
 export interface AuthInfo {
     userType: string;
-    cloud: string;
+    cloud: CloudInstance;
     tenantId: string;
     tenantCountry: string;
     user: string;
@@ -94,7 +112,7 @@ export interface AuthInfo {
     authority: string;
     environmentGeo: string;
     environmentId: string;
-    environmentType: string;
+    environmentType: EnvironmentType;
     organizationId: string;
     organizationUniqueName: string;
     organizationFriendlyName: string;
