@@ -572,6 +572,9 @@ To learn more, visit [Prevent accidental overwrites](command:powerplatform-walkt
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
+    <trans-unit id="powerpages.actionsHub.switchEnvironment.title">
+      <source xml:lang="en">Change Environment</source>
+    </trans-unit>
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
       <source xml:lang="en">Clear Auth Profiles</source>
     </trans-unit>
@@ -731,9 +734,6 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.pacSolutionHelp.title">
       <source xml:lang="en">Show PAC Solution Help</source>
-    </trans-unit>
-    <trans-unit id="powerpages.actionsHub.switchEnvironment.title">
-      <source xml:lang="en">Switch Environment</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
       <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
