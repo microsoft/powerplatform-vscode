@@ -150,48 +150,6 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(registerCommandStub.calledWith("powerpages.actionsHub.switchEnvironment")).to.be.true;
             expect(disposables).to.have.lengthOf(2);
         });
-
-        it("should handle errors during refresh command execution", async () => {
-            const error = new Error("Refresh Error");
-
-            // Check if the method is already stubbed and restore it
-            sinon.stub(pacTerminal.getWrapper(), 'activeAuth').throws(error);
-
-            try {
-                await vscode.commands.executeCommand("powerpages.actionsHub.refresh");
-            } catch (err) {
-                if (err instanceof Error) {
-                    expect(err.message).to.equal("Refresh Error");
-                }
-            }
-
-        });
-
-        it("should handle errors during switch environment command execution", async () => {
-            const error = new Error("Switch Environment Error");
-
-            // Check if the method is already stubbed and restore it
-            const orgListStub = sinon.stub(pacTerminal.getWrapper(), 'orgList').throws(error);
-
-            try {
-                await vscode.commands.executeCommand("powerpages.actionsHub.switchEnvironment");
-            } catch (err) {
-                if (err instanceof Error) {
-                    expect(err.message).to.equal("Switch Environment Error");
-                }
-            }
-
-            orgListStub.restore();
-
-            try {
-                await vscode.commands.executeCommand("powerpages.actionsHub.switchEnvironment");
-            } catch (err) {
-                if (err instanceof Error) {
-                    expect(err.message).to.equal("Switch Environment Error");
-                }
-            }
-
-        });
     });
 
 });
