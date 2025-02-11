@@ -384,7 +384,7 @@
       {
         "command": "powerpages.actionsHub.switchEnvironment",
         "title": "%powerpages.actionsHub.switchEnvironment.title%",
-        "icon": "$(sync)"
+        "icon": "$(arrow-swap)"
       }
     ],
     "configuration": {
