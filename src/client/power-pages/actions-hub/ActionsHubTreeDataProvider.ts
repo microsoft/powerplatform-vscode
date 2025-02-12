@@ -10,13 +10,11 @@ import { Constants } from "./Constants";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
-import { pacAuthManager } from "../../pac/PacAuthManager";
 import { PacTerminal } from "../../lib/PacTerminal";
 import { refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
 import { IArtemisServiceResponse, IWebsiteDetails } from "../../../common/services/Interfaces";
-import { ActiveOrgOutput } from "../../pac/PacTypes";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
-import { orgChangeEvent } from "../../OrgChangeNotifier";
+import PacContext, { OnPacContextChanged } from "../../pac/PacContext";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -25,23 +23,19 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
     private readonly _artemisResponse: IArtemisServiceResponse | null;
-    private _orgDetails: ActiveOrgOutput;
 
-    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput) {
+    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null) {
         this._disposables.push(...this.registerPanel(this._pacTerminal));
 
         this._context = context;
 
         // Register an event listener for environment changes
-        pacAuthManager.onDidChangeEnvironment(() => this.refresh());
+        OnPacContextChanged(() => this.refresh());
         this._artemisResponse = artemisResponse;
-        this._orgDetails = orgDetails;
-
-        this._disposables.push(orgChangeEvent((orgDetails: ActiveOrgOutput) => this._orgDetails = orgDetails));
     }
 
-    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput): ActionsHubTreeDataProvider {
-        return new ActionsHubTreeDataProvider(context, pacTerminal, artemisResponse, orgDetails);
+    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null): ActionsHubTreeDataProvider {
+        return new ActionsHubTreeDataProvider(context, pacTerminal, artemisResponse);
     }
 
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -57,19 +51,20 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
             const orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
             let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
-            const authInfo = pacAuthManager.getAuthInfo();
+            const authInfo = PacContext.AuthInfo;
             if (authInfo) {
-                currentEnvInfo = { currentEnvironmentName: authInfo.organizationFriendlyName };
+                currentEnvInfo = { currentEnvironmentName: authInfo.OrganizationFriendlyName };
             }
 
             let activeSites: IWebsiteDetails[] = [];
             let inactiveSites: IWebsiteDetails[] = [];
+            const orgInfo = PacContext.OrgInfo;
 
-            if (this._artemisResponse?.stamp) {
+            if (this._artemisResponse?.stamp && orgInfo) {
                 let allSites: IWebsiteDetails[] = [];
                 [activeSites, allSites] = await Promise.all([
-                    getActiveWebsites(this._artemisResponse?.stamp, this._orgDetails.EnvironmentId),
-                    getAllWebsites(this._orgDetails)
+                    getActiveWebsites(this._artemisResponse?.stamp, orgInfo.EnvironmentId),
+                    getAllWebsites(orgInfo)
                 ]);
                 const activeSiteIds = new Set(activeSites.map(activeSite => activeSite.WebsiteRecordId));
                 inactiveSites = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || []; //Need to handle failure case

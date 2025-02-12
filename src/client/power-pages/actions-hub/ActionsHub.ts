@@ -11,7 +11,6 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { PacTerminal } from "../../lib/PacTerminal";
 import { Constants } from "./Constants";
 import { IArtemisServiceResponse } from "../../../common/services/Interfaces";
-import { ActiveOrgOutput } from "../../pac/PacTypes";
 
 export class ActionsHub {
     private static _isInitialized = false;
@@ -26,7 +25,7 @@ export class ActionsHub {
         return enableActionsHub;
     }
 
-    static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput): Promise<void> {
+    static async initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null): Promise<void> {
         if (ActionsHub._isInitialized) {
             return;
         }
@@ -44,7 +43,7 @@ export class ActionsHub {
                 return;
             }
 
-            ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisResponse, orgDetails);
+            ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisResponse);
             ActionsHub._isInitialized = true;
             oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED);
         } catch (exception) {

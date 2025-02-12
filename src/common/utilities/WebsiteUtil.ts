@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ActiveOrgOutput } from "../../client/pac/PacTypes";
+import { OrgInfo } from "../../client/pac/PacTypes";
 import { ADX_WEBSITE_RECORDS_API_PATH, ADX_WEBSITE_RECORDS_FETCH_FAILED, GET_ALL_WEBSITES_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_API_PATH } from "../constants";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { dataverseAuthentication } from "../services/AuthenticationProvider";
@@ -28,7 +28,7 @@ export async function getActiveWebsites(serviceEndpointStamp: ServiceEndpointCat
     return await PPAPIService.getAllWebsiteDetails(serviceEndpointStamp, environmentId);
 }
 
-export async function getAllWebsites(orgDetails: ActiveOrgOutput): Promise<IWebsiteDetails[]> {
+export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetails[]> {
     const websites: IWebsiteDetails[] = [];
     try {
         const dataverseToken = (await dataverseAuthentication(orgDetails.OrgUrl ?? '', true)).accessToken;
