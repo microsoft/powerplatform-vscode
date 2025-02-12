@@ -11,10 +11,11 @@ import { SiteTreeItem } from "./SiteTreeItem";
 import { IWebsiteInfo } from "../models/IWebsiteInfo";
 import { WebsiteDataModel } from "../../../../common/services/Constants";
 import { WebsiteStatus } from "../models/WebsiteStatus";
+import { NoSitesTreeItem } from "./NoSitesTreeItem";
 
 export class ActiveGroupTreeItem extends ActionsHubTreeItem {
     private readonly _activeSites: IWebsiteDetails[];
-    
+
     constructor(activeSites: IWebsiteDetails[]) {
         super(
             Constants.Strings.ACTIVE_SITES,
@@ -26,6 +27,10 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
     }
 
     public getChildren(): ActionsHubTreeItem[] {
+        if (!this._activeSites || !this._activeSites.length) {
+            return [new NoSitesTreeItem()];
+        }
+
         return this._activeSites.map(site => {
             const siteInfo: IWebsiteInfo = {
                 name: site.name,

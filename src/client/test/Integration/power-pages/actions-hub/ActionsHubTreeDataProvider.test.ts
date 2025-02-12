@@ -30,6 +30,8 @@ describe("ActionsHubTreeDataProvider", () => {
     let pacTerminal: PacTerminal;
     let pacWrapperStub: sinon.SinonStubbedInstance<PacWrapper>;
     let registerCommandStub: sinon.SinonStub;
+    let artemisServiceResponse: IArtemisServiceResponse;
+    let activeOrgOutput: ActiveOrgOutput;
 
     beforeEach(() => {
         registerCommandStub = sinon.stub(vscode.commands, "registerCommand");
@@ -49,6 +51,8 @@ describe("ActionsHubTreeDataProvider", () => {
         pacWrapperStub = sinon.createStubInstance(PacWrapper);
         pacWrapperStub.activeAuth.resolves({ Status: SUCCESS, Results: [], Errors: [], Information: [] });
         (pacTerminal.getWrapper as sinon.SinonStub).returns(pacWrapperStub);
+        artemisServiceResponse = {} as IArtemisServiceResponse;
+        activeOrgOutput = {} as ActiveOrgOutput;
     });
 
     afterEach(() => {
@@ -57,21 +61,21 @@ describe("ActionsHubTreeDataProvider", () => {
 
     describe('initialize', () => {
         it("should register refresh command", () => {
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.refresh")).to.be.true;
         });
 
         it("should register switchEnvironment command", () => {
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.switchEnvironment")).to.be.true;
         });
 
         it("should register showEnvironmentDetails command", () => {
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails")).to.be.true;
@@ -81,7 +85,7 @@ describe("ActionsHubTreeDataProvider", () => {
     describe('getTreeItem', () => {
         it("should return the element in getTreeItem", () => {
             const element = {} as ActionsHubTreeItem;
-            const result = ActionsHubTreeDataProvider.initialize(context, pacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput).getTreeItem(element);
+            const result = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput).getTreeItem(element);
             expect(result).to.equal(element);
         });
     });
@@ -106,7 +110,7 @@ describe("ActionsHubTreeDataProvider", () => {
                 organizationId: "",
                 organizationUniqueName: ""
             });
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
             const result = await provider.getChildren();
 
             expect(result).to.not.be.null;
@@ -118,7 +122,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
         it("should return environment group tree item with default name when no auth info is available", async () => {
             authInfoStub.returns(null);
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
             const result = await provider.getChildren();
 
             expect(result).to.not.be.null;
@@ -132,7 +136,7 @@ describe("ActionsHubTreeDataProvider", () => {
         it("should return null in getChildren when an error occurs", async () => {
             authInfoStub.throws(new Error("Test Error"));
 
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
             const result = await provider.getChildren();
 
             expect(result).to.be.null;
@@ -141,12 +145,14 @@ describe("ActionsHubTreeDataProvider", () => {
             authInfoStub.restore();
         });
 
-        it("should return an empty array in getChildren when an element is passed", async () => {
+        it("should call element.getChildren when an element is passed", async () => {
             const element = new SiteTreeItem({} as IWebsiteInfo);
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
-            const result = await provider.getChildren(element);
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
+            const getChildrenStub = sinon.stub(element, "getChildren").resolves([]);
 
-            expect(result).to.be.an("array").that.is.empty;
+            await provider.getChildren(element);
+
+            expect(getChildrenStub.calledOnce).to.be.true;
         });
     });
 });

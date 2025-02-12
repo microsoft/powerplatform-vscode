@@ -9,6 +9,7 @@ import { ActiveGroupTreeItem } from "../../../../../power-pages/actions-hub/tree
 import { ActionsHubTreeItem } from "../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { WebsiteDataModel } from "../../../../../../common/services/Constants";
 import { SiteTreeItem } from "../../../../../power-pages/actions-hub/tree-items/SiteTreeItem";
+import { NoSitesTreeItem } from "../../../../../power-pages/actions-hub/tree-items/NoSitesTreeItem";
 
 describe('ActiveGroupTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {
@@ -41,19 +42,34 @@ describe('ActiveGroupTreeItem', () => {
         expect(treeItem.contextValue).to.be.equal("activeSitesGroup");
     });
 
-    it('should have the expected children', () => {
-        const activeWebsites = [
-            { websiteRecordId: "1", name: "Site 1", websiteUrl: "http://site1.com", dataverseInstanceUrl: "http://dataverse1.com", dataverseOrganizationId: "org1", dataModel: WebsiteDataModel.Standard, environmentId: "env1" },
-            { websiteRecordId: "2", name: "Site 2", websiteUrl: "http://site2.com", dataverseInstanceUrl: "http://dataverse2.com", dataverseOrganizationId: "org2", dataModel: WebsiteDataModel.Enhanced, environmentId: "env2" }
-        ];
+    describe('getChildren', () => {
+        describe('when active sites is empty', () => {
+            it('should return NoSitesTreeItem', () => {
+                const treeItem = new ActiveGroupTreeItem([]);
 
-        const treeItem = new ActiveGroupTreeItem(activeWebsites);
-        const children = treeItem.getChildren();
+                const children = treeItem.getChildren();
 
-        const site1 = children[0] as SiteTreeItem;
-        expect(site1.label).to.equal("Site 1");
+                expect(children).to.be.lengthOf(1);
+                expect(children[0]).to.be.instanceOf(NoSitesTreeItem);
+            });
+        });
 
-        const site2 = children[1] as SiteTreeItem;
-        expect(site2.label).to.equal("Site 2");
+        describe('when active sites is not empty', () => {
+            it('should return an array of SiteTreeItem', () => {
+                const activeWebsites = [
+                    { websiteRecordId: "1", name: "Site 1", websiteUrl: "http://site1.com", dataverseInstanceUrl: "http://dataverse1.com", dataverseOrganizationId: "org1", dataModel: WebsiteDataModel.Standard, environmentId: "env1" },
+                    { websiteRecordId: "2", name: "Site 2", websiteUrl: "http://site2.com", dataverseInstanceUrl: "http://dataverse2.com", dataverseOrganizationId: "org2", dataModel: WebsiteDataModel.Enhanced, environmentId: "env2" }
+                ];
+
+                const treeItem = new ActiveGroupTreeItem(activeWebsites);
+                const children = treeItem.getChildren();
+
+                const site1 = children[0] as SiteTreeItem;
+                expect(site1.label).to.equal("Site 1");
+
+                const site2 = children[1] as SiteTreeItem;
+                expect(site2.label).to.equal("Site 2");
+            });
+        });
     });
 });
