@@ -424,6 +424,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
       <source xml:lang="en">Select Type</source>
     </trans-unit>
+    <trans-unit id="++CODE++ced4bf2ba126114717dde651370974e70f3a6ac603e69671be5d4d3e3a303c3c">
+      <source xml:lang="en">Select an environment to switch to</source>
+    </trans-unit>
     <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
       <source xml:lang="en">Selection is empty.</source>
     </trans-unit>
@@ -568,6 +571,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
 To learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more).</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified</note>
+    </trans-unit>
+    <trans-unit id="powerpages.actionsHub.switchEnvironment.title">
+      <source xml:lang="en">Change Environment</source>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
       <source xml:lang="en">Clear Auth Profiles</source>

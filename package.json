@@ -377,9 +377,14 @@
         "title": "%powerplatform.pages.previewSite.title%"
       },
       {
-        "command": "powerpages.actionsHub.refresh",
+        "command": "microsoft.powerplatform.pages.actionsHub.refresh",
         "title": "%powerpages.actionsHub.refresh.title%",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
+        "title": "%powerpages.actionsHub.switchEnvironment.title%",
+        "icon": "$(arrow-swap)"
       }
     ],
     "configuration": {
@@ -855,11 +860,6 @@
           "command": "powerpages.copilot.clearConversation",
           "when": "view == powerpages.copilot",
           "group": "navigation"
-        },
-        {
-          "command": "powerpages.actionsHub.refresh",
-          "when": "view == powerpages.actionsHub",
-          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -930,6 +930,16 @@
           "command": "powerpages.collaboration.openMail",
           "group": "inline",
           "when": "viewItem == userNode"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.refresh",
+          "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
+          "group": "inline"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
+          "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
+          "group": "inline"
         }
       ]
     },
