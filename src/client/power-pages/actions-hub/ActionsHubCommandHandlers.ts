@@ -7,6 +7,23 @@ import * as vscode from 'vscode';
 import { pacAuthManager } from "../../pac/PacAuthManager";
 import { Constants } from './Constants';
 import { oneDSLoggerWrapper } from '../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
+import { PacTerminal } from '../../lib/PacTerminal';
+import { SUCCESS } from '../../../common/constants';
+import { OrgListOutput } from '../../pac/PacTypes';
+import { extractAuthInfo } from '../commonUtility';
+
+export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
+    const pacWrapper = pacTerminal.getWrapper();
+    try {
+        const pacActiveAuth = await pacWrapper.activeAuth();
+        if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
+            const authInfo = extractAuthInfo(pacActiveAuth.Results);
+            pacAuthManager.setAuthInfo(authInfo);
+        }
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: refreshEnvironment.name }, {});
+    }
+}
 
 const getEnvironmentDetails = () => {
     const detailsArray = [];
@@ -42,3 +59,31 @@ export const showEnvironmentDetails = async () => {
         oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_SHOW_ENVIRONMENT_DETAILS_FAILED, error as string, error as Error, { methodName: showEnvironmentDetails.name }, {});
     }
 };
+
+export const switchEnvironment = async (pacTerminal: PacTerminal) => {
+    const pacWrapper = pacTerminal.getWrapper();
+    const authInfo = pacAuthManager.getAuthInfo();
+
+    if (authInfo) {
+        const envListOutput = await pacWrapper.orgList();
+        if (envListOutput && envListOutput.Status === SUCCESS && envListOutput.Results) {
+            //envListOutput.Results is an array of OrgListOutput
+            const envList = envListOutput.Results as OrgListOutput[];
+            //show a quick pick to select the environment with friendly name and environment url
+            const selectedEnv = await vscode.window.showQuickPick(envList.map((env) => {
+                return {
+                    label: env.FriendlyName,
+                    description: env.EnvironmentUrl
+                }
+            }),
+                {
+                    placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT)
+                }
+            );
+
+            if (selectedEnv) {
+                await pacWrapper.orgSelect(selectedEnv.description);
+            }
+        }
+    }
+}
