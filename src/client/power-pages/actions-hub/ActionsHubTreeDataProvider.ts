@@ -11,9 +11,8 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { pacAuthManager } from "../../pac/PacAuthManager";
-import { SUCCESS } from "../../../common/constants";
-import { extractAuthInfo } from "../commonUtility";
 import { PacTerminal } from "../../lib/PacTerminal";
+import { refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
 import { IArtemisServiceResponse, IWebsiteDetails } from "../../../common/services/Interfaces";
 import { ActiveOrgOutput } from "../../pac/PacTypes";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
@@ -29,7 +28,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput) {
         this._disposables.push(
-            vscode.window.registerTreeDataProvider("powerpages.actionsHub", this)
+            vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this)
         );
 
         this._context = context;
@@ -62,7 +61,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
                 let activeSites: IWebsiteDetails[] = [];
                 let inactiveSites: IWebsiteDetails[] = [];
-                
+
                 if (this._artemisResponse?.stamp) {
                     activeSites = await getActiveWebsites(this._artemisResponse?.stamp, this._orgDetails.EnvironmentId) || []; //Need to handle failure case
                     const allSites = await getAllWebsites(this._orgDetails);
@@ -99,19 +98,12 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
-        const pacWrapper = pacTerminal.getWrapper();
         return [
-            vscode.commands.registerCommand("powerpages.actionsHub.refresh", async () => {
-                try {
-                    const pacActiveAuth = await pacWrapper.activeAuth();
-                    if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
-                        const authInfo = extractAuthInfo(pacActiveAuth.Results);
-                        pacAuthManager.setAuthInfo(authInfo);
-                    }
-                } catch (error) {
-                    oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
-                }
-            })
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(pacTerminal)),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => await switchEnvironment(pacTerminal)),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails", showEnvironmentDetails)
         ];
     }
 }

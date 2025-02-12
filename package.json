@@ -377,9 +377,19 @@
         "title": "%powerplatform.pages.previewSite.title%"
       },
       {
-        "command": "powerpages.actionsHub.refresh",
-        "title": "%powerpages.actionsHub.refresh.title%",
+        "command": "microsoft.powerplatform.pages.actionsHub.refresh",
+        "title": "%microsoft.powerplatform.pages.actionsHub.refresh.title%",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+        "title": "%microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title%",
+        "icon": "$(info)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
+        "title": "%microsoft.powerplatform.pages.actionsHub.switchEnvironment.title%",
+        "icon": "$(arrow-swap)"
       }
     ],
     "configuration": {
@@ -826,8 +836,16 @@
           "when": "microsoft.powerplatform.pages.siteRuntimePreviewEnabled && workspaceFolderCount == 1 && !isWeb"
         },
         {
-           "command": "powerPlatform.previewCurrentActiveUsers",
-           "when": "isWeb && virtualWorkspace"
+          "command": "powerPlatform.previewCurrentActiveUsers",
+          "when": "isWeb && virtualWorkspace"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.refresh",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -854,11 +872,6 @@
         {
           "command": "powerpages.copilot.clearConversation",
           "when": "view == powerpages.copilot",
-          "group": "navigation"
-        },
-        {
-          "command": "powerpages.actionsHub.refresh",
-          "when": "view == powerpages.actionsHub",
           "group": "navigation"
         }
       ],
@@ -930,6 +943,21 @@
           "command": "powerpages.collaboration.openMail",
           "group": "inline",
           "when": "viewItem == userNode"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.refresh",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@3"
         }
       ]
     },
@@ -990,7 +1018,7 @@
           "visibility": "visible"
         },
         {
-          "id": "powerpages.actionsHub",
+          "id": "microsoft.powerplatform.pages.actionsHub",
           "name": "%microsoft.powerplatform.pages.actionsHub.title%",
           "when": "microsoft.powerplatform.pages.actionsHubEnabled && !isWeb",
           "icon": "./src/client/assets/powerPages.svg",
@@ -1095,14 +1123,14 @@
     "get-func-name": "^2.0.2",
     "gulp-eslint": "^6.0.0",
     "gulp-filter": "^7.0.0",
-    "gulp-mocha": "^8.0.0",
+    "gulp-mocha": "^10.0.1",
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.1.3",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^6.0.0-alpha.1",
     "jwt-decode": "2.2.0",
-    "mocha": "^9.2.2",
+    "mocha": "^11.1.0",
     "moment": "^2.29.4",
     "nanoid": "^3.1.31",
     "node-fetch": "^2.6.7",
