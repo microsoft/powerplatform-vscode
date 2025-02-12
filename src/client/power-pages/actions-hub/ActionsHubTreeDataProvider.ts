@@ -14,6 +14,7 @@ import { pacAuthManager } from "../../pac/PacAuthManager";
 import { SUCCESS } from "../../../common/constants";
 import { extractAuthInfo } from "../commonUtility";
 import { PacTerminal } from "../../lib/PacTerminal";
+import { OrgListOutput } from "../../pac/PacTypes";
 import { showEnvironmentDetails } from "./Utils";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
@@ -89,6 +90,32 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     }
                 } catch (error) {
                     oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
+                }
+            }),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => {
+                const authInfo = pacAuthManager.getAuthInfo();
+                if(authInfo) {
+                    const envListOutput = await pacWrapper.orgList();
+                    if(envListOutput && envListOutput.Status === SUCCESS && envListOutput.Results) {
+                        //envListOutput.Results is an array of OrgListOutput
+                        const envList = envListOutput.Results as OrgListOutput[];
+                        //show a quick pick to select the environment with friendly name and environment url
+                        const selectedEnv = await vscode.window.showQuickPick(envList.map((env) => {
+                            return {
+                                label: env.FriendlyName,
+                                description: env.EnvironmentUrl
+                            }
+                        }),
+                        {
+                            placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT)
+                        }
+                    );
+
+                        if(selectedEnv) {
+                            await pacWrapper.orgSelect(selectedEnv.description);
+                        }
+                    }
                 }
             }),
 

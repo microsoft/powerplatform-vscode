@@ -385,6 +385,11 @@
         "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
         "title": "%microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title%",
         "icon": "$(info)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
+        "title": "%microsoft.powerplatform.pages.actionsHub.switchEnvironment.title%",
+        "icon": "$(sync)"
       }
     ],
     "configuration": {
@@ -945,8 +950,18 @@
           "when": "viewItem == userNode"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.refresh",
+          "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
+          "group": "inline"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
+          "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
           "group": "inline"
         }
       ]
