@@ -12,9 +12,10 @@ import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem"
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
 import { refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
-import { IArtemisServiceResponse, IWebsiteDetails } from "../../../common/services/Interfaces";
+import { IWebsiteDetails } from "../../../common/services/Interfaces";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
 import PacContext, { OnPacContextChanged } from "../../pac/PacContext";
+import ArtemisContext from "../../ArtemisContext";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -22,20 +23,17 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _onDidChangeTreeData: vscode.EventEmitter<ActionsHubTreeItem | undefined | void> = new vscode.EventEmitter<ActionsHubTreeItem | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
-    private readonly _artemisResponse: IArtemisServiceResponse | null;
-
-    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null) {
+    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
         this._disposables.push(...this.registerPanel(this._pacTerminal));
 
         this._context = context;
 
         // Register an event listener for environment changes
         OnPacContextChanged(() => this.refresh());
-        this._artemisResponse = artemisResponse;
     }
 
-    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null): ActionsHubTreeDataProvider {
-        return new ActionsHubTreeDataProvider(context, pacTerminal, artemisResponse);
+    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
+        return new ActionsHubTreeDataProvider(context, pacTerminal);
     }
 
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -60,10 +58,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             let inactiveSites: IWebsiteDetails[] = [];
             const orgInfo = PacContext.OrgInfo;
 
-            if (this._artemisResponse?.stamp && orgInfo) {
+            if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
                 let allSites: IWebsiteDetails[] = [];
                 [activeSites, allSites] = await Promise.all([
-                    getActiveWebsites(this._artemisResponse?.stamp, orgInfo.EnvironmentId),
+                    getActiveWebsites(ArtemisContext.ServiceResponse?.stamp, orgInfo.EnvironmentId),
                     getAllWebsites(orgInfo)
                 ]);
                 const activeSiteIds = new Set(activeSites.map(activeSite => activeSite.WebsiteRecordId));

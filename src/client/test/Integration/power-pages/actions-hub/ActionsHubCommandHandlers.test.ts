@@ -6,13 +6,13 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { pacAuthManager } from "../../../../pac/PacAuthManager";
 import { showEnvironmentDetails, refreshEnvironment, switchEnvironment } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
-import { AuthInfo } from '../../../../pac/PacTypes';
+import { AuthInfo, CloudInstance, EnvironmentType } from '../../../../pac/PacTypes';
 import { PacTerminal } from '../../../../lib/PacTerminal';
+import PacContext from '../../../../pac/PacContext';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -20,21 +20,29 @@ describe('ActionsHubCommandHandlers', () => {
     let mockSetAuthInfo: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
 
-    const mockAuthInfo = {
-        tenantId: 'test-tenant',
-        entraIdObjectId: 'test-object-id',
-        organizationId: 'test-org-id',
-        organizationUniqueName: 'test-org-name',
-        environmentId: 'test-env-id',
-        environmentType: 'test-env-type',
-        cloud: 'test-cloud',
-        environmentGeo: 'test-geo'
+    const mockAuthInfo : AuthInfo = {
+        UserType: 'user-type',
+        Cloud: CloudInstance.Preprod,
+        TenantId: 'test-tenant',
+        TenantCountry: 'tenant-country',
+        User: 'user',
+        EntraIdObjectId: 'test-object-id',
+        Puid: 'test-puid',
+        UserCountryRegion: 'user-country-region',
+        TokenExpires: 'token-expires',
+        Authority: 'authority',
+        EnvironmentGeo: 'test-geo',
+        EnvironmentId: 'test-env-id',
+        EnvironmentType: EnvironmentType.Regular,
+        OrganizationId: 'test-org-id',
+        OrganizationUniqueName: 'test-org-name',
+        OrganizationFriendlyName: 'test-org-friendly-name'
     };
 
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
-        mockSetAuthInfo = sandbox.stub(pacAuthManager, 'setAuthInfo');
+        mockSetAuthInfo = sandbox.stub(PacContext, 'setContext');
         traceErrorStub = sinon.stub();
         sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns({
             traceError: traceErrorStub,
@@ -49,33 +57,29 @@ describe('ActionsHubCommandHandlers', () => {
     });
 
     describe('showEnvironmentDetails', () => {
-        let mockGetAuthInfo: sinon.SinonStub;
-
-        beforeEach(() => {
-            mockGetAuthInfo = sandbox.stub(pacAuthManager, 'getAuthInfo');
-        });
-
         it('should show environment details when auth info is available', async () => {
-            mockGetAuthInfo.returns(mockAuthInfo);
+            PacContext['_authInfo'] = mockAuthInfo;
             mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
 
             await showEnvironmentDetails();
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Session Details");
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Timestamp");
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Tenant ID: test-tenant");
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Object ID: test-object-id");
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Organization ID: test-org-id");
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Unique name: test-org-name");
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Environment ID: test-env-id");
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Cluster environment: test-env-type");
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Cluster category: test-cloud");
-            expect(mockShowInformationMessage.firstCall.args[0]).to.include("Cluster geo name: test-geo");
+
+            const message = mockShowInformationMessage.firstCall.args[0];
+            expect(message).to.include("Session Details");
+            expect(message).to.include("Timestamp");
+            expect(message).to.include("Tenant ID: test-tenant");
+            expect(message).to.include("Object ID: test-object-id");
+            expect(message).to.include("Organization ID: test-org-id");
+            expect(message).to.include("Unique name: test-org-name");
+            expect(message).to.include("Environment ID: test-env-id");
+            expect(message).to.include("Cluster environment: 1");
+            expect(message).to.include("Cluster category: 1");
+            expect(message).to.include("Cluster geo name: test-geo");
         });
 
         it('should handle cases without auth info', async () => {
-            mockGetAuthInfo.returns(undefined);
+            PacContext['_authInfo'] = null;
             mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
 
             await showEnvironmentDetails();
@@ -84,7 +88,7 @@ describe('ActionsHubCommandHandlers', () => {
         });
 
         it('should handle errors appropriately', async () => {
-            mockGetAuthInfo.throws(new Error('Test error'));
+            mockShowInformationMessage.throws(new Error('Test error'));
 
             await showEnvironmentDetails();
 
@@ -108,6 +112,7 @@ describe('ActionsHubCommandHandlers', () => {
         });
 
         it('should refresh environment successfully when auth is available', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
             const mockResults = {
                 tenantId: 'test-tenant',
                 userId: 'test-user'
@@ -153,7 +158,6 @@ describe('ActionsHubCommandHandlers', () => {
         let mockOrgList: sinon.SinonStub;
         let mockOrgSelect: sinon.SinonStub;
         let mockShowQuickPick: sinon.SinonStub;
-        let mockGetAuthInfo: sinon.SinonStub;
 
         const mockEnvList = [
             {
@@ -177,11 +181,9 @@ describe('ActionsHubCommandHandlers', () => {
                 orgSelect: mockOrgSelect
             });
             mockShowQuickPick = sandbox.stub(vscode.window, 'showQuickPick');
-            mockGetAuthInfo = sandbox.stub(pacAuthManager, 'getAuthInfo');
         });
 
         it('should switch environment successfully when env is selected', async () => {
-            mockGetAuthInfo.returns(mockAuthInfo);
             mockOrgList.resolves({
                 Status: 'Success',
                 Results: mockEnvList

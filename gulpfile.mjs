@@ -215,7 +215,7 @@ function compileIntegrationTests() {
         // to test puppeteer we need "dom".
         // since "dom" overlaps with "webworker" we need to overwrite the lib property.
         // This is a known ts issue (bot being able to have both webworker and dom): https://github.com/microsoft/TypeScript/issues/20595
-        lib: ["es2019", "dom", "dom.iterable"],
+        lib: ["es2019", "dom", "dom.iterable", "es2020"],
     });
     return gulp.src(["src/**/*.ts"]).pipe(tsProject()).pipe(gulp.dest("out"));
 }

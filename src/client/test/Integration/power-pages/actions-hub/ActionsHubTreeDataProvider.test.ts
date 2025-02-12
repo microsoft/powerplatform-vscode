@@ -13,25 +13,21 @@ import { Constants } from "../../../../power-pages/actions-hub/Constants";
 import { EnvironmentGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/EnvironmentGroupTreeItem";
 import { OtherSitesGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/OtherSitesGroupTreeItem";
 import { ActionsHubTreeItem } from "../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
-import { pacAuthManager } from "../../../../pac/PacAuthManager";
 import { PacTerminal } from "../../../../lib/PacTerminal";
 import { PacWrapper } from "../../../../pac/PacWrapper";
 import { SUCCESS } from "../../../../../common/constants";
-import { IArtemisServiceResponse } from "../../../../../common/services/Interfaces";
-import { ActiveOrgOutput } from "../../../../pac/PacTypes";
 import { SiteTreeItem } from "../../../../power-pages/actions-hub/tree-items/SiteTreeItem";
 import { IWebsiteInfo } from "../../../../power-pages/actions-hub/models/IWebsiteInfo";
+import PacContext from "../../../../pac/PacContext";
+import { CloudInstance, EnvironmentType } from "../../../../pac/PacTypes";
 
 describe("ActionsHubTreeDataProvider", () => {
     let context: vscode.ExtensionContext;
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
-    let authInfoStub: sinon.SinonStub;
     let pacTerminal: PacTerminal;
     let pacWrapperStub: sinon.SinonStubbedInstance<PacWrapper>;
     let registerCommandStub: sinon.SinonStub;
-    let artemisServiceResponse: IArtemisServiceResponse;
-    let activeOrgOutput: ActiveOrgOutput;
 
     beforeEach(() => {
         registerCommandStub = sinon.stub(vscode.commands, "registerCommand");
@@ -46,13 +42,10 @@ describe("ActionsHubTreeDataProvider", () => {
             traceError: traceErrorStub,
             featureUsage: sinon.stub()
         });
-        authInfoStub = sinon.stub(pacAuthManager, "getAuthInfo");
         pacTerminal = sinon.createStubInstance(PacTerminal);
         pacWrapperStub = sinon.createStubInstance(PacWrapper);
         pacWrapperStub.activeAuth.resolves({ Status: SUCCESS, Results: [], Errors: [], Information: [] });
         (pacTerminal.getWrapper as sinon.SinonStub).returns(pacWrapperStub);
-        artemisServiceResponse = {} as IArtemisServiceResponse;
-        activeOrgOutput = {} as ActiveOrgOutput;
     });
 
     afterEach(() => {
@@ -61,21 +54,21 @@ describe("ActionsHubTreeDataProvider", () => {
 
     describe('initialize', () => {
         it("should register refresh command", () => {
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.refresh")).to.be.true;
         });
 
         it("should register switchEnvironment command", () => {
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.switchEnvironment")).to.be.true;
         });
 
         it("should register showEnvironmentDetails command", () => {
-            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails")).to.be.true;
@@ -85,32 +78,32 @@ describe("ActionsHubTreeDataProvider", () => {
     describe('getTreeItem', () => {
         it("should return the element in getTreeItem", () => {
             const element = {} as ActionsHubTreeItem;
-            const result = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput).getTreeItem(element);
+            const result = ActionsHubTreeDataProvider.initialize(context, pacTerminal).getTreeItem(element);
             expect(result).to.equal(element);
         });
     });
 
     describe('getChildren', () => {
         it("should return environment and other sites group tree items in getChildren when no element is passed", async () => {
-            authInfoStub.returns({
-                organizationFriendlyName: "TestOrg",
-                userType: "",
-                cloud: "",
-                tenantId: "",
-                tenantCountry: "",
-                user: "",
-                entraIdObjectId: "",
-                puid: "",
-                userCountryRegion: "",
-                tokenExpires: "",
-                authority: "",
-                environmentGeo: "",
-                environmentId: "",
-                environmentType: "",
-                organizationId: "",
-                organizationUniqueName: ""
-            });
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
+            PacContext['_authInfo'] = {
+                OrganizationFriendlyName: "TestOrg",
+                UserType: "",
+                Cloud: CloudInstance.Preprod,
+                TenantId: "",
+                TenantCountry: "",
+                User: "",
+                EntraIdObjectId: "",
+                Puid: "",
+                UserCountryRegion: "",
+                TokenExpires: "",
+                Authority: "",
+                EnvironmentGeo: "",
+                EnvironmentId: "",
+                EnvironmentType: EnvironmentType.Regular,
+                OrganizationId: "",
+                OrganizationUniqueName: ""
+            };
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             const result = await provider.getChildren();
 
             expect(result).to.not.be.null;
@@ -121,8 +114,8 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it("should return environment group tree item with default name when no auth info is available", async () => {
-            authInfoStub.returns(null);
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
+            PacContext['_authInfo'] = null;
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             const result = await provider.getChildren();
 
             expect(result).to.not.be.null;
@@ -133,21 +126,9 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(result![1]).to.be.instanceOf(OtherSitesGroupTreeItem);
         });
 
-        it("should return null in getChildren when an error occurs", async () => {
-            authInfoStub.throws(new Error("Test Error"));
-
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
-            const result = await provider.getChildren();
-
-            expect(result).to.be.null;
-            expect(traceErrorStub.calledWith(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED)).to.be.true;
-
-            authInfoStub.restore();
-        });
-
         it("should call element.getChildren when an element is passed", async () => {
             const element = new SiteTreeItem({} as IWebsiteInfo);
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal, artemisServiceResponse, activeOrgOutput);
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             const getChildrenStub = sinon.stub(element, "getChildren").resolves([]);
 
             await provider.getChildren(element);

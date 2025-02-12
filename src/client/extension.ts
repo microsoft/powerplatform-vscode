@@ -48,6 +48,7 @@ import { showErrorDialog } from "../common/utilities/errorHandlerUtil";
 import { ENVIRONMENT_EXPIRED } from "./power-pages/actions-hub/Constants";
 import { extractAuthInfo, extractOrgInfo } from "./power-pages/commonUtility";
 import PacContext from "./pac/PacContext";
+import ArtemisContext from "./ArtemisContext";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -177,6 +178,8 @@ export async function activate(
             const pacActiveAuth = pacActiveAuthResult.status === 'fulfilled' ? pacActiveAuthResult.value : null;
 
             if (artemisResponse !== null && artemisResponse.response !== null) {
+                ArtemisContext.setContext(artemisResponse);
+
                 const { geoName, geoLongName, clusterName, clusterNumber } = artemisResponse.response;
                 let AadObjectId, EnvID, TenantID;
 
@@ -230,7 +233,7 @@ export async function activate(
 
             await Promise.allSettled([
                 PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context),
-                ActionsHub.initialize(context, pacTerminal, artemisResponse)
+                ActionsHub.initialize(context, pacTerminal)
             ]);
         }),
 

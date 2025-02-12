@@ -13,8 +13,6 @@ import { oneDSLoggerWrapper } from "../../../../../common/OneDSLoggerTelemetry/o
 import { ActionsHubTreeDataProvider } from "../../../../power-pages/actions-hub/ActionsHubTreeDataProvider";
 import { PacWrapper } from "../../../../pac/PacWrapper";
 import { Constants } from "../../../../power-pages/actions-hub/Constants";
-import { IArtemisServiceResponse } from "../../../../../common/services/Interfaces";
-import { ActiveOrgOutput } from "../../../../pac/PacTypes";
 
 describe("ActionsHub", () => {
     let getConfigStub: sinon.SinonStub;
@@ -70,7 +68,7 @@ describe("ActionsHub", () => {
             });
 
             it("should return early", async () => {
-                await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+                await ActionsHub.initialize(fakeContext, fakePacTerminal);
                 expect(executeCommandStub.called).to.be.false;
             });
         });
@@ -89,20 +87,20 @@ describe("ActionsHub", () => {
                 });
 
                 it("should set context to true and return early if isEnabled returns true", async () => {
-                    await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+                    await ActionsHub.initialize(fakeContext, fakePacTerminal);
                     expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "true" })).to.be.true;
                     expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", true)).to.be.true;
                 });
 
                 it("should initialize ActionsHubTreeDataProvider", async () => {
-                    await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+                    await ActionsHub.initialize(fakeContext, fakePacTerminal);
                     expect(actionsHubTreeDataProviderStub.calledWith(fakeContext)).to.be.true;
 
                     actionsHubTreeDataProviderStub.restore();
                 });
 
                 it("should initialize and log initialization event", async () => {
-                    await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+                    await ActionsHub.initialize(fakeContext, fakePacTerminal);
 
                     expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_INITIALIZED)).to.be.true;
                 });
@@ -111,7 +109,7 @@ describe("ActionsHub", () => {
                     const fakeError = new Error("fake error");
                     actionsHubTreeDataProviderStub.throws(fakeError);
 
-                    await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+                    await ActionsHub.initialize(fakeContext, fakePacTerminal);
 
                     expect(traceErrorStub.calledWith(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, fakeError.message, fakeError)).to.be.true;
                 });
@@ -126,13 +124,13 @@ describe("ActionsHub", () => {
                 });
 
                 it("should set context to false and return early if isEnabled returns false", async () => {
-                    await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+                    await ActionsHub.initialize(fakeContext, fakePacTerminal);
                     expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "false" })).to.be.true;
                     expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", false)).to.be.true;
                 });
 
                 it("should not initialize ActionsHubTreeDataProvider", async () => {
-                    await ActionsHub.initialize(fakeContext, fakePacTerminal, {} as IArtemisServiceResponse, {} as ActiveOrgOutput);
+                    await ActionsHub.initialize(fakeContext, fakePacTerminal);
                     expect(actionsHubTreeDataProviderStub.called).to.be.false;
                 });
             });
