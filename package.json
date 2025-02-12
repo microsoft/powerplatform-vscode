@@ -873,11 +873,6 @@
           "command": "powerpages.copilot.clearConversation",
           "when": "view == powerpages.copilot",
           "group": "navigation"
-        },
-        {
-          "command": "microsoft.powerplatform.pages.actionsHub.refresh",
-          "when": "view == microsoft.powerplatform.pages.actionsHub",
-          "group": "navigation"
         }
       ],
       "view/item/context": [
