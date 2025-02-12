@@ -28,15 +28,12 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _orgDetails: ActiveOrgOutput;
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput) {
-        this._disposables.push(
-            vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this)
-        );
+        this._disposables.push(...this.registerPanel(this._pacTerminal));
 
         this._context = context;
 
         // Register an event listener for environment changes
         pacAuthManager.onDidChangeEnvironment(() => this.refresh());
-        this._disposables.push(...this.registerPanel(this._pacTerminal));
         this._artemisResponse = artemisResponse;
         this._orgDetails = orgDetails;
 
@@ -52,43 +49,46 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     async getChildren(element?: ActionsHubTreeItem): Promise<ActionsHubTreeItem[] | null | undefined> {
-        if (!element) {
-            try {
-
-                const orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
-                let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
-                const authInfo = pacAuthManager.getAuthInfo();
-                if (authInfo) {
-                    currentEnvInfo = { currentEnvironmentName: authInfo.organizationFriendlyName };
-                }
-
-                let activeSites: IWebsiteDetails[] = [];
-                let inactiveSites: IWebsiteDetails[] = [];
-
-                if (this._artemisResponse?.stamp) {
-                    activeSites = await getActiveWebsites(this._artemisResponse?.stamp, this._orgDetails.EnvironmentId) || []; //Need to handle failure case
-                    const allSites = await getAllWebsites(this._orgDetails);
-                    const activeSiteIds = new Set(activeSites.map(activeSite => activeSite.WebsiteRecordId));
-                    inactiveSites = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || []; //Need to handle failure case
-                }
-                else {
-                    //TODO: Handle the case when artemis response is not available
-                    // Log the scenario
-                    // Question: Should we show any message to the user? or just show the empty list of sites
-                }
-
-                //TODO: Handle the case when the user is not logged in
-
-                return [
-                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, activeSites, inactiveSites),
-                    new OtherSitesGroupTreeItem()
-                ];
-            } catch (error) {
-                oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: this.getChildren }, {});
-                return null;
-            }
-        } else {
+        if (element) {
             return element.getChildren();
+        }
+
+        try {
+
+            const orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
+            let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
+            const authInfo = pacAuthManager.getAuthInfo();
+            if (authInfo) {
+                currentEnvInfo = { currentEnvironmentName: authInfo.organizationFriendlyName };
+            }
+
+            let activeSites: IWebsiteDetails[] = [];
+            let inactiveSites: IWebsiteDetails[] = [];
+
+            if (this._artemisResponse?.stamp) {
+                let allSites: IWebsiteDetails[] = [];
+                [activeSites, allSites] = await Promise.all([
+                    getActiveWebsites(this._artemisResponse?.stamp, this._orgDetails.EnvironmentId),
+                    getAllWebsites(this._orgDetails)
+                ]);
+                const activeSiteIds = new Set(activeSites.map(activeSite => activeSite.WebsiteRecordId));
+                inactiveSites = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || []; //Need to handle failure case
+            }
+            else {
+                //TODO: Handle the case when artemis response is not available
+                // Log the scenario
+                // Question: Should we show any message to the user? or just show the empty list of sites
+            }
+
+            //TODO: Handle the case when the user is not logged in
+
+            return [
+                new EnvironmentGroupTreeItem(currentEnvInfo, this._context, activeSites, inactiveSites),
+                new OtherSitesGroupTreeItem()
+            ];
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: this.getChildren }, {});
+            return null;
         }
     }
 
@@ -102,6 +102,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
         return [
+            vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this),
+
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(pacTerminal)),
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => await switchEnvironment(pacTerminal)),

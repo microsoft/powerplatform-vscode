@@ -24,16 +24,18 @@ type AdxWebsiteRecords = {
     adx_websiteid: string;
 }
 
-export async function getActiveWebsites(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<IWebsiteDetails[] | null> {
-    return await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId);
+export async function getActiveWebsites(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<IWebsiteDetails[]> {
+    return await PPAPIService.getAllWebsiteDetails(serviceEndpointStamp, environmentId);
 }
 
-export async function getAllWebsites(orgDetails: ActiveOrgOutput): Promise<IWebsiteDetails[] | undefined> {
+export async function getAllWebsites(orgDetails: ActiveOrgOutput): Promise<IWebsiteDetails[]> {
     const websites: IWebsiteDetails[] = [];
     try {
         const dataverseToken = (await dataverseAuthentication(orgDetails.OrgUrl ?? '', true)).accessToken;
-        const adxWebsiteRecords = await getAdxWebsiteRecords(orgDetails.OrgUrl, dataverseToken);
-        const powerPagesSiteRecords = await getPowerPagesSiteRecords(orgDetails.OrgUrl, dataverseToken);
+        const [adxWebsiteRecords, powerPagesSiteRecords] = await Promise.all([
+            getAdxWebsiteRecords(orgDetails.OrgUrl, dataverseToken),
+            getPowerPagesSiteRecords(orgDetails.OrgUrl, dataverseToken)
+        ]);
 
         adxWebsiteRecords.forEach(adxWebsite => {
             websites.push({
@@ -76,10 +78,13 @@ async function getAdxWebsiteRecords(orgUrl: string, token: string) {
             return data.value;
         }
 
-        throw new Error(`Failed to fetch ADX website records. Status: ${response.status}`);
+        if (response.status !== 404) {
+            throw new Error(`Failed to fetch ADX website records. Status: ${response.status}`);
+        }
     } catch (error) {
         oneDSLoggerWrapper.getLogger().traceError(ADX_WEBSITE_RECORDS_FETCH_FAILED, ADX_WEBSITE_RECORDS_FETCH_FAILED, error as Error);
     }
+
     return [];
 }
 
@@ -94,10 +99,13 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
             return data.value;
         }
 
-        throw new Error(`Failed to fetch PowerPages site records. Status: ${response.status}`);
+        if (response.status !== 404) {
+            throw new Error(`Failed to fetch PowerPages site records. Status: ${response.status}`);
+        }
     } catch (error) {
         oneDSLoggerWrapper.getLogger().traceError(POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, error as Error);
     }
+
     return [];
 }
 

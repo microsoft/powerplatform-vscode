@@ -39,7 +39,7 @@ export class PPAPIService {
             return null;
         }
 
-        const websiteDetailsResponse = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId);
+        const websiteDetailsResponse = await PPAPIService.getAllWebsiteDetails(serviceEndpointStamp, environmentId);
         const websiteDetails = websiteDetailsResponse?.find((website) => website.WebsiteRecordId === websiteRecordId); // selecting 1st websiteDetails whose websiteRecordId matches
 
 
@@ -51,7 +51,7 @@ export class PPAPIService {
         return null;
     }
 
-    static async getWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<IWebsiteDetails[] | null> {
+    static async getAllWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<IWebsiteDetails[]> {
         try {
             const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
             const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, environmentId), {
@@ -70,7 +70,7 @@ export class PPAPIService {
             // Question: Is it okay to use the copilot telemetry here in this file?
             sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_DETAILS_FAILED, errorMsg: (error as Error).message });
         }
-        return null;
+        return [];
     }
 
     static async getPPAPIServiceEndpoint(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string, websitePreviewId?: string): Promise<string> {

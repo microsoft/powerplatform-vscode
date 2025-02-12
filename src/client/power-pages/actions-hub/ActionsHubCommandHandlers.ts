@@ -11,6 +11,7 @@ import { PacTerminal } from '../../lib/PacTerminal';
 import { SUCCESS } from '../../../common/constants';
 import { OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
+import { showProgressWithNotification } from '../../../common/utilities/Utils';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -60,30 +61,35 @@ export const showEnvironmentDetails = async () => {
     }
 };
 
+const getEnvironmentList = async (pacTerminal: PacTerminal): Promise<{ label: string, description: string }[]> => {
+    const pacWrapper = pacTerminal.getWrapper();
+    const envListOutput = await pacWrapper.orgList();
+    if (envListOutput && envListOutput.Status === SUCCESS && envListOutput.Results) {
+        const envList = envListOutput.Results as OrgListOutput[];
+        return envList.map((env) => {
+            return {
+                label: env.FriendlyName,
+                description: env.EnvironmentUrl
+            }
+        });
+    }
+
+    return [];
+}
+
 export const switchEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
     const authInfo = pacAuthManager.getAuthInfo();
 
     if (authInfo) {
-        const envListOutput = await pacWrapper.orgList();
-        if (envListOutput && envListOutput.Status === SUCCESS && envListOutput.Results) {
-            //envListOutput.Results is an array of OrgListOutput
-            const envList = envListOutput.Results as OrgListOutput[];
-            //show a quick pick to select the environment with friendly name and environment url
-            const selectedEnv = await vscode.window.showQuickPick(envList.map((env) => {
-                return {
-                    label: env.FriendlyName,
-                    description: env.EnvironmentUrl
-                }
-            }),
-                {
-                    placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT)
-                }
-            );
-
-            if (selectedEnv) {
-                await pacWrapper.orgSelect(selectedEnv.description);
+        const selectedEnv = await vscode.window.showQuickPick(getEnvironmentList(pacTerminal),
+            {
+                placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT)
             }
+        );
+
+        if (selectedEnv) {
+            await showProgressWithNotification(Constants.Strings.CHANGING_ENVIRONMENT, async () => await pacWrapper.orgSelect(selectedEnv.description));
         }
     }
 }
