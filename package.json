@@ -946,18 +946,18 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.refresh",
-          "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
-          "group": "inline"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@1"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
-          "group": "inline"
+          "group": "inline@2"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
-          "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
-          "group": "inline"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@3"
         }
       ]
     },
