@@ -24,9 +24,8 @@ type AdxWebsiteRecords = {
     adx_websiteid: string;
 }
 
-export async function getActiveWebsites(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<IWebsiteDetails[] | undefined> {
-    const websites = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId);
-    return websites?.value;
+export async function getActiveWebsites(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<IWebsiteDetails[] | null> {
+    return await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId);
 }
 
 export async function getAllWebsites(orgDetails: ActiveOrgOutput): Promise<IWebsiteDetails[] | undefined> {
@@ -38,38 +37,38 @@ export async function getAllWebsites(orgDetails: ActiveOrgOutput): Promise<IWebs
 
         adxWebsiteRecords.forEach(adxWebsite => {
             websites.push({
-                name: adxWebsite.adx_name,
-                websiteUrl: adxWebsite.adx_primarydomainname,
-                dataverseInstanceUrl: orgDetails.OrgUrl,
-                dataverseOrganizationId: orgDetails.OrgId,
-                dataModel: WebsiteDataModel.Standard,
-                environmentId: orgDetails.EnvironmentId,
-                websiteRecordId: adxWebsite.adx_websiteid,
+                Name: adxWebsite.adx_name,
+                WebsiteUrl: adxWebsite.adx_primarydomainname,
+                DataverseInstanceUrl: orgDetails.OrgUrl,
+                DataverseOrganizationId: orgDetails.OrgId,
+                DataModel: WebsiteDataModel.Standard,
+                EnvironmentId: orgDetails.EnvironmentId,
+                WebsiteRecordId: adxWebsite.adx_websiteid,
             });
         });
 
         powerPagesSiteRecords.forEach(powerPagesSite => {
             websites.push({
-                name: powerPagesSite.name,
-                websiteUrl: powerPagesSite.primarydomainname,
-                dataverseInstanceUrl: orgDetails.OrgUrl,
-                dataverseOrganizationId: orgDetails.OrgId,
-                dataModel: WebsiteDataModel.Enhanced,
-                environmentId: orgDetails.EnvironmentId,
-                websiteRecordId: powerPagesSite.powerpagesiteid,
+                Name: powerPagesSite.name,
+                WebsiteUrl: powerPagesSite.primarydomainname,
+                DataverseInstanceUrl: orgDetails.OrgUrl,
+                DataverseOrganizationId: orgDetails.OrgId,
+                DataModel: WebsiteDataModel.Enhanced,
+                EnvironmentId: orgDetails.EnvironmentId,
+                WebsiteRecordId: powerPagesSite.powerpagesiteid,
             });
         });
     }
     catch (error) {
         oneDSLoggerWrapper.getLogger().traceError(GET_ALL_WEBSITES_FAILED, GET_ALL_WEBSITES_FAILED, error as Error);
     }
-    return websites; 
+    return websites;
 }
 
 async function getAdxWebsiteRecords(orgUrl: string, token: string) {
     try {
         const dataverseUrl = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}${ADX_WEBSITE_RECORDS_API_PATH}`;
-        const response = await makeApiCall(dataverseUrl, token);
+        const response = await callApi(dataverseUrl, token);
 
         if (response.ok) {
             // TODO: perform response format validation
@@ -87,7 +86,7 @@ async function getAdxWebsiteRecords(orgUrl: string, token: string) {
 async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
     try {
         const dataverseUrl = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}${POWERPAGES_SITE_RECORDS_API_PATH}`;
-        const response = await makeApiCall(dataverseUrl, token);
+        const response = await callApi(dataverseUrl, token);
 
         if (response.ok) {
             // TODO: perform response format validation
@@ -102,7 +101,7 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
     return [];
 }
 
-async function makeApiCall(url: string, token: string) {
+async function callApi(url: string, token: string) {
     const requestInit: RequestInit = {
         method: "GET",
         headers: {

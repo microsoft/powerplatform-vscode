@@ -19,7 +19,7 @@ export class InactiveGroupTreeItem extends ActionsHubTreeItem {
     constructor(inactiveSites: IWebsiteDetails[]) {
         super(
             Constants.Strings.INACTIVE_SITES,
-            vscode.TreeItemCollapsibleState.Collapsed,
+            vscode.TreeItemCollapsibleState.Expanded,
             Constants.Icons.SITE_GROUP,
             Constants.ContextValues.INACTIVE_SITES_GROUP
         )
@@ -33,9 +33,9 @@ export class InactiveGroupTreeItem extends ActionsHubTreeItem {
 
         return this._inactiveSites.map(site => {
             const siteInfo: IWebsiteInfo = {
-                name: site.name,
-                dataModelVersion: site.dataModel == WebsiteDataModel.Standard ? 1 : 2,
-                websiteUrl: site.websiteUrl,
+                name: site.Name,
+                dataModelVersion: site.DataModel == WebsiteDataModel.Standard ? 1 : 2,
+                websiteUrl: site.WebsiteUrl,
                 status: WebsiteStatus.Inactive
             };
             const siteItem = new SiteTreeItem(siteInfo);

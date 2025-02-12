@@ -33,15 +33,15 @@ export interface IIntelligenceAPIEndpointInformation {
 }
 
 export interface IWebsiteDetails {
-    name: string;
-    websiteUrl: string;
-    dataverseInstanceUrl: string;
-    dataverseOrganizationId: string;
-    dataModel: WebsiteDataModel;
-    environmentId: string;
-    id?: string;
-    siteVisibility?: string;
-    tenantId?: string;
-    websiteRecordId: string;
-    type?: WebsiteApplicationType;
+    Name: string;
+    WebsiteUrl: string;
+    DataverseInstanceUrl: string;
+    DataverseOrganizationId: string;
+    DataModel: WebsiteDataModel;
+    EnvironmentId: string;
+    Id?: string;
+    SiteVisibility?: string;
+    TenantId?: string;
+    WebsiteRecordId: string;
+    Type?: WebsiteApplicationType;
 }

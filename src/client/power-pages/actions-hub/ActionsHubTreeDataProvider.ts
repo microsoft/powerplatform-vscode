@@ -16,6 +16,7 @@ import { refreshEnvironment, showEnvironmentDetails, switchEnvironment } from ".
 import { IArtemisServiceResponse, IWebsiteDetails } from "../../../common/services/Interfaces";
 import { ActiveOrgOutput } from "../../pac/PacTypes";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
+import { orgChangeEvent } from "../../OrgChangeNotifier";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -24,7 +25,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
     private readonly _artemisResponse: IArtemisServiceResponse | null;
-    private readonly _orgDetails: ActiveOrgOutput;
+    private _orgDetails: ActiveOrgOutput;
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput) {
         this._disposables.push(
@@ -38,6 +39,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         this._disposables.push(...this.registerPanel(this._pacTerminal));
         this._artemisResponse = artemisResponse;
         this._orgDetails = orgDetails;
+
+        this._disposables.push(orgChangeEvent((orgDetails: ActiveOrgOutput) => this._orgDetails = orgDetails));
     }
 
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal, artemisResponse: IArtemisServiceResponse | null, orgDetails: ActiveOrgOutput): ActionsHubTreeDataProvider {
@@ -65,8 +68,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 if (this._artemisResponse?.stamp) {
                     activeSites = await getActiveWebsites(this._artemisResponse?.stamp, this._orgDetails.EnvironmentId) || []; //Need to handle failure case
                     const allSites = await getAllWebsites(this._orgDetails);
-                    const activeSiteIds = new Set(activeSites.map(activeSite => activeSite.websiteRecordId));
-                    inactiveSites = allSites?.filter(site => !activeSiteIds.has(site.websiteRecordId)) || []; //Need to handle failure case
+                    const activeSiteIds = new Set(activeSites.map(activeSite => activeSite.WebsiteRecordId));
+                    inactiveSites = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || []; //Need to handle failure case
                 }
                 else {
                     //TODO: Handle the case when artemis response is not available

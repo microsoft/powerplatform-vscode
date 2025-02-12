@@ -28,7 +28,7 @@ describe('EnvironmentGroupTreeItem', () => {
     it('should have the expected collapsibleState', () => {
         const treeItem = new EnvironmentGroupTreeItem({ currentEnvironmentName: "Test Environment" }, { extensionUri: vscode.Uri.parse("http://localhost") } as vscode.ExtensionContext, [], []);
 
-        expect(treeItem.collapsibleState).to.be.equal(vscode.TreeItemCollapsibleState.Collapsed);
+        expect(treeItem.collapsibleState).to.be.equal(vscode.TreeItemCollapsibleState.Expanded);
     });
 
     it('should have the expected icon', () => {
@@ -46,13 +46,13 @@ describe('EnvironmentGroupTreeItem', () => {
 
     it('should return the expected children', async () => {
         const activeWebsites: IWebsiteDetails[] = [
-            { websiteRecordId: "1", name: "Active Site 1", websiteUrl: "http://activesite1.com", dataverseInstanceUrl: "http://dataverse1.com", dataverseOrganizationId: "org1", dataModel: WebsiteDataModel.Standard, environmentId: "env1" },
-            { websiteRecordId: "2", name: "Active Site 2", websiteUrl: "http://activesite2.com", dataverseInstanceUrl: "http://dataverse2.com", dataverseOrganizationId: "org2", dataModel: WebsiteDataModel.Enhanced, environmentId: "env2" }
+            { WebsiteRecordId: "1", Name: "Active Site 1", WebsiteUrl: "http://activesite1.com", DataverseInstanceUrl: "http://dataverse1.com", DataverseOrganizationId: "org1", DataModel: WebsiteDataModel.Standard, EnvironmentId: "env1" },
+            { WebsiteRecordId: "2", Name: "Active Site 2", WebsiteUrl: "http://activesite2.com", DataverseInstanceUrl: "http://dataverse2.com", DataverseOrganizationId: "org2", DataModel: WebsiteDataModel.Enhanced, EnvironmentId: "env2" }
         ];
 
         const inactiveWebsites: IWebsiteDetails[] = [
-            { websiteRecordId: "3", name: "Inactive Site 1", websiteUrl: "http://inactivesite1.com", dataverseInstanceUrl: "http://dataverse3.com", dataverseOrganizationId: "org3", dataModel: WebsiteDataModel.Standard, environmentId: "env3" },
-            { websiteRecordId: "4", name: "Inactive Site 2", websiteUrl: "http://inactivesite2.com", dataverseInstanceUrl: "http://dataverse4.com", dataverseOrganizationId: "org4", dataModel: WebsiteDataModel.Enhanced, environmentId: "env4" }
+            { WebsiteRecordId: "3", Name: "Inactive Site 1", WebsiteUrl: "http://inactivesite1.com", DataverseInstanceUrl: "http://dataverse3.com", DataverseOrganizationId: "org3", DataModel: WebsiteDataModel.Standard, EnvironmentId: "env3" },
+            { WebsiteRecordId: "4", Name: "Inactive Site 2", WebsiteUrl: "http://inactivesite2.com", DataverseInstanceUrl: "http://dataverse4.com", DataverseOrganizationId: "org4", DataModel: WebsiteDataModel.Enhanced, EnvironmentId: "env4" }
         ];
 
         const treeItem = new EnvironmentGroupTreeItem({ currentEnvironmentName: "Test Environment" }, { extensionUri: vscode.Uri.parse("http://localhost") } as vscode.ExtensionContext, activeWebsites, inactiveWebsites);

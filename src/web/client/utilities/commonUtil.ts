@@ -334,8 +334,8 @@ export async function getValidWebsitePreviewUrl(): Promise<{ websiteUrl: string,
         return { websiteUrl: '', isValid: false };
     }
 
-    if (siteDetails.websiteUrl.length !== 0) {
-        return { websiteUrl: siteDetails.websiteUrl, isValid: true };
+    if (siteDetails.WebsiteUrl.length !== 0) {
+        return { websiteUrl: siteDetails.WebsiteUrl, isValid: true };
     }
 
     return { websiteUrl: '', isValid: false };

@@ -21,7 +21,7 @@ export class PPAPIService {
 
             if (response.ok) {
                 const websiteDetails = await response.json() as unknown as IWebsiteDetails;
-                sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
+                sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, orgUrl: websiteDetails.DataverseInstanceUrl });
                 return websiteDetails;
             }
         }
@@ -40,19 +40,18 @@ export class PPAPIService {
         }
 
         const websiteDetailsResponse = await PPAPIService.getWebsiteDetails(serviceEndpointStamp, environmentId);
-        const websiteDetailsArray = websiteDetailsResponse?.value; // Access all the websites
-        const websiteDetails = websiteDetailsArray?.find((website) => website.websiteRecordId === websiteRecordId); // selecting 1st websiteDetails whose websiteRecordId matches
+        const websiteDetails = websiteDetailsResponse?.find((website) => website.WebsiteRecordId === websiteRecordId); // selecting 1st websiteDetails whose websiteRecordId matches
 
 
         if (websiteDetails) {
-            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
+            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.DataverseInstanceUrl });
             return websiteDetails;
         }
 
         return null;
     }
 
-    static async getWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<{ value: IWebsiteDetails[] } | null> {
+    static async getWebsiteDetails(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<IWebsiteDetails[] | null> {
         try {
             const accessToken = await powerPlatformAPIAuthentication(serviceEndpointStamp, true);
             const response = await fetch(await PPAPIService.getPPAPIServiceEndpoint(serviceEndpointStamp, environmentId), {
@@ -61,8 +60,8 @@ export class PPAPIService {
             });
 
             if (response.ok) {
-                // TODO: Should we validate the response format?
-                const websiteDetailsArray = await response.json() as { value: IWebsiteDetails[] };
+                const parsedResponse = await response.json();
+                const websiteDetailsArray = parsedResponse.value as IWebsiteDetails[];
                 return websiteDetailsArray;
             }
             throw new Error(`Failed to fetch website details. Status: ${response.status}`);
