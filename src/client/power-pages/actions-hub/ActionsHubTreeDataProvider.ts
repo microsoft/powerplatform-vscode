@@ -80,7 +80,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
         const pacWrapper = pacTerminal.getWrapper();
         return [
-            vscode.commands.registerCommand("powerpages.actionsHub.refresh", async () => {
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => {
                 try {
                     const pacActiveAuth = await pacWrapper.activeAuth();
                     if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
@@ -92,7 +92,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 }
             }),
 
-            vscode.commands.registerCommand("powerpages.actionsHub.switchEnvironment", async () => {
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => {
                 const authInfo = pacAuthManager.getAuthInfo();
                 if(authInfo) {
                     const envListOutput = await pacWrapper.orgList();

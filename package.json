@@ -377,12 +377,12 @@
         "title": "%powerplatform.pages.previewSite.title%"
       },
       {
-        "command": "powerpages.actionsHub.refresh",
+        "command": "microsoft.powerplatform.pages.actionsHub.refresh",
         "title": "%powerpages.actionsHub.refresh.title%",
         "icon": "$(refresh)"
       },
       {
-        "command": "powerpages.actionsHub.switchEnvironment",
+        "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
         "title": "%powerpages.actionsHub.switchEnvironment.title%",
         "icon": "$(arrow-swap)"
       }
@@ -932,12 +932,12 @@
           "when": "viewItem == userNode"
         },
         {
-          "command": "powerpages.actionsHub.refresh",
+          "command": "microsoft.powerplatform.pages.actionsHub.refresh",
           "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
           "group": "inline"
         },
         {
-          "command": "powerpages.actionsHub.switchEnvironment",
+          "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
           "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
           "group": "inline"
         }

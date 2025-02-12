@@ -139,7 +139,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             const disposables = provider["registerPanel"](pacTerminal);
 
-            expect(registerCommandStub.calledWith("powerpages.actionsHub.refresh")).to.be.true;
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.refresh")).to.be.true;
             expect(disposables).to.have.lengthOf(2);
         });
 
@@ -147,7 +147,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             const disposables = provider["registerPanel"](pacTerminal);
 
-            expect(registerCommandStub.calledWith("powerpages.actionsHub.switchEnvironment")).to.be.true;
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.switchEnvironment")).to.be.true;
             expect(disposables).to.have.lengthOf(2);
         });
     });
