@@ -389,7 +389,7 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
         "title": "%microsoft.powerplatform.pages.actionsHub.switchEnvironment.title%",
-        "icon": "$(sync)"
+        "icon": "$(arrow-swap)"
       }
     ],
     "configuration": {
