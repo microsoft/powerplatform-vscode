@@ -52,13 +52,13 @@ describe("ActionsHubTreeDataProvider", () => {
     });
 
     describe('initialize', () => {
-        it("should register refresh command", () => {
+        it("microsoft.powerplatform.pages.actionsHub.refresh", () => {
             // Initialize
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             // Assert that the command was registered
-            expect(registerCommandStub.calledWith("powerpages.actionsHub.refresh")).to.be.true;
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.refresh")).to.be.true;
         });
     });
 
