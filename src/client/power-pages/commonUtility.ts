@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import { removeTrailingSlash } from "../../debugger/utils";
 import * as Constants from "./constants";
 import { AUTH_KEYS } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
-import { AuthInfo } from "../pac/PacTypes";
+import { AuthInfo, CloudInstance, EnvironmentType } from "../pac/PacTypes";
 
 export interface IFileProperties {
     fileCompleteName?: string,
@@ -204,7 +204,7 @@ export function getRegExPattern(fileNameArray: string[]): RegExp[] {
 export function extractAuthInfo(results: any[]): AuthInfo {
     return {
         userType: findAuthValue(results, AUTH_KEYS.USER_TYPE),
-        cloud: findAuthValue(results, AUTH_KEYS.CLOUD),
+        cloud: CloudInstance[findAuthValue(results, AUTH_KEYS.CLOUD) as keyof typeof CloudInstance],
         tenantId: findAuthValue(results, AUTH_KEYS.TENANT_ID),
         tenantCountry: findAuthValue(results, AUTH_KEYS.TENANT_COUNTRY),
         user: findAuthValue(results, AUTH_KEYS.USER),
@@ -215,7 +215,7 @@ export function extractAuthInfo(results: any[]): AuthInfo {
         authority: findAuthValue(results, AUTH_KEYS.AUTHORITY),
         environmentGeo: findAuthValue(results, AUTH_KEYS.ENVIRONMENT_GEO),
         environmentId: findAuthValue(results, AUTH_KEYS.ENVIRONMENT_ID),
-        environmentType: findAuthValue(results, AUTH_KEYS.ENVIRONMENT_TYPE),
+        environmentType: EnvironmentType[findAuthValue(results, AUTH_KEYS.ENVIRONMENT_TYPE) as keyof typeof EnvironmentType],
         organizationId: findAuthValue(results, AUTH_KEYS.ORGANIZATION_ID),
         organizationUniqueName: findAuthValue(results, AUTH_KEYS.ORGANIZATION_UNIQUE_NAME),
         organizationFriendlyName: findAuthValue(results, AUTH_KEYS.ORGANIZATION_FRIENDLY_NAME)

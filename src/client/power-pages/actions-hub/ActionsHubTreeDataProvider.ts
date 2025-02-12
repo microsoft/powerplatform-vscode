@@ -11,10 +11,8 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { pacAuthManager } from "../../pac/PacAuthManager";
-import { SUCCESS } from "../../../common/constants";
-import { extractAuthInfo } from "../commonUtility";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { OrgListOutput } from "../../pac/PacTypes";
+import { refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -25,7 +23,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
         this._disposables.push(
-            vscode.window.registerTreeDataProvider("powerpages.actionsHub", this)
+            vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this)
         );
 
         this._context = context;
@@ -78,45 +76,12 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
-        const pacWrapper = pacTerminal.getWrapper();
         return [
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => {
-                try {
-                    const pacActiveAuth = await pacWrapper.activeAuth();
-                    if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
-                        const authInfo = extractAuthInfo(pacActiveAuth.Results);
-                        pacAuthManager.setAuthInfo(authInfo);
-                    }
-                } catch (error) {
-                    oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: this.refresh.name }, {});
-                }
-            }),
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(pacTerminal)),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => {
-                const authInfo = pacAuthManager.getAuthInfo();
-                if(authInfo) {
-                    const envListOutput = await pacWrapper.orgList();
-                    if(envListOutput && envListOutput.Status === SUCCESS && envListOutput.Results) {
-                        //envListOutput.Results is an array of OrgListOutput
-                        const envList = envListOutput.Results as OrgListOutput[];
-                        //show a quick pick to select the environment with friendly name and environment url
-                        const selectedEnv = await vscode.window.showQuickPick(envList.map((env) => {
-                            return {
-                                label: env.FriendlyName,
-                                description: env.EnvironmentUrl
-                            }
-                        }),
-                        {
-                            placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT)
-                        }
-                    );
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => await switchEnvironment(pacTerminal)),
 
-                        if(selectedEnv) {
-                            await pacWrapper.orgSelect(selectedEnv.description);
-                        }
-                    }
-                }
-            })
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails", showEnvironmentDetails)
         ];
     }
 }

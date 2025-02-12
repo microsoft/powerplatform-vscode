@@ -378,12 +378,17 @@
       },
       {
         "command": "microsoft.powerplatform.pages.actionsHub.refresh",
-        "title": "%powerpages.actionsHub.refresh.title%",
+        "title": "%microsoft.powerplatform.pages.actionsHub.refresh.title%",
         "icon": "$(refresh)"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+        "title": "%microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title%",
+        "icon": "$(info)"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
-        "title": "%powerpages.actionsHub.switchEnvironment.title%",
+        "title": "%microsoft.powerplatform.pages.actionsHub.switchEnvironment.title%",
         "icon": "$(arrow-swap)"
       }
     ],
@@ -831,8 +836,16 @@
           "when": "microsoft.powerplatform.pages.siteRuntimePreviewEnabled && workspaceFolderCount == 1 && !isWeb"
         },
         {
-           "command": "powerPlatform.previewCurrentActiveUsers",
-           "when": "isWeb && virtualWorkspace"
+          "command": "powerPlatform.previewCurrentActiveUsers",
+          "when": "isWeb && virtualWorkspace"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.refresh",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -933,13 +946,18 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.refresh",
-          "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
-          "group": "inline"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@2"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
-          "when": "view == powerpages.actionsHub && viewItem == environmentGroup",
-          "group": "inline"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
+          "group": "inline@3"
         }
       ]
     },
@@ -1000,7 +1018,7 @@
           "visibility": "visible"
         },
         {
-          "id": "powerpages.actionsHub",
+          "id": "microsoft.powerplatform.pages.actionsHub",
           "name": "%microsoft.powerplatform.pages.actionsHub.title%",
           "when": "microsoft.powerplatform.pages.actionsHubEnabled && !isWeb",
           "icon": "./src/client/assets/powerPages.svg",

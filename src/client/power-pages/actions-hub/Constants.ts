@@ -27,13 +27,16 @@ export const Constants = {
         INACTIVE_SITES: vscode.l10n.t("Inactive Sites"),
         NO_SITES_FOUND: vscode.l10n.t("No sites found"),
         NO_ENVIRONMENTS_FOUND: vscode.l10n.t("No environments found"),
-        SELECT_ENVIRONMENT: vscode.l10n.t("Select an environment to switch to")
+        SELECT_ENVIRONMENT: vscode.l10n.t("Select an environment to switch to"),
+        COPY_TO_CLIPBOARD: vscode.l10n.t("Copy to clipboard"),
+        SESSION_DETAILS: vscode.l10n.t("Session Details")
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",
         ACTIONS_HUB_INITIALIZATION_FAILED: "actionsHubInitializationFailed",
         ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED: "actionsHubCurrentEnvFetchFailed",
-        ACTIONS_HUB_REFRESH_FAILED: "actionsHubRefreshFailed"
+        ACTIONS_HUB_REFRESH_FAILED: "actionsHubRefreshFailed",
+        ACTIONS_HUB_SHOW_ENVIRONMENT_DETAILS_FAILED: "actionsHubShowEnvironmentDetailsFailed"
     }
 };
 

@@ -52,13 +52,25 @@ describe("ActionsHubTreeDataProvider", () => {
     });
 
     describe('initialize', () => {
-        it("microsoft.powerplatform.pages.actionsHub.refresh", () => {
-            // Initialize
+        it("should register refresh command", () => {
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
-            // Assert that the command was registered
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.refresh")).to.be.true;
+        });
+
+        it("should register switchEnvironment command", () => {
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.switchEnvironment")).to.be.true;
+        });
+
+        it("should register showEnvironmentDetails command", () => {
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails")).to.be.true;
         });
     });
 
@@ -133,23 +145,4 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(result).to.be.an("array").that.is.empty;
         });
     });
-
-    describe('registerPanel', () => {
-        it("should register the refresh command", async () => {
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const disposables = provider["registerPanel"](pacTerminal);
-
-            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.refresh")).to.be.true;
-            expect(disposables).to.have.lengthOf(2);
-        });
-
-        it("should register the switch environment command", async () => {
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const disposables = provider["registerPanel"](pacTerminal);
-
-            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.switchEnvironment")).to.be.true;
-            expect(disposables).to.have.lengthOf(2);
-        });
-    });
-
 });
