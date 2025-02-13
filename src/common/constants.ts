@@ -93,3 +93,8 @@ export const ADX_WEBPAGE = 'adx_webpage'
 export const HTML_FILE_EXTENSION = '.html';
 export const UTF8_ENCODING = 'utf8';
 export const EDGE_TOOLS_EXTENSION_ID = 'ms-edgedevtools.vscode-edge-devtools';
+export const ADX_WEBSITE_RECORDS_API_PATH = 'api/data/v9.2/adx_websites?$select=*&$expand=owninguser($select=systemuserid,fullname)';
+export const POWERPAGES_SITE_RECORDS_API_PATH = 'api/data/v9.2/powerpagesites?$select=*&$expand=owninguser($select=systemuserid,fullname)';
+export const ADX_WEBSITE_RECORDS_FETCH_FAILED = 'AdxWebsiteRecordsFetchFailed';
+export const POWERPAGES_SITE_RECORDS_FETCH_FAILED = 'PowerPagesSiteRecordsFetchFailed';
+export const GET_ALL_WEBSITES_FAILED = 'GetAllWebsitesFailed';

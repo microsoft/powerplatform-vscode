@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ServiceEndpointCategory, WebsiteApplicationType } from "./Constants";
+import { ServiceEndpointCategory, WebsiteApplicationType, WebsiteDataModel } from "./Constants";
 
 export interface IArtemisServiceEndpointInformation {
     stamp: ServiceEndpointCategory;
@@ -33,13 +33,15 @@ export interface IIntelligenceAPIEndpointInformation {
 }
 
 export interface IWebsiteDetails {
-    websiteUrl: string;
-    dataverseInstanceUrl: string;
-    dataverseOrganizationId: string;
-    environmentId: string;
-    id: string;
-    siteVisibility: string;
-    tenantId: string;
-    websiteRecordId: string;
-    type: WebsiteApplicationType;
+    Name: string;
+    WebsiteUrl: string;
+    DataverseInstanceUrl: string;
+    DataverseOrganizationId: string;
+    DataModel: WebsiteDataModel;
+    EnvironmentId: string;
+    Id?: string;
+    SiteVisibility?: string;
+    TenantId?: string;
+    WebsiteRecordId: string;
+    Type?: WebsiteApplicationType;
 }

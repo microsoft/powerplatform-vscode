@@ -4,13 +4,14 @@
  */
 
 import * as vscode from 'vscode';
-import { pacAuthManager } from "../../pac/PacAuthManager";
 import { Constants } from './Constants';
 import { oneDSLoggerWrapper } from '../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { PacTerminal } from '../../lib/PacTerminal';
 import { SUCCESS } from '../../../common/constants';
 import { OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
+import { showProgressWithNotification } from '../../../common/utilities/Utils';
+import PacContext from '../../pac/PacContext';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -18,7 +19,7 @@ export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
         const pacActiveAuth = await pacWrapper.activeAuth();
         if (pacActiveAuth && pacActiveAuth.Status === SUCCESS) {
             const authInfo = extractAuthInfo(pacActiveAuth.Results);
-            pacAuthManager.setAuthInfo(authInfo);
+            PacContext.setContext(authInfo);
         }
     } catch (error) {
         oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_REFRESH_FAILED, error as string, error as Error, { methodName: refreshEnvironment.name }, {});
@@ -29,17 +30,17 @@ const getEnvironmentDetails = () => {
     const detailsArray = [];
     detailsArray.push(vscode.l10n.t({ message: "Timestamp: {0}", args: [new Date().toISOString()], comment: "{0} is the timestamp" }));
 
-    const authInfo = pacAuthManager.getAuthInfo();
+    const authInfo = PacContext.AuthInfo;
 
     if (authInfo) {
-        detailsArray.push(vscode.l10n.t({ message: "Tenant ID: {0}", args: [authInfo.tenantId], comment: "{0} is the Tenant ID" }));
-        detailsArray.push(vscode.l10n.t({ message: "Object ID: {0}", args: [authInfo.entraIdObjectId], comment: "{0} is the Object ID" }));
-        detailsArray.push(vscode.l10n.t({ message: "Organization ID: {0}", args: [authInfo.organizationId], comment: "{0} is the Organization ID" }));
-        detailsArray.push(vscode.l10n.t({ message: "Unique name: {0}", args: [authInfo.organizationUniqueName], comment: "{0} is the Unique name" }));
-        detailsArray.push(vscode.l10n.t({ message: "Environment ID: {0}", args: [authInfo.environmentId], comment: "{0} is the Environment ID" }));
-        detailsArray.push(vscode.l10n.t({ message: "Cluster environment: {0}", args: [authInfo.environmentType], comment: "{0} is the Cluster environment" }));
-        detailsArray.push(vscode.l10n.t({ message: "Cluster category: {0}", args: [authInfo.cloud], comment: "{0} is the Cluster category" }));
-        detailsArray.push(vscode.l10n.t({ message: "Cluster geo name: {0}", args: [authInfo.environmentGeo], comment: "{0} is the cluster geo name" }));
+        detailsArray.push(vscode.l10n.t({ message: "Tenant ID: {0}", args: [authInfo.TenantId], comment: "{0} is the Tenant ID" }));
+        detailsArray.push(vscode.l10n.t({ message: "Object ID: {0}", args: [authInfo.EntraIdObjectId], comment: "{0} is the Object ID" }));
+        detailsArray.push(vscode.l10n.t({ message: "Organization ID: {0}", args: [authInfo.OrganizationId], comment: "{0} is the Organization ID" }));
+        detailsArray.push(vscode.l10n.t({ message: "Unique name: {0}", args: [authInfo.OrganizationUniqueName], comment: "{0} is the Unique name" }));
+        detailsArray.push(vscode.l10n.t({ message: "Environment ID: {0}", args: [authInfo.EnvironmentId], comment: "{0} is the Environment ID" }));
+        detailsArray.push(vscode.l10n.t({ message: "Cluster environment: {0}", args: [authInfo.EnvironmentType], comment: "{0} is the Cluster environment" }));
+        detailsArray.push(vscode.l10n.t({ message: "Cluster category: {0}", args: [authInfo.Cloud], comment: "{0} is the Cluster category" }));
+        detailsArray.push(vscode.l10n.t({ message: "Cluster geo name: {0}", args: [authInfo.EnvironmentGeo], comment: "{0} is the cluster geo name" }));
     }
 
     return detailsArray.join('\n');
@@ -60,30 +61,35 @@ export const showEnvironmentDetails = async () => {
     }
 };
 
+const getEnvironmentList = async (pacTerminal: PacTerminal): Promise<{ label: string, description: string }[]> => {
+    const pacWrapper = pacTerminal.getWrapper();
+    const envListOutput = await pacWrapper.orgList();
+    if (envListOutput && envListOutput.Status === SUCCESS && envListOutput.Results) {
+        const envList = envListOutput.Results as OrgListOutput[];
+        return envList.map((env) => {
+            return {
+                label: env.FriendlyName,
+                description: env.EnvironmentUrl
+            }
+        });
+    }
+
+    return [];
+}
+
 export const switchEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
-    const authInfo = pacAuthManager.getAuthInfo();
+    const authInfo = PacContext.AuthInfo;
 
     if (authInfo) {
-        const envListOutput = await pacWrapper.orgList();
-        if (envListOutput && envListOutput.Status === SUCCESS && envListOutput.Results) {
-            //envListOutput.Results is an array of OrgListOutput
-            const envList = envListOutput.Results as OrgListOutput[];
-            //show a quick pick to select the environment with friendly name and environment url
-            const selectedEnv = await vscode.window.showQuickPick(envList.map((env) => {
-                return {
-                    label: env.FriendlyName,
-                    description: env.EnvironmentUrl
-                }
-            }),
-                {
-                    placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT)
-                }
-            );
-
-            if (selectedEnv) {
-                await pacWrapper.orgSelect(selectedEnv.description);
+        const selectedEnv = await vscode.window.showQuickPick(getEnvironmentList(pacTerminal),
+            {
+                placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT)
             }
+        );
+
+        if (selectedEnv) {
+            await showProgressWithNotification(Constants.Strings.CHANGING_ENVIRONMENT, async () => await pacWrapper.orgSelect(selectedEnv.description));
         }
     }
 }

@@ -13,16 +13,18 @@ import { Constants } from "../../../../power-pages/actions-hub/Constants";
 import { EnvironmentGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/EnvironmentGroupTreeItem";
 import { OtherSitesGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/OtherSitesGroupTreeItem";
 import { ActionsHubTreeItem } from "../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
-import { pacAuthManager } from "../../../../pac/PacAuthManager";
 import { PacTerminal } from "../../../../lib/PacTerminal";
 import { PacWrapper } from "../../../../pac/PacWrapper";
 import { SUCCESS } from "../../../../../common/constants";
+import { SiteTreeItem } from "../../../../power-pages/actions-hub/tree-items/SiteTreeItem";
+import { IWebsiteInfo } from "../../../../power-pages/actions-hub/models/IWebsiteInfo";
+import PacContext from "../../../../pac/PacContext";
+import { CloudInstance, EnvironmentType } from "../../../../pac/PacTypes";
 
 describe("ActionsHubTreeDataProvider", () => {
     let context: vscode.ExtensionContext;
     let traceInfoStub: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
-    let authInfoStub: sinon.SinonStub;
     let pacTerminal: PacTerminal;
     let pacWrapperStub: sinon.SinonStubbedInstance<PacWrapper>;
     let registerCommandStub: sinon.SinonStub;
@@ -40,7 +42,6 @@ describe("ActionsHubTreeDataProvider", () => {
             traceError: traceErrorStub,
             featureUsage: sinon.stub()
         });
-        authInfoStub = sinon.stub(pacAuthManager, "getAuthInfo");
         pacTerminal = sinon.createStubInstance(PacTerminal);
         pacWrapperStub = sinon.createStubInstance(PacWrapper);
         pacWrapperStub.activeAuth.resolves({ Status: SUCCESS, Results: [], Errors: [], Information: [] });
@@ -84,24 +85,24 @@ describe("ActionsHubTreeDataProvider", () => {
 
     describe('getChildren', () => {
         it("should return environment and other sites group tree items in getChildren when no element is passed", async () => {
-            authInfoStub.returns({
-                organizationFriendlyName: "TestOrg",
-                userType: "",
-                cloud: "",
-                tenantId: "",
-                tenantCountry: "",
-                user: "",
-                entraIdObjectId: "",
-                puid: "",
-                userCountryRegion: "",
-                tokenExpires: "",
-                authority: "",
-                environmentGeo: "",
-                environmentId: "",
-                environmentType: "",
-                organizationId: "",
-                organizationUniqueName: ""
-            });
+            PacContext['_authInfo'] = {
+                OrganizationFriendlyName: "TestOrg",
+                UserType: "",
+                Cloud: CloudInstance.Preprod,
+                TenantId: "",
+                TenantCountry: "",
+                User: "",
+                EntraIdObjectId: "",
+                Puid: "",
+                UserCountryRegion: "",
+                TokenExpires: "",
+                Authority: "",
+                EnvironmentGeo: "",
+                EnvironmentId: "",
+                EnvironmentType: EnvironmentType.Regular,
+                OrganizationId: "",
+                OrganizationUniqueName: ""
+            };
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             const result = await provider.getChildren();
 
@@ -113,7 +114,7 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it("should return environment group tree item with default name when no auth info is available", async () => {
-            authInfoStub.returns(null);
+            PacContext['_authInfo'] = null;
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             const result = await provider.getChildren();
 
@@ -125,24 +126,14 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(result![1]).to.be.instanceOf(OtherSitesGroupTreeItem);
         });
 
-        it("should return null in getChildren when an error occurs", async () => {
-            authInfoStub.throws(new Error("Test Error"));
-
+        it("should call element.getChildren when an element is passed", async () => {
+            const element = new SiteTreeItem({} as IWebsiteInfo);
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const result = await provider.getChildren();
+            const getChildrenStub = sinon.stub(element, "getChildren").resolves([]);
 
-            expect(result).to.be.null;
-            expect(traceErrorStub.calledWith(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED)).to.be.true;
+            await provider.getChildren(element);
 
-            authInfoStub.restore();
-        });
-
-        it("should return an empty array in getChildren when an element is passed", async () => {
-            const element = {} as ActionsHubTreeItem;
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const result = await provider.getChildren(element);
-
-            expect(result).to.be.an("array").that.is.empty;
+            expect(getChildrenStub.calledOnce).to.be.true;
         });
     });
 });

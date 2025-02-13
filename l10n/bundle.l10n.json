@@ -177,6 +177,15 @@
       "{0} will be replaced by the error message."
     ]
   },
+  "Other Sites": "Other Sites",
+  "Active Sites": "Active Sites",
+  "Inactive Sites": "Inactive Sites",
+  "No sites found": "No sites found",
+  "No environments found": "No environments found",
+  "Select an environment": "Select an environment",
+  "Session Details": "Session Details",
+  "Changing environment...": "Changing environment...",
+  "Active Environment is expired or deleted. Please select a new environment.": "Active Environment is expired or deleted. Please select a new environment.",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
@@ -231,14 +240,6 @@
       "{0} is the cluster geo name"
     ]
   },
-  "Other Sites": "Other Sites",
-  "Active Sites": "Active Sites",
-  "Inactive Sites": "Inactive Sites",
-  "No sites found": "No sites found",
-  "No environments found": "No environments found",
-  "Select an environment to switch to": "Select an environment to switch to",
-  "Session Details": "Session Details",
-  "Active Environment is expired or deleted. Please select a new environment.": "Active Environment is expired or deleted. Please select a new environment.",
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",
   "PAC Telemetry disabled": "PAC Telemetry disabled",
