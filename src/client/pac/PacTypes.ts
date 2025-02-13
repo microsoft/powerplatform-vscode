@@ -99,21 +99,31 @@ export enum EnvironmentType {
     Provisioning
 }
 
-export interface AuthInfo {
-    userType: string;
-    cloud: CloudInstance;
-    tenantId: string;
-    tenantCountry: string;
-    user: string;
-    entraIdObjectId: string;
-    puid: string;
-    userCountryRegion: string;
-    tokenExpires: string;
-    authority: string;
-    environmentGeo: string;
-    environmentId: string;
-    environmentType: EnvironmentType;
-    organizationId: string;
-    organizationUniqueName: string;
-    organizationFriendlyName: string;
+export type AuthInfo = {
+    UserType: string;
+    Cloud: CloudInstance;
+    TenantId: string;
+    TenantCountry: string;
+    User: string;
+    EntraIdObjectId: string;
+    Puid: string;
+    UserCountryRegion: string;
+    TokenExpires: string;
+    Authority: string;
+    EnvironmentGeo: string;
+    EnvironmentId: string;
+    EnvironmentType: EnvironmentType;
+    OrganizationId: string;
+    OrganizationUniqueName: string;
+    OrganizationFriendlyName: string;
+}
+
+export type OrgInfo = {
+    OrgId: string,
+    UniqueName: string,
+    FriendlyName: string,
+    OrgUrl: string,
+    UserEmail: string,
+    UserId: string,
+    EnvironmentId: string
 }

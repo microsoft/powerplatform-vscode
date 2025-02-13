@@ -78,6 +78,9 @@
       <source xml:lang="en">Cannot install pac CLI: {0}</source>
       <note>{0} represents the error message returned from the exception</note>
     </trans-unit>
+    <trans-unit id="++CODE++b75d741af5a9c59c95a5c7b7d9f654bb93617232db14c8d2671a5c731828782b">
+      <source xml:lang="en">Changing environment...</source>
+    </trans-unit>
     <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
       <source xml:lang="en">Check the URL and verify the parameters are correct</source>
     </trans-unit>
@@ -448,8 +451,8 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
       <source xml:lang="en">Select Type</source>
     </trans-unit>
-    <trans-unit id="++CODE++ced4bf2ba126114717dde651370974e70f3a6ac603e69671be5d4d3e3a303c3c">
-      <source xml:lang="en">Select an environment to switch to</source>
+    <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
+      <source xml:lang="en">Select an environment</source>
     </trans-unit>
     <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
       <source xml:lang="en">Selection is empty.</source>

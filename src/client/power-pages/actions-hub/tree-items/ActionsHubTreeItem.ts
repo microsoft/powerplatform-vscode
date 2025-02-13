@@ -16,4 +16,8 @@ export abstract class ActionsHubTreeItem extends vscode.TreeItem {
 
         this.tooltip = this.label;
     }
+
+    public getChildren(): ActionsHubTreeItem[] {
+        return [];
+    }
 }

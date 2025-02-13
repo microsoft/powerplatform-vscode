@@ -38,17 +38,17 @@ import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { EXTENSION_ID, SUCCESS } from "../common/constants";
-import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities/Utils";
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
 import { PreviewSite } from "./power-pages/preview-site/PreviewSite";
 import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
-import { pacAuthManager } from "./pac/PacAuthManager";
 import { showErrorDialog } from "../common/utilities/errorHandlerUtil";
 import { ENVIRONMENT_EXPIRED } from "./power-pages/actions-hub/Constants";
-import { extractAuthInfo } from "./power-pages/commonUtility";
+import { extractAuthInfo, extractOrgInfo } from "./power-pages/commonUtility";
+import PacContext from "./pac/PacContext";
+import ArtemisContext from "./ArtemisContext";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -168,26 +168,37 @@ export async function activate(
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
-            const artemisResponse = await ArtemisService.getArtemisResponse(orgID, "");
+
+            const [artemisResult, pacActiveAuthResult] = await Promise.allSettled([
+                ArtemisService.getArtemisResponse(orgID, ""),
+                pacTerminal.getWrapper()?.activeAuth()
+            ]);
+
+            const artemisResponse = artemisResult.status === 'fulfilled' ? artemisResult.value : null;
+            const pacActiveAuth = pacActiveAuthResult.status === 'fulfilled' ? pacActiveAuthResult.value : null;
+
             if (artemisResponse !== null && artemisResponse.response !== null) {
+                ArtemisContext.setContext(artemisResponse);
+
                 const { geoName, geoLongName, clusterName, clusterNumber } = artemisResponse.response;
-                const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-                let AadIdObject, EnvID, TenantID;
+                let AadObjectId, EnvID, TenantID;
+
                 if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
-                    AadIdObject = pacActiveAuth.Results?.filter(obj => obj.Key === AadIdKey);
-                    EnvID = pacActiveAuth.Results?.filter(obj => obj.Key === EnvIdKey);
-                    TenantID = pacActiveAuth.Results?.filter(obj => obj.Key === TenantIdKey);
                     const authInfo = extractAuthInfo(pacActiveAuth.Results);
-                    pacAuthManager.setAuthInfo(authInfo);
+                    PacContext.setContext(authInfo, extractOrgInfo(orgDetails));
+
+                    AadObjectId = authInfo.EntraIdObjectId;
+                    EnvID = authInfo.EnvironmentId;
+                    TenantID = authInfo.TenantId;
                 }
 
-                if (EnvID?.[0]?.Value && TenantID?.[0]?.Value && AadIdObject?.[0]?.Value) {
+                if (EnvID && TenantID && AadObjectId) {
                     await ECSFeaturesClient.init(
                         {
                             AppName: PowerPagesAppName,
-                            EnvID: EnvID[0].Value,
-                            UserID: AadIdObject[0].Value,
-                            TenantID: TenantID[0].Value,
+                            EnvID,
+                            UserID: AadObjectId,
+                            TenantID,
                             Region: artemisResponse.stamp,
                             Location: getECSOrgLocationValue(clusterName, clusterNumber)
                         },
@@ -196,8 +207,8 @@ export async function activate(
 
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
                 let initContext: object = { ...orgDetails, orgGeo: geoName };
-                if (AadIdObject?.[0]?.Value) {
-                    initContext = { ...initContext, AadId: AadIdObject[0].Value }
+                if (AadObjectId) {
+                    initContext = { ...initContext, AadId: AadObjectId }
                 }
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }
@@ -220,9 +231,10 @@ export async function activate(
 
             }
 
-            await PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context);
-
-            await ActionsHub.initialize(context, pacTerminal);
+            await Promise.allSettled([
+                PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context),
+                ActionsHub.initialize(context, pacTerminal)
+            ]);
         }),
 
         orgChangeErrorEvent(() => {

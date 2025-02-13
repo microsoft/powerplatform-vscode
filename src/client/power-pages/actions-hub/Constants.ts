@@ -27,9 +27,10 @@ export const Constants = {
         INACTIVE_SITES: vscode.l10n.t("Inactive Sites"),
         NO_SITES_FOUND: vscode.l10n.t("No sites found"),
         NO_ENVIRONMENTS_FOUND: vscode.l10n.t("No environments found"),
-        SELECT_ENVIRONMENT: vscode.l10n.t("Select an environment to switch to"),
+        SELECT_ENVIRONMENT: vscode.l10n.t("Select an environment"),
         COPY_TO_CLIPBOARD: vscode.l10n.t("Copy to clipboard"),
-        SESSION_DETAILS: vscode.l10n.t("Session Details")
+        SESSION_DETAILS: vscode.l10n.t("Session Details"),
+        CHANGING_ENVIRONMENT: vscode.l10n.t("Changing environment...")
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",

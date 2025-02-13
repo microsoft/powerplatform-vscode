@@ -111,7 +111,7 @@ export class PreviewSite {
             return "";
         }
         const websiteDetails = await PPAPIService.getWebsiteDetailsByWebsiteRecordId(stamp, envId, websiteRecordId);
-        return websiteDetails?.websiteUrl || "";
+        return websiteDetails?.WebsiteUrl || "";
     }
 
     private static async promptInstallEdgeTools(): Promise<void> {
