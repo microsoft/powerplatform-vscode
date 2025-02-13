@@ -11,44 +11,56 @@ import { WebsiteStatus } from "../../../../../power-pages/actions-hub/models/Web
 
 describe('SiteTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {
-        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo" });
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo", isCurrent: false });
 
         expect(treeItem).to.be.instanceOf(ActionsHubTreeItem);
     });
 
     it('should have the expected label', () => {
-        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo" });
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo", isCurrent: false });
 
         expect(treeItem.label).to.be.equal("Test Site");
     });
 
     it('should have the expected collapsibleState', () => {
-        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo" });
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo", isCurrent: false });
 
         expect(treeItem.collapsibleState).to.be.equal(vscode.TreeItemCollapsibleState.None);
     });
 
     it('should have the expected icon', () => {
-        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo" });
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo", isCurrent: false });
 
         expect((treeItem.iconPath as vscode.ThemeIcon).id).to.be.equal('globe');
     });
 
     it('should have the expected contextValue when the site is Active', () => {
-        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo" });
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo", isCurrent: false });
 
         expect(treeItem.contextValue).to.be.equal("activeSite");
     });
 
     it('should have the expected contextValue when the site is Inactive', () => {
-        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Inactive, websiteUrl: "https://foo" });
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Inactive, websiteUrl: "https://foo", isCurrent: false });
 
         expect(treeItem.contextValue).to.be.equal("inactiveSite");
     });
 
     it('should have the expected contextValue when the site is neither Active nor Inactive', () => {
-        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: undefined, websiteUrl: "https://foo" });
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: undefined, websiteUrl: "https://foo", isCurrent: false });
 
         expect(treeItem.contextValue).to.be.equal("otherSite");
+    });
+
+    it('should have the expected description when site is current', () => {
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: undefined, websiteUrl: "https://foo", isCurrent: true });
+
+        expect(treeItem.description).to.be.equal("Current");
+    });
+
+    it('should have the expected description when site is not current', () => {
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: undefined, websiteUrl: "https://foo", isCurrent: false });
+
+        expect(treeItem.description).to.be.equal("");
     });
 });
