@@ -30,7 +30,8 @@ export const Constants = {
         SELECT_ENVIRONMENT: vscode.l10n.t("Select an environment"),
         COPY_TO_CLIPBOARD: vscode.l10n.t("Copy to clipboard"),
         SESSION_DETAILS: vscode.l10n.t("Session Details"),
-        CHANGING_ENVIRONMENT: vscode.l10n.t("Changing environment...")
+        CHANGING_ENVIRONMENT: vscode.l10n.t("Changing environment..."),
+        CURRENT: vscode.l10n.t("Current"),
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",

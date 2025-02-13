@@ -36,7 +36,8 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
                 name: site.Name,
                 dataModelVersion: site.DataModel == WebsiteDataModel.Standard ? 1 : 2,
                 websiteUrl: site.WebsiteUrl,
-                status: WebsiteStatus.Active
+                status: WebsiteStatus.Active,
+                isCurrent: false //TODO: Implement this
             };
             const siteItem = new SiteTreeItem(siteInfo);
             return siteItem;
