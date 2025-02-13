@@ -10,7 +10,7 @@ import { showEnvironmentDetails, refreshEnvironment, switchEnvironment } from '.
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
-import { AuthInfo, CloudInstance, EnvironmentType } from '../../../../pac/PacTypes';
+import { AuthInfo, CloudInstance, EnvironmentType, OrgInfo } from '../../../../pac/PacTypes';
 import { PacTerminal } from '../../../../lib/PacTerminal';
 import PacContext from '../../../../pac/PacContext';
 
@@ -39,6 +39,16 @@ describe('ActionsHubCommandHandlers', () => {
         OrganizationFriendlyName: 'test-org-friendly-name'
     };
 
+    const mockOrgInfo: OrgInfo = {
+        OrgId: 'test-org-id',
+        UniqueName: 'test-org-name',
+        FriendlyName: 'test-org-friendly-name',
+        OrgUrl: 'test-org-url',
+        UserEmail: 'test-user-email',
+        UserId: 'test-user-id',
+        EnvironmentId: 'test-env-id',
+    };
+
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
@@ -59,6 +69,7 @@ describe('ActionsHubCommandHandlers', () => {
     describe('showEnvironmentDetails', () => {
         it('should show environment details when auth info is available', async () => {
             PacContext['_authInfo'] = mockAuthInfo;
+            PacContext['_orgInfo'] = mockOrgInfo;
             mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
 
             await showEnvironmentDetails();
@@ -66,12 +77,15 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockShowInformationMessage.calledOnce).to.be.true;
 
             const message = mockShowInformationMessage.firstCall.args[0];
+            console.log(message)
+
             expect(message).to.include("Session Details");
             expect(message).to.include("Timestamp");
             expect(message).to.include("Tenant ID: test-tenant");
             expect(message).to.include("Object ID: test-object-id");
             expect(message).to.include("Organization ID: test-org-id");
             expect(message).to.include("Unique name: test-org-name");
+            expect(message).to.include("Instance url: test-org-url");
             expect(message).to.include("Environment ID: test-env-id");
             expect(message).to.include("Cluster environment: 1");
             expect(message).to.include("Cluster category: 1");
