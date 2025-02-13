@@ -101,24 +101,35 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
 const getStudioUrl = (): string => {
     const artemisContext = ArtemisContext.ServiceResponse;
 
+    let baseEndpoint = "";
+
     switch (artemisContext.stamp) {
         case ServiceEndpointCategory.TEST:
-            return Constants.StudioEndpoints.TEST;
+            baseEndpoint = Constants.StudioEndpoints.TEST;
+            break;
         case ServiceEndpointCategory.PREPROD:
-            return Constants.StudioEndpoints.PREPROD;
+            baseEndpoint = Constants.StudioEndpoints.PREPROD;
+            break;
         case ServiceEndpointCategory.PROD:
-            return Constants.StudioEndpoints.PROD;
+            baseEndpoint = Constants.StudioEndpoints.PROD;
+            break;
         case ServiceEndpointCategory.DOD:
-            return Constants.StudioEndpoints.DOD;
+            baseEndpoint = Constants.StudioEndpoints.DOD;
+            break;
         case ServiceEndpointCategory.GCC:
-            return Constants.StudioEndpoints.GCC;
+            baseEndpoint = Constants.StudioEndpoints.GCC;
+            break;
         case ServiceEndpointCategory.HIGH:
-            return Constants.StudioEndpoints.HIGH;
+            baseEndpoint = Constants.StudioEndpoints.HIGH;
+            break;
         case ServiceEndpointCategory.MOONCAKE:
-            return Constants.StudioEndpoints.MOONCAKE;
+            baseEndpoint = Constants.StudioEndpoints.MOONCAKE;
+            break;
         default:
-            return "";
+            break;
     }
+
+    return `${baseEndpoint}/environments/${PacContext.AuthInfo?.EnvironmentId}/portals/home`;
 }
 
 const getActiveSitesUrl = () => `${getStudioUrl()}/?tab=active`;
