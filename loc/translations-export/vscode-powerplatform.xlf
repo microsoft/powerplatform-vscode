@@ -722,6 +722,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="pacCLI.openPacLab.title">
       <source xml:lang="en">Open PAC Lab</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title">
+      <source xml:lang="en">Open in Power Pages Studio</source>
+    </trans-unit>
     <trans-unit id="powerPlatform.experimental.auth.testCloudOverride.description">
       <source xml:lang="en">Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.</source>
       <note>This is a Markdown formatted string, and `#powerPlatform.auth.cloud#` must remain unmodified.</note>

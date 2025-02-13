@@ -390,6 +390,22 @@
         "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
         "title": "%microsoft.powerplatform.pages.actionsHub.switchEnvironment.title%",
         "icon": "$(arrow-swap)"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.openActiveSitesInStudio",
+        "title": "%microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title%",
+        "icon": {
+          "dark": "./src/client/assets/open-icon/dark/open.svg",
+          "light": "./src/client/assets/open-icon/light/open.svg"
+        }
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio",
+        "title": "%microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title%",
+        "icon": {
+          "dark": "./src/client/assets/open-icon/dark/open.svg",
+          "light": "./src/client/assets/open-icon/light/open.svg"
+        }
       }
     ],
     "configuration": {
@@ -950,14 +966,24 @@
           "group": "inline@1"
         },
         {
-          "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
+          "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
           "group": "inline@2"
         },
         {
-          "command": "microsoft.powerplatform.pages.actionsHub.switchEnvironment",
+          "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == environmentGroup",
           "group": "inline@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.openActiveSitesInStudio",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == activeSitesGroup",
+          "group": "inline"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSitesGroup",
+          "group": "inline"
         }
       ]
     },

@@ -12,6 +12,8 @@ import { OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
 import PacContext from '../../pac/PacContext';
+import ArtemisContext from '../../ArtemisContext';
+import { ServiceEndpointCategory } from '../../../common/services/Constants';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -93,3 +95,34 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
         }
     }
 }
+
+const getStudioUrl = (): string => {
+    const artemisContext = ArtemisContext.ServiceResponse;
+
+    switch (artemisContext.stamp) {
+        case ServiceEndpointCategory.TEST:
+            return "https://make.test.powerpages.microsoft.com";
+        case ServiceEndpointCategory.PREPROD:
+            return "https://make.preprod.powerpages.microsoft.com";
+        case ServiceEndpointCategory.PROD:
+            return "https://make.powerpages.microsoft.com";
+        case ServiceEndpointCategory.DOD:
+            return "https://make.powerpages.microsoft.appsplatform.us";
+        case ServiceEndpointCategory.GCC:
+            return "https://make.gov.powerpages.microsoft.us";
+        case ServiceEndpointCategory.HIGH:
+            return "https://make.high.powerpages.microsoft.us";
+        case ServiceEndpointCategory.MOONCAKE:
+            return "https://make.powerpages.microsoft.cn";
+        default:
+            return "";
+    }
+}
+
+const getActiveSitesUrl = () => `${getStudioUrl()}/?tab=active`;
+
+const getInactiveSitesUrl = () => `${getStudioUrl()}/?tab=inactive`;
+
+export const openActiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getActiveSitesUrl()));
+
+export const openInactiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getInactiveSitesUrl()));
