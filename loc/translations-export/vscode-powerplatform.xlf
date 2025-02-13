@@ -134,6 +134,9 @@
       <source xml:lang="en">Creating {0}...</source>
       <note>{0} will be replaced by the entity type.</note>
     </trans-unit>
+    <trans-unit id="++CODE++e0d1b68224bf0b31ef16b206c65b5f8f6b89d18161f4a7cdcb8d0ac8d952549a">
+      <source xml:lang="en">Current</source>
+    </trans-unit>
     <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
       <source xml:lang="en">Default Environment: {0}</source>
       <note>The {0} represents profile's resource/environment URL</note>
@@ -284,6 +287,10 @@ Return to this chat and @powerpages can help you write and edit your website cod
     <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
       <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
       <note>{0} represents the version number</note>
+    </trans-unit>
+    <trans-unit id="++CODE++f351355077e2d6b421620f76832f108d9b4d84f31c14857d802cd8db01e4d330">
+      <source xml:lang="en">Instance url: {0}</source>
+      <note>{0} is the Instance Url</note>
     </trans-unit>
     <trans-unit id="++CODE++c59fe0045151cddc10b8384a437337e86eab905877883c18b53e068a3d36121d">
       <source xml:lang="en">Learn more about Copilot</source>

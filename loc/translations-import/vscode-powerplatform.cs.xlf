@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="bundle" source-language="en" datatype="plaintext" target-language="cs">
     <body>
+      <trans-unit id="++CODE++29bb69945e50cb632fabf16f3f89a25d813910c19059d8a792f66262a952039d">
+        <source xml:lang="en">@PowerPages is not yet available in your region.</source>
+        <target state="translated">@PowerPages není zatím ve vaší oblasti k dispozici.</target>
+      </trans-unit>
       <trans-unit id="++CODE++32e135c21be9286cda2fda96fbe713f9af60f5f933e4e58468f256dd54b95575">
         <source xml:lang="en">A content snippet with the same name already exists. Please enter a different name.</source>
         <target state="translated">Fragment obsahu se stejným názvem už existuje. Zadejte jiný název.</target>
@@ -18,9 +22,21 @@
         <source xml:lang="en">A webtemplate with the same name already exists. Please enter a different name.</source>
         <target state="translated">Šablona webu se stejným názvem už existuje. Zadejte jiný název.</target>
       </trans-unit>
+      <trans-unit id="++CODE++bcfb3427790816de073090a76469fec945a3c7f5f82bbac338378ea22784c70a">
+        <source xml:lang="en">AI features have been disabled by your organization. Contact your admin for details. [Learn more](https://go.microsoft.com/fwlink/?linkid=2285848)</source>
+        <target state="translated">Funkce AI byly vaší organizací zakázány. Podrobnosti vám sdělí správce. [Další informace](https://go.microsoft.com/fwlink/?linkid=2285848)</target>
+      </trans-unit>
       <trans-unit id="++CODE++8d35e64354d3db3df1df4ef8e6068b6b9dd58514fcf980f7071e10ed160db95a">
         <source xml:lang="en">AI-generated content can contain mistakes</source>
         <target state="translated">Obsah vygenerovaný umělou inteligencí může obsahovat chyby.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b7a871816816225e2493a94b2b40d7c0ab9fa8a8d14666e68c00e5a511c9f4f6">
+        <source xml:lang="en">Active Environment is expired or deleted. Please select a new environment.</source>
+        <target state="translated">Aktivní prostředí má prošlou platnost nebo bylo odstraněno. Vyberte nové prostředí.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b82f83283cc4275cf0d58b4f55d1242fe46227ee1da9db4b81b6b08804dcbf01">
+        <source xml:lang="en">Active Sites</source>
+        <target state="translated">Aktivní weby</target>
       </trans-unit>
       <trans-unit id="++CODE++5f9c7a14b3c0c2971e4a8f4471af5071dbd3cf37f96fa09fe1257124c0b7e921">
         <source xml:lang="en">Active auth profile is not found or has expired. Please try again.</source>
@@ -47,6 +63,14 @@
         <source xml:lang="en">Are you sure you want to delete the Auth Profile {0}-{1}?</source>
         <note>{0} is the user name, {1} is the URL of environment of the auth profile</note>
         <target state="translated">Určitě chcete odstranit ověřovací profil {0}–{1}?</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e149c8c84127919560017a77982c24d21203ea0835f21dc45f34682f5e65840d">
+        <source xml:lang="en">Arrow icon</source>
+        <target state="translated">Ikona šipky</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1f6087c22e8b59c12a5a95c61f5811ecd795e553b7a0d7f2e337e36dc26fe509">
+        <source xml:lang="en">Authenticating...</source>
+        <target state="translated">Ověřování…</target>
       </trans-unit>
       <trans-unit id="++CODE++4190475b52357e7ad3da76828784a5b9f291519e331b0c0e71f5d14e946bbc4b">
         <source xml:lang="en">Authentication failed. Please try again.</source>
@@ -79,6 +103,9 @@
         <note>{0} represents the error message returned from the exception</note>
         <target state="translated">Nelze nainstalovat pac CLI: {0}</target>
       </trans-unit>
+      <trans-unit id="++CODE++b75d741af5a9c59c95a5c7b7d9f654bb93617232db14c8d2671a5c731828782b">
+        <source xml:lang="en">Changing environment...</source>
+      </trans-unit>
       <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
         <source xml:lang="en">Check the URL and verify the parameters are correct</source>
         <target state="translated">Zkontrolujte adresu URL a ověřte správnost parametrů.</target>
@@ -99,10 +126,26 @@
         <source xml:lang="en">Choose web template</source>
         <target state="translated">Zvolit šablonu webu</target>
       </trans-unit>
+      <trans-unit id="++CODE++149fd22e94b05db4102d8eb8dc887a15388e66177b1e7d7b6634e5530b0998b0">
+        <source xml:lang="en">Clearing cache...</source>
+        <target state="translated">Maže se mezipaměť…</target>
+      </trans-unit>
       <trans-unit id="++CODE++eef726ad55117038c05eaa478148144884ab56cadc5a46785e8221040ff7a6ec">
         <source xml:lang="en">Cloud Instance: {0}</source>
         <note>The {0} represents profile's Azure Cloud Instances</note>
         <target state="translated">Cloudová instance: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++e0a2ada39bb1b062967ebf06c78ad62004625c48072b3e62656836c2b775aa3f">
+        <source xml:lang="en">Cluster category: {0}</source>
+        <note>{0} is the Cluster category</note>
+      </trans-unit>
+      <trans-unit id="++CODE++8f3ffa30307b4f73ca60c319ab62428b539d8410f1d62f67d941ba9957b39d9e">
+        <source xml:lang="en">Cluster environment: {0}</source>
+        <note>{0} is the Cluster environment</note>
+      </trans-unit>
+      <trans-unit id="++CODE++396ccbc26f4551ea0d94633d40a1a5b105360b9b30cf8897e1fde4c9d064a163">
+        <source xml:lang="en">Cluster geo name: {0}</source>
+        <note>{0} is the cluster geo name</note>
       </trans-unit>
       <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
         <source xml:lang="en">Confirm</source>
@@ -116,9 +159,9 @@
         <source xml:lang="en">Copied to clipboard!</source>
         <target state="translated">Zkopírováno do schránky</target>
       </trans-unit>
-      <trans-unit id="++CODE++6f6ff1fc17821e030a88681092957c279c6a5b1177f940017a4c5fd99fd1ea7b">
-        <source xml:lang="en">Copilot is not available. Please contact your administrator.</source>
-        <target state="translated">Copilot není dostupný. Obraťte se na správce.</target>
+      <trans-unit id="++CODE++b04e6767bf84555605710be1a94e48ddcbcb820353b859da427d189cf25395b4">
+        <source xml:lang="en">Copilot illustration</source>
+        <target state="translated">Ilustrace Copilota</target>
       </trans-unit>
       <trans-unit id="++CODE++b749e205302cc21952a1e9646569ca0af9017cc5f39dd741830551bdd4ae823e">
         <source xml:lang="en">Copy to clipboard</source>
@@ -177,6 +220,10 @@ Typ: {3}</target>
         <source xml:lang="en">Enter the name of the web template</source>
         <target state="translated">Zadejte název šablony webu.</target>
       </trans-unit>
+      <trans-unit id="++CODE++b6d455a8dab8e66229a985315b5db1e1c065ba6d999dffd2795c03189fb32265">
+        <source xml:lang="en">Environment ID: {0}</source>
+        <note>{0} is the Environment ID</note>
+      </trans-unit>
       <trans-unit id="++CODE++5a2391041cb1f6f5ab0cce07946dbf4222358fbd947768d94ac12ef5329485d3">
         <source xml:lang="en">Explain the following code snippet:</source>
         <target state="translated">Vysvětlit následující fragment kódu:</target>
@@ -184,6 +231,10 @@ Typ: {3}</target>
       <trans-unit id="++CODE++f9e17ed11037dab93f8820c30db63b2ff2a045b5761f71818b7291afae60f199">
         <source xml:lang="en">Explain the following code {% include 'Page Copy'%}</source>
         <target state="translated">Vysvětlit následující kód: {% include 'Page Copy'%}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b985f1515c42b4b5b0c11a3d7b3286fc9d66997d476668ab1f93a4a11499fef5">
+        <source xml:lang="en">Failed to create a new Power Pages site. Please try again.</source>
+        <target state="translated">Nový web Power Pages se nepodařilo vytvořit. Zkuste to znovu.</target>
       </trans-unit>
       <trans-unit id="++CODE++2310c6b7e5953cab877859ba1fcfa98e58e1508677df9412010e9b578ea237f4">
         <source xml:lang="en">Failed to create: {0}.</source>
@@ -205,6 +256,14 @@ Typ: {3}</target>
       <trans-unit id="++CODE++862d6197d64601aa13ce30db5ec5b8f819ad00fe21e3b031a3e47fe22ef68fb3">
         <source xml:lang="en">Failed to get file ready for edit: {0}</source>
         <target state="translated">Soubor se nepodařilo připravit k úpravám: {0}</target>
+      </trans-unit>
+      <trans-unit id="++CODE++78900eaa5444b623de50e2df5c46a35ee65a934a17bf9a1d619e275f1e6a529c">
+        <source xml:lang="en">Failed to get organization details. Please try again later</source>
+        <target state="translated">Nepodařilo se získat podrobnosti organizace. Zkuste to znovu později.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++51e1f5c5757cfd25a390293a7d8e9eb583943b66211fae1cbe25d07bfcb767f1">
+        <source xml:lang="en">Failed to get website endpoint. Please try again later</source>
+        <target state="translated">Nepodařilo se získat koncový bod webu. Zkuste to znovu později.</target>
       </trans-unit>
       <trans-unit id="++CODE++a9e36b880dd45b64ae5601865540605296febf9bd855fc46d9c35c2c2ed9a7f2">
         <source xml:lang="en">Feature is not enabled for this geo.</source>
@@ -231,9 +290,29 @@ Typ: {3}</target>
         <source xml:lang="en">GETTING STARTED</source>
         <target state="translated">ZAČÍNÁME</target>
       </trans-unit>
+      <trans-unit id="++CODE++c4c059b39483b39ccf3cb056feaa5e400e252a9c558deecdf8d301c1dac9485b">
+        <source xml:lang="en">Generating a new Power Pages site...</source>
+        <target state="translated">Generuje se nový web Power Pages…</target>
+      </trans-unit>
+      <trans-unit id="++CODE++46be031ab391443c1736cb8c7032c5b07b159164f48f5b86fe135465e3255571">
+        <source xml:lang="en">Generating webpages...</source>
+        <target state="translated">Generují se webové stránky…</target>
+      </trans-unit>
       <trans-unit id="++CODE++ee1d3100df4b00eabd74481b92106e42cce956213372a914082f82702f56470d">
         <source xml:lang="en">Get GitHub Copilot to try @powerpages</source>
         <target state="translated">Pořiďte si GitHub Copilota a vyzkoušejte @powerpages</target>
+      </trans-unit>
+      <trans-unit id="++CODE++1a1075387e5e1674a11f58f6aadd4e0abc63e1e3d201ae980b12a37e6d5a584b">
+        <source xml:lang="en">Getting organization details...</source>
+        <target state="translated">Načítají se podrobnosti organizace…</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6f1bba10af9069a03da80d629b97c40fc4bedaf90a23496a2bdef0c512a92959">
+        <source xml:lang="en">Getting region information...</source>
+        <target state="translated">Získávají se informace o oblasti…</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0087988cdb71080f2525354e125366c6db7d85a36f199e2f80d14a44b3fd0340">
+        <source xml:lang="en">Getting website endpoint...</source>
+        <target state="translated">Získává se koncový bod webu…</target>
       </trans-unit>
       <trans-unit id="++CODE++b9f4adbdfa2deef1eaa415a914f63329ee06c604b5a1bf34645175b9e28a9712">
         <source xml:lang="en">Here are a few suggestions to get you started</source>
@@ -269,9 +348,25 @@ Vraťte se do tohoto chatu a @powerpages vám pomůže napsat a upravit kód va�
         <source xml:lang="en">In your own words, describe what you need. You can get help with writing code for Power Pages sites in HTML, CSS, and JS languages.</source>
         <target state="translated">Svými vlastními slovy popište, co potřebujete. Můžete získat pomoc s psaním kódu pro weby Power Pages v jazycích HTML, CSS a JS.</target>
       </trans-unit>
+      <trans-unit id="++CODE++3dbd55d3a97fd4cb21b3c56d8413a25157e099b74e2315575af1cce16bde65d5">
+        <source xml:lang="en">Inactive Sites</source>
+        <target state="translated">Neaktivní weby</target>
+      </trans-unit>
+      <trans-unit id="++CODE++a22418694e3938cc42976630bcd24822ed4f671b168708e0641171440ca8f6dd">
+        <source xml:lang="en">Initializing site preview</source>
+        <target state="translated">Inicializuje se náhled webu.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++15b09c32b0337229ff64c72f2ea9a3f8422fa20975ae494da863fd738554b1de">
+        <source xml:lang="en">Initializing site preview. Please try again after few seconds.</source>
+        <target state="translated">Inicializuje se náhled webu. Zkuste to znovu za několik sekund.</target>
+      </trans-unit>
       <trans-unit id="++CODE++e992151b1efc99f93484c7d7f3076b66ab072a8af2383e96104cc597c971339c">
         <source xml:lang="en">Insert code into editor</source>
         <target state="translated">Vložit kód do editoru</target>
+      </trans-unit>
+      <trans-unit id="++CODE++569ca49f4aaf7846e952c1d4aeca72febd0b79fa1c4f9db08fd3127551218572">
+        <source xml:lang="en">Install</source>
+        <target state="translated">Nainstalovat</target>
       </trans-unit>
       <trans-unit id="++CODE++25109e9c19daeeed3977b84ace83722ac8a4daafcfe4e3709082fcc5b228e7a8">
         <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
@@ -360,6 +455,10 @@ Kód organizace: {3}</target>
         <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
         <target state="translated">V aktuálním adresáři nebyla nalezena žádná data webu. Pokud chcete pokračovat, přepněte do adresáře, který obsahuje stažená data PAC webu.</target>
       </trans-unit>
+      <trans-unit id="++CODE++80266a1ea7e6671d65c98a0624c254f5b9acfacddd05d69524b7f034eeba3268">
+        <source xml:lang="en">No environments found</source>
+        <target state="translated">Nebyla nalezena žádná prostředí.</target>
+      </trans-unit>
       <trans-unit id="++CODE++e0d2b29e6060c3d50691e6961835418fe6a24723c227dacf93250b94e21ed1bb">
         <source xml:lang="en">No page templates found</source>
         <target state="translated">Nebyly nalezeny žádné šablony stránek.</target>
@@ -368,6 +467,10 @@ Kód organizace: {3}</target>
         <source xml:lang="en">No parent pages found for adding webfile</source>
         <target state="translated">Nebyly nalezeny žádné nadřazené stránky pro přidání webového souboru.</target>
       </trans-unit>
+      <trans-unit id="++CODE++b8a162cd305ec78bd85f8e1b5a31a3e2c944fd560aa5f0e17e6b76de4c008e6b">
+        <source xml:lang="en">No sites found</source>
+        <target state="translated">Nebyly nalezeny žádné weby.</target>
+      </trans-unit>
       <trans-unit id="++CODE++abb85d7bb3ea846c90ad6348fd3a1154436cdde8f06db3d86711dd6e23cf1e21">
         <source xml:lang="en">No webpages found</source>
         <target state="translated">Nebyly nalezeny žádné webové stránky.</target>
@@ -375,6 +478,14 @@ Kód organizace: {3}</target>
       <trans-unit id="++CODE++6da29e062697a9f26659ef14ebda075afe939756af5d8e1d3451eb7d6d6e1a8a">
         <source xml:lang="en">No workspace folder found</source>
         <target state="translated">Nebyla nalezena žádná složka pracovního prostoru.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++6c0242ffba2aababcb4e45831de1492e8bccae2cb0f3387dfe9c16620f6928ef">
+        <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
+        <target state="translated">Není otevřena žádná složka pracovního prostoru. Chcete-li zobrazit náhled, otevřete složku webu.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
+        <source xml:lang="en">Object ID: {0}</source>
+        <note>{0} is the Object ID</note>
       </trans-unit>
       <trans-unit id="++CODE++bda6bda1e902d120a7f4515ceac8546c3112e3cb9351df1d8b9713b8f86e0370">
         <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
@@ -388,9 +499,21 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Opening preview site...</source>
         <target state="translated">Otevírá se náhled webu...</target>
       </trans-unit>
+      <trans-unit id="++CODE++e61c4ac3c692e3cfdc02717db82d18b1e9d51242710031f20af35b33d149fa7a">
+        <source xml:lang="en">Opening site preview...</source>
+        <target state="translated">Otevírá se náhled webu…</target>
+      </trans-unit>
       <trans-unit id="++CODE++5cac0147c19013eb88b1fc8dc0d066b48e9f5cfcdbc9737a29d544d9bd61db55">
         <source xml:lang="en">Operation failed. See output panel for details.</source>
         <target state="translated">Operace se nezdařila. Podrobnosti najdete na panel výstupu.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++38bb1c8534acb465ac1e4975989a18199aaea7beb273d8ff935ac0a07e443539">
+        <source xml:lang="en">Organization ID: {0}</source>
+        <note>{0} is the Organization ID</note>
+      </trans-unit>
+      <trans-unit id="++CODE++b3d5416b4e83d803e6f238f1d31a637450f12c9370113871d15bd48c72435cd2">
+        <source xml:lang="en">Other Sites</source>
+        <target state="translated">Další weby</target>
       </trans-unit>
       <trans-unit id="++CODE++d4dc9d620b68b70e7de4aeaa15e1d83dddb457c64a3cadb35cf1b55025ad194f">
         <source xml:lang="en">PAC Telemetry disabled</source>
@@ -442,10 +565,6 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Preview site</source>
         <target state="translated">Zobrazit náhled webu</target>
       </trans-unit>
-      <trans-unit id="++CODE++f190e8061b8cbadd991ff217210525eff0000a8c6ddc2d44baec8388b7bd1a3e">
-        <source xml:lang="en">Preview site URL is not available</source>
-        <target state="translated">Adresa URL náhledu webu není k dispozici.</target>
-      </trans-unit>
       <trans-unit id="++CODE++1cc20af81855b8570858ea1ac0491000d230bcf2ac53c1c1b30243a9b58a2036">
         <source xml:lang="en">Preview site URL is not valid</source>
         <target state="translated">Adresa URL webu verze Preview není platná.</target>
@@ -472,6 +591,9 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Select Type</source>
         <target state="translated">Vybrat typ</target>
       </trans-unit>
+      <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
+        <source xml:lang="en">Select an environment</source>
+      </trans-unit>
       <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
         <source xml:lang="en">Selection is empty.</source>
         <target state="translated">Výběr je prázdný.</target>
@@ -480,9 +602,16 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Selection is too large. Try making a shorter selection.</source>
         <target state="translated">Výběr je příliš velký. Zkuste vybrat méně položek.</target>
       </trans-unit>
+      <trans-unit id="++CODE++142027a259879fdd2b6410360a9cd3798f433c2fc5668bb685dd4ff513072e16">
+        <source xml:lang="en">Session Details</source>
+      </trans-unit>
       <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
         <source xml:lang="en">Show Output Panel</source>
         <target state="translated">Zobrazit panel výstupu</target>
+      </trans-unit>
+      <trans-unit id="++CODE++f7094162bd4c4b59aa706387714347223e1569c79c5b37eb19ac754a33a0fdd0">
+        <source xml:lang="en">Site runtime preview feature is not enabled.</source>
+        <target state="translated">Funkce náhledu webu za běhu není povolena.</target>
       </trans-unit>
       <trans-unit id="++CODE++27dd8c8e67d15783f51c6b71ed60d5350731daa85b418f1e84c2e5828ae2d54e">
         <source xml:lang="en">Some references might be broken. Please check diagnostics for details.</source>
@@ -500,9 +629,18 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Tell us more.</source>
         <target state="translated">Řekněte nám víc.</target>
       </trans-unit>
+      <trans-unit id="++CODE++d676394d137346db95d191c756b08c5be6fbaef4a6ca2159b8e53736e54f98e1">
+        <source xml:lang="en">Tenant ID: {0}</source>
+        <note>{0} is the Tenant ID</note>
+      </trans-unit>
       <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
         <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
         <target state="translated">Generátor Power Pages je připraven k použití v rozšíření editoru VS Code.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++0bc2e4918b64f82220bde3dae30dc007a45fb59c3677833fb5a0e275a3b6b54b">
+        <source xml:lang="en">The extension 'Microsoft Edge Tools' is required to run this command. Do you want to install it now?</source>
+        <note>Do not translate 'Microsoft Edge Tools' </note>
+        <target state="translated">Spuštění tohoto příkazu vyžaduje rozšíření Microsoft Edge Tools. Chcete ho teď nainstalovat?</target>
       </trans-unit>
       <trans-unit id="++CODE++e4a2396fd7a366292a40abc87b18a2329458c258f4d0e0e593e6189dff19a117">
         <source xml:lang="en">The name you want to give to this authentication profile</source>
@@ -511,6 +649,10 @@ Kód organizace: {3}</target>
       <trans-unit id="++CODE++5eccedc8c04d2137a9eb74edf18ea469b4b63e7315de4b8fe49c48bb8d0780e9">
         <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
         <target state="translated">Tento pac CLI je připraven k použití v terminálu editoru VS Code.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++db00163e0e6fed2e319e28785c537befb88ded272d245e503d9580322ab2fec8">
+        <source xml:lang="en">The preview shown is for published changes.</source>
+        <target state="translated">Zobrazený náhled je určený pro publikované změny.</target>
       </trans-unit>
       <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
         <source xml:lang="en">There was a permissions problem with the server</source>
@@ -532,6 +674,10 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Thumbs Up</source>
         <target state="translated">Palec nahoru</target>
       </trans-unit>
+      <trans-unit id="++CODE++75d0f748a196d70fe132e890ca21172baae3169ee3f9aa48c27aed5fbe5965bf">
+        <source xml:lang="en">Timestamp: {0}</source>
+        <note>{0} is the timestamp</note>
+      </trans-unit>
       <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
         <source xml:lang="en">To know more, see &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt;Copilot in Power Pages documentation.</source>
         <target state="translated">Další informace najdete v dokumentaci &lt;a href="https://go.microsoft.com/fwlink/?linkid=2206366"&gt; Copilota v Power Pages.</target>
@@ -548,6 +694,10 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Try and be as specific as possible. Your feedback will be used to improve Copilot. &lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt; View privacy details &lt;/a&gt;</source>
         <target state="translated">Snažte se být co nejkonkrétnější. Vaše názory budou použity ke zlepšení Copilota. &lt;a href="https://privacy.microsoft.com/en-US/data-privacy-notice"&gt;Zobrazit podrobnosti o ochraně soukromí&lt;/a&gt;</target>
       </trans-unit>
+      <trans-unit id="++CODE++34077c1b18e274ca17c858b0521d9ff1edd6a164eccb2a24888fc6ed0eb3df35">
+        <source xml:lang="en">Unable to clear cache</source>
+        <target state="translated">Nelze vymazat mezipaměť</target>
+      </trans-unit>
       <trans-unit id="++CODE++bd7b156375b48ce5797a3421150e6f5c3b71d3a30f823e957241589aea6236ca">
         <source xml:lang="en">Unable to complete the request</source>
         <target state="translated">Žádost nelze dokončit.</target>
@@ -555,6 +705,10 @@ Kód organizace: {3}</target>
       <trans-unit id="++CODE++bab36b47fe2dd4f2f7e8eb486f2e3546e27dc047e69f5b24307bc71e5be2a7cf">
         <source xml:lang="en">Unable to find that app</source>
         <target state="translated">Tuto aplikaci nelze najít.</target>
+      </trans-unit>
+      <trans-unit id="++CODE++b6038584b7b1f565be9c9d3f0ac11be70bd2e69e072ead52884ca7338a14ee67">
+        <source xml:lang="en">Unique name: {0}</source>
+        <note>{0} is the Unique name</note>
       </trans-unit>
       <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
         <source xml:lang="en">Unmanaged</source>
@@ -581,13 +735,17 @@ Kód organizace: {3}</target>
         <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
         <target state="translated">Názvy webových stránek by měly obsahovat jen písmena, číslice, pomlčky nebo podtržítka.</target>
       </trans-unit>
+      <trans-unit id="++CODE++aa64cfbb63d3382bc0530c6e599467b1cc5c1ef8ff3b573d37ad628f9058b2aa">
+        <source xml:lang="en">Website not found in the environment. Please check the credentials and login with correct account.</source>
+        <target state="translated">Web nebyl v tomto prostředí nalezen. Zkontrolujte přihlašovací údaje a přihlaste se pomocí správného účtu.</target>
+      </trans-unit>
       <trans-unit id="++CODE++e4bb03b399c07eeda658d87305435a58818cb5e0c3b76ae054d99564cf14ef6b">
         <source xml:lang="en">What do you need help with?</source>
         <target state="translated">S čím potřebujete pomoci?</target>
       </trans-unit>
-      <trans-unit id="++CODE++6f65376f47dd6d9867102ea8c57d776161ac941091f2a9d52fdd4c8228575e7b">
-        <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you. </source>
-        <target state="translated">Stačí popsat, co potřebujete, a umělá inteligence za vás vytvoří kód v jazyce HTML, CSS, JS nebo Liquid. </target>
+      <trans-unit id="++CODE++ab06f2880f954cfbc6788988300346315e8372cc05d92ce26ff6635c607e1406">
+        <source xml:lang="en">Whether itâ€™s HTML, CSS, JS, or Liquid code, just describe what you need and let AI build it for you.</source>
+        <target state="translated">Stačí popsat, co potřebujete, a umělá inteligence za vás vytvoří kód v jazyce HTML, CSS, JS nebo Liquid.</target>
       </trans-unit>
       <trans-unit id="++CODE++47a853b9f140a6f231de8498ec559d7d882536070b83c1e45c16671fd48a0b65">
         <source xml:lang="en">Working on it...</source>
@@ -644,6 +802,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
         <target state="translated">Vyhněte se náhodným přepisům při pokusu o uložení zastaralého kódu v editoru VS Code pro web. Změny můžete porovnat vedle sebe a rozhodnout, zda je přijmete, nebo vrátíte zpět. 
  
 Další informace najdete v článku, který popisuje, jak se [vyhnout náhodným přepisům](command:powerplatform-walkthrough.saveConflict-learn-more).</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.switchEnvironment.title">
+        <source xml:lang="en">Change Environment</source>
       </trans-unit>
       <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
         <source xml:lang="en">Clear Auth Profiles</source>
@@ -798,6 +959,10 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
         <source xml:lang="en">Overview</source>
         <target state="translated">Přehled</target>
       </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.title">
+        <source xml:lang="en">POWER PAGES ACTIONS</source>
+        <target state="translated">AKCE POWER PAGES</target>
+      </trans-unit>
       <trans-unit id="microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title">
         <source xml:lang="en">POWER PAGES ACTIONS</source>
         <target state="translated">AKCE POWER PAGES</target>
@@ -809,6 +974,13 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="microsoft-powerapps-portals.preview-show.title">
         <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
         <target state="translated">Portál PowerApps -&gt; Zobrazit náhled</target>
+      </trans-unit>
+      <trans-unit id="powerplatform.pages.previewSite.title">
+        <source xml:lang="en">Preview Site</source>
+        <target state="translated">Zobrazit náhled webu</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.refresh.title">
+        <source xml:lang="en">Refresh</source>
       </trans-unit>
       <trans-unit id="pacCLI.envAndSolutionsPanel.refresh.title">
         <source xml:lang="en">Refresh</source>
@@ -829,6 +1001,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <trans-unit id="pacCLI.envAndSolutionsPanel.selectEnvironment.title">
         <source xml:lang="en">Select Environment</source>
         <target state="translated">Vybrat prostředí</target>
+      </trans-unit>
+      <trans-unit id="microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title">
+        <source xml:lang="en">Show Environment Details</source>
       </trans-unit>
       <trans-unit id="pacCLI.pacAuthHelp.title">
         <source xml:lang="en">Show PAC Authentication Help</source>
