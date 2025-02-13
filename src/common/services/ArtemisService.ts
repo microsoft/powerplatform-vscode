@@ -100,10 +100,10 @@ export class ArtemisService {
         const tstUrl = `https://${domain}.${nonProdSegment}.organization.api.test.powerplatform.com/gateway/cluster?api-version=1`;
         const preprodUrl = `https://${domain}.${nonProdSegment}.organization.api.preprod.powerplatform.com/gateway/cluster?api-version=1`;
         const prodUrl = `https://${domainProd}.${prodSegment}.organization.api.powerplatform.com/gateway/cluster?api-version=1`;
-        const gccUrl = `https://${domain}.${nonProdSegment}.organization.api.gov.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
-        const highUrl = `https://${domain}.${nonProdSegment}.organization.api.high.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
-        const mooncakeUrl = `https://${domain}.${nonProdSegment}.organization.api.powerplatform.partner.microsoftonline.cn/gateway/cluster?app-version=1`;
-        const dodUrl = `https://${domain}.${nonProdSegment}.organization.api.appsplatform.us/gateway/cluster?app-version=1`;
+        const gccUrl = `https://${domain}.${prodSegment}.organization.api.gov.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
+        const highUrl = `https://${domain}.${prodSegment}.organization.api.high.powerplatform.microsoft.us/gateway/cluster?api-version=1`;
+        const mooncakeUrl = `https://${domain}.${prodSegment}.organization.api.powerplatform.partner.microsoftonline.cn/gateway/cluster?app-version=1`;
+        const dodUrl = `https://${domain}.${prodSegment}.organization.api.appsplatform.us/gateway/cluster?app-version=1`;
 
         return [
             { stamp: ServiceEndpointCategory.TEST, endpoint: tstUrl },
