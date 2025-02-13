@@ -10,4 +10,5 @@ export interface IWebsiteInfo {
     dataModelVersion: 1 | 2;
     websiteUrl: string;
     status: WebsiteStatus | undefined;
+    isCurrent: boolean;
 }

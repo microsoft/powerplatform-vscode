@@ -10,7 +10,8 @@ export abstract class ActionsHubTreeItem extends vscode.TreeItem {
         public readonly label: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri } | vscode.ThemeIcon,
-        public readonly contextValue: string
+        public readonly contextValue: string,
+        public readonly description: string = "",
     ) {
         super(label, collapsibleState);
 

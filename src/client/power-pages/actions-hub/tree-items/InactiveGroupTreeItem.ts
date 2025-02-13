@@ -36,7 +36,8 @@ export class InactiveGroupTreeItem extends ActionsHubTreeItem {
                 name: site.Name,
                 dataModelVersion: site.DataModel == WebsiteDataModel.Standard ? 1 : 2,
                 websiteUrl: site.WebsiteUrl,
-                status: WebsiteStatus.Inactive
+                status: WebsiteStatus.Inactive,
+                isCurrent: false
             };
             const siteItem = new SiteTreeItem(siteInfo);
             return siteItem;
