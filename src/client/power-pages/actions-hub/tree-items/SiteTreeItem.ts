@@ -17,7 +17,8 @@ export class SiteTreeItem extends ActionsHubTreeItem {
             siteInfo.name,
             vscode.TreeItemCollapsibleState.None,
             Constants.Icons.SITE,
-            SiteTreeItem.getContextValue(siteInfo)
+            SiteTreeItem.getContextValue(siteInfo),
+            siteInfo.isCurrent ? Constants.Strings.CURRENT : ""
         )
     }
 
