@@ -39,6 +39,15 @@ export const Constants = {
         ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED: "actionsHubCurrentEnvFetchFailed",
         ACTIONS_HUB_REFRESH_FAILED: "actionsHubRefreshFailed",
         ACTIONS_HUB_SHOW_ENVIRONMENT_DETAILS_FAILED: "actionsHubShowEnvironmentDetailsFailed"
+    },
+    StudioEndpoints: {
+        TEST: "https://make.test.powerpages.microsoft.com",
+        PREPROD: "https://make.preprod.powerpages.microsoft.com",
+        PROD: "https://make.powerpages.microsoft.com",
+        DOD: "https://make.powerpages.microsoft.appsplatform.us",
+        GCC: "https://make.gov.powerpages.microsoft.us",
+        HIGH: "https://make.high.powerpages.microsoft.us",
+        MOONCAKE: "https://make.powerpages.microsoft.cn"
     }
 };
 

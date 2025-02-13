@@ -103,19 +103,19 @@ const getStudioUrl = (): string => {
 
     switch (artemisContext.stamp) {
         case ServiceEndpointCategory.TEST:
-            return "https://make.test.powerpages.microsoft.com";
+            return Constants.StudioEndpoints.TEST;
         case ServiceEndpointCategory.PREPROD:
-            return "https://make.preprod.powerpages.microsoft.com";
+            return Constants.StudioEndpoints.PREPROD;
         case ServiceEndpointCategory.PROD:
-            return "https://make.powerpages.microsoft.com";
+            return Constants.StudioEndpoints.PROD;
         case ServiceEndpointCategory.DOD:
-            return "https://make.powerpages.microsoft.appsplatform.us";
+            return Constants.StudioEndpoints.DOD;
         case ServiceEndpointCategory.GCC:
-            return "https://make.gov.powerpages.microsoft.us";
+            return Constants.StudioEndpoints.GCC;
         case ServiceEndpointCategory.HIGH:
-            return "https://make.high.powerpages.microsoft.us";
+            return Constants.StudioEndpoints.HIGH;
         case ServiceEndpointCategory.MOONCAKE:
-            return "https://make.powerpages.microsoft.cn";
+            return Constants.StudioEndpoints.MOONCAKE;
         default:
             return "";
     }
