@@ -6,13 +6,16 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
 import { AuthInfo, CloudInstance, EnvironmentType, OrgInfo } from '../../../../pac/PacTypes';
 import { PacTerminal } from '../../../../lib/PacTerminal';
 import PacContext from '../../../../pac/PacContext';
+import ArtemisContext from '../../../../ArtemisContext';
+import { ServiceEndpointCategory } from '../../../../../common/services/Constants';
+import { IArtemisAPIOrgResponse } from '../../../../../common/services/Interfaces';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -212,6 +215,208 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockOrgList.calledOnce).to.be.true;
             expect(mockShowQuickPick.calledOnce).to.be.true;
+        });
+    });
+
+    describe('openActiveSitesInStudio', () => {
+        let mockUrl: sinon.SinonSpy;
+
+        beforeEach(() => {
+            PacContext["_authInfo"] = mockAuthInfo;
+            mockUrl = sandbox.spy(vscode.Uri, 'parse');
+            sandbox.stub(vscode.env, 'openExternal');
+        });
+
+        describe('when service endpoint category is TEST', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.TEST, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open active sites in studio', async () => {
+                await openActiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.test.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=active');
+            });
+        });
+
+        describe('when service endpoint category is PREPROD', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.PREPROD, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open active sites in studio', async () => {
+                await openActiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.preprod.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=active');
+            });
+        });
+
+        describe('when service endpoint category is PROD', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.PROD, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open active sites in studio', async () => {
+                await openActiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=active');
+            });
+        });
+
+        describe('when service endpoint category is DOD', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.DOD, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open active sites in studio', async () => {
+                await openActiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.powerpages.microsoft.appsplatform.us/environments/test-env-id/portals/home/?tab=active');
+            });
+        });
+
+        describe('when service endpoint category is GCC', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.GCC, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open active sites in studio', async () => {
+                await openActiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.gov.powerpages.microsoft.us/environments/test-env-id/portals/home/?tab=active');
+            });
+        });
+
+        describe('when service endpoint category is HIGH', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.HIGH, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open active sites in studio', async () => {
+                await openActiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.high.powerpages.microsoft.us/environments/test-env-id/portals/home/?tab=active');
+            });
+        });
+
+        describe('when service endpoint category is MOONCAKE', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.MOONCAKE, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open active sites in studio', async () => {
+                await openActiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.powerpages.microsoft.cn/environments/test-env-id/portals/home/?tab=active');
+            });
+        });
+    });
+
+    describe('openInactiveSitesInStudio', () => {
+        let mockUrl: sinon.SinonSpy;
+
+        beforeEach(() => {
+            PacContext["_authInfo"] = mockAuthInfo;
+            mockUrl = sandbox.spy(vscode.Uri, 'parse');
+            sandbox.stub(vscode.env, 'openExternal');
+        });
+
+        describe('when service endpoint category is TEST', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.TEST, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open inactive sites in studio', async () => {
+                await openInactiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.test.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=inactive');
+            });
+        });
+
+        describe('when service endpoint category is PREPROD', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.PREPROD, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open inactive sites in studio', async () => {
+                await openInactiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.preprod.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=inactive');
+            });
+        });
+
+        describe('when service endpoint category is PROD', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.PROD, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open inactive sites in studio', async () => {
+                await openInactiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.powerpages.microsoft.com/environments/test-env-id/portals/home/?tab=inactive');
+            });
+        });
+
+        describe('when service endpoint category is DOD', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.DOD, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open inactive sites in studio', async () => {
+                await openInactiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.powerpages.microsoft.appsplatform.us/environments/test-env-id/portals/home/?tab=inactive');
+            });
+        });
+
+        describe('when service endpoint category is GCC', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.GCC, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open inactive sites in studio', async () => {
+                await openInactiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.gov.powerpages.microsoft.us/environments/test-env-id/portals/home/?tab=inactive');
+            });
+        });
+
+        describe('when service endpoint category is HIGH', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.HIGH, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open inactive sites in studio', async () => {
+                await openInactiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.high.powerpages.microsoft.us/environments/test-env-id/portals/home/?tab=inactive');
+            });
+        });
+
+        describe('when service endpoint category is MOONCAKE', () => {
+            beforeEach(() => {
+                ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.MOONCAKE, response: {} as IArtemisAPIOrgResponse };
+            });
+
+            it('should open inactive sites in studio', async () => {
+                await openInactiveSitesInStudio();
+
+                expect(mockUrl.calledOnce).to.be.true;
+                expect(mockUrl.firstCall.args[0]).to.equal('https://make.powerpages.microsoft.cn/environments/test-env-id/portals/home/?tab=inactive');
+            });
         });
     });
 });

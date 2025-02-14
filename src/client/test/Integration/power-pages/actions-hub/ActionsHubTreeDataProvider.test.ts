@@ -73,6 +73,20 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails")).to.be.true;
         });
+
+        it("should register openActiveSitesInStudio command", () => {
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.openActiveSitesInStudio")).to.be.true;
+        });
+
+        it("should register openInactiveSitesInStudio command", () => {
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio")).to.be.true;
+        });
     });
 
     describe('getTreeItem', () => {

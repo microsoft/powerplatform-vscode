@@ -12,6 +12,8 @@ import { OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
 import PacContext from '../../pac/PacContext';
+import ArtemisContext from '../../ArtemisContext';
+import { ServiceEndpointCategory } from '../../../common/services/Constants';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -95,3 +97,45 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
         }
     }
 }
+
+const getStudioUrl = (): string => {
+    const artemisContext = ArtemisContext.ServiceResponse;
+
+    let baseEndpoint = "";
+
+    switch (artemisContext.stamp) {
+        case ServiceEndpointCategory.TEST:
+            baseEndpoint = Constants.StudioEndpoints.TEST;
+            break;
+        case ServiceEndpointCategory.PREPROD:
+            baseEndpoint = Constants.StudioEndpoints.PREPROD;
+            break;
+        case ServiceEndpointCategory.PROD:
+            baseEndpoint = Constants.StudioEndpoints.PROD;
+            break;
+        case ServiceEndpointCategory.DOD:
+            baseEndpoint = Constants.StudioEndpoints.DOD;
+            break;
+        case ServiceEndpointCategory.GCC:
+            baseEndpoint = Constants.StudioEndpoints.GCC;
+            break;
+        case ServiceEndpointCategory.HIGH:
+            baseEndpoint = Constants.StudioEndpoints.HIGH;
+            break;
+        case ServiceEndpointCategory.MOONCAKE:
+            baseEndpoint = Constants.StudioEndpoints.MOONCAKE;
+            break;
+        default:
+            break;
+    }
+
+    return `${baseEndpoint}/environments/${PacContext.AuthInfo?.EnvironmentId}/portals/home`;
+}
+
+const getActiveSitesUrl = () => `${getStudioUrl()}/?tab=active`;
+
+const getInactiveSitesUrl = () => `${getStudioUrl()}/?tab=inactive`;
+
+export const openActiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getActiveSitesUrl()));
+
+export const openInactiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getInactiveSitesUrl()));
