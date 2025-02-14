@@ -105,7 +105,8 @@ describe("ActionsHubTreeDataProvider", () => {
 
     describe('getChildren', () => {
         it("should return environment and other sites group tree items in getChildren when no element is passed", async () => {
-            PacContext['_authInfo'] = {
+            // Stub the AuthInfo getter to return a valid object.
+            sinon.stub(PacContext, "AuthInfo").get(() => ({
                 OrganizationFriendlyName: "TestOrg",
                 UserType: "",
                 Cloud: CloudInstance.Preprod,
@@ -122,7 +123,11 @@ describe("ActionsHubTreeDataProvider", () => {
                 EnvironmentType: EnvironmentType.Regular,
                 OrganizationId: "",
                 OrganizationUniqueName: ""
-            };
+            }));
+
+            // Optionally, if needed, stub OrgInfo getter so that branch with website fetching is skipped.
+            sinon.stub(PacContext, "OrgInfo").get(() => undefined);
+
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             const result = await provider.getChildren();
 
