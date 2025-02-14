@@ -87,6 +87,13 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio")).to.be.true;
         });
+
+        it("should register preview command", () => {
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.preview")).to.be.true;
+        });
     });
 
     describe('getTreeItem', () => {

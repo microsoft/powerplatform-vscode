@@ -11,7 +11,7 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { openActiveSitesInStudio, openInactiveSitesInStudio, refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
+import { openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
 import { IWebsiteDetails } from "../../../common/services/Interfaces";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
 import PacContext, { OnPacContextChanged } from "../../pac/PacContext";
@@ -105,7 +105,9 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.openActiveSitesInStudio", openActiveSitesInStudio),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio", openInactiveSitesInStudio)
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio", openInactiveSitesInStudio),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite)
         ];
     }
 }

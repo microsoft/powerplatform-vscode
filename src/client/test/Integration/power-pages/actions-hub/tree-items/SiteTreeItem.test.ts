@@ -8,6 +8,7 @@ import { expect } from "chai";
 import { SiteTreeItem } from "../../../../../power-pages/actions-hub/tree-items/SiteTreeItem";
 import { ActionsHubTreeItem } from "../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 import { WebsiteStatus } from "../../../../../power-pages/actions-hub/models/WebsiteStatus";
+import { IWebsiteInfo } from "../../../../../power-pages/actions-hub/models/IWebsiteInfo";
 
 describe('SiteTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {
@@ -62,5 +63,12 @@ describe('SiteTreeItem', () => {
         const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: undefined, websiteUrl: "https://foo", isCurrent: false });
 
         expect(treeItem.description).to.be.equal("");
+    });
+
+    it('should have the siteInfo property set to the site info passed in the constructor', () => {
+        const siteInfo = { name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo", isCurrent: false } as IWebsiteInfo;
+        const treeItem = new SiteTreeItem(siteInfo);
+
+        expect(treeItem.siteInfo).to.deep.equal(siteInfo);
     });
 });

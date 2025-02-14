@@ -22,6 +22,7 @@ import { dataverseAuthentication } from '../../../common/services/Authentication
 import { IOrgDetails } from '../../../common/chat-participants/powerpages/PowerPagesChatParticipantTypes';
 import { IArtemisServiceResponse } from '../../../common/services/Interfaces';
 import { ActiveOrgOutput } from '../../pac/PacTypes';
+import PacContext from '../../pac/PacContext';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
@@ -125,7 +126,7 @@ export class PreviewSite {
         }
     }
 
-    private static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined): Promise<void> {
+    public static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined): Promise<void> {
         if (!webSitePreviewURL || webSitePreviewURL === "") {
             return;
         }
@@ -193,24 +194,30 @@ export class PreviewSite {
             }
         }
 
-        await PreviewSite.clearCache(orgDetails);
+        await PreviewSite.clearCache(this._websiteUrl);
 
         await PreviewSite.launchBrowserAndDevToolsWithinVsCode(this._websiteUrl);
     }
 
-    private static async clearCache(orgDetails: IOrgDetails): Promise<void> {
-        if (!this._websiteUrl) {
+    public static async clearCache(websiteUrl: string | undefined): Promise<void> {
+        if (!websiteUrl) {
             return;
         }
 
-        const requestUrl = `${this._websiteUrl.endsWith('/') ? this._websiteUrl : this._websiteUrl.concat('/')}_services/cache/config`;
+        const orgDetails = PacContext.OrgInfo;
+
+        if (!orgDetails) {
+            return;
+        }
+
+        const requestUrl = `${websiteUrl.endsWith('/') ? websiteUrl : websiteUrl.concat('/')}_services/cache/config`;
 
         await showProgressWithNotification(
             Messages.INITIALIZING_PREVIEW,
             async (progress) => {
                 progress.report({ message: Messages.CLEARING_CACHE });
 
-                const authResponse = await dataverseAuthentication(orgDetails.orgUrl);
+                const authResponse = await dataverseAuthentication(orgDetails.OrgUrl);
 
                 const clearCacheResponse = await fetch(requestUrl, {
                     headers: {

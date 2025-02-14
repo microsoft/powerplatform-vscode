@@ -11,7 +11,7 @@ import { WebsiteStatus } from "../models/WebsiteStatus";
 
 export class SiteTreeItem extends ActionsHubTreeItem {
     constructor(
-        siteInfo: IWebsiteInfo
+        public readonly siteInfo: IWebsiteInfo
     ) {
         super(
             siteInfo.name,
