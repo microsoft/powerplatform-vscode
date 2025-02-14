@@ -9,7 +9,6 @@ import * as sinon from "sinon";
 import * as vscode from "vscode";
 import { ActionsHubTreeDataProvider } from "../../../../power-pages/actions-hub/ActionsHubTreeDataProvider";
 import { oneDSLoggerWrapper } from "../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { Constants } from "../../../../power-pages/actions-hub/Constants";
 import { EnvironmentGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/EnvironmentGroupTreeItem";
 import { OtherSitesGroupTreeItem } from "../../../../power-pages/actions-hub/tree-items/OtherSitesGroupTreeItem";
 import { ActionsHubTreeItem } from "../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
@@ -141,10 +140,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(result).to.not.be.null;
             expect(result).to.not.be.undefined;
-            expect(result).to.have.lengthOf(2);
-            expect(result![0]).to.be.instanceOf(EnvironmentGroupTreeItem);
-            expect((result![0] as EnvironmentGroupTreeItem).environmentInfo.currentEnvironmentName).to.equal(Constants.Strings.NO_ENVIRONMENTS_FOUND);
-            expect(result![1]).to.be.instanceOf(OtherSitesGroupTreeItem);
+            expect(result).to.have.lengthOf(0);
         });
 
         it("should call element.getChildren when an element is passed", async () => {

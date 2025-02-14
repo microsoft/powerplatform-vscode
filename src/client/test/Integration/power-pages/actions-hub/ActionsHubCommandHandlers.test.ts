@@ -441,7 +441,9 @@ describe('ActionsHubCommandHandlers', () => {
             await createNewAuthProfile(mockPacWrapper);
 
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.calledOnceWith('https://test-org-url', true)).to.be.true;
+            expect(mockDataverseAuthentication.calledOnce).to.be.true;
+            expect(mockDataverseAuthentication.firstCall.args[0]).to.equal('https://test-org-url');
+            expect(mockDataverseAuthentication.firstCall.args[1]).to.be.true;
         });
 
         it('should handle missing organization URL', async () => {
