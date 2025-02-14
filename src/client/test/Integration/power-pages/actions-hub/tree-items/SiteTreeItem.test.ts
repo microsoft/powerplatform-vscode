@@ -35,10 +35,16 @@ describe('SiteTreeItem', () => {
         expect((treeItem.iconPath as vscode.ThemeIcon).id).to.be.equal('globe');
     });
 
-    it('should have the expected contextValue when the site is Active', () => {
+    it('should have the expected contextValue when the site is Active and current', () => {
+        const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo", isCurrent: true });
+
+        expect(treeItem.contextValue).to.be.equal("currentActiveSite");
+    });
+
+    it('should have the expected contextValue when the site is Active and not current', () => {
         const treeItem = new SiteTreeItem({ name: "Test Site", dataModelVersion: 1, status: WebsiteStatus.Active, websiteUrl: "https://foo", isCurrent: false });
 
-        expect(treeItem.contextValue).to.be.equal("activeSite");
+        expect(treeItem.contextValue).to.be.equal("nonCurrentActiveSite");
     });
 
     it('should have the expected contextValue when the site is Inactive', () => {

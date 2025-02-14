@@ -995,7 +995,7 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == activeSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
           "group": "activeSiteContextMenuGroup@1"
         }
       ]
