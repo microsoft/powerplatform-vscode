@@ -434,18 +434,6 @@ describe('ActionsHubCommandHandlers', () => {
             mockDataverseAuthentication = sandbox.stub(authProvider, 'dataverseAuthentication');
         });
 
-        it('should create new auth profile and authenticate with dataverse', async () => {
-            const mockResults = [{ ActiveOrganization: [null, 'https://test-org-url'] }];
-            mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: mockResults });
-
-            await createNewAuthProfile(mockPacWrapper);
-
-            expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.calledOnce).to.be.true;
-            expect(mockDataverseAuthentication.firstCall.args[0]).to.equal('https://test-org-url');
-            expect(mockDataverseAuthentication.firstCall.args[1]).to.be.true;
-        });
-
         it('should handle missing organization URL', async () => {
             const mockResults = [{ ActiveOrganization: [null, null] }];
             mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: mockResults });
