@@ -7,6 +7,7 @@ import { WebsiteStatus } from "./WebsiteStatus";
 
 export interface IWebsiteInfo {
     name: string;
+    websiteId: string;
     dataModelVersion: 1 | 2;
     websiteUrl: string;
     status: WebsiteStatus | undefined;
