@@ -38,7 +38,10 @@ export const Constants = {
         ACTIONS_HUB_INITIALIZATION_FAILED: "actionsHubInitializationFailed",
         ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED: "actionsHubCurrentEnvFetchFailed",
         ACTIONS_HUB_REFRESH_FAILED: "actionsHubRefreshFailed",
-        ACTIONS_HUB_SHOW_ENVIRONMENT_DETAILS_FAILED: "actionsHubShowEnvironmentDetailsFailed"
+        ACTIONS_HUB_SHOW_ENVIRONMENT_DETAILS_FAILED: "actionsHubShowEnvironmentDetailsFailed",
+        ORGANIZATION_URL_MISSING: "Organization URL is missing in the results.",
+        EMPTY_RESULTS_ARRAY: "Results array is empty or not an array.",
+        PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful."
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

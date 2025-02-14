@@ -44,8 +44,6 @@ import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
 import { PreviewSite } from "./power-pages/preview-site/PreviewSite";
 import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
-import { showErrorDialog } from "../common/utilities/errorHandlerUtil";
-import { ENVIRONMENT_EXPIRED } from "./power-pages/actions-hub/Constants";
 import { extractAuthInfo, extractOrgInfo } from "./power-pages/commonUtility";
 import PacContext from "./pac/PacContext";
 import ArtemisContext from "./ArtemisContext";
@@ -238,7 +236,8 @@ export async function activate(
         }),
 
         orgChangeErrorEvent(() => {
-            showErrorDialog(ENVIRONMENT_EXPIRED);
+            //Even if auth change was unsuccessful, we should still initialize the actions hub
+            ActionsHub.initialize(context, pacTerminal);
         })
     );
 

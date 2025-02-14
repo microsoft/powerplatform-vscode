@@ -14,6 +14,9 @@ import { showProgressWithNotification } from '../../../common/utilities/Utils';
 import PacContext from '../../pac/PacContext';
 import ArtemisContext from '../../ArtemisContext';
 import { ServiceEndpointCategory } from '../../../common/services/Constants';
+import { PacWrapper } from '../../pac/PacWrapper';
+import { createAuthProfileExp } from '../../../common/copilot/utils/copilotUtil';
+import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -139,3 +142,47 @@ const getInactiveSitesUrl = () => `${getStudioUrl()}/?tab=inactive`;
 export const openActiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getActiveSitesUrl()));
 
 export const openInactiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getInactiveSitesUrl()));
+
+export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void> => {
+    try {
+        const pacAuthCreateOutput = await createAuthProfileExp(pacWrapper);
+        if (pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS) {
+            const results = pacAuthCreateOutput.Results;
+            if (Array.isArray(results) && results.length > 0) {
+                const orgUrl = results[0].ActiveOrganization?.Item2;
+                if (orgUrl) {
+                    await dataverseAuthentication(orgUrl, true);
+                } else {
+                    oneDSLoggerWrapper.getLogger().traceError(
+                        createNewAuthProfile.name,
+                        Constants.EventNames.ORGANIZATION_URL_MISSING,
+                        new Error(Constants.EventNames.ORGANIZATION_URL_MISSING),
+                        {}
+                    );
+                }
+            } else {
+                oneDSLoggerWrapper.getLogger().traceError(
+                    createNewAuthProfile.name,
+                    Constants.EventNames.EMPTY_RESULTS_ARRAY,
+                    new Error(Constants.EventNames.EMPTY_RESULTS_ARRAY),
+                    {}
+                );
+            }
+        } else {
+            oneDSLoggerWrapper.getLogger().traceError(
+                createNewAuthProfile.name,
+                Constants.EventNames.PAC_AUTH_OUTPUT_FAILURE,
+                new Error(Constants.EventNames.PAC_AUTH_OUTPUT_FAILURE),
+                {}
+            );
+        }
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(
+            createNewAuthProfile.name,
+            error as string,
+            error as Error,
+            { methodName: createNewAuthProfile.name },
+            {}
+        );
+    }
+};

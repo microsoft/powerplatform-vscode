@@ -27,6 +27,8 @@ export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
         vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
         return;
     }
+
+    return pacAuthCreateOutput;
 }
 
 export function getDisabledOrgList() {

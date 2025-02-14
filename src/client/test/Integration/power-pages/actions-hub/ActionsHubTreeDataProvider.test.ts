@@ -87,6 +87,13 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio")).to.be.true;
         });
+
+        it("should register newAuthProfile command", () => {
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("powerpages.actionsHub.newAuthProfile")).to.be.true;
+        });
     });
 
     describe('getTreeItem', () => {
