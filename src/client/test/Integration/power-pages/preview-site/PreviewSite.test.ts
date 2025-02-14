@@ -68,4 +68,41 @@ describe('PreviewSite', () => {
             expect(result).to.be.false;
         });
     });
+
+    describe('loadSiteUrl', () => {
+        const mockWorkspaceFolders = [{ uri: 'test/path', name: 'test', index: 0 }];
+
+        beforeEach(() => {
+            PreviewSite['_websiteUrl'] = undefined;
+        });
+
+        it('should set website URL when getWebSiteUrl returns valid URL', async () => {
+            // Arrange
+            const expectedUrl = 'https://test-website.com';
+            const getWebSiteUrlStub = sandbox.stub();
+            getWebSiteUrlStub.resolves(expectedUrl);
+            PreviewSite['getWebSiteUrl'] = getWebSiteUrlStub;
+
+            // Act
+            await PreviewSite.loadSiteUrl(mockWorkspaceFolders);
+
+            // Assert
+            expect(PreviewSite['_websiteUrl']).to.equal(expectedUrl);
+            expect(getWebSiteUrlStub.calledOnceWith(mockWorkspaceFolders)).to.be.true;
+        });
+
+        it('should set empty string when getWebSiteUrl returns empty string', async () => {
+            // Arrange
+            const getWebSiteUrlStub = sandbox.stub();
+            getWebSiteUrlStub.resolves('');
+            PreviewSite['getWebSiteUrl'] = getWebSiteUrlStub;
+
+            // Act
+            await PreviewSite.loadSiteUrl(mockWorkspaceFolders);
+
+            // Assert
+            expect(PreviewSite['_websiteUrl']).to.equal('');
+            expect(getWebSiteUrlStub.calledOnceWith(mockWorkspaceFolders)).to.be.true;
+        });
+    });
 });
