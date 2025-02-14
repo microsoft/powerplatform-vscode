@@ -159,6 +159,17 @@ describe("ActionsHubTreeDataProvider", () => {
         });
 
         it("should return environment group tree item with default name when no auth info is available", async () => {
+            const mockActiveSites = [
+                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
+            ] as IWebsiteDetails[];
+            const mockAllSites = [
+                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" },
+                { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
+            ] as IWebsiteDetails[];
+
+            sinon.stub(WebsiteUtil, 'getActiveWebsites').resolves(mockActiveSites);
+            sinon.stub(WebsiteUtil, 'getAllWebsites').resolves(mockAllSites);
+
             PacContext['_authInfo'] = null;
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             const result = await provider.getChildren();
