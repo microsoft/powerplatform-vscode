@@ -12,6 +12,7 @@
   "microsoft-powerapps-portals.walkthrough.title": "Upravit kód Power Pages",
   "microsoft-powerapps-portals.webExtension.init.title": "Inicializovat webové rozšíření",
   "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "AKCE POWER PAGES",
+  "microsoft.powerplatform.pages.actionsHub.title": "AKCE POWER PAGES",
   "pacCLI.authPanel.clearAuthProfile.title": "Vymazat ověřovací profily",
   "pacCLI.authPanel.copyUser.title": "Zkopírovat uživatele",
   "pacCLI.authPanel.deleteAuthProfile.title": "Odstranit ověřovací profil",
@@ -46,5 +47,6 @@
   "powerPlatform.auth.cloud.description": "Cloudové nástroje Power Platform Tools ve službě Azure, které se mají používat k ověřování",
   "powerPlatform.experimental.auth.testCloudOverride.description": "Přepíše `#powerPlatform.auth.cloud#` pro testovací cíle. Nezadávejte, pokud chcete použít výchozí chování.",
   "powerpages.copilotPanel.clearConversation.title": "Vymazat konverzaci",
-  "powerpages.copilotPanel.title": "Copilot v Power Pages"
+  "powerpages.copilotPanel.title": "Copilot v Power Pages",
+  "powerplatform.pages.previewSite.title": "Zobrazit náhled webu"
 }

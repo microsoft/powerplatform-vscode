@@ -12,6 +12,7 @@
   "microsoft-powerapps-portals.walkthrough.title": "Modifica codice Power Pages",
   "microsoft-powerapps-portals.webExtension.init.title": "Inizializza estensione Web",
   "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "AZIONI DI POWER PAGES",
+  "microsoft.powerplatform.pages.actionsHub.title": "AZIONI DI POWER PAGES",
   "pacCLI.authPanel.clearAuthProfile.title": "Cancella profili di autenticazione",
   "pacCLI.authPanel.copyUser.title": "Copia utente",
   "pacCLI.authPanel.deleteAuthProfile.title": "Elimina profilo di autenticazione",
@@ -46,5 +47,6 @@
   "powerPlatform.auth.cloud.description": "Quali Azure cloud Power Platform Tools utilizzare per l'autenticazione.",
   "powerPlatform.experimental.auth.testCloudOverride.description": "Sostituisce `#powerPlatform.auth.cloud#` per le destinazioni del test. Lascia vuoto per il comportamento predefinito.",
   "powerpages.copilotPanel.clearConversation.title": "Cancella conversazione",
-  "powerpages.copilotPanel.title": "Copilot in Power Pages"
+  "powerpages.copilotPanel.title": "Copilot in Power Pages",
+  "powerplatform.pages.previewSite.title": "Sito in anteprima"
 }
