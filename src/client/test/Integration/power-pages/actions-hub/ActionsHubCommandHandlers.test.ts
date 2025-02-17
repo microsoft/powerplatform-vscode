@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -16,6 +16,10 @@ import PacContext from '../../../../pac/PacContext';
 import ArtemisContext from '../../../../ArtemisContext';
 import { ServiceEndpointCategory } from '../../../../../common/services/Constants';
 import { IArtemisAPIOrgResponse } from '../../../../../common/services/Interfaces';
+import { PreviewSite } from '../../../../power-pages/preview-site/PreviewSite';
+import { SiteTreeItem } from '../../../../power-pages/actions-hub/tree-items/SiteTreeItem';
+import { WebsiteStatus } from '../../../../power-pages/actions-hub/models/WebsiteStatus';
+import { IWebsiteInfo } from '../../../../power-pages/actions-hub/models/IWebsiteInfo';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -23,7 +27,7 @@ describe('ActionsHubCommandHandlers', () => {
     let mockSetAuthInfo: sinon.SinonStub;
     let traceErrorStub: sinon.SinonStub;
 
-    const mockAuthInfo : AuthInfo = {
+    const mockAuthInfo: AuthInfo = {
         UserType: 'user-type',
         Cloud: CloudInstance.Preprod,
         TenantId: 'test-tenant',
@@ -450,6 +454,34 @@ describe('ActionsHubCommandHandlers', () => {
                 expect(mockUrl.calledOnce).to.be.true;
                 expect(mockUrl.firstCall.args[0]).to.equal('https://make.powerpages.microsoft.cn/environments/test-env-id/portals/home/?tab=inactive');
             });
+        });
+    });
+
+    describe('previewSite', () => {
+        let mockPreviewSiteClearCache: sinon.SinonStub;
+        let mockLaunchBrowserAndDevTools: sinon.SinonStub;
+        let mockSiteInfo: IWebsiteInfo;
+
+        beforeEach(() => {
+            mockPreviewSiteClearCache = sandbox.stub(PreviewSite, 'clearCache');
+            mockLaunchBrowserAndDevTools = sandbox.stub(PreviewSite, 'launchBrowserAndDevToolsWithinVsCode');
+            mockSiteInfo = {
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false
+            };
+        });
+
+        it('should clear cache and launch browser with dev tools', async () => {
+            const siteTreeItem = new SiteTreeItem(mockSiteInfo);
+
+            await previewSite(siteTreeItem);
+
+            expect(mockPreviewSiteClearCache.calledOnceWith('https://test-site.com')).to.be.true;
+            expect(mockLaunchBrowserAndDevTools.calledOnceWith('https://test-site.com')).to.be.true;
         });
     });
 });
