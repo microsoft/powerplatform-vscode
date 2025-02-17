@@ -19,10 +19,11 @@ import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../../client/OrgChangeNotifier";
-import { createAuthProfileExp, getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
+import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../services/Constants";
 import { ArtemisService } from "../services/ArtemisService";
 import { IApiRequestParams, SUCCESS, UserPrompt } from "../constants";
+import { createAuthProfileExp } from "../utilities/PacAuthUtil";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
