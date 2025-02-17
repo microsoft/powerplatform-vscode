@@ -6,13 +6,13 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "./ActionsHubTreeItem";
 import { Constants } from "../Constants";
+import { IWebsiteDetails } from "../../../../common/services/Interfaces";
 import { SiteTreeItem } from "./SiteTreeItem";
+import { IWebsiteInfo } from "../models/IWebsiteInfo";
+import { WebsiteDataModel } from "../../../../common/services/Constants";
+import { WebsiteStatus } from "../models/WebsiteStatus";
 import { NoSitesTreeItem } from "./NoSitesTreeItem";
 import CurrentSiteContext from "../CurrentSiteContext";
-import { WebsiteStatus } from "../models/WebsiteStatus";
-import { IWebsiteDetails } from "../../../../common/services/Interfaces";
-import { WebsiteDataModel } from "../../../../common/services/Constants";
-import { IWebsiteInfo } from "../models/IWebsiteInfo";
 
 export class ActiveGroupTreeItem extends ActionsHubTreeItem {
     private readonly _activeSites: IWebsiteDetails[];

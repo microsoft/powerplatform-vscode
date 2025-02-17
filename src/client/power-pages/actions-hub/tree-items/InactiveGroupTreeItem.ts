@@ -6,13 +6,12 @@
 import * as vscode from "vscode";
 import { Constants } from "../Constants";
 import { ActionsHubTreeItem } from "./ActionsHubTreeItem";
-import { SiteTreeItem } from "./SiteTreeItem";
-import { NoSitesTreeItem } from "./NoSitesTreeItem";
-import { WebsiteStatus } from "../models/WebsiteStatus";
 import { IWebsiteDetails } from "../../../../common/services/Interfaces";
-import { WebsiteDataModel } from "../../../../common/services/Constants";
+import { SiteTreeItem } from "./SiteTreeItem";
 import { IWebsiteInfo } from "../models/IWebsiteInfo";
-
+import { WebsiteDataModel } from "../../../../common/services/Constants";
+import { WebsiteStatus } from "../models/WebsiteStatus";
+import { NoSitesTreeItem } from "./NoSitesTreeItem";
 export class InactiveGroupTreeItem extends ActionsHubTreeItem {
     private readonly _inactiveSites: IWebsiteDetails[];
 
@@ -40,7 +39,8 @@ export class InactiveGroupTreeItem extends ActionsHubTreeItem {
                 status: WebsiteStatus.Inactive,
                 isCurrent: false
             };
-            return new SiteTreeItem(siteInfo);
+            const siteItem = new SiteTreeItem(siteInfo);
+            return siteItem;
         });
     }
 }

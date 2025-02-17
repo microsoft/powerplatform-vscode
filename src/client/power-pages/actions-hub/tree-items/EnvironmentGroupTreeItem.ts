@@ -7,9 +7,9 @@ import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "./ActionsHubTreeItem";
 import { IEnvironmentInfo } from "../models/IEnvironmentInfo";
 import { Constants } from "../Constants";
+import { IWebsiteDetails } from "../../../../common/services/Interfaces";
 import { ActiveGroupTreeItem } from "./ActiveGroupTreeItem";
 import { InactiveGroupTreeItem } from "./InactiveGroupTreeItem";
-import { IWebsiteDetails } from "../../../../common/services/Interfaces";
 
 export class EnvironmentGroupTreeItem extends ActionsHubTreeItem {
     environmentInfo: IEnvironmentInfo = {} as IEnvironmentInfo;
