@@ -413,6 +413,10 @@
         }
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title%"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.newAuthProfile",
         "title": "%microsoft.powerplatform.pages.actionsHub.login.title%"
       }
@@ -875,6 +879,10 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -997,6 +1005,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSitesGroup",
           "group": "inline"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "activeSiteContextMenuGroup@1"
         }
       ]
     },

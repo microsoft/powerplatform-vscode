@@ -55,9 +55,16 @@ describe('ActionsHubCommandHandlers', () => {
         EnvironmentId: 'test-env-id',
     };
 
+    const artemisResponse = {
+        environment: 'cluster-env',
+        clusterCategory: 'cluster-category',
+        geoName: 'geo-name'
+    } as IArtemisAPIOrgResponse;
+
     beforeEach(() => {
         sandbox = sinon.createSandbox();
         mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
+        ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.TEST, response: artemisResponse };
         mockSetAuthInfo = sandbox.stub(PacContext, 'setContext');
         traceErrorStub = sinon.stub();
         sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns({
@@ -73,6 +80,35 @@ describe('ActionsHubCommandHandlers', () => {
     });
 
     describe('showEnvironmentDetails', () => {
+        it('should show information notification', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showEnvironmentDetails();
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+        });
+
+        it('should have expected heading', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showEnvironmentDetails();
+
+            const message = mockShowInformationMessage.firstCall.args[0];
+            expect(message).to.include("Session Details");
+        });
+
+        it('should be rendered as modal', async () => {
+            PacContext['_authInfo'] = mockAuthInfo;
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showEnvironmentDetails();
+
+            const message = mockShowInformationMessage.firstCall.args[1];
+            expect(message.modal).to.be.true;
+        });
+
         it('should show environment details when auth info is available', async () => {
             PacContext['_authInfo'] = mockAuthInfo;
             PacContext['_orgInfo'] = mockOrgInfo;
@@ -82,10 +118,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
 
-            const message = mockShowInformationMessage.firstCall.args[0];
-            console.log(message)
-
-            expect(message).to.include("Session Details");
+            const message = mockShowInformationMessage.firstCall.args[1].detail;
             expect(message).to.include("Timestamp");
             expect(message).to.include("Tenant ID: test-tenant");
             expect(message).to.include("Object ID: test-object-id");
@@ -93,9 +126,9 @@ describe('ActionsHubCommandHandlers', () => {
             expect(message).to.include("Unique name: test-org-name");
             expect(message).to.include("Instance url: test-org-url");
             expect(message).to.include("Environment ID: test-env-id");
-            expect(message).to.include("Cluster environment: 1");
-            expect(message).to.include("Cluster category: 1");
-            expect(message).to.include("Cluster geo name: test-geo");
+            expect(message).to.include("Cluster environment: cluster-env");
+            expect(message).to.include("Cluster category: cluster-cat");
+            expect(message).to.include("Cluster geo name: geo-name");
         });
 
         it('should handle cases without auth info', async () => {

@@ -230,7 +230,7 @@ export async function activate(
             }
 
             await Promise.allSettled([
-                PreviewSite.initialize(artemisResponse, workspaceFolders, orgDetails, pacTerminal, context),
+                PreviewSite.initialize(context, workspaceFolders),
                 ActionsHub.initialize(context, pacTerminal)
             ]);
         }),

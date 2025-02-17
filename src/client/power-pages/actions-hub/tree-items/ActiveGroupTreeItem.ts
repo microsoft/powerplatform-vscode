@@ -34,6 +34,7 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
         return this._activeSites.map(site => {
             const siteInfo: IWebsiteInfo = {
                 name: site.Name,
+                websiteId: site.WebsiteRecordId,
                 dataModelVersion: site.DataModel == WebsiteDataModel.Standard ? 1 : 2,
                 websiteUrl: site.WebsiteUrl,
                 status: WebsiteStatus.Active,
