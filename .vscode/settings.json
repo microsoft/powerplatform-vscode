@@ -1,12 +1,15 @@
 {
   "cSpell.words": [
     "dataverse",
+    "Entra",
     "lcid",
     "nupkg",
     "powerapps",
     "powerpages",
     "powerplatform",
-    "PPAPI"
+    "PPAPI",
+    "Puid",
+    "testorg"
   ],
   "sarif-viewer.connectToGithubCodeScanning": "off"
 }

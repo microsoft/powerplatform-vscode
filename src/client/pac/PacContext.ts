@@ -35,15 +35,20 @@ class PacContext implements IPacContext {
     }
 
     public setContext(authInfo: AuthInfo | null = null, orgInfo: OrgInfo | null = null): void {
-        if (authInfo){
+        let shouldFireEvent = false;
+        if (authInfo) {
             this._authInfo = authInfo;
+            shouldFireEvent = true;
         }
 
-        if (orgInfo){
+        if (orgInfo) {
             this._orgInfo = orgInfo;
+            shouldFireEvent = true;
         }
 
-        this._onChanged.fire(this);
+        if (shouldFireEvent) {
+            this._onChanged.fire(this);
+        }
     }
 }
 
