@@ -235,9 +235,9 @@ export async function activate(
             ]);
         }),
 
-        orgChangeErrorEvent(() => {
+        orgChangeErrorEvent(async () => {
             //Even if auth change was unsuccessful, we should still initialize the actions hub
-            ActionsHub.initialize(context, pacTerminal);
+            await ActionsHub.initialize(context, pacTerminal);
         })
     );
 

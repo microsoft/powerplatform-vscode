@@ -49,14 +49,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         }
 
         try {
-
-            const orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
-            let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
             const authInfo = PacContext.AuthInfo;
             if (authInfo && authInfo.OrganizationFriendlyName) {
-                currentEnvInfo = { currentEnvironmentName: authInfo.OrganizationFriendlyName };
-
-
+                const currentEnvInfo: IEnvironmentInfo = {
+                    currentEnvironmentName: authInfo.OrganizationFriendlyName
+                };
                 let activeSites: IWebsiteDetails[] = [];
                 let inactiveSites: IWebsiteDetails[] = [];
                 const orgInfo = PacContext.OrgInfo;
@@ -75,9 +72,6 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                     // Log the scenario
                     // Question: Should we show any message to the user? or just show the empty list of sites
                 }
-
-                //TODO: Handle the case when the user is not logged in
-
                 return [
                     new EnvironmentGroupTreeItem(currentEnvInfo, this._context, activeSites, inactiveSites),
                     new OtherSitesGroupTreeItem()
