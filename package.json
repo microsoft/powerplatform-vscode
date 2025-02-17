@@ -406,6 +406,10 @@
           "dark": "./src/client/assets/open-icon/dark/open.svg",
           "light": "./src/client/assets/open-icon/light/open.svg"
         }
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title%"
       }
     ],
     "configuration": {
@@ -862,6 +866,10 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -984,6 +992,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSitesGroup",
           "group": "inline"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "activeSiteContextMenuGroup@1"
         }
       ]
     },

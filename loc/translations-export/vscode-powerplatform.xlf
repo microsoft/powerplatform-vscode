@@ -751,6 +751,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="microsoft-powerapps-portals.preview-show.title">
       <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title">
+      <source xml:lang="en">Preview</source>
+    </trans-unit>
     <trans-unit id="powerplatform.pages.previewSite.title">
       <source xml:lang="en">Preview Site</source>
     </trans-unit>
