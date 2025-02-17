@@ -12,6 +12,7 @@ import { IWebsiteInfo } from "../models/IWebsiteInfo";
 import { WebsiteDataModel } from "../../../../common/services/Constants";
 import { WebsiteStatus } from "../models/WebsiteStatus";
 import { NoSitesTreeItem } from "./NoSitesTreeItem";
+
 export class InactiveGroupTreeItem extends ActionsHubTreeItem {
     private readonly _inactiveSites: IWebsiteDetails[];
 
