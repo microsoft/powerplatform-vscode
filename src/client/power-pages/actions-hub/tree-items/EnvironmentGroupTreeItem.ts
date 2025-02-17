@@ -9,14 +9,14 @@ import { IEnvironmentInfo } from "../models/IEnvironmentInfo";
 import { Constants } from "../Constants";
 import { ActiveGroupTreeItem } from "./ActiveGroupTreeItem";
 import { InactiveGroupTreeItem } from "./InactiveGroupTreeItem";
-import { IWebsiteInfo } from "../models/IWebsiteInfo";
+import { IWebsiteDetails } from "../../../../common/services/Interfaces";
 
 export class EnvironmentGroupTreeItem extends ActionsHubTreeItem {
     environmentInfo: IEnvironmentInfo = {} as IEnvironmentInfo;
-    private readonly _activeSites: IWebsiteInfo[];
-    private readonly _inactiveSites: IWebsiteInfo[];
+    private readonly _activeSites: IWebsiteDetails[];
+    private readonly _inactiveSites: IWebsiteDetails[];
 
-    constructor(environmentInfo: IEnvironmentInfo, context: vscode.ExtensionContext, activeSites: IWebsiteInfo[], inactiveSites: IWebsiteInfo[]) {
+    constructor(environmentInfo: IEnvironmentInfo, context: vscode.ExtensionContext, activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[]) {
         super(
             environmentInfo.currentEnvironmentName,
         vscode.TreeItemCollapsibleState.Expanded,

@@ -13,8 +13,8 @@ import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
 import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
 import PacContext from "../../pac/PacContext";
-import { IWebsiteInfo } from "./models/IWebsiteInfo";
 import CurrentSiteContext from "./CurrentSiteContext";
+import { IWebsiteDetails } from "../../../common/services/Interfaces";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -22,8 +22,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _onDidChangeTreeData: vscode.EventEmitter<ActionsHubTreeItem | undefined | void> = new vscode.EventEmitter<ActionsHubTreeItem | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
-    private _activeSites: IWebsiteInfo[] = [];
-    private _inactiveSites: IWebsiteInfo[] = [];
+    private _activeSites: IWebsiteDetails[] = [];
+    private _inactiveSites: IWebsiteDetails[] = [];
     private _isFirstLoad = true;
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
@@ -47,12 +47,6 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             const websites = await fetchWebsites();
             this._activeSites = websites.activeSites;
             this._inactiveSites = websites.inactiveSites;
-        }
-
-        if (CurrentSiteContext.currentSiteId) {
-            for (const site of this._activeSites) {
-                site.isCurrent = site.websiteId === CurrentSiteContext.currentSiteId;
-            }
         }
     }
 
