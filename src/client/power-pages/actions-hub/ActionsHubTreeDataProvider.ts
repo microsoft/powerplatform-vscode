@@ -11,11 +11,10 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
-import { IWebsiteDetails } from "../../../common/services/Interfaces";
-import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
-import PacContext, { OnPacContextChanged } from "../../pac/PacContext";
-import ArtemisContext from "../../ArtemisContext";
+import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
+import PacContext from "../../pac/PacContext";
+import { IWebsiteInfo } from "./models/IWebsiteInfo";
+import CurrentSiteContext from "./CurrentSiteContext";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -23,13 +22,38 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     private _onDidChangeTreeData: vscode.EventEmitter<ActionsHubTreeItem | undefined | void> = new vscode.EventEmitter<ActionsHubTreeItem | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
+    private _activeSites: IWebsiteInfo[] = [];
+    private _inactiveSites: IWebsiteInfo[] = [];
+    private _isFirstLoad = true;
+
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
-        this._disposables.push(...this.registerPanel(this._pacTerminal));
+        this._disposables.push(
+            ...this.registerPanel(this._pacTerminal),
 
+            PacContext.onChanged(async () => await this.refresh(true)),
+
+            CurrentSiteContext.onChanged(async () => await this.refresh(false))
+        );
         this._context = context;
+    }
 
-        // Register an event listener for environment changes
-        OnPacContextChanged(() => this.refresh());
+    public async refresh(fetchSites: boolean): Promise<void> {
+        await this.loadWebsites(fetchSites);
+        this._onDidChangeTreeData.fire();
+    }
+
+    private async loadWebsites(fetchSites: boolean): Promise<void> {
+        if (fetchSites) {
+            const websites = await fetchWebsites();
+            this._activeSites = websites.activeSites;
+            this._inactiveSites = websites.inactiveSites;
+        }
+
+        if (CurrentSiteContext.currentSiteId) {
+            for (const site of this._activeSites) {
+                site.isCurrent = site.websiteId === CurrentSiteContext.currentSiteId;
+            }
+        }
     }
 
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
@@ -41,12 +65,16 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     async getChildren(element?: ActionsHubTreeItem): Promise<ActionsHubTreeItem[] | null | undefined> {
+        if (this._isFirstLoad) {
+            this._isFirstLoad = false;
+            await this.loadWebsites(true);
+        }
+
         if (element) {
             return element.getChildren();
         }
 
         try {
-
             const orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
             let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
             const authInfo = PacContext.AuthInfo;
@@ -54,39 +82,14 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 currentEnvInfo = { currentEnvironmentName: authInfo.OrganizationFriendlyName };
             }
 
-            let activeSites: IWebsiteDetails[] = [];
-            let inactiveSites: IWebsiteDetails[] = [];
-            const orgInfo = PacContext.OrgInfo;
-
-            if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
-                let allSites: IWebsiteDetails[] = [];
-                [activeSites, allSites] = await Promise.all([
-                    getActiveWebsites(ArtemisContext.ServiceResponse?.stamp, orgInfo.EnvironmentId),
-                    getAllWebsites(orgInfo)
-                ]);
-                const activeSiteIds = new Set(activeSites.map(activeSite => activeSite.WebsiteRecordId));
-                inactiveSites = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || []; //Need to handle failure case
-            }
-            else {
-                //TODO: Handle the case when artemis response is not available
-                // Log the scenario
-                // Question: Should we show any message to the user? or just show the empty list of sites
-            }
-
-            //TODO: Handle the case when the user is not logged in
-
             return [
-                new EnvironmentGroupTreeItem(currentEnvInfo, this._context, activeSites, inactiveSites),
+                new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites),
                 new OtherSitesGroupTreeItem()
             ];
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: this.getChildren }, {});
             return null;
         }
-    }
-
-    public refresh(): void {
-        this._onDidChangeTreeData.fire();
     }
 
     public dispose(): void {

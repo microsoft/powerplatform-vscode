@@ -13,9 +13,13 @@ import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
 import PacContext from '../../pac/PacContext';
 import ArtemisContext from '../../ArtemisContext';
-import { ServiceEndpointCategory } from '../../../common/services/Constants';
+import { ServiceEndpointCategory, WebsiteDataModel } from '../../../common/services/Constants';
 import { SiteTreeItem } from './tree-items/SiteTreeItem';
 import { PreviewSite } from '../preview-site/PreviewSite';
+import { IWebsiteInfo } from './models/IWebsiteInfo';
+import { IWebsiteDetails } from '../../../common/services/Interfaces';
+import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
+import { WebsiteStatus } from './models/WebsiteStatus';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -148,3 +152,49 @@ export const previewSite = async (siteTreeItem: SiteTreeItem) => {
 
     await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl);
 };
+
+export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteInfo[], inactiveSites: IWebsiteInfo[] }> => {
+    try {
+        const orgInfo = PacContext.OrgInfo;
+        if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
+            let allSites: IWebsiteDetails[] = [];
+            let activeWebsiteDetails: IWebsiteDetails[] = [];
+            [activeWebsiteDetails, allSites] = await Promise.all([
+                getActiveWebsites(ArtemisContext.ServiceResponse?.stamp, orgInfo.EnvironmentId),
+                getAllWebsites(orgInfo)
+            ]);
+            const activeSiteIds = new Set(activeWebsiteDetails.map(activeSite => activeSite.WebsiteRecordId));
+            const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || [];
+
+            const activeSites = activeWebsiteDetails.map(site => {
+                const siteInfo: IWebsiteInfo = {
+                    name: site.Name,
+                    websiteId: site.WebsiteRecordId,
+                    dataModelVersion: site.DataModel == WebsiteDataModel.Standard ? 1 : 2,
+                    websiteUrl: site.WebsiteUrl,
+                    status: WebsiteStatus.Active,
+                    isCurrent: false
+                };
+                return siteInfo;
+            });
+
+            const inactiveSites = inactiveWebsiteDetails.map(site => {
+                const siteInfo: IWebsiteInfo = {
+                    name: site.Name,
+                    websiteId: site.WebsiteRecordId,
+                    dataModelVersion: site.DataModel == WebsiteDataModel.Standard ? 1 : 2,
+                    websiteUrl: site.WebsiteUrl,
+                    status: WebsiteStatus.Inactive,
+                    isCurrent: false
+                };
+                return siteInfo;
+            });
+
+            return { activeSites, inactiveSites };
+        }
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: 'fetchWebsites' }, {});
+    }
+
+    return { activeSites: [], inactiveSites: [] };
+}

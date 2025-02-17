@@ -6,17 +6,14 @@
 import * as vscode from "vscode";
 import { Constants } from "../Constants";
 import { ActionsHubTreeItem } from "./ActionsHubTreeItem";
-import { IWebsiteDetails } from "../../../../common/services/Interfaces";
 import { SiteTreeItem } from "./SiteTreeItem";
 import { IWebsiteInfo } from "../models/IWebsiteInfo";
-import { WebsiteDataModel } from "../../../../common/services/Constants";
-import { WebsiteStatus } from "../models/WebsiteStatus";
 import { NoSitesTreeItem } from "./NoSitesTreeItem";
 
 export class InactiveGroupTreeItem extends ActionsHubTreeItem {
-    private readonly _inactiveSites: IWebsiteDetails[];
+    private readonly _inactiveSites: IWebsiteInfo[];
 
-    constructor(inactiveSites: IWebsiteDetails[]) {
+    constructor(inactiveSites: IWebsiteInfo[]) {
         super(
             Constants.Strings.INACTIVE_SITES,
             vscode.TreeItemCollapsibleState.Expanded,
@@ -31,17 +28,6 @@ export class InactiveGroupTreeItem extends ActionsHubTreeItem {
             return [new NoSitesTreeItem()];
         }
 
-        return this._inactiveSites.map(site => {
-            const siteInfo: IWebsiteInfo = {
-                name: site.Name,
-                websiteId: site.WebsiteRecordId,
-                dataModelVersion: site.DataModel == WebsiteDataModel.Standard ? 1 : 2,
-                websiteUrl: site.WebsiteUrl,
-                status: WebsiteStatus.Inactive,
-                isCurrent: false
-            };
-            const siteItem = new SiteTreeItem(siteInfo);
-            return siteItem;
-        });
+        return this._inactiveSites.map(siteInfo => new SiteTreeItem(siteInfo));
     }
 }

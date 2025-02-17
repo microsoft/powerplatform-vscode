@@ -16,7 +16,7 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { getWorkspaceFolders, showProgressWithNotification } from '../../../common/utilities/Utils';
 import { Events, Messages } from './Constants';
 import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
-import PacContext, { OnPacContextChanged } from '../../pac/PacContext';
+import PacContext from '../../pac/PacContext';
 import ArtemisContext from '../../ArtemisContext';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
@@ -52,7 +52,7 @@ export class PreviewSite {
             const orgDetails = PacContext.OrgInfo;
 
             if (artemisResponse && orgDetails && isSiteRuntimePreviewEnabled) {
-                OnPacContextChanged(async () => await PreviewSite.loadSiteUrl(workspaceFolders));
+                PacContext.onChanged(async () => await PreviewSite.loadSiteUrl(workspaceFolders));
 
                 context.subscriptions.push(
                     vscode.commands.registerCommand(
