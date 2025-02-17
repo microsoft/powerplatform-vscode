@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, fetchWebsites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -14,12 +14,13 @@ import { AuthInfo, CloudInstance, EnvironmentType, OrgInfo } from '../../../../p
 import { PacTerminal } from '../../../../lib/PacTerminal';
 import PacContext from '../../../../pac/PacContext';
 import ArtemisContext from '../../../../ArtemisContext';
-import { ServiceEndpointCategory } from '../../../../../common/services/Constants';
-import { IArtemisAPIOrgResponse } from '../../../../../common/services/Interfaces';
+import { ServiceEndpointCategory, WebsiteDataModel } from '../../../../../common/services/Constants';
+import { IArtemisAPIOrgResponse, IWebsiteDetails } from '../../../../../common/services/Interfaces';
 import { PreviewSite } from '../../../../power-pages/preview-site/PreviewSite';
 import { SiteTreeItem } from '../../../../power-pages/actions-hub/tree-items/SiteTreeItem';
 import { WebsiteStatus } from '../../../../power-pages/actions-hub/models/WebsiteStatus';
 import { IWebsiteInfo } from '../../../../power-pages/actions-hub/models/IWebsiteInfo';
+import * as WebsiteUtils from '../../../../../common/utilities/WebsiteUtil';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -482,6 +483,92 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockPreviewSiteClearCache.calledOnceWith('https://test-site.com')).to.be.true;
             expect(mockLaunchBrowserAndDevTools.calledOnceWith('https://test-site.com')).to.be.true;
+        });
+    });
+
+    describe('fetchWebsites', () => {
+        let mockGetActiveWebsites: sinon.SinonStub;
+        let mockGetAllWebsites: sinon.SinonStub;
+
+        beforeEach(() => {
+            ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.TEST, response: artemisResponse };
+            mockGetActiveWebsites = sandbox.stub(WebsiteUtils, 'getActiveWebsites');
+            mockGetAllWebsites = sandbox.stub(WebsiteUtils, 'getAllWebsites');
+            sinon.stub(PacContext, "OrgInfo").get(() => ({ OrgId: 'test-org-id', EnvironmentId: 'test-env-id' }));
+        });
+
+        it('should not call getActiveWebsites and getAllWebsites', async () => {
+            sinon.stub(PacContext, "OrgInfo").get(() => undefined);
+
+            await fetchWebsites();
+
+            expect(mockGetActiveWebsites.called).to.be.false;
+            expect(mockGetAllWebsites.called).to.be.false;
+        });
+
+        it('should return empty response when orgInfo is null', async () => {
+            sinon.stub(PacContext, "OrgInfo").get(() => undefined);
+
+            const response = await fetchWebsites();
+
+            expect(response.activeSites).to.be.empty;
+            expect(response.inactiveSites).to.be.empty;
+        });
+
+        it('should log the error when there is problem is fetching websites', async () => {
+            const activeSites = [
+                {
+                    Name: 'Active Site 1',
+                    WebsiteRecordId: 'active-site-1',
+                    DataModel: WebsiteDataModel.Enhanced,
+                    WebsiteUrl: 'https://active-site-1.com',
+                    Id: 'active-site-1',
+                }
+            ] as IWebsiteDetails[];
+
+            mockGetActiveWebsites.resolves(activeSites);
+            mockGetAllWebsites.rejects(new Error('Test error'));
+
+            const response = await fetchWebsites();
+
+            expect(response.activeSites).to.be.empty;
+            expect(response.inactiveSites).to.be.empty;
+
+            expect(traceErrorStub.calledOnce).to.be.true;
+        });
+
+        it('should return active and inactive websites', async () => {
+            const activeSites = [
+                {
+                    Name: 'Active Site 1',
+                    WebsiteRecordId: 'active-site-1',
+                    DataModel: WebsiteDataModel.Enhanced,
+                    WebsiteUrl: 'https://active-site-1.com',
+                    Id: 'active-site-1',
+                }
+            ] as IWebsiteDetails[];
+            const inactiveSites = [
+                {
+                    Name: 'Inactive Site 1',
+                    WebsiteRecordId: 'inactive-site-1',
+                    DataModel: WebsiteDataModel.Enhanced,
+                    WebsiteUrl: 'https://inactive-site-1.com',
+                    Id: 'inactive-site-1',
+                }
+            ] as IWebsiteDetails[];
+
+            const allSites = [
+                ...activeSites,
+                ...inactiveSites
+
+            ] as IWebsiteDetails[];
+            mockGetActiveWebsites.resolves(activeSites);
+            mockGetAllWebsites.resolves(allSites);
+
+            const response = await fetchWebsites();
+
+            expect(response.activeSites).to.deep.equal(activeSites);
+            expect(response.inactiveSites).to.deep.equal(inactiveSites);
         });
     });
 });

@@ -167,7 +167,7 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails };
         }
     } catch (error) {
-        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: 'fetchWebsites' }, {});
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: fetchWebsites.name }, {});
     }
 
     return { activeSites: [], inactiveSites: [] };

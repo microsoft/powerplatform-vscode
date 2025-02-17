@@ -185,6 +185,7 @@ describe("ActionsHubTreeDataProvider", () => {
         it("should call element.getChildren when an element is passed", async () => {
             const element = new SiteTreeItem({} as IWebsiteInfo);
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            provider["_isFirstLoad"] = false;
             const getChildrenStub = sinon.stub(element, "getChildren").resolves([]);
 
             const result = await provider.getChildren(element);
