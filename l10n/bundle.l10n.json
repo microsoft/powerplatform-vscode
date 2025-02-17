@@ -185,6 +185,7 @@
   "Select an environment": "Select an environment",
   "Session Details": "Session Details",
   "Changing environment...": "Changing environment...",
+  "Current": "Current",
   "Active Environment is expired or deleted. Please select a new environment.": "Active Environment is expired or deleted. Please select a new environment.",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
@@ -214,6 +215,12 @@
     "message": "Unique name: {0}",
     "comment": [
       "{0} is the Unique name"
+    ]
+  },
+  "Instance url: {0}/{0} is the Instance Url": {
+    "message": "Instance url: {0}",
+    "comment": [
+      "{0} is the Instance Url"
     ]
   },
   "Environment ID: {0}/{0} is the Environment ID": {

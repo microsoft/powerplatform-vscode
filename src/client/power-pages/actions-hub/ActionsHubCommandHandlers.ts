@@ -12,6 +12,10 @@ import { OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
 import PacContext from '../../pac/PacContext';
+import ArtemisContext from '../../ArtemisContext';
+import { ServiceEndpointCategory } from '../../../common/services/Constants';
+import { SiteTreeItem } from './tree-items/SiteTreeItem';
+import { PreviewSite } from '../preview-site/PreviewSite';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -32,6 +36,7 @@ const getEnvironmentDetails = () => {
 
     const authInfo = PacContext.AuthInfo;
     const orgInfo = PacContext.OrgInfo;
+    const artemisResponse = ArtemisContext.ServiceResponse.response;
 
     if (authInfo) {
         detailsArray.push(vscode.l10n.t({ message: "Tenant ID: {0}", args: [authInfo.TenantId], comment: "{0} is the Tenant ID" }));
@@ -40,9 +45,9 @@ const getEnvironmentDetails = () => {
         detailsArray.push(vscode.l10n.t({ message: "Unique name: {0}", args: [authInfo.OrganizationUniqueName], comment: "{0} is the Unique name" }));
         detailsArray.push(vscode.l10n.t({ message: "Instance url: {0}", args: [orgInfo?.OrgUrl], comment: "{0} is the Instance Url" }));
         detailsArray.push(vscode.l10n.t({ message: "Environment ID: {0}", args: [authInfo.EnvironmentId], comment: "{0} is the Environment ID" }));
-        detailsArray.push(vscode.l10n.t({ message: "Cluster environment: {0}", args: [authInfo.EnvironmentType], comment: "{0} is the Cluster environment" }));
-        detailsArray.push(vscode.l10n.t({ message: "Cluster category: {0}", args: [authInfo.Cloud], comment: "{0} is the Cluster category" }));
-        detailsArray.push(vscode.l10n.t({ message: "Cluster geo name: {0}", args: [authInfo.EnvironmentGeo], comment: "{0} is the cluster geo name" }));
+        detailsArray.push(vscode.l10n.t({ message: "Cluster environment: {0}", args: [artemisResponse.environment], comment: "{0} is the Cluster environment" }));
+        detailsArray.push(vscode.l10n.t({ message: "Cluster category: {0}", args: [artemisResponse.clusterCategory], comment: "{0} is the Cluster category" }));
+        detailsArray.push(vscode.l10n.t({ message: "Cluster geo name: {0}", args: [artemisResponse.geoName], comment: "{0} is the cluster geo name" }));
     }
 
     return detailsArray.join('\n');
@@ -53,7 +58,7 @@ export const showEnvironmentDetails = async () => {
         const message = Constants.Strings.SESSION_DETAILS;
         const details = getEnvironmentDetails();
 
-        const result = await vscode.window.showInformationMessage(`${message}\n${details}`, Constants.Strings.COPY_TO_CLIPBOARD);
+        const result = await vscode.window.showInformationMessage(message, { detail: details, modal: true }, Constants.Strings.COPY_TO_CLIPBOARD);
 
         if (result == Constants.Strings.COPY_TO_CLIPBOARD) {
             await vscode.env.clipboard.writeText(details);
@@ -95,3 +100,51 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
         }
     }
 }
+
+const getStudioUrl = (): string => {
+    const artemisContext = ArtemisContext.ServiceResponse;
+
+    let baseEndpoint = "";
+
+    switch (artemisContext.stamp) {
+        case ServiceEndpointCategory.TEST:
+            baseEndpoint = Constants.StudioEndpoints.TEST;
+            break;
+        case ServiceEndpointCategory.PREPROD:
+            baseEndpoint = Constants.StudioEndpoints.PREPROD;
+            break;
+        case ServiceEndpointCategory.PROD:
+            baseEndpoint = Constants.StudioEndpoints.PROD;
+            break;
+        case ServiceEndpointCategory.DOD:
+            baseEndpoint = Constants.StudioEndpoints.DOD;
+            break;
+        case ServiceEndpointCategory.GCC:
+            baseEndpoint = Constants.StudioEndpoints.GCC;
+            break;
+        case ServiceEndpointCategory.HIGH:
+            baseEndpoint = Constants.StudioEndpoints.HIGH;
+            break;
+        case ServiceEndpointCategory.MOONCAKE:
+            baseEndpoint = Constants.StudioEndpoints.MOONCAKE;
+            break;
+        default:
+            break;
+    }
+
+    return `${baseEndpoint}/environments/${PacContext.AuthInfo?.EnvironmentId}/portals/home`;
+}
+
+const getActiveSitesUrl = () => `${getStudioUrl()}/?tab=active`;
+
+const getInactiveSitesUrl = () => `${getStudioUrl()}/?tab=inactive`;
+
+export const openActiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getActiveSitesUrl()));
+
+export const openInactiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getInactiveSitesUrl()));
+
+export const previewSite = async (siteTreeItem: SiteTreeItem) => {
+    await PreviewSite.clearCache(siteTreeItem.siteInfo.websiteUrl);
+
+    await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl);
+};
