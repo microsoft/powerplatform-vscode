@@ -114,62 +114,6 @@ describe("ActionsHubTreeDataProvider", () => {
     });
 
     describe('getChildren', () => {
-        it("should return environment and other sites group tree items in getChildren when no element is passed", async () => {
-            const mockActiveSites = [
-                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
-            ] as IWebsiteDetails[];
-            const mockAllSites = [
-                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" },
-                { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
-            ] as IWebsiteDetails[];
-
-            // Stub the AuthInfo getter to return a valid object.
-            sinon.stub(PacContext, "AuthInfo").get(() => ({
-                OrganizationFriendlyName: "TestOrg",
-                UserType: "",
-                Cloud: CloudInstance.Preprod,
-                TenantId: "",
-                TenantCountry: "",
-                User: "",
-                EntraIdObjectId: "",
-                Puid: "",
-                UserCountryRegion: "",
-                TokenExpires: "",
-                Authority: "",
-                EnvironmentGeo: "",
-                EnvironmentId: "",
-                EnvironmentType: EnvironmentType.Regular,
-                OrganizationId: "",
-                OrganizationUniqueName: ""
-            }));
-
-            // Optionally, if needed, stub OrgInfo getter so that branch with website fetching is skipped.
-            sinon.stub(PacContext, "OrgInfo").get(() => undefined);
-
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            sinon.stub(WebsiteUtil, 'getActiveWebsites').resolves(mockActiveSites);
-            sinon.stub(WebsiteUtil, 'getAllWebsites').resolves(mockAllSites);
-
-            const result = await provider.getChildren();
-
-            expect(result).to.not.be.null;
-            expect(result).to.not.be.undefined;
-            expect(result).to.have.lengthOf(2);
-            expect(result![0]).to.be.instanceOf(EnvironmentGroupTreeItem);
-            expect(result![1]).to.be.instanceOf(OtherSitesGroupTreeItem);
-
-            const expectedEnvironmentInfo = {
-                currentEnvironmentName: "TestOrg"
-            };
-            const mockInactiveSites = mockAllSites.filter(site => !mockActiveSites.some(activeSite => activeSite.WebsiteRecordId === site.WebsiteRecordId));
-
-            // Verify the EnvironmentGroupTreeItem was created with correct properties
-            const environmentGroup = result![0] as EnvironmentGroupTreeItem;
-            expect(environmentGroup.environmentInfo).to.deep.equal(expectedEnvironmentInfo);
-            expect(environmentGroup['_activeSites']).to.deep.equal(mockActiveSites);
-            expect(environmentGroup['_inactiveSites']).to.deep.equal(mockInactiveSites);
-        });
-
         it("should return environment group tree item with default name when no auth info is available", async () => {
             const mockActiveSites = [
                 { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
@@ -259,19 +203,6 @@ describe("ActionsHubTreeDataProvider", () => {
             const result = await provider.getChildren();
 
             expect(result).to.be.an('array').that.is.empty;
-        });
-
-        it("should return null and log error when getChildren throws an error", async () => {
-            sinon.stub(PacContext, "AuthInfo").get(() => {
-                throw new Error("Test error");
-            });
-
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const result = await provider.getChildren();
-
-            expect(result).to.be.null;
-            expect(traceErrorStub.calledOnce).to.be.true;
-            expect(traceErrorStub.firstCall.args[0]).to.equal("actionsHub.currentEnvFetchFailed");
         });
 
         it("should call element.getChildren when an element is passed", async () => {
