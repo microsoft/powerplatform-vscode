@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import { PacWrapper } from '../../../client/pac/PacWrapper';
 import { SUCCESS } from '../../constants';
 import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE } from '../../copilot/constants';
-import { createAuthProfileExp } from '../PacAuthUtils';
+import { createAuthProfileExp } from '../PacAuthUtil';
 import * as Utils from '../Utils';
 
 describe('PacAuthUtils', () => {

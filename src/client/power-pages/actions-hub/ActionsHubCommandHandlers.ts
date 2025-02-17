@@ -15,8 +15,8 @@ import PacContext from '../../pac/PacContext';
 import ArtemisContext from '../../ArtemisContext';
 import { ServiceEndpointCategory } from '../../../common/services/Constants';
 import { PacWrapper } from '../../pac/PacWrapper';
-import { createAuthProfileExp } from '../../../common/copilot/utils/copilotUtil';
 import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
+import { createAuthProfileExp } from '../../../common/utilities/PacAuthUtil';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();

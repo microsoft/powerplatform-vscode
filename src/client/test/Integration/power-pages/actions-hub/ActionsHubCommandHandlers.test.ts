@@ -17,8 +17,8 @@ import ArtemisContext from '../../../../ArtemisContext';
 import { ServiceEndpointCategory } from '../../../../../common/services/Constants';
 import { IArtemisAPIOrgResponse } from '../../../../../common/services/Interfaces';
 import { PacWrapper } from '../../../../pac/PacWrapper';
-import * as copilotUtil from '../../../../../common/copilot/utils/copilotUtil';
 import * as authProvider from '../../../../../common/services/AuthenticationProvider';
+import * as PacAuthUtil from '../../../../../common/utilities/PacAuthUtil';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -430,7 +430,7 @@ describe('ActionsHubCommandHandlers', () => {
 
         beforeEach(() => {
             mockPacWrapper = sandbox.createStubInstance(PacWrapper);
-            mockCreateAuthProfileExp = sandbox.stub(copilotUtil, 'createAuthProfileExp');
+            mockCreateAuthProfileExp = sandbox.stub(PacAuthUtil, 'createAuthProfileExp');
             mockDataverseAuthentication = sandbox.stub(authProvider, 'dataverseAuthentication');
         });
 
