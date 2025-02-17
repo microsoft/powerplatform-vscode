@@ -9,7 +9,8 @@
     "powerplatform",
     "PPAPI",
     "Puid",
-    "testorg"
+    "testorg",
+    "websiteid"
   ],
   "sarif-viewer.connectToGithubCodeScanning": "off"
 }
