@@ -25,33 +25,36 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private _activeSites: IWebsiteDetails[] = [];
     private _inactiveSites: IWebsiteDetails[] = [];
-    private _isFirstLoad = true;
+    private _loadWebsites = true;
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
         this._disposables.push(
             ...this.registerPanel(this._pacTerminal),
 
-            PacContext.onChanged(async () => await this.refresh(true)),
+            PacContext.onChanged(() => {
+                this._loadWebsites = true;
+                this.refresh();
+            }),
 
-            CurrentSiteContext.onChanged(async () => await this.refresh(false)),
+            CurrentSiteContext.onChanged(() => this.refresh()),
 
             // Register an event listener for org change error as action hub will not be re-initialized in extension.ts
-            orgChangeErrorEvent(() => this.refresh(false))
+            orgChangeErrorEvent(() => this.refresh())
         );
         this._context = context;
     }
 
-    public async refresh(fetchSites: boolean): Promise<void> {
-        if (fetchSites) {
-            await this.loadWebsites();
-        }
+    private refresh(): void {
         this._onDidChangeTreeData.fire();
     }
 
     private async loadWebsites(): Promise<void> {
-        const websites = await fetchWebsites();
-        this._activeSites = websites.activeSites;
-        this._inactiveSites = websites.inactiveSites;
+        if (this._loadWebsites) {
+            const websites = await fetchWebsites();
+            this._activeSites = websites.activeSites;
+            this._inactiveSites = websites.inactiveSites;
+            this._loadWebsites = false;
+        }
     }
 
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
@@ -63,10 +66,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     async getChildren(element?: ActionsHubTreeItem): Promise<ActionsHubTreeItem[] | null | undefined> {
-        if (this._isFirstLoad) {
-            this._isFirstLoad = false;
-            await this.loadWebsites();
-        }
+        await this.loadWebsites();
 
         if (element) {
             return element.getChildren();
