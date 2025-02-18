@@ -216,6 +216,7 @@ describe('ActionsHubCommandHandlers', () => {
         let mockOrgList: sinon.SinonStub;
         let mockOrgSelect: sinon.SinonStub;
         let mockShowQuickPick: sinon.SinonStub;
+        let pacContextStub: sinon.SinonStub;
 
         const mockEnvList = [
             {
@@ -239,6 +240,13 @@ describe('ActionsHubCommandHandlers', () => {
                 orgSelect: mockOrgSelect
             });
             mockShowQuickPick = sandbox.stub(vscode.window, 'showQuickPick');
+            pacContextStub = sinon.stub(PacContext, 'AuthInfo').get(() => ({
+                OrganizationFriendlyName: 'Dev Environment'
+            }));
+        });
+
+        afterEach(() => {
+            pacContextStub.get(() => mockAuthInfo);
         });
 
         it('should switch environment successfully when env is selected', async () => {
@@ -256,6 +264,20 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockOrgList.calledOnce).to.be.true;
             expect(mockShowQuickPick.calledOnce).to.be.true;
+
+            const envList = await mockShowQuickPick.firstCall.args[0];
+            expect(envList).to.deep.equal([
+                {
+                    label: 'Dev Environment',
+                    detail: 'https://dev.crm.dynamics.com',
+                    description: 'Current'
+                },
+                {
+                    label: 'Prod Environment',
+                    detail: 'https://prod.crm.dynamics.com',
+                    description: ''
+                }
+            ]);
         });
     });
 
