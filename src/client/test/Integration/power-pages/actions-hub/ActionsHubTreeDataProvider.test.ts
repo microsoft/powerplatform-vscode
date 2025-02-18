@@ -166,6 +166,7 @@ describe("ActionsHubTreeDataProvider", () => {
             sinon.stub(PacContext, "AuthInfo").get(() => null);
 
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            provider["_loadWebsites"] = false;
             const result = await provider.getChildren();
 
             expect(result).to.be.an('array').that.is.empty;
