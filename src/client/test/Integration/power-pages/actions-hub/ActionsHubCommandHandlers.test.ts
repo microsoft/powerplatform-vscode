@@ -245,7 +245,10 @@ describe('ActionsHubCommandHandlers', () => {
             mockPacContext = sinon.stub(PacContext, 'AuthInfo').get(() => ({
                 OrganizationFriendlyName: 'Dev Environment'
             }));
-            mockShowProgressNotification = sinon.stub(Utils, 'showProgressWithNotification').resolves();
+            mockShowProgressNotification = sinon.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, task: (progress: vscode.Progress<{
+                message?: string;
+                increment?: number;
+            }>) => Promise<any>) => await task({} as unknown as vscode.Progress<{ message?: string; increment?: number }>));
         });
 
         afterEach(() => {
@@ -284,6 +287,8 @@ describe('ActionsHubCommandHandlers', () => {
             ]);
 
             expect(mockShowProgressNotification.calledOnce, "Switch environment notification was not called").to.be.true;
+            expect(mockShowProgressNotification.firstCall.args[0]).to.equal('Changing environment...');
+            expect(mockOrgSelect.calledOnce, "Org select function was not called").to.be.true;
         });
 
         it('should not switch environment when current environment is selected', async () => {
@@ -317,6 +322,7 @@ describe('ActionsHubCommandHandlers', () => {
             ]);
 
             expect(mockShowProgressNotification.calledOnce, "Switch environment notification was called").to.be.false;
+            expect(mockOrgSelect.calledOnce, "Org select function was called").to.be.false;
         });
     });
 
