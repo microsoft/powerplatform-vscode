@@ -19,6 +19,8 @@ import { PreviewSite } from '../preview-site/PreviewSite';
 import { PacWrapper } from '../../pac/PacWrapper';
 import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
 import { createAuthProfileExp } from '../../../common/utilities/PacAuthUtil';
+import { IWebsiteDetails } from '../../../common/services/Interfaces';
+import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -196,3 +198,25 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
         );
     }
 };
+
+export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[] }> => {
+    try {
+        const orgInfo = PacContext.OrgInfo;
+        if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
+            let allSites: IWebsiteDetails[] = [];
+            let activeWebsiteDetails: IWebsiteDetails[] = [];
+            [activeWebsiteDetails, allSites] = await Promise.all([
+                getActiveWebsites(ArtemisContext.ServiceResponse?.stamp, orgInfo.EnvironmentId),
+                getAllWebsites(orgInfo)
+            ]);
+            const activeSiteIds = new Set(activeWebsiteDetails.map(activeSite => activeSite.WebsiteRecordId));
+            const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || [];
+
+            return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails };
+        }
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: fetchWebsites.name }, {});
+    }
+
+    return { activeSites: [], inactiveSites: [] };
+}

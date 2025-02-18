@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { parse } from 'yaml';
 import { GetWebsiteRecordID, sendTelemetryEvent } from '../OneDSLoggerTelemetry/telemetry/telemetry';
+import { WEBSITE_YML } from '../constants';
 
 export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,14 +40,22 @@ export function getPortalsOrgURLs(workspaceRootFolders: WorkspaceFolder[] | null
     return output;
 }
 
-export function getWebsiteRecordId(workspaceFolders: { uri: string }[]): string {
+export function getWebsiteRecordId(param: { uri: string }[] | string): string {
     try {
-        if (!workspaceFolders || workspaceFolders.length === 0) {
+        let workspaceFolderPath = "";
+
+        if (Array.isArray(param) && param.length > 0) {
+            workspaceFolderPath = param[0].uri;
+        }
+        else if (typeof param === 'string') {
+            workspaceFolderPath = param;
+        }
+
+        if (!workspaceFolderPath) {
             return "";
         }
 
-        const workspaceRootFolder = workspaceFolders[0];
-        const websiteYmlPath = path.join(workspaceRootFolder.uri, 'website.yml');
+        const websiteYmlPath = path.join(workspaceFolderPath, WEBSITE_YML);
         if (fs.existsSync(websiteYmlPath)) {
             const fileContent = fs.readFileSync(websiteYmlPath, 'utf8');
             const parsedYaml = parse(fileContent);
@@ -58,4 +67,19 @@ export function getWebsiteRecordId(workspaceFolders: { uri: string }[]): string 
         sendTelemetryEvent({ methodName: getWebsiteRecordId.name, eventName: GetWebsiteRecordID, exception: exception as Error });
     }
     return "";
+}
+
+export function findWebsiteYmlFolder(startPath: string): string | null {
+    let currentPath = startPath;
+    while (currentPath) {
+        if (fs.existsSync(path.join(currentPath, WEBSITE_YML))) {
+            return currentPath;
+        }
+        const parentPath = path.dirname(currentPath);
+        if (parentPath === currentPath) {
+            break;
+        }
+        currentPath = parentPath;
+    }
+    return null;
 }

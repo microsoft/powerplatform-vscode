@@ -6,15 +6,14 @@
 import { EventEmitter, Event } from "vscode";
 import { AuthInfo, OrgInfo } from "./PacTypes";
 
-const _onPacContextChanged: EventEmitter<IPacContext> = new EventEmitter<IPacContext>();
-export const OnPacContextChanged: Event<IPacContext> = _onPacContextChanged.event;
-
 interface IPacContext {
     AuthInfo: AuthInfo | null;
     OrgInfo: OrgInfo | null;
 }
 
 class PacContext implements IPacContext {
+    private readonly _onChanged: EventEmitter<IPacContext> = new EventEmitter<IPacContext>();
+    public readonly onChanged: Event<IPacContext> = this._onChanged.event;
     private _authInfo: AuthInfo | null;
     private _orgInfo: OrgInfo | null;
 
@@ -31,17 +30,25 @@ class PacContext implements IPacContext {
         this._orgInfo = null;
     }
 
+    public dispose() {
+        this._onChanged.dispose();
+    }
 
     public setContext(authInfo: AuthInfo | null = null, orgInfo: OrgInfo | null = null): void {
-        if (authInfo){
+        let shouldFireEvent = false;
+        if (authInfo) {
             this._authInfo = authInfo;
+            shouldFireEvent = true;
         }
 
-        if (orgInfo){
+        if (orgInfo) {
             this._orgInfo = orgInfo;
+            shouldFireEvent = true;
         }
 
-        _onPacContextChanged.fire(this);
+        if (shouldFireEvent) {
+            this._onChanged.fire(this);
+        }
     }
 }
 

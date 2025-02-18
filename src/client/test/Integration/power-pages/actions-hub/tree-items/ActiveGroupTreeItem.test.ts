@@ -11,6 +11,9 @@ import { WebsiteDataModel } from "../../../../../../common/services/Constants";
 import { SiteTreeItem } from "../../../../../power-pages/actions-hub/tree-items/SiteTreeItem";
 import { NoSitesTreeItem } from "../../../../../power-pages/actions-hub/tree-items/NoSitesTreeItem";
 import { IWebsiteDetails } from "../../../../../../common/services/Interfaces";
+import sinon from "sinon";
+import { WebsiteStatus } from "../../../../../power-pages/actions-hub/models/WebsiteStatus";
+import CurrentSiteContext from "../../../../../power-pages/actions-hub/CurrentSiteContext";
 
 describe('ActiveGroupTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {
@@ -56,6 +59,10 @@ describe('ActiveGroupTreeItem', () => {
         });
 
         describe('when active sites is not empty', () => {
+            beforeEach(() => {
+                sinon.stub(CurrentSiteContext, 'currentSiteId').value('1');
+            });
+
             it('should return an array of SiteTreeItem', () => {
                 const activeWebsites: IWebsiteDetails[] = [
                     { WebsiteRecordId: "1", Name: "Site 1", WebsiteUrl: "http://site1.com", DataverseInstanceUrl: "http://dataverse1.com", DataverseOrganizationId: "org1", DataModel: WebsiteDataModel.Standard, EnvironmentId: "env1" },
@@ -66,10 +73,24 @@ describe('ActiveGroupTreeItem', () => {
                 const children = treeItem.getChildren();
 
                 const site1 = children[0] as SiteTreeItem;
-                expect(site1.label).to.equal("Site 1");
+                expect(site1.siteInfo).to.deep.equal({
+                    name: 'Site 1',
+                    websiteId: '1',
+                    dataModelVersion: 1,
+                    websiteUrl: 'http://site1.com',
+                    status: WebsiteStatus.Active,
+                    isCurrent: true
+                });
 
                 const site2 = children[1] as SiteTreeItem;
-                expect(site2.label).to.equal("Site 2");
+                expect(site2.siteInfo).to.deep.equal({
+                    name: 'Site 2',
+                    websiteId: '2',
+                    dataModelVersion: 2,
+                    websiteUrl: 'http://site2.com',
+                    status: WebsiteStatus.Active,
+                    isCurrent: false
+                });
             });
         });
     });

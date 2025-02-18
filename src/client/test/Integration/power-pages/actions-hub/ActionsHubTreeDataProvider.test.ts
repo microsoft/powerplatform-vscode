@@ -19,8 +19,8 @@ import { SiteTreeItem } from "../../../../power-pages/actions-hub/tree-items/Sit
 import { IWebsiteInfo } from "../../../../power-pages/actions-hub/models/IWebsiteInfo";
 import PacContext from "../../../../pac/PacContext";
 import { CloudInstance, EnvironmentType } from "../../../../pac/PacTypes";
-import * as WebsiteUtil from "../../../../../common/utilities/WebsiteUtil";
 import { IWebsiteDetails } from "../../../../../common/services/Interfaces";
+import * as CommandHandlers from "../../../../power-pages/actions-hub/ActionsHubCommandHandlers";
 
 // Add global type declaration for ArtemisContext
 describe("ActionsHubTreeDataProvider", () => {
@@ -118,13 +118,10 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockActiveSites = [
                 { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
             ] as IWebsiteDetails[];
-            const mockAllSites = [
-                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" },
+            const mockInactiveSites = [
                 { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
             ] as IWebsiteDetails[];
-
-            sinon.stub(WebsiteUtil, 'getActiveWebsites').resolves(mockActiveSites);
-            sinon.stub(WebsiteUtil, 'getAllWebsites').resolves(mockAllSites);
+            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
 
             PacContext['_authInfo'] = null;
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
@@ -150,10 +147,10 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockActiveSites = [
                 { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
             ] as IWebsiteDetails[];
-            const mockAllSites = [
-                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" },
+            const mockInactiveSites = [
                 { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
             ] as IWebsiteDetails[];
+            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
 
             sinon.stub(PacContext, "AuthInfo").get(() => ({
                 OrganizationFriendlyName: "TestOrg",
@@ -179,8 +176,6 @@ describe("ActionsHubTreeDataProvider", () => {
             }));
 
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            sinon.stub(WebsiteUtil, 'getActiveWebsites').resolves(mockActiveSites);
-            sinon.stub(WebsiteUtil, 'getAllWebsites').resolves(mockAllSites);
 
             const result = await provider.getChildren();
 
@@ -193,7 +188,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const environmentGroup = result![0] as EnvironmentGroupTreeItem;
             expect(environmentGroup.environmentInfo.currentEnvironmentName).to.equal("TestOrg");
             expect(environmentGroup['_activeSites']).to.deep.equal(mockActiveSites);
-            expect(environmentGroup['_inactiveSites']).to.deep.equal([mockAllSites[1]]);
+            expect(environmentGroup['_inactiveSites']).to.deep.equal(mockInactiveSites);
         });
 
         it("should return empty array when auth info is not available", async () => {
@@ -205,15 +200,67 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(result).to.be.an('array').that.is.empty;
         });
 
+        it("should return environment group tree item with default name when no auth info is available", async () => {
+            const mockActiveSites = [
+                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
+            ] as IWebsiteDetails[];
+            const mockInactiveSites = [
+                { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
+            ] as IWebsiteDetails[];
+            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
+
+            PacContext['_authInfo'] = null;
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const result = await provider.getChildren();
+
+            expect(result).to.be.an('array').that.is.empty;
+        });
+
         it("should call element.getChildren when an element is passed", async () => {
             const element = new SiteTreeItem({} as IWebsiteInfo);
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            provider["_loadWebsites"] = false;
             const getChildrenStub = sinon.stub(element, "getChildren").resolves([]);
 
             const result = await provider.getChildren(element);
 
             expect(getChildrenStub.calledOnce).to.be.true;
             expect(result).to.deep.equal([]);
+        });
+
+        it('should load websites when it is first load', async () => {
+            const mockActiveSites = [
+                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
+            ] as IWebsiteDetails[];
+            const mockInactiveSites = [
+                { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
+            ] as IWebsiteDetails[];
+            const mockFetchWebsites = sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
+
+            PacContext['_authInfo'] = {
+                OrganizationFriendlyName: "TestOrg",
+                UserType: "",
+                Cloud: CloudInstance.Preprod,
+                TenantId: "",
+                TenantCountry: "",
+                User: "",
+                EntraIdObjectId: "",
+                Puid: "",
+                UserCountryRegion: "",
+                TokenExpires: "",
+                Authority: "",
+                EnvironmentGeo: "",
+                EnvironmentId: "",
+                EnvironmentType: EnvironmentType.Regular,
+                OrganizationId: "",
+                OrganizationUniqueName: ""
+            };
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            provider["_loadWebsites"] = true;
+
+            await provider.getChildren();
+
+            expect(mockFetchWebsites.calledOnce).to.be.true;
         });
     });
 });

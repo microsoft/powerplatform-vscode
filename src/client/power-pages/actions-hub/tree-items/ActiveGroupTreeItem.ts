@@ -12,6 +12,7 @@ import { IWebsiteInfo } from "../models/IWebsiteInfo";
 import { WebsiteDataModel } from "../../../../common/services/Constants";
 import { WebsiteStatus } from "../models/WebsiteStatus";
 import { NoSitesTreeItem } from "./NoSitesTreeItem";
+import CurrentSiteContext from "../CurrentSiteContext";
 
 export class ActiveGroupTreeItem extends ActionsHubTreeItem {
     private readonly _activeSites: IWebsiteDetails[];
@@ -22,7 +23,7 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
             vscode.TreeItemCollapsibleState.Expanded,
             Constants.Icons.SITE_GROUP,
             Constants.ContextValues.ACTIVE_SITES_GROUP
-        )
+        );
         this._activeSites = activeSites;
     }
 
@@ -31,17 +32,17 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
             return [new NoSitesTreeItem()];
         }
 
-        return this._activeSites.map(site => {
+        return this._activeSites.map((site) => {
             const siteInfo: IWebsiteInfo = {
                 name: site.Name,
                 websiteId: site.WebsiteRecordId,
                 dataModelVersion: site.DataModel == WebsiteDataModel.Standard ? 1 : 2,
                 websiteUrl: site.WebsiteUrl,
                 status: WebsiteStatus.Active,
-                isCurrent: false //TODO: Implement this
+                isCurrent: CurrentSiteContext.currentSiteId === site.WebsiteRecordId
             };
-            const siteItem = new SiteTreeItem(siteInfo);
-            return siteItem;
+
+            return new SiteTreeItem(siteInfo);
         });
     }
 }
