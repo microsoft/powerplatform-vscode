@@ -608,6 +608,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
   </body></file>
   <file original="package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.login.title">
+      <source xml:lang="en">Add New Auth Profile</source>
+    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
       <source xml:lang="en">Advanced capabilities</source>
     </trans-unit>
@@ -695,6 +698,12 @@ The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
       <source xml:lang="en">Initialize Web Extension</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.login">
+      <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://example.com/learn-more).
+[Login](command:powerpages.actionsHub.newAuthProfile)</source>
+      <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:powerpages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
       <source xml:lang="en">Name/Rename Auth Profile</source>

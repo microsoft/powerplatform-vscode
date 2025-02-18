@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, fetchWebsites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -16,6 +16,9 @@ import PacContext from '../../../../pac/PacContext';
 import ArtemisContext from '../../../../ArtemisContext';
 import { ServiceEndpointCategory, WebsiteDataModel } from '../../../../../common/services/Constants';
 import { IArtemisAPIOrgResponse, IWebsiteDetails } from '../../../../../common/services/Interfaces';
+import { PacWrapper } from '../../../../pac/PacWrapper';
+import * as authProvider from '../../../../../common/services/AuthenticationProvider';
+import * as PacAuthUtil from '../../../../../common/utilities/PacAuthUtil';
 import { PreviewSite } from '../../../../power-pages/preview-site/PreviewSite';
 import { SiteTreeItem } from '../../../../power-pages/actions-hub/tree-items/SiteTreeItem';
 import { WebsiteStatus } from '../../../../power-pages/actions-hub/models/WebsiteStatus';
@@ -455,6 +458,64 @@ describe('ActionsHubCommandHandlers', () => {
                 expect(mockUrl.calledOnce).to.be.true;
                 expect(mockUrl.firstCall.args[0]).to.equal('https://make.powerpages.microsoft.cn/environments/test-env-id/portals/home/?tab=inactive');
             });
+        });
+    });
+
+    describe('createNewAuthProfile', () => {
+        let mockPacWrapper: sinon.SinonStubbedInstance<PacWrapper>;
+        let mockCreateAuthProfileExp: sinon.SinonStub;
+        let mockDataverseAuthentication: sinon.SinonStub;
+
+        beforeEach(() => {
+            mockPacWrapper = sandbox.createStubInstance(PacWrapper);
+            mockCreateAuthProfileExp = sandbox.stub(PacAuthUtil, 'createAuthProfileExp');
+            mockDataverseAuthentication = sandbox.stub(authProvider, 'dataverseAuthentication');
+        });
+
+        it('should handle missing organization URL', async () => {
+            const mockResults = [{ ActiveOrganization: [null, null] }];
+            mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: mockResults });
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
+            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
+        });
+
+        it('should handle empty results array', async () => {
+            mockCreateAuthProfileExp.resolves({ Status: 'Success', Results: [] });
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
+            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
+        });
+
+        it('should handle PAC auth output failure', async () => {
+            mockCreateAuthProfileExp.resolves({ Status: 'Failed', Results: null });
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
+            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
+        });
+
+        it('should handle errors during auth profile creation', async () => {
+            const error = new Error('Test error');
+            mockCreateAuthProfileExp.rejects(error);
+
+            await createNewAuthProfile(mockPacWrapper);
+
+            expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
+            expect(mockDataverseAuthentication.called).to.be.false;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
         });
     });
 

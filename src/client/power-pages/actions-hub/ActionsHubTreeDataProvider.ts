@@ -11,10 +11,11 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
+import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import { IWebsiteDetails } from "../../../common/services/Interfaces";
+import { orgChangeErrorEvent } from "../../OrgChangeNotifier";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -32,7 +33,10 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
             PacContext.onChanged(async () => await this.refresh(true)),
 
-            CurrentSiteContext.onChanged(async () => await this.refresh(false))
+            CurrentSiteContext.onChanged(async () => await this.refresh(false)),
+
+            // Register an event listener for org change error as action hub will not be re-initialized in extension.ts
+            orgChangeErrorEvent(() => this.refresh(false))
         );
         this._context = context;
     }
@@ -69,17 +73,19 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         }
 
         try {
-            const orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
-            let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
             const authInfo = PacContext.AuthInfo;
-            if (authInfo) {
-                currentEnvInfo = { currentEnvironmentName: authInfo.OrganizationFriendlyName };
+            if (authInfo && authInfo.OrganizationFriendlyName) {
+                const currentEnvInfo: IEnvironmentInfo = {
+                    currentEnvironmentName: authInfo.OrganizationFriendlyName
+                };
+                return [
+                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites),
+                    new OtherSitesGroupTreeItem()
+                ];
+            } else {
+                // Login experience scenario
+                return [];
             }
-
-            return [
-                new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites),
-                new OtherSitesGroupTreeItem()
-            ];
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: this.getChildren }, {});
             return null;
@@ -104,7 +110,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio", openInactiveSitesInStudio),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite)
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite),
+
+            vscode.commands.registerCommand("powerpages.actionsHub.newAuthProfile", async () => {
+                await createNewAuthProfile(pacTerminal.getWrapper());
+            }),
         ];
     }
 }

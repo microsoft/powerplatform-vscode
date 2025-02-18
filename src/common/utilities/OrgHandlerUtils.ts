@@ -7,8 +7,8 @@ import { ActiveOrgOutput } from '../../client/pac/PacTypes';
 import { PacWrapper } from '../../client/pac/PacWrapper';
 import { IOrgDetails } from '../chat-participants/powerpages/PowerPagesChatParticipantTypes';
 import { SUCCESS } from '../constants';
-import { createAuthProfileExp } from '../copilot/utils/copilotUtil';
 import { ERROR_CONSTANTS } from '../ErrorConstants';
+import { createAuthProfileExp } from './PacAuthUtil';
 
 export const ORG_DETAILS_KEY = 'orgDetails';
 
