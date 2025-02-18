@@ -98,3 +98,4 @@ export const POWERPAGES_SITE_RECORDS_API_PATH = 'api/data/v9.2/powerpagesites?$s
 export const ADX_WEBSITE_RECORDS_FETCH_FAILED = 'AdxWebsiteRecordsFetchFailed';
 export const POWERPAGES_SITE_RECORDS_FETCH_FAILED = 'PowerPagesSiteRecordsFetchFailed';
 export const GET_ALL_WEBSITES_FAILED = 'GetAllWebsitesFailed';
+export const WEBSITE_YML = 'website.yml';

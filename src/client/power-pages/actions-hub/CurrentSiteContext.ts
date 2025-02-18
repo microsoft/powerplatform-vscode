@@ -5,8 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
-import { parse } from 'yaml';
+import { findWebsiteYmlFolder, getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
 
 interface ICurrentSiteContext {
     currentSiteId: string | null;
@@ -41,46 +40,15 @@ class CurrentSiteContext implements ICurrentSiteContext {
         this._disposables.forEach(d => d.dispose());
     }
 
-    private checkWebsiteYml(folderPath: string): string | null {
-        try {
-            const websiteYmlPath = path.join(folderPath, 'website.yml');
-            if (fs.existsSync(websiteYmlPath)) {
-                const fileContent = fs.readFileSync(websiteYmlPath, 'utf8');
-                const parsedYaml = parse(fileContent);
-                if (parsedYaml && parsedYaml.adx_websiteid) {
-                    return parsedYaml.adx_websiteid;
-                }
-            }
-        } catch (error) {
-            //TODO: log error
-        }
-        return null;
-    }
-
-    private findWebsiteYmlFolder(startPath: string): string | null {
-        let currentPath = startPath;
-        while (currentPath) {
-            if (fs.existsSync(path.join(currentPath, 'website.yml'))) {
-                return currentPath;
-            }
-            const parentPath = path.dirname(currentPath);
-            if (parentPath === currentPath) {
-                break;
-            }
-            currentPath = parentPath;
-        }
-        return null;
-    }
-
     private getCurrentSiteId(): string | null {
         const activeEditor = vscode.window.activeTextEditor;
         if (activeEditor) {
             const filePath = activeEditor.document.uri.fsPath;
             const fileDirectory = path.dirname(filePath);
-            const websiteYmlFolder = this.findWebsiteYmlFolder(fileDirectory);
+            const websiteYmlFolder = findWebsiteYmlFolder(fileDirectory);
 
             if (websiteYmlFolder) {
-                const siteId = this.checkWebsiteYml(websiteYmlFolder);
+                const siteId = getWebsiteRecordId(websiteYmlFolder);
                 if (siteId) {
                     return siteId;
                 }
@@ -90,7 +58,7 @@ class CurrentSiteContext implements ICurrentSiteContext {
         // Fallback: check first workspace folder
         const workspaceFolders = vscode.workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
-            return this.checkWebsiteYml(workspaceFolders[0].uri.fsPath);
+            return getWebsiteRecordId(workspaceFolders[0].uri.fsPath);
         }
 
         return null;
