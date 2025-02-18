@@ -287,7 +287,7 @@
     function createWalkthroughDiv() {
         const walkthrough = document.createElement("div");
         walkthrough.classList.add("walkthrough-div");
-        walkthrough.innerHTML = `<h1 class="walkthrough-title">${copilotStrings.GETTING_STARTED_MESSAGE}</h1>
+        walkthrough.innerHTML = `<h4 class="walkthrough-title">${copilotStrings.GETTING_STARTED_MESSAGE}</h4>
                             <a href="#" class="walkthrough-content" tabindex="0" aria-label="${copilotStrings.LEARN_MORE_MESSAGE}">
                                 ${bookIconSvg}
                                 <span id="walk-text">${copilotStrings.LEARN_MORE_MESSAGE}</span>
