@@ -165,6 +165,11 @@
         "view": "pacCLI.authPanel",
         "contents": "%pacCLI.authPanel.welcome.whenInteractiveNotSupported%",
         "when": "!virtualWorkspace && !pacCLI.authPanel.interactiveLoginSupported"
+      },
+      {
+        "view":"microsoft.powerplatform.pages.actionsHub",
+        "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
       }
     ],
     "commands": [
@@ -410,6 +415,10 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.newAuthProfile",
+        "title": "%microsoft.powerplatform.pages.actionsHub.login.title%"
       }
     ],
     "configuration": {
@@ -722,6 +731,10 @@
         {
           "command": "pacCLI.authPanel.newAuthProfile",
           "when": "pacCLI.authPanel.interactiveLoginSupported"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.newAuthProfile",
+          "when": "never"
         },
         {
           "command": "pacCLI.envAndSolutionsPanel.copyFriendlyName",

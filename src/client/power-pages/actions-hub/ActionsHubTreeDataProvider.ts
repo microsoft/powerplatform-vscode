@@ -11,11 +11,12 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
+import { openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment } from "./ActionsHubCommandHandlers";
 import { IWebsiteDetails } from "../../../common/services/Interfaces";
 import { getActiveWebsites, getAllWebsites } from "../../../common/utilities/WebsiteUtil";
 import PacContext, { OnPacContextChanged } from "../../pac/PacContext";
 import ArtemisContext from "../../ArtemisContext";
+import { orgChangeErrorEvent } from "../../OrgChangeNotifier";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -30,6 +31,8 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
         // Register an event listener for environment changes
         OnPacContextChanged(() => this.refresh());
+        // Register an event listener for org change error as action hub will not be re-initialized in extension.ts
+        orgChangeErrorEvent(() => this.refresh());
     }
 
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
@@ -46,45 +49,42 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
         }
 
         try {
-
-            const orgFriendlyName = Constants.Strings.NO_ENVIRONMENTS_FOUND; // Login experience scenario
-            let currentEnvInfo: IEnvironmentInfo = { currentEnvironmentName: orgFriendlyName };
             const authInfo = PacContext.AuthInfo;
-            if (authInfo) {
-                currentEnvInfo = { currentEnvironmentName: authInfo.OrganizationFriendlyName };
+            if (authInfo && authInfo.OrganizationFriendlyName) {
+                const currentEnvInfo: IEnvironmentInfo = {
+                    currentEnvironmentName: authInfo.OrganizationFriendlyName
+                };
+                let activeSites: IWebsiteDetails[] = [];
+                let inactiveSites: IWebsiteDetails[] = [];
+                const orgInfo = PacContext.OrgInfo;
+
+                if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
+                    let allSites: IWebsiteDetails[] = [];
+                    [activeSites, allSites] = await Promise.all([
+                        getActiveWebsites(ArtemisContext.ServiceResponse?.stamp, orgInfo.EnvironmentId),
+                        getAllWebsites(orgInfo)
+                    ]);
+                    const activeSiteIds = new Set(activeSites.map(activeSite => activeSite.WebsiteRecordId));
+                    inactiveSites = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || []; //Need to handle failure case
+                }
+                else {
+                    //TODO: Handle the case when artemis response is not available
+                    // Log the scenario
+                    // Question: Should we show any message to the user? or just show the empty list of sites
+                }
+                return [
+                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, activeSites, inactiveSites),
+                    new OtherSitesGroupTreeItem()
+                ];
+            } else {
+                // Login experience scenario
+                return [];
             }
-
-            let activeSites: IWebsiteDetails[] = [];
-            let inactiveSites: IWebsiteDetails[] = [];
-            const orgInfo = PacContext.OrgInfo;
-
-            if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
-                let allSites: IWebsiteDetails[] = [];
-                [activeSites, allSites] = await Promise.all([
-                    getActiveWebsites(ArtemisContext.ServiceResponse?.stamp, orgInfo.EnvironmentId),
-                    getAllWebsites(orgInfo)
-                ]);
-                const activeSiteIds = new Set(activeSites.map(activeSite => activeSite.WebsiteRecordId));
-                inactiveSites = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || []; //Need to handle failure case
-            }
-            else {
-                //TODO: Handle the case when artemis response is not available
-                // Log the scenario
-                // Question: Should we show any message to the user? or just show the empty list of sites
-            }
-
-            //TODO: Handle the case when the user is not logged in
-
-            return [
-                new EnvironmentGroupTreeItem(currentEnvInfo, this._context, activeSites, inactiveSites),
-                new OtherSitesGroupTreeItem()
-            ];
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: this.getChildren }, {});
             return null;
         }
     }
-
     public refresh(): void {
         this._onDidChangeTreeData.fire();
     }
@@ -107,7 +107,11 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio", openInactiveSitesInStudio),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite)
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite),
+
+            vscode.commands.registerCommand("powerpages.actionsHub.newAuthProfile", async () => {
+                await createNewAuthProfile(pacTerminal.getWrapper());
+            }),
         ];
     }
 }
