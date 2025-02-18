@@ -248,6 +248,7 @@ describe('ActionsHubCommandHandlers', () => {
             mockShowProgressNotification = sinon.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, task: (progress: vscode.Progress<{
                 message?: string;
                 increment?: number;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             }>) => Promise<any>) => await task({} as unknown as vscode.Progress<{ message?: string; increment?: number }>));
         });
 
@@ -286,6 +287,9 @@ describe('ActionsHubCommandHandlers', () => {
                 }
             ]);
 
+            expect(mockShowQuickPick.firstCall.args[1]).to.deep.equal({
+                placeHolder: 'Select an environment'
+            });
             expect(mockShowProgressNotification.calledOnce, "Switch environment notification was not called").to.be.true;
             expect(mockShowProgressNotification.firstCall.args[0]).to.equal('Changing environment...');
             expect(mockOrgSelect.calledOnce, "Org select function was not called").to.be.true;

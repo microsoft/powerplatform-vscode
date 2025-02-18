@@ -97,8 +97,7 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
     if (authInfo) {
         const selectedEnv = await vscode.window.showQuickPick(getEnvironmentList(pacTerminal, authInfo),
             {
-                placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT),
-                title: vscode.l10n.t(Constants.Strings.CHANGE_ENVIRONMENT),
+                placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT)
             }
         );
 

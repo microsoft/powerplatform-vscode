@@ -78,9 +78,6 @@
       <source xml:lang="en">Cannot install pac CLI: {0}</source>
       <note>{0} represents the error message returned from the exception</note>
     </trans-unit>
-    <trans-unit id="++CODE++23e8c5dff68b0181a536ac3c83e9b998d96ab8e4278a25816761d890d2408417">
-      <source xml:lang="en">Change environment</source>
-    </trans-unit>
     <trans-unit id="++CODE++b75d741af5a9c59c95a5c7b7d9f654bb93617232db14c8d2671a5c731828782b">
       <source xml:lang="en">Changing environment...</source>
     </trans-unit>
