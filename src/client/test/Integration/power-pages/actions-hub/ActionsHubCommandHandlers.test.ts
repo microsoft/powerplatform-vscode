@@ -263,7 +263,7 @@ describe('ActionsHubCommandHandlers', () => {
             });
             mockShowQuickPick.resolves({
                 label: 'Prod Environment',
-                description: 'https://prod.crm.dynamics.com'
+                detail: 'https://prod.crm.dynamics.com'
             });
             mockOrgSelect.resolves();
 
@@ -289,6 +289,7 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockShowProgressNotification.calledOnce, "Switch environment notification was not called").to.be.true;
             expect(mockShowProgressNotification.firstCall.args[0]).to.equal('Changing environment...');
             expect(mockOrgSelect.calledOnce, "Org select function was not called").to.be.true;
+            expect(mockOrgSelect.firstCall.args[0]).to.equal('https://prod.crm.dynamics.com');
         });
 
         it('should not switch environment when current environment is selected', async () => {
@@ -298,7 +299,7 @@ describe('ActionsHubCommandHandlers', () => {
             });
             mockShowQuickPick.resolves({
                 label: 'Dev Environment',
-                description: 'https://dev.crm.dynamics.com'
+                detail: 'https://dev.crm.dynamics.com'
             });
             mockOrgSelect.resolves();
 
