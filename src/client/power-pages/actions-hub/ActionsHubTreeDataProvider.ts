@@ -38,16 +38,16 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     public async refresh(fetchSites: boolean): Promise<void> {
-        await this.loadWebsites(fetchSites);
+        if (fetchSites) {
+            await this.loadWebsites();
+        }
         this._onDidChangeTreeData.fire();
     }
 
-    private async loadWebsites(fetchSites: boolean): Promise<void> {
-        if (fetchSites) {
-            const websites = await fetchWebsites();
-            this._activeSites = websites.activeSites;
-            this._inactiveSites = websites.inactiveSites;
-        }
+    private async loadWebsites(): Promise<void> {
+        const websites = await fetchWebsites();
+        this._activeSites = websites.activeSites;
+        this._inactiveSites = websites.inactiveSites;
     }
 
     public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
@@ -61,7 +61,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     async getChildren(element?: ActionsHubTreeItem): Promise<ActionsHubTreeItem[] | null | undefined> {
         if (this._isFirstLoad) {
             this._isFirstLoad = false;
-            await this.loadWebsites(true);
+            await this.loadWebsites();
         }
 
         if (element) {
