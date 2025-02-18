@@ -103,7 +103,7 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
         );
 
         if (selectedEnv && selectedEnv.label !== authInfo.OrganizationFriendlyName) {
-            await showProgressWithNotification(Constants.Strings.CHANGING_ENVIRONMENT, async () => await pacWrapper.orgSelect(selectedEnv.description));
+            await showProgressWithNotification(Constants.Strings.CHANGING_ENVIRONMENT, async () => await pacWrapper.orgSelect(selectedEnv.detail));
         }
     }
 }
