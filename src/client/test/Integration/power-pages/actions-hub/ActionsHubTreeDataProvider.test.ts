@@ -55,62 +55,104 @@ describe("ActionsHubTreeDataProvider", () => {
     });
 
     describe('initialize', () => {
-        it("should register refresh command", () => {
+        it("should register refresh command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'refreshEnvironment');
+            mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.refresh")).to.be.true;
+
+            await registerCommandStub.getCall(0).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
-        it("should register switchEnvironment command", () => {
+        it("should register switchEnvironment command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'switchEnvironment');
+            mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.switchEnvironment")).to.be.true;
+
+            await registerCommandStub.getCall(1).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
-        it("should register showEnvironmentDetails command", () => {
+        it("should register showEnvironmentDetails command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'showEnvironmentDetails');
+            mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails")).to.be.true;
+
+            await registerCommandStub.getCall(2).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
-        it("should register openActiveSitesInStudio command", () => {
+        it("should register openActiveSitesInStudio command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'openActiveSitesInStudio');
+            mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.openActiveSitesInStudio")).to.be.true;
+
+            await registerCommandStub.getCall(3).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
-        it("should register openInactiveSitesInStudio command", () => {
+        it("should register openInactiveSitesInStudio command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'openInactiveSitesInStudio');
+            mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio")).to.be.true;
+
+            await registerCommandStub.getCall(4).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
-        it("should register preview command", () => {
+        it("should register preview command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'previewSite');
+            mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.preview")).to.be.true;
+
+            await registerCommandStub.getCall(5).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
-        it("should register newAuthProfile command", () => {
+        it("should register newAuthProfile command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'createNewAuthProfile');
+            mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("powerpages.actionsHub.newAuthProfile")).to.be.true;
+
+            await registerCommandStub.getCall(6).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
         });
 
         it("should register revealInOS commands", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'revealInOS');
+            mockCommandHandler.resolves();
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows")).to.be.true;
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac")).to.be.true;
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux")).to.be.true;
+
+            await registerCommandStub.getCall(7).args[1]();
+            await registerCommandStub.getCall(8).args[1]();
+            await registerCommandStub.getCall(9).args[1]();
+            expect(mockCommandHandler.calledThrice).to.be.true;
         });
     });
 
