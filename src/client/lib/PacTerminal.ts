@@ -76,7 +76,7 @@ export class PacTerminal implements vscode.Disposable {
         vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/powerplatform-vscode-lab'));
     }
 
-    private static getTerminal(): vscode.Terminal {
+    public static getTerminal(): vscode.Terminal {
         const terminal = vscode.window.activeTerminal ?
             vscode.window.activeTerminal as vscode.Terminal :
             vscode.window.createTerminal();

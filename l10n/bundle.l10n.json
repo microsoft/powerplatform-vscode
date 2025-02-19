@@ -186,6 +186,8 @@
   "Session Details": "Session Details",
   "Changing environment...": "Changing environment...",
   "Current": "Current",
+  "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?",
+  "Yes": "Yes",
   "Active Environment is expired or deleted. Please select a new environment.": "Active Environment is expired or deleted. Please select a new environment.",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",

@@ -33,6 +33,8 @@ export const Constants = {
         SESSION_DETAILS: vscode.l10n.t("Session Details"),
         CHANGING_ENVIRONMENT: vscode.l10n.t("Changing environment..."),
         CURRENT: vscode.l10n.t("Current"),
+        SITE_UPLOAD_CONFIRMATION: vscode.l10n.t(`Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?`),
+        YES: vscode.l10n.t("Yes"),
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",
