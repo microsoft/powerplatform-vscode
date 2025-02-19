@@ -735,6 +735,9 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title">
+      <source xml:lang="en">Open Containing Folder</source>
+    </trans-unit>
     <trans-unit id="pacCLI.openPacLab.title">
       <source xml:lang="en">Open PAC Lab</source>
     </trans-unit>
@@ -774,6 +777,12 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.refresh.title">
       <source xml:lang="en">Refresh</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title">
+      <source xml:lang="en">Reveal in Explorer</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title">
+      <source xml:lang="en">Reveal in Finder</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
       <source xml:lang="en">Save conflict</source>
