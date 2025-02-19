@@ -606,7 +606,8 @@ describe('ActionsHubCommandHandlers', () => {
                 dataModelVersion: 1,
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
-                isCurrent: false
+                isCurrent: false,
+                siteVisibility: 'Public'
             };
         });
 
@@ -652,11 +653,11 @@ describe('ActionsHubCommandHandlers', () => {
         it('should log the error when there is problem is fetching websites', async () => {
             const activeSites = [
                 {
-                    Name: 'Active Site 1',
-                    WebsiteRecordId: 'active-site-1',
-                    DataModel: WebsiteDataModel.Enhanced,
-                    WebsiteUrl: 'https://active-site-1.com',
-                    Id: 'active-site-1',
+                    name: 'Active Site 1',
+                    websiteRecordId: 'active-site-1',
+                    dataModel: WebsiteDataModel.Enhanced,
+                    websiteUrl: 'https://active-site-1.com',
+                    id: 'active-site-1',
                 }
             ] as IWebsiteDetails[];
 
@@ -674,20 +675,22 @@ describe('ActionsHubCommandHandlers', () => {
         it('should return active and inactive websites', async () => {
             const activeSites = [
                 {
-                    Name: 'Active Site 1',
-                    WebsiteRecordId: 'active-site-1',
-                    DataModel: WebsiteDataModel.Enhanced,
-                    WebsiteUrl: 'https://active-site-1.com',
-                    Id: 'active-site-1',
+                    name: 'Active Site 1',
+                    websiteRecordId: 'active-site-1',
+                    dataModel: WebsiteDataModel.Enhanced,
+                    websiteUrl: 'https://active-site-1.com',
+                    id: 'active-site-1',
+                    siteVisibility: "public"
                 }
             ] as IWebsiteDetails[];
             const inactiveSites = [
                 {
-                    Name: 'Inactive Site 1',
-                    WebsiteRecordId: 'inactive-site-1',
-                    DataModel: WebsiteDataModel.Enhanced,
-                    WebsiteUrl: 'https://inactive-site-1.com',
-                    Id: 'inactive-site-1',
+                    name: 'Inactive Site 1',
+                    websiteRecordId: 'inactive-site-1',
+                    dataModel: WebsiteDataModel.Enhanced,
+                    websiteUrl: 'https://inactive-site-1.com',
+                    id: 'inactive-site-1',
+                    siteVisibility: 'private'
                 }
             ] as IWebsiteDetails[];
 

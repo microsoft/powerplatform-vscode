@@ -65,8 +65,26 @@ describe('ActiveGroupTreeItem', () => {
 
             it('should return an array of SiteTreeItem', () => {
                 const activeWebsites: IWebsiteDetails[] = [
-                    { WebsiteRecordId: "1", Name: "Site 1", WebsiteUrl: "http://site1.com", DataverseInstanceUrl: "http://dataverse1.com", DataverseOrganizationId: "org1", DataModel: WebsiteDataModel.Standard, EnvironmentId: "env1" },
-                    { WebsiteRecordId: "2", Name: "Site 2", WebsiteUrl: "http://site2.com", DataverseInstanceUrl: "http://dataverse2.com", DataverseOrganizationId: "org2", DataModel: WebsiteDataModel.Enhanced, EnvironmentId: "env2" }
+                    {
+                        websiteRecordId: "1",
+                        name: "Site 1",
+                        websiteUrl: "http://site1.com",
+                        dataverseInstanceUrl: "http://dataverse1.com",
+                        dataverseOrganizationId: "org1",
+                        dataModel: WebsiteDataModel.Standard,
+                        environmentId: "env1",
+                        siteVisibility: "public"
+                    },
+                    {
+                        websiteRecordId: "2",
+                        name: "Site 2",
+                        websiteUrl: "http://site2.com",
+                        dataverseInstanceUrl: "http://dataverse2.com",
+                        dataverseOrganizationId: "org2",
+                        dataModel: WebsiteDataModel.Enhanced,
+                        environmentId: "env2",
+                        siteVisibility: "private"
+                    }
                 ];
 
                 const treeItem = new ActiveGroupTreeItem(activeWebsites);
@@ -79,7 +97,8 @@ describe('ActiveGroupTreeItem', () => {
                     dataModelVersion: 1,
                     websiteUrl: 'http://site1.com',
                     status: WebsiteStatus.Active,
-                    isCurrent: true
+                    isCurrent: true,
+                    siteVisibility: "public"
                 });
 
                 const site2 = children[1] as SiteTreeItem;
@@ -89,7 +108,8 @@ describe('ActiveGroupTreeItem', () => {
                     dataModelVersion: 2,
                     websiteUrl: 'http://site2.com',
                     status: WebsiteStatus.Active,
-                    isCurrent: false
+                    isCurrent: false,
+                    siteVisibility: "private"
                 });
             });
         });

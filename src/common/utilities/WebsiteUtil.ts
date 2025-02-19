@@ -39,25 +39,25 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
 
         adxWebsiteRecords.forEach(adxWebsite => {
             websites.push({
-                Name: adxWebsite.adx_name,
-                WebsiteUrl: adxWebsite.adx_primarydomainname,
-                DataverseInstanceUrl: orgDetails.OrgUrl,
-                DataverseOrganizationId: orgDetails.OrgId,
-                DataModel: WebsiteDataModel.Standard,
-                EnvironmentId: orgDetails.EnvironmentId,
-                WebsiteRecordId: adxWebsite.adx_websiteid,
+                name: adxWebsite.adx_name,
+                websiteUrl: adxWebsite.adx_primarydomainname,
+                dataverseInstanceUrl: orgDetails.OrgUrl,
+                dataverseOrganizationId: orgDetails.OrgId,
+                dataModel: WebsiteDataModel.Standard,
+                environmentId: orgDetails.EnvironmentId,
+                websiteRecordId: adxWebsite.adx_websiteid,
             });
         });
 
         powerPagesSiteRecords.forEach(powerPagesSite => {
             websites.push({
-                Name: powerPagesSite.name,
-                WebsiteUrl: powerPagesSite.primarydomainname,
-                DataverseInstanceUrl: orgDetails.OrgUrl,
-                DataverseOrganizationId: orgDetails.OrgId,
-                DataModel: WebsiteDataModel.Enhanced,
-                EnvironmentId: orgDetails.EnvironmentId,
-                WebsiteRecordId: powerPagesSite.powerpagesiteid,
+                name: powerPagesSite.name,
+                websiteUrl: powerPagesSite.primarydomainname,
+                dataverseInstanceUrl: orgDetails.OrgUrl,
+                dataverseOrganizationId: orgDetails.OrgId,
+                dataModel: WebsiteDataModel.Enhanced,
+                environmentId: orgDetails.EnvironmentId,
+                websiteRecordId: powerPagesSite.powerpagesiteid,
             });
         });
     }

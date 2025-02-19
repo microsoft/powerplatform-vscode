@@ -33,12 +33,13 @@ export class InactiveGroupTreeItem extends ActionsHubTreeItem {
 
         return this._inactiveSites.map(site => {
             const siteInfo: IWebsiteInfo = {
-                name: site.Name,
-                websiteId: site.WebsiteRecordId,
-                dataModelVersion: site.DataModel == WebsiteDataModel.Standard ? 1 : 2,
-                websiteUrl: site.WebsiteUrl,
+                name: site.name,
+                websiteId: site.websiteRecordId,
+                dataModelVersion: site.dataModel == WebsiteDataModel.Standard ? 1 : 2,
+                websiteUrl: site.websiteUrl,
                 status: WebsiteStatus.Inactive,
-                isCurrent: false
+                isCurrent: false,
+                siteVisibility: ""
             };
             const siteItem = new SiteTreeItem(siteInfo);
             return siteItem;
