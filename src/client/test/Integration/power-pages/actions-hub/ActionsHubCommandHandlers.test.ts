@@ -24,6 +24,7 @@ import { SiteTreeItem } from '../../../../power-pages/actions-hub/tree-items/Sit
 import { WebsiteStatus } from '../../../../power-pages/actions-hub/models/WebsiteStatus';
 import { IWebsiteInfo } from '../../../../power-pages/actions-hub/models/IWebsiteInfo';
 import * as WebsiteUtils from '../../../../../common/utilities/WebsiteUtil';
+import * as Utils from '../../../../../common/utilities/Utils';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -216,6 +217,8 @@ describe('ActionsHubCommandHandlers', () => {
         let mockOrgList: sinon.SinonStub;
         let mockOrgSelect: sinon.SinonStub;
         let mockShowQuickPick: sinon.SinonStub;
+        let mockPacContext: sinon.SinonStub;
+        let mockShowProgressNotification: sinon.SinonStub;
 
         const mockEnvList = [
             {
@@ -239,6 +242,19 @@ describe('ActionsHubCommandHandlers', () => {
                 orgSelect: mockOrgSelect
             });
             mockShowQuickPick = sandbox.stub(vscode.window, 'showQuickPick');
+            mockPacContext = sinon.stub(PacContext, 'AuthInfo').get(() => ({
+                OrganizationFriendlyName: 'Dev Environment'
+            }));
+            mockShowProgressNotification = sinon.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, task: (progress: vscode.Progress<{
+                message?: string;
+                increment?: number;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            }>) => Promise<any>) => await task({} as unknown as vscode.Progress<{ message?: string; increment?: number }>));
+        });
+
+        afterEach(() => {
+            mockPacContext.get(() => mockAuthInfo);
+            mockShowProgressNotification.restore();
         });
 
         it('should switch environment successfully when env is selected', async () => {
@@ -247,8 +263,8 @@ describe('ActionsHubCommandHandlers', () => {
                 Results: mockEnvList
             });
             mockShowQuickPick.resolves({
-                label: 'Dev Environment',
-                description: 'https://dev.crm.dynamics.com'
+                label: 'Prod Environment',
+                detail: 'https://prod.crm.dynamics.com'
             });
             mockOrgSelect.resolves();
 
@@ -256,6 +272,62 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockOrgList.calledOnce).to.be.true;
             expect(mockShowQuickPick.calledOnce).to.be.true;
+
+            const envList = await mockShowQuickPick.firstCall.args[0];
+            expect(envList).to.deep.equal([
+                {
+                    label: 'Dev Environment',
+                    detail: 'https://dev.crm.dynamics.com',
+                    description: 'Current'
+                },
+                {
+                    label: 'Prod Environment',
+                    detail: 'https://prod.crm.dynamics.com',
+                    description: ''
+                }
+            ]);
+
+            expect(mockShowQuickPick.firstCall.args[1]).to.deep.equal({
+                placeHolder: 'Select an environment'
+            });
+            expect(mockShowProgressNotification.calledOnce, "Switch environment notification was not called").to.be.true;
+            expect(mockShowProgressNotification.firstCall.args[0]).to.equal('Changing environment...');
+            expect(mockOrgSelect.calledOnce, "Org select function was not called").to.be.true;
+            expect(mockOrgSelect.firstCall.args[0]).to.equal('https://prod.crm.dynamics.com');
+        });
+
+        it('should not switch environment when current environment is selected', async () => {
+            mockOrgList.resolves({
+                Status: 'Success',
+                Results: mockEnvList
+            });
+            mockShowQuickPick.resolves({
+                label: 'Dev Environment',
+                detail: 'https://dev.crm.dynamics.com'
+            });
+            mockOrgSelect.resolves();
+
+            await switchEnvironment(mockPacTerminal as unknown as PacTerminal);
+
+            expect(mockOrgList.calledOnce).to.be.true;
+            expect(mockShowQuickPick.calledOnce).to.be.true;
+
+            const envList = await mockShowQuickPick.firstCall.args[0];
+            expect(envList).to.deep.equal([
+                {
+                    label: 'Dev Environment',
+                    detail: 'https://dev.crm.dynamics.com',
+                    description: 'Current'
+                },
+                {
+                    label: 'Prod Environment',
+                    detail: 'https://prod.crm.dynamics.com',
+                    description: ''
+                }
+            ]);
+
+            expect(mockShowProgressNotification.calledOnce, "Switch environment notification was called").to.be.false;
+            expect(mockOrgSelect.calledOnce, "Org select function was called").to.be.false;
         });
     });
 
