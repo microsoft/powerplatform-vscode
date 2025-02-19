@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -734,5 +734,35 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
         });
+    });
+    describe('uploadSite', () => {
+        let mockShowInformationMessage: sinon.SinonStub;
+        let mockSendText: sinon.SinonStub;
+        let mockSiteTreeItem: SiteTreeItem;
+
+        beforeEach(() => {
+            mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
+            mockSendText = sandbox.stub(PacTerminal.getTerminal(), 'sendText');
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: 'Public'
+            });
+            sandbox.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => 'test-path');
+        });
+
+        it('should upload site when user confirms', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.YES);
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
     });
 });

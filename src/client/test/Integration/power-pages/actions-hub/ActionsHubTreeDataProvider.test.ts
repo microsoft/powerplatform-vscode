@@ -154,6 +154,19 @@ describe("ActionsHubTreeDataProvider", () => {
             await registerCommandStub.getCall(9).args[1]();
             expect(mockCommandHandler.calledThrice).to.be.true;
         });
+
+        //command "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite"
+        it("should register uploadSite command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'uploadSite');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite")).to.be.true;
+
+            await registerCommandStub.getCall(10).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
     });
 
     describe('getTreeItem', () => {
