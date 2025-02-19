@@ -114,35 +114,6 @@ describe("ActionsHubTreeDataProvider", () => {
     });
 
     describe('getChildren', () => {
-        it("should return environment group tree item with default name when no auth info is available", async () => {
-            const mockActiveSites = [
-                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
-            ] as IWebsiteDetails[];
-            const mockInactiveSites = [
-                { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
-            ] as IWebsiteDetails[];
-            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
-
-            PacContext['_authInfo'] = null;
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const result = await provider.getChildren();
-
-            expect(result).to.not.be.null;
-            expect(result).to.not.be.undefined;
-            expect(result).to.have.lengthOf(0);
-        });
-
-        it("should call element.getChildren when an element is passed", async () => {
-            const element = new SiteTreeItem({} as IWebsiteInfo);
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const getChildrenStub = sinon.stub(element, "getChildren").resolves([]);
-
-            const result = await provider.getChildren(element);
-
-            expect(getChildrenStub.calledOnce).to.be.true;
-            expect(result).to.deep.equal([]);
-        });
-
         it("should return environment and other sites group tree items when auth info and Artemis context are available", async () => {
             const mockActiveSites = [
                 { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
@@ -195,6 +166,7 @@ describe("ActionsHubTreeDataProvider", () => {
             sinon.stub(PacContext, "AuthInfo").get(() => null);
 
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            provider["_loadWebsites"] = false;
             const result = await provider.getChildren();
 
             expect(result).to.be.an('array').that.is.empty;
@@ -219,6 +191,7 @@ describe("ActionsHubTreeDataProvider", () => {
         it("should call element.getChildren when an element is passed", async () => {
             const element = new SiteTreeItem({} as IWebsiteInfo);
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: [], inactiveSites: [] });
             provider["_loadWebsites"] = false;
             const getChildrenStub = sinon.stub(element, "getChildren").resolves([]);
 
