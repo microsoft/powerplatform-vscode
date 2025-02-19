@@ -8,7 +8,7 @@ import { Constants } from './Constants';
 import { oneDSLoggerWrapper } from '../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { PacTerminal } from '../../lib/PacTerminal';
 import { SUCCESS } from '../../../common/constants';
-import { OrgListOutput } from '../../pac/PacTypes';
+import { AuthInfo, OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
 import PacContext from '../../pac/PacContext';
@@ -74,7 +74,7 @@ export const showEnvironmentDetails = async () => {
     }
 };
 
-const getEnvironmentList = async (pacTerminal: PacTerminal): Promise<{ label: string, description: string }[]> => {
+const getEnvironmentList = async (pacTerminal: PacTerminal, authInfo: AuthInfo): Promise<{ label: string, description: string, detail: string }[]> => {
     const pacWrapper = pacTerminal.getWrapper();
     const envListOutput = await pacWrapper.orgList();
     if (envListOutput && envListOutput.Status === SUCCESS && envListOutput.Results) {
@@ -82,7 +82,8 @@ const getEnvironmentList = async (pacTerminal: PacTerminal): Promise<{ label: st
         return envList.map((env) => {
             return {
                 label: env.FriendlyName,
-                description: env.EnvironmentUrl
+                detail: env.EnvironmentUrl,
+                description: authInfo.OrganizationFriendlyName === env.FriendlyName ? Constants.Strings.CURRENT : ""
             }
         });
     }
@@ -95,14 +96,14 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
     const authInfo = PacContext.AuthInfo;
 
     if (authInfo) {
-        const selectedEnv = await vscode.window.showQuickPick(getEnvironmentList(pacTerminal),
+        const selectedEnv = await vscode.window.showQuickPick(getEnvironmentList(pacTerminal, authInfo),
             {
                 placeHolder: vscode.l10n.t(Constants.Strings.SELECT_ENVIRONMENT)
             }
         );
 
-        if (selectedEnv) {
-            await showProgressWithNotification(Constants.Strings.CHANGING_ENVIRONMENT, async () => await pacWrapper.orgSelect(selectedEnv.description));
+        if (selectedEnv && selectedEnv.label !== authInfo.OrganizationFriendlyName) {
+            await showProgressWithNotification(Constants.Strings.CHANGING_ENVIRONMENT, async () => await pacWrapper.orgSelect(selectedEnv.detail));
         }
     }
 }
