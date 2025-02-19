@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -25,6 +25,7 @@ import { WebsiteStatus } from '../../../../power-pages/actions-hub/models/Websit
 import { IWebsiteInfo } from '../../../../power-pages/actions-hub/models/IWebsiteInfo';
 import * as WebsiteUtils from '../../../../../common/utilities/WebsiteUtil';
 import * as Utils from '../../../../../common/utilities/Utils';
+import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteContext';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -702,6 +703,33 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(response.activeSites).to.deep.equal(activeSites);
             expect(response.inactiveSites).to.deep.equal(inactiveSites);
+        });
+    });
+
+    describe('revealInOS', () => {
+        let executeCommandStub: sinon.SinonStub;
+
+        beforeEach(() => {
+            executeCommandStub = sinon.stub(vscode.commands, 'executeCommand');
+        });
+
+        afterEach(() => {
+            executeCommandStub.restore();
+        });
+
+        it('should not reveal file in OS when file path is not provided', async () => {
+            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
+            await revealInOS();
+
+            expect(executeCommandStub.called).to.be.false;
+        });
+
+        it('should reveal file in OS when file path is provided', async () => {
+            const mockPath = 'test-path';
+            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
+            await revealInOS();
+
+            expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
         });
     });
 });

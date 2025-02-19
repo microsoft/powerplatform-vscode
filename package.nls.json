@@ -105,5 +105,8 @@
       "The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified"
     ]
   },
-  "microsoft.powerplatform.pages.actionsHub.login.title": "Add New Auth Profile"
+  "microsoft.powerplatform.pages.actionsHub.login.title": "Add New Auth Profile",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "Reveal in Explorer",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Reveal in Finder",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Open Containing Folder"
 }

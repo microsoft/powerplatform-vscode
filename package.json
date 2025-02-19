@@ -419,6 +419,18 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.newAuthProfile",
         "title": "%microsoft.powerplatform.pages.actionsHub.login.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
+        "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
+        "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
+        "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title%"
       }
     ],
     "configuration": {
@@ -883,6 +895,18 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -1010,6 +1034,21 @@
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
           "group": "activeSiteContextMenuGroup@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isWindows",
+          "group": "activeSiteContextMenuGroup@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isMac",
+          "group": "activeSiteContextMenuGroup@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isLinux",
+          "group": "activeSiteContextMenuGroup@2"
         }
       ]
     },

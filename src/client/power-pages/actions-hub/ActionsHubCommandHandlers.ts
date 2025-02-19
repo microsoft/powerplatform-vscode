@@ -21,6 +21,7 @@ import { dataverseAuthentication } from '../../../common/services/Authentication
 import { createAuthProfileExp } from '../../../common/utilities/PacAuthUtil';
 import { IWebsiteDetails } from '../../../common/services/Interfaces';
 import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
+import CurrentSiteContext from './CurrentSiteContext';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -220,4 +221,10 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
     }
 
     return { activeSites: [], inactiveSites: [] };
+}
+
+export const revealInOS = async () => {
+    if (CurrentSiteContext.currentSiteFolderPath) {
+        await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(CurrentSiteContext.currentSiteFolderPath));
+    }
 }
