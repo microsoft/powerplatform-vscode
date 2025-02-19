@@ -101,7 +101,7 @@ describe("ActionsHubTreeDataProvider", () => {
             const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             actionsHubTreeDataProvider["registerPanel"](pacTerminal);
 
-            expect(registerCommandStub.calledWith("powerpages.actionsHub.newAuthProfile")).to.be.true;
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.newAuthProfile")).to.be.true;
         });
     });
 
