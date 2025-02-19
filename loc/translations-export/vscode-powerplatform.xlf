@@ -701,9 +701,9 @@ The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.login">
       <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://example.com/learn-more).
-[Login](command:powerpages.actionsHub.newAuthProfile)</source>
+[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
-The second line should be '[TRANSLATION HERE](command:powerpages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified</note>
+The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
       <source xml:lang="en">Name/Rename Auth Profile</source>
