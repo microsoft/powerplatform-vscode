@@ -66,7 +66,7 @@ export class NPSService {
         try {
 
             const baseApiUrl = this.getNpsSurveyEndpoint();
-            const accessToken: string = await npsAuthentication(WebExtensionContext.telemetry.getTelemetryReporter(), SurveyConstants.AUTHORIZATION_ENDPOINT);
+            const accessToken: string = await npsAuthentication(SurveyConstants.AUTHORIZATION_ENDPOINT);
 
             if (accessToken) {
                 WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_NPS_AUTHENTICATION_COMPLETED);

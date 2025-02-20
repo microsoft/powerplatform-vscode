@@ -7,7 +7,6 @@ import { ADX_ENTITYFORM } from "../../copilot/constants";
 import { getEntityColumns, getEntityName, getFormXml } from "../../copilot/dataverseMetadata";
 import { IActiveFileParams } from "../../copilot/model";
 import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ArtemisService } from "../../services/ArtemisService";
 import { dataverseAuthentication } from "../../services/AuthenticationProvider";
 import { IIntelligenceAPIEndpointInformation } from "../../services/Interfaces";
@@ -22,12 +21,11 @@ import * as vscode from 'vscode';
 export async function getEndpoint(
     orgID: string,
     environmentID: string,
-    telemetry: ITelemetry,
     cachedEndpoint: IIntelligenceAPIEndpointInformation | null,
     sessionID: string
 ): Promise<IIntelligenceAPIEndpointInformation> {
     if (!cachedEndpoint) {
-        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, telemetry, sessionID, environmentID) as IIntelligenceAPIEndpointInformation; // TODO - add session ID
+        cachedEndpoint = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentID) as IIntelligenceAPIEndpointInformation; // TODO - add session ID
     }
     return cachedEndpoint;
 }
@@ -36,21 +34,21 @@ export async function getEndpoint(
     * Get component info for the active file
     * @returns componentInfo - Entity details for active file (form or list)
 */
-export async function getComponentInfo(telemetry: ITelemetry, orgUrl: string | undefined, activeFileParams: IActiveFileParams, sessionID: string): Promise<IComponentInfo> {
+export async function getComponentInfo(orgUrl: string | undefined, activeFileParams: IActiveFileParams, sessionID: string): Promise<IComponentInfo> {
 
     let metadataInfo = { entityName: '', formName: '' };
     let componentInfo: string[] = [];
 
     if (isEntityInSupportedList(activeFileParams.dataverseEntity)) {
-        metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
+        metadataInfo = await getEntityName(sessionID, activeFileParams.dataverseEntity);
 
-        const dataverseToken = (await dataverseAuthentication(telemetry, orgUrl ?? '', true)).accessToken;
+        const dataverseToken = (await dataverseAuthentication(orgUrl ?? '', true)).accessToken;
 
         if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
-            const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, orgUrl ?? '', dataverseToken, telemetry, sessionID);
+            const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, orgUrl ?? '', dataverseToken, sessionID);
             componentInfo = formColumns;
         } else {
-            const entityColumns = await getEntityColumns(metadataInfo.entityName, orgUrl ?? '', dataverseToken, telemetry, sessionID);
+            const entityColumns = await getEntityColumns(metadataInfo.entityName, orgUrl ?? '', dataverseToken, sessionID);
             componentInfo = entityColumns;
         }
     }
@@ -62,14 +60,12 @@ export function isEntityInSupportedList(entity: string): boolean {
     return SUPPORTED_ENTITIES.includes(entity);
 }
 
-export function handleChatParticipantFeedback (feedback: vscode.ChatResultFeedback, sessionId: string, telemetry: ITelemetry) {
+export function handleChatParticipantFeedback (feedback: vscode.ChatResultFeedback, sessionId: string) {
     const scenario = feedback.result.metadata?.scenario;
     const orgId = feedback.result.metadata?.orgId;
     if (feedback.kind === 1) {
-        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, { feedback: feedback.kind.toString(), scenario: scenario, orgId:orgId, sessionId: sessionId });
         oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSUP, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId });
     } else if (feedback.kind === 0) {
-        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId});
         oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GITHUB_POWER_PAGES_AGENT_SCENARIO_FEEDBACK_THUMBSDOWN, { feedback: feedback.kind.toString(), scenario: scenario, orgId: orgId, sessionId: sessionId });
     }
 }

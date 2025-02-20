@@ -4,7 +4,6 @@
  */
 
 import * as vscode from "vscode";
-import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { CopilotLoginFailureEvent, CopilotLoginSuccessEvent } from "../copilot/telemetry/telemetryConstants";
 import { getUserAgent } from "../utilities/Utils";
@@ -82,7 +81,7 @@ export function getCommonHeaders(
 }
 
 //Get access token for Intelligence API service
-export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessionID: string, orgId: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string, userId: string }> {
+export async function intelligenceAPIAuthentication(sessionID: string, orgId: string, firstTimeAuth = false): Promise<{ accessToken: string, user: string, userId: string }> {
     let accessToken = '';
     let user = '';
     let userId = '';
@@ -94,24 +93,23 @@ export async function intelligenceAPIAuthentication(telemetry: ITelemetry, sessi
         }
         accessToken = session?.accessToken ?? '';
         user = session.account.label;
-        userId = getOIDFromToken(accessToken, telemetry);
+        userId = getOIDFromToken(accessToken);
         if (!accessToken) {
             throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
 
         if (firstTimeAuth) {
-            sendTelemetryEvent(telemetry, { eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID, orgId: orgId });
+            sendTelemetryEvent({ eventName: CopilotLoginSuccessEvent, copilotSessionId: sessionID, orgId: orgId });
         }
     } catch (error) {
         showErrorDialog(vscode.l10n.t("Authorization Failed. Please run again to authorize it"),
             vscode.l10n.t("There was a permissions problem with the server"));
-        sendTelemetryEvent(telemetry, { eventName: CopilotLoginFailureEvent, copilotSessionId: sessionID, orgId: orgId, errorMsg: (error as Error).message });
+        sendTelemetryEvent({ eventName: CopilotLoginFailureEvent, copilotSessionId: sessionID, orgId: orgId, errorMsg: (error as Error).message });
     }
     return { accessToken, user, userId };
 }
 
 export async function dataverseAuthentication(
-    telemetry: ITelemetry,
     dataverseOrgURL: string,
     firstTimeAuth = false
 ): Promise<{ accessToken: string, userId: string }> {
@@ -138,18 +136,16 @@ export async function dataverseAuthentication(
         }
 
         accessToken = session?.accessToken ?? "";
-        userId = getOIDFromToken(accessToken, telemetry);
+        userId = getOIDFromToken(accessToken);
         if (!accessToken) {
             throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
 
         if (firstTimeAuth) {
-            sendTelemetryEvent(telemetry,
-                {
-                    eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
-                    userId: userId
-                }
-            );
+            sendTelemetryEvent({
+                eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_COMPLETED,
+                userId: userId
+            });
         }
     } catch (error) {
         showErrorDialog(
@@ -159,10 +155,10 @@ export async function dataverseAuthentication(
             vscode.l10n.t("There was a permissions problem with the server")
         );
         sendTelemetryEvent(
-            telemetry, {
-            eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
-            errorMsg: (error as Error).message
-        }
+            {
+                eventName: VSCODE_EXTENSION_DATAVERSE_AUTHENTICATION_FAILED,
+                errorMsg: (error as Error).message
+            }
         );
     }
 
@@ -170,11 +166,10 @@ export async function dataverseAuthentication(
 }
 
 export async function npsAuthentication(
-    telemetry: ITelemetry,
     cesSurveyAuthorizationEndpoint: string
 ): Promise<string> {
     let accessToken = "";
-    sendTelemetryEvent(telemetry,
+    sendTelemetryEvent(
         { eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_STARTED }
     );
     try {
@@ -187,7 +182,7 @@ export async function npsAuthentication(
         if (!accessToken) {
             throw new Error(ERROR_CONSTANTS.NO_ACCESS_TOKEN);
         }
-        sendTelemetryEvent(telemetry,
+        sendTelemetryEvent(
             { eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_COMPLETED }
         );
     } catch (error) {
@@ -198,7 +193,6 @@ export async function npsAuthentication(
             vscode.l10n.t("There was a permissions problem with the server")
         );
         sendTelemetryEvent(
-            telemetry,
             {
                 eventName: VSCODE_EXTENSION_NPS_AUTHENTICATION_FAILED,
                 errorMsg: (error as Error).message
@@ -210,7 +204,6 @@ export async function npsAuthentication(
 }
 
 export async function graphClientAuthentication(
-    telemetry: ITelemetry,
     firstTimeAuth = false
 ): Promise<string> {
     let accessToken = "";
@@ -241,9 +234,9 @@ export async function graphClientAuthentication(
         }
 
         if (firstTimeAuth) {
-            sendTelemetryEvent(telemetry, {
+            sendTelemetryEvent({
                 eventName: VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_COMPLETED,
-                userId: getOIDFromToken(accessToken, telemetry),
+                userId: getOIDFromToken(accessToken),
             });
         }
     } catch (error) {
@@ -253,7 +246,7 @@ export async function graphClientAuthentication(
             ),
             vscode.l10n.t("There was a permissions problem with the server")
         );
-        sendTelemetryEvent(telemetry,
+        sendTelemetryEvent(
             { eventName: VSCODE_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED, errorMsg: (error as Error).message }
         )
     }
@@ -262,7 +255,6 @@ export async function graphClientAuthentication(
 }
 
 export async function bapServiceAuthentication(
-    telemetry: ITelemetry,
     firstTimeAuth = false
 ): Promise<string> {
     let accessToken = "";
@@ -287,9 +279,9 @@ export async function bapServiceAuthentication(
         }
 
         if (firstTimeAuth) {
-            sendTelemetryEvent(telemetry, {
+            sendTelemetryEvent({
                 eventName: VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_COMPLETED,
-                userId: getOIDFromToken(accessToken, telemetry),
+                userId: getOIDFromToken(accessToken),
             });
         }
     } catch (error) {
@@ -299,7 +291,7 @@ export async function bapServiceAuthentication(
             ),
             vscode.l10n.t("There was a permissions problem with the server")
         );
-        sendTelemetryEvent(telemetry,
+        sendTelemetryEvent(
             { eventName: VSCODE_EXTENSION_BAP_SERVICE_AUTHENTICATION_FAILED, errorMsg: (error as Error).message }
         )
     }
@@ -307,12 +299,12 @@ export async function bapServiceAuthentication(
     return accessToken;
 }
 
-export function getOIDFromToken(token: string, telemetry: ITelemetry) {
+export function getOIDFromToken(token: string) {
     try {
         const decoded = jwt_decode(token);
         return decoded?.oid ?? "";
     } catch (error) {
-        sendTelemetryEvent(telemetry,
+        sendTelemetryEvent(
             { eventName: VSCODE_EXTENSION_DECODE_JWT_TOKEN_FAILED, errorMsg: (error as Error).message }
         )
     }
@@ -320,7 +312,6 @@ export function getOIDFromToken(token: string, telemetry: ITelemetry) {
 }
 
 export async function powerPlatformAPIAuthentication(
-    telemetry: ITelemetry,
     serviceEndpointStamp: ServiceEndpointCategory,
     firstTimeAuth = false
 ): Promise<string> {
@@ -347,7 +338,7 @@ export async function powerPlatformAPIAuthentication(
         }
 
         if (firstTimeAuth) {
-            sendTelemetryEvent(telemetry, {
+            sendTelemetryEvent({
                 eventName: VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_COMPLETED,
                 userId:
                     session?.account.id.split("/").pop() ??
@@ -362,7 +353,7 @@ export async function powerPlatformAPIAuthentication(
             ),
             vscode.l10n.t("There was a permissions problem with the server")
         );
-        sendTelemetryEvent(telemetry,
+        sendTelemetryEvent(
             { eventName: VSCODE_EXTENSION_PPAPI_WEBSITES_AUTHENTICATION_FAILED, errorMsg: (error as Error).message }
         )
     }

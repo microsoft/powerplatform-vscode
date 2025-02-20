@@ -8,22 +8,30 @@ import { queryParameters } from "../../common/constants";
 import { sanitizeURL } from "../../utilities/urlBuilderUtil";
 import { webExtensionTelemetryEventNames } from "../../../../common/OneDSLoggerTelemetry/web/client/webExtensionTelemetryEvents";
 import { WebExtensionTelemetry } from "../../telemetry/webExtensionTelemetry";
-import { vscodeExtAppInsightsResourceProvider } from "../../../../common/telemetry-generated/telemetryConfiguration";
 import * as commonUtil from "../../utilities/commonUtil";
 import { expect } from "chai";
+import { oneDSLoggerWrapper } from "../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 
 describe("webExtensionTelemetry", () => {
+    let traceInfoStub: sinon.SinonStub;
+    let traceErrorStub: sinon.SinonStub;
+
+    beforeEach(() => {
+        traceInfoStub = sinon.stub();
+        traceErrorStub = sinon.stub();
+
+        sinon.stub(oneDSLoggerWrapper, "getLogger").returns({
+            traceInfo: traceInfoStub,
+            traceWarning: sinon.stub(),
+            traceError: traceErrorStub,
+            featureUsage: sinon.stub()
+        });
+    });
+
     afterEach(() => {
         sinon.restore();
     });
     const webExtensionTelemetry = new WebExtensionTelemetry();
-    const appInsightsResource =
-        vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
-            undefined
-        );
-    webExtensionTelemetry.setTelemetryReporter("", "", appInsightsResource);
-
-    const telemetry = webExtensionTelemetry.getTelemetryReporter();
 
     it("sendExtensionInitPathParametersTelemetry_whenSendProperValues_shouldCallWithAllValidData", () => {
         //Act
@@ -32,7 +40,6 @@ describe("webExtensionTelemetry", () => {
         const entityId: string | undefined =
             "e5dce21c-f85f-4849-b699-920c0fad5fbf";
 
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
         //Action
         webExtensionTelemetry.sendExtensionInitPathParametersTelemetry(
             appName,
@@ -47,7 +54,7 @@ describe("webExtensionTelemetry", () => {
             entityId: entityId,
         };
         assert.calledOnceWithExactly(
-            sendTelemetryEvent,
+            traceInfoStub,
             webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
             properties
         );
@@ -59,7 +66,6 @@ describe("webExtensionTelemetry", () => {
         const entity: string | undefined = undefined;
         const entityId: string | undefined = undefined;
 
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
         //Action
         webExtensionTelemetry.sendExtensionInitPathParametersTelemetry(
             appName,
@@ -72,7 +78,7 @@ describe("webExtensionTelemetry", () => {
             appName: "",
         };
         assert.calledOnceWithExactly(
-            sendTelemetryEvent,
+            traceInfoStub,
             webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_PATH_PARAMETERS,
             properties
         );
@@ -107,7 +113,6 @@ describe("webExtensionTelemetry", () => {
             [queryParameters.REFERRER_SOURCE, "test"],
         ]);
 
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
         const properties = {
             orgId: queryParamsMap.get(queryParameters.ORG_ID),
             tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
@@ -141,7 +146,7 @@ describe("webExtensionTelemetry", () => {
 
         //Assert
         assert.calledOnceWithExactly(
-            sendTelemetryEvent,
+            traceInfoStub,
             webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
             properties
         );
@@ -151,7 +156,6 @@ describe("webExtensionTelemetry", () => {
         //Act
         const queryParamsMap = new Map<string, string>([]);
 
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
         const properties = {
             orgId: queryParamsMap.get(queryParameters.ORG_ID),
             tenantId: queryParamsMap.get(queryParameters.TENANT_ID),
@@ -179,7 +183,7 @@ describe("webExtensionTelemetry", () => {
 
         //Assert
         assert.calledOnceWithExactly(
-            sendTelemetryEvent,
+            traceInfoStub,
             webExtensionTelemetryEventNames.WEB_EXTENSION_INIT_QUERY_PARAMETERS,
             properties
         );
@@ -191,10 +195,7 @@ describe("webExtensionTelemetry", () => {
         const methodName = "triggeredMethod";
 
         const errorMessage = "not a valid Id";
-        const sendTelemetryException = stub(
-            telemetry,
-            "sendTelemetryException"
-        );
+
         const properties = {
             eventName: eventName,
             methodName: methodName
@@ -205,13 +206,15 @@ describe("webExtensionTelemetry", () => {
 
         //Assert
         const error: Error = new Error(errorMessage);
-        assert.calledOnce(sendTelemetryException);
+        assert.calledOnce(traceErrorStub);
 
         const sendTelemetryExceptionCalls =
-            sendTelemetryException.getCalls()[0];
+            traceErrorStub.getCalls()[0];
 
-        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(error);
-        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(eventName);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(errorMessage);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[3]).deep.eq(properties);
     });
 
     it("sendErrorTelemetry_whenErrorMessageNotPassed_shouldCallSendTelemetryExceptionWithNewError", () => {
@@ -219,10 +222,6 @@ describe("webExtensionTelemetry", () => {
         const eventName = "update";
         const methodName = "triggeredMethod";
 
-        const sendTelemetryException = stub(
-            telemetry,
-            "sendTelemetryException"
-        );
         const properties = {
             eventName: eventName,
             methodName: methodName
@@ -231,13 +230,15 @@ describe("webExtensionTelemetry", () => {
         webExtensionTelemetry.sendErrorTelemetry(eventName, methodName);
         //Assert
 
-        assert.calledOnce(sendTelemetryException);
+        assert.calledOnce(traceErrorStub);
 
         const sendTelemetryExceptionCalls =
-            sendTelemetryException.getCalls()[0];
+            traceErrorStub.getCalls()[0];
 
-        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(new Error());
-        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(eventName);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(undefined);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(new Error());
+        expect(sendTelemetryExceptionCalls.args[3]).deep.eq(properties);
     });
 
     it("sendInfoTelemetry_whenPropertiesIsPassed_shouldCallSendTelemetryEvent", () => {
@@ -246,28 +247,25 @@ describe("webExtensionTelemetry", () => {
         const properties = {
             eventName: eventName,
         };
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
 
         //Action
-
         webExtensionTelemetry.sendInfoTelemetry(eventName, properties);
 
         //Assert
-        assert.calledOnceWithExactly(sendTelemetryEvent, eventName, properties);
+        assert.calledOnceWithExactly(traceInfoStub, eventName, properties);
     });
 
     it("sendInfoTelemetry_whenPropertiesIsPassed_shouldCallSendTelemetryEvent", () => {
         //Act
         const eventName = "update";
         const properties = undefined;
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
 
         //Action
 
         webExtensionTelemetry.sendInfoTelemetry(eventName);
 
         //Assert
-        assert.calledOnceWithExactly(sendTelemetryEvent, eventName, properties);
+        assert.calledOnceWithExactly(traceInfoStub, eventName, properties);
     });
 
     it("sendAPITelemetry_whenErrorMessageIsPassed_shouldCallSendTelemetryException", () => {
@@ -281,11 +279,6 @@ describe("webExtensionTelemetry", () => {
         const errorMessage = "this is error";
         const eventName = "update";
 
-        const sendTelemetryException = stub(
-            telemetry,
-            "sendTelemetryException"
-        );
-
         const properties = {
             url: sanitizeURL(URL),
             entity: entity,
@@ -293,8 +286,7 @@ describe("webExtensionTelemetry", () => {
             entityFileExtensionType: entityFileExtensionType,
             methodName: "sendAPITelemetry_whenErrorMessageIsPassed_shouldCallSendTelemetryException",
             isSuccessful: "true",
-            status: "200",
-            eventName: eventName
+            status: "200"
         };
 
         //Action
@@ -317,14 +309,16 @@ describe("webExtensionTelemetry", () => {
         };
         //Assert
         const error: Error = new Error(errorMessage);
-        assert.calledOnce(sendTelemetryException);
+        assert.calledOnce(traceErrorStub);
 
         const sendTelemetryExceptionCalls =
-            sendTelemetryException.getCalls()[0];
+            traceErrorStub.getCalls()[0];
 
-        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(error);
-        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
-        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(measurements);
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(eventName);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(errorMessage);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[3]).deep.eq(properties);
+        expect(sendTelemetryExceptionCalls.args[4]).deep.eq(measurements);
     });
 
     it("sendAPITelemetry_whenErrorMessageNotPassed_shouldCallSendTelemetryException", () => {
@@ -337,8 +331,6 @@ describe("webExtensionTelemetry", () => {
         const duration = 4;
         const errorMessage = "";
         const eventName = "update";
-
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
 
         const properties = {
             url: sanitizeURL(URL),
@@ -370,7 +362,7 @@ describe("webExtensionTelemetry", () => {
         };
         //Assert
         assert.calledOnceWithExactly(
-            sendTelemetryEvent,
+            traceInfoStub,
             eventName,
             properties,
             measurements
@@ -387,8 +379,6 @@ describe("webExtensionTelemetry", () => {
         const duration = undefined;
         const errorMessage = "";
         const eventName = "update";
-
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
 
         const properties = {
             url: sanitizeURL(URL),
@@ -420,7 +410,7 @@ describe("webExtensionTelemetry", () => {
         };
         //Assert
         assert.calledOnceWithExactly(
-            sendTelemetryEvent,
+            traceInfoStub,
             eventName,
             properties,
             measurements
@@ -437,8 +427,6 @@ describe("webExtensionTelemetry", () => {
         const duration = undefined;
         const errorMessage = "";
         const eventName = "update";
-
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
 
         const properties = {
             url: sanitizeURL(URL),
@@ -469,7 +457,7 @@ describe("webExtensionTelemetry", () => {
         };
         //Assert
         assert.calledOnceWithExactly(
-            sendTelemetryEvent,
+            traceInfoStub,
             eventName,
             properties,
             measurements
@@ -483,7 +471,6 @@ describe("webExtensionTelemetry", () => {
         const httpMethod = "GET";
         const entityFileExtensionType = "adx";
         const duration = 3;
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
         const properties = {
             url: sanitizeURL(URL),
             entity: entity,
@@ -511,7 +498,7 @@ describe("webExtensionTelemetry", () => {
 
         //Assert
         assert.calledOnceWithExactly(
-            sendTelemetryEvent,
+            traceInfoStub,
             webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
             properties,
             measurements
@@ -526,16 +513,11 @@ describe("webExtensionTelemetry", () => {
         const entityFileExtensionType = "adx";
         const duration = 3;
         const errorMessage = "this is error message";
-        const sendTelemetryException = stub(
-            telemetry,
-            "sendTelemetryException"
-        );
         const properties = {
             url: sanitizeURL(URL),
             entity: entity,
             httpMethod: httpMethod,
             entityFileExtensionType: entityFileExtensionType,
-            eventName: webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE,
             isSuccessful: "false",
             status: "200",
             methodName: "sendAPIFailureTelemetry_withErrorMessage_shouldCallSendTelemetryException"
@@ -559,21 +541,22 @@ describe("webExtensionTelemetry", () => {
 
         //Assert
         const error: Error = new Error(errorMessage);
-        assert.calledOnce(sendTelemetryException);
+        assert.calledOnce(traceErrorStub);
 
         const sendTelemetryExceptionCalls =
-            sendTelemetryException.getCalls()[0];
+            traceErrorStub.getCalls()[0];
 
-        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(error);
-        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(properties);
-        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(measurements);
+        expect(sendTelemetryExceptionCalls.args[0]).deep.eq(webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_FAILURE);
+        expect(sendTelemetryExceptionCalls.args[1]).deep.eq(errorMessage);
+        expect(sendTelemetryExceptionCalls.args[2]).deep.eq(error);
+        expect(sendTelemetryExceptionCalls.args[3]).deep.eq(properties);
+        expect(sendTelemetryExceptionCalls.args[4]).deep.eq(measurements);
     });
 
     it("sendPerfTelemetry_whenSendProperValues_shouldCallWithAllValidData", () => {
         //Act
         const eventName = webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS;
         const duration = 3;
-        const sendTelemetryEvent = stub(telemetry, "sendTelemetryEvent");
 
         //Action
         webExtensionTelemetry.sendPerfTelemetry(eventName, duration);
@@ -583,7 +566,7 @@ describe("webExtensionTelemetry", () => {
             durationInMillis: 3,
         };
         assert.calledOnceWithExactly(
-            sendTelemetryEvent,
+            traceInfoStub,
             webExtensionTelemetryEventNames.WEB_EXTENSION_API_REQUEST_SUCCESS,
             undefined,
             measurements

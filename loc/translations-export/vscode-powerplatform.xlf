@@ -75,6 +75,9 @@
       <source xml:lang="en">Cannot install pac CLI: {0}</source>
       <note>{0} represents the error message returned from the exception</note>
     </trans-unit>
+    <trans-unit id="++CODE++b75d741af5a9c59c95a5c7b7d9f654bb93617232db14c8d2671a5c731828782b">
+      <source xml:lang="en">Changing environment...</source>
+    </trans-unit>
     <trans-unit id="++CODE++9885d66d0771f63c5a4b5d3b8cbe26be8832bc941243f5b18573975750a9986b">
       <source xml:lang="en">Check the URL and verify the parameters are correct</source>
     </trans-unit>
@@ -90,12 +93,26 @@
     <trans-unit id="++CODE++2c8d1f9ca282591926b952dc5949d44df6204f1f0a3f5183bcd5ef7ae5864bad">
       <source xml:lang="en">Choose web template</source>
     </trans-unit>
-    <trans-unit id="++CODE++149fd22e94b05db4102d8eb8dc887a15388e66177b1e7d7b6634e5530b0998b0">
-      <source xml:lang="en">Clearing cache...</source>
+    <trans-unit id="++CODE++7aaafd1c6d6875eb1cd67e841f87457e929c922a18fef7c1452c1e1a4c036456">
+      <source xml:lang="en">Clearing cache. See [details](https://aka.ms/pages-clear-cache).</source>
+      <note>This is a markdown formatting which must persist across translations.
+The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
     <trans-unit id="++CODE++eef726ad55117038c05eaa478148144884ab56cadc5a46785e8221040ff7a6ec">
       <source xml:lang="en">Cloud Instance: {0}</source>
       <note>The {0} represents profile's Azure Cloud Instances</note>
+    </trans-unit>
+    <trans-unit id="++CODE++e0a2ada39bb1b062967ebf06c78ad62004625c48072b3e62656836c2b775aa3f">
+      <source xml:lang="en">Cluster category: {0}</source>
+      <note>{0} is the Cluster category</note>
+    </trans-unit>
+    <trans-unit id="++CODE++8f3ffa30307b4f73ca60c319ab62428b539d8410f1d62f67d941ba9957b39d9e">
+      <source xml:lang="en">Cluster environment: {0}</source>
+      <note>{0} is the Cluster environment</note>
+    </trans-unit>
+    <trans-unit id="++CODE++396ccbc26f4551ea0d94633d40a1a5b105360b9b30cf8897e1fde4c9d064a163">
+      <source xml:lang="en">Cluster geo name: {0}</source>
+      <note>{0} is the cluster geo name</note>
     </trans-unit>
     <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
       <source xml:lang="en">Confirm</source>
@@ -115,6 +132,9 @@
     <trans-unit id="++CODE++446092146c92f1aa2441a29971d3844b0add13a951c45c491423f506bbe4edab">
       <source xml:lang="en">Creating {0}...</source>
       <note>{0} will be replaced by the entity type.</note>
+    </trans-unit>
+    <trans-unit id="++CODE++e0d1b68224bf0b31ef16b206c65b5f8f6b89d18161f4a7cdcb8d0ac8d952549a">
+      <source xml:lang="en">Current</source>
     </trans-unit>
     <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
       <source xml:lang="en">Default Environment: {0}</source>
@@ -151,6 +171,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++048d1e764983197603f13e79d28f59bbfa358c0c11e1184c27fc687512589778">
       <source xml:lang="en">Enter the name of the web template</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b6d455a8dab8e66229a985315b5db1e1c065ba6d999dffd2795c03189fb32265">
+      <source xml:lang="en">Environment ID: {0}</source>
+      <note>{0} is the Environment ID</note>
     </trans-unit>
     <trans-unit id="++CODE++5a2391041cb1f6f5ab0cce07946dbf4222358fbd947768d94ac12ef5329485d3">
       <source xml:lang="en">Explain the following code snippet:</source>
@@ -263,6 +287,10 @@ Return to this chat and @powerpages can help you write and edit your website cod
       <source xml:lang="en">Installing Power Pages generator(v{0})...</source>
       <note>{0} represents the version number</note>
     </trans-unit>
+    <trans-unit id="++CODE++f351355077e2d6b421620f76832f108d9b4d84f31c14857d802cd8db01e4d330">
+      <source xml:lang="en">Instance url: {0}</source>
+      <note>{0} is the Instance Url</note>
+    </trans-unit>
     <trans-unit id="++CODE++c59fe0045151cddc10b8384a437337e86eab905877883c18b53e068a3d36121d">
       <source xml:lang="en">Learn more about Copilot</source>
     </trans-unit>
@@ -324,6 +352,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++b1061a7adf836619e40617bbbbe42d04a9c167b5756a2b4926c02d88e780a7f9">
       <source xml:lang="en">No Website Data Found in Current Directory. Please switch to a directory that contains the PAC downloaded website data to continue.</source>
     </trans-unit>
+    <trans-unit id="++CODE++80266a1ea7e6671d65c98a0624c254f5b9acfacddd05d69524b7f034eeba3268">
+      <source xml:lang="en">No environments found</source>
+    </trans-unit>
     <trans-unit id="++CODE++e0d2b29e6060c3d50691e6961835418fe6a24723c227dacf93250b94e21ed1bb">
       <source xml:lang="en">No page templates found</source>
     </trans-unit>
@@ -342,6 +373,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++6c0242ffba2aababcb4e45831de1492e8bccae2cb0f3387dfe9c16620f6928ef">
       <source xml:lang="en">No workspace folder opened. Please open a site folder to preview.</source>
     </trans-unit>
+    <trans-unit id="++CODE++b2b461f3eae470e95fdcfd61a3cbe6680e84d0a7221a305f696ce44843badc89">
+      <source xml:lang="en">Object ID: {0}</source>
+      <note>{0} is the Object ID</note>
+    </trans-unit>
     <trans-unit id="++CODE++bda6bda1e902d120a7f4515ceac8546c3112e3cb9351df1d8b9713b8f86e0370">
       <source xml:lang="en">One or more attribute names have been changed or removed. Contact your admin.</source>
     </trans-unit>
@@ -356,6 +391,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++5cac0147c19013eb88b1fc8dc0d066b48e9f5cfcdbc9737a29d544d9bd61db55">
       <source xml:lang="en">Operation failed. See output panel for details.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++38bb1c8534acb465ac1e4975989a18199aaea7beb273d8ff935ac0a07e443539">
+      <source xml:lang="en">Organization ID: {0}</source>
+      <note>{0} is the Organization ID</note>
     </trans-unit>
     <trans-unit id="++CODE++b3d5416b4e83d803e6f238f1d31a637450f12c9370113871d15bd48c72435cd2">
       <source xml:lang="en">Other Sites</source>
@@ -418,14 +457,23 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++a40f78f3a7f5c5ab1b101e95cdf044552542712fdcf45a83dfea3f455b6f638a">
       <source xml:lang="en">Select Type</source>
     </trans-unit>
+    <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
+      <source xml:lang="en">Select an environment</source>
+    </trans-unit>
     <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
       <source xml:lang="en">Selection is empty.</source>
     </trans-unit>
     <trans-unit id="++CODE++d4e969ee5e3ea8fe5e7f9195be448fd5fd5d2cb6f487929c3e495cbbe7e8f1e8">
       <source xml:lang="en">Selection is too large. Try making a shorter selection.</source>
     </trans-unit>
+    <trans-unit id="++CODE++142027a259879fdd2b6410360a9cd3798f433c2fc5668bb685dd4ff513072e16">
+      <source xml:lang="en">Session Details</source>
+    </trans-unit>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
+    </trans-unit>
+    <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
+      <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
     </trans-unit>
     <trans-unit id="++CODE++f7094162bd4c4b59aa706387714347223e1569c79c5b37eb19ac754a33a0fdd0">
       <source xml:lang="en">Site runtime preview feature is not enabled.</source>
@@ -441,6 +489,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++550b4ee4e0ae69ddf9c18f9d46f59e59da633a2644633d140197d62ded3f2657">
       <source xml:lang="en">Tell us more.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++d676394d137346db95d191c756b08c5be6fbaef4a6ca2159b8e53736e54f98e1">
+      <source xml:lang="en">Tenant ID: {0}</source>
+      <note>{0} is the Tenant ID</note>
     </trans-unit>
     <trans-unit id="++CODE++618f7afd7be2f12bf2ebbaba5bc7e951d2ebfb11d4480647f991fbb664caa26e">
       <source xml:lang="en">The Power Pages generator is ready for use in your VS Code extension!</source>
@@ -473,6 +525,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++8b1d85ebb8ecdb644b32f92089716c40b0f7dd2df4b43b3bdbaeba904deecfad">
       <source xml:lang="en">Thumbs Up</source>
     </trans-unit>
+    <trans-unit id="++CODE++75d0f748a196d70fe132e890ca21172baae3169ee3f9aa48c27aed5fbe5965bf">
+      <source xml:lang="en">Timestamp: {0}</source>
+      <note>{0} is the timestamp</note>
+    </trans-unit>
     <trans-unit id="++CODE++4f8c4d58a87feaaff06fd5f9cb84370ab4a42220bf1e8cbedbca716f8f21c9ee">
       <source xml:lang="en">To know more, see &lt;a href=&quot;https://go.microsoft.com/fwlink/?linkid=2206366&quot;&gt;Copilot in Power Pages documentation.</source>
     </trans-unit>
@@ -493,6 +549,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++bab36b47fe2dd4f2f7e8eb486f2e3546e27dc047e69f5b24307bc71e5be2a7cf">
       <source xml:lang="en">Unable to find that app</source>
+    </trans-unit>
+    <trans-unit id="++CODE++b6038584b7b1f565be9c9d3f0ac11be70bd2e69e072ead52884ca7338a14ee67">
+      <source xml:lang="en">Unique name: {0}</source>
+      <note>{0} is the Unique name</note>
     </trans-unit>
     <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
       <source xml:lang="en">Unmanaged</source>
@@ -550,6 +610,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
   </body></file>
   <file original="package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.login.title">
+      <source xml:lang="en">Add New Auth Profile</source>
+    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.title">
       <source xml:lang="en">Advanced capabilities</source>
     </trans-unit>
@@ -562,6 +625,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
 To learn more, visit [Prevent accidental overwrites](command:powerplatform-walkthrough.saveConflict-learn-more).</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.saveConflict-learn-more).', keeping brackets and the text in the parentheses unmodified</note>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.switchEnvironment.title">
+      <source xml:lang="en">Change Environment</source>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.clearAuthProfile.title">
       <source xml:lang="en">Clear Auth Profiles</source>
@@ -635,6 +701,12 @@ The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="microsoft-powerapps-portals.webExtension.init.title">
       <source xml:lang="en">Initialize Web Extension</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.login">
+      <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://example.com/learn-more).
+[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)</source>
+      <note>This is a Markdown formatted string, and the formatting must persist across translations.
+The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified</note>
+    </trans-unit>
     <trans-unit id="pacCLI.authPanel.nameAuthProfile.title">
       <source xml:lang="en">Name/Rename Auth Profile</source>
     </trans-unit>
@@ -665,8 +737,17 @@ The second line should be '[TRANSLATION HERE](command:pacCLI.authPanel.newAuthPr
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.overview-learn-more)', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title">
+      <source xml:lang="en">Open Containing Folder</source>
+    </trans-unit>
     <trans-unit id="pacCLI.openPacLab.title">
       <source xml:lang="en">Open PAC Lab</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title">
+      <source xml:lang="en">Open in Power Pages Studio</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title">
+      <source xml:lang="en">Open site management</source>
     </trans-unit>
     <trans-unit id="powerPlatform.experimental.auth.testCloudOverride.description">
       <source xml:lang="en">Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.</source>
@@ -687,14 +768,26 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="microsoft-powerapps-portals.preview-show.title">
       <source xml:lang="en">PowerApps Portal -&gt; Show preview</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title">
+      <source xml:lang="en">Preview</source>
+    </trans-unit>
     <trans-unit id="powerplatform.pages.previewSite.title">
       <source xml:lang="en">Preview Site</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.refresh.title">
+      <source xml:lang="en">Refresh</source>
     </trans-unit>
     <trans-unit id="pacCLI.envAndSolutionsPanel.refresh.title">
       <source xml:lang="en">Refresh</source>
     </trans-unit>
     <trans-unit id="pacCLI.authPanel.refresh.title">
       <source xml:lang="en">Refresh</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title">
+      <source xml:lang="en">Reveal in Explorer</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title">
+      <source xml:lang="en">Reveal in Finder</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.saveConflict.title">
       <source xml:lang="en">Save conflict</source>
@@ -704,6 +797,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.envAndSolutionsPanel.selectEnvironment.title">
       <source xml:lang="en">Select Environment</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title">
+      <source xml:lang="en">Show Environment Details</source>
     </trans-unit>
     <trans-unit id="pacCLI.pacAuthHelp.title">
       <source xml:lang="en">Show PAC Authentication Help</source>

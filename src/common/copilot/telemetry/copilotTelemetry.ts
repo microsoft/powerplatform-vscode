@@ -3,12 +3,11 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { ITelemetry } from "../../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { oneDSLoggerWrapper } from "../../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { IProDevCopilotTelemetryData } from "./ITelemetry";
 
 
-export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDevCopilotTelemetryData): void {
+export function sendTelemetryEvent(telemetryData: IProDevCopilotTelemetryData): void {
     const telemetryDataProperties: Record<string, string> = {}
     const telemetryDataMeasurements: Record<string, number> = {}
 
@@ -33,11 +32,9 @@ export function sendTelemetryEvent(telemetry: ITelemetry, telemetryData: IProDev
 
     if (telemetryData.error) {
         telemetryDataProperties.eventName = telemetryData.eventName;
-        telemetry.sendTelemetryException(telemetryData.error, telemetryDataProperties, telemetryDataMeasurements);
         oneDSLoggerWrapper.getLogger().traceError(telemetryData.error.name, telemetryData.error.message, telemetryData.error, telemetryDataProperties, telemetryDataMeasurements);
 
     } else {
-        telemetry.sendTelemetryEvent(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
         oneDSLoggerWrapper.getLogger().traceInfo(telemetryData.eventName, telemetryDataProperties, telemetryDataMeasurements);
     }
 }

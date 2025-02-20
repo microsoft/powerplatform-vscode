@@ -8,7 +8,7 @@ import { OneDSLogger } from "./oneDSLogger";
 
 //// Wrapper class of oneDSLogger for below purposes
 //// 1. Abstracting code from manual trace log APIs.
-//// 2. Constrolling instantiation of 1ds SDK framework code in oneDSLogger.ts
+//// 2. Controlling instantiation of 1ds SDK framework code in oneDSLogger.ts
 
 export class oneDSLoggerWrapper {
     private static instance: oneDSLoggerWrapper;

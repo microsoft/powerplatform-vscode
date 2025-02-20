@@ -4,7 +4,6 @@
  */
 
 import * as vscode from 'vscode';
-import { ITelemetry } from '../../../../OneDSLoggerTelemetry/telemetry/ITelemetry';
 import { getNL2PageData } from './Nl2PageService';
 import { getNL2SiteData } from './Nl2SiteService';
 import { NL2SITE_REQUEST_FAILED, NL2PAGE_GENERATING_WEBPAGES, NL2PAGE_RESPONSE_FAILED } from '../../PowerPagesChatParticipantConstants';
@@ -24,7 +23,6 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
         userPrompt,
         sessionId,
         stream,
-        telemetry,
         orgId,
         envId,
         userId,
@@ -34,12 +32,12 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
         return;
     }
-    const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, stream, orgId, envId, userId);
+    const { siteName, siteDescription, sitePages } = await fetchSiteAndPageData(intelligenceAPIEndpointInfo.intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, stream, orgId, envId, userId);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const contentProvider = previewSitePagesContent({ sitePages, stream, extensionContext, telemetry, sessionId, orgId, envId, userId });
+    const contentProvider = previewSitePagesContent({ sitePages, stream, extensionContext, sessionId, orgId, envId, userId });
 
-    const envList = await getEnvList(telemetry, intelligenceAPIEndpointInfo.endpointStamp);
+    const envList = await getEnvList(intelligenceAPIEndpointInfo.endpointStamp);
 
     stream.button({
         command: CREATE_SITE_BTN_CMD,
@@ -55,11 +53,10 @@ export const createSite = async (createSiteOptions: ICreateSiteOptions) => {
     };
 };
 
-async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceApiToken: string, userPrompt: string, sessionId: string, telemetry: ITelemetry, stream: vscode.ChatResponseStream, orgId: string, envId: string, userId: string) {
+async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceApiToken: string, userPrompt: string, sessionId: string, stream: vscode.ChatResponseStream, orgId: string, envId: string, userId: string) {
     // Call NL2Site service to get initial site content
-    telemetry.sendTelemetryEvent(VSCODE_EXTENSION_NL2SITE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
     oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_NL2SITE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
-    const { siteName, pages, siteDescription } = await getNL2SiteData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, telemetry, orgId, envId, userId);
+    const { siteName, pages, siteDescription } = await getNL2SiteData(intelligenceEndpoint, intelligenceApiToken, userPrompt, sessionId, orgId, envId, userId);
 
     if (!siteName) {
         throw new Error(NL2SITE_REQUEST_FAILED);
@@ -70,9 +67,8 @@ async function fetchSiteAndPageData(intelligenceEndpoint: string, intelligenceAp
     stream.progress(NL2PAGE_GENERATING_WEBPAGES);
 
     // Call NL2Page service to get page content
-    telemetry.sendTelemetryEvent(VSCODE_EXTENSION_NL2PAGE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
     oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_NL2PAGE_REQUEST, { sessionId: sessionId, orgId: orgId, environmentId: envId, userId: userId });
-    const sitePages = await getNL2PageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, siteName, sitePagesList, sessionId, telemetry, orgId, envId, userId);
+    const sitePages = await getNL2PageData(intelligenceEndpoint, intelligenceApiToken, userPrompt, siteName, sitePagesList, sessionId, orgId, envId, userId);
 
     if (!sitePages) {
         throw new Error(NL2PAGE_RESPONSE_FAILED);
@@ -89,7 +85,6 @@ function previewSitePagesContent(
         sitePages,
         stream,
         extensionContext,
-        telemetry,
         sessionId,
         orgId,
         envId,
@@ -118,13 +113,12 @@ function previewSitePagesContent(
             contentProvider.writeFile(pageUri, Buffer.from(page.content, UTF8_ENCODING));
         });
 
-        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_PREVIEW_SITE_PAGES, { sessionId, orgId, environmentId: envId, userId });
+        oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_PREVIEW_SITE_PAGES, { sessionId, orgId, environmentId: envId, userId });
 
         stream.filetree(sitePagesFolder, baseUri);
 
         return contentProvider;
     } catch (error) {
-        telemetry.sendTelemetryEvent(VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR, { sessionId, orgId, environmentId: envId, userId, error: (error as Error).message });
         oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_PREVIEW_SITE_PAGES_ERROR, (error as Error).message, error as Error, { sessionId, orgId, environmentId: envId, userId }, {});
         throw error;
     }

@@ -16,7 +16,6 @@ import { MultiStepInput } from "../../../common/utilities/MultiStepInput";
 import { exec } from "child_process";
 import { Tables, WEBFILE, YoSubGenerator } from "./CreateOperationConstants";
 import { FileCreateEvent, sendTelemetryEvent, UserFileCreateEvent } from "../../../common/OneDSLoggerTelemetry/telemetry/telemetry";
-import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import path from "path";
 import { statSync } from "fs";
 
@@ -29,8 +28,7 @@ interface IWebfileInputState {
 
 export const createWebfile = async (
   selectedWorkspaceFolder: string | undefined,
-  yoGenPath: string | null,
-  telemetry: ITelemetry
+  yoGenPath: string | null
 ) => {
   try {
     if (!selectedWorkspaceFolder || !yoGenPath) {
@@ -71,10 +69,10 @@ export const createWebfile = async (
       return;
     }
 
-    addWebfiles(yoGenPath, parentPageId, filteredFiles, selectedWorkspaceFolder, telemetry);
+    addWebfiles(yoGenPath, parentPageId, filteredFiles, selectedWorkspaceFolder);
 
   } catch (error: any) {
-    sendTelemetryEvent(telemetry, {
+    sendTelemetryEvent({
       methodName: createWebfile.name,
       eventName: UserFileCreateEvent,
       fileEntityType: WEBFILE,
@@ -144,8 +142,7 @@ const addWebfiles = async (
   yoGenPath: string,
   parentPageId: string,
   selectedFiles: vscode.Uri[],
-  selectedWorkspaceFolder: string,
-  telemetry: ITelemetry
+  selectedWorkspaceFolder: string
 ) => {
   try {
     const webfileCount = selectedFiles.length;
@@ -180,7 +177,7 @@ const addWebfiles = async (
           });
         });
         await Promise.all(promises);
-        sendTelemetryEvent(telemetry, { methodName: addWebfiles.name, eventName: FileCreateEvent, fileEntityType: WEBFILE, numberOfFiles: webfileCount.toString(), durationInMills: (performance.now() - startTime) })
+        sendTelemetryEvent({ methodName: addWebfiles.name, eventName: FileCreateEvent, fileEntityType: WEBFILE, numberOfFiles: webfileCount.toString(), durationInMills: (performance.now() - startTime) })
         vscode.window.showInformationMessage(
           vscode.l10n.t("Webfile(s) added successfully")
         );
@@ -188,7 +185,7 @@ const addWebfiles = async (
     );
   } catch (error: any) {
     logErrorAndNotifyUser(error);
-    sendTelemetryEvent(telemetry, {
+    sendTelemetryEvent({
       methodName: addWebfiles.name,
       eventName: FileCreateEvent,
       fileEntityType: WEBFILE,

@@ -11,24 +11,30 @@ import { WebsiteStatus } from "../models/WebsiteStatus";
 
 export class SiteTreeItem extends ActionsHubTreeItem {
     constructor(
-        siteInfo: IWebsiteInfo
+        public readonly siteInfo: IWebsiteInfo
     ) {
         super(
             siteInfo.name,
             vscode.TreeItemCollapsibleState.None,
             Constants.Icons.SITE,
-            SiteTreeItem.getContextValue(siteInfo)
+            SiteTreeItem.getContextValue(siteInfo),
+            siteInfo.isCurrent ? Constants.Strings.CURRENT : ""
         )
     }
 
-    private static getContextValue(websiteInfo: IWebsiteInfo): string {
-        switch (websiteInfo.status) {
-            case WebsiteStatus.Active:
-                return Constants.ContextValues.ACTIVE_SITE;
-            case WebsiteStatus.Inactive:
-                return Constants.ContextValues.INACTIVE_SITE;
-            default:
-                return Constants.ContextValues.OTHER_SITE;
+    private static getContextValue(siteInfo: IWebsiteInfo): string {
+        if (siteInfo.status === WebsiteStatus.Active && siteInfo.isCurrent) {
+            return Constants.ContextValues.CURRENT_ACTIVE_SITE;
         }
+
+        if (siteInfo.status === WebsiteStatus.Active && !siteInfo.isCurrent) {
+            return Constants.ContextValues.NON_CURRENT_ACTIVE_SITE;
+        }
+
+        if (siteInfo.status === WebsiteStatus.Inactive) {
+            return Constants.ContextValues.INACTIVE_SITE;
+        }
+
+        return Constants.ContextValues.OTHER_SITE;
     }
 }

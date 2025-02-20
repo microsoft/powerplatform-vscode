@@ -22,7 +22,18 @@ export const Messages = {
     FAILED_TO_GET_ENDPOINT: vscode.l10n.t("Failed to get website endpoint. Please try again later"),
     GETTING_WEBSITE_ENDPOINT: vscode.l10n.t("Getting website endpoint..."),
     ORG_DETAILS_ERROR: vscode.l10n.t("Failed to get organization details. Please try again later"),
-    CLEARING_CACHE: vscode.l10n.t("Clearing cache..."),
+    CLEARING_CACHE: vscode.l10n.t({
+        message: "Clearing cache. See [details](https://aka.ms/pages-clear-cache).",
+        comment: [
+            "This is a markdown formatting which must persist across translations.",
+            "The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified"
+        ]
+    }),
     AUTHENTICATING: vscode.l10n.t("Authenticating..."),
     UNABLE_TO_CLEAR_CACHE: vscode.l10n.t("Unable to clear cache"),
 };
+
+export const Events = {
+    PREVIEW_SITE_INITIALIZED: "PreviewSiteInitialized",
+    PREVIEW_SITE_INITIALIZATION_FAILED: "PreviewSiteInitializationFailed"
+}

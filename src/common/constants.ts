@@ -4,7 +4,6 @@
  */
 
 import { IActiveFileParams } from "./copilot/model";
-import { ITelemetry } from "./OneDSLoggerTelemetry/telemetry/ITelemetry";
 
 
 export const EXTENSION_ID = "microsoft-IsvExpTools.powerplatform-vscode";
@@ -78,7 +77,6 @@ export interface IApiRequestParams {
     sessionID: string;
     entityName: string;
     entityColumns: string[];
-    telemetry: ITelemetry;
     aibEndpoint: string | null;
     geoName: string | null;
     crossGeoDataMovementEnabledPPACFlag?: boolean;
@@ -95,3 +93,11 @@ export const ADX_WEBPAGE = 'adx_webpage'
 export const HTML_FILE_EXTENSION = '.html';
 export const UTF8_ENCODING = 'utf8';
 export const EDGE_TOOLS_EXTENSION_ID = 'ms-edgedevtools.vscode-edge-devtools';
+export const ADX_WEBSITE_RECORDS_API_PATH = 'api/data/v9.2/adx_websites?$select=*&$expand=owninguser($select=systemuserid,fullname)';
+export const POWERPAGES_SITE_RECORDS_API_PATH = 'api/data/v9.2/powerpagesites?$select=*&$expand=owninguser($select=systemuserid,fullname)';
+export const APP_MODULES_PATH = 'api/data/v9.2/appmodules';
+export const ADX_WEBSITE_RECORDS_FETCH_FAILED = 'AdxWebsiteRecordsFetchFailed';
+export const POWERPAGES_SITE_RECORDS_FETCH_FAILED = 'PowerPagesSiteRecordsFetchFailed';
+export const APP_MODULES_FETCH_FAILED = 'AppModulesFetchFailed';
+export const GET_ALL_WEBSITES_FAILED = 'GetAllWebsitesFailed';
+export const WEBSITE_YML = 'website.yml';

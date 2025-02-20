@@ -6,46 +6,121 @@
 import * as vscode from "vscode";
 import { ActionsHubTreeItem } from "./tree-items/ActionsHubTreeItem";
 import { OtherSitesGroupTreeItem } from "./tree-items/OtherSitesGroupTreeItem";
-import { ITelemetry } from "../../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { Constants } from "./Constants";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
+import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
+import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
+import { PacTerminal } from "../../lib/PacTerminal";
+import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement } from "./ActionsHubCommandHandlers";
+import PacContext from "../../pac/PacContext";
+import CurrentSiteContext from "./CurrentSiteContext";
+import { IWebsiteDetails } from "../../../common/services/Interfaces";
+import { orgChangeErrorEvent } from "../../OrgChangeNotifier";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
     private readonly _context: vscode.ExtensionContext;
-    private readonly _telemetry: ITelemetry;
+    private _onDidChangeTreeData: vscode.EventEmitter<ActionsHubTreeItem | undefined | void> = new vscode.EventEmitter<ActionsHubTreeItem | undefined | void>();
+    readonly onDidChangeTreeData: vscode.Event<ActionsHubTreeItem | undefined | void> = this._onDidChangeTreeData.event;
 
-    private constructor(context: vscode.ExtensionContext, telemetry: ITelemetry) {
+    private _activeSites: IWebsiteDetails[] = [];
+    private _inactiveSites: IWebsiteDetails[] = [];
+    private _loadWebsites = true;
+
+    private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
         this._disposables.push(
-            vscode.window.registerTreeDataProvider("powerpages.actionsHub", this)
-        );
+            ...this.registerPanel(this._pacTerminal),
 
+            PacContext.onChanged(() => {
+                this._loadWebsites = true;
+                this.refresh();
+            }),
+
+            CurrentSiteContext.onChanged(() => this.refresh()),
+
+            // Register an event listener for org change error as action hub will not be re-initialized in extension.ts
+            orgChangeErrorEvent(() => this.refresh())
+        );
         this._context = context;
-        this._telemetry = telemetry;
     }
 
-    public static initialize(context: vscode.ExtensionContext, telemetry: ITelemetry): void {
-        new ActionsHubTreeDataProvider(context, telemetry);
+    private refresh(): void {
+        this._onDidChangeTreeData.fire();
+    }
 
-        telemetry.sendTelemetryEvent(Constants.EventNames.ACTIONS_HUB_INITIALIZED);
-        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED);
+    private async loadWebsites(): Promise<void> {
+        if (this._loadWebsites) {
+            const websites = await fetchWebsites();
+            this._activeSites = websites.activeSites;
+            this._inactiveSites = websites.inactiveSites;
+            this._loadWebsites = false;
+        }
+    }
+
+    public static initialize(context: vscode.ExtensionContext, pacTerminal: PacTerminal): ActionsHubTreeDataProvider {
+        return new ActionsHubTreeDataProvider(context, pacTerminal);
     }
 
     getTreeItem(element: ActionsHubTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;
     }
 
-    getChildren(element?: ActionsHubTreeItem | undefined): vscode.ProviderResult<ActionsHubTreeItem[]> {
-        if (!element) {
-            return [
-                new OtherSitesGroupTreeItem()
-            ];
-        } else {
-            return [];
+    async getChildren(element?: ActionsHubTreeItem): Promise<ActionsHubTreeItem[] | null | undefined> {
+        await this.loadWebsites();
+
+        if (element) {
+            return element.getChildren();
+        }
+
+        try {
+            const authInfo = PacContext.AuthInfo;
+            if (authInfo && authInfo.OrganizationFriendlyName) {
+                const currentEnvInfo: IEnvironmentInfo = {
+                    currentEnvironmentName: authInfo.OrganizationFriendlyName
+                };
+                return [
+                    new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites),
+                    new OtherSitesGroupTreeItem()
+                ];
+            } else {
+                // Login experience scenario
+                return [];
+            }
+        } catch (error) {
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: this.getChildren }, {});
+            return null;
         }
     }
 
     public dispose(): void {
         this._disposables.forEach(d => d.dispose());
+    }
+
+    private registerPanel(pacTerminal: PacTerminal): vscode.Disposable[] {
+        return [
+            vscode.window.registerTreeDataProvider("microsoft.powerplatform.pages.actionsHub", this),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.refresh", async () => await refreshEnvironment(pacTerminal)),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.switchEnvironment", async () => await switchEnvironment(pacTerminal)),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails", showEnvironmentDetails),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.openActiveSitesInStudio", openActiveSitesInStudio),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.openInactiveSitesInStudio", openInactiveSitesInStudio),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.newAuthProfile", async () => {
+                await createNewAuthProfile(pacTerminal.getWrapper());
+            }),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows", revealInOS),
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac", revealInOS),
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux", revealInOS),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement", openSiteManagement)
+        ];
     }
 }

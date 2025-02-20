@@ -20,7 +20,6 @@ import {
 import { WebExtensionTelemetry } from "./telemetry/webExtensionTelemetry";
 import { getEnvironmentIdFromUrl, isCoPresenceEnabled, updateFileContentInFileDataMap } from "./utilities/commonUtil";
 import { NPSService } from "./services/NPSService";
-import { vscodeExtAppInsightsResourceProvider } from "../../common/telemetry-generated/telemetryConfiguration";
 import { NPSWebView } from "./webViews/NPSWebView";
 import {
     getFileEntityId,
@@ -46,23 +45,8 @@ import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 
 export function activate(context: vscode.ExtensionContext): void {
-    // setup telemetry
-    // TODO: Determine how to determine the user's dataBoundary
-    const dataBoundary = undefined;
-    const appInsightsResource =
-        vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
-            dataBoundary
-        );
     oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
-    WebExtensionContext.telemetry.setTelemetryReporter(
-        context.extension.id,
-        context.extension.packageJSON.version,
-        appInsightsResource
-    );
-    context.subscriptions.push(
-        WebExtensionContext.telemetry.getTelemetryReporter()
-    );
 
     WebExtensionContext.telemetry.sendInfoTelemetry("activated");
     const portalsFS = new PortalsFS();
@@ -149,7 +133,7 @@ export function activate(context: vscode.ExtensionContext): void {
                                         await portalsFS.readDirectory(WebExtensionContext.rootDirectory, true);
 
                                         // Initialize ECS config in webExtensionContext
-                                        await ECSFeaturesClient.init(WebExtensionContext.telemetry.getTelemetryReporter(),
+                                        await ECSFeaturesClient.init(
                                             {
                                                 AppName: PowerPagesAppName,
                                                 EnvID: WebExtensionContext.environmentId,
@@ -599,7 +583,6 @@ export function registerCopilot(context: vscode.ExtensionContext) {
 
         const copilotPanel = new copilot.PowerPagesCopilot(context.extensionUri,
             context,
-            WebExtensionContext.telemetry.getTelemetryReporter(),
             undefined,
             orgInfo);
 
@@ -632,7 +615,7 @@ function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: str
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
             { orgId: orgId });
         const telemetryData = JSON.stringify({ orgId: orgId });
-        copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+        copilotNotificationPanel(context, telemetryData);
 
         // Update the stored version to the current version
         context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
@@ -644,7 +627,7 @@ function showNotificationForCopilot(context: vscode.ExtensionContext, orgId: str
         WebExtensionContext.telemetry.sendInfoTelemetry(webExtensionTelemetryEventNames.WEB_EXTENSION_WEB_COPILOT_NOTIFICATION_SHOWN,
             { orgId: orgId });
         const telemetryData = JSON.stringify({ orgId: orgId });
-        copilotNotificationPanel(context, WebExtensionContext.telemetry.getTelemetryReporter(), telemetryData);
+        copilotNotificationPanel(context, telemetryData);
     }
 }
 
@@ -665,7 +648,7 @@ function isActiveDocument(fileFsPath: string): boolean {
 }
 
 async function fetchArtemisData(orgId: string) {
-    const artemisResponse = await ArtemisService.getArtemisResponse(orgId, WebExtensionContext.telemetry.getTelemetryReporter(), "");
+    const artemisResponse = await ArtemisService.getArtemisResponse(orgId, "");
     if (artemisResponse === null || artemisResponse.response === null) {
         WebExtensionContext.telemetry.sendErrorTelemetry(
             webExtensionTelemetryEventNames.WEB_EXTENSION_ARTEMIS_RESPONSE_FAILED,
