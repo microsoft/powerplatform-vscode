@@ -731,7 +731,6 @@ describe('ActionsHubCommandHandlers', () => {
             const mockPath = 'test-path';
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
             await revealInOS();
-
             expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
         });
     });
@@ -755,7 +754,7 @@ describe('ActionsHubCommandHandlers', () => {
             sandbox.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => 'test-path');
         });
 
-        it('should upload site when user confirms', async () => {
+        it('should upload site when user confirms for public site', async () => {
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
             await uploadSite(mockSiteTreeItem);
@@ -764,5 +763,13 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
 
+        it('should upload site without confirmation for private site', async () => {
+            mockSiteTreeItem.siteInfo.siteVisibility = 'Private';
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockShowInformationMessage.called).to.be.false;
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
     });
 });
