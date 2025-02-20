@@ -238,3 +238,24 @@ export const openSiteManagement = async (siteTreeItem: SiteTreeItem) => {
     }
     await vscode.env.openExternal(vscode.Uri.parse(siteTreeItem.siteInfo.siteManagementUrl));
 }
+
+export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
+
+    //Show a modal dialog to take confirmation from the user
+    if (siteTreeItem.siteInfo.siteVisibility.toLowerCase() === Constants.SiteVisibility.PUBLIC) {
+        const confirm = await vscode.window.showInformationMessage(
+            Constants.Strings.SITE_UPLOAD_CONFIRMATION,
+            { modal: true },
+            Constants.Strings.YES
+        );
+
+        if (confirm !== Constants.Strings.YES) {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_CANCELLED, { methodName: uploadSite.name });
+            return;
+        }
+    }
+    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE, { methodName: uploadSite.name });
+    const websitePath = CurrentSiteContext.currentSiteFolderPath;
+    const modelVersion = siteTreeItem.siteInfo.dataModelVersion;
+    PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePath}" --modelVersion "${modelVersion}"`);
+}

@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -249,7 +249,7 @@ describe('ActionsHubCommandHandlers', () => {
             mockShowProgressNotification = sinon.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, task: (progress: vscode.Progress<{
                 message?: string;
                 increment?: number;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             }>) => Promise<any>) => await task({} as unknown as vscode.Progress<{ message?: string; increment?: number }>));
         });
 
@@ -732,9 +732,63 @@ describe('ActionsHubCommandHandlers', () => {
         it('should reveal file in OS when file path is provided', async () => {
             const mockPath = 'test-path';
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
-            await revealInOS();
-
-            expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+            await revealInOS(); expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
         });
     });
+    describe('uploadSite', () => {
+        let mockSendText: sinon.SinonStub;
+        let mockSiteTreeItem: SiteTreeItem;
+
+        beforeEach(() => {
+            mockSendText = sinon.stub();
+            // Set up CurrentSiteContext
+            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            sinon.stub(PacTerminal, 'getTerminal').returns({ sendText: mockSendText } as any);
+        });
+
+        afterEach(() => {
+            sinon.restore();
+        });
+
+        it('should show confirmation dialog and upload when user confirms for public site', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PUBLIC,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+            mockShowInformationMessage.resolves(Constants.Strings.YES);
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_UPLOAD_CONFIRMATION);
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should upload without confirmation for private site', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PRIVATE,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockShowInformationMessage.called).to.be.false;
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+    });
+
 });

@@ -11,7 +11,7 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement } from "./ActionsHubCommandHandlers";
+import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite } from "./ActionsHubCommandHandlers";
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import { IWebsiteDetails } from "../../../common/services/Interfaces";
@@ -120,7 +120,9 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac", revealInOS),
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux", revealInOS),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement", openSiteManagement)
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement", openSiteManagement),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite", uploadSite)
         ];
     }
 }

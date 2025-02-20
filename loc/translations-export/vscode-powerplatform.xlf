@@ -60,6 +60,9 @@
     <trans-unit id="++CODE++bf27ec2e917b9f2578f8e6372f8656370d24cffe2c5a7b900d0b3280f8ec69fb">
       <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
     </trans-unit>
+    <trans-unit id="++CODE++6fab20ee9c8b4cb1fa10d787f3cd4eac13d34d27050fd193162a2399f690f59c">
+      <source xml:lang="en">Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?</source>
+    </trans-unit>
     <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -594,6 +597,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++9265d4c9f6b10b1a95877bcccee77e9d164e8a51ab17104b14ba19e7935aef0e">
       <source xml:lang="en">Write web API code to query active contact records.</source>
     </trans-unit>
+    <trans-unit id="++CODE++85a39ab345d672ff8ca9b9c6876f3adcacf45ee7c1e2dbd2408fd338bd55e07e">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
     <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
       <source xml:lang="en">You are editing a live, public site </source>
     </trans-unit>
@@ -702,8 +708,8 @@ The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <source xml:lang="en">Initialize Web Extension</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.login">
-      <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://example.com/learn-more).
-[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)</source>
+      <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).
+[Login](command:powerpages.actionsHub.newAuthProfile)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
@@ -815,6 +821,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.pacSolutionHelp.title">
       <source xml:lang="en">Show PAC Solution Help</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
+      <source xml:lang="en">Upload changes</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
       <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
