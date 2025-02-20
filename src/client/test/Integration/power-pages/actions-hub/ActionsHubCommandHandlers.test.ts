@@ -741,6 +741,7 @@ describe('ActionsHubCommandHandlers', () => {
             mockSendText = sinon.stub();
             // Set up CurrentSiteContext
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             sinon.stub(PacTerminal, 'getTerminal').returns({ sendText: mockSendText } as any);
         });
 
