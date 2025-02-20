@@ -4,7 +4,8 @@
  */
 
 import { OrgInfo } from "../../client/pac/PacTypes";
-import { ADX_WEBSITE_RECORDS_API_PATH, ADX_WEBSITE_RECORDS_FETCH_FAILED, GET_ALL_WEBSITES_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_API_PATH } from "../constants";
+import { Constants } from "../../client/power-pages/actions-hub/Constants";
+import { ADX_WEBSITE_RECORDS_API_PATH, ADX_WEBSITE_RECORDS_FETCH_FAILED, GET_ALL_WEBSITES_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_API_PATH, APP_MODULES_PATH, APP_MODULES_FETCH_FAILED } from "../constants";
 import { oneDSLoggerWrapper } from "../OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { dataverseAuthentication } from "../services/AuthenticationProvider";
 import { ServiceEndpointCategory, WebsiteDataModel } from "../services/Constants";
@@ -24,6 +25,36 @@ type AdxWebsiteRecords = {
     adx_websiteid: string;
 }
 
+type AppModule = {
+    appmoduleid: string;
+    uniquename: string;
+}
+
+const getSiteManagementUrl = (orgUrl: string, appId: string, dataModel: WebsiteDataModel, websiteId: string): string => {
+    if (!appId) {
+        return "";
+    }
+
+    const entity = dataModel === WebsiteDataModel.Enhanced ? Constants.EntityNames.MSPP_WEBSITE : Constants.EntityNames.ADX_WEBSITE;
+    const url = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}main.aspx?appid=${appId}&pagetype=entityrecord&etn=${entity}&id=${websiteId}`;
+
+    return url;
+}
+
+const getPowerPagesManagementAppId = (appModules: AppModule[]): string => {
+    const appName = Constants.AppNames.POWER_PAGES_MANAGEMENT;
+    const appId = appModules.find(appModule => appModule.uniquename.toLowerCase() === appName)?.appmoduleid;
+
+    return appId ?? "";
+}
+
+const getPortalManagementAppId = (appModules: AppModule[]): string => {
+    const appName = Constants.AppNames.PORTAL_MANAGEMENT;
+    const appId = appModules.find(appModule => appModule.uniquename.toLowerCase() === appName)?.appmoduleid;
+
+    return appId ?? "";
+}
+
 export async function getActiveWebsites(serviceEndpointStamp: ServiceEndpointCategory, environmentId: string): Promise<IWebsiteDetails[]> {
     return await PPAPIService.getAllWebsiteDetails(serviceEndpointStamp, environmentId);
 }
@@ -32,10 +63,14 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
     const websites: IWebsiteDetails[] = [];
     try {
         const dataverseToken = (await dataverseAuthentication(orgDetails.OrgUrl ?? '', true)).accessToken;
-        const [adxWebsiteRecords, powerPagesSiteRecords] = await Promise.all([
+        const [adxWebsiteRecords, powerPagesSiteRecords, appModules] = await Promise.all([
             getAdxWebsiteRecords(orgDetails.OrgUrl, dataverseToken),
-            getPowerPagesSiteRecords(orgDetails.OrgUrl, dataverseToken)
+            getPowerPagesSiteRecords(orgDetails.OrgUrl, dataverseToken),
+            getAppModules(orgDetails.OrgUrl)
         ]);
+
+        const powerPagesManagementAppId = getPowerPagesManagementAppId(appModules);
+        const portalManagementAppId = getPortalManagementAppId(appModules);
 
         adxWebsiteRecords.forEach(adxWebsite => {
             websites.push({
@@ -46,6 +81,7 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 dataModel: WebsiteDataModel.Standard,
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: adxWebsite.adx_websiteid,
+                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, portalManagementAppId, WebsiteDataModel.Standard, adxWebsite.adx_websiteid)
             });
         });
 
@@ -58,6 +94,7 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
                 dataModel: WebsiteDataModel.Enhanced,
                 environmentId: orgDetails.EnvironmentId,
                 websiteRecordId: powerPagesSite.powerpagesiteid,
+                siteManagementUrl: getSiteManagementUrl(orgDetails.OrgUrl, powerPagesManagementAppId, WebsiteDataModel.Enhanced, powerPagesSite.powerpagesiteid)
             });
         });
     }
@@ -106,6 +143,25 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
         oneDSLoggerWrapper.getLogger().traceError(POWERPAGES_SITE_RECORDS_FETCH_FAILED, POWERPAGES_SITE_RECORDS_FETCH_FAILED, error as Error);
     }
 
+    return [];
+}
+
+async function getAppModules(orgUrl: string) {
+    try {
+        const { accessToken } = await dataverseAuthentication(orgUrl);
+        const dataverseUrl = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}${APP_MODULES_PATH}`;
+        const response = await callApi(dataverseUrl, accessToken);
+
+        if (response.ok) {
+            const data = await response.json() as { value: AppModule[] };
+            return data.value;
+        }
+
+        throw new Error(`Failed to fetch app modules. Status: ${response.status}`);
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        oneDSLoggerWrapper.getLogger().traceError(APP_MODULES_FETCH_FAILED, errorMessage, error as Error);
+    }
     return [];
 }
 

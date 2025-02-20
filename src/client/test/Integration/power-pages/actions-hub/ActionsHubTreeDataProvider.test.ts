@@ -154,6 +154,18 @@ describe("ActionsHubTreeDataProvider", () => {
             await registerCommandStub.getCall(9).args[1]();
             expect(mockCommandHandler.calledThrice).to.be.true;
         });
+
+        it("should register openSiteManagement commands", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'openSiteManagement');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement")).to.be.true;
+
+            await registerCommandStub.getCall(10).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
     });
 
     describe('getTreeItem', () => {

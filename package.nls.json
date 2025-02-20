@@ -108,5 +108,6 @@
   "microsoft.powerplatform.pages.actionsHub.login.title": "Add New Auth Profile",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "Reveal in Explorer",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Reveal in Finder",
-  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Open Containing Folder"
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Open Containing Folder",
+  "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "Open Site Management"
 }

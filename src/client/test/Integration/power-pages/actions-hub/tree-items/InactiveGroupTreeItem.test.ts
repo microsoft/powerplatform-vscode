@@ -67,7 +67,8 @@ describe('InactiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org1",
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
-                        siteVisibility: "Public"
+                        siteVisibility: "Public",
+                        siteManagementUrl: "http://site1.com/manage"
                     },
                     {
                         websiteRecordId: "2",
@@ -77,7 +78,8 @@ describe('InactiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org2",
                         dataModel: WebsiteDataModel.Enhanced,
                         environmentId: "env2",
-                        siteVisibility: "Public"
+                        siteVisibility: "Public",
+                        siteManagementUrl: "http://site1.com/manage"
                     }
                 ];
 
@@ -92,7 +94,8 @@ describe('InactiveGroupTreeItem', () => {
                     websiteUrl: 'http://site1.com',
                     status: WebsiteStatus.Inactive,
                     isCurrent: false,
-                    siteVisibility: ""
+                    siteVisibility: "",
+                    siteManagementUrl: "http://site1.com/manage"
                 });
 
                 const site2 = children[1] as SiteTreeItem;
@@ -103,7 +106,8 @@ describe('InactiveGroupTreeItem', () => {
                     websiteUrl: 'http://site2.com',
                     status: WebsiteStatus.Inactive,
                     isCurrent: false,
-                    siteVisibility: ""
+                    siteVisibility: "",
+                    siteManagementUrl: "http://site1.com/manage"
                 });
             });
         });
