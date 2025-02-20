@@ -1,15 +1,22 @@
 {
   "cSpell.words": [
+    "appmoduleid",
     "dataverse",
+    "entityrecord",
     "Entra",
     "lcid",
+    "MSPP",
     "nupkg",
+    "pagetype",
     "powerapps",
     "powerpages",
+    "powerpagesiteid",
     "powerplatform",
     "PPAPI",
+    "primarydomainname",
     "Puid",
     "testorg",
+    "uniquename",
     "websiteid"
   ],
   "sarif-viewer.connectToGithubCodeScanning": "off"

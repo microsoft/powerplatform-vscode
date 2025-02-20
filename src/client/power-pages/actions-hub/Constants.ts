@@ -33,6 +33,7 @@ export const Constants = {
         SESSION_DETAILS: vscode.l10n.t("Session Details"),
         CHANGING_ENVIRONMENT: vscode.l10n.t("Changing environment..."),
         CURRENT: vscode.l10n.t("Current"),
+        SITE_MANAGEMENT_URL_NOT_FOUND: vscode.l10n.t("Site management URL not found for the selected site. Please try again after refreshing the environment.")
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",
@@ -42,7 +43,8 @@ export const Constants = {
         ACTIONS_HUB_SHOW_ENVIRONMENT_DETAILS_FAILED: "actionsHubShowEnvironmentDetailsFailed",
         ORGANIZATION_URL_MISSING: "Organization URL is missing in the results.",
         EMPTY_RESULTS_ARRAY: "Results array is empty or not an array.",
-        PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful."
+        PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful.",
+        SITE_MANAGEMENT_URL_NOT_FOUND: "siteManagementUrlNotFound"
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",
@@ -52,7 +54,13 @@ export const Constants = {
         GCC: "https://make.gov.powerpages.microsoft.us",
         HIGH: "https://make.high.powerpages.microsoft.us",
         MOONCAKE: "https://make.powerpages.microsoft.cn"
+    },
+    AppNames: {
+        POWER_PAGES_MANAGEMENT: 'mspp_powerpagemanagement',
+        PORTAL_MANAGEMENT: 'dynamics365portals'
+    },
+    EntityNames: {
+        MSPP_WEBSITE: 'mspp_website',
+        ADX_WEBSITE: 'adx_website'
     }
 };
-
-export const ENVIRONMENT_EXPIRED = vscode.l10n.t("Active Environment is expired or deleted. Please select a new environment.")

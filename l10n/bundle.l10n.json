@@ -120,7 +120,13 @@
   "Failed to get website endpoint. Please try again later": "Failed to get website endpoint. Please try again later",
   "Getting website endpoint...": "Getting website endpoint...",
   "Failed to get organization details. Please try again later": "Failed to get organization details. Please try again later",
-  "Clearing cache...": "Clearing cache...",
+  "Clearing cache. See [details](https://aka.ms/pages-clear-cache)./This is a markdown formatting which must persist across translations.The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified": {
+    "message": "Clearing cache. See [details](https://aka.ms/pages-clear-cache).",
+    "comment": [
+      "This is a markdown formatting which must persist across translations.",
+      "The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified"
+    ]
+  },
   "Authenticating...": "Authenticating...",
   "Unable to clear cache": "Unable to clear cache",
   "Enter the name of the web template": "Enter the name of the web template",
@@ -186,7 +192,7 @@
   "Session Details": "Session Details",
   "Changing environment...": "Changing environment...",
   "Current": "Current",
-  "Active Environment is expired or deleted. Please select a new environment.": "Active Environment is expired or deleted. Please select a new environment.",
+  "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Site management URL not found for the selected site. Please try again after refreshing the environment.",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
