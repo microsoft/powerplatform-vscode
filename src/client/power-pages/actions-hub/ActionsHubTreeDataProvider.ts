@@ -112,7 +112,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.preview", previewSite),
 
-            vscode.commands.registerCommand("powerpages.actionsHub.newAuthProfile", async () => {
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.newAuthProfile", async () => {
                 await createNewAuthProfile(pacTerminal.getWrapper());
             }),
 
