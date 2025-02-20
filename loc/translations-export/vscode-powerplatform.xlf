@@ -706,7 +706,7 @@ The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <source xml:lang="en">Initialize Web Extension</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.login">
-      <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://example.com/learn-more).
+      <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).
 [Login](command:powerpages.actionsHub.newAuthProfile)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:powerpages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified</note>

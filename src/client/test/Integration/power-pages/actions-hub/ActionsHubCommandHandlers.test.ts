@@ -735,12 +735,10 @@ describe('ActionsHubCommandHandlers', () => {
         });
     });
     describe('uploadSite', () => {
-        let mockShowInformationMessage: sinon.SinonStub;
         let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
 
         beforeEach(() => {
-            mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
             mockSendText = sandbox.stub(PacTerminal.getTerminal(), 'sendText');
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Test Site",
