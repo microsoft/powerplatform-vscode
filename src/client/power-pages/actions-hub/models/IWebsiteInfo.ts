@@ -12,4 +12,5 @@ export interface IWebsiteInfo {
     websiteUrl: string;
     status: WebsiteStatus | undefined;
     isCurrent: boolean;
+    siteVisibility: string;
 }

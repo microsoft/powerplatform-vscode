@@ -11,6 +11,7 @@ import { IWebsiteDetails } from "../../../../../../common/services/Interfaces";
 import { SiteTreeItem } from "../../../../../power-pages/actions-hub/tree-items/SiteTreeItem";
 import { WebsiteDataModel } from "../../../../../../common/services/Constants";
 import { NoSitesTreeItem } from "../../../../../power-pages/actions-hub/tree-items/NoSitesTreeItem";
+import { WebsiteStatus } from "../../../../../power-pages/actions-hub/models/WebsiteStatus";
 
 describe('InactiveGroupTreeItem', () => {
     it('should be of type ActionsHubTreeItem', () => {
@@ -58,18 +59,52 @@ describe('InactiveGroupTreeItem', () => {
         describe('when active sites is not empty', () => {
             it('should return an array of SiteTreeItem', () => {
                 const inactiveWebsites: IWebsiteDetails[] = [
-                    { WebsiteRecordId: "1", Name: "Site 1", WebsiteUrl: "http://site1.com", DataverseInstanceUrl: "http://dataverse1.com", DataverseOrganizationId: "org1", DataModel: WebsiteDataModel.Standard, EnvironmentId: "env1" },
-                    { WebsiteRecordId: "2", Name: "Site 2", WebsiteUrl: "http://site2.com", DataverseInstanceUrl: "http://dataverse2.com", DataverseOrganizationId: "org2", DataModel: WebsiteDataModel.Enhanced, EnvironmentId: "env2" }
+                    {
+                        websiteRecordId: "1",
+                        name: "Site 1",
+                        websiteUrl: "http://site1.com",
+                        dataverseInstanceUrl: "http://dataverse1.com",
+                        dataverseOrganizationId: "org1",
+                        dataModel: WebsiteDataModel.Standard,
+                        environmentId: "env1",
+                        siteVisibility: "Public"
+                    },
+                    {
+                        websiteRecordId: "2",
+                        name: "Site 2",
+                        websiteUrl: "http://site2.com",
+                        dataverseInstanceUrl: "http://dataverse2.com",
+                        dataverseOrganizationId: "org2",
+                        dataModel: WebsiteDataModel.Enhanced,
+                        environmentId: "env2",
+                        siteVisibility: "Public"
+                    }
                 ];
 
                 const treeItem = new InactiveGroupTreeItem(inactiveWebsites);
                 const children = treeItem.getChildren();
 
                 const site1 = children[0] as SiteTreeItem;
-                expect(site1.label).to.equal("Site 1");
+                expect(site1.siteInfo).to.deep.equal({
+                    name: 'Site 1',
+                    websiteId: '1',
+                    dataModelVersion: 1,
+                    websiteUrl: 'http://site1.com',
+                    status: WebsiteStatus.Inactive,
+                    isCurrent: false,
+                    siteVisibility: ""
+                });
 
                 const site2 = children[1] as SiteTreeItem;
-                expect(site2.label).to.equal("Site 2");
+                expect(site2.siteInfo).to.deep.equal({
+                    name: 'Site 2',
+                    websiteId: '2',
+                    dataModelVersion: 2,
+                    websiteUrl: 'http://site2.com',
+                    status: WebsiteStatus.Inactive,
+                    isCurrent: false,
+                    siteVisibility: ""
+                });
             });
         });
     });

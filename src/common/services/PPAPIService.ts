@@ -21,7 +21,7 @@ export class PPAPIService {
 
             if (response.ok) {
                 const websiteDetails = await response.json() as unknown as IWebsiteDetails;
-                sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, orgUrl: websiteDetails.DataverseInstanceUrl });
+                sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
                 return websiteDetails;
             }
         }
@@ -40,11 +40,11 @@ export class PPAPIService {
         }
 
         const websiteDetailsResponse = await PPAPIService.getAllWebsiteDetails(serviceEndpointStamp, environmentId);
-        const websiteDetails = websiteDetailsResponse?.find((website) => website.WebsiteRecordId === websiteRecordId); // selecting 1st websiteDetails whose websiteRecordId matches
+        const websiteDetails = websiteDetailsResponse?.find((website) => website.websiteRecordId === websiteRecordId); // selecting 1st websiteDetails whose websiteRecordId matches
 
 
         if (websiteDetails) {
-            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.DataverseInstanceUrl });
+            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_PPAPI_GET_WEBSITE_BY_RECORD_ID_COMPLETED, orgUrl: websiteDetails.dataverseInstanceUrl });
             return websiteDetails;
         }
 

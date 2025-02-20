@@ -165,12 +165,30 @@ describe("ActionsHubTreeDataProvider", () => {
     });
 
     describe('getChildren', () => {
-        it("should return environment and other sites group tree items when auth info and Artemis context are available", async () => {
+        it("should return empty array when no auth is available", async () => {
             const mockActiveSites = [
-                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
+                { name: "Foo", websiteRecordId: 'foo', websiteUrl: "https://foo.com" }
             ] as IWebsiteDetails[];
             const mockInactiveSites = [
-                { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
+                { name: "Bar", websiteRecordId: 'Bar', websiteUrl: "https://bar.com" }
+            ] as IWebsiteDetails[];
+            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
+
+            PacContext['_authInfo'] = null;
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            const result = await provider.getChildren();
+
+            expect(result).to.not.be.null;
+            expect(result).to.not.be.undefined;
+            expect(result).to.have.lengthOf(0);
+        });
+
+        it("should return environment and other sites group tree items when auth info and Artemis context are available", async () => {
+            const mockActiveSites = [
+                { name: "Foo", websiteRecordId: 'foo', websiteUrl: "https://foo.com" }
+            ] as IWebsiteDetails[];
+            const mockInactiveSites = [
+                { name: "Bar", websiteRecordId: 'Bar', websiteUrl: "https://bar.com" }
             ] as IWebsiteDetails[];
             sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
 
@@ -223,22 +241,6 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(result).to.be.an('array').that.is.empty;
         });
 
-        it("should return environment group tree item with default name when no auth info is available", async () => {
-            const mockActiveSites = [
-                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
-            ] as IWebsiteDetails[];
-            const mockInactiveSites = [
-                { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
-            ] as IWebsiteDetails[];
-            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
-
-            PacContext['_authInfo'] = null;
-            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            const result = await provider.getChildren();
-
-            expect(result).to.be.an('array').that.is.empty;
-        });
-
         it("should call element.getChildren when an element is passed", async () => {
             const element = new SiteTreeItem({} as IWebsiteInfo);
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
@@ -254,10 +256,10 @@ describe("ActionsHubTreeDataProvider", () => {
 
         it('should load websites when it is first load', async () => {
             const mockActiveSites = [
-                { Name: "Foo", WebsiteRecordId: 'foo', WebsiteUrl: "https://foo.com" }
+                { name: "Foo", websiteRecordId: 'foo', websiteUrl: "https://foo.com" }
             ] as IWebsiteDetails[];
             const mockInactiveSites = [
-                { Name: "Bar", WebsiteRecordId: 'Bar', WebsiteUrl: "https://bar.com" }
+                { name: "Bar", websiteRecordId: 'Bar', websiteUrl: "https://bar.com" }
             ] as IWebsiteDetails[];
             const mockFetchWebsites = sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
 
