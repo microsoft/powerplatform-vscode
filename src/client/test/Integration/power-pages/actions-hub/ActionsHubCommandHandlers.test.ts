@@ -731,14 +731,11 @@ describe('ActionsHubCommandHandlers', () => {
             const mockPath = 'test-path';
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
             await revealInOS();            expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;        });    });
-
         describe('uploadSite', () => {
-        let mockShowInformationMessage: sinon.SinonStub;
         let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
     
         beforeEach(() => {
-            mockShowInformationMessage = sinon.stub(vscode.window, 'showInformationMessage');
             mockSendText = sinon.stub();
             // Set up CurrentSiteContext
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
