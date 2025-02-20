@@ -54,6 +54,10 @@ export const Constants = {
         GCC: "https://make.gov.powerpages.microsoft.us",
         HIGH: "https://make.high.powerpages.microsoft.us",
         MOONCAKE: "https://make.powerpages.microsoft.cn"
+    },
+    SiteVisibility : {
+        PUBLIC: "public",
+        PRIVATE: "private"
     }
 };
 

@@ -232,14 +232,16 @@ export const revealInOS = async () => {
 export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
 
     //Show a modal dialog to take confirmation from the user
-    const confirm = await vscode.window.showInformationMessage(
-        Constants.Strings.SITE_UPLOAD_CONFIRMATION,
-        { modal: true },
-        Constants.Strings.YES
-    );
+    if (siteTreeItem.siteInfo.siteVisibility === Constants.SiteVisibility.PUBLIC) {
+        const confirm = await vscode.window.showInformationMessage(
+            Constants.Strings.SITE_UPLOAD_CONFIRMATION,
+            { modal: true },
+            Constants.Strings.YES
+        );
 
-    if (confirm !== Constants.Strings.YES) {
-        return;
+        if (confirm !== Constants.Strings.YES) {
+            return;
+        }
     }
     const websitePath = CurrentSiteContext.currentSiteFolderPath;
     const modalVersion = siteTreeItem.siteInfo.dataModelVersion;
