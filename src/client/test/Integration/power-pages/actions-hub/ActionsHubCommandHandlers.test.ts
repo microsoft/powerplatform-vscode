@@ -738,10 +738,10 @@ describe('ActionsHubCommandHandlers', () => {
         let mockSiteTreeItem: SiteTreeItem;
 
         beforeEach(() => {
-            mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
             mockSendText = sinon.stub();
             // Set up CurrentSiteContext
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
+            sinon.stub(PacTerminal, 'getTerminal').returns({ sendText: mockSendText } as any);
         });
 
         afterEach(() => {
@@ -749,7 +749,6 @@ describe('ActionsHubCommandHandlers', () => {
         });
 
         it('should show confirmation dialog and upload when user confirms for public site', async () => {
-            // Arrange
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Test Site",
                 websiteId: "test-id",
@@ -761,18 +760,14 @@ describe('ActionsHubCommandHandlers', () => {
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
-            // Act
             await uploadSite(mockSiteTreeItem);
 
-            // Assert
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_UPLOAD_CONFIRMATION);
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
 
-
         it('should upload without confirmation for private site', async () => {
-            // Arrange
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Test Site",
                 websiteId: "test-id",
@@ -783,10 +778,8 @@ describe('ActionsHubCommandHandlers', () => {
                 siteVisibility: Constants.SiteVisibility.PRIVATE
             });
 
-            // Act
             await uploadSite(mockSiteTreeItem);
 
-            // Assert
             expect(mockShowInformationMessage.called).to.be.false;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
