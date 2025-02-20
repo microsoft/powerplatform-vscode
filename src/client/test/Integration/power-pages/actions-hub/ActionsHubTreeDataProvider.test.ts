@@ -155,6 +155,18 @@ describe("ActionsHubTreeDataProvider", () => {
             expect(mockCommandHandler.calledThrice).to.be.true;
         });
 
+        it("should register openSiteManagement commands", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'openSiteManagement');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement")).to.be.true;
+
+            await registerCommandStub.getCall(10).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
+
         //command "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite"
         it("should register uploadSite command", async () => {
             const mockCommandHandler = sinon.stub(CommandHandlers, 'uploadSite');

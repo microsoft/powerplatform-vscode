@@ -33,6 +33,7 @@ export const Constants = {
         SESSION_DETAILS: vscode.l10n.t("Session Details"),
         CHANGING_ENVIRONMENT: vscode.l10n.t("Changing environment..."),
         CURRENT: vscode.l10n.t("Current"),
+        SITE_MANAGEMENT_URL_NOT_FOUND: vscode.l10n.t("Site management URL not found for the selected site. Please try again after refreshing the environment."),
         SITE_UPLOAD_CONFIRMATION: vscode.l10n.t(`Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?`),
         YES: vscode.l10n.t("Yes"),
     },
@@ -45,6 +46,7 @@ export const Constants = {
         ORGANIZATION_URL_MISSING: "Organization URL is missing in the results.",
         EMPTY_RESULTS_ARRAY: "Results array is empty or not an array.",
         PAC_AUTH_OUTPUT_FAILURE: "pacAuthCreateOutput is missing or unsuccessful.",
+        SITE_MANAGEMENT_URL_NOT_FOUND: "siteManagementUrlNotFound",
         ACTIONS_HUB_UPLOAD_SITE: "actionsHubUploadSite",
         ACTIONS_HUB_UPLOAD_SITE_CANCELLED: "actionsHubUploadSiteCancelled",
     },
@@ -60,7 +62,13 @@ export const Constants = {
     SiteVisibility : {
         PUBLIC: "public",
         PRIVATE: "private"
+    },
+    AppNames: {
+        POWER_PAGES_MANAGEMENT: 'mspp_powerpagemanagement',
+        PORTAL_MANAGEMENT: 'dynamics365portals'
+    },
+    EntityNames: {
+        MSPP_WEBSITE: 'mspp_website',
+        ADX_WEBSITE: 'adx_website'
     }
 };
-
-export const ENVIRONMENT_EXPIRED = vscode.l10n.t("Active Environment is expired or deleted. Please select a new environment.")

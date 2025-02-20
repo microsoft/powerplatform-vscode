@@ -44,4 +44,5 @@ export interface IWebsiteDetails {
     tenantId?: string;
     websiteRecordId: string;
     type?: WebsiteApplicationType;
+    siteManagementUrl: string;
 }

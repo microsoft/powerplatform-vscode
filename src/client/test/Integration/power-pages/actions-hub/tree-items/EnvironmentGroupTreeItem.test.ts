@@ -44,19 +44,19 @@ describe('EnvironmentGroupTreeItem', () => {
         expect(treeItem.contextValue).to.be.equal("environmentGroup");
     });
 
-    it('should return the expected children', async () => {
+    it('should return the expected children', () => {
         const activeWebsites: IWebsiteDetails[] = [
-            { websiteRecordId: "1", name: "Active Site 1", websiteUrl: "http://activesite1.com", dataverseInstanceUrl: "http://dataverse1.com", dataverseOrganizationId: "org1", dataModel: WebsiteDataModel.Standard, environmentId: "env1" },
-            { websiteRecordId: "2", name: "Active Site 2", websiteUrl: "http://activesite2.com", dataverseInstanceUrl: "http://dataverse2.com", dataverseOrganizationId: "org2", dataModel: WebsiteDataModel.Enhanced, environmentId: "env2" }
+            { websiteRecordId: "1", name: "Active Site 1", websiteUrl: "http://activesite1.com", dataverseInstanceUrl: "http://dataverse1.com", dataverseOrganizationId: "org1", dataModel: WebsiteDataModel.Standard, environmentId: "env1", siteManagementUrl: "http://siteManagement1.com" },
+            { websiteRecordId: "2", name: "Active Site 2", websiteUrl: "http://activesite2.com", dataverseInstanceUrl: "http://dataverse2.com", dataverseOrganizationId: "org2", dataModel: WebsiteDataModel.Enhanced, environmentId: "env2", siteManagementUrl: "http://siteManagement1.com" }
         ];
 
         const inactiveWebsites: IWebsiteDetails[] = [
-            { websiteRecordId: "3", name: "Inactive Site 1", websiteUrl: "http://inactivesite1.com", dataverseInstanceUrl: "http://dataverse3.com", dataverseOrganizationId: "org3", dataModel: WebsiteDataModel.Standard, environmentId: "env3" },
-            { websiteRecordId: "4", name: "Inactive Site 2", websiteUrl: "http://inactivesite2.com", dataverseInstanceUrl: "http://dataverse4.com", dataverseOrganizationId: "org4", dataModel: WebsiteDataModel.Enhanced, environmentId: "env4" }
+            { websiteRecordId: "3", name: "Inactive Site 1", websiteUrl: "http://inactivesite1.com", dataverseInstanceUrl: "http://dataverse3.com", dataverseOrganizationId: "org3", dataModel: WebsiteDataModel.Standard, environmentId: "env3", siteManagementUrl: "http://siteManagement1.com" },
+            { websiteRecordId: "4", name: "Inactive Site 2", websiteUrl: "http://inactivesite2.com", dataverseInstanceUrl: "http://dataverse4.com", dataverseOrganizationId: "org4", dataModel: WebsiteDataModel.Enhanced, environmentId: "env4", siteManagementUrl: "http://siteManagement1.com" }
         ];
 
         const treeItem = new EnvironmentGroupTreeItem({ currentEnvironmentName: "Test Environment" }, { extensionUri: vscode.Uri.parse("http://localhost") } as vscode.ExtensionContext, activeWebsites, inactiveWebsites);
-        const children = await treeItem.getChildren();
+        const children = treeItem.getChildren();
 
         expect(children).to.have.lengthOf(2);
 

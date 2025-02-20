@@ -607,7 +607,8 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: 'Public'
+                siteVisibility: 'Public',
+                siteManagementUrl: 'https://test-site-management.com',
             };
         });
 
@@ -690,12 +691,13 @@ describe('ActionsHubCommandHandlers', () => {
                     dataModel: WebsiteDataModel.Enhanced,
                     websiteUrl: 'https://inactive-site-1.com',
                     id: 'inactive-site-1',
-                    siteVisibility: 'private'
+                    siteVisibility: 'private',
+                    siteManagementUrl: "https://inactive-site-1-management.com"
                 }
             ] as IWebsiteDetails[];
 
             const allSites = [
-                ...activeSites,
+                ...activeSites.map(site => ({ ...site, siteManagementUrl: "https://portalmanagement.com" })),
                 ...inactiveSites
 
             ] as IWebsiteDetails[];
@@ -704,7 +706,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             const response = await fetchWebsites();
 
-            expect(response.activeSites).to.deep.equal(activeSites);
+            expect(response.activeSites).to.deep.equal([...activeSites.map(site => ({ ...site, siteManagementUrl: "https://portalmanagement.com" }))]);
             expect(response.inactiveSites).to.deep.equal(inactiveSites);
         });
     });

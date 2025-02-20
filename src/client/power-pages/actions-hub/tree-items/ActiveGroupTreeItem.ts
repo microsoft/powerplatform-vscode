@@ -40,7 +40,8 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
                 websiteUrl: site.websiteUrl,
                 status: WebsiteStatus.Active,
                 isCurrent: CurrentSiteContext.currentSiteId === site.websiteRecordId,
-                siteVisibility: site.siteVisibility ?? ""
+                siteVisibility: site.siteVisibility ?? "",
+                siteManagementUrl: site.siteManagementUrl
             };
 
             return new SiteTreeItem(siteInfo);

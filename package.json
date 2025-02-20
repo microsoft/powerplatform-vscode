@@ -433,6 +433,10 @@
         "title": "%microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title%"
       },
       {
+        "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
+        "title": "%microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title%"
+      },
+      {
         "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title%"
       }
@@ -913,6 +917,10 @@
           "when": "never"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
+          "when": "never"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
           "when": "never"
         }
@@ -1057,6 +1065,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isLinux",
           "group": "activeSiteContextMenuGroup@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
+          "group": "inactiveSiteContextMenuGroup@1"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",

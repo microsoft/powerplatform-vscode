@@ -213,6 +213,7 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             ]);
             const activeSiteIds = new Set(activeWebsiteDetails.map(activeSite => activeSite.websiteRecordId));
             const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.websiteRecordId)) || [];
+            activeWebsiteDetails = activeWebsiteDetails.map(detail => ({ ...detail, siteManagementUrl: allSites.find(site => site.websiteRecordId === detail.websiteRecordId)?.siteManagementUrl ?? "" }));
 
             return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails };
         }
@@ -227,6 +228,15 @@ export const revealInOS = async () => {
     if (CurrentSiteContext.currentSiteFolderPath) {
         await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(CurrentSiteContext.currentSiteFolderPath));
     }
+}
+
+export const openSiteManagement = async (siteTreeItem: SiteTreeItem) => {
+    if (!siteTreeItem.siteInfo.siteManagementUrl) {
+        vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.SITE_MANAGEMENT_URL_NOT_FOUND));
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND, Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND, new Error(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND), { method: openSiteManagement.name });
+        return;
+    }
+    await vscode.env.openExternal(vscode.Uri.parse(siteTreeItem.siteInfo.siteManagementUrl));
 }
 
 export const uploadSite = async (siteTreeItem: SiteTreeItem) => {

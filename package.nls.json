@@ -109,5 +109,5 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "Reveal in Explorer",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Reveal in Finder",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Open Containing Folder",
-  "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title": "Upload changes"
+  "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "Open site management"
 }

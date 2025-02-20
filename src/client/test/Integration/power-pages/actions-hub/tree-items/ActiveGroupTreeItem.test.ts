@@ -73,7 +73,8 @@ describe('ActiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org1",
                         dataModel: WebsiteDataModel.Standard,
                         environmentId: "env1",
-                        siteVisibility: "public"
+                        siteVisibility: "public",
+                        siteManagementUrl: "http://site1.com/manage"
                     },
                     {
                         websiteRecordId: "2",
@@ -83,7 +84,8 @@ describe('ActiveGroupTreeItem', () => {
                         dataverseOrganizationId: "org2",
                         dataModel: WebsiteDataModel.Enhanced,
                         environmentId: "env2",
-                        siteVisibility: "private"
+                        siteVisibility: "private",
+                        siteManagementUrl: "http://site1.com/manage"
                     }
                 ];
 
@@ -98,7 +100,8 @@ describe('ActiveGroupTreeItem', () => {
                     websiteUrl: 'http://site1.com',
                     status: WebsiteStatus.Active,
                     isCurrent: true,
-                    siteVisibility: "public"
+                    siteVisibility: "public",
+                    siteManagementUrl: "http://site1.com/manage"
                 });
 
                 const site2 = children[1] as SiteTreeItem;
@@ -109,7 +112,8 @@ describe('ActiveGroupTreeItem', () => {
                     websiteUrl: 'http://site2.com',
                     status: WebsiteStatus.Active,
                     isCurrent: false,
-                    siteVisibility: "private"
+                    siteVisibility: "private",
+                    siteManagementUrl: "http://site1.com/manage"
                 });
             });
         });

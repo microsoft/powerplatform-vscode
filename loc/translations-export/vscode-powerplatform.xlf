@@ -22,9 +22,6 @@
     <trans-unit id="++CODE++8d35e64354d3db3df1df4ef8e6068b6b9dd58514fcf980f7071e10ed160db95a">
       <source xml:lang="en">AI-generated content can contain mistakes</source>
     </trans-unit>
-    <trans-unit id="++CODE++b7a871816816225e2493a94b2b40d7c0ab9fa8a8d14666e68c00e5a511c9f4f6">
-      <source xml:lang="en">Active Environment is expired or deleted. Please select a new environment.</source>
-    </trans-unit>
     <trans-unit id="++CODE++b82f83283cc4275cf0d58b4f55d1242fe46227ee1da9db4b81b6b08804dcbf01">
       <source xml:lang="en">Active Sites</source>
     </trans-unit>
@@ -99,8 +96,10 @@
     <trans-unit id="++CODE++2c8d1f9ca282591926b952dc5949d44df6204f1f0a3f5183bcd5ef7ae5864bad">
       <source xml:lang="en">Choose web template</source>
     </trans-unit>
-    <trans-unit id="++CODE++149fd22e94b05db4102d8eb8dc887a15388e66177b1e7d7b6634e5530b0998b0">
-      <source xml:lang="en">Clearing cache...</source>
+    <trans-unit id="++CODE++7aaafd1c6d6875eb1cd67e841f87457e929c922a18fef7c1452c1e1a4c036456">
+      <source xml:lang="en">Clearing cache. See [details](https://aka.ms/pages-clear-cache).</source>
+      <note>This is a markdown formatting which must persist across translations.
+The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
     <trans-unit id="++CODE++eef726ad55117038c05eaa478148144884ab56cadc5a46785e8221040ff7a6ec">
       <source xml:lang="en">Cloud Instance: {0}</source>
@@ -476,6 +475,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
     </trans-unit>
+    <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
+      <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
+    </trans-unit>
     <trans-unit id="++CODE++f7094162bd4c4b59aa706387714347223e1569c79c5b37eb19ac754a33a0fdd0">
       <source xml:lang="en">Site runtime preview feature is not enabled.</source>
     </trans-unit>
@@ -749,6 +751,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title">
       <source xml:lang="en">Open in Power Pages Studio</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title">
+      <source xml:lang="en">Open site management</source>
     </trans-unit>
     <trans-unit id="powerPlatform.experimental.auth.testCloudOverride.description">
       <source xml:lang="en">Overrides `#powerPlatform.auth.cloud#` for test targets. Leave blank for default behavior.</source>
