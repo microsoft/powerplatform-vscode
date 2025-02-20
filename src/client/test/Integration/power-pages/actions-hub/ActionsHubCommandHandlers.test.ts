@@ -738,6 +738,7 @@ describe('ActionsHubCommandHandlers', () => {
         let mockSiteTreeItem: SiteTreeItem;
 
         beforeEach(() => {
+            mockShowInformationMessage = sandbox.stub(vscode.window, 'showInformationMessage');
             mockSendText = sinon.stub();
             // Set up CurrentSiteContext
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
