@@ -211,8 +211,8 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
                 getActiveWebsites(ArtemisContext.ServiceResponse?.stamp, orgInfo.EnvironmentId),
                 getAllWebsites(orgInfo)
             ]);
-            const activeSiteIds = new Set(activeWebsiteDetails.map(activeSite => activeSite.WebsiteRecordId));
-            const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.WebsiteRecordId)) || [];
+            const activeSiteIds = new Set(activeWebsiteDetails.map(activeSite => activeSite.websiteRecordId));
+            const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.websiteRecordId)) || [];
 
             return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails };
         }

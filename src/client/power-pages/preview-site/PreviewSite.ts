@@ -94,7 +94,7 @@ export class PreviewSite {
         }
 
         const websiteDetails = await PPAPIService.getWebsiteDetailsByWebsiteRecordId(ArtemisContext.ServiceResponse.stamp, orgDetails.EnvironmentId, websiteRecordId);
-        return websiteDetails?.WebsiteUrl || "";
+        return websiteDetails?.websiteUrl || "";
     }
 
     private static async promptInstallEdgeTools(): Promise<void> {
