@@ -12,6 +12,10 @@
   "microsoft-powerapps-portals.walkthrough.title": "Изменить код Power Pages",
   "microsoft-powerapps-portals.webExtension.init.title": "Инициализация веб-расширения",
   "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "ДЕЙСТВИЯ POWER PAGES",
+  "microsoft.powerplatform.pages.actionsHub.refresh.title": "Обновить",
+  "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title": "Показать сведения о среде",
+  "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "Изменить среду",
+  "microsoft.powerplatform.pages.actionsHub.title": "ДЕЙСТВИЯ POWER PAGES",
   "pacCLI.authPanel.clearAuthProfile.title": "Удаление профилей проверки подлинности",
   "pacCLI.authPanel.copyUser.title": "Копировать пользователя",
   "pacCLI.authPanel.deleteAuthProfile.title": "Удаление профиля проверки подлинности",
@@ -46,5 +50,6 @@
   "powerPlatform.auth.cloud.description": "Какие инструменты Power Platform Tools облака Azure следует использовать для проверки подлинности.",
   "powerPlatform.experimental.auth.testCloudOverride.description": "Переопределяет `#powerPlatform.auth.cloud#` для тестовых целей. Оставьте пустым, чтобы действовали параметры по умолчанию.",
   "powerpages.copilotPanel.clearConversation.title": "Удалить разговор",
-  "powerpages.copilotPanel.title": "Copilot в Power Pages"
+  "powerpages.copilotPanel.title": "Copilot в Power Pages",
+  "powerplatform.pages.previewSite.title": "Предварительный просмотр сайта"
 }

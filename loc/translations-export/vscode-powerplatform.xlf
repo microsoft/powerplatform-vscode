@@ -822,9 +822,6 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="pacCLI.pacSolutionHelp.title">
       <source xml:lang="en">Show PAC Solution Help</source>
     </trans-unit>
-    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
-      <source xml:lang="en">Upload changes</source>
-    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
       <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
  

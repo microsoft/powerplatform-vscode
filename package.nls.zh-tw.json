@@ -12,6 +12,10 @@
   "microsoft-powerapps-portals.walkthrough.title": "編輯 Power Pages 代碼",
   "microsoft-powerapps-portals.webExtension.init.title": "初始化 Web 擴充",
   "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "POWER PAGES 動作",
+  "microsoft.powerplatform.pages.actionsHub.refresh.title": "重新整理",
+  "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title": "顯示環境詳細資料",
+  "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "變更環境",
+  "microsoft.powerplatform.pages.actionsHub.title": "POWER PAGES 動作",
   "pacCLI.authPanel.clearAuthProfile.title": "清除驗證設定檔",
   "pacCLI.authPanel.copyUser.title": "複製使用者",
   "pacCLI.authPanel.deleteAuthProfile.title": "刪除驗證設定檔",
@@ -46,5 +50,6 @@
   "powerPlatform.auth.cloud.description": "應使用些 Azure 雲端 Power Platform Tools 來進行驗證。",
   "powerPlatform.experimental.auth.testCloudOverride.description": "覆寫測試目標的 `#powerPlatform.auth.cloud#`。預設行為請保留空白。",
   "powerpages.copilotPanel.clearConversation.title": "清除交談",
-  "powerpages.copilotPanel.title": "Power Pages 中的 Copilot"
+  "powerpages.copilotPanel.title": "Power Pages 中的 Copilot",
+  "powerplatform.pages.previewSite.title": "預覽網站"
 }
