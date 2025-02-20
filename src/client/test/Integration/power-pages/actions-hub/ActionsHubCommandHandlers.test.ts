@@ -737,8 +737,13 @@ describe('ActionsHubCommandHandlers', () => {
     describe('uploadSite', () => {
         let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
+        let mockShowWarningMessage: sinon.SinonStub;
 
         beforeEach(() => {
+            // Reset all stubs before each test
+            sandbox.restore();
+
+            mockShowWarningMessage = sandbox.stub(vscode.window, 'showWarningMessage');
             mockSendText = sandbox.stub(PacTerminal.getTerminal(), 'sendText');
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Test Site",
@@ -752,12 +757,16 @@ describe('ActionsHubCommandHandlers', () => {
             sandbox.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => 'test-path');
         });
 
+        afterEach(() => {
+            sandbox.restore();
+        });
+
         it('should upload site when user confirms for public site', async () => {
-            mockShowInformationMessage.resolves(Constants.Strings.YES);
+            mockShowWarningMessage.resolves('Yes');
 
             await uploadSite(mockSiteTreeItem);
 
-            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockShowWarningMessage.calledOnce).to.be.true;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
 
@@ -766,7 +775,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             await uploadSite(mockSiteTreeItem);
 
-            expect(mockShowInformationMessage.called).to.be.false;
+            expect(mockShowWarningMessage.called).to.be.false;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
     });
