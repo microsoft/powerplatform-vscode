@@ -176,7 +176,7 @@ describe("ActionsHubTreeDataProvider", () => {
 
             expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite")).to.be.true;
 
-            await registerCommandStub.getCall(10).args[1]();
+            await registerCommandStub.getCall(11).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
     });
