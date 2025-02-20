@@ -759,7 +759,8 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: Constants.SiteVisibility.PUBLIC
+                siteVisibility: Constants.SiteVisibility.PUBLIC,
+                siteManagementUrl: "https://inactive-site-1-management.com"
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
@@ -778,7 +779,8 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: Constants.SiteVisibility.PRIVATE
+                siteVisibility: Constants.SiteVisibility.PRIVATE,
+                siteManagementUrl: "https://inactive-site-1-management.com"
             });
 
             await uploadSite(mockSiteTreeItem);
