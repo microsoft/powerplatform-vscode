@@ -730,16 +730,26 @@ describe('ActionsHubCommandHandlers', () => {
         it('should reveal file in OS when file path is provided', async () => {
             const mockPath = 'test-path';
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
-            await revealInOS();
-            expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
-        });
-    });
-    describe('uploadSite', () => {
+            await revealInOS();            expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;        });    });
+
+        describe('uploadSite', () => {
+        let mockShowInformationMessage: sinon.SinonStub;
         let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
-
+    
         beforeEach(() => {
-            mockSendText = sandbox.stub(PacTerminal.getTerminal(), 'sendText');
+            mockShowInformationMessage = sinon.stub(vscode.window, 'showInformationMessage');
+            mockSendText = sinon.stub();
+            // Set up CurrentSiteContext
+            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
+        });
+    
+        afterEach(() => {
+            sinon.restore();
+        });
+    
+        it('should show confirmation dialog and upload when user confirms for public site', async () => {
+            // Arrange
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Test Site",
                 websiteId: "test-id",
@@ -747,27 +757,40 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: 'Public'
+                siteVisibility: Constants.SiteVisibility.PUBLIC
             });
-            sandbox.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => 'test-path');
-        });
-
-        it('should upload site when user confirms for public site', async () => {
             mockShowInformationMessage.resolves(Constants.Strings.YES);
-
+    
+            // Act
             await uploadSite(mockSiteTreeItem);
-
+    
+            // Assert
             expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_UPLOAD_CONFIRMATION);
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
 
-        it('should upload site without confirmation for private site', async () => {
-            mockSiteTreeItem.siteInfo.siteVisibility = 'Private';
-
+    
+        it('should upload without confirmation for private site', async () => {
+            // Arrange
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PRIVATE
+            });
+    
+            // Act
             await uploadSite(mockSiteTreeItem);
-
+    
+            // Assert
             expect(mockShowInformationMessage.called).to.be.false;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
+    
     });
+    
 });
