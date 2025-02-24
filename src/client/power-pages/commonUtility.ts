@@ -7,6 +7,8 @@ import path from "path";
 import * as vscode from "vscode";
 import { removeTrailingSlash } from "../../debugger/utils";
 import * as Constants from "./constants";
+import { AUTH_KEYS } from "../../common/OneDSLoggerTelemetry/telemetryConstants";
+import { ActiveAuthOutput, ActiveOrgOutput, AuthInfo, CloudInstance, EnvironmentType, OrgInfo } from "../pac/PacTypes";
 
 export interface IFileProperties {
     fileCompleteName?: string,
@@ -196,4 +198,53 @@ export function getRegExPattern(fileNameArray: string[]): RegExp[] {
     }
 
     return patterns;
+}
+
+export function extractAuthInfo(results: ActiveAuthOutput[]): AuthInfo {
+    return {
+        UserType: findAuthValue(results, AUTH_KEYS.USER_TYPE),
+        Cloud: CloudInstance[findAuthValue(results, AUTH_KEYS.CLOUD) as keyof typeof CloudInstance],
+        TenantId: findAuthValue(results, AUTH_KEYS.TENANT_ID),
+        TenantCountry: findAuthValue(results, AUTH_KEYS.TENANT_COUNTRY),
+        User: findAuthValue(results, AUTH_KEYS.USER),
+        EntraIdObjectId: findAuthValue(results, AUTH_KEYS.ENTRA_ID_OBJECT_ID),
+        Puid: findAuthValue(results, AUTH_KEYS.PUID),
+        UserCountryRegion: findAuthValue(results, AUTH_KEYS.USER_COUNTRY_REGION),
+        TokenExpires: findAuthValue(results, AUTH_KEYS.TOKEN_EXPIRES),
+        Authority: findAuthValue(results, AUTH_KEYS.AUTHORITY),
+        EnvironmentGeo: findAuthValue(results, AUTH_KEYS.ENVIRONMENT_GEO),
+        EnvironmentId: findAuthValue(results, AUTH_KEYS.ENVIRONMENT_ID),
+        EnvironmentType: EnvironmentType[findAuthValue(results, AUTH_KEYS.ENVIRONMENT_TYPE) as keyof typeof EnvironmentType],
+        OrganizationId: findAuthValue(results, AUTH_KEYS.ORGANIZATION_ID),
+        OrganizationUniqueName: findAuthValue(results, AUTH_KEYS.ORGANIZATION_UNIQUE_NAME),
+        OrganizationFriendlyName: findAuthValue(results, AUTH_KEYS.ORGANIZATION_FRIENDLY_NAME)
+    };
+}
+
+export function extractOrgInfo(orgOutput: ActiveOrgOutput): OrgInfo {
+    if (!orgOutput) {
+        return {
+            OrgId: '',
+            UniqueName: '',
+            FriendlyName: '',
+            OrgUrl: '',
+            UserEmail: '',
+            UserId: '',
+            EnvironmentId: ''
+        };
+    }
+
+    return  {
+        OrgId: orgOutput.OrgId,
+        UniqueName: orgOutput.UniqueName,
+        FriendlyName: orgOutput.FriendlyName,
+        OrgUrl: orgOutput.OrgUrl,
+        UserEmail: orgOutput.UserEmail,
+        UserId: orgOutput.UserId,
+        EnvironmentId: orgOutput.EnvironmentId
+    };
+}
+
+export function findAuthValue(results: ActiveAuthOutput[], key: string): string {
+    return results?.find(obj => obj.Key === key)?.Value ?? '';
 }

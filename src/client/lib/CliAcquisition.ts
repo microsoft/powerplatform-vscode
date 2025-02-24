@@ -87,7 +87,6 @@ export class CliAcquisition implements IDisposable {
                     { encoding: "utf-8" });
 
                 if (install.status != 0) {
-                    this._context.telemetry.sendTelemetryErrorEvent("PacInstallError", { "stdout": install.stdout, "stderr": install.stderr });
                     oneDSLoggerWrapper.getLogger().traceError(
                         'PacInstallError',
                         'PacInstallError',
@@ -105,7 +104,6 @@ export class CliAcquisition implements IDisposable {
                     this._context.showCliInstallFailedError(errorMessage);
                     reject(errorMessage);
                 } else {
-                    this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                     oneDSLoggerWrapper.getLogger().traceInfo('PacCliInstalled', { cliVersion: this.cliVersion });
                     this._context.showCliReadyMessage();
                     this.setInstalledVersion(this._cliVersion);
@@ -119,7 +117,6 @@ export class CliAcquisition implements IDisposable {
                 fs.createReadStream(pathToNupkg)
                     .pipe(Extract({ path: this._cliPath }))
                     .on('close', () => {
-                        this._context.telemetry.sendTelemetryEvent('PacCliInstalled', { cliVersion: this.cliVersion });
                         oneDSLoggerWrapper.getLogger().traceInfo('PacCliInstalled', { cliVersion: this.cliVersion });
                         this._context.showCliReadyMessage();
                         if (os.platform() !== 'win32') {

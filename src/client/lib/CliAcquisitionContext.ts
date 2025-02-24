@@ -4,12 +4,10 @@
  */
 
 import * as vscode from 'vscode';
-import { ITelemetry } from '../../common/OneDSLoggerTelemetry/telemetry/ITelemetry';
 
 export interface ICliAcquisitionContext {
     readonly extensionPath: string;
     readonly globalStorageLocalPath: string;
-    readonly telemetry: ITelemetry;
     showInformationMessage(message: string, ...items: string[]): void;
     showErrorMessage(message: string, ...items: string[]): void;
     showCliPreparingMessage(version: string): void;
@@ -22,7 +20,6 @@ export interface ICliAcquisitionContext {
 export class CliAcquisitionContext implements ICliAcquisitionContext {
     public constructor(
         private readonly _context: vscode.ExtensionContext,
-        private readonly _telemetry: ITelemetry
     ) { }
 
     public get extensionPath(): string {
@@ -30,9 +27,6 @@ export class CliAcquisitionContext implements ICliAcquisitionContext {
     }
     public get globalStorageLocalPath(): string {
         return this._context.globalStorageUri.fsPath;
-    }
-    public get telemetry(): ITelemetry {
-        return this._telemetry;
     }
 
     showInformationMessage(message: string, ...items: string[]): void {

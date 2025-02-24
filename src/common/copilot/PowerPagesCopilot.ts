@@ -9,7 +9,6 @@ import { sendApiRequest } from "./IntelligenceApiService";
 import { dataverseAuthentication, getOIDFromToken, intelligenceAPIAuthentication } from "../services/AuthenticationProvider";
 import { v4 as uuidv4 } from 'uuid'
 import { PacWrapper } from "../../client/pac/PacWrapper";
-import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { ADX_ENTITYFORM, ADX_ENTITYLIST, AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE, AuthProfileNotFound, COPILOT_IN_POWERPAGES, COPILOT_UNAVAILABLE, CopilotStylePathSegments, EXPLAIN_CODE, GITHUB_COPILOT_CHAT_EXT, PowerPagesParticipantDocLink, PowerPagesParticipantPrompt, SELECTED_CODE_INFO, SELECTED_CODE_INFO_ENABLED, THUMBS_DOWN, THUMBS_UP, WebViewMessage, sendIconSvg } from "./constants";
 import { IOrgInfo } from './model';
 import { checkCopilotAvailability, escapeDollarSign, getActiveEditorContent, getNonce, getSelectedCode, getSelectedCodeLineRange, getUserName, openWalkthrough, showConnectedOrgMessage, showInputBoxAndGetOrgUrl, showProgressWithNotification } from "../utilities/Utils";
@@ -17,14 +16,14 @@ import { CESUserFeedback } from "./user-feedback/CESSurvey";
 import { ActiveOrgOutput } from "../../client/pac/PacTypes";
 import { CopilotWalkthroughEvent, CopilotCopyCodeToClipboardEvent, CopilotInsertCodeToEditorEvent, CopilotLoadedEvent, CopilotOrgChangedEvent, CopilotUserFeedbackThumbsDownEvent, CopilotUserFeedbackThumbsUpEvent, CopilotUserPromptedEvent, CopilotCodeLineCountEvent, CopilotClearChatEvent, CopilotExplainCode, CopilotExplainCodeSize, CopilotNotAvailableECSConfig, CopilotPanelTryGitHubCopilotClicked, VSCodeExtensionGitHubChatPanelOpened, VSCodeExtensionGitHubChatNotFound } from "./telemetry/telemetryConstants";
 import { sendTelemetryEvent } from "./telemetry/copilotTelemetry";
-import TelemetryReporter from "@vscode/extension-telemetry";
 import { getEntityColumns, getEntityName, getFormXml } from "./dataverseMetadata";
 import { isWithinTokenLimit, encode } from "gpt-tokenizer";
 import { orgChangeErrorEvent, orgChangeEvent } from "../../client/OrgChangeNotifier";
-import { createAuthProfileExp, getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
+import { getDisabledOrgList, getDisabledTenantList } from "./utils/copilotUtil";
 import { INTELLIGENCE_SCOPE_DEFAULT, PROVIDER_ID } from "../services/Constants";
 import { ArtemisService } from "../services/ArtemisService";
 import { IApiRequestParams, SUCCESS, UserPrompt } from "../constants";
+import { createAuthProfileExp } from "../utilities/PacAuthUtil";
 
 let intelligenceApiToken: string;
 let userID: string; // Populated from PAC or intelligence API
@@ -46,7 +45,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     private _extensionContext: vscode.ExtensionContext;
     private readonly _disposables: vscode.Disposable[] = [];
     private loginButtonRendered = false;
-    private telemetry: ITelemetry;
     private aibEndpoint: string | null = null;
     private geoName: string | null = null;
     private crossGeoDataMovementEnabledPPACFlag = false;
@@ -54,10 +52,8 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
     constructor(
         private readonly _extensionUri: vscode.Uri,
         _context: vscode.ExtensionContext,
-        telemetry: ITelemetry | TelemetryReporter,
         pacWrapper?: PacWrapper,
         orgInfo?: IOrgInfo) {
-        this.telemetry = telemetry;
         this._extensionContext = _context;
         sessionID = uuidv4();
         this._pacWrapper = pacWrapper;
@@ -65,7 +61,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this._disposables.push(
             vscode.commands.registerCommand("powerpages.copilot.clearConversation", () => {
                 if (userName && orgID) {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotClearChatEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
+                    sendTelemetryEvent({ eventName: CopilotClearChatEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                     this.sendMessageToWebview({ type: "clearConversation" });
                     sessionID = uuidv4();
                 }
@@ -91,7 +87,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 const withinTokenLimit = isWithinTokenLimit(selectedCode, 1000);
                 if (commandType === EXPLAIN_CODE) {
                     const tokenSize = encode(selectedCode).length;
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotExplainCodeSize, copilotSessionId: sessionID, orgId: orgID, userId: userID,  codeLineCount: String(selectedCodeLineRange.end - selectedCodeLineRange.start), tokenSize: String(tokenSize) });
+                    sendTelemetryEvent({ eventName: CopilotExplainCodeSize, copilotSessionId: sessionID, orgId: orgID, userId: userID,  codeLineCount: String(selectedCodeLineRange.end - selectedCodeLineRange.start), tokenSize: String(tokenSize) });
                     if (withinTokenLimit === false) {
                         return;
                     }
@@ -104,7 +100,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             );
 
             this._disposables.push(
-                vscode.commands.registerCommand("powerpages.copilot.explain", () => { sendTelemetryEvent(this.telemetry, { eventName: CopilotExplainCode, copilotSessionId: sessionID, orgId: orgID, userId: userID }); this.show(); handleSelectionChange(EXPLAIN_CODE) })
+                vscode.commands.registerCommand("powerpages.copilot.explain", () => { sendTelemetryEvent({ eventName: CopilotExplainCode, copilotSessionId: sessionID, orgId: orgID, userId: userID }); this.show(); handleSelectionChange(EXPLAIN_CODE) })
             );
         }
         this._disposables.push(
@@ -210,12 +206,12 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;
                     } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) {
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID, userId: userID });
+                        sendTelemetryEvent({ eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                         this.sendMessageToWebview({ type: 'Unavailable' });
                         return;
                     }
 
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
+                    sendTelemetryEvent({ eventName: CopilotLoadedEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                     this.sendMessageToWebview({ type: 'env' });
                     await this.checkAuthentication();
                     if (orgID && userName) {
@@ -233,10 +229,10 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     break;
                 }
                 case "newUserPrompt": {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, userId: userID, isSuggestedPrompt: String(data.value.isSuggestedPrompt), crossGeoDataMovementEnabledPPACFlag: this.crossGeoDataMovementEnabledPPACFlag }); //TODO: Add active Editor info
+                    sendTelemetryEvent({ eventName: CopilotUserPromptedEvent, copilotSessionId: sessionID, aibEndpoint: this.aibEndpoint ?? '', orgId: orgID, userId: userID, isSuggestedPrompt: String(data.value.isSuggestedPrompt), crossGeoDataMovementEnabledPPACFlag: this.crossGeoDataMovementEnabledPPACFlag }); //TODO: Add active Editor info
                     orgID
                         ? (async () => {
-                            await this.authenticateAndSendAPIRequest(data.value.userPrompt, orgID, this.telemetry);
+                            await this.authenticateAndSendAPIRequest(data.value.userPrompt, orgID);
                         })()
                         : (() => {
                             this.sendMessageToWebview({ type: 'apiResponse', value: AuthProfileNotFound });
@@ -253,14 +249,14 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     vscode.window.activeTextEditor?.insertSnippet(
                         new vscode.SnippetString(`${escapedSnippet}`)
                     );
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotInsertCodeToEditorEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
+                    sendTelemetryEvent({ eventName: CopilotInsertCodeToEditorEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                     break;
                 }
                 case "copyCodeToClipboard": {
 
                     vscode.env.clipboard.writeText(data.value);
                     vscode.window.showInformationMessage(vscode.l10n.t('Copied to clipboard!'))
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotCopyCodeToClipboardEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
+                    sendTelemetryEvent({ eventName: CopilotCopyCodeToClipboardEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                     break;
                 }
                 case "clearChat": {
@@ -275,32 +271,32 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
 
                     if (feedbackValue === THUMBS_UP) {
 
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID, subScenario: String(messageScenario) });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_UP, this.telemetry, this.geoName as string, messageScenario, tenantId)
+                        sendTelemetryEvent({ eventName: CopilotUserFeedbackThumbsUpEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID, subScenario: String(messageScenario) });
+                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_UP, this.geoName as string, messageScenario, tenantId)
                     } else if (feedbackValue === THUMBS_DOWN) {
 
-                        sendTelemetryEvent(this.telemetry, { eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID, subScenario: String(messageScenario) });
-                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_DOWN, this.telemetry, this.geoName as string, messageScenario, tenantId)
+                        sendTelemetryEvent({ eventName: CopilotUserFeedbackThumbsDownEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID, subScenario: String(messageScenario) });
+                        CESUserFeedback(this._extensionContext, sessionID, userID, THUMBS_DOWN, this.geoName as string, messageScenario, tenantId)
                     }
                     break;
                 }
                 case "walkthrough": {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
+                    sendTelemetryEvent({ eventName: CopilotWalkthroughEvent, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                     openWalkthrough(this._extensionUri);
                     break;
                 }
                 case "codeLineCount": {
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: String(data.value), orgId: orgID, userId: userID });
+                    sendTelemetryEvent({ eventName: CopilotCodeLineCountEvent, copilotSessionId: sessionID, codeLineCount: String(data.value), orgId: orgID, userId: userID });
                     break;
                 }
                 case "openGitHubCopilotLink": {
                     //Open the GitHub Copilot Chat with @powerpages if GitHub Copilot Chat is installed
-                    sendTelemetryEvent(this.telemetry, { eventName: CopilotPanelTryGitHubCopilotClicked, copilotSessionId: sessionID, orgId: orgID, userId: userID });
+                    sendTelemetryEvent({ eventName: CopilotPanelTryGitHubCopilotClicked, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                     if (vscode.extensions.getExtension(GITHUB_COPILOT_CHAT_EXT)) {
-                        sendTelemetryEvent(this.telemetry, { eventName: VSCodeExtensionGitHubChatPanelOpened, copilotSessionId: sessionID, orgId: orgID, userId: userID });
+                        sendTelemetryEvent({ eventName: VSCodeExtensionGitHubChatPanelOpened, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                         vscode.commands.executeCommand('workbench.action.chat.open', PowerPagesParticipantPrompt);
                     } else {
-                        sendTelemetryEvent(this.telemetry, { eventName: VSCodeExtensionGitHubChatNotFound, copilotSessionId: sessionID, orgId: orgID, userId: userID });
+                        sendTelemetryEvent({ eventName: VSCodeExtensionGitHubChatNotFound, copilotSessionId: sessionID, orgId: orgID, userId: userID });
                         vscode.env.openExternal(vscode.Uri.parse(PowerPagesParticipantDocLink));
                     }
                 }
@@ -321,7 +317,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (pacOutput && pacOutput.Status === SUCCESS) {
             this.handleOrgChangeSuccess.call(this, pacOutput.Results);
 
-            intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) => {
+            intelligenceAPIAuthentication(sessionID, orgID).then(({ accessToken, user, userId }) => {
                 this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId);
             });
 
@@ -340,7 +336,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
             }
             const pacAuthCreateOutput = await showProgressWithNotification(AUTH_CREATE_MESSAGE, async () => { return await this._pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
             pacAuthCreateOutput && pacAuthCreateOutput.Status === SUCCESS
-                ? intelligenceAPIAuthentication(this.telemetry, sessionID, orgID).then(({ accessToken, user, userId }) =>
+                ? intelligenceAPIAuthentication(sessionID, orgID).then(({ accessToken, user, userId }) =>
                     this.intelligenceAPIAuthenticationHandler.call(this, accessToken, user, userId)
                 )
                 : vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
@@ -354,15 +350,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         if (session) {
             intelligenceApiToken = session.accessToken;
             userName = getUserName(session.account.label);
-            userID = getOIDFromToken(session.accessToken, this.telemetry);
+            userID = getOIDFromToken(session.accessToken);
         } else {
             intelligenceApiToken = "";
             userName = "";
         }
     }
 
-    private async authenticateAndSendAPIRequest(data: UserPrompt[], orgID: string, telemetry: ITelemetry) {
-        return intelligenceAPIAuthentication(telemetry, sessionID, orgID)
+    private async authenticateAndSendAPIRequest(data: UserPrompt[], orgID: string) {
+        return intelligenceAPIAuthentication(sessionID, orgID)
             .then(async ({ accessToken, user, userId }) => {
                 intelligenceApiToken = accessToken;
                 userName = getUserName(user);
@@ -376,15 +372,15 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                 let componentInfo: string[] = [];
 
                 if (activeFileParams.dataverseEntity == ADX_ENTITYFORM || activeFileParams.dataverseEntity == ADX_ENTITYLIST) {
-                    metadataInfo = await getEntityName(telemetry, sessionID, activeFileParams.dataverseEntity);
+                    metadataInfo = await getEntityName(sessionID, activeFileParams.dataverseEntity);
 
-                    const dataverseToken = (await dataverseAuthentication(telemetry, activeOrgUrl, true)).accessToken;
+                    const dataverseToken = (await dataverseAuthentication(activeOrgUrl, true)).accessToken;
 
                     if (activeFileParams.dataverseEntity == ADX_ENTITYFORM) {
-                        const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+                        const formColumns = await getFormXml(metadataInfo.entityName, metadataInfo.formName, activeOrgUrl, dataverseToken, sessionID);
                         componentInfo = formColumns;
                     } else {
-                        const entityColumns = await getEntityColumns(metadataInfo.entityName, activeOrgUrl, dataverseToken, telemetry, sessionID);
+                        const entityColumns = await getEntityColumns(metadataInfo.entityName, activeOrgUrl, dataverseToken, sessionID);
                         componentInfo = entityColumns;
                     }
 
@@ -397,7 +393,6 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                     sessionID: sessionID,
                     entityName: metadataInfo.entityName,
                     entityColumns: componentInfo,
-                    telemetry: telemetry,
                     aibEndpoint: this.aibEndpoint,
                     geoName: this.geoName,
                     crossGeoDataMovementEnabledPPACFlag: this.crossGeoDataMovementEnabledPPACFlag
@@ -423,9 +418,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         environmentId = activeOrg.EnvironmentId
 
         sessionID = uuidv4(); // Generate a new session ID on org change
-        sendTelemetryEvent(this.telemetry, { eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
+        sendTelemetryEvent({ eventName: CopilotOrgChangedEvent, copilotSessionId: sessionID, orgId: orgID });
 
-        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, this.telemetry, sessionID, environmentId);
+        const intelligenceAPIEndpointInfo = await ArtemisService.getIntelligenceEndpoint(orgID, sessionID, environmentId);
         if (!intelligenceAPIEndpointInfo.intelligenceEndpoint) {
             this.sendMessageToWebview({ type: 'Unavailable' });
             return;
@@ -435,7 +430,7 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
         this.crossGeoDataMovementEnabledPPACFlag = intelligenceAPIEndpointInfo.crossGeoDataMovementEnabledPPACFlag;
 
 
-        const copilotAvailabilityStatus = checkCopilotAvailability(this.aibEndpoint, orgID, this.telemetry, sessionID, tenantId);
+        const copilotAvailabilityStatus = checkCopilotAvailability(this.aibEndpoint, orgID, sessionID, tenantId);
 
         if (!copilotAvailabilityStatus) {
             this.sendMessageToWebview({ type: 'Unavailable' });

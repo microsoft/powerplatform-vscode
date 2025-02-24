@@ -120,7 +120,13 @@
   "Failed to get website endpoint. Please try again later": "Failed to get website endpoint. Please try again later",
   "Getting website endpoint...": "Getting website endpoint...",
   "Failed to get organization details. Please try again later": "Failed to get organization details. Please try again later",
-  "Clearing cache...": "Clearing cache...",
+  "Clearing cache. See [details](https://aka.ms/pages-clear-cache)./This is a markdown formatting which must persist across translations.The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified": {
+    "message": "Clearing cache. See [details](https://aka.ms/pages-clear-cache).",
+    "comment": [
+      "This is a markdown formatting which must persist across translations.",
+      "The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).', keeping brackets and the text in the parentheses unmodified"
+    ]
+  },
   "Authenticating...": "Authenticating...",
   "Unable to clear cache": "Unable to clear cache",
   "Enter the name of the web template": "Enter the name of the web template",
@@ -181,6 +187,72 @@
   "Active Sites": "Active Sites",
   "Inactive Sites": "Inactive Sites",
   "No sites found": "No sites found",
+  "No environments found": "No environments found",
+  "Select an environment": "Select an environment",
+  "Session Details": "Session Details",
+  "Changing environment...": "Changing environment...",
+  "Current": "Current",
+  "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Site management URL not found for the selected site. Please try again after refreshing the environment.",
+  "Timestamp: {0}/{0} is the timestamp": {
+    "message": "Timestamp: {0}",
+    "comment": [
+      "{0} is the timestamp"
+    ]
+  },
+  "Tenant ID: {0}/{0} is the Tenant ID": {
+    "message": "Tenant ID: {0}",
+    "comment": [
+      "{0} is the Tenant ID"
+    ]
+  },
+  "Object ID: {0}/{0} is the Object ID": {
+    "message": "Object ID: {0}",
+    "comment": [
+      "{0} is the Object ID"
+    ]
+  },
+  "Organization ID: {0}/{0} is the Organization ID": {
+    "message": "Organization ID: {0}",
+    "comment": [
+      "{0} is the Organization ID"
+    ]
+  },
+  "Unique name: {0}/{0} is the Unique name": {
+    "message": "Unique name: {0}",
+    "comment": [
+      "{0} is the Unique name"
+    ]
+  },
+  "Instance url: {0}/{0} is the Instance Url": {
+    "message": "Instance url: {0}",
+    "comment": [
+      "{0} is the Instance Url"
+    ]
+  },
+  "Environment ID: {0}/{0} is the Environment ID": {
+    "message": "Environment ID: {0}",
+    "comment": [
+      "{0} is the Environment ID"
+    ]
+  },
+  "Cluster environment: {0}/{0} is the Cluster environment": {
+    "message": "Cluster environment: {0}",
+    "comment": [
+      "{0} is the Cluster environment"
+    ]
+  },
+  "Cluster category: {0}/{0} is the Cluster category": {
+    "message": "Cluster category: {0}",
+    "comment": [
+      "{0} is the Cluster category"
+    ]
+  },
+  "Cluster geo name: {0}/{0} is the cluster geo name": {
+    "message": "Cluster geo name: {0}",
+    "comment": [
+      "{0} is the cluster geo name"
+    ]
+  },
   "PAC Telemetry enabled": "PAC Telemetry enabled",
   "Failed to enable PAC telemetry.": "Failed to enable PAC telemetry.",
   "PAC Telemetry disabled": "PAC Telemetry disabled",

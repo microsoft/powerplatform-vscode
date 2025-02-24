@@ -23,7 +23,6 @@ export async function sendApiRequest(params: IApiRequestParams) {
         sessionID,
         entityName,
         entityColumns,
-        telemetry,
         aibEndpoint,
         geoName,
         crossGeoDataMovementEnabledPPACFlag = false,
@@ -94,7 +93,7 @@ export async function sendApiRequest(params: IApiRequestParams) {
                 const jsonResponse = await response.json();
 
                 if (jsonResponse.operationStatus === 'Success') {
-                    sendTelemetryEvent(telemetry, { eventName: CopilotResponseSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgId: orgID });
+                    sendTelemetryEvent({ eventName: CopilotResponseSuccessEvent, copilotSessionId: sessionID, durationInMills: responseTime, orgId: orgID });
                     if (jsonResponse.additionalData && Array.isArray(jsonResponse.additionalData) && jsonResponse.additionalData.length > 0) {
                         const additionalData = jsonResponse.additionalData[0];
                         if (additionalData.properties && additionalData.properties.response) {
@@ -110,7 +109,7 @@ export async function sendApiRequest(params: IApiRequestParams) {
                 }
                 throw new Error("Invalid response format");
             } catch (error) {
-                sendTelemetryEvent(telemetry, { eventName: CopilotResponseOkFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime, orgId: orgID });
+                sendTelemetryEvent({ eventName: CopilotResponseOkFailureEvent, copilotSessionId: sessionID, error: error as Error, durationInMills: responseTime, orgId: orgID });
                 return InvalidResponse;
             }
         } else {
@@ -120,7 +119,7 @@ export async function sendApiRequest(params: IApiRequestParams) {
                 const errorMessage = errorResponse.error && errorResponse.error.messages[0];
 
                 const responseError = new Error(errorMessage);
-                sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEventWithMessage, copilotSessionId: sessionID, responseStatus: String(response.status), error: responseError, durationInMills: responseTime, orgId: orgID });
+                sendTelemetryEvent({ eventName: CopilotResponseFailureEventWithMessage, copilotSessionId: sessionID, responseStatus: String(response.status), error: responseError, durationInMills: responseTime, orgId: orgID });
 
                 if (response.status === 429) {
                     return RateLimitingResponse
@@ -137,12 +136,12 @@ export async function sendApiRequest(params: IApiRequestParams) {
                     return InvalidResponse;
                 }
             } catch (error) {
-                sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: String(response.status), error: error as Error, durationInMills: responseTime, orgId: orgID });
+                sendTelemetryEvent({ eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, responseStatus: String(response.status), error: error as Error, durationInMills: responseTime, orgId: orgID });
                 return InvalidResponse;
             }
         }
     } catch (error) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error, orgId: orgID });
+        sendTelemetryEvent({ eventName: CopilotResponseFailureEvent, copilotSessionId: sessionID, error: error as Error, orgId: orgID });
         return NetworkError;
     }
 

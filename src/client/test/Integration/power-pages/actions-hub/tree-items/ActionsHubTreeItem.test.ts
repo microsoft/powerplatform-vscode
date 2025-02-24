@@ -13,7 +13,8 @@ class MockTreeItem extends ActionsHubTreeItem {
             "Foo",
             vscode.TreeItemCollapsibleState.Collapsed,
             "iconPath",
-            "contextValue"
+            "contextValue",
+            "describe"
         );
     }
 }
@@ -25,9 +26,39 @@ describe('ActionsHubTreeItem', () => {
         expect(treeItem).to.be.instanceOf(vscode.TreeItem);
     });
 
+    it('should have the expected label', () => {
+        const treeItem = new MockTreeItem();
+
+        expect(treeItem.label).to.be.equal("Foo");
+    });
+
+    it('should have the expected collapsible state', () => {
+        const treeItem = new MockTreeItem();
+
+        expect(treeItem.collapsibleState).to.be.equal(vscode.TreeItemCollapsibleState.Collapsed);
+    });
+
+    it('should have the expected icon path', () => {
+        const treeItem = new MockTreeItem();
+
+        expect(treeItem.iconPath).to.be.equal("iconPath");
+    });
+
+    it('should have the expected context value', () => {
+        const treeItem = new MockTreeItem();
+
+        expect(treeItem.contextValue).to.be.equal("contextValue");
+    });
+
     it('should have the expected tooltip', () => {
         const treeItem = new MockTreeItem();
 
         expect(treeItem.tooltip).to.be.equal("Foo");
+    });
+
+    it('should have the expected description', () => {
+        const treeItem = new MockTreeItem();
+
+        expect(treeItem.description).to.be.equal("describe");
     });
 });

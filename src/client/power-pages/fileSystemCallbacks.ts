@@ -4,7 +4,6 @@
  */
 
 import * as vscode from "vscode";
-import { ITelemetry } from "../../common/OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { getCurrentWorkspaceURI, getExcludedFileGlobPattern, getFileProperties, getPowerPageEntityType, getRegExPattern } from "./commonUtility";
 import { PowerPagesEntityType } from "./constants";
 import { cleanupRelatedFiles, fileRenameValidation, updateEntityPathNames } from "./fileSystemUpdatesUtility";
@@ -12,17 +11,15 @@ import { FileDeleteEvent, FileRenameEvent, sendTelemetryEvent, UserFileDeleteEve
 import { showDiagnosticMessage, validateTextDocument } from "./validationDiagnostics";
 
 export async function handleFileSystemCallbacks(
-    context: vscode.ExtensionContext,
-    telemetry: ITelemetry
+    context: vscode.ExtensionContext
 ) {
     // Add file system callback flows here - for rename and delete file actions
-    await processOnDidDeleteFiles(context, telemetry);
-    await processOnDidRenameFiles(context, telemetry);
+    await processOnDidDeleteFiles(context);
+    await processOnDidRenameFiles(context);
 }
 
 async function processOnDidDeleteFiles(
-    context: vscode.ExtensionContext,
-    telemetry: ITelemetry
+    context: vscode.ExtensionContext
 ) {
     context.subscriptions.push(
         vscode.workspace.onDidDeleteFiles(async (e) => {
@@ -38,7 +35,7 @@ async function processOnDidDeleteFiles(
                         const fileEntityType = getPowerPageEntityType(f.path);
 
                         // Usage of FileDeleteEvent per file
-                        sendTelemetryEvent(telemetry, { eventName: FileDeleteEvent, fileEntityType: PowerPagesEntityType[fileEntityType], methodName: processOnDidDeleteFiles.name });
+                        sendTelemetryEvent({ eventName: FileDeleteEvent, fileEntityType: PowerPagesEntityType[fileEntityType], methodName: processOnDidDeleteFiles.name });
 
                         if (fileEntityType === PowerPagesEntityType.UNKNOWN) {
                             return;
@@ -46,7 +43,7 @@ async function processOnDidDeleteFiles(
 
                         const fileProperties = getFileProperties(f.path);
                         if (fileProperties.fileName && fileProperties.fileCompleteName) {
-                            await cleanupRelatedFiles(f.path, fileEntityType, fileProperties, telemetry);
+                            await cleanupRelatedFiles(f.path, fileEntityType, fileProperties);
 
                             // TODO - Add search validation for entity guid
                             allFileNames.push(fileProperties.fileName);
@@ -57,26 +54,25 @@ async function processOnDidDeleteFiles(
                         const patterns = getRegExPattern(allFileNames);
                         const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, getExcludedFileGlobPattern(allFileNames), 1000);
                         allDocumentsUriInWorkspace.forEach(async uri =>
-                            await validateTextDocument(uri, patterns, true, telemetry)
+                            await validateTextDocument(uri, patterns, true)
                         );
 
                         // Show notification to check for diagnostics
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { methodName: processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent({ methodName: processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileDeleteEvent
-                sendTelemetryEvent(telemetry, { methodName: processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent({ methodName: processOnDidDeleteFiles.name, eventName: UserFileDeleteEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
             }
         })
     );
 }
 
 async function processOnDidRenameFiles(
-    context: vscode.ExtensionContext,
-    telemetry: ITelemetry
+    context: vscode.ExtensionContext
 ) {
     context.subscriptions.push(
         vscode.workspace.onDidRenameFiles(async (e) => {
@@ -91,7 +87,7 @@ async function processOnDidRenameFiles(
                         const fileEntityType = getPowerPageEntityType(f.oldUri.path);
 
                         // Usage of FileRenameEvent per file
-                        sendTelemetryEvent(telemetry, { methodName: processOnDidRenameFiles.name, eventName: FileRenameEvent, fileEntityType: PowerPagesEntityType[fileEntityType] });
+                        sendTelemetryEvent({ methodName: processOnDidRenameFiles.name, eventName: FileRenameEvent, fileEntityType: PowerPagesEntityType[fileEntityType] });
 
                         if (fileEntityType === PowerPagesEntityType.UNKNOWN) {
                             return;
@@ -100,9 +96,9 @@ async function processOnDidRenameFiles(
                         const fileProperties = getFileProperties(f.oldUri.path);
 
                         if (fileProperties.fileName && fileProperties.fileCompleteName) {
-                            const isValidationSuccess = await fileRenameValidation(f.oldUri, f.newUri, fileProperties, telemetry);
+                            const isValidationSuccess = await fileRenameValidation(f.oldUri, f.newUri, fileProperties);
                             if (isValidationSuccess) {
-                                await updateEntityPathNames(f.oldUri, f.newUri, fileProperties, fileEntityType, telemetry);
+                                await updateEntityPathNames(f.oldUri, f.newUri, fileProperties, fileEntityType);
                             }
 
                             allFileNames.push(fileProperties.fileName);
@@ -113,21 +109,19 @@ async function processOnDidRenameFiles(
                         const patterns = getRegExPattern(allFileNames);
                         const allDocumentsUriInWorkspace = await vscode.workspace.findFiles(`**/*.*`, getExcludedFileGlobPattern(allFileNames), 1000);
                         allDocumentsUriInWorkspace.forEach(async uri =>
-                            await validateTextDocument(uri, patterns, true, telemetry)
+                            await validateTextDocument(uri, patterns, true)
                         );
 
                         // Show notification to check for diagnostics
                         showDiagnosticMessage();
                     }
                 } catch (error) {
-                    sendTelemetryEvent(telemetry, { methodName: processOnDidRenameFiles.name, eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
+                    sendTelemetryEvent({ methodName: processOnDidRenameFiles.name, eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime), exception: error as Error });
                 }
 
                 // Performance of UserFileRenameEvent
-                sendTelemetryEvent(telemetry, { methodName: processOnDidRenameFiles.name, eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
+                sendTelemetryEvent({ methodName: processOnDidRenameFiles.name, eventName: UserFileRenameEvent, numberOfFiles: e.files.length.toString(), durationInMills: (performance.now() - startTime) });
             }
         })
     );
 }
-
-

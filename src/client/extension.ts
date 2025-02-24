@@ -3,11 +3,8 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import TelemetryReporter from "@vscode/extension-telemetry";
 import * as path from "path";
 import * as vscode from "vscode";
-import { AppTelemetryConfigUtility } from "../common/pp-tooling-telemetry-node";
-import { vscodeExtAppInsightsResourceProvider } from "../common/telemetry-generated/telemetryConfiguration";
 import { ITelemetryData } from "../common/TelemetryData";
 import { CliAcquisition } from "./lib/CliAcquisition";
 import { PacTerminal } from "./lib/PacTerminal";
@@ -34,27 +31,27 @@ import { CopilotNotificationShown } from "../common/copilot/telemetry/telemetryC
 import { copilotNotificationPanel, disposeNotificationPanel } from "../common/copilot/welcome-notification/CopilotNotificationPanel";
 import { COPILOT_NOTIFICATION_DISABLED, EXTENSION_VERSION_KEY } from "../common/copilot/constants";
 import { oneDSLoggerWrapper } from "../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
-import { OrgChangeNotifier, orgChangeEvent } from "./OrgChangeNotifier";
+import { OrgChangeNotifier, orgChangeErrorEvent, orgChangeEvent } from "./OrgChangeNotifier";
 import { ActiveOrgOutput } from "./pac/PacTypes";
 import { desktopTelemetryEventNames } from "../common/OneDSLoggerTelemetry/client/desktopExtensionTelemetryEventNames";
 import { ArtemisService } from "../common/services/ArtemisService";
 import { workspaceContainsPortalConfigFolder } from "../common/utilities/PathFinderUtil";
 import { getPortalsOrgURLs } from "../common/utilities/WorkspaceInfoFinderUtil";
 import { EXTENSION_ID, SUCCESS } from "../common/constants";
-import { AadIdKey, EnvIdKey, TenantIdKey } from "../common/OneDSLoggerTelemetry/telemetryConstants";
 import { PowerPagesAppName, PowerPagesClientName } from "../common/ecs-features/constants";
 import { ECSFeaturesClient } from "../common/ecs-features/ecsFeatureClient";
 import { getECSOrgLocationValue, getWorkspaceFolders } from "../common/utilities/Utils";
 import { CliAcquisitionContext } from "./lib/CliAcquisitionContext";
-import { PreviewSite, SITE_PREVIEW_COMMAND_ID } from "./power-pages/preview-site/PreviewSite";
-import { ActionsHubTreeDataProvider } from "./power-pages/actions-hub/ActionsHubTreeDataProvider";
-import { IArtemisServiceResponse } from "../common/services/Interfaces";
+import { PreviewSite } from "./power-pages/preview-site/PreviewSite";
+import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
+import { extractAuthInfo, extractOrgInfo } from "./power-pages/commonUtility";
+import PacContext from "./pac/PacContext";
+import ArtemisContext from "./ArtemisContext";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
 let htmlServerRunning = false;
 let yamlServerRunning = false;
-let _telemetry: TelemetryReporter;
 
 
 export async function activate(
@@ -62,25 +59,9 @@ export async function activate(
 ): Promise<void> {
     _context = context;
 
-    // setup telemetry
-    const telemetryEnv =
-        AppTelemetryConfigUtility.createGlobalTelemetryEnvironment();
-    const appInsightsResource =
-        vscodeExtAppInsightsResourceProvider.GetAppInsightsResourceForDataBoundary(
-            telemetryEnv.dataBoundary
-        );
-    _telemetry = new TelemetryReporter(
-        context.extension.id,
-        context.extension.packageJSON.version,
-        appInsightsResource.instrumentationKey
-    );
-    context.subscriptions.push(_telemetry);
     // Logging telemetry in US cluster for unauthenticated scenario
     oneDSLoggerWrapper.instantiate("us");
 
-    _telemetry.sendTelemetryEvent("Start", {
-        "pac.userId": readUserSettings().uniqueId,
-    });
     oneDSLoggerWrapper.getLogger().traceInfo("Start", {
         "pac.userId": readUserSettings().uniqueId
     });
@@ -109,9 +90,6 @@ export async function activate(
         vscode.commands.registerCommand(
             "microsoft-powerapps-portals.preview-show",
             () => {
-                _telemetry.sendTelemetryEvent("StartCommand", {
-                    commandId: "microsoft-powerapps-portals.preview-show",
-                });
                 oneDSLoggerWrapper.getLogger().traceInfo("StartCommand", {
                     commandId: "microsoft-powerapps-portals.preview-show"
                 });
@@ -123,9 +101,6 @@ export async function activate(
     // registering bootstrapdiff command
     _context.subscriptions.push(
         vscode.commands.registerCommand('microsoft-powerapps-portals.bootstrap-diff', async () => {
-            _telemetry.sendTelemetryEvent("StartCommand", {
-                commandId: "microsoft-powerapps-portals.bootstrap-diff",
-            });
             oneDSLoggerWrapper.getLogger().traceInfo("StartCommand", {
                 commandId: "microsoft-powerapps-portals.bootstrap-diff",
             });
@@ -143,9 +118,6 @@ export async function activate(
                 PortalWebView.checkDocumentIsHTML()
             ) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
-                        page: "NewPage",
-                    });
                     oneDSLoggerWrapper.getLogger().traceInfo("PortalWebPagePreview", {
                         page: "NewPage",
                     });
@@ -160,9 +132,6 @@ export async function activate(
                 return;
             } else if (isCurrentDocumentEdited()) {
                 if (PortalWebView?.currentPanel) {
-                    _telemetry.sendTelemetryEvent("PortalWebPagePreview", {
-                        page: "ExistingPage",
-                    });
                     oneDSLoggerWrapper.getLogger().traceInfo("PortalWebPagePreview", {
                         page: "ExistingPage",
                     });
@@ -181,12 +150,12 @@ export async function activate(
     }
 
     // Add CRUD related callback subscription here
-    await handleFileSystemCallbacks(_context, _telemetry);
+    await handleFileSystemCallbacks(_context);
 
-    const cliContext = new CliAcquisitionContext(_context, _telemetry);
+    const cliContext = new CliAcquisitionContext(_context);
     const cli = new CliAcquisition(cliContext);
     const cliPath = await cli.ensureInstalled();
-    const pacTerminal = new PacTerminal(_context, _telemetry, cliPath);
+    const pacTerminal = new PacTerminal(_context, cliPath);
     _context.subscriptions.push(cli);
     _context.subscriptions.push(pacTerminal);
 
@@ -197,24 +166,37 @@ export async function activate(
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
-            const artemisResponse = await ArtemisService.getArtemisResponse(orgID, _telemetry, "");
+
+            const [artemisResult, pacActiveAuthResult] = await Promise.allSettled([
+                ArtemisService.getArtemisResponse(orgID, ""),
+                pacTerminal.getWrapper()?.activeAuth()
+            ]);
+
+            const artemisResponse = artemisResult.status === 'fulfilled' ? artemisResult.value : null;
+            const pacActiveAuth = pacActiveAuthResult.status === 'fulfilled' ? pacActiveAuthResult.value : null;
+
             if (artemisResponse !== null && artemisResponse.response !== null) {
+                ArtemisContext.setContext(artemisResponse);
+
                 const { geoName, geoLongName, clusterName, clusterNumber } = artemisResponse.response;
-                const pacActiveAuth = await pacTerminal.getWrapper()?.activeAuth();
-                let AadIdObject, EnvID, TenantID;
+                let AadObjectId, EnvID, TenantID;
+
                 if ((pacActiveAuth && pacActiveAuth.Status === SUCCESS)) {
-                    AadIdObject = pacActiveAuth.Results?.filter(obj => obj.Key === AadIdKey);
-                    EnvID = pacActiveAuth.Results?.filter(obj => obj.Key === EnvIdKey);
-                    TenantID = pacActiveAuth.Results?.filter(obj => obj.Key === TenantIdKey);
+                    const authInfo = extractAuthInfo(pacActiveAuth.Results);
+                    PacContext.setContext(authInfo, extractOrgInfo(orgDetails));
+
+                    AadObjectId = authInfo.EntraIdObjectId;
+                    EnvID = authInfo.EnvironmentId;
+                    TenantID = authInfo.TenantId;
                 }
 
-                if (EnvID?.[0]?.Value && TenantID?.[0]?.Value && AadIdObject?.[0]?.Value) {
-                    await ECSFeaturesClient.init(_telemetry,
+                if (EnvID && TenantID && AadObjectId) {
+                    await ECSFeaturesClient.init(
                         {
                             AppName: PowerPagesAppName,
-                            EnvID: EnvID[0].Value,
-                            UserID: AadIdObject[0].Value,
-                            TenantID: TenantID[0].Value,
+                            EnvID,
+                            UserID: AadObjectId,
+                            TenantID,
                             Region: artemisResponse.stamp,
                             Location: getECSOrgLocationValue(clusterName, clusterNumber)
                         },
@@ -223,8 +205,8 @@ export async function activate(
 
                 oneDSLoggerWrapper.instantiate(geoName, geoLongName);
                 let initContext: object = { ...orgDetails, orgGeo: geoName };
-                if (AadIdObject?.[0]?.Value) {
-                    initContext = { ...initContext, AadId: AadIdObject[0].Value }
+                if (AadObjectId) {
+                    initContext = { ...initContext, AadId: AadObjectId }
                 }
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }
@@ -233,23 +215,29 @@ export async function activate(
                 let telemetryData = '';
                 let listOfActivePortals = [];
                 try {
-                    listOfActivePortals = getPortalsOrgURLs(workspaceFolders, _telemetry);
+                    listOfActivePortals = getPortalsOrgURLs(workspaceFolders);
                     telemetryData = JSON.stringify(listOfActivePortals);
-                    _telemetry.sendTelemetryEvent("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
                     oneDSLoggerWrapper.getLogger().traceInfo("VscodeDesktopUsage", { listOfActivePortals: telemetryData, countOfActivePortals: listOfActivePortals.length.toString() });
                 } catch (exception) {
                     const exceptionError = exception as Error;
-                    _telemetry.sendTelemetryException(exceptionError, { eventName: 'VscodeDesktopUsage' });
                     oneDSLoggerWrapper.getLogger().traceError(exceptionError.name, exceptionError.message, exceptionError, { eventName: 'VscodeDesktopUsage' });
                 }
 
                 // Show Copilot notification after ECS initialization and workspace check
-                showNotificationForCopilot(_telemetry, telemetryData, listOfActivePortals.length.toString());
+                showNotificationForCopilot(telemetryData, listOfActivePortals.length.toString());
                 copilotNotificationShown = true;
 
             }
 
-            await initializeSiteRuntimePreview(artemisResponse, workspaceFolders, orgDetails, pacTerminal);
+            await Promise.allSettled([
+                PreviewSite.initialize(context, workspaceFolders),
+                ActionsHub.initialize(context, pacTerminal)
+            ]);
+        }),
+
+        orgChangeErrorEvent(async () => {
+            //Even if auth change was unsuccessful, we should still initialize the actions hub
+            await ActionsHub.initialize(context, pacTerminal);
         })
     );
 
@@ -261,10 +249,9 @@ export async function activate(
         vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
         vscode.workspace.textDocuments.forEach(didOpenTextDocument);
 
-        _telemetry.sendTelemetryEvent("PowerPagesWebsiteYmlExists"); // Capture's PowerPages Users
         oneDSLoggerWrapper.getLogger().traceInfo("PowerPagesWebsiteYmlExists");
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', true);
-        initializeGenerator(_context, cliContext, _telemetry); // Showing the create command only if website.yml exists
+        initializeGenerator(_context, cliContext); // Showing the create command only if website.yml exists
     }
     else {
         vscode.commands.executeCommand('setContext', 'powerpages.websiteYmlExists', false);
@@ -273,61 +260,15 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
-    initializeActionsHub(context);
-
     if (shouldEnableDebugger()) {
-        activateDebugger(context, _telemetry);
+        activateDebugger(context);
     }
 
-    _telemetry.sendTelemetryEvent("activated");
     oneDSLoggerWrapper.getLogger().traceInfo("activated");
 }
 
-async function initializeSiteRuntimePreview(
-    artemisResponse: IArtemisServiceResponse | null,
-    workspaceFolders: WorkspaceFolder[],
-    orgDetails: ActiveOrgOutput,
-    pacTerminal: PacTerminal) {
-
-    const isSiteRuntimePreviewEnabled = PreviewSite.isSiteRuntimePreviewEnabled();
-
-    oneDSLoggerWrapper.getLogger().traceInfo("EnableSiteRuntimePreview", {
-        isEnabled: isSiteRuntimePreviewEnabled.toString(),
-        websiteURL: PreviewSite.getSiteUrl() || "undefined"
-    });
-
-    if (artemisResponse !== null && isSiteRuntimePreviewEnabled) {
-        _context.subscriptions.push(
-            vscode.commands.registerCommand(
-                SITE_PREVIEW_COMMAND_ID,
-                async () => await PreviewSite.handlePreviewRequest(_telemetry, pacTerminal)
-            )
-        );
-
-        await PreviewSite.loadSiteUrl(workspaceFolders, artemisResponse?.stamp, orgDetails.EnvironmentId, _telemetry);
-        await vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.siteRuntimePreviewEnabled", true);
-    }
-}
-
-function initializeActionsHub(context: vscode.ExtensionContext) {
-    //TODO: Initialize this based on ECS feature flag
-    const actionsHubEnabled = false;
-
-    vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", actionsHubEnabled);
-
-    if (actionsHubEnabled) {
-        ActionsHubTreeDataProvider.initialize(context, _telemetry);
-    }
-}
-
 export async function deactivate(): Promise<void> {
-    if (_telemetry) {
-        _telemetry.sendTelemetryEvent("End");
-        oneDSLoggerWrapper.getLogger().traceInfo("End");
-        // dispose() will flush any events not sent
-        // Note, while dispose() returns a promise, we don't await it so that we can unblock the rest of unloading logic
-        _telemetry.dispose();
-    }
+    oneDSLoggerWrapper.getLogger().traceInfo("End");
 
     if (client) {
         await client.stop();
@@ -440,11 +381,6 @@ function registerClientToReceiveNotifications(client: LanguageClient) {
         client.onNotification("telemetry/event", (payload: string) => {
             const serverTelemetry = JSON.parse(payload) as ITelemetryData;
             if (!!serverTelemetry && !!serverTelemetry.eventName) {
-                _telemetry.sendTelemetryEvent(
-                    serverTelemetry.eventName,
-                    serverTelemetry.properties,
-                    serverTelemetry.measurements
-                );
                 oneDSLoggerWrapper.getLogger().traceInfo(
                     serverTelemetry.eventName,
                     serverTelemetry.properties,
@@ -484,7 +420,7 @@ function handleWorkspaceFolderChange() {
     }
 }
 
-function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData: string, countOfActivePortals: string) {
+function showNotificationForCopilot(telemetryData: string, countOfActivePortals: string) {
     if (vscode.workspace.getConfiguration('powerPlatform').get('experimental.copilotEnabled') === false) {
         return;
     }
@@ -494,9 +430,8 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
 
     if (!storedVersion || storedVersion !== currentVersion) {
         // Show notification panel for the first load or after an update
-        telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
         oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
-        copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
+        copilotNotificationPanel(_context, telemetryData, countOfActivePortals);
 
         // Update the stored version to the current version
         _context.globalState.update(EXTENSION_VERSION_KEY, currentVersion);
@@ -506,9 +441,8 @@ function showNotificationForCopilot(telemetry: TelemetryReporter, telemetryData:
     const isCopilotNotificationDisabled = _context.globalState.get(COPILOT_NOTIFICATION_DISABLED, false);
 
     if (!isCopilotNotificationDisabled) {
-        telemetry.sendTelemetryEvent(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
         oneDSLoggerWrapper.getLogger().traceInfo(CopilotNotificationShown, { listOfOrgs: telemetryData, countOfActivePortals });
-        copilotNotificationPanel(_context, telemetry, telemetryData, countOfActivePortals);
+        copilotNotificationPanel(_context, telemetryData, countOfActivePortals);
     }
 
 }

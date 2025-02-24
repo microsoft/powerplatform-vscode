@@ -8,7 +8,6 @@ import { componentTypeSchema, EXTENSION_ID, EXTENSION_NAME, IEnvInfo, IRelatedFi
 import { CUSTOM_TELEMETRY_FOR_POWER_PAGES_SETTING_NAME } from "../OneDSLoggerTelemetry/telemetryConstants";
 import { COPILOT_UNAVAILABLE, DataverseEntityNameMap, EntityFieldMap, FieldTypeMap } from "../copilot/constants";
 import { IActiveFileData } from "../copilot/model";
-import { ITelemetry } from "../OneDSLoggerTelemetry/telemetry/ITelemetry";
 import { sendTelemetryEvent } from "../copilot/telemetry/copilotTelemetry";
 import { getDisabledOrgList, getDisabledTenantList } from "../copilot/utils/copilotUtil";
 import { CopilotNotAvailable, CopilotNotAvailableECSConfig } from "../copilot/telemetry/telemetryConstants";
@@ -199,7 +198,6 @@ export function getActiveEditorContent(): IActiveFileData {
 export function checkCopilotAvailability(
     aibEndpoint: string | null,
     orgID: string,
-    telemetry: ITelemetry,
     sessionID: string,
     tenantId?: string | undefined,
 ): boolean {
@@ -208,10 +206,10 @@ export function checkCopilotAvailability(
         return false;
     }
     else if (aibEndpoint === COPILOT_UNAVAILABLE) {
-        sendTelemetryEvent(telemetry, { eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
+        sendTelemetryEvent({ eventName: CopilotNotAvailable, copilotSessionId: sessionID, orgId: orgID });
         return false;
     } else if (getDisabledOrgList()?.includes(orgID) || getDisabledTenantList()?.includes(tenantId ?? "")) { // Tenant ID not available in desktop
-        sendTelemetryEvent(telemetry, { eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID });
+        sendTelemetryEvent({ eventName: CopilotNotAvailableECSConfig, copilotSessionId: sessionID, orgId: orgID });
         return false;
     } else {
         return true;
@@ -272,7 +270,7 @@ async function getFileContentByType(activeFileUri: vscode.Uri, componentType: st
 }
 
 //fetchRelatedFiles function based on component type
-export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, telemetry: ITelemetry, sessionId: string): Promise<IRelatedFiles[]> {
+export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType: string, fieldType: string, sessionId: string): Promise<IRelatedFiles[]> {
     try {
         const relatedFileTypes = relatedFilesSchema[componentType]?.[fieldType];
         if (!relatedFileTypes) {
@@ -293,7 +291,6 @@ export async function fetchRelatedFiles(activeFileUri: vscode.Uri, componentType
         return files;
     } catch (error) {
         const message = (error as Error)?.message;
-        telemetry.sendTelemetryErrorEvent(VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED, { error: message, sessionId: sessionId });
         oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_COPILOT_CONTEXT_RELATED_FILES_FETCH_FAILED, message, error as Error, { sessionId: sessionId }, {});
         return [];
     }
@@ -330,14 +327,14 @@ export function getECSOrgLocationValue(clusterName: string, clusterNumber: strin
 }
 
 //API call to get env list for an org
-export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEndpointCategory | undefined): Promise<IEnvInfo[]> {
+export async function getEnvList(endpointStamp: ServiceEndpointCategory | undefined): Promise<IEnvInfo[]> {
     if(!endpointStamp) {
         return [];
     }
     const envInfo: IEnvInfo[] = [];
     try {
-        const bapAuthToken = await bapServiceAuthentication(telemetry, true);
-        const bapEndpoint = getBAPEndpoint(endpointStamp, telemetry);
+        const bapAuthToken = await bapServiceAuthentication(true);
+        const bapEndpoint = getBAPEndpoint(endpointStamp);
         const envListEndpoint = `${bapEndpoint}${BAP_ENVIRONMENT_LIST_URL.replace('{apiVersion}', BAP_API_VERSION)}`;
 
         const envListResponse = await fetch(envListEndpoint, {
@@ -356,17 +353,17 @@ export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEn
                     envDisplayName: env.properties.displayName
                 });
             });
-            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS });
+            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS });
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GET_ENV_LIST_SUCCESS);
         } else {
-            sendTelemetryEvent(telemetry, {
+            sendTelemetryEvent({
                 eventName: VSCODE_EXTENSION_GET_ENV_LIST_FAILED,
                 errorMsg: envListResponse.statusText
             });
             oneDSLoggerWrapper.getLogger().traceError(VSCODE_EXTENSION_GET_ENV_LIST_FAILED, VSCODE_EXTENSION_GET_ENV_LIST_FAILED, new Error(envListResponse.statusText));
         }
     } catch (error) {
-        sendTelemetryEvent(telemetry, {
+        sendTelemetryEvent({
             eventName: VSCODE_EXTENSION_GET_ENV_LIST_FAILED,
             errorMsg: (error as Error).message
         });
@@ -376,7 +373,7 @@ export async function getEnvList(telemetry: ITelemetry, endpointStamp: ServiceEn
 }
 
 
-export function getBAPEndpoint(serviceEndpointStamp: ServiceEndpointCategory, telemetry: ITelemetry): string {
+export function getBAPEndpoint(serviceEndpointStamp: ServiceEndpointCategory): string {
     let bapEndpoint = "";
 
     switch (serviceEndpointStamp) {
@@ -395,7 +392,7 @@ export function getBAPEndpoint(serviceEndpointStamp: ServiceEndpointCategory, te
         case ServiceEndpointCategory.HIGH:
         case ServiceEndpointCategory.MOONCAKE:
         default:
-            sendTelemetryEvent(telemetry, { eventName: VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });
+            sendTelemetryEvent({ eventName: VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION, data: serviceEndpointStamp });
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_GET_BAP_ENDPOINT_UNSUPPORTED_REGION, { data: serviceEndpointStamp });
             break;
     }

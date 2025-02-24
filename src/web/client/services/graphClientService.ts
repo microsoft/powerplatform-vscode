@@ -21,7 +21,7 @@ export class GraphClientService {
     }
 
     public async graphClientAuthentication(firstTimeAuth = false) {
-        const accessToken = await graphClientAuthentication(WebExtensionContext.telemetry.getTelemetryReporter(), firstTimeAuth);
+        const accessToken = await graphClientAuthentication(firstTimeAuth);
         if (!accessToken) {
             WebExtensionContext.telemetry.sendErrorTelemetry(
                 webExtensionTelemetryEventNames.WEB_EXTENSION_GRAPH_CLIENT_AUTHENTICATION_FAILED,
