@@ -12,6 +12,16 @@
   "microsoft-powerapps-portals.walkthrough.title": "编辑 Power Pages 码",
   "microsoft-powerapps-portals.webExtension.init.title": "初始化 Web 扩展",
   "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "POWER PAGES 操作",
+  "microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title": "预览",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "打开包含文件夹",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "在查找器中显示",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "在资源管理器中显示",
+  "microsoft.powerplatform.pages.actionsHub.login.title": "添加新的身份验证配置文件",
+  "microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title": "在 Power Pages 工作室中打开",
+  "microsoft.powerplatform.pages.actionsHub.refresh.title": "刷新",
+  "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title": "显示环境详细信息",
+  "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "更改环境",
+  "microsoft.powerplatform.pages.actionsHub.title": "POWER PAGES 操作",
   "pacCLI.authPanel.clearAuthProfile.title": "清除身份验证配置文件",
   "pacCLI.authPanel.copyUser.title": "复制用户",
   "pacCLI.authPanel.deleteAuthProfile.title": "删除身份验证配置文件",
@@ -46,5 +56,6 @@
   "powerPlatform.auth.cloud.description": "应使用哪些 Azure 云 Power Platform Tools 来进行身份验证。",
   "powerPlatform.experimental.auth.testCloudOverride.description": "替代测试目标的 `#powerPlatform.auth.cloud#`。对于默认行为，请保留为空。",
   "powerpages.copilotPanel.clearConversation.title": "清除对话",
-  "powerpages.copilotPanel.title": "Power Pages 中的助手"
+  "powerpages.copilotPanel.title": "Power Pages 中的助手",
+  "powerplatform.pages.previewSite.title": "预览站点"
 }

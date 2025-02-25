@@ -12,6 +12,16 @@
   "microsoft-powerapps-portals.walkthrough.title": "Power Pages-Code bearbeiten",
   "microsoft-powerapps-portals.webExtension.init.title": "Weberweiterung initialisieren",
   "microsoft-powerplatform-portals.navigation-loop.powerPagesFileExplorer.title": "POWER PAGES-AKTIONEN",
+  "microsoft.powerplatform.pages.actionsHub.activeSite.previewSite.title": "Als Vorschauversionen anzeigen",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Enthaltenen Ordner öffnen",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Im Finder anzeigen",
+  "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows.title": "Im Explorer anzeigen",
+  "microsoft.powerplatform.pages.actionsHub.login.title": "Neues Authentifizierungsprofil hinzufügen",
+  "microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title": "Im Power Pages-Studio öffnen",
+  "microsoft.powerplatform.pages.actionsHub.refresh.title": "Aktualisieren",
+  "microsoft.powerplatform.pages.actionsHub.showEnvironmentDetails.title": "Umgebungsdetails anzeigen",
+  "microsoft.powerplatform.pages.actionsHub.switchEnvironment.title": "Umgebung ändern",
+  "microsoft.powerplatform.pages.actionsHub.title": "POWER PAGES-AKTIONEN",
   "pacCLI.authPanel.clearAuthProfile.title": "Authentifizierungsprofile löschen",
   "pacCLI.authPanel.copyUser.title": "Benutzer kopieren",
   "pacCLI.authPanel.deleteAuthProfile.title": "Authentifizierungsprofil löschen",
@@ -46,5 +56,6 @@
   "powerPlatform.auth.cloud.description": "Welche Power Platform Tools für die Azure Cloud zur Authentifizierung verwendet werden sollen.",
   "powerPlatform.experimental.auth.testCloudOverride.description": "Überschreibt `#powerPlatform.auth.cloud#` für Testziele. Lassen Sie das Feld für das Standardverhalten leer.",
   "powerpages.copilotPanel.clearConversation.title": "Unterhaltung schließen",
-  "powerpages.copilotPanel.title": "Copilot in Power Pages"
+  "powerpages.copilotPanel.title": "Copilot in Power Pages",
+  "powerplatform.pages.previewSite.title": "Website als Vorschau anzeigen"
 }
