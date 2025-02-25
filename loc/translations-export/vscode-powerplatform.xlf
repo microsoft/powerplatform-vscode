@@ -709,7 +709,7 @@ The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.login">
       <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).
-[Login](command:powerpages.actionsHub.newAuthProfile)</source>
+[Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified</note>
     </trans-unit>
@@ -823,7 +823,7 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <source xml:lang="en">Show PAC Solution Help</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
-      <source xml:lang="en">Upload changes</source>
+      <source xml:lang="en">Upload Site</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
       <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.
