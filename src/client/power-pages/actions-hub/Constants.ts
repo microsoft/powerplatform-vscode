@@ -49,6 +49,8 @@ export const Constants = {
         SITE_MANAGEMENT_URL_NOT_FOUND: "siteManagementUrlNotFound",
         ACTIONS_HUB_UPLOAD_SITE: "actionsHubUploadSite",
         ACTIONS_HUB_UPLOAD_SITE_CANCELLED: "actionsHubUploadSiteCancelled",
+        OTHER_SITES_YAML_PARSE_FAILED: "OtherSitesYamlParseFailed",
+        OTHER_SITES_FILESYSTEM_ERROR: "OtherSitesFilesystemError"
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",
