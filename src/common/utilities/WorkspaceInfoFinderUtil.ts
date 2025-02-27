@@ -9,7 +9,7 @@ import {
 import { glob } from 'glob';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as yaml from 'js-yaml';
+import { parse } from 'yaml';
 import { GetWebsiteRecordID, sendTelemetryEvent } from '../OneDSLoggerTelemetry/telemetry/telemetry';
 import { WEBSITE_YML } from '../constants';
 
@@ -58,7 +58,7 @@ export function getWebsiteRecordId(param: { uri: string }[] | string): string {
         const websiteYmlPath = path.join(workspaceFolderPath, WEBSITE_YML);
         if (fs.existsSync(websiteYmlPath)) {
             const fileContent = fs.readFileSync(websiteYmlPath, 'utf8');
-            const parsedYaml = yaml.load(fileContent) as { adx_websiteid?: string };
+            const parsedYaml = parse(fileContent);
             if (parsedYaml && parsedYaml.adx_websiteid) {
                 return parsedYaml.adx_websiteid;
             }

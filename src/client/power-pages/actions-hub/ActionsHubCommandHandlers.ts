@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as yaml from 'js-yaml';
+import * as yaml from 'yaml';
 import { Constants } from './Constants';
 import { oneDSLoggerWrapper } from '../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { PacTerminal } from '../../lib/PacTerminal';
@@ -303,7 +303,7 @@ export function findOtherSites(knownSiteIds: Map<string, boolean>, fsModule = fs
                 try {
                     // Parse website.yml to get site details
                     const yamlContent = fsModule.readFileSync(websiteYamlPath, UTF8_ENCODING);
-                    const websiteData = yamlModule.load(yamlContent) as WebsiteYaml;
+                    const websiteData = yamlModule.parse(yamlContent) as WebsiteYaml;
 
                     const websiteId = websiteData?.adx_websiteid;
 
