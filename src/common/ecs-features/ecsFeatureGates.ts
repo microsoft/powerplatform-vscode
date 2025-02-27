@@ -65,6 +65,6 @@ export const {
     teamName: PowerPagesClientName,
     description: 'Enable Actions Hub Panel in VS Code Desktop',
     fallback: {
-        enableActionsHub: true,
+        enableActionsHub: false,
     },
 });
