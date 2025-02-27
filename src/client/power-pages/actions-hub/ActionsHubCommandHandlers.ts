@@ -218,8 +218,8 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.websiteRecordId)) || [];
             activeWebsiteDetails = activeWebsiteDetails.map(detail => ({ ...detail, siteManagementUrl: allSites.find(site => site.websiteRecordId === detail.websiteRecordId)?.siteManagementUrl ?? "" }));
 
-            const curretnEnvSiteIds = createKnownSiteIdsMap(activeWebsiteDetails, inactiveWebsiteDetails);
-            const otherSites = findOtherSites(curretnEnvSiteIds);
+            const currentEnvSiteIds = createKnownSiteIdsMap(activeWebsiteDetails, inactiveWebsiteDetails);
+            const otherSites = findOtherSites(currentEnvSiteIds);
 
             return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails, otherSites: otherSites };
         }
