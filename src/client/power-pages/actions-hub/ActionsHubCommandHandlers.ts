@@ -271,7 +271,7 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
  * @param knownSiteIds Map of site IDs that should be excluded from results
  * @returns Array of site information objects for sites found in the parent folder
  */
-export function findOtherSites(knownSiteIds: Map<string, boolean>): IOtherSiteInfo[] {
+export function findOtherSites(knownSiteIds: Map<string, boolean>, fsModule = fs, yamlModule = yaml): IOtherSiteInfo[] {
     // Get the workspace folders
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) {
@@ -283,7 +283,7 @@ export function findOtherSites(knownSiteIds: Map<string, boolean>): IOtherSiteIn
 
     try {
         // Get directories in the parent folder
-        const items = fs.readdirSync(parentFolder, { withFileTypes: true });
+        const items = fsModule.readdirSync(parentFolder, { withFileTypes: true });
         const directories = items
             .filter(item => item.isDirectory())
             .map(item => path.join(parentFolder, item.name));
@@ -299,11 +299,11 @@ export function findOtherSites(knownSiteIds: Map<string, boolean>): IOtherSiteIn
         for (const dir of directories) {
             const websiteYamlPath = path.join(dir, WEBSITE_YML);
 
-            if (fs.existsSync(websiteYamlPath)) {
+            if (fsModule.existsSync(websiteYamlPath)) {
                 try {
                     // Parse website.yml to get site details
-                    const yamlContent = fs.readFileSync(websiteYamlPath, UTF8_ENCODING);
-                    const websiteData = yaml.load(yamlContent) as WebsiteYaml;
+                    const yamlContent = fsModule.readFileSync(websiteYamlPath, UTF8_ENCODING);
+                    const websiteData = yamlModule.load(yamlContent) as WebsiteYaml;
 
                     const websiteId = websiteData?.adx_websiteid;
 

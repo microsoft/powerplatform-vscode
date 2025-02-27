@@ -6,8 +6,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as yaml from 'js-yaml';
 import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsMap, findOtherSites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
@@ -793,18 +791,25 @@ describe('ActionsHubCommandHandlers', () => {
 
     });
 
-    describe('findOtherSites', () => {
-        let fsReaddirSyncStub: sinon.SinonStub;
-        let fsExistsSyncStub: sinon.SinonStub;
-        let fsReadFileSyncStub: sinon.SinonStub;
-        let yamlLoadStub: sinon.SinonStub;
+        describe('findOtherSites', () => {
+        let mockFs: any;
+        let mockYaml: any;
         let mockWorkspaceFolders: sinon.SinonStub;
 
         beforeEach(() => {
-            fsReaddirSyncStub = sandbox.stub(fs, 'readdirSync');
-            fsExistsSyncStub = sandbox.stub(fs, 'existsSync');
-            fsReadFileSyncStub = sandbox.stub(fs, 'readFileSync');
-            yamlLoadStub = sandbox.stub(yaml, 'load');
+            // Create mock fs module with stubbed methods
+            mockFs = {
+                readdirSync: sandbox.stub(),
+                existsSync: sandbox.stub(),
+                readFileSync: sandbox.stub()
+            };
+
+            // Create mock yaml module with stubbed methods
+            mockYaml = {
+                load: sandbox.stub()
+            };
+
+            // Stub workspace folders
             mockWorkspaceFolders = sandbox.stub(vscode.workspace, 'workspaceFolders').get(() => [{
                 uri: { fsPath: '/test/current/workspace' },
                 name: 'workspace',
@@ -819,7 +824,7 @@ describe('ActionsHubCommandHandlers', () => {
         it('should return empty array when no workspace folders exist', () => {
             mockWorkspaceFolders.get(() => undefined);
 
-            const result = findOtherSites(new Map());
+            const result = findOtherSites(new Map(), mockFs, mockYaml);
 
             expect(result).to.be.an('array').that.is.empty;
         });
@@ -830,26 +835,26 @@ describe('ActionsHubCommandHandlers', () => {
                 ['known-site-2', true]
             ]);
 
-            fsReaddirSyncStub.returns([
+            mockFs.readdirSync.returns([
                 { name: 'site1', isDirectory: () => true },
                 { name: 'site2', isDirectory: () => true }
             ]);
 
-            fsExistsSyncStub.returns(true);
+            mockFs.existsSync.returns(true);
 
-            fsReadFileSyncStub.onFirstCall().returns('yaml content 1');
-            fsReadFileSyncStub.onSecondCall().returns('yaml content 2');
+            mockFs.readFileSync.onFirstCall().returns('yaml content 1');
+            mockFs.readFileSync.onSecondCall().returns('yaml content 2');
 
-            yamlLoadStub.onFirstCall().returns({
+            mockYaml.load.onFirstCall().returns({
                 adx_websiteid: 'unknown-site-1',
                 adx_name: 'Unknown Site 1'
             });
-            yamlLoadStub.onSecondCall().returns({
+            mockYaml.load.onSecondCall().returns({
                 adx_websiteid: 'known-site-1',
                 adx_name: 'Known Site 1'
             });
 
-            const result = findOtherSites(knownSiteIds);
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
 
             expect(result).to.have.lengthOf(1);
             expect(result[0].websiteId).to.equal('unknown-site-1');
@@ -861,16 +866,16 @@ describe('ActionsHubCommandHandlers', () => {
             const knownSiteIds = new Map<string, boolean>();
 
             // Return empty directory list to force including current workspace
-            fsReaddirSyncStub.returns([]);
+            mockFs.readdirSync.returns([]);
 
-            fsExistsSyncStub.returns(true);
-            fsReadFileSyncStub.returns('yaml content');
-            yamlLoadStub.returns({
+            mockFs.existsSync.returns(true);
+            mockFs.readFileSync.returns('yaml content');
+            mockYaml.load.returns({
                 adx_websiteid: 'current-workspace-site',
                 adx_name: 'Current Workspace Site'
             });
 
-            const result = findOtherSites(knownSiteIds);
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
 
             expect(result).to.have.lengthOf(1);
             expect(result[0].websiteId).to.equal('current-workspace-site');
@@ -881,15 +886,15 @@ describe('ActionsHubCommandHandlers', () => {
         it('should handle errors in yaml parsing', () => {
             const knownSiteIds = new Map<string, boolean>();
 
-            fsReaddirSyncStub.returns([
+            mockFs.readdirSync.returns([
                 { name: 'error-site', isDirectory: () => true }
             ]);
 
-            fsExistsSyncStub.returns(true);
-            fsReadFileSyncStub.returns('invalid yaml');
-            yamlLoadStub.throws(new Error('YAML parse error'));
+            mockFs.existsSync.returns(true);
+            mockFs.readFileSync.returns('invalid yaml');
+            mockYaml.load.throws(new Error('YAML parse error'));
 
-            const result = findOtherSites(knownSiteIds);
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
 
             expect(result).to.be.an('array').that.is.empty;
             expect(traceErrorStub.calledOnce).to.be.true;
@@ -899,9 +904,9 @@ describe('ActionsHubCommandHandlers', () => {
         it('should handle filesystem errors', () => {
             const knownSiteIds = new Map<string, boolean>();
 
-            fsReaddirSyncStub.throws(new Error('Filesystem error'));
+            mockFs.readdirSync.throws(new Error('Filesystem error'));
 
-            const result = findOtherSites(knownSiteIds);
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
 
             expect(result).to.be.an('array').that.is.empty;
             expect(traceErrorStub.calledOnce).to.be.true;
@@ -911,23 +916,22 @@ describe('ActionsHubCommandHandlers', () => {
         it('should skip sites with missing website id', () => {
             const knownSiteIds = new Map<string, boolean>();
 
-            fsReaddirSyncStub.returns([
+            mockFs.readdirSync.returns([
                 { name: 'missing-id-site', isDirectory: () => true }
             ]);
 
-            fsExistsSyncStub.returns(true);
-            fsReadFileSyncStub.returns('yaml content');
-            yamlLoadStub.returns({
+            mockFs.existsSync.returns(true);
+            mockFs.readFileSync.returns('yaml content');
+            mockYaml.load.returns({
                 adx_name: 'Site With Missing ID'
                 // No adx_websiteid
             });
 
-            const result = findOtherSites(knownSiteIds);
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
 
             expect(result).to.be.an('array').that.is.empty;
         });
     });
-
     describe('createKnownSiteIdsMap', () => {
         it('should create a map with active and inactive site IDs', () => {
             const activeSites = [
