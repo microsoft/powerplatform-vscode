@@ -4,10 +4,12 @@
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as yaml from 'yaml';
 import { Constants } from './Constants';
 import { oneDSLoggerWrapper } from '../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { PacTerminal } from '../../lib/PacTerminal';
-import { SUCCESS } from '../../../common/constants';
+import { SUCCESS, UTF8_ENCODING, WEBSITE_YML } from '../../../common/constants';
 import { AuthInfo, OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
@@ -19,9 +21,11 @@ import { PreviewSite } from '../preview-site/PreviewSite';
 import { PacWrapper } from '../../pac/PacWrapper';
 import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
 import { createAuthProfileExp } from '../../../common/utilities/PacAuthUtil';
-import { IWebsiteDetails } from '../../../common/services/Interfaces';
+import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from '../../../common/services/Interfaces';
 import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
 import CurrentSiteContext from './CurrentSiteContext';
+import path from 'path';
+import { getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -201,7 +205,7 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
     }
 };
 
-export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[] }> => {
+export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[], otherSites: IOtherSiteInfo[] }> => {
     try {
         const orgInfo = PacContext.OrgInfo;
         if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
@@ -215,13 +219,16 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.websiteRecordId)) || [];
             activeWebsiteDetails = activeWebsiteDetails.map(detail => ({ ...detail, siteManagementUrl: allSites.find(site => site.websiteRecordId === detail.websiteRecordId)?.siteManagementUrl ?? "" }));
 
-            return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails };
+            const currentEnvSiteIds = createKnownSiteIdsSet(activeWebsiteDetails, inactiveWebsiteDetails);
+            const otherSites = findOtherSites(currentEnvSiteIds);
+
+            return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails, otherSites: otherSites };
         }
     } catch (error) {
         oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: fetchWebsites.name }, {});
     }
 
-    return { activeSites: [], inactiveSites: [] };
+    return { activeSites: [], inactiveSites: [], otherSites: [] };
 }
 
 export const revealInOS = async () => {
@@ -258,4 +265,98 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
     const websitePath = CurrentSiteContext.currentSiteFolderPath;
     const modelVersion = siteTreeItem.siteInfo.dataModelVersion;
     PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePath}" --modelVersion "${modelVersion}"`);
+}
+
+/**
+ * Finds Power Pages sites in the parent folder that aren't in the known sites list
+ * @param knownSiteIds Set of site IDs that should be excluded from results
+ * @returns Array of site information objects for sites found in the parent folder
+ */
+export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlModule = yaml): IOtherSiteInfo[] {
+    // Get the workspace folders
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || workspaceFolders.length === 0) {
+        return [];
+    }
+
+    const currentWorkspaceFolder = workspaceFolders[0].uri.fsPath;
+    const parentFolder = path.dirname(currentWorkspaceFolder);
+
+    try {
+        // Get directories in the parent folder
+        const items = fsModule.readdirSync(parentFolder, { withFileTypes: true });
+        const directories = items
+            .filter(item => item.isDirectory())
+            .map(item => path.join(parentFolder, item.name));
+
+        // Make sure we include the current workspace folder
+        if (!directories.includes(currentWorkspaceFolder)) {
+            directories.push(currentWorkspaceFolder);
+        }
+
+        const otherSites: IOtherSiteInfo[] = [];
+
+        // Check each directory for website.yml
+        for (const dir of directories) {
+            const websiteYamlPath = path.join(dir, WEBSITE_YML);
+
+            if (fsModule.existsSync(websiteYamlPath)) {
+                try {
+                    // Use the utility function to get website record ID
+                    const websiteId = getWebsiteRecordId(dir);
+                    
+                    // Only include sites that aren't already in active or inactive sites
+                    if (websiteId && !knownSiteIds.has(websiteId.toLowerCase())) {
+                        // Parse website.yml to get site details for the name
+                        const yamlContent = fsModule.readFileSync(websiteYamlPath, UTF8_ENCODING);
+                        const websiteData = yamlModule.parse(yamlContent) as WebsiteYaml;
+                        
+                        otherSites.push({
+                            name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
+                            websiteId: websiteId,
+                            folderPath: dir
+                        });
+                    }
+                } catch (error) {
+                    oneDSLoggerWrapper.getLogger().traceError(
+                        Constants.EventNames.OTHER_SITES_YAML_PARSE_FAILED,
+                        error as string,
+                        error as Error,
+                        { methodName: findOtherSites.name }
+                    );
+                }
+            }
+        }
+
+        return otherSites;
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(
+            Constants.EventNames.OTHER_SITES_FILESYSTEM_ERROR,
+            error as string,
+            error as Error,
+            { methodName: findOtherSites.name }
+        );
+        return [];
+    }
+}
+
+export function createKnownSiteIdsSet(
+    activeSites: IWebsiteDetails[] | undefined, 
+    inactiveSites: IWebsiteDetails[] | undefined
+): Set<string> {
+    const knownSiteIds = new Set<string>();
+    
+    activeSites?.forEach(site => {
+        if (site.websiteRecordId) {
+            knownSiteIds.add(site.websiteRecordId.toLowerCase());
+        }
+    });
+    
+    inactiveSites?.forEach(site => {
+        if (site.websiteRecordId) {
+            knownSiteIds.add(site.websiteRecordId.toLowerCase());
+        }
+    });
+    
+    return knownSiteIds;
 }

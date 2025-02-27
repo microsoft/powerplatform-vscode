@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -26,6 +26,7 @@ import { IWebsiteInfo } from '../../../../power-pages/actions-hub/models/IWebsit
 import * as WebsiteUtils from '../../../../../common/utilities/WebsiteUtil';
 import * as Utils from '../../../../../common/utilities/Utils';
 import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteContext';
+import * as WorkspaceInfoFinderUtil from "../../../../../common/utilities/WorkspaceInfoFinderUtil";
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -791,4 +792,134 @@ describe('ActionsHubCommandHandlers', () => {
 
     });
 
+    describe('findOtherSites', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let mockFs: any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let mockYaml: any;
+        let mockWorkspaceFolders: sinon.SinonStub;
+        let mockGetWebsiteRecordId: sinon.SinonStub;
+    
+        beforeEach(() => {
+            // Create mock fs module with stubbed methods
+            mockFs = {
+                readdirSync: sandbox.stub(),
+                existsSync: sandbox.stub(),
+                readFileSync: sandbox.stub()
+            };
+    
+            // Create mock yaml module with stubbed methods
+            mockYaml = {
+                load: sandbox.stub()
+            };
+    
+            // Stub workspace folders
+            mockWorkspaceFolders = sandbox.stub(vscode.workspace, 'workspaceFolders').get(() => [{
+                uri: { fsPath: '/test/current/workspace' },
+                name: 'workspace',
+                index: 0
+            }]);
+            
+            // Stub the getWebsiteRecordId function
+            mockGetWebsiteRecordId = sandbox.stub(WorkspaceInfoFinderUtil, 'getWebsiteRecordId');
+        });
+    
+        afterEach(() => {
+            sandbox.restore();
+        });
+    
+        it('should return empty array when no workspace folders exist', () => {
+            mockWorkspaceFolders.get(() => undefined);
+    
+            const result = findOtherSites(new Set(), mockFs, mockYaml);
+    
+            expect(result).to.be.an('array').that.is.empty;
+        });
+    
+        it('should handle filesystem errors', () => {
+            const knownSiteIds = new Set<string>();
+            
+            mockFs.readdirSync.throws(new Error('Filesystem error'));
+            
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
+            
+            expect(result).to.be.an('array').that.is.empty;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.OTHER_SITES_FILESYSTEM_ERROR);
+        });
+    
+        it('should skip sites with missing website id', () => {
+            const knownSiteIds = new Set<string>();
+            
+            mockFs.readdirSync.returns([
+                { name: 'missing-id-site', isDirectory: () => true }
+            ]);
+            
+            mockFs.existsSync.returns(true);
+            mockFs.readFileSync.returns('yaml content');
+            mockYaml.load.returns({
+                adx_name: 'Site With Missing ID'
+                // No adx_websiteid
+            });
+            
+            // Setup the stub for getWebsiteRecordId to return null
+            mockGetWebsiteRecordId.withArgs('/test/current/workspace/missing-id-site').returns(null);
+            
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
+            
+            expect(result).to.be.an('array').that.is.empty;
+        });
+    });
+
+    describe('createKnownSiteIdsSet', () => {
+        it('should create a set with active and inactive site IDs', () => {
+            const activeSites = [
+                { websiteRecordId: 'active-1', name: 'Active Site 1' },
+                { websiteRecordId: 'active-2', name: 'Active Site 2' }
+            ] as IWebsiteDetails[];
+
+            const inactiveSites = [
+                { websiteRecordId: 'inactive-1', name: 'Inactive Site 1' },
+                { websiteRecordId: 'inactive-2', name: 'Inactive Site 2' }
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsSet(activeSites, inactiveSites);
+
+            expect(result.size).to.equal(4);
+            expect(result.has('active-1')).to.be.true;
+            expect(result.has('active-2')).to.be.true;
+            expect(result.has('inactive-1')).to.be.true;
+            expect(result.has('inactive-2')).to.be.true;
+        });
+
+        it('should handle case sensitivity by converting to lowercase', () => {
+            const activeSites = [
+                { websiteRecordId: 'ACTIVE-1', name: 'Active Site 1' }
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsSet(activeSites, undefined);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('active-1')).to.be.true;
+        });
+
+        it('should handle undefined inputs', () => {
+            const result = createKnownSiteIdsSet(undefined, undefined);
+            expect(result.size).to.equal(0);
+        });
+
+        it('should skip sites with missing websiteRecordId', () => {
+            const activeSites = [
+                { websiteRecordId: 'active-1', name: 'Active Site 1' },
+                { name: 'Site Without ID' } as IWebsiteDetails
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsSet(activeSites, undefined);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('active-1')).to.be.true;
+        });
+    });
+
 });
+
