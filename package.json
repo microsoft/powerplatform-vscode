@@ -167,7 +167,7 @@
         "when": "!virtualWorkspace && !pacCLI.authPanel.interactiveLoginSupported"
       },
       {
-        "view":"microsoft.powerplatform.pages.actionsHub",
+        "view": "microsoft.powerplatform.pages.actionsHub",
         "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
       }
@@ -1309,7 +1309,7 @@
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
     "worker-loader": "^3.0.8",
-    "yaml": "^2.2.2"
+    "yaml": "^2.7.0"
   },
   "__metadata": {
     "id": "b8680bb6-eaa9-481a-ae0b-83574fa58620",
