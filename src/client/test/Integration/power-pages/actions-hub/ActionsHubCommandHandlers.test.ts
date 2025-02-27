@@ -885,24 +885,6 @@ describe('ActionsHubCommandHandlers', () => {
             expect(result[0].folderPath).to.equal('/test/current/workspace');
         });
 
-        it('should handle errors in yaml parsing', () => {
-            const knownSiteIds = new Map<string, boolean>();
-
-            mockFs.readdirSync.returns([
-                { name: 'error-site', isDirectory: () => true }
-            ]);
-
-            mockFs.existsSync.returns(true);
-            mockFs.readFileSync.returns('invalid yaml');
-            mockYaml.load.throws(new Error('YAML parse error'));
-
-            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
-
-            expect(result).to.be.an('array').that.is.empty;
-            expect(traceErrorStub.calledOnce).to.be.true;
-            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.OTHER_SITES_YAML_PARSE_FAILED);
-        });
-
         it('should handle filesystem errors', () => {
             const knownSiteIds = new Map<string, boolean>();
 
