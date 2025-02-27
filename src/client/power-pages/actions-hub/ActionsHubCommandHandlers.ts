@@ -233,7 +233,12 @@ export const revealInOS = async () => {
 export const openSiteManagement = async (siteTreeItem: SiteTreeItem) => {
     if (!siteTreeItem.siteInfo.siteManagementUrl) {
         vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.SITE_MANAGEMENT_URL_NOT_FOUND));
-        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND, Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND, new Error(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND), { method: openSiteManagement.name });
+        oneDSLoggerWrapper.getLogger().traceError(
+            Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND,
+            Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND,
+            new Error(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND),
+            { method: openSiteManagement.name }
+        );
         return;
     }
     await vscode.env.openExternal(vscode.Uri.parse(siteTreeItem.siteInfo.siteManagementUrl));
