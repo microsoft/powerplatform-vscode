@@ -439,6 +439,10 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+        "title": "%microsoft.powerplatform.pages.actionsHub.siteDetails.title%"
       }
     ],
     "configuration": {
@@ -923,6 +927,10 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -1075,6 +1083,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite)",
           "group": "activeSiteContextMenuGroup@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
+          "group": "siteDetailsContextMenuGroup@1"
         }
       ]
     },

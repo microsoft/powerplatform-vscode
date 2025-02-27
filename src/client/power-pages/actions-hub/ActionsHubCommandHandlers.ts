@@ -66,7 +66,7 @@ export const showEnvironmentDetails = async () => {
 
         const result = await vscode.window.showInformationMessage(message, { detail: details, modal: true }, Constants.Strings.COPY_TO_CLIPBOARD);
 
-        if (result == Constants.Strings.COPY_TO_CLIPBOARD) {
+        if (result === Constants.Strings.COPY_TO_CLIPBOARD) {
             await vscode.env.clipboard.writeText(details);
         }
     } catch (error) {
@@ -258,4 +258,19 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
     const websitePath = CurrentSiteContext.currentSiteFolderPath;
     const modelVersion = siteTreeItem.siteInfo.dataModelVersion;
     PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePath}" --modelVersion "${modelVersion}"`);
+}
+
+export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
+    const siteInfo = siteTreeItem.siteInfo;
+    const details = [
+        vscode.l10n.t({ message: "Friendly name: {0}", args: [siteInfo.name], comment: "{0} is the website name" }),
+        vscode.l10n.t({ message: "Website ID: {0}", args: [siteInfo.websiteId], comment: "{0} is the website ID" }),
+        vscode.l10n.t({ message: "Data model version: v{0}", args: [siteInfo.dataModelVersion], comment: "{0} is the data model version" })
+    ].join('\n');
+
+    const result = await vscode.window.showInformationMessage(Constants.Strings.SITE_DETAILS, { detail: details, modal: true }, Constants.Strings.COPY_TO_CLIPBOARD);
+
+    if (result === Constants.Strings.COPY_TO_CLIPBOARD) {
+        await vscode.env.clipboard.writeText(details);
+    }
 }
