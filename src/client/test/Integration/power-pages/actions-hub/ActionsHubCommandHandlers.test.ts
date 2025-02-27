@@ -792,7 +792,9 @@ describe('ActionsHubCommandHandlers', () => {
     });
 
         describe('findOtherSites', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let mockFs: any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let mockYaml: any;
         let mockWorkspaceFolders: sinon.SinonStub;
 
