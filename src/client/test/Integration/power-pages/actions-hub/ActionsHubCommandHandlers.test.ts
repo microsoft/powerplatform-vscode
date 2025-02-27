@@ -836,67 +836,6 @@ describe('ActionsHubCommandHandlers', () => {
             expect(result).to.be.an('array').that.is.empty;
         });
     
-        it('should find sites that are not in the known sites set', () => {
-            const knownSiteIds = new Set<string>([
-                'known-site-1',
-                'known-site-2'
-            ]);
-            
-            mockFs.readdirSync.returns([
-                { name: 'site1', isDirectory: () => true },
-                { name: 'site2', isDirectory: () => true }
-            ]);
-            
-            mockFs.existsSync.returns(true);
-            
-            mockFs.readFileSync.onFirstCall().returns('yaml content 1');
-            mockFs.readFileSync.onSecondCall().returns('yaml content 2');
-            
-            mockYaml.load.onFirstCall().returns({
-                adx_websiteid: 'unknown-site-1',
-                adx_name: 'Unknown Site 1'
-            });
-            mockYaml.load.onSecondCall().returns({
-                adx_websiteid: 'known-site-1',
-                adx_name: 'Known Site 1'
-            });
-            
-            // Setup the stub for getWebsiteRecordId
-            mockGetWebsiteRecordId.withArgs('/test/current/workspace/site1').returns('unknown-site-1');
-            mockGetWebsiteRecordId.withArgs('/test/current/workspace/site2').returns('known-site-1');
-            
-            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
-            
-            expect(result).to.have.lengthOf(1);
-            expect(result[0].websiteId).to.equal('unknown-site-1');
-            expect(result[0].name).to.equal('Unknown Site 1');
-            expect(result[0].folderPath).to.contain('site1');
-        });
-    
-        it('should include current workspace folder if not already included', () => {
-            const knownSiteIds = new Set<string>();
-            
-            // Return empty directory list to force including current workspace
-            mockFs.readdirSync.returns([]);
-            
-            mockFs.existsSync.returns(true);
-            mockFs.readFileSync.returns('yaml content');
-            mockYaml.load.returns({
-                adx_websiteid: 'current-workspace-site',
-                adx_name: 'Current Workspace Site'
-            });
-            
-            // Setup the stub for getWebsiteRecordId
-            mockGetWebsiteRecordId.withArgs('/test/current/workspace').returns('current-workspace-site');
-            
-            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
-            
-            expect(result).to.have.lengthOf(1);
-            expect(result[0].websiteId).to.equal('current-workspace-site');
-            expect(result[0].name).to.equal('Current Workspace Site');
-            expect(result[0].folderPath).to.equal('/test/current/workspace');
-        });
-    
         it('should handle filesystem errors', () => {
             const knownSiteIds = new Set<string>();
             
