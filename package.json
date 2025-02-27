@@ -1057,37 +1057,37 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
-          "group": "activeSiteContextMenuGroup@1"
+          "group": "siteAction@1"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isWindows",
-          "group": "activeSiteContextMenuGroup@2"
+          "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isMac",
-          "group": "activeSiteContextMenuGroup@2"
+          "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isLinux",
-          "group": "activeSiteContextMenuGroup@2"
+          "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
-          "group": "inactiveSiteContextMenuGroup@1"
+          "group": "siteAction@3"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite)",
-          "group": "activeSiteContextMenuGroup@1"
+          "group": "siteAction@2"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
-          "group": "siteDetailsContextMenuGroup@1"
+          "group": "siteAction@4"
         }
       ]
     },
