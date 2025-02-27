@@ -6,7 +6,9 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import * as fs from 'fs';
+import * as yaml from 'js-yaml';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsMap, findOtherSites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -791,4 +793,190 @@ describe('ActionsHubCommandHandlers', () => {
 
     });
 
+    describe('findOtherSites', () => {
+        let fsReaddirSyncStub: sinon.SinonStub;
+        let fsExistsSyncStub: sinon.SinonStub;
+        let fsReadFileSyncStub: sinon.SinonStub;
+        let yamlLoadStub: sinon.SinonStub;
+        let mockWorkspaceFolders: sinon.SinonStub;
+
+        beforeEach(() => {
+            fsReaddirSyncStub = sandbox.stub(fs, 'readdirSync');
+            fsExistsSyncStub = sandbox.stub(fs, 'existsSync');
+            fsReadFileSyncStub = sandbox.stub(fs, 'readFileSync');
+            yamlLoadStub = sandbox.stub(yaml, 'load');
+            mockWorkspaceFolders = sandbox.stub(vscode.workspace, 'workspaceFolders').get(() => [{
+                uri: { fsPath: '/test/current/workspace' },
+                name: 'workspace',
+                index: 0
+            }]);
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should return empty array when no workspace folders exist', () => {
+            mockWorkspaceFolders.get(() => undefined);
+
+            const result = findOtherSites(new Map());
+
+            expect(result).to.be.an('array').that.is.empty;
+        });
+
+        it('should find sites that are not in the known sites map', () => {
+            const knownSiteIds = new Map<string, boolean>([
+                ['known-site-1', true],
+                ['known-site-2', true]
+            ]);
+
+            fsReaddirSyncStub.returns([
+                { name: 'site1', isDirectory: () => true },
+                { name: 'site2', isDirectory: () => true }
+            ]);
+
+            fsExistsSyncStub.returns(true);
+
+            fsReadFileSyncStub.onFirstCall().returns('yaml content 1');
+            fsReadFileSyncStub.onSecondCall().returns('yaml content 2');
+
+            yamlLoadStub.onFirstCall().returns({
+                adx_websiteid: 'unknown-site-1',
+                adx_name: 'Unknown Site 1'
+            });
+            yamlLoadStub.onSecondCall().returns({
+                adx_websiteid: 'known-site-1',
+                adx_name: 'Known Site 1'
+            });
+
+            const result = findOtherSites(knownSiteIds);
+
+            expect(result).to.have.lengthOf(1);
+            expect(result[0].websiteId).to.equal('unknown-site-1');
+            expect(result[0].name).to.equal('Unknown Site 1');
+            expect(result[0].folderPath).to.contain('site1');
+        });
+
+        it('should include current workspace folder if not already included', () => {
+            const knownSiteIds = new Map<string, boolean>();
+
+            // Return empty directory list to force including current workspace
+            fsReaddirSyncStub.returns([]);
+
+            fsExistsSyncStub.returns(true);
+            fsReadFileSyncStub.returns('yaml content');
+            yamlLoadStub.returns({
+                adx_websiteid: 'current-workspace-site',
+                adx_name: 'Current Workspace Site'
+            });
+
+            const result = findOtherSites(knownSiteIds);
+
+            expect(result).to.have.lengthOf(1);
+            expect(result[0].websiteId).to.equal('current-workspace-site');
+            expect(result[0].name).to.equal('Current Workspace Site');
+            expect(result[0].folderPath).to.equal('/test/current/workspace');
+        });
+
+        it('should handle errors in yaml parsing', () => {
+            const knownSiteIds = new Map<string, boolean>();
+
+            fsReaddirSyncStub.returns([
+                { name: 'error-site', isDirectory: () => true }
+            ]);
+
+            fsExistsSyncStub.returns(true);
+            fsReadFileSyncStub.returns('invalid yaml');
+            yamlLoadStub.throws(new Error('YAML parse error'));
+
+            const result = findOtherSites(knownSiteIds);
+
+            expect(result).to.be.an('array').that.is.empty;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.OTHER_SITES_YAML_PARSE_FAILED);
+        });
+
+        it('should handle filesystem errors', () => {
+            const knownSiteIds = new Map<string, boolean>();
+
+            fsReaddirSyncStub.throws(new Error('Filesystem error'));
+
+            const result = findOtherSites(knownSiteIds);
+
+            expect(result).to.be.an('array').that.is.empty;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.OTHER_SITES_FILESYSTEM_ERROR);
+        });
+
+        it('should skip sites with missing website id', () => {
+            const knownSiteIds = new Map<string, boolean>();
+
+            fsReaddirSyncStub.returns([
+                { name: 'missing-id-site', isDirectory: () => true }
+            ]);
+
+            fsExistsSyncStub.returns(true);
+            fsReadFileSyncStub.returns('yaml content');
+            yamlLoadStub.returns({
+                adx_name: 'Site With Missing ID'
+                // No adx_websiteid
+            });
+
+            const result = findOtherSites(knownSiteIds);
+
+            expect(result).to.be.an('array').that.is.empty;
+        });
+    });
+
+    describe('createKnownSiteIdsMap', () => {
+        it('should create a map with active and inactive site IDs', () => {
+            const activeSites = [
+                { websiteRecordId: 'active-1', name: 'Active Site 1' },
+                { websiteRecordId: 'active-2', name: 'Active Site 2' }
+            ] as IWebsiteDetails[];
+
+            const inactiveSites = [
+                { websiteRecordId: 'inactive-1', name: 'Inactive Site 1' },
+                { websiteRecordId: 'inactive-2', name: 'Inactive Site 2' }
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsMap(activeSites, inactiveSites);
+
+            expect(result.size).to.equal(4);
+            expect(result.has('active-1')).to.be.true;
+            expect(result.has('active-2')).to.be.true;
+            expect(result.has('inactive-1')).to.be.true;
+            expect(result.has('inactive-2')).to.be.true;
+        });
+
+        it('should handle case sensitivity by converting to lowercase', () => {
+            const activeSites = [
+                { websiteRecordId: 'ACTIVE-1', name: 'Active Site 1' }
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsMap(activeSites, undefined);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('active-1')).to.be.true;
+        });
+
+        it('should handle undefined inputs', () => {
+            const result = createKnownSiteIdsMap(undefined, undefined);
+            expect(result.size).to.equal(0);
+        });
+
+        it('should skip sites with missing websiteRecordId', () => {
+            const activeSites = [
+                { websiteRecordId: 'active-1', name: 'Active Site 1' },
+                { name: 'Site Without ID' } as IWebsiteDetails
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsMap(activeSites, undefined);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('active-1')).to.be.true;
+        });
+    });
+
 });
+
