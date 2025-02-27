@@ -195,6 +195,7 @@
   "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Site management URL not found for the selected site. Please try again after refreshing the environment.",
   "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?",
   "Yes": "Yes",
+  "Site Details": "Site Details",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
@@ -253,6 +254,24 @@
     "message": "Cluster geo name: {0}",
     "comment": [
       "{0} is the cluster geo name"
+    ]
+  },
+  "Friendly name: {0}/{0} is the website name": {
+    "message": "Friendly name: {0}",
+    "comment": [
+      "{0} is the website name"
+    ]
+  },
+  "Website ID: {0}/{0} is the website ID": {
+    "message": "Website ID: {0}",
+    "comment": [
+      "{0} is the website ID"
+    ]
+  },
+  "Data model version: v{0}/{0} is the data model version": {
+    "message": "Data model version: v{0}",
+    "comment": [
+      "{0} is the data model version"
     ]
   },
   "PAC Telemetry enabled": "PAC Telemetry enabled",

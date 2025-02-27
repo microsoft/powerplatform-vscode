@@ -139,6 +139,10 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     <trans-unit id="++CODE++e0d1b68224bf0b31ef16b206c65b5f8f6b89d18161f4a7cdcb8d0ac8d952549a">
       <source xml:lang="en">Current</source>
     </trans-unit>
+    <trans-unit id="++CODE++1da89bd5f5df020ca47c79dfdbc1517a299ca77570df2de4132f53797d5f2412">
+      <source xml:lang="en">Data model version: v{0}</source>
+      <note>{0} is the data model version</note>
+    </trans-unit>
     <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
       <source xml:lang="en">Default Environment: {0}</source>
       <note>The {0} represents profile's resource/environment URL</note>
@@ -225,6 +229,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++1b93e507157d91755f08e1abfe8a33d725b637a32ddadf149420b25907d440a0">
       <source xml:lang="en">File(s) already exist. No new files to add</source>
+    </trans-unit>
+    <trans-unit id="++CODE++56281cd1d0090cc4c7c38634a5738f51769927efda74805ba19e30e35868fd4e">
+      <source xml:lang="en">Friendly name: {0}</source>
+      <note>{0} is the website name</note>
     </trans-unit>
     <trans-unit id="++CODE++7184a5edf42e6fc9ef8f53fc1dd73f10b3f6196a23f6d340c4f434e60c366e45">
       <source xml:lang="en">GETTING STARTED</source>
@@ -475,6 +483,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
     </trans-unit>
+    <trans-unit id="++CODE++524bca0347e50e3801bebf27374124b3babf072729b4da4bcc45ef5c385ee8f4">
+      <source xml:lang="en">Site Details</source>
+    </trans-unit>
     <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
       <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
     </trans-unit>
@@ -575,6 +586,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
       <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++091327257429303159b8580005b5b5a1e05fd028030817edaaa835cfcb0b3293">
+      <source xml:lang="en">Website ID: {0}</source>
+      <note>{0} is the website ID</note>
     </trans-unit>
     <trans-unit id="++CODE++aa64cfbb63d3382bc0530c6e599467b1cc5c1ef8ff3b573d37ad628f9058b2aa">
       <source xml:lang="en">Website not found in the environment. Please check the credentials and login with correct account.</source>
@@ -821,6 +836,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.pacSolutionHelp.title">
       <source xml:lang="en">Show PAC Solution Help</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.siteDetails.title">
+      <source xml:lang="en">Site Details</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
       <source xml:lang="en">Upload Site</source>
