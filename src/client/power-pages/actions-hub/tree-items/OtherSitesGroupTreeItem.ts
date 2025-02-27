@@ -29,7 +29,7 @@ export class OtherSitesGroupTreeItem extends ActionsHubTreeItem {
             const siteInfo: IWebsiteInfo = {
                 name: site.name,
                 websiteId: site.websiteId || '',
-                dataModelVersion: 2, // Assuming current env supports EDM
+                dataModelVersion: 2, // For other sites, we don't have this information. Defaulting to 2 and will rely on current sites to determine the data model for operations.
                 status: undefined,
                 isCurrent: false,
                 websiteUrl: "",
