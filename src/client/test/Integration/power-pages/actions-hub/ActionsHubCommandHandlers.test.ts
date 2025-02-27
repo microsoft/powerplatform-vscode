@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsMap, findOtherSites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -791,7 +791,7 @@ describe('ActionsHubCommandHandlers', () => {
 
     });
 
-        describe('findOtherSites', () => {
+    describe('findOtherSites', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let mockFs: any;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -826,27 +826,27 @@ describe('ActionsHubCommandHandlers', () => {
         it('should return empty array when no workspace folders exist', () => {
             mockWorkspaceFolders.get(() => undefined);
 
-            const result = findOtherSites(new Map(), mockFs, mockYaml);
+            const result = findOtherSites(new Set(), mockFs, mockYaml);
 
             expect(result).to.be.an('array').that.is.empty;
         });
 
-        it('should find sites that are not in the known sites map', () => {
-            const knownSiteIds = new Map<string, boolean>([
-                ['known-site-1', true],
-                ['known-site-2', true]
+        it('should find sites that are not in the known sites set', () => {
+            const knownSiteIds = new Set<string>([
+                'known-site-1',
+                'known-site-2'
             ]);
-
+    
             mockFs.readdirSync.returns([
                 { name: 'site1', isDirectory: () => true },
                 { name: 'site2', isDirectory: () => true }
             ]);
-
+    
             mockFs.existsSync.returns(true);
-
+    
             mockFs.readFileSync.onFirstCall().returns('yaml content 1');
             mockFs.readFileSync.onSecondCall().returns('yaml content 2');
-
+    
             mockYaml.load.onFirstCall().returns({
                 adx_websiteid: 'unknown-site-1',
                 adx_name: 'Unknown Site 1'
@@ -855,9 +855,9 @@ describe('ActionsHubCommandHandlers', () => {
                 adx_websiteid: 'known-site-1',
                 adx_name: 'Known Site 1'
             });
-
+    
             const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
-
+    
             expect(result).to.have.lengthOf(1);
             expect(result[0].websiteId).to.equal('unknown-site-1');
             expect(result[0].name).to.equal('Unknown Site 1');
@@ -865,7 +865,7 @@ describe('ActionsHubCommandHandlers', () => {
         });
 
         it('should include current workspace folder if not already included', () => {
-            const knownSiteIds = new Map<string, boolean>();
+            const knownSiteIds = new Set<string>();
 
             // Return empty directory list to force including current workspace
             mockFs.readdirSync.returns([]);
@@ -886,7 +886,7 @@ describe('ActionsHubCommandHandlers', () => {
         });
 
         it('should handle filesystem errors', () => {
-            const knownSiteIds = new Map<string, boolean>();
+            const knownSiteIds = new Set<string>();
 
             mockFs.readdirSync.throws(new Error('Filesystem error'));
 
@@ -898,7 +898,7 @@ describe('ActionsHubCommandHandlers', () => {
         });
 
         it('should skip sites with missing website id', () => {
-            const knownSiteIds = new Map<string, boolean>();
+            const knownSiteIds = new Set<string>();
 
             mockFs.readdirSync.returns([
                 { name: 'missing-id-site', isDirectory: () => true }
@@ -916,8 +916,9 @@ describe('ActionsHubCommandHandlers', () => {
             expect(result).to.be.an('array').that.is.empty;
         });
     });
-    describe('createKnownSiteIdsMap', () => {
-        it('should create a map with active and inactive site IDs', () => {
+
+    describe('createKnownSiteIdsSet', () => {
+        it('should create a set with active and inactive site IDs', () => {
             const activeSites = [
                 { websiteRecordId: 'active-1', name: 'Active Site 1' },
                 { websiteRecordId: 'active-2', name: 'Active Site 2' }
@@ -928,7 +929,7 @@ describe('ActionsHubCommandHandlers', () => {
                 { websiteRecordId: 'inactive-2', name: 'Inactive Site 2' }
             ] as IWebsiteDetails[];
 
-            const result = createKnownSiteIdsMap(activeSites, inactiveSites);
+            const result = createKnownSiteIdsSet(activeSites, inactiveSites);
 
             expect(result.size).to.equal(4);
             expect(result.has('active-1')).to.be.true;
@@ -942,14 +943,14 @@ describe('ActionsHubCommandHandlers', () => {
                 { websiteRecordId: 'ACTIVE-1', name: 'Active Site 1' }
             ] as IWebsiteDetails[];
 
-            const result = createKnownSiteIdsMap(activeSites, undefined);
+            const result = createKnownSiteIdsSet(activeSites, undefined);
 
             expect(result.size).to.equal(1);
             expect(result.has('active-1')).to.be.true;
         });
 
         it('should handle undefined inputs', () => {
-            const result = createKnownSiteIdsMap(undefined, undefined);
+            const result = createKnownSiteIdsSet(undefined, undefined);
             expect(result.size).to.equal(0);
         });
 
@@ -959,7 +960,7 @@ describe('ActionsHubCommandHandlers', () => {
                 { name: 'Site Without ID' } as IWebsiteDetails
             ] as IWebsiteDetails[];
 
-            const result = createKnownSiteIdsMap(activeSites, undefined);
+            const result = createKnownSiteIdsSet(activeSites, undefined);
 
             expect(result.size).to.equal(1);
             expect(result.has('active-1')).to.be.true;
