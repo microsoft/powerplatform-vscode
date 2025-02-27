@@ -25,6 +25,7 @@ import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from '../../../common/se
 import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
 import CurrentSiteContext from './CurrentSiteContext';
 import path from 'path';
+import { getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -218,7 +219,7 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.websiteRecordId)) || [];
             activeWebsiteDetails = activeWebsiteDetails.map(detail => ({ ...detail, siteManagementUrl: allSites.find(site => site.websiteRecordId === detail.websiteRecordId)?.siteManagementUrl ?? "" }));
 
-            const currentEnvSiteIds = createKnownSiteIdsMap(activeWebsiteDetails, inactiveWebsiteDetails);
+            const currentEnvSiteIds = createKnownSiteIdsSet(activeWebsiteDetails, inactiveWebsiteDetails);
             const otherSites = findOtherSites(currentEnvSiteIds);
 
             return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails, otherSites: otherSites };
@@ -268,10 +269,10 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
 
 /**
  * Finds Power Pages sites in the parent folder that aren't in the known sites list
- * @param knownSiteIds Map of site IDs that should be excluded from results
+ * @param knownSiteIds Set of site IDs that should be excluded from results
  * @returns Array of site information objects for sites found in the parent folder
  */
-export function findOtherSites(knownSiteIds: Map<string, boolean>, fsModule = fs, yamlModule = yaml): IOtherSiteInfo[] {
+export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlModule = yaml): IOtherSiteInfo[] {
     // Get the workspace folders
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) {
@@ -301,16 +302,17 @@ export function findOtherSites(knownSiteIds: Map<string, boolean>, fsModule = fs
 
             if (fsModule.existsSync(websiteYamlPath)) {
                 try {
-                    // Parse website.yml to get site details
-                    const yamlContent = fsModule.readFileSync(websiteYamlPath, UTF8_ENCODING);
-                    const websiteData = yamlModule.parse(yamlContent) as WebsiteYaml;
-
-                    const websiteId = websiteData?.adx_websiteid;
-
+                    // Use the utility function to get website record ID
+                    const websiteId = getWebsiteRecordId(dir);
+                    
                     // Only include sites that aren't already in active or inactive sites
                     if (websiteId && !knownSiteIds.has(websiteId.toLowerCase())) {
+                        // Parse website.yml to get site details for the name
+                        const yamlContent = fsModule.readFileSync(websiteYamlPath, UTF8_ENCODING);
+                        const websiteData = yamlModule.parse(yamlContent) as WebsiteYaml;
+                        
                         otherSites.push({
-                            name: websiteData?.adx_name || "",
+                            name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
                             websiteId: websiteId,
                             folderPath: dir
                         });
@@ -338,25 +340,23 @@ export function findOtherSites(knownSiteIds: Map<string, boolean>, fsModule = fs
     }
 }
 
-export function createKnownSiteIdsMap(
-    activeSites: IWebsiteDetails[] | undefined,
+export function createKnownSiteIdsSet(
+    activeSites: IWebsiteDetails[] | undefined, 
     inactiveSites: IWebsiteDetails[] | undefined
-): Map<string, boolean> {
-    const knownSiteIds = new Map<string, boolean>();
-
-    // Add active site IDs to the map
+): Set<string> {
+    const knownSiteIds = new Set<string>();
+    
     activeSites?.forEach(site => {
         if (site.websiteRecordId) {
-            knownSiteIds.set(site.websiteRecordId.toLowerCase(), true);
+            knownSiteIds.add(site.websiteRecordId.toLowerCase());
         }
     });
-
-    // Add inactive site IDs to the map
+    
     inactiveSites?.forEach(site => {
         if (site.websiteRecordId) {
-            knownSiteIds.set(site.websiteRecordId.toLowerCase(), true);
+            knownSiteIds.add(site.websiteRecordId.toLowerCase());
         }
     });
-
+    
     return knownSiteIds;
 }
