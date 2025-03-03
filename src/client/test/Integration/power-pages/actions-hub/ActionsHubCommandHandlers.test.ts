@@ -27,6 +27,7 @@ import * as WebsiteUtils from '../../../../../common/utilities/WebsiteUtil';
 import * as Utils from '../../../../../common/utilities/Utils';
 import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteContext';
 import * as WorkspaceInfoFinderUtil from "../../../../../common/utilities/WorkspaceInfoFinderUtil";
+import * as dataverseMetadata from "../../../../../common/copilot/dataverseMetadata";
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -736,12 +737,25 @@ describe('ActionsHubCommandHandlers', () => {
             await revealInOS(); expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
         });
     });
-    describe('uploadSite', () => {
+
+        describe('uploadSite', () => {
         let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
+        let mockShowErrorMessage: sinon.SinonStub;
+        let traceInfoStub: sinon.SinonStub;
 
         beforeEach(() => {
             mockSendText = sinon.stub();
+            mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
+            traceInfoStub = sandbox.stub();
+
+            sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns({
+                traceError: traceErrorStub,
+                traceInfo: traceInfoStub,
+                traceWarning: sinon.stub(),
+                featureUsage: sinon.stub(),
+            });
+
             // Set up CurrentSiteContext
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -769,7 +783,28 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_UPLOAD_CONFIRMATION);
+            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE)).to.be.true;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should not upload when user cancels confirmation for public site', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PUBLIC,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+            mockShowInformationMessage.resolves(undefined);
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_CANCELLED)).to.be.true;
+            expect(mockSendText.called).to.be.false;
         });
 
         it('should upload without confirmation for private site', async () => {
@@ -787,9 +822,112 @@ describe('ActionsHubCommandHandlers', () => {
             await uploadSite(mockSiteTreeItem);
 
             expect(mockShowInformationMessage.called).to.be.false;
+            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE)).to.be.true;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
 
+        it('should handle case sensitivity for public site visibility', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: "PUBLIC", // Uppercase
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+            mockShowInformationMessage.resolves(Constants.Strings.YES);
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should show error when current site path is not found', async () => {
+            sandbox.restore(); // Reset stubs
+            sandbox.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
+            mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
+            sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns({
+                traceError: traceErrorStub,
+                traceInfo: sinon.stub(),
+                traceWarning: sinon.stub(),
+                featureUsage: sinon.stub(),
+            });
+
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PRIVATE,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockShowErrorMessage.calledOnce).to.be.true;
+            expect(mockShowErrorMessage.firstCall.args[0]).to.equal(Constants.Strings.CURRENT_SITE_PATH_NOT_FOUND);
+        });
+
+        it('should handle upload for other sites', async () => {
+            // Create a mock for dataverseAuthentication
+            const mockDataverseAuth = sandbox.stub(authProvider, 'dataverseAuthentication');
+            mockDataverseAuth.resolves({ accessToken: 'test-token', userId: 'test- userId' });
+
+            // Create a mock for isEdmEnvironment
+            const mockIsEdmEnvironment = sandbox.stub(dataverseMetadata, 'isEdmEnvironment');
+            mockIsEdmEnvironment.resolves(true);
+
+            // Create a site tree item with contextValue OTHER_SITE
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Other Site",
+                websiteId: "other-id",
+                dataModelVersion: 1,
+                status: undefined,
+                websiteUrl: '',
+                isCurrent: false,
+                siteVisibility: "",
+                siteManagementUrl: "",
+                folderPath: "other-site-path"
+            });
+
+            // Set the context value explicitly
+            sandbox.stub(mockSiteTreeItem, 'contextValue').get(() => Constants.ContextValues.OTHER_SITE);
+
+            // Set up PacContext
+            sandbox.stub(PacContext, 'OrgInfo').get(() => ({ OrgUrl: 'test-org-url' }));
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockDataverseAuth.calledOnce).to.be.true;
+            expect(mockIsEdmEnvironment.calledOnce).to.be.true;
+            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE)).to.be.true;
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "other-site-path" --modelVersion 2`)).to.be.true;
+        });
+
+        it('should handle errors during upload', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PRIVATE,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+
+            mockSendText.throws(new Error('Upload failed'));
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_FAILED);
+        });
     });
 
     describe('findOtherSites', () => {
@@ -799,7 +937,7 @@ describe('ActionsHubCommandHandlers', () => {
         let mockYaml: any;
         let mockWorkspaceFolders: sinon.SinonStub;
         let mockGetWebsiteRecordId: sinon.SinonStub;
-    
+
         beforeEach(() => {
             // Create mock fs module with stubbed methods
             mockFs = {
@@ -807,66 +945,66 @@ describe('ActionsHubCommandHandlers', () => {
                 existsSync: sandbox.stub(),
                 readFileSync: sandbox.stub()
             };
-    
+
             // Create mock yaml module with stubbed methods
             mockYaml = {
                 load: sandbox.stub()
             };
-    
+
             // Stub workspace folders
             mockWorkspaceFolders = sandbox.stub(vscode.workspace, 'workspaceFolders').get(() => [{
                 uri: { fsPath: '/test/current/workspace' },
                 name: 'workspace',
                 index: 0
             }]);
-            
+
             // Stub the getWebsiteRecordId function
             mockGetWebsiteRecordId = sandbox.stub(WorkspaceInfoFinderUtil, 'getWebsiteRecordId');
         });
-    
+
         afterEach(() => {
             sandbox.restore();
         });
-    
+
         it('should return empty array when no workspace folders exist', () => {
             mockWorkspaceFolders.get(() => undefined);
-    
+
             const result = findOtherSites(new Set(), mockFs, mockYaml);
-    
+
             expect(result).to.be.an('array').that.is.empty;
         });
-    
+
         it('should handle filesystem errors', () => {
             const knownSiteIds = new Set<string>();
-            
+
             mockFs.readdirSync.throws(new Error('Filesystem error'));
-            
+
             const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
-            
+
             expect(result).to.be.an('array').that.is.empty;
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.OTHER_SITES_FILESYSTEM_ERROR);
         });
-    
+
         it('should skip sites with missing website id', () => {
             const knownSiteIds = new Set<string>();
-            
+
             mockFs.readdirSync.returns([
                 { name: 'missing-id-site', isDirectory: () => true }
             ]);
-            
+
             mockFs.existsSync.returns(true);
             mockFs.readFileSync.returns('yaml content');
             mockYaml.load.returns({
                 adx_name: 'Site With Missing ID'
                 // No adx_websiteid
             });
-            
+
             // Setup the stub for getWebsiteRecordId to return null
             mockGetWebsiteRecordId.withArgs('/test/current/workspace/missing-id-site').returns(null);
-            
+
             const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
-            
+
             expect(result).to.be.an('array').that.is.empty;
         });
     });
