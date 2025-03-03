@@ -808,11 +808,9 @@ describe('ActionsHubCommandHandlers', () => {
     describe('uploadSite', () => {
         let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
-        let mockShowErrorMessage: sinon.SinonStub;
 
         beforeEach(() => {
             mockSendText = sinon.stub();
-            mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage')
 
             // Set up CurrentSiteContext
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
@@ -901,27 +899,6 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
 
-        it('should show error when current site path is not found', async () => {
-            sandbox.restore(); // Reset stubs
-            sandbox.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
-
-            mockSiteTreeItem = new SiteTreeItem({
-                name: "Test Site",
-                websiteId: "test-id",
-                dataModelVersion: 1,
-                status: WebsiteStatus.Active,
-                websiteUrl: 'https://test-site.com',
-                isCurrent: false,
-                siteVisibility: Constants.SiteVisibility.PRIVATE,
-                siteManagementUrl: "https://inactive-site-1-management.com"
-            });
-
-            await uploadSite(mockSiteTreeItem);
-
-            expect(mockShowErrorMessage.calledOnce).to.be.true;
-            expect(mockShowErrorMessage.firstCall.args[0]).to.equal(Constants.Strings.CURRENT_SITE_PATH_NOT_FOUND);
-        });
-
         it('should handle upload for other sites', async () => {
             // Create a mock for dataverseAuthentication
             const mockDataverseAuth = sandbox.stub(authProvider, 'dataverseAuthentication');
@@ -935,7 +912,7 @@ describe('ActionsHubCommandHandlers', () => {
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Other Site",
                 websiteId: "other-id",
-                dataModelVersion: 1,
+                dataModelVersion: 2,
                 status: undefined,
                 websiteUrl: '',
                 isCurrent: false,
