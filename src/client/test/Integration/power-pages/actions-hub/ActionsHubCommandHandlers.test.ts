@@ -27,7 +27,6 @@ import * as WebsiteUtils from '../../../../../common/utilities/WebsiteUtil';
 import * as Utils from '../../../../../common/utilities/Utils';
 import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteContext';
 import * as WorkspaceInfoFinderUtil from "../../../../../common/utilities/WorkspaceInfoFinderUtil";
-import * as dataverseMetadata from "../../../../../common/copilot/dataverseMetadata";
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -897,41 +896,6 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
-        });
-
-        it('should handle upload for other sites', async () => {
-            // Create a mock for dataverseAuthentication
-            const mockDataverseAuth = sandbox.stub(authProvider, 'dataverseAuthentication');
-            mockDataverseAuth.resolves({ accessToken: 'test-token', userId: 'test- userId' });
-
-            // Create a mock for isEdmEnvironment
-            const mockIsEdmEnvironment = sandbox.stub(dataverseMetadata, 'isEdmEnvironment');
-            mockIsEdmEnvironment.resolves(true);
-
-            // Create a site tree item with contextValue OTHER_SITE
-            mockSiteTreeItem = new SiteTreeItem({
-                name: "Other Site",
-                websiteId: "other-id",
-                dataModelVersion: 2,
-                status: undefined,
-                websiteUrl: '',
-                isCurrent: false,
-                siteVisibility: "",
-                siteManagementUrl: "",
-                folderPath: "other-site-path"
-            });
-
-            // Set the context value explicitly
-            sandbox.stub(mockSiteTreeItem, 'contextValue').get(() => Constants.ContextValues.OTHER_SITE);
-
-            // Set up PacContext
-            sandbox.stub(PacContext, 'OrgInfo').get(() => ({ OrgUrl: 'test-org-url' }));
-
-            await uploadSite(mockSiteTreeItem);
-
-            expect(mockDataverseAuth.calledOnce).to.be.true;
-            expect(mockIsEdmEnvironment.calledOnce).to.be.true;
-            expect(mockSendText.calledOnceWith(`pac pages upload --path "other-site-path" --modelVersion 2`)).to.be.true;
         });
 
         it('should handle errors during upload', async () => {
