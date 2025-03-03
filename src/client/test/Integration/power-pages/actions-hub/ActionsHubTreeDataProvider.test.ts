@@ -191,6 +191,18 @@ describe("ActionsHubTreeDataProvider", () => {
             await registerCommandStub.getCall(12).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
+
+        it("should register downloadSite command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'downloadSite');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite")).to.be.true;
+
+            await registerCommandStub.getCall(13).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
     });
 
     describe('getTreeItem', () => {

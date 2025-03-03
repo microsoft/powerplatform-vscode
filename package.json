@@ -443,6 +443,10 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
         "title": "%microsoft.powerplatform.pages.actionsHub.siteDetails.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title%"
       }
     ],
     "configuration": {
@@ -931,6 +935,10 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -1060,6 +1068,21 @@
           "group": "siteAction@1"
         },
         {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite)",
+          "group": "siteAction@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
+          "group": "siteAction@4"
+        },
+        {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isWindows",
           "group": "siteAction@5"
@@ -1078,16 +1101,6 @@
           "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
           "group": "siteAction@3"
-        },
-        {
-          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite)",
-          "group": "siteAction@2"
-        },
-        {
-          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
-          "group": "siteAction@4"
         }
       ]
     },

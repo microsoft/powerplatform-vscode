@@ -36,7 +36,10 @@ export const Constants = {
         SITE_MANAGEMENT_URL_NOT_FOUND: vscode.l10n.t("Site management URL not found for the selected site. Please try again after refreshing the environment."),
         SITE_UPLOAD_CONFIRMATION: vscode.l10n.t(`Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?`),
         YES: vscode.l10n.t("Yes"),
-        SITE_DETAILS: vscode.l10n.t("Site Details")
+        SITE_DETAILS: vscode.l10n.t("Site Details"),
+        BROWSE: vscode.l10n.t("Browse..."),
+        SELECT_DOWNLOAD_FOLDER: vscode.l10n.t("Select the folder that will contain your project root for your site"),
+        SELECT_FOLDER: vscode.l10n.t("Select Folder")
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",
