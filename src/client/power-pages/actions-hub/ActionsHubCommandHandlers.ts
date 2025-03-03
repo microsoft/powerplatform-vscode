@@ -70,7 +70,7 @@ export const showEnvironmentDetails = async () => {
 
         const result = await vscode.window.showInformationMessage(message, { detail: details, modal: true }, Constants.Strings.COPY_TO_CLIPBOARD);
 
-        if (result == Constants.Strings.COPY_TO_CLIPBOARD) {
+        if (result === Constants.Strings.COPY_TO_CLIPBOARD) {
             await vscode.env.clipboard.writeText(details);
         }
     } catch (error) {
@@ -240,7 +240,12 @@ export const revealInOS = async () => {
 export const openSiteManagement = async (siteTreeItem: SiteTreeItem) => {
     if (!siteTreeItem.siteInfo.siteManagementUrl) {
         vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.SITE_MANAGEMENT_URL_NOT_FOUND));
-        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND, Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND, new Error(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND), { method: openSiteManagement.name });
+        oneDSLoggerWrapper.getLogger().traceError(
+            Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND,
+            Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND,
+            new Error(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND),
+            { method: openSiteManagement.name }
+        );
         return;
     }
     await vscode.env.openExternal(vscode.Uri.parse(siteTreeItem.siteInfo.siteManagementUrl));
@@ -304,13 +309,13 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
                 try {
                     // Use the utility function to get website record ID
                     const websiteId = getWebsiteRecordId(dir);
-                    
+
                     // Only include sites that aren't already in active or inactive sites
                     if (websiteId && !knownSiteIds.has(websiteId.toLowerCase())) {
                         // Parse website.yml to get site details for the name
                         const yamlContent = fsModule.readFileSync(websiteYamlPath, UTF8_ENCODING);
                         const websiteData = yamlModule.parse(yamlContent) as WebsiteYaml;
-                        
+
                         otherSites.push({
                             name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
                             websiteId: websiteId,
@@ -341,22 +346,37 @@ export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlMod
 }
 
 export function createKnownSiteIdsSet(
-    activeSites: IWebsiteDetails[] | undefined, 
+    activeSites: IWebsiteDetails[] | undefined,
     inactiveSites: IWebsiteDetails[] | undefined
 ): Set<string> {
     const knownSiteIds = new Set<string>();
-    
+
     activeSites?.forEach(site => {
         if (site.websiteRecordId) {
             knownSiteIds.add(site.websiteRecordId.toLowerCase());
         }
     });
-    
+
     inactiveSites?.forEach(site => {
         if (site.websiteRecordId) {
             knownSiteIds.add(site.websiteRecordId.toLowerCase());
         }
     });
-    
+
     return knownSiteIds;
+}
+
+export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
+    const siteInfo = siteTreeItem.siteInfo;
+    const details = [
+        vscode.l10n.t({ message: "Friendly name: {0}", args: [siteInfo.name], comment: "{0} is the website name" }),
+        vscode.l10n.t({ message: "Website ID: {0}", args: [siteInfo.websiteId], comment: "{0} is the website ID" }),
+        vscode.l10n.t({ message: "Data model version: v{0}", args: [siteInfo.dataModelVersion], comment: "{0} is the data model version" })
+    ].join('\n');
+
+    const result = await vscode.window.showInformationMessage(Constants.Strings.SITE_DETAILS, { detail: details, modal: true }, Constants.Strings.COPY_TO_CLIPBOARD);
+
+    if (result === Constants.Strings.COPY_TO_CLIPBOARD) {
+        await vscode.env.clipboard.writeText(details);
+    }
 }
