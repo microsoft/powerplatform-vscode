@@ -37,6 +37,7 @@ export const Constants = {
         SITE_UPLOAD_CONFIRMATION: vscode.l10n.t(`Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?`),
         YES: vscode.l10n.t("Yes"),
         CURRENT_SITE_PATH_NOT_FOUND: vscode.l10n.t("Current site path not found."),
+        SITE_DETAILS: vscode.l10n.t("Site Details")
     },
     EventNames: {
         ACTIONS_HUB_INITIALIZED: "actionsHubInitialized",

@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites, showSiteDetails, openSiteManagement } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -738,6 +738,73 @@ describe('ActionsHubCommandHandlers', () => {
         });
     });
 
+    describe('openSiteManagement', () => {
+        let mockUrl: sinon.SinonSpy;
+
+        beforeEach(() => {
+            mockUrl = sandbox.spy(vscode.Uri, 'parse');
+            sandbox.stub(vscode.env, 'openExternal');
+        });
+
+        it('should open site management URL when available', async () => {
+            await openSiteManagement({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1,
+                    status: WebsiteStatus.Active,
+                    websiteUrl: 'https://test-site.com',
+                    isCurrent: false,
+                    siteVisibility: Constants.SiteVisibility.PRIVATE,
+                    siteManagementUrl: "https://test-site-management.com"
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.calledOnce).to.be.true;
+            expect(mockUrl.firstCall.args[0]).to.equal('https://test-site-management.com');
+        });
+
+        it('should show error message when site management URL is not available', async () => {
+            const mockErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
+
+            await openSiteManagement({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1,
+                    status: WebsiteStatus.Active,
+                    websiteUrl: 'https://test-site.com',
+                    isCurrent: false,
+                    siteVisibility: Constants.SiteVisibility.PRIVATE
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockErrorMessage.calledOnce).to.be.true;
+            expect(mockErrorMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_MANAGEMENT_URL_NOT_FOUND);
+        });
+
+        it('should show log error when site management URL is not available', async () => {
+            sandbox.stub(vscode.window, 'showErrorMessage');
+
+            await openSiteManagement({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1,
+                    status: WebsiteStatus.Active,
+                    websiteUrl: 'https://test-site.com',
+                    isCurrent: false,
+                    siteVisibility: Constants.SiteVisibility.PRIVATE
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
+            expect(traceErrorStub.firstCall.args[1]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
+            expect(traceErrorStub.firstCall.args[3]).to.deep.equal({ method: openSiteManagement.name });
+        });
+    });
+
+
         describe('uploadSite', () => {
         let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
@@ -1059,5 +1126,68 @@ describe('ActionsHubCommandHandlers', () => {
         });
     });
 
-});
+    describe('showSiteDetails', () => {
+        it('should show information notification', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
 
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+        });
+
+        it('should have expected heading', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            const message = mockShowInformationMessage.firstCall.args[0];
+            expect(message).to.include("Site Details");
+        });
+
+        it('should be rendered as modal', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            const message = mockShowInformationMessage.firstCall.args[1];
+            expect(message.modal).to.be.true;
+        });
+
+        it('should show site details', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+
+            const message = mockShowInformationMessage.firstCall.args[1].detail;
+            expect(message).to.include("Friendly name: Test Site");
+            expect(message).to.include("Website ID: test-id");
+            expect(message).to.include("Data model version: v1");
+        });
+    });
+});
