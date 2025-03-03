@@ -382,7 +382,7 @@ export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
     }
 }
 
-const getDownloadFolderOptions = async () => {
+const getDownloadFolderOptions = () => {
     const options = [
         {
             label: Constants.Strings.BROWSE,
