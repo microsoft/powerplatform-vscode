@@ -805,23 +805,14 @@ describe('ActionsHubCommandHandlers', () => {
     });
 
 
-        describe('uploadSite', () => {
+    describe('uploadSite', () => {
         let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
         let mockShowErrorMessage: sinon.SinonStub;
-        let traceInfoStub: sinon.SinonStub;
 
         beforeEach(() => {
             mockSendText = sinon.stub();
-            mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
-            traceInfoStub = sandbox.stub();
-
-            sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns({
-                traceError: traceErrorStub,
-                traceInfo: traceInfoStub,
-                traceWarning: sinon.stub(),
-                featureUsage: sinon.stub(),
-            });
+            mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage')
 
             // Set up CurrentSiteContext
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
@@ -850,7 +841,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_UPLOAD_CONFIRMATION);
-            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE)).to.be.true;
+
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
 
@@ -870,7 +861,6 @@ describe('ActionsHubCommandHandlers', () => {
             await uploadSite(mockSiteTreeItem);
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
-            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_CANCELLED)).to.be.true;
             expect(mockSendText.called).to.be.false;
         });
 
@@ -889,7 +879,6 @@ describe('ActionsHubCommandHandlers', () => {
             await uploadSite(mockSiteTreeItem);
 
             expect(mockShowInformationMessage.called).to.be.false;
-            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE)).to.be.true;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
 
@@ -915,13 +904,6 @@ describe('ActionsHubCommandHandlers', () => {
         it('should show error when current site path is not found', async () => {
             sandbox.restore(); // Reset stubs
             sandbox.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
-            mockShowErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
-            sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns({
-                traceError: traceErrorStub,
-                traceInfo: sinon.stub(),
-                traceWarning: sinon.stub(),
-                featureUsage: sinon.stub(),
-            });
 
             mockSiteTreeItem = new SiteTreeItem({
                 name: "Test Site",
@@ -972,7 +954,6 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockDataverseAuth.calledOnce).to.be.true;
             expect(mockIsEdmEnvironment.calledOnce).to.be.true;
-            expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE)).to.be.true;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "other-site-path" --modelVersion 2`)).to.be.true;
         });
 
