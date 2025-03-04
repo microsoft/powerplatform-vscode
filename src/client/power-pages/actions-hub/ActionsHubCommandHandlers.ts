@@ -158,7 +158,7 @@ export const openInactiveSitesInStudio = async () => await vscode.env.openExtern
 export const previewSite = async (siteTreeItem: SiteTreeItem) => {
     await PreviewSite.clearCache(siteTreeItem.siteInfo.websiteUrl);
 
-    await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl, siteTreeItem.siteInfo.dataModelVersion);
+    await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl, siteTreeItem.siteInfo.dataModelVersion, siteTreeItem.siteInfo.siteVisibility);
 };
 
 export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void> => {
@@ -252,10 +252,10 @@ export const openSiteManagement = async (siteTreeItem: SiteTreeItem) => {
     await vscode.env.openExternal(vscode.Uri.parse(siteTreeItem.siteInfo.siteManagementUrl));
 }
 
-export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
+export const uploadSite = async (siteTreeItem: SiteTreeItem, websitePath: string) => {
 
     //Show a modal dialog to take confirmation from the user
-    if (siteTreeItem.siteInfo.siteVisibility.toLowerCase() === Constants.SiteVisibility.PUBLIC) {
+    if (siteTreeItem.siteInfo.siteVisibility?.toLowerCase() === Constants.SiteVisibility.PUBLIC) {
         const confirm = await vscode.window.showInformationMessage(
             Constants.Strings.SITE_UPLOAD_CONFIRMATION,
             { modal: true },
@@ -268,9 +268,9 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
         }
     }
     oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE, { methodName: uploadSite.name });
-    const websitePath = CurrentSiteContext.currentSiteFolderPath;
+    const websitePathToUpload = websitePath ?? CurrentSiteContext.currentSiteFolderPath;
     const modelVersion = siteTreeItem.siteInfo.dataModelVersion;
-    PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePath}" --modelVersion "${modelVersion}"`);
+    PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePathToUpload}" --modelVersion "${modelVersion}"`);
 }
 
 /**

@@ -20,7 +20,6 @@ import PacContext from '../../pac/PacContext';
 import ArtemisContext from '../../ArtemisContext';
 import { PacTerminal } from '../../lib/PacTerminal';
 import CurrentSiteContext from '../actions-hub/CurrentSiteContext';
-import path from 'path';
 import { IWebsiteDetails } from '../../../common/services/Interfaces';
 import { uploadSite } from '../actions-hub/ActionsHubCommandHandlers';
 import { SiteTreeItem } from '../actions-hub/tree-items/SiteTreeItem';
@@ -84,7 +83,7 @@ export class PreviewSite {
     static async loadSiteDetails(workspaceFolders: WorkspaceFolder[]): Promise<void> {
         const websiteDetails = await PreviewSite.getWebsiteDetails(workspaceFolders);
 
-        this._websiteDetails = websiteDetails;
+        PreviewSite._websiteDetails = websiteDetails;
     }
 
     private static async getWebsiteDetails(workspaceFolders: WorkspaceFolder[]): Promise<IWebsiteDetails> {
@@ -117,7 +116,7 @@ export class PreviewSite {
         }
     }
 
-    public static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined, dataModelVersion: 1 | 2): Promise<void> {
+    public static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined, dataModelVersion: 1 | 2, siteVisibility: string): Promise<void> {
         if (!webSitePreviewURL || webSitePreviewURL === "") {
             return;
         }
@@ -125,7 +124,7 @@ export class PreviewSite {
         const edgeToolsExtension = vscode.extensions.getExtension(EDGE_TOOLS_EXTENSION_ID);
 
         if (!edgeToolsExtension) {
-            await this.promptInstallEdgeTools();
+            await PreviewSite.promptInstallEdgeTools();
             return;
         }
 
@@ -136,12 +135,12 @@ export class PreviewSite {
 
         const websitePath = CurrentSiteContext.currentSiteFolderPath;
         if (websitePath) {
-            await PreviewSite.showUploadWarning(websitePath, dataModelVersion);
+            await PreviewSite.showUploadWarning(websitePath, dataModelVersion, siteVisibility);
         }
     }
 
-    private static async showUploadWarning(websitePath: string, dataModelVersion: 1 | 2) {
-        const pendingChangesResult = await PreviewSite._pacTerminal.getWrapper().pendingChanges(path.dirname(websitePath), dataModelVersion);
+    private static async showUploadWarning(websitePath: string, dataModelVersion: 1 | 2, siteVisibility: string) {
+        const pendingChangesResult = await PreviewSite._pacTerminal.getWrapper().pendingChanges(websitePath, dataModelVersion);
 
         try {
             if (pendingChangesResult.Status === SUCCESS && pendingChangesResult.Information[pendingChangesResult.Information.length - 1].includes(TRUE)) {
@@ -150,9 +149,9 @@ export class PreviewSite {
                     await uploadSite({
                         siteInfo: {
                             dataModelVersion: dataModelVersion,
-                            siteVisibility: this._websiteDetails?.siteVisibility
+                            siteVisibility: siteVisibility
                         }
-                    } as SiteTreeItem);
+                    } as SiteTreeItem, websitePath);
                 }
             }
         } catch (exception) {
@@ -179,7 +178,7 @@ export class PreviewSite {
             return;
         }
 
-        if (this._websiteDetails === undefined) {
+        if (PreviewSite._websiteDetails === undefined) {
             oneDSLoggerWrapper.getLogger().traceInfo(VSCODE_EXTENSION_SITE_PREVIEW_ERROR, { error: Messages.INITIALIZING_PREVIEW_TRY_AGAIN });
             await vscode.window.showWarningMessage(Messages.INITIALIZING_PREVIEW_TRY_AGAIN);
             return;
@@ -193,7 +192,7 @@ export class PreviewSite {
             return;
         }
 
-        if (!this._websiteDetails.websiteUrl) {
+        if (!PreviewSite._websiteDetails.websiteUrl) {
             let shouldRepeatLoginFlow = true;
 
             while (shouldRepeatLoginFlow) {
@@ -202,9 +201,13 @@ export class PreviewSite {
         }
 
 
-        await PreviewSite.clearCache(this._websiteDetails.websiteUrl);
+        await PreviewSite.clearCache(PreviewSite._websiteDetails.websiteUrl);
 
-        await PreviewSite.launchBrowserAndDevToolsWithinVsCode(this._websiteDetails.websiteUrl, this._websiteDetails.dataModel === WebsiteDataModel.Standard ? 1 : 2);
+        await PreviewSite.launchBrowserAndDevToolsWithinVsCode(
+            PreviewSite._websiteDetails.websiteUrl,
+            PreviewSite._websiteDetails.dataModel === WebsiteDataModel.Standard ? 1 : 2,
+            PreviewSite._websiteDetails.siteVisibility ?? ""
+        );
     }
 
     public static async clearCache(websiteUrl: string | undefined): Promise<void> {
@@ -273,7 +276,7 @@ export class PreviewSite {
 
                     await PreviewSite.loadSiteDetails(getWorkspaceFolders());
 
-                    if (!this._websiteDetails?.websiteUrl) {
+                    if (!PreviewSite._websiteDetails?.websiteUrl) {
                         shouldRepeatLoginFlow = true;
                     }
                 }
