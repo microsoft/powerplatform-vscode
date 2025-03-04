@@ -10,22 +10,25 @@ import { AUTH_CREATE_FAILED, AUTH_CREATE_MESSAGE } from "../copilot/constants";
 import { showInputBoxAndGetOrgUrl, showProgressWithNotification } from "./Utils";
 
 
- export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined) {
-     const userOrgUrl = await showInputBoxAndGetOrgUrl();
-     if (!userOrgUrl) {
-         return;
-     }
+ export async function createAuthProfileExp(pacWrapper: PacWrapper | undefined, userOrgUrl = "") {
+    if (!userOrgUrl) {
+        userOrgUrl = await showInputBoxAndGetOrgUrl() ?? "";
+    }
 
-     if (!pacWrapper) {
-         vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
-         return;
-     }
+    if (!userOrgUrl) {
+        return;
+    }
 
-     const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
-     if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== SUCCESS) {
-         vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
-         return;
-     }
+    if (!pacWrapper) {
+        vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
+        return;
+    }
+
+    const pacAuthCreateOutput = await showProgressWithNotification(vscode.l10n.t(AUTH_CREATE_MESSAGE), async () => { return await pacWrapper?.authCreateNewAuthProfileForOrg(userOrgUrl) });
+    if (pacAuthCreateOutput && pacAuthCreateOutput.Status !== SUCCESS) {
+        vscode.window.showErrorMessage(AUTH_CREATE_FAILED);
+        return;
+    }
 
      return pacAuthCreateOutput;
  }

@@ -47,8 +47,7 @@ import { ActionsHub } from "./power-pages/actions-hub/ActionsHub";
 import { extractAuthInfo, extractOrgInfo } from "./power-pages/commonUtility";
 import PacContext from "./pac/PacContext";
 import ArtemisContext from "./ArtemisContext";
-import { MetadataDiff } from "../common/power-pages/metadata-diff/MetadataDiff";
-import { MetadataDiffTreeDataProvider } from "../common/power-pages/metadata-diff/MetadataDiffTreeDataProvider";
+import { MetadataDiffDesktop } from "./power-pages/metadata-diff/MetadataDiffDesktop";
 
 let client: LanguageClient;
 let _context: vscode.ExtensionContext;
@@ -262,7 +261,7 @@ export async function activate(
     const workspaceFolderWatcher = vscode.workspace.onDidChangeWorkspaceFolders(handleWorkspaceFolderChange);
     _context.subscriptions.push(workspaceFolderWatcher);
 
-    MetadataDiff.initialize(context)
+    MetadataDiffDesktop.initialize(context, pacTerminal)
 
     if (shouldEnableDebugger()) {
         activateDebugger(context);

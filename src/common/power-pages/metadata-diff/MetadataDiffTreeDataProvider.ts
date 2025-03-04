@@ -50,11 +50,13 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
     }
 
     private async getDiffFiles(workspacePath: string, storagePath: string): Promise<string[]> {
-        const diffFiles: string[] = [];
-        const allFiles = this.getAllFilesRecursively(workspacePath);
+        const diffFiles: Set<string> = new Set();
 
-        // Compare files
-        for (const file of allFiles) {
+        const workspaceFiles = this.getAllFilesRecursively(workspacePath);
+        const storageFiles = this.getAllFilesRecursively(storagePath);
+
+        // Check workspace files against storage files
+        for (const file of workspaceFiles) {
             const relativePath = path.relative(workspacePath, file);
             const storageFile = path.join(storagePath, relativePath);
 
@@ -63,60 +65,24 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
                 const storageContent = fs.readFileSync(storageFile, "utf8");
 
                 if (workspaceContent !== storageContent) {
-                    diffFiles.push(relativePath);
+                    diffFiles.add(relativePath);
                 }
             } else {
-                diffFiles.push(relativePath);
-            }
-        }
-        return diffFiles;
-    }
-
-    private async mockChangesAndCopyFiles(workspacePath: string, storagePath: string): Promise<string> {
-
-        const allFiles = this.getAllFilesRecursively(workspacePath);
-
-        // Create copies in storagePath if they don't exist
-        for (const file of allFiles) {
-            const relativePath = path.relative(workspacePath, file);
-            const storageFile = path.join(storagePath, relativePath);
-
-            // Ensure directory exists
-            fs.mkdirSync(path.dirname(storageFile), { recursive: true });
-
-            if (!fs.existsSync(storageFile)) {
-                fs.copyFileSync(file, storageFile);
+                diffFiles.add(relativePath);
             }
         }
 
-        // Mock a random file change
-        const randomFile = allFiles[Math.floor(Math.random() * allFiles.length)];
-        fs.writeFileSync(path.join(storagePath, path.relative(workspacePath, randomFile)), "");
+        // Check storage files against workspace files (to detect deletions)
+        for (const file of storageFiles) {
+            const relativePath = path.relative(storagePath, file);
+            const workspaceFile = path.join(workspacePath, relativePath);
 
-        return storagePath;
-    }
-
-    private async getDiffFilesWithMockChanges(): Promise<string[]> {
-        const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (!workspaceFolders) {
-            return [];
+            if (!fs.existsSync(workspaceFile)) {
+                diffFiles.add(relativePath);
+            }
         }
 
-        const workspacePath = workspaceFolders[0].uri.fsPath;
-        const storagePath = this._context.storageUri?.fsPath;
-        if (!storagePath) {
-            throw new Error("Storage path is not defined");
-        }
-
-        // Clean out any existing files in storagePath (so we have a "fresh" download)
-        if (fs.existsSync(storagePath)) {
-            fs.rmSync(storagePath, { recursive: true, force: true });
-        }
-        fs.mkdirSync(storagePath, { recursive: true });
-
-        await this.mockChangesAndCopyFiles(workspacePath, storagePath);
-
-        return this.getDiffFiles(workspacePath, storagePath);
+        return Array.from(diffFiles);
     }
 
     async getChildren(element?: MetadataDiffTreeItem): Promise<MetadataDiffTreeItem[] | null | undefined> {
@@ -125,7 +91,25 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
         }
 
         try {
-            const diffFiles = await this.getDiffFilesWithMockChanges();
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders) {
+                return [];
+            }
+
+            const workspacePath = workspaceFolders[0].uri.fsPath;
+            const storagePath = this._context.storageUri?.fsPath;
+            if (!storagePath) {
+                throw new Error("Storage path is not defined");
+            }
+
+            const folderNames = fs.readdirSync(storagePath).filter(file => fs.statSync(path.join(storagePath, file)).isDirectory());
+            //check if storage path contains any files
+            if (folderNames.length === 0) {
+                return [];
+            }
+            const websitePath = path.join(storagePath, folderNames[0]);
+
+            const diffFiles = await this.getDiffFiles(workspacePath, websitePath);
             if (diffFiles.length === 0) {
                 return [];
             }
@@ -133,10 +117,8 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             const filePathMap = new Map<string, string>();
 
             diffFiles.forEach(relativePath => {
-                if (this._context.storageUri) {
-                    const storedFileUri = vscode.Uri.joinPath(this._context.storageUri, relativePath);
+                const storedFileUri = vscode.Uri.joinPath(vscode.Uri.file(websitePath), relativePath);
                     filePathMap.set(relativePath, storedFileUri.fsPath);
-                }
             });
 
             return this.buildTreeHierarchy(filePathMap);

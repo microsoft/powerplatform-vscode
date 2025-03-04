@@ -110,5 +110,13 @@
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac.title": "Reveal in Finder",
   "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux.title": "Open Containing Folder",
   "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title": "Open site management",
-  "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title": "Upload Site"
+  "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title": "Upload Site",
+  "microsoft.powerplatform.pages.metadataDiff.title": "POWER PAGES METADATA COMPARATOR",
+  "microsoft.powerplatform.pages.metadataDiff.login":{
+    "message":  "Compare your Power Pages website against a Power Pages environment to view any differences. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).\n[Get Started](command:microsoft.powerplatform.pages.metadataDiff.triggerFlow)",
+    "comment": [
+      "This is a Markdown formatted string, and the formatting must persist across translations.",
+      "The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.metadataDiff.triggerFlow).', keeping brackets and the text in the parentheses unmodified"
+    ]
+  }
 }

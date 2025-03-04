@@ -170,6 +170,11 @@
         "view": "microsoft.powerplatform.pages.actionsHub",
         "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
+      },
+      {
+        "view": "microsoft.powerplatform.pages.metadataDiff",
+        "contents": "%microsoft.powerplatform.pages.metadataDiff.login%",
+        "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
       }
     ],
     "commands": [
@@ -439,6 +444,10 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.metadataDiff.triggerFlow",
+        "title": "%microsoft.powerplatform.pages.metadataDiff.login.title%"
       }
     ],
     "configuration": {

@@ -180,6 +180,10 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "disable"));
     }
 
+    public async pagesDownload(path: string, websiteId: string): Promise<string> {
+        return this.pacInterop.executeCommand(new PacArguments("pages", "download", "--path", path, "--webSiteId", websiteId));
+    }
+
     public exit(): void {
         this.pacInterop.exit();
     }
