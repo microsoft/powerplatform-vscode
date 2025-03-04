@@ -268,7 +268,7 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem, websitePath: string
         }
     }
     oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE, { methodName: uploadSite.name });
-    const websitePathToUpload = websitePath ?? CurrentSiteContext.currentSiteFolderPath;
+    const websitePathToUpload = websitePath || CurrentSiteContext.currentSiteFolderPath;
     const modelVersion = siteTreeItem.siteInfo.dataModelVersion;
     PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePathToUpload}" --modelVersion "${modelVersion}"`);
 }
