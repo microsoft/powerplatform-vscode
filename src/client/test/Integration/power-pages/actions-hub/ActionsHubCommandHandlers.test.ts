@@ -833,7 +833,7 @@ describe('ActionsHubCommandHandlers', () => {
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_UPLOAD_CONFIRMATION);
@@ -852,7 +852,7 @@ describe('ActionsHubCommandHandlers', () => {
                 siteManagementUrl: "https://inactive-site-1-management.com"
             });
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.called).to.be.false;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
