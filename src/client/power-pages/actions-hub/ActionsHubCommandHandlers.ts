@@ -113,43 +113,42 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
     }
 }
 
-const getStudioUrl = (): string => {
+const getStudioBaseUrl = (): string => {
     const artemisContext = ArtemisContext.ServiceResponse;
-
-    let baseEndpoint = "";
 
     switch (artemisContext.stamp) {
         case ServiceEndpointCategory.TEST:
-            baseEndpoint = Constants.StudioEndpoints.TEST;
-            break;
+            return Constants.StudioEndpoints.TEST;
         case ServiceEndpointCategory.PREPROD:
-            baseEndpoint = Constants.StudioEndpoints.PREPROD;
-            break;
+            return Constants.StudioEndpoints.PREPROD;
         case ServiceEndpointCategory.PROD:
-            baseEndpoint = Constants.StudioEndpoints.PROD;
-            break;
+            return Constants.StudioEndpoints.PROD;
         case ServiceEndpointCategory.DOD:
-            baseEndpoint = Constants.StudioEndpoints.DOD;
-            break;
+            return Constants.StudioEndpoints.DOD;
         case ServiceEndpointCategory.GCC:
-            baseEndpoint = Constants.StudioEndpoints.GCC;
-            break;
+            return Constants.StudioEndpoints.GCC;
         case ServiceEndpointCategory.HIGH:
-            baseEndpoint = Constants.StudioEndpoints.HIGH;
-            break;
+            return Constants.StudioEndpoints.HIGH;
         case ServiceEndpointCategory.MOONCAKE:
-            baseEndpoint = Constants.StudioEndpoints.MOONCAKE;
-            break;
-        default:
-            break;
+            return Constants.StudioEndpoints.MOONCAKE;
+    }
+
+    return "";
+}
+
+const getPPHomeUrl = (): string => {
+    const baseEndpoint = getStudioBaseUrl();
+
+    if (!baseEndpoint) {
+        return "";
     }
 
     return `${baseEndpoint}/environments/${PacContext.AuthInfo?.EnvironmentId}/portals/home`;
 }
 
-const getActiveSitesUrl = () => `${getStudioUrl()}/?tab=active`;
+const getActiveSitesUrl = () => `${getPPHomeUrl()}/?tab=active`;
 
-const getInactiveSitesUrl = () => `${getStudioUrl()}/?tab=inactive`;
+const getInactiveSitesUrl = () => `${getPPHomeUrl()}/?tab=inactive`;
 
 export const openActiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getActiveSitesUrl()));
 
@@ -453,4 +452,29 @@ export const downloadSite = async (siteTreeItem: SiteTreeItem) => {
     }
 
     executeSiteDownloadCommand(siteInfo, downloadPath);
+}
+
+const getStudioUrl = (environmentId: string, websiteId: string) => {
+    if (!environmentId || !websiteId) {
+        return "";
+    }
+
+    const baseEndpoint = getStudioBaseUrl();
+
+    if (!baseEndpoint) {
+        return "";
+    }
+
+    return `${baseEndpoint}/e/${environmentId}/sites/${websiteId}/pages`;
+}
+
+export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
+    const environmentId = PacContext.AuthInfo?.EnvironmentId || "";
+    const studioUrl = getStudioUrl(environmentId, siteTreeItem.siteInfo.websiteId);
+
+    if (!studioUrl) {
+        return;
+    }
+
+    await vscode.env.openExternal(vscode.Uri.parse(studioUrl));
 }
