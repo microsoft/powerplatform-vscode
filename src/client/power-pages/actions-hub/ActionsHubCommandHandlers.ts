@@ -158,7 +158,7 @@ export const openInactiveSitesInStudio = async () => await vscode.env.openExtern
 export const previewSite = async (siteTreeItem: SiteTreeItem) => {
     await PreviewSite.clearCache(siteTreeItem.siteInfo.websiteUrl);
 
-    await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl);
+    await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl, siteTreeItem.siteInfo.dataModelVersion);
 };
 
 export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void> => {

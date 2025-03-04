@@ -620,7 +620,7 @@ describe('ActionsHubCommandHandlers', () => {
             await previewSite(siteTreeItem);
 
             expect(mockPreviewSiteClearCache.calledOnceWith('https://test-site.com')).to.be.true;
-            expect(mockLaunchBrowserAndDevTools.calledOnceWith('https://test-site.com')).to.be.true;
+            expect(mockLaunchBrowserAndDevTools.calledOnceWith('https://test-site.com', 1)).to.be.true;
         });
     });
 
