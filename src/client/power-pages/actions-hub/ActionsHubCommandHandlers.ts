@@ -26,6 +26,7 @@ import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/Web
 import CurrentSiteContext from './CurrentSiteContext';
 import path from 'path';
 import { getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
+import { IWebsiteInfo } from './models/IWebsiteInfo';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -379,4 +380,77 @@ export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
     if (result === Constants.Strings.COPY_TO_CLIPBOARD) {
         await vscode.env.clipboard.writeText(details);
     }
+}
+
+const getDownloadFolderOptions = () => {
+    const options = [
+        {
+            label: Constants.Strings.BROWSE,
+            iconPath: new vscode.ThemeIcon("folder")
+        }
+    ] as { label: string, iconPath: vscode.ThemeIcon | undefined }[];
+
+    if (CurrentSiteContext.currentSiteFolderPath) {
+        options.push({
+            label: path.dirname(CurrentSiteContext.currentSiteFolderPath),
+            iconPath: undefined
+        });
+    }
+
+    return options;
+}
+
+const getDownloadPath = async () => {
+    let downloadPath = "";
+    const option = await vscode.window.showQuickPick(getDownloadFolderOptions(), {
+        canPickMany: false,
+        placeHolder: Constants.Strings.SELECT_DOWNLOAD_FOLDER
+    });
+
+    if (option?.label === Constants.Strings.BROWSE) {
+        const folderUri = await vscode.window.showOpenDialog({
+            canSelectFolders: true,
+            canSelectFiles: false,
+            openLabel: Constants.Strings.SELECT_FOLDER,
+            title: Constants.Strings.SELECT_DOWNLOAD_FOLDER
+        });
+
+        if (folderUri && folderUri.length > 0) {
+            downloadPath = folderUri[0].fsPath;
+        }
+    } else {
+        downloadPath = option?.label || "";
+    }
+    return downloadPath;
+}
+
+
+const executeSiteDownloadCommand = (siteInfo: IWebsiteInfo, downloadPath: string) => {
+    const modelVersion = siteInfo.dataModelVersion;
+    const downloadCommandParts = ["pac", "pages", "download"];
+    downloadCommandParts.push("--overwrite");
+    downloadCommandParts.push(`--path "${downloadPath}"`);
+    downloadCommandParts.push(`--webSiteId ${siteInfo.websiteId}`);
+    downloadCommandParts.push(`--modelVersion "${modelVersion}"`);
+
+    const downloadCommand = downloadCommandParts.join(" ");
+
+    PacTerminal.getTerminal().sendText(downloadCommand);
+}
+
+export const downloadSite = async (siteTreeItem: SiteTreeItem) => {
+    let downloadPath = "";
+    const { siteInfo } = siteTreeItem;
+
+    if (siteInfo.isCurrent && CurrentSiteContext.currentSiteFolderPath) {
+        downloadPath = path.dirname(CurrentSiteContext.currentSiteFolderPath);
+    } else {
+        downloadPath = await getDownloadPath();
+    }
+
+    if (!downloadPath) {
+        return;
+    }
+
+    executeSiteDownloadCommand(siteInfo, downloadPath);
 }
