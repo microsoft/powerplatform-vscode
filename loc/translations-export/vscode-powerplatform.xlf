@@ -63,6 +63,9 @@
     <trans-unit id="++CODE++6fab20ee9c8b4cb1fa10d787f3cd4eac13d34d27050fd193162a2399f690f59c">
       <source xml:lang="en">Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?</source>
     </trans-unit>
+    <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
+      <source xml:lang="en">Browse...</source>
+    </trans-unit>
     <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -464,6 +467,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
       <source xml:lang="en">Saving your file ...</source>
     </trans-unit>
+    <trans-unit id="++CODE++e597da9c984517f802536a83c825cd4f017898c5f28030fe1f62fb94f5228828">
+      <source xml:lang="en">Select Folder</source>
+    </trans-unit>
     <trans-unit id="++CODE++6e26632772595a9d2fdf17191f6d7b59983c308d884deed6ba317054f7d30688">
       <source xml:lang="en">Select Folder for new PCF Control</source>
       <note>Do not translate 'PCF' as it is a product name.</note>
@@ -473,6 +479,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
       <source xml:lang="en">Select an environment</source>
+    </trans-unit>
+    <trans-unit id="++CODE++26297069e403c73e147151f2964757b7e9149762cf3a8e04ffd833907fb979e4">
+      <source xml:lang="en">Select the folder that will contain your project root for your site</source>
     </trans-unit>
     <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
       <source xml:lang="en">Selection is empty.</source>
@@ -697,6 +706,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     </trans-unit>
     <trans-unit id="pacCLI.openDocumentation.title">
       <source xml:lang="en">Documentation</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title">
+      <source xml:lang="en">Download Site</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
       <source xml:lang="en">Edit Power Pages code</source>

@@ -27,6 +27,7 @@ import CurrentSiteContext from './CurrentSiteContext';
 import path from 'path';
 import { getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
 import { isEdmEnvironment } from '../../../common/copilot/dataverseMetadata';
+import { IWebsiteInfo } from './models/IWebsiteInfo';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -282,7 +283,7 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
  */
 async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
     const websitePath = siteTreeItem.siteInfo.folderPath;
-    
+
     if (!websitePath) {
         return;
     }
@@ -291,7 +292,7 @@ async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
     let modelVersionParam = '';
     const currentOrgUrl = PacContext.OrgInfo?.OrgUrl ?? '';
     const dataverseAccessToken = await dataverseAuthentication(currentOrgUrl, true);
-    
+
     if (dataverseAccessToken) {
         const isEdmSupported = await isEdmEnvironment(currentOrgUrl, dataverseAccessToken.accessToken);
         if (isEdmSupported) {
@@ -300,12 +301,12 @@ async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
     }
 
     // Execute the upload command
-    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE, { 
+    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE, {
         methodName: uploadSite.name,
         siteId: siteTreeItem.siteInfo.websiteId,
         siteName: siteTreeItem.siteInfo.name
     });
-    
+
     PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePath}" ${modelVersionParam}`);
 }
 
@@ -323,7 +324,7 @@ async function uploadCurrentSite(siteTreeItem: SiteTreeItem): Promise<void> {
         );
 
         if (confirm !== Constants.Strings.YES) {
-            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_CANCELLED, { 
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_CANCELLED, {
                 methodName: uploadSite.name,
                 siteId: siteTreeItem.siteInfo.websiteId,
                 siteName: siteTreeItem.siteInfo.name
@@ -340,13 +341,13 @@ async function uploadCurrentSite(siteTreeItem: SiteTreeItem): Promise<void> {
 
     const modelVersion = siteTreeItem.siteInfo.dataModelVersion || 1;
 
-    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE, { 
+    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE, {
         methodName: uploadSite.name,
         siteId: siteTreeItem.siteInfo.websiteId,
         siteName: siteTreeItem.siteInfo.name,
         modelVersion: modelVersion.toString()
     });
-    
+
     PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePath}" --modelVersion "${modelVersion}"`);
 }
 
@@ -457,4 +458,77 @@ export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
     if (result === Constants.Strings.COPY_TO_CLIPBOARD) {
         await vscode.env.clipboard.writeText(details);
     }
+}
+
+const getDownloadFolderOptions = () => {
+    const options = [
+        {
+            label: Constants.Strings.BROWSE,
+            iconPath: new vscode.ThemeIcon("folder")
+        }
+    ] as { label: string, iconPath: vscode.ThemeIcon | undefined }[];
+
+    if (CurrentSiteContext.currentSiteFolderPath) {
+        options.push({
+            label: path.dirname(CurrentSiteContext.currentSiteFolderPath),
+            iconPath: undefined
+        });
+    }
+
+    return options;
+}
+
+const getDownloadPath = async () => {
+    let downloadPath = "";
+    const option = await vscode.window.showQuickPick(getDownloadFolderOptions(), {
+        canPickMany: false,
+        placeHolder: Constants.Strings.SELECT_DOWNLOAD_FOLDER
+    });
+
+    if (option?.label === Constants.Strings.BROWSE) {
+        const folderUri = await vscode.window.showOpenDialog({
+            canSelectFolders: true,
+            canSelectFiles: false,
+            openLabel: Constants.Strings.SELECT_FOLDER,
+            title: Constants.Strings.SELECT_DOWNLOAD_FOLDER
+        });
+
+        if (folderUri && folderUri.length > 0) {
+            downloadPath = folderUri[0].fsPath;
+        }
+    } else {
+        downloadPath = option?.label || "";
+    }
+    return downloadPath;
+}
+
+
+const executeSiteDownloadCommand = (siteInfo: IWebsiteInfo, downloadPath: string) => {
+    const modelVersion = siteInfo.dataModelVersion;
+    const downloadCommandParts = ["pac", "pages", "download"];
+    downloadCommandParts.push("--overwrite");
+    downloadCommandParts.push(`--path "${downloadPath}"`);
+    downloadCommandParts.push(`--webSiteId ${siteInfo.websiteId}`);
+    downloadCommandParts.push(`--modelVersion "${modelVersion}"`);
+
+    const downloadCommand = downloadCommandParts.join(" ");
+
+    PacTerminal.getTerminal().sendText(downloadCommand);
+}
+
+export const downloadSite = async (siteTreeItem: SiteTreeItem) => {
+    let downloadPath = "";
+    const { siteInfo } = siteTreeItem;
+
+    if (siteInfo.isCurrent && CurrentSiteContext.currentSiteFolderPath) {
+        downloadPath = path.dirname(CurrentSiteContext.currentSiteFolderPath);
+    } else {
+        downloadPath = await getDownloadPath();
+    }
+
+    if (!downloadPath) {
+        return;
+    }
+
+    executeSiteDownloadCommand(siteInfo, downloadPath);
 }

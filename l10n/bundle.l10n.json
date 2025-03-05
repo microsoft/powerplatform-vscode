@@ -197,6 +197,9 @@
   "Yes": "Yes",
   "Current site path not found.": "Current site path not found.",
   "Site Details": "Site Details",
+  "Browse...": "Browse...",
+  "Select the folder that will contain your project root for your site": "Select the folder that will contain your project root for your site",
+  "Select Folder": "Select Folder",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
