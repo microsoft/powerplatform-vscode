@@ -16,7 +16,6 @@ import path from "path";
 import { getWebsiteRecordId } from "../../../common/utilities/WorkspaceInfoFinderUtil";
 
 export class MetadataDiffDesktop {
-    //private readonly _disposables: vscode.Disposable[] = [];
     private static _isInitialized = false;
 
     static isEnabled(): boolean {
