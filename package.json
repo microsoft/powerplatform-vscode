@@ -1092,17 +1092,17 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isWindows",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isWindows",
           "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isMac",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isMac",
           "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isLinux",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isLinux",
           "group": "siteAction@5"
         },
         {

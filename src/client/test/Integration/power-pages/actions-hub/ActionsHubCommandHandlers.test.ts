@@ -724,17 +724,36 @@ describe('ActionsHubCommandHandlers', () => {
             executeCommandStub.restore();
         });
 
-        it('should not reveal file in OS when file path is not provided', async () => {
-            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
-            await revealInOS();
+        describe('when opening active site', () => {
+            it('should not reveal file in OS when file path is not provided', async () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
+                await revealInOS({ contextValue: Constants.ContextValues.CURRENT_ACTIVE_SITE } as SiteTreeItem);
 
-            expect(executeCommandStub.called).to.be.false;
+                expect(executeCommandStub.called).to.be.false;
+            });
+
+            it('should reveal file in OS when file path is provided', async () => {
+                const mockPath = 'test-path';
+                sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
+                await revealInOS({ contextValue: Constants.ContextValues.CURRENT_ACTIVE_SITE } as SiteTreeItem);
+
+                expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+            });
         });
 
-        it('should reveal file in OS when file path is provided', async () => {
-            const mockPath = 'test-path';
-            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
-            await revealInOS(); expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+        describe('when opening other site', () => {
+            it('should not reveal file in OS when file path is not provided', async () => {
+                await revealInOS({ contextValue: Constants.ContextValues.OTHER_SITE, siteInfo: {} } as SiteTreeItem);
+
+                expect(executeCommandStub.called).to.be.false;
+            });
+
+            it('should reveal file in OS when file path is provided', async () => {
+                const mockPath = 'test-path';
+                await revealInOS({ contextValue: Constants.ContextValues.OTHER_SITE, siteInfo: { folderPath: mockPath } } as SiteTreeItem);
+
+                expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+            });
         });
     });
 
