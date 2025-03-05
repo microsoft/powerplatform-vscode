@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites, showSiteDetails, openSiteManagement, downloadSite } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites, showSiteDetails, openSiteManagement, downloadSite, openInStudio } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -1277,6 +1277,69 @@ describe('ActionsHubCommandHandlers', () => {
                     expect(mockSendText.called).to.be.false;
                 });
             });
+        });
+    });
+
+    describe('openInStudio', () => {
+        let mockUrl: sinon.SinonSpy;
+        let mockOpenUrl: sinon.SinonStub;
+
+        beforeEach(() => {
+            mockUrl = sandbox.spy(vscode.Uri, 'parse');
+            mockOpenUrl = sandbox.stub(vscode.env, 'openExternal');
+            sandbox.stub(PacContext, 'AuthInfo').get(() => mockAuthInfo);
+            sandbox.stub(ArtemisContext, 'ServiceResponse').get(() => ({ stamp: ServiceEndpointCategory.TEST }));
+        });
+
+        it('should open in studio', async () => {
+            await openInStudio({
+                siteInfo: {
+                    websiteId: "test-id"
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.calledOnce).to.be.true;
+            expect(mockUrl.firstCall.args[0]).to.equal('https://make.test.powerpages.microsoft.com/e/test-env-id/sites/test-id/pages');
+
+            expect(mockOpenUrl.calledOnce).to.be.true;
+            expect(mockOpenUrl.firstCall.args[0].toString()).to.equal('https://make.test.powerpages.microsoft.com/e/test-env-id/sites/test-id/pages');
+        });
+
+        it('should not open when website id is missing', async () => {
+            await openInStudio({
+                siteInfo: {
+                    websiteId: ""
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.called).to.be.false;
+            expect(mockOpenUrl.called).to.be.false;
+        });
+
+        it('should not open when environment id is missing', async () => {
+            sandbox.stub(PacContext, 'AuthInfo').get(() => ({ ...mockAuthInfo, EnvironmentId: undefined }));
+
+            await openInStudio({
+                siteInfo: {
+                    websiteId: "test-id"
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.called).to.be.false;
+            expect(mockOpenUrl.called).to.be.false;
+        });
+
+        it('should not open when Artemis stamp id is missing', async () => {
+            sandbox.stub(ArtemisContext, 'ServiceResponse').get(() => ({ stamp: 'foo' }));
+
+            await openInStudio({
+                siteInfo: {
+                    websiteId: "test-id"
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.called).to.be.false;
+            expect(mockOpenUrl.called).to.be.false;
         });
     });
 });

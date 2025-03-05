@@ -779,6 +779,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     <trans-unit id="pacCLI.openPacLab.title">
       <source xml:lang="en">Open PAC Lab</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title">
+      <source xml:lang="en">Open in Power Pages Studio</source>
+    </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title">
       <source xml:lang="en">Open in Power Pages Studio</source>
     </trans-unit>
