@@ -447,6 +447,10 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
         "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title%"
       }
     ],
     "configuration": {
@@ -939,6 +943,10 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -1069,7 +1077,7 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite)",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite)",
           "group": "siteAction@2"
         },
         {
@@ -1101,6 +1109,11 @@
           "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
           "group": "siteAction@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@6"
         }
       ]
     },

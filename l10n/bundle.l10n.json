@@ -196,6 +196,7 @@
   "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Site management URL not found for the selected site. Please try again after refreshing the environment.",
   "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?",
   "Yes": "Yes",
+  "Current site path not found.": "Current site path not found.",
   "Site Details": "Site Details",
   "Browse...": "Browse...",
   "Select the folder that will contain your project root for your site": "Select the folder that will contain your project root for your site",

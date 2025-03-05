@@ -142,6 +142,9 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     <trans-unit id="++CODE++e0d1b68224bf0b31ef16b206c65b5f8f6b89d18161f4a7cdcb8d0ac8d952549a">
       <source xml:lang="en">Current</source>
     </trans-unit>
+    <trans-unit id="++CODE++fc47ac56c8a4446c02d8470168a888d8e0040cfc0bb5ce6173e324dccc72f24c">
+      <source xml:lang="en">Current site path not found.</source>
+    </trans-unit>
     <trans-unit id="++CODE++1da89bd5f5df020ca47c79dfdbc1517a299ca77570df2de4132f53797d5f2412">
       <source xml:lang="en">Data model version: v{0}</source>
       <note>{0} is the data model version</note>
@@ -778,6 +781,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.openPacLab.title">
       <source xml:lang="en">Open PAC Lab</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title">
+      <source xml:lang="en">Open in Power Pages Studio</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title">
       <source xml:lang="en">Open in Power Pages Studio</source>
