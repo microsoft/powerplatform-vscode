@@ -59,11 +59,8 @@ describe('ActiveGroupTreeItem', () => {
         });
 
         describe('when active sites is not empty', () => {
-            beforeEach(() => {
-                sinon.stub(CurrentSiteContext, 'currentSiteId').value('1');
-            });
-
             it('should return an array of SiteTreeItem', () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteId').value('1');
                 const activeWebsites: IWebsiteDetails[] = [
                     {
                         websiteRecordId: "1",
@@ -85,7 +82,7 @@ describe('ActiveGroupTreeItem', () => {
                         dataModel: WebsiteDataModel.Enhanced,
                         environmentId: "env2",
                         siteVisibility: "private",
-                        siteManagementUrl: "http://site1.com/manage"
+                        siteManagementUrl: "http://site2.com/manage"
                     }
                 ];
 
@@ -113,6 +110,71 @@ describe('ActiveGroupTreeItem', () => {
                     status: WebsiteStatus.Active,
                     isCurrent: false,
                     siteVisibility: "private",
+                    siteManagementUrl: "http://site2.com/manage"
+                });
+            });
+
+            it('should return an array of SiteTreeItem when site id is empty', () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteId').value('');
+                const activeWebsites: IWebsiteDetails[] = [
+                    {
+                        websiteRecordId: "",
+                        name: "Site 1",
+                        websiteUrl: "http://site1.com",
+                        dataverseInstanceUrl: "http://dataverse1.com",
+                        dataverseOrganizationId: "org1",
+                        dataModel: WebsiteDataModel.Standard,
+                        environmentId: "env1",
+                        siteVisibility: "public",
+                        siteManagementUrl: "http://site1.com/manage"
+                    }
+                ];
+
+                const treeItem = new ActiveGroupTreeItem(activeWebsites);
+                const children = treeItem.getChildren();
+
+                const site1 = children[0] as SiteTreeItem;
+                expect(site1.siteInfo).to.deep.equal({
+                    name: 'Site 1',
+                    websiteId: '',
+                    dataModelVersion: 1,
+                    websiteUrl: 'http://site1.com',
+                    status: WebsiteStatus.Active,
+                    isCurrent: false,
+                    siteVisibility: "public",
+                    siteManagementUrl: "http://site1.com/manage"
+                });
+            });
+
+            it('should return an array of SiteTreeItem when site id is empty', () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteId').value(null);
+                const activeWebsites: IWebsiteDetails[] = [
+                    {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        websiteRecordId: null!,
+                        name: "Site 1",
+                        websiteUrl: "http://site1.com",
+                        dataverseInstanceUrl: "http://dataverse1.com",
+                        dataverseOrganizationId: "org1",
+                        dataModel: WebsiteDataModel.Standard,
+                        environmentId: "env1",
+                        siteVisibility: "public",
+                        siteManagementUrl: "http://site1.com/manage"
+                    }
+                ];
+
+                const treeItem = new ActiveGroupTreeItem(activeWebsites);
+                const children = treeItem.getChildren();
+
+                const site1 = children[0] as SiteTreeItem;
+                expect(site1.siteInfo).to.deep.equal({
+                    name: 'Site 1',
+                    websiteId: null,
+                    dataModelVersion: 1,
+                    websiteUrl: 'http://site1.com',
+                    status: WebsiteStatus.Active,
+                    isCurrent: false,
+                    siteVisibility: "public",
                     siteManagementUrl: "http://site1.com/manage"
                 });
             });
