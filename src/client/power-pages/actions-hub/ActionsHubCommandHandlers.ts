@@ -232,10 +232,17 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
     return { activeSites: [], inactiveSites: [], otherSites: [] };
 }
 
-export const revealInOS = async () => {
-    if (CurrentSiteContext.currentSiteFolderPath) {
-        await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(CurrentSiteContext.currentSiteFolderPath));
+export const revealInOS = async (siteTreeItem: SiteTreeItem) => {
+    let folderPath = CurrentSiteContext.currentSiteFolderPath;
+    if (siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
+        folderPath = siteTreeItem.siteInfo.folderPath || "";
     }
+
+    if (!folderPath) {
+        return;
+    }
+
+    await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(folderPath));
 }
 
 export const openSiteManagement = async (siteTreeItem: SiteTreeItem) => {
