@@ -620,7 +620,7 @@ describe('ActionsHubCommandHandlers', () => {
             await previewSite(siteTreeItem);
 
             expect(mockPreviewSiteClearCache.calledOnceWith('https://test-site.com')).to.be.true;
-            expect(mockLaunchBrowserAndDevTools.calledOnceWith('https://test-site.com')).to.be.true;
+            expect(mockLaunchBrowserAndDevTools.calledOnceWith('https://test-site.com', 1)).to.be.true;
         });
     });
 
@@ -724,17 +724,36 @@ describe('ActionsHubCommandHandlers', () => {
             executeCommandStub.restore();
         });
 
-        it('should not reveal file in OS when file path is not provided', async () => {
-            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
-            await revealInOS();
+        describe('when opening active site', () => {
+            it('should not reveal file in OS when file path is not provided', async () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
+                await revealInOS({ contextValue: Constants.ContextValues.CURRENT_ACTIVE_SITE } as SiteTreeItem);
 
-            expect(executeCommandStub.called).to.be.false;
+                expect(executeCommandStub.called).to.be.false;
+            });
+
+            it('should reveal file in OS when file path is provided', async () => {
+                const mockPath = 'test-path';
+                sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
+                await revealInOS({ contextValue: Constants.ContextValues.CURRENT_ACTIVE_SITE } as SiteTreeItem);
+
+                expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+            });
         });
 
-        it('should reveal file in OS when file path is provided', async () => {
-            const mockPath = 'test-path';
-            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
-            await revealInOS(); expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+        describe('when opening other site', () => {
+            it('should not reveal file in OS when file path is not provided', async () => {
+                await revealInOS({ contextValue: Constants.ContextValues.OTHER_SITE, siteInfo: {} } as SiteTreeItem);
+
+                expect(executeCommandStub.called).to.be.false;
+            });
+
+            it('should reveal file in OS when file path is provided', async () => {
+                const mockPath = 'test-path';
+                await revealInOS({ contextValue: Constants.ContextValues.OTHER_SITE, siteInfo: { folderPath: mockPath } } as SiteTreeItem);
+
+                expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+            });
         });
     });
 
@@ -835,7 +854,7 @@ describe('ActionsHubCommandHandlers', () => {
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_UPLOAD_CONFIRMATION);
@@ -856,7 +875,7 @@ describe('ActionsHubCommandHandlers', () => {
             });
             mockShowInformationMessage.resolves(undefined);
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockSendText.called).to.be.false;
@@ -874,7 +893,7 @@ describe('ActionsHubCommandHandlers', () => {
                 siteManagementUrl: "https://inactive-site-1-management.com"
             });
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.called).to.be.false;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
@@ -893,7 +912,7 @@ describe('ActionsHubCommandHandlers', () => {
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
@@ -913,7 +932,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             mockSendText.throws(new Error('Upload failed'));
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_FAILED);

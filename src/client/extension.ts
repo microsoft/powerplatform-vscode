@@ -233,7 +233,7 @@ export async function activate(
             }
 
             await Promise.allSettled([
-                PreviewSite.initialize(context, workspaceFolders),
+                PreviewSite.initialize(context, workspaceFolders, pacTerminal),
                 ActionsHub.initialize(context, pacTerminal)
             ]);
         }),
