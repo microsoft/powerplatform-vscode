@@ -49,40 +49,44 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
         return fileList;
     }
 
-    private async getDiffFiles(workspacePath: string, storagePath: string): Promise<string[]> {
-        const diffFiles: Set<string> = new Set();
+    private async getDiffFiles(workspacePath: string, storagePath: string): Promise<Map<string, { workspaceFile?: string; storageFile?: string }>> {
+        const diffFiles = new Map<string, { workspaceFile?: string; storageFile?: string }>();
 
         const workspaceFiles = this.getAllFilesRecursively(workspacePath);
         const storageFiles = this.getAllFilesRecursively(storagePath);
 
-        // Check workspace files against storage files
-        for (const file of workspaceFiles) {
-            const relativePath = path.relative(workspacePath, file);
+        const workspaceFileSet = new Set(workspaceFiles.map(f => path.relative(workspacePath, f)));
+        const storageFileSet = new Set(storageFiles.map(f => path.relative(storagePath, f)));
+
+        // Files only in workspace or modified files
+        for (const relativePath of workspaceFileSet) {
+            const workspaceFile = path.join(workspacePath, relativePath);
             const storageFile = path.join(storagePath, relativePath);
 
-            if (fs.existsSync(storageFile)) {
-                const workspaceContent = fs.readFileSync(file, "utf8");
-                const storageContent = fs.readFileSync(storageFile, "utf8");
-
-                if (workspaceContent !== storageContent) {
-                    diffFiles.add(relativePath);
-                }
+            if (!storageFileSet.has(relativePath)) {
+                diffFiles.set(relativePath, { workspaceFile }); // File only in workspace
             } else {
-                diffFiles.add(relativePath);
+                const workspaceContent = fs.readFileSync(workspaceFile, "utf8");
+                const storageContent = fs.readFileSync(storageFile, "utf8");
+                if (workspaceContent !== storageContent) {
+                    const normalizedWorkspaceContent = workspaceContent.replace(/\r\n/g, "\n");
+                    const normalizedStorageContent = storageContent.replace(/\r\n/g, "\n");
+                    if (normalizedWorkspaceContent !== normalizedStorageContent) {
+                        diffFiles.set(relativePath, { workspaceFile, storageFile }); // Modified file
+                    }
+                }
             }
         }
 
-        // Check storage files against workspace files (to detect deletions)
-        for (const file of storageFiles) {
-            const relativePath = path.relative(storagePath, file);
-            const workspaceFile = path.join(workspacePath, relativePath);
-
-            if (!fs.existsSync(workspaceFile)) {
-                diffFiles.add(relativePath);
+        // Files only in storage (deleted from workspace)
+        for (const relativePath of storageFileSet) {
+            if (!workspaceFileSet.has(relativePath)) {
+                const storageFile = path.join(storagePath, relativePath);
+                diffFiles.set(relativePath, { storageFile }); // File only in storage
             }
         }
 
-        return Array.from(diffFiles);
+        return diffFiles;
     }
 
     async getChildren(element?: MetadataDiffTreeItem): Promise<MetadataDiffTreeItem[] | null | undefined> {
@@ -103,25 +107,17 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             }
 
             const folderNames = fs.readdirSync(storagePath).filter(file => fs.statSync(path.join(storagePath, file)).isDirectory());
-            //check if storage path contains any files
             if (folderNames.length === 0) {
                 return [];
             }
             const websitePath = path.join(storagePath, folderNames[0]);
 
             const diffFiles = await this.getDiffFiles(workspacePath, websitePath);
-            if (diffFiles.length === 0) {
+            if (diffFiles.size === 0) {
                 return [];
             }
 
-            const filePathMap = new Map<string, string>();
-
-            diffFiles.forEach(relativePath => {
-                const storedFileUri = vscode.Uri.joinPath(vscode.Uri.file(websitePath), relativePath);
-                    filePathMap.set(relativePath, storedFileUri.fsPath);
-            });
-
-            return this.buildTreeHierarchy(filePathMap);
+            return this.buildTreeHierarchy(diffFiles);
         } catch (error) {
             oneDSLoggerWrapper.getLogger().traceError(
                 Constants.EventNames.METADATA_DIFF_CURRENT_ENV_FETCH_FAILED,
@@ -134,15 +130,10 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
         }
     }
 
-    private buildTreeHierarchy(filePathMap: Map<string, string>): MetadataDiffTreeItem[] {
+    private buildTreeHierarchy(filePathMap: Map<string, { workspaceFile?: string; storageFile?: string }>): MetadataDiffTreeItem[] {
         const rootItems: Map<string, MetadataDiffTreeItem> = new Map();
-        const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (!workspaceFolders) {
-            throw new Error("No workspace folders found");
-        }
-        const workspaceRoot = workspaceFolders[0].uri.fsPath;
 
-        filePathMap.forEach((storedFilePath, relativePath) => {
+        filePathMap.forEach(({ workspaceFile, storageFile }, relativePath) => {
             const parts = relativePath.split(path.sep);
             let currentLevel = rootItems;
             let parentItem: MetadataDiffTreeItem | undefined;
@@ -155,8 +146,8 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
                     let newItem: MetadataDiffTreeItem;
 
                     if (isFile) {
-                        const absoluteWorkspaceFilePath = path.join(workspaceRoot, relativePath);
-                        newItem = new MetadataDiffFileItem(name, absoluteWorkspaceFilePath, storedFilePath);
+                        const hasDiff = workspaceFile === undefined || storageFile === undefined || fs.readFileSync(workspaceFile, "utf8") !== fs.readFileSync(storageFile, "utf8");
+                        newItem = new MetadataDiffFileItem(name, workspaceFile, storageFile, hasDiff);
                     } else {
                         newItem = new MetadataDiffFolderItem(name);
                     }
@@ -175,6 +166,22 @@ export class MetadataDiffTreeDataProvider implements vscode.TreeDataProvider<Met
             }
         });
 
-        return Array.from(rootItems.values());
+        // Filter out folders without changed files
+        const filterEmptyFolders = (items: MetadataDiffTreeItem[]): MetadataDiffTreeItem[] => {
+            return items.filter(item => {
+                if (item instanceof MetadataDiffFolderItem) {
+                    const childrenArray = Array.from(item.getChildrenMap().values());
+                    const filteredChildren = filterEmptyFolders(childrenArray);
+                    item.getChildrenMap().clear();
+                    filteredChildren.forEach(child => item.getChildrenMap().set(child.label, child));
+                    return filteredChildren.length > 0;
+                } else if (item instanceof MetadataDiffFileItem) {
+                    return item.hasDiff;
+                }
+                return false;
+            });
+        };
+
+        return filterEmptyFolders(Array.from(rootItems.values()));
     }
 }

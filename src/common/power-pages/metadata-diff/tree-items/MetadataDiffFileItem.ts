@@ -7,18 +7,24 @@ import * as vscode from "vscode";
 import { MetadataDiffTreeItem } from "./MetadataDiffTreeItem";
 
 export class MetadataDiffFileItem extends MetadataDiffTreeItem {
-    constructor(label: string, workspaceFilePath: string, storedFilePath: string) {
-        super(label, vscode.TreeItemCollapsibleState.None, "file", workspaceFilePath);
+    public readonly workspaceFile?: string;
+    public readonly storageFile?: string;
+    public readonly hasDiff: boolean;
 
-        const workspaceUri = vscode.Uri.file(workspaceFilePath);
-        const storedUri = vscode.Uri.file(storedFilePath);
+    constructor(label: string, workspaceFile?: string, storageFile?: string, hasDiff = true) {
+        super(label, vscode.TreeItemCollapsibleState.None, "metadataDiffFileItem");
+        this.workspaceFile = workspaceFile;
+        this.storageFile = storageFile;
+        this.hasDiff = hasDiff;
+
+        const workspaceUri = workspaceFile ? vscode.Uri.file(workspaceFile) : vscode.Uri.parse(`untitled:${label} (Deleted)`);
+        const storedUri = storageFile ? vscode.Uri.file(storageFile) : vscode.Uri.parse(`untitled:${label} (Deleted)`);
 
         this.resourceUri = workspaceUri;
         this.command = {
-            command: "vscode.diff",
-            title: "Compare Changes",
-            arguments: [storedUri, workspaceUri, `Diff: ${label}`]
+            command: 'vscode.diff',
+            title: 'Show Diff',
+            arguments: [storedUri, workspaceUri, `${label} (Diff)`]
         };
-        this.iconPath = new vscode.ThemeIcon("file");
     }
 }
