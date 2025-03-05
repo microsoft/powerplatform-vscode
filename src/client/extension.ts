@@ -163,6 +163,9 @@ export async function activate(
 
     const workspaceFolders = getWorkspaceFolders();
 
+    // Init OrgChangeNotifier instance
+    OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
+
     _context.subscriptions.push(
         orgChangeEvent(async (orgDetails: ActiveOrgOutput) => {
             const orgID = orgDetails.OrgId;
@@ -211,7 +214,7 @@ export async function activate(
                 oneDSLoggerWrapper.getLogger().traceInfo(desktopTelemetryEventNames.DESKTOP_EXTENSION_INIT_CONTEXT, initContext);
             }
 
-            if (!copilotNotificationShown) {
+            if (!copilotNotificationShown && workspaceContainsPortalConfigFolder(workspaceFolders)) {
                 let telemetryData = '';
                 let listOfActivePortals = [];
                 try {
@@ -242,9 +245,6 @@ export async function activate(
     );
 
     if (workspaceContainsPortalConfigFolder(workspaceFolders)) {
-
-        // Init OrgChangeNotifier instance
-        OrgChangeNotifier.createOrgChangeNotifierInstance(pacTerminal.getWrapper());
 
         vscode.workspace.onDidOpenTextDocument(didOpenTextDocument);
         vscode.workspace.textDocuments.forEach(didOpenTextDocument);
