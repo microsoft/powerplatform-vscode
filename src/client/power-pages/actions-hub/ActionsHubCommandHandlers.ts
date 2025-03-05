@@ -158,7 +158,7 @@ export const openInactiveSitesInStudio = async () => await vscode.env.openExtern
 export const previewSite = async (siteTreeItem: SiteTreeItem) => {
     await PreviewSite.clearCache(siteTreeItem.siteInfo.websiteUrl);
 
-    await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl);
+    await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl, siteTreeItem.siteInfo.dataModelVersion, siteTreeItem.siteInfo.siteVisibility);
 };
 
 export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void> => {
@@ -262,8 +262,9 @@ export const openSiteManagement = async (siteTreeItem: SiteTreeItem) => {
 /**
  * Uploads a Power Pages site to the environment
  * @param siteTreeItem The site tree item containing site information
+ * @param websitePath The path to the website folder to upload. If not passed the current site context will be used.
  */
-export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
+export const uploadSite = async (siteTreeItem: SiteTreeItem, websitePath: string) => {
     try {
         // Handle upload for "other" sites (sites not in the current environment)
         if (siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
@@ -272,7 +273,7 @@ export const uploadSite = async (siteTreeItem: SiteTreeItem) => {
         }
 
         // Handle upload for active/inactive sites
-        await uploadCurrentSite(siteTreeItem);
+        await uploadCurrentSite(siteTreeItem, websitePath);
     } catch (error) {
         oneDSLoggerWrapper.getLogger().traceError(
             Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_FAILED,
@@ -320,7 +321,7 @@ async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
  * Uploads a site that's in the current environment
  * @param siteTreeItem The site tree item containing site information
  */
-async function uploadCurrentSite(siteTreeItem: SiteTreeItem): Promise<void> {
+async function uploadCurrentSite(siteTreeItem: SiteTreeItem, websitePath: string): Promise<void> {
     // Public sites require confirmation to prevent accidental deployment
     if (siteTreeItem.siteInfo.siteVisibility?.toLowerCase() === Constants.SiteVisibility.PUBLIC) {
         const confirm = await vscode.window.showInformationMessage(
@@ -339,8 +340,8 @@ async function uploadCurrentSite(siteTreeItem: SiteTreeItem): Promise<void> {
         }
     }
 
-    const websitePath = CurrentSiteContext.currentSiteFolderPath;
-    if (!websitePath) {
+    const websitePathToUpload = websitePath || CurrentSiteContext.currentSiteFolderPath;
+    if (!websitePathToUpload) {
         vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.CURRENT_SITE_PATH_NOT_FOUND));
         return;
     }
@@ -354,7 +355,7 @@ async function uploadCurrentSite(siteTreeItem: SiteTreeItem): Promise<void> {
         modelVersion: modelVersion.toString()
     });
 
-    PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePath}" --modelVersion "${modelVersion}"`);
+    PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePathToUpload}" --modelVersion "${modelVersion}"`);
 }
 
 /**
