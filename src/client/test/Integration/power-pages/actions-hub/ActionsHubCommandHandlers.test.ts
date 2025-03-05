@@ -856,7 +856,7 @@ describe('ActionsHubCommandHandlers', () => {
             });
             mockShowInformationMessage.resolves(undefined);
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockSendText.called).to.be.false;
@@ -893,7 +893,7 @@ describe('ActionsHubCommandHandlers', () => {
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
@@ -913,7 +913,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             mockSendText.throws(new Error('Upload failed'));
 
-            await uploadSite(mockSiteTreeItem);
+            await uploadSite(mockSiteTreeItem, "");
 
             expect(traceErrorStub.calledOnce).to.be.true;
             expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_FAILED);
