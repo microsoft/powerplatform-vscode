@@ -1077,7 +1077,7 @@
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite)",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite)",
           "group": "siteAction@2"
         },
         {

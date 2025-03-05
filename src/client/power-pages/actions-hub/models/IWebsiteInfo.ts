@@ -14,4 +14,5 @@ export interface IWebsiteInfo {
     isCurrent: boolean;
     siteVisibility: string;
     siteManagementUrl: string;
+    folderPath?: string;    
 }

@@ -34,7 +34,8 @@ export class OtherSitesGroupTreeItem extends ActionsHubTreeItem {
                 isCurrent: false,
                 websiteUrl: "",
                 siteVisibility: "",
-                siteManagementUrl: ""
+                siteManagementUrl: "",
+                folderPath : site.folderPath
             };
             return new SiteTreeItem(siteInfo);
         });
