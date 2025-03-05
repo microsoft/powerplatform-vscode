@@ -533,9 +533,6 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++5eccedc8c04d2137a9eb74edf18ea469b4b63e7315de4b8fe49c48bb8d0780e9">
       <source xml:lang="en">The pac CLI is ready for use in your VS Code terminal!</source>
     </trans-unit>
-    <trans-unit id="++CODE++db00163e0e6fed2e319e28785c537befb88ded272d245e503d9580322ab2fec8">
-      <source xml:lang="en">The preview shown is for published changes.</source>
-    </trans-unit>
     <trans-unit id="++CODE++18f3be2933741b96e56b1e1f70818fcba46ec9c5b3dcd0e28d801eab15791d84">
       <source xml:lang="en">There was a permissions problem with the server</source>
     </trans-unit>
@@ -582,6 +579,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
       <source xml:lang="en">Unmanaged</source>
+    </trans-unit>
+    <trans-unit id="++CODE++7fce0124a7cb74955461f08e39ceaaed1e2850492f077f4e6defd82ef3ca6b0e">
+      <source xml:lang="en">Upload changes</source>
     </trans-unit>
     <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
       <source xml:lang="en">User: {0}</source>
@@ -632,6 +632,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
       <source xml:lang="en">You can use this in &lt;a href=&quot;#&quot; id=&quot;github-copilot-link&quot;&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++eeb25aaca6a9e3f6c670334480b8e56e2a362ecfec23f8e63617915b22ddc8a0">
+      <source xml:lang="en">Your preview isn't updated. Please upload your site to see the latest changes.</source>
     </trans-unit>
     <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
       <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
