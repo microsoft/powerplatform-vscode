@@ -15,7 +15,7 @@ export const Constants = {
         INACTIVE_SITE: "inactiveSite",
         OTHER_SITE: "otherSite",
         OTHER_SITES_GROUP: "otherSitesGroup",
-        NO_SITES: "noSites"
+        NO_SITES: "noSites",
     },
     Icons: {
         SITE: new vscode.ThemeIcon('globe'),
@@ -36,6 +36,7 @@ export const Constants = {
         SITE_MANAGEMENT_URL_NOT_FOUND: vscode.l10n.t("Site management URL not found for the selected site. Please try again after refreshing the environment."),
         SITE_UPLOAD_CONFIRMATION: vscode.l10n.t(`Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?`),
         YES: vscode.l10n.t("Yes"),
+        CURRENT_SITE_PATH_NOT_FOUND: vscode.l10n.t("Current site path not found."),
         SITE_DETAILS: vscode.l10n.t("Site Details"),
         BROWSE: vscode.l10n.t("Browse..."),
         SELECT_DOWNLOAD_FOLDER: vscode.l10n.t("Select the folder that will contain your project root for your site"),
@@ -54,7 +55,9 @@ export const Constants = {
         ACTIONS_HUB_UPLOAD_SITE: "actionsHubUploadSite",
         ACTIONS_HUB_UPLOAD_SITE_CANCELLED: "actionsHubUploadSiteCancelled",
         OTHER_SITES_YAML_PARSE_FAILED: "OtherSitesYamlParseFailed",
-        OTHER_SITES_FILESYSTEM_ERROR: "OtherSitesFilesystemError"
+        OTHER_SITES_FILESYSTEM_ERROR: "OtherSitesFilesystemError",
+        ACTIONS_HUB_UPLOAD_OTHER_SITE: "ActionsHubUploadOtherSite",
+        ACTIONS_HUB_UPLOAD_SITE_FAILED: "ActionsHubUploadSiteFailed",
     },
     StudioEndpoints: {
         TEST: "https://make.test.powerpages.microsoft.com",

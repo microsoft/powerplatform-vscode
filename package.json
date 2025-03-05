@@ -1101,6 +1101,16 @@
           "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
           "group": "siteAction@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite)",
+          "group": "siteAction@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
+          "group": "siteAction@4"
         }
       ]
     },

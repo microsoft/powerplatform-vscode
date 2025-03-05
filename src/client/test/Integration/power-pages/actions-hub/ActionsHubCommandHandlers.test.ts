@@ -804,12 +804,14 @@ describe('ActionsHubCommandHandlers', () => {
         });
     });
 
+
     describe('uploadSite', () => {
         let mockSendText: sinon.SinonStub;
         let mockSiteTreeItem: SiteTreeItem;
 
         beforeEach(() => {
             mockSendText = sinon.stub();
+
             // Set up CurrentSiteContext
             sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -837,7 +839,27 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(mockShowInformationMessage.calledOnce).to.be.true;
             expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_UPLOAD_CONFIRMATION);
+
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should not upload when user cancels confirmation for public site', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PUBLIC,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+            mockShowInformationMessage.resolves(undefined);
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockSendText.called).to.be.false;
         });
 
         it('should upload without confirmation for private site', async () => {
@@ -858,6 +880,44 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
         });
 
+        it('should handle case sensitivity for public site visibility', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: "PUBLIC", // Uppercase
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+            mockShowInformationMessage.resolves(Constants.Strings.YES);
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should handle errors during upload', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PRIVATE,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+
+            mockSendText.throws(new Error('Upload failed'));
+
+            await uploadSite(mockSiteTreeItem);
+
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_FAILED);
+        });
     });
 
     describe('findOtherSites', () => {
