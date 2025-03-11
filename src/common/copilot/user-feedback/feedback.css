@@ -30,7 +30,6 @@ body {
     color: var(--vscode-button-foreground);
     cursor: pointer;
     padding: 6px 11px;
-    outline: 1px solid transparent;
     outline-offset: 2px !important;
     border-radius: 2px;
 }
