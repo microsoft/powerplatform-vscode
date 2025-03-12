@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="bundle" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="++CODE++08833dda22312dacb09f1d185caedf751289ee89a4c75682a09f4a262bf67ac4">
+      <source xml:lang="en"> End of Code Block </source>
+    </trans-unit>
     <trans-unit id="++CODE++29bb69945e50cb632fabf16f3f89a25d813910c19059d8a792f66262a952039d">
       <source xml:lang="en">@PowerPages is not yet available in your region.</source>
     </trans-unit>
@@ -120,6 +123,9 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
       <source xml:lang="en">Cluster geo name: {0}</source>
       <note>{0} is the cluster geo name</note>
     </trans-unit>
+    <trans-unit id="++CODE++51e495f295ba55f724b77298746e3284ff9fc8e1e582828a9a3f4051fc577cb0">
+      <source xml:lang="en">Code Block </source>
+    </trans-unit>
     <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
       <source xml:lang="en">Confirm</source>
     </trans-unit>
@@ -128,6 +134,9 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     </trans-unit>
     <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
       <source xml:lang="en">Copied to clipboard!</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9b44302f1c5e52f926415b952b83efce47fce76164fa64f1a42d1a1606efa11d">
+      <source xml:lang="en">Copilot Response</source>
     </trans-unit>
     <trans-unit id="++CODE++b04e6767bf84555605710be1a94e48ddcbcb820353b859da427d189cf25395b4">
       <source xml:lang="en">Copilot illustration</source>

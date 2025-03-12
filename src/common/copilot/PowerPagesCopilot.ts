@@ -195,6 +195,9 @@ export class PowerPagesCopilot implements vscode.WebviewViewProvider {
                         WORKING_ON_IT_MESSAGE: vscode.l10n.t("Working on it..."),
                         GITHUB_COPILOT_CHAT: vscode.l10n.t('You can use this in <a href="#" id="github-copilot-link">GitHub Copilot with @powerpages</a> and leverage best of both world.'),
                         NEW_BADGE: vscode.l10n.t("NEW"),
+                        COPILOT_RESPONSE: vscode.l10n.t("Copilot Response"),
+                        CODE_BLOCK: vscode.l10n.t("Code Block "),
+                        CODE_BLOCK_END: vscode.l10n.t(" End of Code Block "),
                     };
 
                     this.sendMessageToWebview({
