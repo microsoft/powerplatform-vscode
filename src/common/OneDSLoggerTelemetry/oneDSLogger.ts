@@ -116,12 +116,12 @@ export class OneDSLogger implements ITelemetryLogger {
         if ((coreConfig.instrumentationKey ?? "") !== "") {
             this.appInsightsCore.initialize(coreConfig, []);
         }
-        this.intitializeContextInfo();
+        this.initializeContextInfo();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.appInsightsCore.addTelemetryInitializer(this.populateCommonAttributes());
     }
 
-    private intitializeContextInfo() {
+    private initializeContextInfo() {
         OneDSLogger.contextInfo = {
             orgId: "",
             portalId: "",
