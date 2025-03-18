@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="bundle" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="++CODE++08833dda22312dacb09f1d185caedf751289ee89a4c75682a09f4a262bf67ac4">
+      <source xml:lang="en"> End of Code Block </source>
+    </trans-unit>
     <trans-unit id="++CODE++29bb69945e50cb632fabf16f3f89a25d813910c19059d8a792f66262a952039d">
       <source xml:lang="en">@PowerPages is not yet available in your region.</source>
     </trans-unit>
@@ -60,6 +63,12 @@
     <trans-unit id="++CODE++bf27ec2e917b9f2578f8e6372f8656370d24cffe2c5a7b900d0b3280f8ec69fb">
       <source xml:lang="en">Be careful making changes. Anyone can see the changes you make immediately. Choose Edit the site to make edits, or close the editor tab to cancel without editing.</source>
     </trans-unit>
+    <trans-unit id="++CODE++6fab20ee9c8b4cb1fa10d787f3cd4eac13d34d27050fd193162a2399f690f59c">
+      <source xml:lang="en">Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?</source>
+    </trans-unit>
+    <trans-unit id="++CODE++c58a6bd402efb06c3e7dfd6d68910412fee2dfc1788ae384dc123089ce912285">
+      <source xml:lang="en">Browse...</source>
+    </trans-unit>
     <trans-unit id="++CODE++19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -114,6 +123,9 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
       <source xml:lang="en">Cluster geo name: {0}</source>
       <note>{0} is the cluster geo name</note>
     </trans-unit>
+    <trans-unit id="++CODE++51e495f295ba55f724b77298746e3284ff9fc8e1e582828a9a3f4051fc577cb0">
+      <source xml:lang="en">Code Block </source>
+    </trans-unit>
     <trans-unit id="++CODE++eebdd24a77d9ad32222660c07777163bf5f6732df2b172351f3f8d5783e4f529">
       <source xml:lang="en">Confirm</source>
     </trans-unit>
@@ -122,6 +134,9 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     </trans-unit>
     <trans-unit id="++CODE++916fa4a51e4d90e09a42289aa7961a6aff3401424f633240c630ac47f58a6d30">
       <source xml:lang="en">Copied to clipboard!</source>
+    </trans-unit>
+    <trans-unit id="++CODE++9b44302f1c5e52f926415b952b83efce47fce76164fa64f1a42d1a1606efa11d">
+      <source xml:lang="en">Copilot Response</source>
     </trans-unit>
     <trans-unit id="++CODE++b04e6767bf84555605710be1a94e48ddcbcb820353b859da427d189cf25395b4">
       <source xml:lang="en">Copilot illustration</source>
@@ -135,6 +150,13 @@ The second line should be '[TRANSLATION HERE](https://aka.ms/pages-clear-cache).
     </trans-unit>
     <trans-unit id="++CODE++e0d1b68224bf0b31ef16b206c65b5f8f6b89d18161f4a7cdcb8d0ac8d952549a">
       <source xml:lang="en">Current</source>
+    </trans-unit>
+    <trans-unit id="++CODE++fc47ac56c8a4446c02d8470168a888d8e0040cfc0bb5ce6173e324dccc72f24c">
+      <source xml:lang="en">Current site path not found.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++1da89bd5f5df020ca47c79dfdbc1517a299ca77570df2de4132f53797d5f2412">
+      <source xml:lang="en">Data model version: v{0}</source>
+      <note>{0} is the data model version</note>
     </trans-unit>
     <trans-unit id="++CODE++5bd78fcb75f98d65ab8f89a8f0b6681c25c13308fa8643c44ab459b7783c06c9">
       <source xml:lang="en">Default Environment: {0}</source>
@@ -222,6 +244,10 @@ The {3} represents Solution's Type (Managed or Unmanaged), but that test is loca
     </trans-unit>
     <trans-unit id="++CODE++1b93e507157d91755f08e1abfe8a33d725b637a32ddadf149420b25907d440a0">
       <source xml:lang="en">File(s) already exist. No new files to add</source>
+    </trans-unit>
+    <trans-unit id="++CODE++56281cd1d0090cc4c7c38634a5738f51769927efda74805ba19e30e35868fd4e">
+      <source xml:lang="en">Friendly name: {0}</source>
+      <note>{0} is the website name</note>
     </trans-unit>
     <trans-unit id="++CODE++7184a5edf42e6fc9ef8f53fc1dd73f10b3f6196a23f6d340c4f434e60c366e45">
       <source xml:lang="en">GETTING STARTED</source>
@@ -450,6 +476,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++0134bc37f2fdeb11daa9e760ecee0ef9706989b33f77a38daadb8b7aae685749">
       <source xml:lang="en">Saving your file ...</source>
     </trans-unit>
+    <trans-unit id="++CODE++e597da9c984517f802536a83c825cd4f017898c5f28030fe1f62fb94f5228828">
+      <source xml:lang="en">Select Folder</source>
+    </trans-unit>
     <trans-unit id="++CODE++6e26632772595a9d2fdf17191f6d7b59983c308d884deed6ba317054f7d30688">
       <source xml:lang="en">Select Folder for new PCF Control</source>
       <note>Do not translate 'PCF' as it is a product name.</note>
@@ -459,6 +488,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++87468e6a845b82466220c11dd0ca315a4389dc1cb8e0ee102035bb4ce5cb7e39">
       <source xml:lang="en">Select an environment</source>
+    </trans-unit>
+    <trans-unit id="++CODE++26297069e403c73e147151f2964757b7e9149762cf3a8e04ffd833907fb979e4">
+      <source xml:lang="en">Select the folder that will contain your project root for your site</source>
     </trans-unit>
     <trans-unit id="++CODE++4d6f03fa73020c945e651c34d40c5529f3477ac02df254c1764a68d576575e14">
       <source xml:lang="en">Selection is empty.</source>
@@ -471,6 +503,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++899fb203e6c2faac8093e21a2fa8db0d4b13d16ea5492461d8b72dbcee3ecf2a">
       <source xml:lang="en">Show Output Panel</source>
+    </trans-unit>
+    <trans-unit id="++CODE++524bca0347e50e3801bebf27374124b3babf072729b4da4bcc45ef5c385ee8f4">
+      <source xml:lang="en">Site Details</source>
     </trans-unit>
     <trans-unit id="++CODE++a72357d268bce5e1643bfd74563495784179f75ace0d652db8f808f293586b63">
       <source xml:lang="en">Site management URL not found for the selected site. Please try again after refreshing the environment.</source>
@@ -557,6 +592,9 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++4b8d64fae5d1cbf5f7324782e9b5c430db7c218771e84b0b402a9a4d0ec4bf05">
       <source xml:lang="en">Unmanaged</source>
     </trans-unit>
+    <trans-unit id="++CODE++7fce0124a7cb74955461f08e39ceaaed1e2850492f077f4e6defd82ef3ca6b0e">
+      <source xml:lang="en">Upload changes</source>
+    </trans-unit>
     <trans-unit id="++CODE++696d5f7b79a75961bc5d99ecbbea7b535acc73160e0b6422daa45b0ae7c04368">
       <source xml:lang="en">User: {0}</source>
       <note>The {0} represents auth profile's user name (email address))</note>
@@ -572,6 +610,10 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     </trans-unit>
     <trans-unit id="++CODE++00dc171124ab430bbbaae51ec39dda1c5e7d045f382f56b1767d9e733292731c">
       <source xml:lang="en">Webpage names should contain only letters, numbers, hyphens, or underscores.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++091327257429303159b8580005b5b5a1e05fd028030817edaaa835cfcb0b3293">
+      <source xml:lang="en">Website ID: {0}</source>
+      <note>{0} is the website ID</note>
     </trans-unit>
     <trans-unit id="++CODE++aa64cfbb63d3382bc0530c6e599467b1cc5c1ef8ff3b573d37ad628f9058b2aa">
       <source xml:lang="en">Website not found in the environment. Please check the credentials and login with correct account.</source>
@@ -594,11 +636,17 @@ The {3} represents Dataverse Environment's Organization ID (GUID)</note>
     <trans-unit id="++CODE++9265d4c9f6b10b1a95877bcccee77e9d164e8a51ab17104b14ba19e7935aef0e">
       <source xml:lang="en">Write web API code to query active contact records.</source>
     </trans-unit>
+    <trans-unit id="++CODE++85a39ab345d672ff8ca9b9c6876f3adcacf45ee7c1e2dbd2408fd338bd55e07e">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
     <trans-unit id="++CODE++3c65297a1fc0860c6993f5c8beb4341dd13b71d7f3957daba611adf04a6c971b">
       <source xml:lang="en">You are editing a live, public site </source>
     </trans-unit>
     <trans-unit id="++CODE++beb45bfdd4c3f6da9bb3687e4d9275790d086c1dffaec84839fa9ec9ce4e9ee2">
       <source xml:lang="en">You can use this in &lt;a href=&quot;#&quot; id=&quot;github-copilot-link&quot;&gt;GitHub Copilot with @powerpages&lt;/a&gt; and leverage best of both world.</source>
+    </trans-unit>
+    <trans-unit id="++CODE++eeb25aaca6a9e3f6c670334480b8e56e2a362ecfec23f8e63617915b22ddc8a0">
+      <source xml:lang="en">Your preview isn't updated. Please upload your site to see the latest changes.</source>
     </trans-unit>
     <trans-unit id="++CODE++3a928d0a6dd0e0c6b56eb3bf08b20e6361e876fd6b2eeca59f718cbfdc310472">
       <source xml:lang="en">dotnet sdk 6.0 or greater must be installed</source>
@@ -674,6 +722,9 @@ The fifth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.s
     <trans-unit id="pacCLI.openDocumentation.title">
       <source xml:lang="en">Documentation</source>
     </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title">
+      <source xml:lang="en">Download Site</source>
+    </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.title">
       <source xml:lang="en">Edit Power Pages code</source>
     </trans-unit>
@@ -702,7 +753,7 @@ The eighth line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
       <source xml:lang="en">Initialize Web Extension</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.login">
-      <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://example.com/learn-more).
+      <source xml:lang="en">Login and connect to a Power Pages environment to use Power Pages actions. [Learn more](https://go.microsoft.com/fwlink/?linkid=2305702).
 [Login](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile)</source>
       <note>This is a Markdown formatted string, and the formatting must persist across translations.
 The second line should be '[TRANSLATION HERE](command:microsoft.powerplatform.pages.actionsHub.newAuthProfile).', keeping brackets and the text in the parentheses unmodified</note>
@@ -742,6 +793,9 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.openPacLab.title">
       <source xml:lang="en">Open PAC Lab</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title">
+      <source xml:lang="en">Open in Power Pages Studio</source>
     </trans-unit>
     <trans-unit id="microsoft.powerplatform.pages.actionsHub.openSitesInStudio.title">
       <source xml:lang="en">Open in Power Pages Studio</source>
@@ -815,6 +869,12 @@ The second line should be '[TRANSLATION HERE](command:powerplatform-walkthrough.
     </trans-unit>
     <trans-unit id="pacCLI.pacSolutionHelp.title">
       <source xml:lang="en">Show PAC Solution Help</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.siteDetails.title">
+      <source xml:lang="en">Site Details</source>
+    </trans-unit>
+    <trans-unit id="microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title">
+      <source xml:lang="en">Upload Site</source>
     </trans-unit>
     <trans-unit id="microsoft-powerapps-portals.walkthrough.advancedCapabilities.description">
       <source xml:lang="en">Visual Studio Code for Web enables editing and publishing of web pages on your website.

@@ -4,10 +4,12 @@
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as yaml from 'yaml';
 import { Constants } from './Constants';
 import { oneDSLoggerWrapper } from '../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import { PacTerminal } from '../../lib/PacTerminal';
-import { SUCCESS } from '../../../common/constants';
+import { SUCCESS, UTF8_ENCODING, WEBSITE_YML } from '../../../common/constants';
 import { AuthInfo, OrgListOutput } from '../../pac/PacTypes';
 import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
@@ -19,9 +21,14 @@ import { PreviewSite } from '../preview-site/PreviewSite';
 import { PacWrapper } from '../../pac/PacWrapper';
 import { dataverseAuthentication } from '../../../common/services/AuthenticationProvider';
 import { createAuthProfileExp } from '../../../common/utilities/PacAuthUtil';
-import { IWebsiteDetails } from '../../../common/services/Interfaces';
+import { IOtherSiteInfo, IWebsiteDetails, WebsiteYaml } from '../../../common/services/Interfaces';
 import { getActiveWebsites, getAllWebsites } from '../../../common/utilities/WebsiteUtil';
 import CurrentSiteContext from './CurrentSiteContext';
+import path from 'path';
+import { getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
+import { isEdmEnvironment } from '../../../common/copilot/dataverseMetadata';
+import { IWebsiteInfo } from './models/IWebsiteInfo';
+
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -66,7 +73,7 @@ export const showEnvironmentDetails = async () => {
 
         const result = await vscode.window.showInformationMessage(message, { detail: details, modal: true }, Constants.Strings.COPY_TO_CLIPBOARD);
 
-        if (result == Constants.Strings.COPY_TO_CLIPBOARD) {
+        if (result === Constants.Strings.COPY_TO_CLIPBOARD) {
             await vscode.env.clipboard.writeText(details);
         }
     } catch (error) {
@@ -108,43 +115,42 @@ export const switchEnvironment = async (pacTerminal: PacTerminal) => {
     }
 }
 
-const getStudioUrl = (): string => {
+const getStudioBaseUrl = (): string => {
     const artemisContext = ArtemisContext.ServiceResponse;
-
-    let baseEndpoint = "";
 
     switch (artemisContext.stamp) {
         case ServiceEndpointCategory.TEST:
-            baseEndpoint = Constants.StudioEndpoints.TEST;
-            break;
+            return Constants.StudioEndpoints.TEST;
         case ServiceEndpointCategory.PREPROD:
-            baseEndpoint = Constants.StudioEndpoints.PREPROD;
-            break;
+            return Constants.StudioEndpoints.PREPROD;
         case ServiceEndpointCategory.PROD:
-            baseEndpoint = Constants.StudioEndpoints.PROD;
-            break;
+            return Constants.StudioEndpoints.PROD;
         case ServiceEndpointCategory.DOD:
-            baseEndpoint = Constants.StudioEndpoints.DOD;
-            break;
+            return Constants.StudioEndpoints.DOD;
         case ServiceEndpointCategory.GCC:
-            baseEndpoint = Constants.StudioEndpoints.GCC;
-            break;
+            return Constants.StudioEndpoints.GCC;
         case ServiceEndpointCategory.HIGH:
-            baseEndpoint = Constants.StudioEndpoints.HIGH;
-            break;
+            return Constants.StudioEndpoints.HIGH;
         case ServiceEndpointCategory.MOONCAKE:
-            baseEndpoint = Constants.StudioEndpoints.MOONCAKE;
-            break;
-        default:
-            break;
+            return Constants.StudioEndpoints.MOONCAKE;
+    }
+
+    return "";
+}
+
+const getPPHomeUrl = (): string => {
+    const baseEndpoint = getStudioBaseUrl();
+
+    if (!baseEndpoint) {
+        return "";
     }
 
     return `${baseEndpoint}/environments/${PacContext.AuthInfo?.EnvironmentId}/portals/home`;
 }
 
-const getActiveSitesUrl = () => `${getStudioUrl()}/?tab=active`;
+const getActiveSitesUrl = () => `${getPPHomeUrl()}/?tab=active`;
 
-const getInactiveSitesUrl = () => `${getStudioUrl()}/?tab=inactive`;
+const getInactiveSitesUrl = () => `${getPPHomeUrl()}/?tab=inactive`;
 
 export const openActiveSitesInStudio = async () => await vscode.env.openExternal(vscode.Uri.parse(getActiveSitesUrl()));
 
@@ -153,7 +159,7 @@ export const openInactiveSitesInStudio = async () => await vscode.env.openExtern
 export const previewSite = async (siteTreeItem: SiteTreeItem) => {
     await PreviewSite.clearCache(siteTreeItem.siteInfo.websiteUrl);
 
-    await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl);
+    await PreviewSite.launchBrowserAndDevToolsWithinVsCode(siteTreeItem.siteInfo.websiteUrl, siteTreeItem.siteInfo.dataModelVersion, siteTreeItem.siteInfo.siteVisibility);
 };
 
 export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void> => {
@@ -201,7 +207,7 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
     }
 };
 
-export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[] }> => {
+export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[], inactiveSites: IWebsiteDetails[], otherSites: IOtherSiteInfo[] }> => {
     try {
         const orgInfo = PacContext.OrgInfo;
         if (ArtemisContext.ServiceResponse?.stamp && orgInfo) {
@@ -215,26 +221,347 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.websiteRecordId)) || [];
             activeWebsiteDetails = activeWebsiteDetails.map(detail => ({ ...detail, siteManagementUrl: allSites.find(site => site.websiteRecordId === detail.websiteRecordId)?.siteManagementUrl ?? "" }));
 
-            return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails };
+            const currentEnvSiteIds = createKnownSiteIdsSet(activeWebsiteDetails, inactiveWebsiteDetails);
+            const otherSites = findOtherSites(currentEnvSiteIds);
+
+            return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails, otherSites: otherSites };
         }
     } catch (error) {
         oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: fetchWebsites.name }, {});
     }
 
-    return { activeSites: [], inactiveSites: [] };
+    return { activeSites: [], inactiveSites: [], otherSites: [] };
 }
 
-export const revealInOS = async () => {
-    if (CurrentSiteContext.currentSiteFolderPath) {
-        await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(CurrentSiteContext.currentSiteFolderPath));
+export const revealInOS = async (siteTreeItem: SiteTreeItem) => {
+    let folderPath = CurrentSiteContext.currentSiteFolderPath;
+    if (siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
+        folderPath = siteTreeItem.siteInfo.folderPath || "";
     }
+
+    if (!folderPath) {
+        return;
+    }
+
+    await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(folderPath));
 }
 
 export const openSiteManagement = async (siteTreeItem: SiteTreeItem) => {
     if (!siteTreeItem.siteInfo.siteManagementUrl) {
         vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.SITE_MANAGEMENT_URL_NOT_FOUND));
-        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND, Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND, new Error(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND), { method: openSiteManagement.name });
+        oneDSLoggerWrapper.getLogger().traceError(
+            Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND,
+            Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND,
+            new Error(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND),
+            { method: openSiteManagement.name }
+        );
         return;
     }
     await vscode.env.openExternal(vscode.Uri.parse(siteTreeItem.siteInfo.siteManagementUrl));
+}
+
+/**
+ * Uploads a Power Pages site to the environment
+ * @param siteTreeItem The site tree item containing site information
+ * @param websitePath The path to the website folder to upload. If not passed the current site context will be used.
+ */
+export const uploadSite = async (siteTreeItem: SiteTreeItem, websitePath: string) => {
+    try {
+        // Handle upload for "other" sites (sites not in the current environment)
+        if (siteTreeItem.contextValue === Constants.ContextValues.OTHER_SITE) {
+            await uploadOtherSite(siteTreeItem);
+            return;
+        }
+
+        // Handle upload for active/inactive sites
+        await uploadCurrentSite(siteTreeItem, websitePath);
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(
+            Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_FAILED,
+            error as string,
+            error as Error,
+            { methodName: uploadSite.name }
+        );
+    }
+};
+
+/**
+ * Uploads a site that isn't in the current environment
+ * @param siteTreeItem The site tree item containing site information
+ */
+async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
+    const websitePath = siteTreeItem.siteInfo.folderPath;
+
+    if (!websitePath) {
+        return;
+    }
+
+    // Check if EDM is supported to determine the correct model version
+    let modelVersionParam = '';
+    const currentOrgUrl = PacContext.OrgInfo?.OrgUrl ?? '';
+    const dataverseAccessToken = await dataverseAuthentication(currentOrgUrl, true);
+
+    if (dataverseAccessToken) {
+        const isEdmSupported = await isEdmEnvironment(currentOrgUrl, dataverseAccessToken.accessToken);
+        if (isEdmSupported) {
+            modelVersionParam = ' --modelVersion 2';
+        }
+    }
+
+    // Execute the upload command
+    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_OTHER_SITE, {
+        methodName: uploadSite.name,
+        siteId: siteTreeItem.siteInfo.websiteId,
+        siteName: siteTreeItem.siteInfo.name
+    });
+
+    PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePath}" ${modelVersionParam}`);
+}
+
+/**
+ * Uploads a site that's in the current environment
+ * @param siteTreeItem The site tree item containing site information
+ */
+async function uploadCurrentSite(siteTreeItem: SiteTreeItem, websitePath: string): Promise<void> {
+    // Public sites require confirmation to prevent accidental deployment
+    if (siteTreeItem.siteInfo.siteVisibility?.toLowerCase() === Constants.SiteVisibility.PUBLIC) {
+        const confirm = await vscode.window.showInformationMessage(
+            Constants.Strings.SITE_UPLOAD_CONFIRMATION,
+            { modal: true },
+            Constants.Strings.YES
+        );
+
+        if (confirm !== Constants.Strings.YES) {
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_CANCELLED, {
+                methodName: uploadSite.name,
+                siteId: siteTreeItem.siteInfo.websiteId,
+                siteName: siteTreeItem.siteInfo.name
+            });
+            return;
+        }
+    }
+
+    const websitePathToUpload = websitePath || CurrentSiteContext.currentSiteFolderPath;
+    if (!websitePathToUpload) {
+        vscode.window.showErrorMessage(vscode.l10n.t(Constants.Strings.CURRENT_SITE_PATH_NOT_FOUND));
+        return;
+    }
+
+    const modelVersion = siteTreeItem.siteInfo.dataModelVersion || 1;
+
+    oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE, {
+        methodName: uploadSite.name,
+        siteId: siteTreeItem.siteInfo.websiteId,
+        siteName: siteTreeItem.siteInfo.name,
+        modelVersion: modelVersion.toString()
+    });
+
+    PacTerminal.getTerminal().sendText(`pac pages upload --path "${websitePathToUpload}" --modelVersion "${modelVersion}"`);
+}
+
+/**
+ * Finds Power Pages sites in the parent folder that aren't in the known sites list
+ * @param knownSiteIds Set of site IDs that should be excluded from results
+ * @returns Array of site information objects for sites found in the parent folder
+ */
+export function findOtherSites(knownSiteIds: Set<string>, fsModule = fs, yamlModule = yaml): IOtherSiteInfo[] {
+    // Get the workspace folders
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || workspaceFolders.length === 0) {
+        return [];
+    }
+
+    const currentWorkspaceFolder = workspaceFolders[0].uri.fsPath;
+    const parentFolder = path.dirname(currentWorkspaceFolder);
+
+    try {
+        // Get directories in the parent folder
+        const items = fsModule.readdirSync(parentFolder, { withFileTypes: true });
+        const directories = items
+            .filter(item => item.isDirectory())
+            .map(item => path.join(parentFolder, item.name));
+
+        // Make sure we include the current workspace folder
+        if (!directories.includes(currentWorkspaceFolder)) {
+            directories.push(currentWorkspaceFolder);
+        }
+
+        const otherSites: IOtherSiteInfo[] = [];
+
+        // Check each directory for website.yml
+        for (const dir of directories) {
+            const websiteYamlPath = path.join(dir, WEBSITE_YML);
+
+            if (fsModule.existsSync(websiteYamlPath)) {
+                try {
+                    // Use the utility function to get website record ID
+                    const websiteId = getWebsiteRecordId(dir);
+
+                    // Only include sites that aren't already in active or inactive sites
+                    if (websiteId && !knownSiteIds.has(websiteId.toLowerCase())) {
+                        // Parse website.yml to get site details for the name
+                        const yamlContent = fsModule.readFileSync(websiteYamlPath, UTF8_ENCODING);
+                        const websiteData = yamlModule.parse(yamlContent) as WebsiteYaml;
+
+                        otherSites.push({
+                            name: websiteData?.adx_name || path.basename(dir), // Use folder name as fallback
+                            websiteId: websiteId,
+                            folderPath: dir
+                        });
+                    }
+                } catch (error) {
+                    oneDSLoggerWrapper.getLogger().traceError(
+                        Constants.EventNames.OTHER_SITES_YAML_PARSE_FAILED,
+                        error as string,
+                        error as Error,
+                        { methodName: findOtherSites.name }
+                    );
+                }
+            }
+        }
+
+        return otherSites;
+    } catch (error) {
+        oneDSLoggerWrapper.getLogger().traceError(
+            Constants.EventNames.OTHER_SITES_FILESYSTEM_ERROR,
+            error as string,
+            error as Error,
+            { methodName: findOtherSites.name }
+        );
+        return [];
+    }
+}
+
+export function createKnownSiteIdsSet(
+    activeSites: IWebsiteDetails[] | undefined,
+    inactiveSites: IWebsiteDetails[] | undefined
+): Set<string> {
+    const knownSiteIds = new Set<string>();
+
+    activeSites?.forEach(site => {
+        if (site.websiteRecordId) {
+            knownSiteIds.add(site.websiteRecordId.toLowerCase());
+        }
+    });
+
+    inactiveSites?.forEach(site => {
+        if (site.websiteRecordId) {
+            knownSiteIds.add(site.websiteRecordId.toLowerCase());
+        }
+    });
+
+    return knownSiteIds;
+}
+
+export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
+    const siteInfo = siteTreeItem.siteInfo;
+    const details = [
+        vscode.l10n.t({ message: "Friendly name: {0}", args: [siteInfo.name], comment: "{0} is the website name" }),
+        vscode.l10n.t({ message: "Website ID: {0}", args: [siteInfo.websiteId], comment: "{0} is the website ID" }),
+        vscode.l10n.t({ message: "Data model version: v{0}", args: [siteInfo.dataModelVersion], comment: "{0} is the data model version" })
+    ].join('\n');
+
+    const result = await vscode.window.showInformationMessage(Constants.Strings.SITE_DETAILS, { detail: details, modal: true }, Constants.Strings.COPY_TO_CLIPBOARD);
+
+    if (result === Constants.Strings.COPY_TO_CLIPBOARD) {
+        await vscode.env.clipboard.writeText(details);
+    }
+}
+
+const getDownloadFolderOptions = () => {
+    const options = [
+        {
+            label: Constants.Strings.BROWSE,
+            iconPath: new vscode.ThemeIcon("folder")
+        }
+    ] as { label: string, iconPath: vscode.ThemeIcon | undefined }[];
+
+    if (CurrentSiteContext.currentSiteFolderPath) {
+        options.push({
+            label: path.dirname(CurrentSiteContext.currentSiteFolderPath),
+            iconPath: undefined
+        });
+    }
+
+    return options;
+}
+
+const getDownloadPath = async () => {
+    let downloadPath = "";
+    const option = await vscode.window.showQuickPick(getDownloadFolderOptions(), {
+        canPickMany: false,
+        placeHolder: Constants.Strings.SELECT_DOWNLOAD_FOLDER
+    });
+
+    if (option?.label === Constants.Strings.BROWSE) {
+        const folderUri = await vscode.window.showOpenDialog({
+            canSelectFolders: true,
+            canSelectFiles: false,
+            openLabel: Constants.Strings.SELECT_FOLDER,
+            title: Constants.Strings.SELECT_DOWNLOAD_FOLDER
+        });
+
+        if (folderUri && folderUri.length > 0) {
+            downloadPath = folderUri[0].fsPath;
+        }
+    } else {
+        downloadPath = option?.label || "";
+    }
+    return downloadPath;
+}
+
+
+const executeSiteDownloadCommand = (siteInfo: IWebsiteInfo, downloadPath: string) => {
+    const modelVersion = siteInfo.dataModelVersion;
+    const downloadCommandParts = ["pac", "pages", "download"];
+    downloadCommandParts.push("--overwrite");
+    downloadCommandParts.push(`--path "${downloadPath}"`);
+    downloadCommandParts.push(`--webSiteId ${siteInfo.websiteId}`);
+    downloadCommandParts.push(`--modelVersion "${modelVersion}"`);
+
+    const downloadCommand = downloadCommandParts.join(" ");
+
+    PacTerminal.getTerminal().sendText(downloadCommand);
+}
+
+export const downloadSite = async (siteTreeItem: SiteTreeItem) => {
+    let downloadPath = "";
+    const { siteInfo } = siteTreeItem;
+
+    if (siteInfo.isCurrent && CurrentSiteContext.currentSiteFolderPath) {
+        downloadPath = path.dirname(CurrentSiteContext.currentSiteFolderPath);
+    } else {
+        downloadPath = await getDownloadPath();
+    }
+
+    if (!downloadPath) {
+        return;
+    }
+
+    executeSiteDownloadCommand(siteInfo, downloadPath);
+}
+
+const getStudioUrl = (environmentId: string, websiteId: string) => {
+    if (!environmentId || !websiteId) {
+        return "";
+    }
+
+    const baseEndpoint = getStudioBaseUrl();
+
+    if (!baseEndpoint) {
+        return "";
+    }
+
+    return `${baseEndpoint}/e/${environmentId}/sites/${websiteId}/pages`;
+}
+
+export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
+    const environmentId = PacContext.AuthInfo?.EnvironmentId || "";
+    const studioUrl = getStudioUrl(environmentId, siteTreeItem.siteInfo.websiteId);
+
+    if (!studioUrl) {
+        return;
+    }
+
+    await vscode.env.openExternal(vscode.Uri.parse(studioUrl));
 }

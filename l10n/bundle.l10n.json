@@ -57,6 +57,9 @@
   "Working on it...": "Working on it...",
   "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.": "You can use this in <a href=\"#\" id=\"github-copilot-link\">GitHub Copilot with @powerpages</a> and leverage best of both world.",
   "NEW": "NEW",
+  "Copilot Response": "Copilot Response",
+  "Code Block ": "Code Block ",
+  " End of Code Block ": " End of Code Block ",
   "Copied to clipboard!": "Copied to clipboard!",
   "What do you need help with?": "What do you need help with?",
   "Make sure AI-generated content is accurate and appropriate before using. <a href=\"https://go.microsoft.com/fwlink/?linkid=2240145\">Learn more</a> | <a href=\"https://go.microsoft.com/fwlink/?linkid=2189520\">View\n              terms</a>": "Make sure AI-generated content is accurate and appropriate before using. <a href=\"https://go.microsoft.com/fwlink/?linkid=2240145\">Learn more</a> | <a href=\"https://go.microsoft.com/fwlink/?linkid=2189520\">View\n              terms</a>",
@@ -109,7 +112,6 @@
     ]
   },
   "Opening site preview...": "Opening site preview...",
-  "The preview shown is for published changes.": "The preview shown is for published changes.",
   "Site runtime preview feature is not enabled.": "Site runtime preview feature is not enabled.",
   "No workspace folder opened. Please open a site folder to preview.": "No workspace folder opened. Please open a site folder to preview.",
   "Initializing site preview. Please try again after few seconds.": "Initializing site preview. Please try again after few seconds.",
@@ -129,6 +131,8 @@
   },
   "Authenticating...": "Authenticating...",
   "Unable to clear cache": "Unable to clear cache",
+  "Your preview isn't updated. Please upload your site to see the latest changes.": "Your preview isn't updated. Please upload your site to see the latest changes.",
+  "Upload changes": "Upload changes",
   "Enter the name of the web template": "Enter the name of the web template",
   "Please enter a name for the web template.": "Please enter a name for the web template.",
   "A webtemplate with the same name already exists. Please enter a different name.": "A webtemplate with the same name already exists. Please enter a different name.",
@@ -193,6 +197,13 @@
   "Changing environment...": "Changing environment...",
   "Current": "Current",
   "Site management URL not found for the selected site. Please try again after refreshing the environment.": "Site management URL not found for the selected site. Please try again after refreshing the environment.",
+  "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?": "Be careful when you're updating public sites. The changes you make are visible to anyone immediately. Do you want to continue?",
+  "Yes": "Yes",
+  "Current site path not found.": "Current site path not found.",
+  "Site Details": "Site Details",
+  "Browse...": "Browse...",
+  "Select the folder that will contain your project root for your site": "Select the folder that will contain your project root for your site",
+  "Select Folder": "Select Folder",
   "Timestamp: {0}/{0} is the timestamp": {
     "message": "Timestamp: {0}",
     "comment": [
@@ -251,6 +262,24 @@
     "message": "Cluster geo name: {0}",
     "comment": [
       "{0} is the cluster geo name"
+    ]
+  },
+  "Friendly name: {0}/{0} is the website name": {
+    "message": "Friendly name: {0}",
+    "comment": [
+      "{0} is the website name"
+    ]
+  },
+  "Website ID: {0}/{0} is the website ID": {
+    "message": "Website ID: {0}",
+    "comment": [
+      "{0} is the website ID"
+    ]
+  },
+  "Data model version: v{0}/{0} is the data model version": {
+    "message": "Data model version: v{0}",
+    "comment": [
+      "{0} is the data model version"
     ]
   },
   "PAC Telemetry enabled": "PAC Telemetry enabled",

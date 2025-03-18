@@ -11,10 +11,10 @@ import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLo
 import { EnvironmentGroupTreeItem } from "./tree-items/EnvironmentGroupTreeItem";
 import { IEnvironmentInfo } from "./models/IEnvironmentInfo";
 import { PacTerminal } from "../../lib/PacTerminal";
-import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement } from "./ActionsHubCommandHandlers";
+import { fetchWebsites, openActiveSitesInStudio, openInactiveSitesInStudio, previewSite, createNewAuthProfile, refreshEnvironment, showEnvironmentDetails, switchEnvironment, revealInOS, openSiteManagement, uploadSite, showSiteDetails, downloadSite, openInStudio } from "./ActionsHubCommandHandlers";
 import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
-import { IWebsiteDetails } from "../../../common/services/Interfaces";
+import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
 import { orgChangeErrorEvent } from "../../OrgChangeNotifier";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
@@ -25,6 +25,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private _activeSites: IWebsiteDetails[] = [];
     private _inactiveSites: IWebsiteDetails[] = [];
+    private _otherSites: IOtherSiteInfo[] = [];
     private _loadWebsites = true;
 
     private constructor(context: vscode.ExtensionContext, private readonly _pacTerminal: PacTerminal) {
@@ -53,6 +54,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             const websites = await fetchWebsites();
             this._activeSites = websites.activeSites;
             this._inactiveSites = websites.inactiveSites;
+            this._otherSites = websites.otherSites;
             this._loadWebsites = false;
         }
     }
@@ -78,9 +80,13 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 const currentEnvInfo: IEnvironmentInfo = {
                     currentEnvironmentName: authInfo.OrganizationFriendlyName
                 };
+
+                if(!this._otherSites.length){
+                    return [new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites)];
+                }
                 return [
                     new EnvironmentGroupTreeItem(currentEnvInfo, this._context, this._activeSites, this._inactiveSites),
-                    new OtherSitesGroupTreeItem()
+                    new OtherSitesGroupTreeItem(this._otherSites)
                 ];
             } else {
                 // Login experience scenario
@@ -120,7 +126,15 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac", revealInOS),
             vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux", revealInOS),
 
-            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement", openSiteManagement)
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement", openSiteManagement),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite", uploadSite),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.siteDetails", showSiteDetails),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite", downloadSite),
+
+            vscode.commands.registerCommand("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio", openInStudio)
         ];
     }
 }

@@ -39,12 +39,20 @@ export class ActiveGroupTreeItem extends ActionsHubTreeItem {
                 dataModelVersion: site.dataModel == WebsiteDataModel.Standard ? 1 : 2,
                 websiteUrl: site.websiteUrl,
                 status: WebsiteStatus.Active,
-                isCurrent: CurrentSiteContext.currentSiteId === site.websiteRecordId,
+                isCurrent: this.isCurrentSite(site.websiteRecordId),
                 siteVisibility: site.siteVisibility ?? "",
                 siteManagementUrl: site.siteManagementUrl
             };
 
             return new SiteTreeItem(siteInfo);
         });
+    }
+
+    private isCurrentSite(siteId: string): boolean {
+        if (!CurrentSiteContext.currentSiteId || !siteId) {
+            return false;
+        }
+
+        return CurrentSiteContext.currentSiteId === siteId;
     }
 }
