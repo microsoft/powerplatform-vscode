@@ -43,6 +43,7 @@ import { ArtemisService } from "../../common/services/ArtemisService";
 import { showErrorDialog } from "../../common/utilities/errorHandlerUtil";
 import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
+import { CodeGenPreview } from "../../common/codegen/CodeGenPreview";
 
 export function activate(context: vscode.ExtensionContext): void {
     oneDSLoggerWrapper.instantiate(GeoNames.US);
@@ -57,6 +58,8 @@ export function activate(context: vscode.ExtensionContext): void {
             { isCaseSensitive: true }
         )
     );
+
+    CodeGenPreview.initialize();
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
