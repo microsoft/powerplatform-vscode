@@ -164,7 +164,7 @@ export class PacWrapper {
         return this.executeCommandAndParseResults<PacOrgWhoOutput>(new PacArguments("org", "who"));
     }
 
-    public async activeAuth(): Promise <PacAuthWhoOutput> {
+    public async activeAuth(): Promise<PacAuthWhoOutput> {
         return this.executeCommandAndParseResults<PacAuthWhoOutput>(new PacArguments("auth", "who"));
     }
 
@@ -178,6 +178,10 @@ export class PacWrapper {
 
     public async disableTelemetry(): Promise<PacOutput> {
         return this.executeCommandAndParseResults<PacOutput>(new PacArguments("telemetry", "disable"));
+    }
+
+    public async pendingChanges(websitePath: string, dataModelVersion: 1 | 2): Promise<PacOutput> {
+        return this.executeCommandAndParseResults<PacOutput>(new PacArguments("pages", "pending-changes", "-p", websitePath, "-mv", dataModelVersion.toString()));
     }
 
     public exit(): void {

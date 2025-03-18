@@ -8,9 +8,9 @@ import { expect } from "chai";
 import { ActionsHubTreeItem } from "../../../../../power-pages/actions-hub/tree-items/ActionsHubTreeItem";
 
 class MockTreeItem extends ActionsHubTreeItem {
-    constructor() {
+    constructor(label: string | null = "Foo") {
         super(
-            "Foo",
+            label,
             vscode.TreeItemCollapsibleState.Collapsed,
             "iconPath",
             "contextValue",
@@ -30,6 +30,12 @@ describe('ActionsHubTreeItem', () => {
         const treeItem = new MockTreeItem();
 
         expect(treeItem.label).to.be.equal("Foo");
+    });
+
+    it('should have expected label when null is passed', () => {
+        const treeItem = new MockTreeItem(null);
+
+        expect(treeItem.tooltip).to.be.equal("");
     });
 
     it('should have the expected collapsible state', () => {

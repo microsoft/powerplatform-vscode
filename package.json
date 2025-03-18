@@ -167,7 +167,7 @@
         "when": "!virtualWorkspace && !pacCLI.authPanel.interactiveLoginSupported"
       },
       {
-        "view":"microsoft.powerplatform.pages.actionsHub",
+        "view": "microsoft.powerplatform.pages.actionsHub",
         "contents": "%microsoft.powerplatform.pages.actionsHub.login%",
         "when": "!virtualWorkspace && pacCLI.authPanel.interactiveLoginSupported"
       }
@@ -435,6 +435,22 @@
       {
         "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
         "title": "%microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+        "title": "%microsoft.powerplatform.pages.actionsHub.siteDetails.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite.title%"
+      },
+      {
+        "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+        "title": "%microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio.title%"
       }
     ],
     "configuration": {
@@ -915,6 +931,22 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
           "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+          "when": "never"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+          "when": "never"
         }
       ],
       "view/title": [
@@ -1041,27 +1073,47 @@
         {
           "command": "microsoft.powerplatform.pages.actionsHub.activeSite.preview",
           "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
-          "group": "activeSiteContextMenuGroup@1"
+          "group": "siteAction@1"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite)",
+          "group": "siteAction@2"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.siteDetails",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite || viewItem == inactiveSite)",
+          "group": "siteAction@4"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.windows",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isWindows",
-          "group": "activeSiteContextMenuGroup@2"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isWindows",
+          "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.mac",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isMac",
-          "group": "activeSiteContextMenuGroup@2"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isMac",
+          "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.currentActiveSite.revealInOS.linux",
-          "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == currentActiveSite && isLinux",
-          "group": "activeSiteContextMenuGroup@2"
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == otherSite) && isLinux",
+          "group": "siteAction@5"
         },
         {
           "command": "microsoft.powerplatform.pages.actionsHub.inactiveSite.openSiteManagement",
           "when": "view == microsoft.powerplatform.pages.actionsHub && viewItem == inactiveSite",
-          "group": "inactiveSiteContextMenuGroup@1"
+          "group": "siteAction@3"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio",
+          "when": "view == microsoft.powerplatform.pages.actionsHub && (viewItem == currentActiveSite || viewItem == nonCurrentActiveSite)",
+          "group": "siteAction@6"
         }
       ]
     },
@@ -1283,7 +1335,7 @@
     "vscode-languageserver": "^7.0.0",
     "vscode-languageserver-textdocument": "^1.0.1",
     "worker-loader": "^3.0.8",
-    "yaml": "^2.2.2"
+    "yaml": "^2.7.0"
   },
   "__metadata": {
     "id": "b8680bb6-eaa9-481a-ae0b-83574fa58620",

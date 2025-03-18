@@ -41,6 +41,8 @@ export const PORTAL_YEOMAN_GENERATOR_PACKAGE_TARBALL_NAME = "microsoft-generator
 
 export const SUCCESS = "Success";
 
+export const TRUE = "True";
+
 // Define the schema for file extensions
 export const componentTypeSchema: { [key: string]: { [key: string]: string } } = {
     'adx_webpage': {

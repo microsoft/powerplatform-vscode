@@ -299,13 +299,19 @@
         const messageWrapper = document.createElement("div");
         messageWrapper.classList.add("message-wrapper");
 
+        // Add a visually hidden live region for screen readers
+        const liveRegion = document.createElement("div");
+        liveRegion.setAttribute("aria-live", "polite");
+        liveRegion.setAttribute("role", "status");
+        liveRegion.setAttribute("aria-atomic", "true");
+        liveRegion.classList.add("sr-only"); //corresponding CSS
+        messageWrapper.appendChild(liveRegion);
+
         const messageElement = document.createElement("div");
         const makerElement = createCopilotSection();
         messageElement.appendChild(makerElement);
         messageElement.appendChild(document.createElement("br"));
-
         messageElement.classList.add("message", "api-response");
-
         messageWrapper.appendChild(messageElement);
 
         if (!chatMessages) {
@@ -317,15 +323,15 @@
             updateThinking: function (thinkingMessage) {
                 const thinking = document.createElement("div");
                 thinking.classList.add("thinking");
-                thinking.setAttribute("tabindex", "0"); // Make the element focusable
-                thinking.setAttribute("role", "status"); // Add ARIA role
+                thinking.setAttribute("tabindex", "0");
+                thinking.setAttribute("role", "status");
                 messageElement.appendChild(thinking);
                 chatMessages.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight;
 
-                //This is necessary because
-// screen readers may not immediately detect content updates if they occur synchronously
+                // Update both visual and screen reader elements
                 setTimeout(() => {
                     thinking.innerText = thinkingMessage;
+                    liveRegion.innerText = thinkingMessage; // Announce to screen readers
                 }, 0);
             },
             updateResponse: function (apiResponse) {
@@ -344,18 +350,28 @@
                 }
 
                 messages.push(message);
-
                 messageIndex++;
 
                 const apiResponseElement = parseCodeBlocks(apiResponse);
                 apiResponseElement.setAttribute("aria-live", "assertive"); // Add aria-live attribute to response
                 messageElement.appendChild(apiResponseElement);
 
+                // Create screen reader friendly version
+                let screenReaderText = copilotStrings.COPILOT_RESPONSE;
+                apiResponse.forEach(item => {
+                    screenReaderText += item.displayText + " ";
+                    if (item.code && !skipCodes.includes(item.code)) {
+                        const codeBlockStart = copilotStrings.CODE_BLOCK;
+                        const codeBlockEnd = copilotStrings.CODE_BLOCK_END;
+                        screenReaderText += codeBlockStart + item.code + codeBlockEnd;
+                    }
+                });
+
+                // Update the live region for screen readers
+                liveRegion.innerText = screenReaderText;
+
                 messageWrapper.dataset.id = message.id;
-
                 messageWrapper.appendChild(document.createElement("hr"));
-
-                // Add feedback session for the API response
                 const feedback = createFeedbackDiv();
                 messageWrapper.appendChild(feedback);
                 chatMessages.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight;

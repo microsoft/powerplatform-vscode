@@ -6,7 +6,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
+import { showEnvironmentDetails, refreshEnvironment, switchEnvironment, openActiveSitesInStudio, openInactiveSitesInStudio, createNewAuthProfile, previewSite, fetchWebsites, revealInOS, uploadSite, createKnownSiteIdsSet, findOtherSites, showSiteDetails, openSiteManagement, downloadSite, openInStudio } from '../../../../power-pages/actions-hub/ActionsHubCommandHandlers';
 import { Constants } from '../../../../power-pages/actions-hub/Constants';
 import { oneDSLoggerWrapper } from '../../../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper';
 import * as CommonUtils from '../../../../power-pages/commonUtility';
@@ -26,6 +26,8 @@ import { IWebsiteInfo } from '../../../../power-pages/actions-hub/models/IWebsit
 import * as WebsiteUtils from '../../../../../common/utilities/WebsiteUtil';
 import * as Utils from '../../../../../common/utilities/Utils';
 import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteContext';
+import * as WorkspaceInfoFinderUtil from "../../../../../common/utilities/WorkspaceInfoFinderUtil";
+import path from 'path';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -249,7 +251,7 @@ describe('ActionsHubCommandHandlers', () => {
             mockShowProgressNotification = sinon.stub(Utils, 'showProgressWithNotification').callsFake(async (title: string, task: (progress: vscode.Progress<{
                 message?: string;
                 increment?: number;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             }>) => Promise<any>) => await task({} as unknown as vscode.Progress<{ message?: string; increment?: number }>));
         });
 
@@ -618,7 +620,7 @@ describe('ActionsHubCommandHandlers', () => {
             await previewSite(siteTreeItem);
 
             expect(mockPreviewSiteClearCache.calledOnceWith('https://test-site.com')).to.be.true;
-            expect(mockLaunchBrowserAndDevTools.calledOnceWith('https://test-site.com')).to.be.true;
+            expect(mockLaunchBrowserAndDevTools.calledOnceWith('https://test-site.com', 1)).to.be.true;
         });
     });
 
@@ -722,19 +724,641 @@ describe('ActionsHubCommandHandlers', () => {
             executeCommandStub.restore();
         });
 
-        it('should not reveal file in OS when file path is not provided', async () => {
-            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
-            await revealInOS();
+        describe('when opening active site', () => {
+            it('should not reveal file in OS when file path is not provided', async () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
+                await revealInOS({ contextValue: Constants.ContextValues.CURRENT_ACTIVE_SITE } as SiteTreeItem);
 
-            expect(executeCommandStub.called).to.be.false;
+                expect(executeCommandStub.called).to.be.false;
+            });
+
+            it('should reveal file in OS when file path is provided', async () => {
+                const mockPath = 'test-path';
+                sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
+                await revealInOS({ contextValue: Constants.ContextValues.CURRENT_ACTIVE_SITE } as SiteTreeItem);
+
+                expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+            });
         });
 
-        it('should reveal file in OS when file path is provided', async () => {
-            const mockPath = 'test-path';
-            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => mockPath);
-            await revealInOS();
+        describe('when opening other site', () => {
+            it('should not reveal file in OS when file path is not provided', async () => {
+                await revealInOS({ contextValue: Constants.ContextValues.OTHER_SITE, siteInfo: {} } as SiteTreeItem);
 
-            expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+                expect(executeCommandStub.called).to.be.false;
+            });
+
+            it('should reveal file in OS when file path is provided', async () => {
+                const mockPath = 'test-path';
+                await revealInOS({ contextValue: Constants.ContextValues.OTHER_SITE, siteInfo: { folderPath: mockPath } } as SiteTreeItem);
+
+                expect(executeCommandStub.calledOnceWith('revealFileInOS', vscode.Uri.file(mockPath))).to.be.true;
+            });
+        });
+    });
+
+    describe('openSiteManagement', () => {
+        let mockUrl: sinon.SinonSpy;
+
+        beforeEach(() => {
+            mockUrl = sandbox.spy(vscode.Uri, 'parse');
+            sandbox.stub(vscode.env, 'openExternal');
+        });
+
+        it('should open site management URL when available', async () => {
+            await openSiteManagement({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1,
+                    status: WebsiteStatus.Active,
+                    websiteUrl: 'https://test-site.com',
+                    isCurrent: false,
+                    siteVisibility: Constants.SiteVisibility.PRIVATE,
+                    siteManagementUrl: "https://test-site-management.com"
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.calledOnce).to.be.true;
+            expect(mockUrl.firstCall.args[0]).to.equal('https://test-site-management.com');
+        });
+
+        it('should show error message when site management URL is not available', async () => {
+            const mockErrorMessage = sandbox.stub(vscode.window, 'showErrorMessage');
+
+            await openSiteManagement({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1,
+                    status: WebsiteStatus.Active,
+                    websiteUrl: 'https://test-site.com',
+                    isCurrent: false,
+                    siteVisibility: Constants.SiteVisibility.PRIVATE
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockErrorMessage.calledOnce).to.be.true;
+            expect(mockErrorMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_MANAGEMENT_URL_NOT_FOUND);
+        });
+
+        it('should show log error when site management URL is not available', async () => {
+            sandbox.stub(vscode.window, 'showErrorMessage');
+
+            await openSiteManagement({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1,
+                    status: WebsiteStatus.Active,
+                    websiteUrl: 'https://test-site.com',
+                    isCurrent: false,
+                    siteVisibility: Constants.SiteVisibility.PRIVATE
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
+            expect(traceErrorStub.firstCall.args[1]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
+            expect(traceErrorStub.firstCall.args[3]).to.deep.equal({ method: openSiteManagement.name });
+        });
+    });
+
+
+    describe('uploadSite', () => {
+        let mockSendText: sinon.SinonStub;
+        let mockSiteTreeItem: SiteTreeItem;
+
+        beforeEach(() => {
+            mockSendText = sinon.stub();
+
+            // Set up CurrentSiteContext
+            sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "test-path");
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            sinon.stub(PacTerminal, 'getTerminal').returns({ sendText: mockSendText } as any);
+        });
+
+        afterEach(() => {
+            sinon.restore();
+        });
+
+        it('should show confirmation dialog and upload when user confirms for public site', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PUBLIC,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+            mockShowInformationMessage.resolves(Constants.Strings.YES);
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockShowInformationMessage.firstCall.args[0]).to.equal(Constants.Strings.SITE_UPLOAD_CONFIRMATION);
+
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should not upload when user cancels confirmation for public site', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PUBLIC,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+            mockShowInformationMessage.resolves(undefined);
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockSendText.called).to.be.false;
+        });
+
+        it('should upload without confirmation for private site', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PRIVATE,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockShowInformationMessage.called).to.be.false;
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should handle case sensitivity for public site visibility', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: "PUBLIC", // Uppercase
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+            mockShowInformationMessage.resolves(Constants.Strings.YES);
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+            expect(mockSendText.calledOnceWith(`pac pages upload --path "test-path" --modelVersion "1"`)).to.be.true;
+        });
+
+        it('should handle errors during upload', async () => {
+            mockSiteTreeItem = new SiteTreeItem({
+                name: "Test Site",
+                websiteId: "test-id",
+                dataModelVersion: 1,
+                status: WebsiteStatus.Active,
+                websiteUrl: 'https://test-site.com',
+                isCurrent: false,
+                siteVisibility: Constants.SiteVisibility.PRIVATE,
+                siteManagementUrl: "https://inactive-site-1-management.com"
+            });
+
+            mockSendText.throws(new Error('Upload failed'));
+
+            await uploadSite(mockSiteTreeItem, "");
+
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_UPLOAD_SITE_FAILED);
+        });
+    });
+
+    describe('findOtherSites', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let mockFs: any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let mockYaml: any;
+        let mockWorkspaceFolders: sinon.SinonStub;
+        let mockGetWebsiteRecordId: sinon.SinonStub;
+
+        beforeEach(() => {
+            // Create mock fs module with stubbed methods
+            mockFs = {
+                readdirSync: sandbox.stub(),
+                existsSync: sandbox.stub(),
+                readFileSync: sandbox.stub()
+            };
+
+            // Create mock yaml module with stubbed methods
+            mockYaml = {
+                load: sandbox.stub()
+            };
+
+            // Stub workspace folders
+            mockWorkspaceFolders = sandbox.stub(vscode.workspace, 'workspaceFolders').get(() => [{
+                uri: { fsPath: '/test/current/workspace' },
+                name: 'workspace',
+                index: 0
+            }]);
+
+            // Stub the getWebsiteRecordId function
+            mockGetWebsiteRecordId = sandbox.stub(WorkspaceInfoFinderUtil, 'getWebsiteRecordId');
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        it('should return empty array when no workspace folders exist', () => {
+            mockWorkspaceFolders.get(() => undefined);
+
+            const result = findOtherSites(new Set(), mockFs, mockYaml);
+
+            expect(result).to.be.an('array').that.is.empty;
+        });
+
+        it('should handle filesystem errors', () => {
+            const knownSiteIds = new Set<string>();
+
+            mockFs.readdirSync.throws(new Error('Filesystem error'));
+
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
+
+            expect(result).to.be.an('array').that.is.empty;
+            expect(traceErrorStub.calledOnce).to.be.true;
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.OTHER_SITES_FILESYSTEM_ERROR);
+        });
+
+        it('should skip sites with missing website id', () => {
+            const knownSiteIds = new Set<string>();
+
+            mockFs.readdirSync.returns([
+                { name: 'missing-id-site', isDirectory: () => true }
+            ]);
+
+            mockFs.existsSync.returns(true);
+            mockFs.readFileSync.returns('yaml content');
+            mockYaml.load.returns({
+                adx_name: 'Site With Missing ID'
+                // No adx_websiteid
+            });
+
+            // Setup the stub for getWebsiteRecordId to return null
+            mockGetWebsiteRecordId.withArgs('/test/current/workspace/missing-id-site').returns(null);
+
+            const result = findOtherSites(knownSiteIds, mockFs, mockYaml);
+
+            expect(result).to.be.an('array').that.is.empty;
+        });
+    });
+
+    describe('createKnownSiteIdsSet', () => {
+        it('should create a set with active and inactive site IDs', () => {
+            const activeSites = [
+                { websiteRecordId: 'active-1', name: 'Active Site 1' },
+                { websiteRecordId: 'active-2', name: 'Active Site 2' }
+            ] as IWebsiteDetails[];
+
+            const inactiveSites = [
+                { websiteRecordId: 'inactive-1', name: 'Inactive Site 1' },
+                { websiteRecordId: 'inactive-2', name: 'Inactive Site 2' }
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsSet(activeSites, inactiveSites);
+
+            expect(result.size).to.equal(4);
+            expect(result.has('active-1')).to.be.true;
+            expect(result.has('active-2')).to.be.true;
+            expect(result.has('inactive-1')).to.be.true;
+            expect(result.has('inactive-2')).to.be.true;
+        });
+
+        it('should handle case sensitivity by converting to lowercase', () => {
+            const activeSites = [
+                { websiteRecordId: 'ACTIVE-1', name: 'Active Site 1' }
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsSet(activeSites, undefined);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('active-1')).to.be.true;
+        });
+
+        it('should handle undefined inputs', () => {
+            const result = createKnownSiteIdsSet(undefined, undefined);
+            expect(result.size).to.equal(0);
+        });
+
+        it('should skip sites with missing websiteRecordId', () => {
+            const activeSites = [
+                { websiteRecordId: 'active-1', name: 'Active Site 1' },
+                { name: 'Site Without ID' } as IWebsiteDetails
+            ] as IWebsiteDetails[];
+
+            const result = createKnownSiteIdsSet(activeSites, undefined);
+
+            expect(result.size).to.equal(1);
+            expect(result.has('active-1')).to.be.true;
+        });
+    });
+
+    describe('showSiteDetails', () => {
+        it('should show information notification', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+        });
+
+        it('should have expected heading', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            const message = mockShowInformationMessage.firstCall.args[0];
+            expect(message).to.include("Site Details");
+        });
+
+        it('should be rendered as modal', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            const message = mockShowInformationMessage.firstCall.args[1];
+            expect(message.modal).to.be.true;
+        });
+
+        it('should show site details', async () => {
+            mockShowInformationMessage.resolves(Constants.Strings.COPY_TO_CLIPBOARD);
+
+            await showSiteDetails({
+                siteInfo: {
+                    name: "Test Site",
+                    websiteId: "test-id",
+                    dataModelVersion: 1
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockShowInformationMessage.calledOnce).to.be.true;
+
+            const message = mockShowInformationMessage.firstCall.args[1].detail;
+            expect(message).to.include("Friendly name: Test Site");
+            expect(message).to.include("Website ID: test-id");
+            expect(message).to.include("Data model version: v1");
+        });
+    });
+
+    describe('downloadSite', () => {
+        let dirnameSpy: sinon.SinonSpy;
+        let mockSendText: sinon.SinonStub;
+
+        beforeEach(() => {
+            mockSendText = sinon.stub();
+            dirnameSpy = sinon.spy(path, 'dirname');
+            sinon.stub(PacTerminal, 'getTerminal').returns({ sendText: mockSendText } as unknown as vscode.Terminal);
+        });
+
+        afterEach(() => {
+            sinon.restore();
+        });
+
+        describe('when the site is current', () => {
+            it('should download without asking for download path', async () => {
+                sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "D:/foo/bar");
+                const mockSiteTreeItem = new SiteTreeItem({
+                    isCurrent: true,
+                    websiteId: 'test-id',
+                    dataModelVersion: 2
+                } as IWebsiteInfo);
+
+                await downloadSite(mockSiteTreeItem);
+
+                expect(dirnameSpy.calledOnce).to.be.true;
+                expect(mockSendText.calledOnce).to.be.true;
+                expect(mockSendText.firstCall.args[0]).to.equal('pac pages download --overwrite --path "D:/foo" --webSiteId test-id --modelVersion "2"');
+            });
+        });
+
+        describe('when the site is not current', () => {
+            describe('and there is no current site context', () => {
+                beforeEach(() => {
+                    sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => undefined);
+                });
+
+                it('should only show 1 option in download path quick pick', async () => {
+                    const mockSiteTreeItem = new SiteTreeItem({
+                        isCurrent: false,
+                        websiteId: 'test-id',
+                        dataModelVersion: 2
+                    } as IWebsiteInfo);
+
+                    const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+
+                    await downloadSite(mockSiteTreeItem);
+
+                    expect(mockQuickPick.calledOnce).to.be.true;
+                    const options = mockQuickPick.firstCall.args[0] as { label: string, iconPath: vscode.ThemeIcon }[];
+                    expect(options.length).to.equal(1);
+                    expect(options[0].label).to.equal("Browse...");
+                    expect(mockQuickPick.firstCall.args[1]).to.deep.equal({
+                        canPickMany: false,
+                        placeHolder: Constants.Strings.SELECT_DOWNLOAD_FOLDER
+                    });
+                });
+            });
+
+            describe('but there is a current site context', () => {
+                beforeEach(() => {
+                    sinon.stub(CurrentSiteContext, 'currentSiteFolderPath').get(() => "D:/foo/bar");
+                });
+
+                it('should show 2 options in download path quick pick', async () => {
+                    const mockSiteTreeItem = new SiteTreeItem({
+                        isCurrent: false,
+                        websiteId: 'test-id',
+                        dataModelVersion: 2
+                    } as IWebsiteInfo);
+
+                    const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+
+                    await downloadSite(mockSiteTreeItem);
+
+                    expect(mockQuickPick.calledOnce).to.be.true;
+                    const options = mockQuickPick.firstCall.args[0] as vscode.QuickPickItem[];
+                    expect(options.length).to.equal(2);
+                    expect(options[0].label).to.equal("Browse...");
+                    expect(options[1].label).to.equal("D:/foo");
+                    expect(mockQuickPick.firstCall.args[1]).to.deep.equal({
+                        canPickMany: false,
+                        placeHolder: Constants.Strings.SELECT_DOWNLOAD_FOLDER
+                    });
+                });
+
+                it('should download when a path is selected', async () => {
+                    const mockSiteTreeItem = new SiteTreeItem({
+                        isCurrent: false,
+                        websiteId: 'test-id',
+                        dataModelVersion: 2
+                    } as IWebsiteInfo);
+
+                    const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+                    mockQuickPick.resolves({ label: "D:/foo" });
+
+                    await downloadSite(mockSiteTreeItem);
+
+                    expect(mockSendText.calledOnce).to.be.true;
+                    expect(mockSendText.firstCall.args[0]).to.equal('pac pages download --overwrite --path "D:/foo" --webSiteId test-id --modelVersion "2"');
+                });
+
+                it('should show file open dialog when "Browse..." is selected', async () => {
+                    const mockSiteTreeItem = new SiteTreeItem({
+                        isCurrent: false,
+                        websiteId: 'test-id',
+                        dataModelVersion: 2
+                    } as IWebsiteInfo);
+
+                    const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+                    mockQuickPick.resolves({ label: "Browse..." });
+
+                    const mockShowOpenDialog = sinon.stub(vscode.window, 'showOpenDialog');
+                    mockShowOpenDialog.resolves([{ fsPath: "D:/foo" } as unknown as vscode.Uri]);
+
+                    await downloadSite(mockSiteTreeItem);
+
+                    expect(mockShowOpenDialog.calledOnce).to.be.true;
+                    expect(mockShowOpenDialog.firstCall.args[0]).to.deep.equal({
+                        canSelectFolders: true,
+                        canSelectFiles: false,
+                        openLabel: Constants.Strings.SELECT_FOLDER,
+                        title: Constants.Strings.SELECT_DOWNLOAD_FOLDER
+                    });
+                });
+
+                it('should download the site when a path is selected in the file open dialog', async () => {
+                    const mockSiteTreeItem = new SiteTreeItem({
+                        isCurrent: false,
+                        websiteId: 'test-id',
+                        dataModelVersion: 2
+                    } as IWebsiteInfo);
+
+                    const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+                    mockQuickPick.resolves({ label: "Browse..." });
+
+                    const mockShowOpenDialog = sinon.stub(vscode.window, 'showOpenDialog');
+                    mockShowOpenDialog.resolves([{ fsPath: "D:/foo" } as unknown as vscode.Uri]);
+
+                    await downloadSite(mockSiteTreeItem);
+
+                    expect(mockSendText.calledOnce).to.be.true;
+                    expect(mockSendText.firstCall.args[0]).to.equal('pac pages download --overwrite --path "D:/foo" --webSiteId test-id --modelVersion "2"');
+                });
+
+                it('should not download the site when no path is selected in the file open dialog', async () => {
+                    const mockSiteTreeItem = new SiteTreeItem({
+                        isCurrent: false,
+                        websiteId: 'test-id',
+                        dataModelVersion: 2
+                    } as IWebsiteInfo);
+
+                    const mockQuickPick = sinon.stub(vscode.window, 'showQuickPick');
+                    mockQuickPick.resolves({ label: "Browse..." });
+
+                    const mockShowOpenDialog = sinon.stub(vscode.window, 'showOpenDialog');
+                    mockShowOpenDialog.resolves([]);
+
+                    await downloadSite(mockSiteTreeItem);
+
+                    expect(mockSendText.called).to.be.false;
+                });
+            });
+        });
+    });
+
+    describe('openInStudio', () => {
+        let mockUrl: sinon.SinonSpy;
+        let mockOpenUrl: sinon.SinonStub;
+
+        beforeEach(() => {
+            mockUrl = sandbox.spy(vscode.Uri, 'parse');
+            mockOpenUrl = sandbox.stub(vscode.env, 'openExternal');
+            sandbox.stub(PacContext, 'AuthInfo').get(() => mockAuthInfo);
+            sandbox.stub(ArtemisContext, 'ServiceResponse').get(() => ({ stamp: ServiceEndpointCategory.TEST }));
+        });
+
+        it('should open in studio', async () => {
+            await openInStudio({
+                siteInfo: {
+                    websiteId: "test-id"
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.calledOnce).to.be.true;
+            expect(mockUrl.firstCall.args[0]).to.equal('https://make.test.powerpages.microsoft.com/e/test-env-id/sites/test-id/pages');
+
+            expect(mockOpenUrl.calledOnce).to.be.true;
+            expect(mockOpenUrl.firstCall.args[0].toString()).to.equal('https://make.test.powerpages.microsoft.com/e/test-env-id/sites/test-id/pages');
+        });
+
+        it('should not open when website id is missing', async () => {
+            await openInStudio({
+                siteInfo: {
+                    websiteId: ""
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.called).to.be.false;
+            expect(mockOpenUrl.called).to.be.false;
+        });
+
+        it('should not open when environment id is missing', async () => {
+            sandbox.stub(PacContext, 'AuthInfo').get(() => ({ ...mockAuthInfo, EnvironmentId: undefined }));
+
+            await openInStudio({
+                siteInfo: {
+                    websiteId: "test-id"
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.called).to.be.false;
+            expect(mockOpenUrl.called).to.be.false;
+        });
+
+        it('should not open when Artemis stamp id is missing', async () => {
+            sandbox.stub(ArtemisContext, 'ServiceResponse').get(() => ({ stamp: 'foo' }));
+
+            await openInStudio({
+                siteInfo: {
+                    websiteId: "test-id"
+                } as IWebsiteInfo
+            } as SiteTreeItem);
+
+            expect(mockUrl.called).to.be.false;
+            expect(mockOpenUrl.called).to.be.false;
         });
     });
 });

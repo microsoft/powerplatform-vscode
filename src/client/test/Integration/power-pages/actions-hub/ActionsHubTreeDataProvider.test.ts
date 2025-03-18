@@ -19,7 +19,7 @@ import { SiteTreeItem } from "../../../../power-pages/actions-hub/tree-items/Sit
 import { IWebsiteInfo } from "../../../../power-pages/actions-hub/models/IWebsiteInfo";
 import PacContext from "../../../../pac/PacContext";
 import { CloudInstance, EnvironmentType } from "../../../../pac/PacTypes";
-import { IWebsiteDetails } from "../../../../../common/services/Interfaces";
+import { IOtherSiteInfo, IWebsiteDetails } from "../../../../../common/services/Interfaces";
 import * as CommandHandlers from "../../../../power-pages/actions-hub/ActionsHubCommandHandlers";
 
 // Add global type declaration for ArtemisContext
@@ -166,6 +166,55 @@ describe("ActionsHubTreeDataProvider", () => {
             await registerCommandStub.getCall(10).args[1]();
             expect(mockCommandHandler.calledOnce).to.be.true;
         });
+
+        //command "microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite"
+        it("should register uploadSite command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'uploadSite');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.uploadSite")).to.be.true;
+
+            await registerCommandStub.getCall(11).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
+
+        it("should register siteDetails command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'showSiteDetails');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.siteDetails")).to.be.true;
+
+            await registerCommandStub.getCall(12).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
+
+        it("should register downloadSite command", async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'downloadSite');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.downloadSite")).to.be.true;
+
+            await registerCommandStub.getCall(13).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
+
+        it('should register openSiteInStudio command', async () => {
+            const mockCommandHandler = sinon.stub(CommandHandlers, 'openInStudio');
+            mockCommandHandler.resolves();
+            const actionsHubTreeDataProvider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            actionsHubTreeDataProvider["registerPanel"](pacTerminal);
+
+            expect(registerCommandStub.calledWith("microsoft.powerplatform.pages.actionsHub.activeSite.openInStudio")).to.be.true;
+
+            await registerCommandStub.getCall(14).args[1]();
+            expect(mockCommandHandler.calledOnce).to.be.true;
+        });
     });
 
     describe('getTreeItem', () => {
@@ -184,7 +233,10 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockInactiveSites = [
                 { name: "Bar", websiteRecordId: 'Bar', websiteUrl: "https://bar.com" }
             ] as IWebsiteDetails[];
-            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
+            const otherSites = [
+                { name: "Baz", websiteId: 'baz' }
+            ] as IOtherSiteInfo[];
+            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites, otherSites: otherSites });
 
             PacContext['_authInfo'] = null;
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
@@ -202,7 +254,10 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockInactiveSites = [
                 { name: "Bar", websiteRecordId: 'Bar', websiteUrl: "https://bar.com" }
             ] as IWebsiteDetails[];
-            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
+            const otherSites = [
+                { name: "Baz", websiteId: 'baz' }
+            ] as IOtherSiteInfo[];
+            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites, otherSites: otherSites });
 
             sinon.stub(PacContext, "AuthInfo").get(() => ({
                 OrganizationFriendlyName: "TestOrg",
@@ -256,7 +311,7 @@ describe("ActionsHubTreeDataProvider", () => {
         it("should call element.getChildren when an element is passed", async () => {
             const element = new SiteTreeItem({} as IWebsiteInfo);
             const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
-            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: [], inactiveSites: [] });
+            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: [], inactiveSites: [], otherSites: [] });
             provider["_loadWebsites"] = false;
             const getChildrenStub = sinon.stub(element, "getChildren").resolves([]);
 
@@ -273,7 +328,10 @@ describe("ActionsHubTreeDataProvider", () => {
             const mockInactiveSites = [
                 { name: "Bar", websiteRecordId: 'Bar', websiteUrl: "https://bar.com" }
             ] as IWebsiteDetails[];
-            const mockFetchWebsites = sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites });
+            const otherSites = [
+                { name: "Baz", websiteId: 'baz' }
+            ] as IOtherSiteInfo[];
+            const mockFetchWebsites = sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites, otherSites: otherSites });
 
             PacContext['_authInfo'] = {
                 OrganizationFriendlyName: "TestOrg",
