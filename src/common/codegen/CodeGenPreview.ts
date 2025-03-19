@@ -9,6 +9,7 @@ import { BrowserNPM } from "./BrowserNpm";
 import * as esbuild from 'esbuild-wasm';
 import { resolvePlugin } from "./esbuild";
 import { CreateDemoSite } from "./DemoDataHelper";
+import { showProgressWithNotification } from "../utilities/Utils";
 
 export class CodeGenPreview implements vscode.Disposable {
     private static _isInitialized = false;
@@ -40,22 +41,33 @@ export class CodeGenPreview implements vscode.Disposable {
             return;
         }
 
-        new CodeGenPreview();
-        CodeGenPreview._ppmInstance = new BrowserNPM(CodeGenPreview._memFs);
-        await CodeGenPreview._ppmInstance.installDependencies();
-        await esbuild.initialize({
-            worker: true,
-            wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.25.1/esbuild.wasm',
-        });
+        await showProgressWithNotification("Initializing code gen preview", async (progress) => {
+            new CodeGenPreview();
+            CodeGenPreview._ppmInstance = new BrowserNPM(CodeGenPreview._memFs);
 
-        await CodeGenPreview.rebuild();
+            progress.report({ message: "Installing dependencies..." });
+            await CodeGenPreview._ppmInstance.installDependencies();
 
-        const folder = vscode.workspace.workspaceFolders?.[0] || "";
-        CodeGenPreview._watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(folder, "src/**/*"));
-        CodeGenPreview._watcher.onDidChange(async (uri) => {
-            console.log(`File changed: ${uri.toString()}`);
+            progress.report({ increment: 50, message: "Loading esbuild..." });
+            await esbuild.initialize({
+                worker: true,
+                wasmURL: 'https://cdn.jsdelivr.net/npm/esbuild-wasm@0.25.1/esbuild.wasm',
+            });
+
+            progress.report({ increment: 75, message: "Building..." });
             await CodeGenPreview.rebuild();
-        })
+
+            const folder = vscode.workspace.workspaceFolders?.[0] || "";
+
+            progress.report({ increment: 85, message: "Setting up watcher..." });
+            CodeGenPreview._watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(folder, "src/**/*"));
+            CodeGenPreview._watcher.onDidChange(async (uri) => {
+                console.log(`File changed: ${uri.toString()}`);
+                await CodeGenPreview.rebuild();
+            })
+
+            progress.report({ increment: 100, message: "Code generation preview initialized successfully!" });
+        });
 
         CodeGenPreview._isInitialized = true;
     }
