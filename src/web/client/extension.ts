@@ -45,7 +45,7 @@ import { EXTENSION_ID } from "../../common/constants";
 import { getECSOrgLocationValue } from "../../common/utilities/Utils";
 import { CodeGenPreview } from "../../common/codegen/CodeGenPreview";
 
-export function activate(context: vscode.ExtensionContext): void {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
     oneDSLoggerWrapper.instantiate(GeoNames.US);
     WebExtensionContext.setVscodeWorkspaceState(context.workspaceState);
 
@@ -59,7 +59,7 @@ export function activate(context: vscode.ExtensionContext): void {
         )
     );
 
-    CodeGenPreview.initialize();
+    await CodeGenPreview.initialize();
 
     context.subscriptions.push(
         vscode.commands.registerCommand(

@@ -47,6 +47,10 @@ const nodeConfig = {
                 loader: 'ts-loader'
             }
             ]
+        },
+        {
+            test: /\.wasm$/,
+            type: 'webassembly/async',
         }]
     },
     plugins:[
@@ -61,7 +65,11 @@ const nodeConfig = {
         {
             message: /dependency is an expression|require function is used in a way in which dependencies cannot be statically extracted/
         }
-    ]
+    ],
+    experiments: {
+        asyncWebAssembly: true,  // Enable WebAssembly as an async module
+        // or syncWebAssembly: true, (deprecated, like webpack 4)
+    },
 };
 const webConfig = {
     mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
@@ -104,6 +112,10 @@ const webConfig = {
             use: [{
                 loader: 'ts-loader'
             }]
+        },
+        {
+            test: /\.wasm$/,
+            type: 'webassembly/async',
         }]
     },
     plugins: [
@@ -129,7 +141,11 @@ const webConfig = {
         {
             message: /dependency is an expression|require function is used in a way in which dependencies cannot be statically extracted/
         }
-    ]
+    ],
+    experiments: {
+        asyncWebAssembly: true,  // Enable WebAssembly as an async module
+        // or syncWebAssembly: true, (deprecated, like webpack 4)
+    },
 };
 
 /** @type fluent container scripts web worker config */
@@ -175,6 +191,10 @@ const webWorkerConfig = {
                     options: { inline: "fallback" },
                 },
             },
+            {
+                test: /\.wasm$/,
+                type: 'webassembly/async',
+            },
         ],
     },
     externals: {
@@ -188,7 +208,11 @@ const webWorkerConfig = {
         {
             message: /dependency is an expression|require function is used in a way in which dependencies cannot be statically extracted/
         }
-    ]
+    ],
+    experiments: {
+        asyncWebAssembly: true,  // Enable WebAssembly as an async module
+        // or syncWebAssembly: true, (deprecated, like webpack 4)
+    },
 };
 
 module.exports = [nodeConfig, webConfig, webWorkerConfig];
