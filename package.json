@@ -198,7 +198,7 @@
       {
         "command": "microsoft.powerplatform.pages.codegen.preview",
         "title": "Open Live Preview",
-        "category": "Power Pages Codegen"
+        "icon": "$(eye)"
       },
       {
         "command": "pacCLI.openDocumentation",
@@ -745,6 +745,11 @@
           "when": "resourceLangId == html && !virtualWorkspace",
           "command": "microsoft-powerapps-portals.preview-show",
           "group": "navigation"
+        },
+        {
+          "command": "microsoft.powerplatform.pages.codegen.preview",
+          "group": "navigation",
+          "when": "isWeb && virtualWorkspace"
         },
         {
           "command": "powerPlatform.previewCurrentActiveUsers",
