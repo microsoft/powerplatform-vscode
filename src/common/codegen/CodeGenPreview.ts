@@ -89,7 +89,7 @@ export class CodeGenPreview implements vscode.Disposable {
                 write: false,
                 bundle: true,
                 metafile: true,
-                plugins: [resolvePlugin(CodeGenPreview._ppmInstance)],
+                plugins: [resolvePlugin(CodeGenPreview._ppmInstance)]
             });
             const endTime = performance.now();
             console.log('Build time:', endTime - startTime, 'ms');

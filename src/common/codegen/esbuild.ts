@@ -82,21 +82,11 @@ export function resolvePlugin(npmManager: BrowserNPM): Plugin {
       });
 
       build.onLoad({ filter: /.*/, namespace: 'opfsNamespace' }, async (args) => {
-        // Check if the file is already cached
-        if (buildCache.has(args.path)) {
-          const cachedContent = buildCache.get(args.path);
-          if (cachedContent) {
-            return { contents: cachedContent, loader: inferLoader(args.path) };
-          }
-        }
-        // If not cached, read the file and cache it
         const fileBlob = npmManager.readModuleFile(args.path);
         if (!fileBlob) {
           return { errors: [{ text: `Module not found: ${args.path}` }] };
         }
         const fileText = await fileBlob.text();
-        // Cache the file content
-        buildCache.set(args.path, fileText);
         return { contents: fileText, loader: inferLoader(args.path) };
       });
     },
