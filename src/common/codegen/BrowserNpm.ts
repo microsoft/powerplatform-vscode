@@ -194,7 +194,7 @@ export class BrowserNPM {
                     returnValue = !!this.fileSystem.readFile(vscode.Uri.parse(`memfs:/${path}`));
                 }
             } catch (error) {
-                console.error(`Error checking file: ${path}`, error);
+                //console.error(`Error checking file: ${path}`, error);
                 returnValue = false;
             }
 
