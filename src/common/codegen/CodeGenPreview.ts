@@ -28,40 +28,40 @@ export class CodeGenPreview implements vscode.Disposable {
         CodeGenPreview._memFs.createDirectory(vscode.Uri.parse(`memfs:/node_modules/`));
 
         CodeGenPreview._memFs.writeFile(vscode.Uri.parse(`memfs:/src/index.tsx`), Buffer.from(`
-            import React from 'react';
-            import ReactDOM from 'react-dom';
-            import { useFormik } from 'formik';
-            import * as yup from 'yup';
-            import Button from '@material-ui/core/Button';
-            import TextField from '@material-ui/core/TextField';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 
-            const validationSchema = yup.object({
-            email: yup
-                .string('Enter your email')
-                .email('Enter a valid email!')
-                .required('Email is required'),
-            password: yup
-                .string('Enter your password')
-                .min(8, 'Password should be of minimum 8 characters length')
-                .required('Password is required'),
-            });
+const validationSchema = yup.object({
+    email: yup
+        .string('Enter your email')
+        .email('Enter a valid email!')
+        .required('Email is required'),
+    password: yup
+        .string('Enter your password')
+        .min(8, 'Password should be of minimum 8 characters length')
+        .required('Password is required'),
+});
 
-            const WithMaterialUI = () => {
-            const formik = useFormik({
-                initialValues: {
-                email: 'foobar@example.com',
-                password: 'foobar',
-                },
-                validationSchema: validationSchema,
-                onSubmit: (values) => {
-                alert(JSON.stringify(values, null, 2));
-                },
-            });
+const WithMaterialUI = () => {
+    const formik = useFormik({
+        initialValues: {
+            email: 'foobar@example.com',
+            password: 'foobar',
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            alert(JSON.stringify(values, null, 2));
+        },
+    });
 
-            return (
-                <div>
-                <form onSubmit={formik.handleSubmit}>
-                    <TextField
+    return (
+        <div>
+            <form onSubmit={formik.handleSubmit}>
+                <TextField
                     fullWidth
                     id="email"
                     name="email"
@@ -71,8 +71,8 @@ export class CodeGenPreview implements vscode.Disposable {
                     onBlur={formik.handleBlur}
                     error={formik.touched.email && Boolean(formik.errors.email)}
                     helperText={formik.touched.email && formik.errors.email}
-                    />
-                    <TextField
+                />
+                <TextField
                     fullWidth
                     id="password"
                     name="password"
@@ -83,16 +83,17 @@ export class CodeGenPreview implements vscode.Disposable {
                     onBlur={formik.handleBlur}
                     error={formik.touched.password && Boolean(formik.errors.password)}
                     helperText={formik.touched.password && formik.errors.password}
-                    />
-                    <Button color="primary" variant="contained" fullWidth type="submit">
+                />
+                <Button color="primary" variant="contained" fullWidth type="submit">
                     Submit
-                    </Button>
-                </form>
-                </div>
-            );
-            };
+                </Button>
+            </form>
+        </div>
+    );
+};
 
-            ReactDOM.render(<WithMaterialUI />, document.getElementById('root'));`.trim()
+ReactDOM.render(<WithMaterialUI />, document.getElementById('root'));
+`.trim()
         ), { create: true, overwrite: true });
 
         CodeGenPreview._memFs.writeFile(vscode.Uri.parse(`memfs:/package.json`), Buffer.from(
