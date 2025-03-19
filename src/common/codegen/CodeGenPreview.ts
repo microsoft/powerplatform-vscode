@@ -111,6 +111,7 @@ export class CodeGenPreview implements vscode.Disposable {
     private static showPreview() {
         const panel = vscode.window.createWebviewPanel("codeGenPreview", "Code Generation Preview", vscode.ViewColumn.Beside, {
             enableScripts: true,
+            enableCommandUris: true,
             retainContextWhenHidden: false
         });
 

@@ -30,7 +30,7 @@ export const PROJECT_ROOT = '/project/';
 
 // https://esbuild.github.io/api/#resolve-extensions
 const RESOLVE_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js', '.css', '.json'];
-const buildCache = new Map<string, string>();
+//const buildCache = new Map<string, string>();
 export function resolvePlugin(npmManager: BrowserNPM): Plugin {
   return {
     name: 'resolve',
