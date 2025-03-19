@@ -144,17 +144,27 @@ export class MemFS implements vscode.FileSystemProvider {
 		this._fireSoon({ type: vscode.FileChangeType.Changed, uri: dirname }, { uri, type: vscode.FileChangeType.Deleted });
 	}
 
-	createDirectory(uri: vscode.Uri): void {
-		const basename = path.posix.basename(uri.path);
-		const dirname = uri.with({ path: path.posix.dirname(uri.path) });
-		const parent = this._lookupAsDirectory(dirname, false);
+    createDirectory(uri: vscode.Uri): void {
+        const basename = path.posix.basename(uri.path);
+        const dirname = uri.with({ path: path.posix.dirname(uri.path) });
+        const parent = this._lookupAsDirectory(dirname, false);
 
-		const entry = new Directory(basename);
-		parent.entries.set(entry.name, entry);
-		parent.mtime = Date.now();
-		parent.size += 1;
-		this._fireSoon({ type: vscode.FileChangeType.Changed, uri: dirname }, { type: vscode.FileChangeType.Created, uri });
-	}
+        // Check if directory already exists
+        if (parent.entries.has(basename)) {
+            const entry = parent.entries.get(basename);
+            if (entry instanceof Directory) {
+                // Directory already exists, no need to create
+                return;
+            }
+            throw vscode.FileSystemError.FileExists(uri);
+        }
+
+        const entry = new Directory(basename);
+        parent.entries.set(entry.name, entry);
+        parent.mtime = Date.now();
+        parent.size += 1;
+        this._fireSoon({ type: vscode.FileChangeType.Changed, uri: dirname }, { type: vscode.FileChangeType.Created, uri });
+    }
 
 	// --- lookup
 
