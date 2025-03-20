@@ -564,3 +564,15 @@ export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
 
     await vscode.env.openExternal(vscode.Uri.parse(studioUrl));
 }
+
+export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
+    const websiteId = siteTreeItem.siteInfo.websiteId;
+    const environmentId = PacContext.AuthInfo?.EnvironmentId || "";
+    const reactivateSiteUrl = `${getPPHomeUrl()}/?tab=inactive&websiteId=${websiteId}&environmentId=${environmentId}`; // TODO: Update this URL to the correct one for reactivation
+
+    if (!reactivateSiteUrl) {
+        return;
+    }
+
+    await vscode.env.openExternal(vscode.Uri.parse(reactivateSiteUrl));
+}
