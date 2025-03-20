@@ -68,10 +68,6 @@ export const Constants = {
         HIGH: "https://make.high.powerpages.microsoft.us",
         MOONCAKE: "https://make.powerpages.microsoft.cn"
     },
-    SiteVisibility : {
-        PUBLIC: "public",
-        PRIVATE: "private"
-    },
     AppNames: {
         POWER_PAGES_MANAGEMENT: 'mspp_powerpagemanagement',
         PORTAL_MANAGEMENT: 'dynamics365portals'

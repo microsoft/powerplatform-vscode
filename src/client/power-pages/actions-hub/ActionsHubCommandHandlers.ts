@@ -15,7 +15,7 @@ import { extractAuthInfo } from '../commonUtility';
 import { showProgressWithNotification } from '../../../common/utilities/Utils';
 import PacContext from '../../pac/PacContext';
 import ArtemisContext from '../../ArtemisContext';
-import { ServiceEndpointCategory } from '../../../common/services/Constants';
+import { ServiceEndpointCategory, WebsiteDataModel } from '../../../common/services/Constants';
 import { SiteTreeItem } from './tree-items/SiteTreeItem';
 import { PreviewSite } from '../preview-site/PreviewSite';
 import { PacWrapper } from '../../pac/PacWrapper';
@@ -28,6 +28,8 @@ import path from 'path';
 import { getWebsiteRecordId } from '../../../common/utilities/WorkspaceInfoFinderUtil';
 import { isEdmEnvironment } from '../../../common/copilot/dataverseMetadata';
 import { IWebsiteInfo } from './models/IWebsiteInfo';
+import moment from 'moment';
+import { SiteVisibility } from './models/SiteVisibility';
 
 export const refreshEnvironment = async (pacTerminal: PacTerminal) => {
     const pacWrapper = pacTerminal.getWrapper();
@@ -218,7 +220,20 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             ]);
             const activeSiteIds = new Set(activeWebsiteDetails.map(activeSite => activeSite.websiteRecordId));
             const inactiveWebsiteDetails = allSites?.filter(site => !activeSiteIds.has(site.websiteRecordId)) || [];
-            activeWebsiteDetails = activeWebsiteDetails.map(detail => ({ ...detail, siteManagementUrl: allSites.find(site => site.websiteRecordId === detail.websiteRecordId)?.siteManagementUrl ?? "" }));
+            activeWebsiteDetails = activeWebsiteDetails.map(detail => {
+                const site = allSites.find(site => site.websiteRecordId === detail.websiteRecordId);
+
+                if (!site) {
+                    return detail;
+                }
+
+                return {
+                    ...detail,
+                    siteManagementUrl: site.siteManagementUrl,
+                    createdOn: site.createdOn,
+                    creator: site.creator,
+                }
+            });
 
             const currentEnvSiteIds = createKnownSiteIdsSet(activeWebsiteDetails, inactiveWebsiteDetails);
             const otherSites = findOtherSites(currentEnvSiteIds);
@@ -323,7 +338,7 @@ async function uploadOtherSite(siteTreeItem: SiteTreeItem): Promise<void> {
  */
 async function uploadCurrentSite(siteTreeItem: SiteTreeItem, websitePath: string): Promise<void> {
     // Public sites require confirmation to prevent accidental deployment
-    if (siteTreeItem.siteInfo.siteVisibility?.toLowerCase() === Constants.SiteVisibility.PUBLIC) {
+    if (siteTreeItem.siteInfo.siteVisibility?.toLowerCase() === SiteVisibility.Public) {
         const confirm = await vscode.window.showInformationMessage(
             Constants.Strings.SITE_UPLOAD_CONFIRMATION,
             { modal: true },
@@ -456,14 +471,28 @@ export const showSiteDetails = async (siteTreeItem: SiteTreeItem) => {
     const siteInfo = siteTreeItem.siteInfo;
     const details = [
         vscode.l10n.t({ message: "Friendly name: {0}", args: [siteInfo.name], comment: "{0} is the website name" }),
-        vscode.l10n.t({ message: "Website ID: {0}", args: [siteInfo.websiteId], comment: "{0} is the website ID" }),
-        vscode.l10n.t({ message: "Data model version: v{0}", args: [siteInfo.dataModelVersion], comment: "{0} is the data model version" })
-    ].join('\n');
+        vscode.l10n.t({ message: "Website Id: {0}", args: [siteInfo.websiteId], comment: "{0} is the website ID" }),
+        vscode.l10n.t({ message: "Data model version: {0}", args: [siteInfo.dataModelVersion === 1 ? WebsiteDataModel.Standard : WebsiteDataModel.Enhanced], comment: "{0} is the data model version" })
+    ];
 
-    const result = await vscode.window.showInformationMessage(Constants.Strings.SITE_DETAILS, { detail: details, modal: true }, Constants.Strings.COPY_TO_CLIPBOARD);
+    if (siteInfo.websiteUrl) {
+        details.push(vscode.l10n.t({ message: "Website Url: {0}", args: [siteInfo.websiteUrl], comment: "{0} is the website Url" }));
+    }
+
+    if (siteInfo.siteVisibility) {
+        const visibility = siteInfo.siteVisibility.charAt(0).toUpperCase() + siteInfo.siteVisibility.slice(1).toLowerCase();
+        details.push(vscode.l10n.t({ message: "Site visibility: {0}", args: [visibility], comment: "{0} is the site visibility" }));
+    }
+
+    details.push(vscode.l10n.t({ message: "Creator: {0}", args: [siteInfo.creator], comment: "{0} is the creator" }));
+    details.push(vscode.l10n.t({ message: "Created on: {0}", args: [moment(siteInfo.createdOn).format('LL')], comment: "{0} is the created date" }));
+
+    const formattedDetails = details.join('\n');
+
+    const result = await vscode.window.showInformationMessage(Constants.Strings.SITE_DETAILS, { detail: formattedDetails, modal: true }, Constants.Strings.COPY_TO_CLIPBOARD);
 
     if (result === Constants.Strings.COPY_TO_CLIPBOARD) {
-        await vscode.env.clipboard.writeText(details);
+        await vscode.env.clipboard.writeText(formattedDetails);
     }
 }
 
