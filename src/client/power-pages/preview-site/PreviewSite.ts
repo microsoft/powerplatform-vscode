@@ -23,6 +23,7 @@ import CurrentSiteContext from '../actions-hub/CurrentSiteContext';
 import { IWebsiteDetails } from '../../../common/services/Interfaces';
 import { uploadSite } from '../actions-hub/ActionsHubCommandHandlers';
 import { SiteTreeItem } from '../actions-hub/tree-items/SiteTreeItem';
+import { SiteVisibility } from '../actions-hub/models/SiteVisibility';
 
 export const SITE_PREVIEW_COMMAND_ID = "microsoft.powerplatform.pages.preview-site";
 
@@ -116,8 +117,8 @@ export class PreviewSite {
         }
     }
 
-    public static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined, dataModelVersion: 1 | 2, siteVisibility: string): Promise<void> {
-        if (!webSitePreviewURL || webSitePreviewURL === "") {
+    public static async launchBrowserAndDevToolsWithinVsCode(webSitePreviewURL: string | undefined, dataModelVersion: 1 | 2, siteVisibility: SiteVisibility | undefined): Promise<void> {
+        if (!webSitePreviewURL || webSitePreviewURL === "" || !siteVisibility) {
             return;
         }
 
@@ -139,7 +140,7 @@ export class PreviewSite {
         }
     }
 
-    private static async showUploadWarning(websitePath: string, dataModelVersion: 1 | 2, siteVisibility: string) {
+    private static async showUploadWarning(websitePath: string, dataModelVersion: 1 | 2, siteVisibility: SiteVisibility) {
         const pendingChangesResult = await PreviewSite._pacTerminal.getWrapper().pendingChanges(websitePath, dataModelVersion);
 
         try {
@@ -206,7 +207,7 @@ export class PreviewSite {
         await PreviewSite.launchBrowserAndDevToolsWithinVsCode(
             PreviewSite._websiteDetails.websiteUrl,
             PreviewSite._websiteDetails.dataModel === WebsiteDataModel.Standard ? 1 : 2,
-            PreviewSite._websiteDetails.siteVisibility ?? ""
+            PreviewSite._websiteDetails.siteVisibility
         );
     }
 
