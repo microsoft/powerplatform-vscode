@@ -28,6 +28,7 @@ import * as Utils from '../../../../../common/utilities/Utils';
 import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteContext';
 import * as WorkspaceInfoFinderUtil from "../../../../../common/utilities/WorkspaceInfoFinderUtil";
 import path from 'path';
+import { SiteVisibility } from '../../../../power-pages/actions-hub/models/SiteVisibility';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -609,8 +610,10 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: 'Public',
+                siteVisibility: SiteVisibility.Public,
                 siteManagementUrl: 'https://test-site-management.com',
+                createdOn: "2025-03-20",
+                creator: "Test Creator"
             };
         });
 
@@ -699,7 +702,7 @@ describe('ActionsHubCommandHandlers', () => {
             ] as IWebsiteDetails[];
 
             const allSites = [
-                ...activeSites.map(site => ({ ...site, siteManagementUrl: "https://portalmanagement.com" })),
+                ...activeSites.map(site => ({ ...site, siteManagementUrl: "https://portalmanagement.com", createdOn: "2025-03-20", creator: "Test Creator" })),
                 ...inactiveSites
 
             ] as IWebsiteDetails[];
@@ -708,7 +711,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             const response = await fetchWebsites();
 
-            expect(response.activeSites).to.deep.equal([...activeSites.map(site => ({ ...site, siteManagementUrl: "https://portalmanagement.com" }))]);
+            expect(response.activeSites).to.deep.equal([...activeSites.map(site => ({ ...site, siteManagementUrl: "https://portalmanagement.com", createdOn: "2025-03-20", creator: "Test Creator" }))]);
             expect(response.inactiveSites).to.deep.equal(inactiveSites);
         });
     });
@@ -774,8 +777,10 @@ describe('ActionsHubCommandHandlers', () => {
                     status: WebsiteStatus.Active,
                     websiteUrl: 'https://test-site.com',
                     isCurrent: false,
-                    siteVisibility: Constants.SiteVisibility.PRIVATE,
-                    siteManagementUrl: "https://test-site-management.com"
+                    siteVisibility: SiteVisibility.Private,
+                    siteManagementUrl: "https://test-site-management.com",
+                    createdOn: "2025-03-20",
+                    creator: "Test Creator"
                 } as IWebsiteInfo
             } as SiteTreeItem);
 
@@ -794,7 +799,7 @@ describe('ActionsHubCommandHandlers', () => {
                     status: WebsiteStatus.Active,
                     websiteUrl: 'https://test-site.com',
                     isCurrent: false,
-                    siteVisibility: Constants.SiteVisibility.PRIVATE
+                    siteVisibility: SiteVisibility.Private,
                 } as IWebsiteInfo
             } as SiteTreeItem);
 
@@ -813,7 +818,7 @@ describe('ActionsHubCommandHandlers', () => {
                     status: WebsiteStatus.Active,
                     websiteUrl: 'https://test-site.com',
                     isCurrent: false,
-                    siteVisibility: Constants.SiteVisibility.PRIVATE
+                    siteVisibility: SiteVisibility.Private
                 } as IWebsiteInfo
             } as SiteTreeItem);
 
@@ -849,8 +854,10 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: Constants.SiteVisibility.PUBLIC,
-                siteManagementUrl: "https://inactive-site-1-management.com"
+                siteVisibility: SiteVisibility.Public,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator"
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
@@ -870,8 +877,10 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: Constants.SiteVisibility.PUBLIC,
-                siteManagementUrl: "https://inactive-site-1-management.com"
+                siteVisibility: SiteVisibility.Public,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator"
             });
             mockShowInformationMessage.resolves(undefined);
 
@@ -889,8 +898,10 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: Constants.SiteVisibility.PRIVATE,
-                siteManagementUrl: "https://inactive-site-1-management.com"
+                siteVisibility: SiteVisibility.Private,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator"
             });
 
             await uploadSite(mockSiteTreeItem, "");
@@ -907,8 +918,10 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: "PUBLIC", // Uppercase
-                siteManagementUrl: "https://inactive-site-1-management.com"
+                siteVisibility: SiteVisibility.Public,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator"
             });
             mockShowInformationMessage.resolves(Constants.Strings.YES);
 
@@ -926,8 +939,10 @@ describe('ActionsHubCommandHandlers', () => {
                 status: WebsiteStatus.Active,
                 websiteUrl: 'https://test-site.com',
                 isCurrent: false,
-                siteVisibility: Constants.SiteVisibility.PRIVATE,
-                siteManagementUrl: "https://inactive-site-1-management.com"
+                siteVisibility: SiteVisibility.Private,
+                siteManagementUrl: "https://inactive-site-1-management.com",
+                createdOn: "2025-03-20",
+                creator: "Test Creator"
             });
 
             mockSendText.throws(new Error('Upload failed'));
@@ -1120,7 +1135,11 @@ describe('ActionsHubCommandHandlers', () => {
                 siteInfo: {
                     name: "Test Site",
                     websiteId: "test-id",
-                    dataModelVersion: 1
+                    dataModelVersion: 1,
+                    websiteUrl: 'https://test-site.com',
+                    siteVisibility: SiteVisibility.Public,
+                    createdOn: "2025-03-20T00:00:00Z",
+                    creator: "Test Creator"
                 } as IWebsiteInfo
             } as SiteTreeItem);
 
@@ -1128,8 +1147,12 @@ describe('ActionsHubCommandHandlers', () => {
 
             const message = mockShowInformationMessage.firstCall.args[1].detail;
             expect(message).to.include("Friendly name: Test Site");
-            expect(message).to.include("Website ID: test-id");
-            expect(message).to.include("Data model version: v1");
+            expect(message).to.include("Website Id: test-id");
+            expect(message).to.include("Data model version: Standard");
+            expect(message).to.include("Website Url: https://test-site.com");
+            expect(message).to.include("Site visibility: Public");
+            expect(message).to.include("Creator: Test Creator");
+            expect(message).to.include("Created on: March 20, 2025");
         });
     });
 
