@@ -74,7 +74,7 @@ export async function getAllWebsites(orgDetails: OrgInfo): Promise<IWebsiteDetai
         const [adxWebsiteRecords, powerPagesSiteRecords, appModules] = await Promise.all([
             getAdxWebsiteRecords(orgDetails.OrgUrl, dataverseToken),
             getPowerPagesSiteRecords(orgDetails.OrgUrl, dataverseToken),
-            getAppModules(orgDetails.OrgUrl)
+            getAppModules(orgDetails.OrgUrl, dataverseToken)
         ]);
 
         const powerPagesManagementAppId = getPowerPagesManagementAppId(appModules);
@@ -160,9 +160,8 @@ async function getPowerPagesSiteRecords(orgUrl: string, token: string) {
     return [];
 }
 
-async function getAppModules(orgUrl: string) {
+async function getAppModules(orgUrl: string, accessToken: string) {
     try {
-        const { accessToken } = await dataverseAuthentication(orgUrl);
         const dataverseUrl = `${orgUrl.endsWith('/') ? orgUrl : orgUrl.concat('/')}${APP_MODULES_PATH}`;
         const response = await callApi(dataverseUrl, accessToken);
 
