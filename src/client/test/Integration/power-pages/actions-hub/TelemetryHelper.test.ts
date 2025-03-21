@@ -8,7 +8,6 @@ import sinon from 'sinon';
 import PacContext from '../../../../pac/PacContext';
 import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteContext';
 import { getBaseEventInfo } from '../../../../power-pages/actions-hub/TelemetryHelper';
-import * as os from 'os';
 import ArtemisContext from '../../../../ArtemisContext';
 
 
@@ -21,7 +20,6 @@ describe('TelemetryHelper', () => {
             orgInfoStub = sinon.stub(PacContext, 'OrgInfo').value({ OrgId: 'testOrgId', OrgUrl: 'testOrgUrl' });
             siteIdStub = sinon.stub(CurrentSiteContext, 'currentSiteId').value('testSiteId');
             sinon.stub(ArtemisContext, 'ServiceResponse').value({ stamp: 'testStamp', response: { geoName: 'testGeo' } });
-            sinon.stub(os, 'platform').returns('win32');
         });
 
         afterEach(() => {
@@ -36,7 +34,7 @@ describe('TelemetryHelper', () => {
                 geo: 'testGeo',
                 orgId: 'testOrgId',
                 orgUrl: 'testOrgUrl',
-                siteId: 'testSiteId'
+                currentSiteId: 'testSiteId'
             });
         });
 
@@ -44,7 +42,7 @@ describe('TelemetryHelper', () => {
             orgInfoStub.value(undefined);
             const eventInfo = getBaseEventInfo();
             expect(eventInfo).to.deep.equal({
-                siteId: 'testSiteId',
+                currentSiteId: 'testSiteId',
                 os: 'Windows',
                 stamp: 'testStamp',
                 geo: 'testGeo',
