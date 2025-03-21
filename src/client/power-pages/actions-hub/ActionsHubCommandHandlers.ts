@@ -235,10 +235,8 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
                 }
             });
 
-            // Sort activesites based on created on date, newly created sites will be on top
-            activeWebsiteDetails.sort((a, b) => {
-                return moment(b.createdOn).diff(moment(a.createdOn));
-            });
+            activeWebsiteDetails.sort(sortByCreatedOn);
+            inactiveWebsiteDetails.sort(sortByCreatedOn);
 
             const currentEnvSiteIds = createKnownSiteIdsSet(activeWebsiteDetails, inactiveWebsiteDetails);
             const otherSites = findOtherSites(currentEnvSiteIds);
@@ -597,4 +595,10 @@ export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
     }
 
     await vscode.env.openExternal(vscode.Uri.parse(studioUrl));
+}
+
+export function sortByCreatedOn<T extends { createdOn?: string | null }>(item1: T, item2: T): number {
+    const date1 = new Date(item1.createdOn || '').valueOf(); //NaN if createdOn is null or undefined
+    const date2 = new Date(item2.createdOn || '').valueOf();
+    return date2 - date1; // Sort in descending order (newest first)
 }
