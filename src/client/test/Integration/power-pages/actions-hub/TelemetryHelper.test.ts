@@ -8,6 +8,8 @@ import sinon from 'sinon';
 import PacContext from '../../../../pac/PacContext';
 import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteContext';
 import { getBaseEventInfo } from '../../../../power-pages/actions-hub/TelemetryHelper';
+import * as os from 'os';
+import ArtemisContext from '../../../../ArtemisContext';
 
 
 describe('TelemetryHelper', () => {
@@ -18,6 +20,8 @@ describe('TelemetryHelper', () => {
         beforeEach(() => {
             orgInfoStub = sinon.stub(PacContext, 'OrgInfo').value({ OrgId: 'testOrgId', OrgUrl: 'testOrgUrl' });
             siteIdStub = sinon.stub(CurrentSiteContext, 'currentSiteId').value('testSiteId');
+            sinon.stub(ArtemisContext, 'ServiceResponse').value({ stamp: 'testStamp', response: { geoName: 'testGeo' } });
+            sinon.stub(os, 'platform').returns('win32');
         });
 
         afterEach(() => {
@@ -27,6 +31,9 @@ describe('TelemetryHelper', () => {
         it('should return event info with orgId, orgUrl, and siteId', () => {
             const eventInfo = getBaseEventInfo();
             expect(eventInfo).to.deep.equal({
+                os: 'Windows',
+                stamp: 'testStamp',
+                geo: 'testGeo',
                 orgId: 'testOrgId',
                 orgUrl: 'testOrgUrl',
                 siteId: 'testSiteId'
@@ -37,7 +44,10 @@ describe('TelemetryHelper', () => {
             orgInfoStub.value(undefined);
             const eventInfo = getBaseEventInfo();
             expect(eventInfo).to.deep.equal({
-                siteId: 'testSiteId'
+                siteId: 'testSiteId',
+                os: 'Windows',
+                stamp: 'testStamp',
+                geo: 'testGeo',
             });
         });
 
@@ -46,7 +56,10 @@ describe('TelemetryHelper', () => {
             const eventInfo = getBaseEventInfo();
             expect(eventInfo).to.deep.equal({
                 orgId: 'testOrgId',
-                orgUrl: 'testOrgUrl'
+                orgUrl: 'testOrgUrl',
+                os: 'Windows',
+                stamp: 'testStamp',
+                geo: 'testGeo',
             });
         });
 
@@ -54,7 +67,11 @@ describe('TelemetryHelper', () => {
             orgInfoStub.value(undefined);
             siteIdStub.value(undefined);
             const eventInfo = getBaseEventInfo();
-            expect(eventInfo).to.deep.equal({});
+            expect(eventInfo).to.deep.equal({
+                os: 'Windows',
+                stamp: 'testStamp',
+                geo: 'testGeo',
+            });
         });
     });
 });
