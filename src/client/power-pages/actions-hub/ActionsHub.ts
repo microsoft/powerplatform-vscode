@@ -10,6 +10,7 @@ import { ActionsHubTreeDataProvider } from "./ActionsHubTreeDataProvider";
 import { oneDSLoggerWrapper } from "../../../common/OneDSLoggerTelemetry/oneDSLoggerWrapper";
 import { PacTerminal } from "../../lib/PacTerminal";
 import { Constants } from "./Constants";
+import { getBaseEventInfo } from "./TelemetryHelper";
 
 export class ActionsHub {
     private static _isInitialized = false;
@@ -32,8 +33,9 @@ export class ActionsHub {
         try {
             const isActionsHubEnabled = ActionsHub.isEnabled();
 
-            oneDSLoggerWrapper.getLogger().traceInfo("EnableActionsHub", {
-                isEnabled: isActionsHubEnabled.toString()
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_ENABLED, {
+                isEnabled: isActionsHubEnabled.toString(),
+                ...getBaseEventInfo()
             });
 
             vscode.commands.executeCommand("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", isActionsHubEnabled);
@@ -44,10 +46,10 @@ export class ActionsHub {
 
             ActionsHubTreeDataProvider.initialize(context, pacTerminal);
             ActionsHub._isInitialized = true;
-            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED);
+            oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_INITIALIZED, getBaseEventInfo());
         } catch (exception) {
             const exceptionError = exception as Error;
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_INITIALIZATION_FAILED, exceptionError.message, exceptionError, getBaseEventInfo());
         }
     }
 }

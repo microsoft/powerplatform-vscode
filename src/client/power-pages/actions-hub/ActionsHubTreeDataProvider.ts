@@ -16,6 +16,7 @@ import PacContext from "../../pac/PacContext";
 import CurrentSiteContext from "./CurrentSiteContext";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../common/services/Interfaces";
 import { orgChangeErrorEvent } from "../../OrgChangeNotifier";
+import { getBaseEventInfo } from "./TelemetryHelper";
 
 export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<ActionsHubTreeItem> {
     private readonly _disposables: vscode.Disposable[] = [];
@@ -47,15 +48,20 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
 
     private refresh(): void {
         this._onDidChangeTreeData.fire();
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_REFRESH, { ...getBaseEventInfo() });
     }
 
     private async loadWebsites(): Promise<void> {
         if (this._loadWebsites) {
-            const websites = await fetchWebsites();
-            this._activeSites = websites.activeSites;
-            this._inactiveSites = websites.inactiveSites;
-            this._otherSites = websites.otherSites;
-            this._loadWebsites = false;
+            try {
+                const websites = await fetchWebsites();
+                this._activeSites = websites.activeSites;
+                this._inactiveSites = websites.inactiveSites;
+                this._otherSites = websites.otherSites;
+                this._loadWebsites = false;
+            } catch (error) {
+                oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_LOAD_WEBSITES_FAILED, error as string, error as Error, { methodName: this.loadWebsites, ...getBaseEventInfo() }, {});
+            }
         }
     }
 
@@ -68,6 +74,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
     }
 
     async getChildren(element?: ActionsHubTreeItem): Promise<ActionsHubTreeItem[] | null | undefined> {
+        oneDSLoggerWrapper.getLogger().traceInfo(Constants.EventNames.ACTIONS_HUB_TREE_GET_CHILDREN_CALLED, { methodName: this.getChildren.name, ...getBaseEventInfo() });
         await this.loadWebsites();
 
         if (element) {
@@ -93,7 +100,7 @@ export class ActionsHubTreeDataProvider implements vscode.TreeDataProvider<Actio
                 return [];
             }
         } catch (error) {
-            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: this.getChildren }, {});
+            oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_TREE_GET_CHILDREN_FAILED, error as string, error as Error, { methodName: this.getChildren, ...getBaseEventInfo() });
             return null;
         }
     }
