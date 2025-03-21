@@ -235,6 +235,11 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
                 }
             });
 
+            // Sort activesites based on created on date, newly created sites will be on top
+            activeWebsiteDetails.sort((a, b) => {
+                return moment(b.createdOn).diff(moment(a.createdOn));
+            });
+
             const currentEnvSiteIds = createKnownSiteIdsSet(activeWebsiteDetails, inactiveWebsiteDetails);
             const otherSites = findOtherSites(currentEnvSiteIds);
 
