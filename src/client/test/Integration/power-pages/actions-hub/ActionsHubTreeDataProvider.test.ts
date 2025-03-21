@@ -21,6 +21,8 @@ import PacContext from "../../../../pac/PacContext";
 import { CloudInstance, EnvironmentType } from "../../../../pac/PacTypes";
 import { IOtherSiteInfo, IWebsiteDetails } from "../../../../../common/services/Interfaces";
 import * as CommandHandlers from "../../../../power-pages/actions-hub/ActionsHubCommandHandlers";
+import { Constants } from "../../../../power-pages/actions-hub/Constants";
+import * as TelemetryHelper from "../../../../power-pages/actions-hub/TelemetryHelper";
 
 // Add global type declaration for ArtemisContext
 describe("ActionsHubTreeDataProvider", () => {
@@ -48,6 +50,9 @@ describe("ActionsHubTreeDataProvider", () => {
         pacWrapperStub = sinon.createStubInstance(PacWrapper);
         pacWrapperStub.activeAuth.resolves({ Status: SUCCESS, Results: [], Errors: [], Information: [] });
         (pacTerminal.getWrapper as sinon.SinonStub).returns(pacWrapperStub);
+        sinon.stub(TelemetryHelper, 'getBaseEventInfo').returns({
+            testMetric: "foo"
+        });
     });
 
     afterEach(() => {
@@ -226,6 +231,27 @@ describe("ActionsHubTreeDataProvider", () => {
     });
 
     describe('getChildren', () => {
+        it ('should call traceInfo', async () => {
+            const mockActiveSites = [
+                { name: "Foo", websiteRecordId: 'foo', websiteUrl: "https://foo.com" }
+            ] as IWebsiteDetails[];
+            const mockInactiveSites = [
+                { name: "Bar", websiteRecordId: 'Bar', websiteUrl: "https://bar.com" }
+            ] as IWebsiteDetails[];
+            const otherSites = [
+                { name: "Baz", websiteId: 'baz' }
+            ] as IOtherSiteInfo[];
+            sinon.stub(CommandHandlers, 'fetchWebsites').resolves({ activeSites: mockActiveSites, inactiveSites: mockInactiveSites, otherSites: otherSites });
+
+            PacContext['_authInfo'] = null;
+            const provider = ActionsHubTreeDataProvider.initialize(context, pacTerminal);
+            await provider.getChildren();
+
+            expect(traceInfoStub.calledOnce).to.be.true;
+            expect(traceInfoStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_TREE_GET_CHILDREN_CALLED);
+            expect(traceInfoStub.firstCall.args[1]).to.deep.equal({ methodName: provider.getChildren.name, testMetric: "foo" });
+        });
+
         it("should return empty array when no auth is available", async () => {
             const mockActiveSites = [
                 { name: "Foo", websiteRecordId: 'foo', websiteUrl: "https://foo.com" }

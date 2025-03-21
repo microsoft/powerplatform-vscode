@@ -176,24 +176,24 @@ export const createNewAuthProfile = async (pacWrapper: PacWrapper): Promise<void
                 } else {
                     oneDSLoggerWrapper.getLogger().traceError(
                         createNewAuthProfile.name,
-                        Constants.EventNames.ORGANIZATION_URL_MISSING,
-                        new Error(Constants.EventNames.ORGANIZATION_URL_MISSING),
+                        Constants.Strings.ORGANIZATION_URL_MISSING,
+                        new Error(Constants.Strings.ORGANIZATION_URL_MISSING),
                         {}
                     );
                 }
             } else {
                 oneDSLoggerWrapper.getLogger().traceError(
                     createNewAuthProfile.name,
-                    Constants.EventNames.EMPTY_RESULTS_ARRAY,
-                    new Error(Constants.EventNames.EMPTY_RESULTS_ARRAY),
+                    Constants.Strings.EMPTY_RESULTS_ARRAY,
+                    new Error(Constants.Strings.EMPTY_RESULTS_ARRAY),
                     {}
                 );
             }
         } else {
             oneDSLoggerWrapper.getLogger().traceError(
                 createNewAuthProfile.name,
-                Constants.EventNames.PAC_AUTH_OUTPUT_FAILURE,
-                new Error(Constants.EventNames.PAC_AUTH_OUTPUT_FAILURE),
+                Constants.Strings.PAC_AUTH_OUTPUT_FAILURE,
+                new Error(Constants.Strings.PAC_AUTH_OUTPUT_FAILURE),
                 {}
             );
         }
@@ -244,7 +244,7 @@ export const fetchWebsites = async (): Promise<{ activeSites: IWebsiteDetails[],
             return { activeSites: activeWebsiteDetails, inactiveSites: inactiveWebsiteDetails, otherSites: otherSites };
         }
     } catch (error) {
-        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_CURRENT_ENV_FETCH_FAILED, error as string, error as Error, { methodName: fetchWebsites.name }, {});
+        oneDSLoggerWrapper.getLogger().traceError(Constants.EventNames.ACTIONS_HUB_FETCH_WEBSITES_FAILED, error as string, error as Error, { methodName: fetchWebsites.name }, {});
     }
 
     return { activeSites: [], inactiveSites: [], otherSites: [] };

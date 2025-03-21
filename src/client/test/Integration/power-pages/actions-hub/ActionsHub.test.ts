@@ -88,7 +88,7 @@ describe("ActionsHub", () => {
 
                 it("should set context to true and return early if isEnabled returns true", async () => {
                     await ActionsHub.initialize(fakeContext, fakePacTerminal);
-                    expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "true" })).to.be.true;
+                    expect(traceInfoStub.calledWith(Constants.EventNames.ACTIONS_HUB_ENABLED, { isEnabled: "true" })).to.be.true;
                     expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", true)).to.be.true;
                 });
 
@@ -125,7 +125,10 @@ describe("ActionsHub", () => {
 
                 it("should set context to false and return early if isEnabled returns false", async () => {
                     await ActionsHub.initialize(fakeContext, fakePacTerminal);
-                    expect(traceInfoStub.calledWith("EnableActionsHub", { isEnabled: "false" })).to.be.true;
+
+                    expect(traceInfoStub.calledOnce).to.be.true;
+                    expect(traceInfoStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_ENABLED);
+                    expect(traceInfoStub.firstCall.args[1]).to.deep.equal({ isEnabled: "false" });
                     expect(executeCommandStub.calledWith("setContext", "microsoft.powerplatform.pages.actionsHubEnabled", false)).to.be.true;
                 });
 
