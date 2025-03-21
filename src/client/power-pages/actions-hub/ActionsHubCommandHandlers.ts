@@ -568,7 +568,14 @@ export const openInStudio = async (siteTreeItem: SiteTreeItem) => {
 export const reactivateSite = async (siteTreeItem: SiteTreeItem) => {
     const websiteId = siteTreeItem.siteInfo.websiteId;
     const environmentId = PacContext.AuthInfo?.EnvironmentId || "";
-    const reactivateSiteUrl = `${getPPHomeUrl()}/?tab=inactive&websiteId=${websiteId}&environmentId=${environmentId}`; // TODO: Update this URL to the correct one for reactivation
+    let isNewDataModel = false;
+    if(siteTreeItem.siteInfo.dataModelVersion === 2) {
+        isNewDataModel = true;
+    }
+
+    //reactivateSiteUrl: https://your-domain.com/e/{environmentId}/portals/create?reactivation=true&websiteId=12345&siteName=MySite&siteAddress=mysite.example.com&siteLanguageId=1033&isNewDataModel=true
+    const reactivateSiteUrl = `${getStudioBaseUrl()}/e/${environmentId}/portals/create?reactivation=true&websiteId=${websiteId}&siteName=${siteTreeItem.siteInfo.name}&siteAddress=${siteTreeItem.siteInfo.websiteUrl}&siteLanguageId=1033&isNewDataModel=${isNewDataModel}`; //TODO: Get the site language ID dynamically
+
 
     if (!reactivateSiteUrl) {
         return;
