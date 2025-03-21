@@ -270,16 +270,40 @@
       "{0} is the website name"
     ]
   },
-  "Website ID: {0}/{0} is the website ID": {
-    "message": "Website ID: {0}",
+  "Website Id: {0}/{0} is the website ID": {
+    "message": "Website Id: {0}",
     "comment": [
       "{0} is the website ID"
     ]
   },
-  "Data model version: v{0}/{0} is the data model version": {
-    "message": "Data model version: v{0}",
+  "Data model version: {0}/{0} is the data model version": {
+    "message": "Data model version: {0}",
     "comment": [
       "{0} is the data model version"
+    ]
+  },
+  "Website Url: {0}/{0} is the website Url": {
+    "message": "Website Url: {0}",
+    "comment": [
+      "{0} is the website Url"
+    ]
+  },
+  "Site visibility: {0}/{0} is the site visibility": {
+    "message": "Site visibility: {0}",
+    "comment": [
+      "{0} is the site visibility"
+    ]
+  },
+  "Creator: {0}/{0} is the creator": {
+    "message": "Creator: {0}",
+    "comment": [
+      "{0} is the creator"
+    ]
+  },
+  "Created on: {0}/{0} is the created date": {
+    "message": "Created on: {0}",
+    "comment": [
+      "{0} is the created date"
     ]
   },
   "PAC Telemetry enabled": "PAC Telemetry enabled",
