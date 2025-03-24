@@ -160,6 +160,8 @@ export class PreviewSite {
                         }
                     } as SiteTreeItem, websitePath);
                 }
+            } else {
+                await vscode.window.showInformationMessage(Messages.PREVIEW_SHOWN_FOR_PUBLISHED_CHANGES);
             }
         } catch (exception) {
             const exceptionError = exception as Error;
