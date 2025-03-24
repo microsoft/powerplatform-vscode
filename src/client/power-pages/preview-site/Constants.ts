@@ -37,5 +37,6 @@ export const Messages = {
 export const Events = {
     PREVIEW_SITE_INITIALIZED: "PreviewSiteInitialized",
     PREVIEW_SITE_INITIALIZATION_FAILED: "PreviewSiteInitializationFailed",
-    PREVIEW_SITE_UPLOAD_WARNING_FAILED: "PreviewSiteUploadWarningFailed"
+    PREVIEW_SITE_UPLOAD_WARNING_FAILED: "PreviewSiteUploadWarningFailed",
+    PREVIEW_SITE_CLOSE_EXISTING_PREVIEW_FAILED: "PreviewSiteCloseExistingPreviewFailed"
 }

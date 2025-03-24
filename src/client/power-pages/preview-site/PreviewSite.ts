@@ -75,6 +75,9 @@ export class PreviewSite {
             }
 
             PreviewSite._isInitialized = true;
+            oneDSLoggerWrapper.getLogger().traceInfo(Events.PREVIEW_SITE_INITIALIZED, {
+                isEnabled: isSiteRuntimePreviewEnabled.toString()
+            });
         } catch (exception) {
             const exceptionError = exception as Error;
             oneDSLoggerWrapper.getLogger().traceError(Events.PREVIEW_SITE_INITIALIZATION_FAILED, exceptionError.message, exceptionError);
@@ -131,7 +134,10 @@ export class PreviewSite {
 
         await showProgressWithNotification(
             Messages.OPENING_SITE_PREVIEW,
-            async () => await vscode.commands.executeCommand('vscode-edge-devtools.launch', { launchUrl: webSitePreviewURL })
+            async () => {
+                PreviewSite.closeExistingPreview();
+                await vscode.commands.executeCommand('vscode-edge-devtools.launch', { launchUrl: webSitePreviewURL });
+            }
         );
 
         const websitePath = CurrentSiteContext.currentSiteFolderPath;
@@ -285,5 +291,20 @@ export class PreviewSite {
         }
 
         return shouldRepeatLoginFlow;
+    }
+
+    private static closeExistingPreview() {
+        try {
+            vscode.window.tabGroups.all.forEach((tabGroup) => {
+                tabGroup.tabs.forEach(async (tab) => {
+                    if (tab.label.toLowerCase().startsWith("edge devtools")) {
+                        await vscode.window.tabGroups.close(tab);
+                    }
+                });
+            });
+        } catch (error) {
+            const exceptionError = error as Error;
+            oneDSLoggerWrapper.getLogger().traceError(Events.PREVIEW_SITE_CLOSE_EXISTING_PREVIEW_FAILED, (error as Error).message, exceptionError);
+        }
     }
 }

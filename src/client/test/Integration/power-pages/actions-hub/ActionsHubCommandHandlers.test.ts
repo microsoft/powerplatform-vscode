@@ -29,6 +29,7 @@ import CurrentSiteContext from '../../../../power-pages/actions-hub/CurrentSiteC
 import * as WorkspaceInfoFinderUtil from "../../../../../common/utilities/WorkspaceInfoFinderUtil";
 import path from 'path';
 import { SiteVisibility } from '../../../../power-pages/actions-hub/models/SiteVisibility';
+import * as TelemetryHelper from '../../../../power-pages/actions-hub/TelemetryHelper';
 
 describe('ActionsHubCommandHandlers', () => {
     let sandbox: sinon.SinonSandbox;
@@ -77,6 +78,7 @@ describe('ActionsHubCommandHandlers', () => {
         ArtemisContext["_artemisResponse"] = { stamp: ServiceEndpointCategory.TEST, response: artemisResponse };
         mockSetAuthInfo = sandbox.stub(PacContext, 'setContext');
         traceErrorStub = sinon.stub();
+        sandbox.stub(TelemetryHelper, "getBaseEventInfo").returns({ foo: 'bar' });
         sandbox.stub(oneDSLoggerWrapper, 'getLogger').returns({
             traceError: traceErrorStub,
             traceInfo: sinon.stub(),
@@ -591,7 +593,7 @@ describe('ActionsHubCommandHandlers', () => {
             expect(mockCreateAuthProfileExp.calledOnce).to.be.true;
             expect(mockDataverseAuthentication.called).to.be.false;
             expect(traceErrorStub.calledOnce).to.be.true;
-            expect(traceErrorStub.firstCall.args[0]).to.equal('createNewAuthProfile');
+            expect(traceErrorStub.firstCall.args[0]).to.equal('ActionsHubCreateAuthProfileFailed');
         });
     });
 
@@ -824,7 +826,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
             expect(traceErrorStub.firstCall.args[1]).to.equal(Constants.EventNames.SITE_MANAGEMENT_URL_NOT_FOUND);
-            expect(traceErrorStub.firstCall.args[3]).to.deep.equal({ method: openSiteManagement.name });
+            expect(traceErrorStub.firstCall.args[3]).to.deep.equal({ method: openSiteManagement.name, foo: 'bar', siteId: 'test-id' });
         });
     });
 
@@ -1007,7 +1009,7 @@ describe('ActionsHubCommandHandlers', () => {
 
             expect(result).to.be.an('array').that.is.empty;
             expect(traceErrorStub.calledOnce).to.be.true;
-            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.OTHER_SITES_FILESYSTEM_ERROR);
+            expect(traceErrorStub.firstCall.args[0]).to.equal(Constants.EventNames.ACTIONS_HUB_FIND_OTHER_SITES_FAILED);
         });
 
         it('should skip sites with missing website id', () => {
